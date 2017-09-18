@@ -8,21 +8,22 @@
 //////////////////////////////////////////////////////////////////////////
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 let historyDetail =
-    React.PropTypes.shape({
-      query: React.PropTypes.string,
-      start_time: React.PropTypes.instanceOf(Date),
-      status: React.PropTypes.bool,
-      total_time: React.PropTypes.string,
-      row_affected: React.PropTypes.int,
-      message: React.PropTypes.string,
+    PropTypes.shape({
+      query: PropTypes.string,
+      start_time: PropTypes.instanceOf(Date),
+      status: PropTypes.bool,
+      total_time: PropTypes.string,
+      row_affected: PropTypes.int,
+      message: PropTypes.string,
     });
 
 let historyCollectionClass =
-  React.PropTypes.shape({
-    historyList: React.PropTypes.array.isRequired,
-    onChange: React.PropTypes.func.isRequired,
+  PropTypes.shape({
+    historyList: PropTypes.array.isRequired,
+    onChange: PropTypes.func.isRequired,
   });
 
 export default {

@@ -13,6 +13,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'underscore';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import QueryHistoryEntry from './query_history_entry';
 import QueryHistoryEntryDateGroup from './query_history_entry_date_group';
@@ -150,7 +151,7 @@ export default class QueryHistoryEntries extends React.Component {
 }
 
 QueryHistoryEntries.propTypes = {
-  historyEntries: React.PropTypes.array.isRequired,
-  selectedEntry: React.PropTypes.number.isRequired,
-  onSelectEntry: React.PropTypes.func.isRequired,
+  historyEntries: PropTypes.array.isRequired,
+  selectedEntry: PropTypes.number.isRequired,
+  onSelectEntry: PropTypes.func.isRequired,
 };
