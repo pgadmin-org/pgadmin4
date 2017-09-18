@@ -14,7 +14,9 @@ import Shapes from '../../react_shapes';
 export default class HistoryErrorMessage extends React.Component {
 
   parseErrorMessage(message) {
-    return message.match(/ERROR:\s*([^\n\r]*)/i)[1];
+    return message.match(/ERROR:\s*([^\n\r]*)/i) ?
+           message.match(/ERROR:\s*([^\n\r]*)/i)[1] :
+           message;
   }
 
   render() {
