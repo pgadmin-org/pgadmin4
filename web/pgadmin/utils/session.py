@@ -58,6 +58,7 @@ class ManagedSession(CallbackDict, SessionMixin):
         self.modified = False
         self.randval = randval
         self.last_write = None
+        self.force_write = False
         self.hmac_digest = hmac_digest
 
     def sign(self, secret):
@@ -219,12 +220,13 @@ class FileBackedSessionManager(SessionManager):
         current_time = time.time()
         if not session.hmac_digest:
             session.sign(self.secret)
-        else:
+        elif not session.force_write:
             if session.last_write is not None \
                     and (current_time - float(session.last_write)) < self.disk_write_delay:
                 return
 
         session.last_write = current_time
+        session.force_write = False
         fname = os.path.join(self.path, session.sid)
         with open(fname, 'wb') as f:
             dump(
