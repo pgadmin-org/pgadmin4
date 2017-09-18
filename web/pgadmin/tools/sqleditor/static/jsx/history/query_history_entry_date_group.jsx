@@ -9,6 +9,7 @@
 
 import React from 'react';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 export default class QueryHistoryEntryDateGroup extends React.Component {
 
@@ -40,7 +41,7 @@ export default class QueryHistoryEntryDateGroup extends React.Component {
 }
 
 QueryHistoryEntryDateGroup.propTypes = {
-  date: React.PropTypes.instanceOf(Date).isRequired,
+  date: PropTypes.instanceOf(Date).isRequired,
 };
 
 QueryHistoryEntryDateGroup.formatString = 'MMM DD YYYY';

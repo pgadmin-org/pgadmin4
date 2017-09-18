@@ -71,6 +71,7 @@
     "jquery-contextmenu": "^2.5.0",
     "jquery-ui": "^1.12.1",
     "moment": "^2.18.1",
+    "prop-types": "^15.5.10",
     "react": "file:../web/pgadmin/static/vendor/react",
     "react-dom": "file:../web/pgadmin/static/vendor/react-dom",
     "react-split-pane": "^0.1.63",
