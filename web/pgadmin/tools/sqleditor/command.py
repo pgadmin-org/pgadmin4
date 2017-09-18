@@ -660,7 +660,7 @@ class ForeignTableCommand(GridCommand):
 
         It is a derived class for ForeignTable type.
     """
-    object_type = 'foreign-table'
+    object_type = 'foreign_table'
 
     def __init__(self, **kwargs):
         """

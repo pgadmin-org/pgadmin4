@@ -334,7 +334,7 @@ define('pgadmin.node.foreign_table', [
           // Fetch Columns from server
           var fnd_columns = columns.where({inheritedid: parseInt(i)});
           if (fnd_columns && fnd_columns.length <= 0) {
-            inhted_columns = self.fetchColumns(i);
+            var inhted_columns = self.fetchColumns(i);
             columns.add(inhted_columns);
           }
         });
@@ -601,7 +601,7 @@ define('pgadmin.node.foreign_table', [
           }
         },{
           id: 'columns', label: gettext('Columns'), cell: 'string',
-          type: 'collection', group: gettext('Columns'), visible: false, mode: ['edit', 'create'],
+          type: 'collection', group: gettext('Columns'), mode: ['edit', 'create'],
           model: ColumnsModel, canAdd: true, canDelete: true, canEdit: true,
           columns: ['attname', 'datatype', 'inheritedfrom'],
           canDeleteRow: function(m) {
@@ -615,7 +615,7 @@ define('pgadmin.node.foreign_table', [
         },
         {
           id: 'constraints', label: gettext('Constraints'), cell: 'string',
-          type: 'collection', group: gettext('Constraints'), visible: false, mode: ['edit', 'create'],
+          type: 'collection', group: gettext('Constraints'), mode: ['edit', 'create'],
           model: ConstraintModel, canAdd: true, canDelete: true, columns: ['conname','consrc', 'connoinherit', 'convalidated'],
           canEdit: function(o) {
             if (o instanceof Backbone.Model) {
@@ -695,7 +695,7 @@ define('pgadmin.node.foreign_table', [
           if (_.indexOf(['schema'], d._type) > -1)
             return true;
 
-          if ('coll-foreign-table' == d._type) {
+          if ('coll-foreign_table' == d._type) {
             //Check if we are not child of catalog
             var prev_i = t.hasParent(i) ? t.parent(i) : null,
               prev_d = prev_i ? t.itemData(prev_i) : null;
