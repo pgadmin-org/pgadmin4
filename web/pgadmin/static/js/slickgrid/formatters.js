@@ -14,20 +14,45 @@
         "Numbers": NumbersFormatter,
         "Checkmark": CheckmarkFormatter,
         "Text": TextFormatter,
+        "Binary": BinaryFormatter,
+        "JsonStringArray": JsonArrayFormatter,
+        "NumbersArray": NumbersArrayFormatter,
+        "TextArray": TextArrayFormatter,
       }
     }
   });
 
-  function JsonFormatter(row, cell, value, columnDef, dataContext) {
-    // If column has default value, set placeholder
+  function NullAndDefaultFormatter(row, cell, value, columnDef, dataContext) {
     if (_.isUndefined(value) && columnDef.has_default_val) {
-      return "<span class='pull-left disabled_cell'>[default]</span>";
+        return "<span class='pull-left disabled_cell'>[default]</span>";
     }
     else if (
       (_.isUndefined(value) && columnDef.not_null) ||
       (_.isUndefined(value) || value === null)
     ) {
       return "<span class='pull-left disabled_cell'>[null]</span>";
+    }
+    return null;
+  }
+
+  function NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext) {
+    if (_.isUndefined(value) && columnDef.has_default_val) {
+        return "<span class='pull-right disabled_cell'>[default]</span>";
+    }
+    else if (
+      (_.isUndefined(value) && columnDef.not_null) ||
+      (_.isUndefined(value) || value === null)
+    ) {
+      return "<span class='pull-right disabled_cell'>[null]</span>";
+    }
+    return null;
+  }
+
+  function JsonFormatter(row, cell, value, columnDef, dataContext) {
+    // If column has default value, set placeholder
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    if (data) {
+      return data;
     } else {
       // Stringify only if it's json object
       if (typeof value === "object" && !Array.isArray(value)) {
@@ -48,19 +73,61 @@
     }
   }
 
+  function JsonArrayFormatter(row, cell, value, columnDef, dataContext) {
+    // If column has default value, set placeholder
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    if (data) {
+      return data;
+    } else {
+      var data = [];
+      for (var k in value) {
+        // Stringify only if it's json object
+        var v = value[k];
+        if (typeof v === "object" && !Array.isArray(v)) {
+          return data.push(_.escape(JSON.stringify(v)));
+        } else if (Array.isArray(v)) {
+          var temp = [];
+          $.each(v, function(i, val) {
+            if (typeof val === "object") {
+              temp.push(JSON.stringify(val));
+            } else {
+              temp.push(val)
+            }
+          });
+          return data.push(_.escape("[" + temp.join() + "]"));
+        } else {
+          return data.push(_.escape(v));
+        }
+      }
+      return '{' + data.join() + '}';
+    }
+  }
+
   function NumbersFormatter(row, cell, value, columnDef, dataContext) {
     // If column has default value, set placeholder
-    if (_.isUndefined(value) && columnDef.has_default_val) {
-      return "<span class='pull-right disabled_cell'>[default]</span>";
-    }
-    else if (
-      (_.isUndefined(value) || value === null || value === "") ||
-      (_.isUndefined(value) && columnDef.not_null)
-    ) {
-      return "<span class='pull-right disabled_cell'>[null]</span>";
-    }
-    else {
+    var data = NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext);
+    if (data) {
+      return data;
+    } else {
       return "<span style='float:right'>" + _.escape(value) + "</span>";
+    }
+  }
+
+  function NumbersArrayFormatter(row, cell, value, columnDef, dataContext) {
+    // If column has default value, set placeholder
+    var data = NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext);
+    if (data) {
+      return data;
+    } else {
+      data = [];
+      for(var k in value) {
+        if (value[k] == null) {
+          data.push("<span class='disabled_cell'>[null]</span>");
+        } else {
+          data.push(_.escape(value[k]));
+        }
+      }
+      return "<span style='float:right'>{" + data.join() + "}</span>";
     }
   }
 
@@ -70,35 +137,49 @@
      * 2) unchecked=false
      * 3) indeterminate=null
      */
-    if (_.isUndefined(value) && columnDef.has_default_val) {
-      return "<span class='pull-left disabled_cell'>[default]</span>";
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    if (data) {
+      return data;
+    } else {
+      return value ? "true" : "false";
     }
-    else if (
-      (_.isUndefined(value) && columnDef.not_null) ||
-      (value == null || value === "")
-    ) {
-      return "<span class='pull-left disabled_cell'>[null]</span>";
-    }
-    return value ? "true" : "false";
   }
 
   function TextFormatter(row, cell, value, columnDef, dataContext) {
     // If column has default value, set placeholder
-    if (_.isUndefined(value) && columnDef.has_default_val) {
-        return "<span class='pull-left disabled_cell'>[default]</span>";
-    }
-    else if (
-      (_.isUndefined(value) && columnDef.not_null) ||
-      (_.isUndefined(value) || _.isNull(value))
-    ) {
-      return "<span class='pull-left disabled_cell'>[null]</span>";
-    } else if(columnDef.column_type_internal == 'bytea' ||
-      columnDef.column_type_internal == 'bytea[]') {
-      return "<span class='pull-left disabled_cell'>[" + _.escape(value) + "]</span>";
-    }
-    else {
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    if (data) {
+      return data;
+    } else {
       return _.escape(value);
     }
   }
 
+  function TextArrayFormatter(row, cell, value, columnDef, dataContext) {
+    // If column has default value, set placeholder
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    if (data) {
+      return data;
+    } else {
+      data = [];
+      for(var k in value) {
+        if (value[k] === null) {
+          data.push("<span class='disabled_cell'>[null]</span>");
+        } else {
+          data.push(_.escape(value[k]));
+        }
+      }
+      return "{" + data.join() + "}";
+    }
+  }
+
+  function BinaryFormatter(row, cell, value, columnDef, dataContext) {
+    // If column has default value, set placeholder
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    if (data) {
+      return data;
+    } else {
+      return "<span class='pull-left disabled_cell'>[" + _.escape(value) + "]</span>";
+    }
+  }
 })(jQuery);

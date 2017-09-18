@@ -50,31 +50,65 @@ else:
 
 _ = gettext
 
+unicode_type_for_record = psycopg2.extensions.new_type(
+    (2249,),
+    "RECORD",
+    psycopg2.extensions.UNICODE
+)
+
+unicode_array_type_for_record_array = psycopg2.extensions.new_array_type(
+    (2287,),
+    "ARRAY_RECORD",
+    unicode_type_for_record
+)
+
 # This registers a unicode type caster for datatype 'RECORD'.
-psycopg2.extensions.register_type(
-    psycopg2.extensions.new_type((2249,), "RECORD",
-                                 psycopg2.extensions.UNICODE)
+psycopg2.extensions.register_type(unicode_type_for_record)
+
+# This registers a array unicode type caster for datatype 'ARRAY_RECORD'.
+psycopg2.extensions.register_type(unicode_array_type_for_record_array)
+
+
+# define type caster to convert various pg types into string type
+pg_types_to_string_type = psycopg2.extensions.new_type(
+    (
+        # To cast bytea, interval type
+        17, 1186,
+
+        # to cast int4range, int8range, numrange tsrange, tstzrange, daterange
+        3904, 3926, 3906, 3908, 3910, 3912, 3913,
+
+        # date, timestamp, timestamptz, bigint, double precision
+        1700, 1082, 1114, 1184, 20, 701,
+
+        # real
+        700
+    ),
+    'TYPECAST_TO_STRING', psycopg2.STRING
+)
+
+# define type caster to convert pg array types of above types into
+# array of string type
+pg_array_types_to_array_of_string_type = psycopg2.extensions.new_array_type(
+    (
+        # To cast bytea[] type
+        1001,
+
+        # bigint[]
+        1016,
+
+        # double precision[], real[]
+        1022, 1021
+    ),
+    'TYPECAST_TO_ARRAY_OF_STRING', pg_types_to_string_type
 )
 
 # This registers a type caster to convert various pg types into string type
-psycopg2.extensions.register_type(
-    psycopg2.extensions.new_type(
-        (
-            # To cast bytea, bytea[] and interval type
-            17, 1001, 1186,
+psycopg2.extensions.register_type(pg_types_to_string_type)
 
-            # to cast int4range, int8range, numrange tsrange, tstzrange,
-            # daterange
-            3904, 3926, 3906, 3908, 3910, 3912, 3913,
-
-            # date, timestamp, timestamptz, bigint, double precision, bigint[]
-            1700, 1082, 1114, 1184, 20, 701, 1016,
-
-            # double precision[], real, real[]
-            1022, 700, 1021
-         ),
-        'TYPECAST_TO_STRING', psycopg2.STRING)
-)
+# This registers a type caster to convert various pg array types into
+# array of string type
+psycopg2.extensions.register_type(pg_array_types_to_array_of_string_type)
 
 
 def register_string_typecasters(connection):
@@ -144,6 +178,7 @@ def register_binary_typecasters(connection):
             lambda value, cursor: 'binary data[]' if value is not None else None),
         connection
     )
+
 
 class Connection(BaseConnection):
     """

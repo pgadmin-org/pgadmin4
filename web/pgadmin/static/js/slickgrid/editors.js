@@ -48,6 +48,10 @@
     return $buttons;
   }
 
+  function is_valid_array(val) {
+    val = $.trim(val)
+    return !(val != "" && (val.charAt(0) != '{' || val.charAt(val.length - 1) != '}'));
+  }
   /*
    * This function handles the [default] and [null] values for cells
    * if row is copied, otherwise returns the editor value.
@@ -189,15 +193,41 @@
     this.loadValue = function (item) {
       var col = args.column;
 
-      if (_.isUndefined(item[args.column.field]) && col.has_default_val) {
-        $input.val(defaultValue = "");
+      if (_.isUndefined(item[args.column.field]) || _.isNull(item[args.column.field])) {
+          $input.val(defaultValue = "");
+          return;
       }
-      else if (item[args.column.field] === "") {
-        $input.val(defaultValue = "''");
-      }
-      else {
-        $input.val(defaultValue = item[args.column.field]);
-        $input.select();
+
+      if (!args.column.is_array) {
+        if (item[args.column.field] === "") {
+          $input.val(defaultValue = "''");
+        } else if (item[args.column.field] === "''") {
+          $input.val(defaultValue = "\\'\\'");
+        } else if (item[args.column.field] === '""') {
+          $input.val(defaultValue = '\\"\\"');
+        } else {
+          $input.val(defaultValue = item[args.column.field]);
+          $input.select();
+        }
+      } else {
+        var data = [];
+        for (var k in item[args.column.field]) {
+          if (_.isUndefined(item[args.column.field][k]) || _.isNull(item[args.column.field][k])) {
+            data.push('');
+          } else if (item[args.column.field][k] === "") {
+            data.push("''");
+          } else if (item[args.column.field][k] === "''") {
+            data.push("\\'\\'");
+          } else if (item[args.column.field][k] === '""') {
+            data.push('\\"\\"');
+          } else {
+            data.push(item[args.column.field][k]);
+            $input.select();
+          }
+        }
+        defaultValue = data;
+        $input.val('{' + data.join() +'}');
+
       }
     };
 
@@ -207,18 +237,43 @@
       if (value === "") {
         return null;
       }
-      // single/double quotes represent an empty string
-      // If found return ''
-      else if (value === "''" || value === '""') {
-        return '';
-      }
-      else {
-        // If found string literals - \"\", \'\', \\'\\' and \\\\'\\\\'
-        // then remove slashes.
-        value = value.replace("\\'\\'", "''");
-        value = value.replace('\\"\\"', '""');
-        value = value = value.replace(/\\\\/g, '\\');
-        return value;
+
+      if (!args.column.is_array) {
+        if (value === "''" || value === '""') {
+          return '';
+        } else if (value === "\\'\\'") {
+          return "''";
+        } else if (value === '\\"\\"') {
+          return '""';
+        } else {
+          return value;
+        }
+      } else {
+
+        // Remove leading { and trailing }.
+        // Also remove leading and trailing whitespaces.
+        var value = $.trim(value.slice(1, -1));
+
+        if(value == '') {
+          return [];
+        }
+
+        var data = [];
+        value = value.split(',');
+        for (var k in value) {
+          if (value[k] == "") {
+            data.push(null);  //empty string from editor is null value.
+          } else if (value[k] === "''" || value[k] === '""') {
+            data.push('');    // double quote from editor is blank string;
+          } else if (value[k] === "\\'\\'") {
+            data.push("''");
+          } else if (value[k] === '\\"\\"') {
+            data.push('""');
+          } else {
+            data.push(value[k]);
+          }
+        }
+        return data;
       }
     };
 
@@ -233,7 +288,7 @@
         return false;
       } else {
         return (!($input.val() == "" && _.isNull(defaultValue))) &&
-               ($input.val() != defaultValue);
+               ($input.val() !== defaultValue);
       }
     };
 
@@ -243,6 +298,13 @@
         if (!validationResults.valid) {
           return validationResults;
         }
+      }
+
+      if (args.column.is_array && !is_valid_array($input.val())) {
+        return {
+          valid: false,
+          msg: "Array must start with '{' and end with '}'"
+        };
       }
 
       return {
@@ -859,7 +921,13 @@
 
     this.loadValue = function (item) {
       defaultValue = item[args.column.field];
-      $input.val(defaultValue);
+
+      if(args.column.is_array && !_.isNull(defaultValue) && !_.isUndefined(defaultValue)) {
+        $input.val('{' + defaultValue.join() +'}');
+      } else {
+        $input.val(defaultValue);
+      }
+
       $input[0].defaultValue = defaultValue;
       $input.select();
     };
@@ -868,6 +936,24 @@
       if ($input.val() === "") {
         return null;
       }
+
+      if(args.column.is_array) {
+        // Remove leading { and trailing }.
+        // Also remove leading and trailing whitespaces.
+        var val = $.trim($input.val().slice(1, -1));
+
+        if(val == '') {
+          return [];
+        }
+        val = val.split(',');
+        for (var k in val) {
+          if (val[k] == "") {
+            val[k] = null;  //empty string from editor is null value.
+          }
+        }
+        return val;
+      }
+
       return $input.val();
     };
 
@@ -887,17 +973,44 @@
     };
 
     this.validate = function () {
-      if (isNaN($input.val())) {
+      var value = $input.val();
+      if (!args.column.is_array && isNaN(value)) {
         return {
           valid: false,
-          msg: "Please enter a valid integer"
+          msg: "Please enter a valid number"
         };
       }
-
       if (args.column.validator) {
-        var validationResults = args.column.validator($input.val());
+        var validationResults = args.column.validator(value);
         if (!validationResults.valid) {
           return validationResults;
+        }
+      }
+
+      if (args.column.is_array) {
+        if (!is_valid_array(value)) {
+          return {
+            valid: false,
+            msg: "Array must start with '{' and end with '}'"
+          };
+        }
+
+        var val = $.trim(value.slice(1, -1)),
+            arr;
+
+        if(val == '') {
+          arr = [];
+        } else {
+          var arr = val.split(',');
+        }
+
+        for (var k in arr) {
+          if (isNaN(arr[k])) {
+            return {
+              valid: false,
+              msg: "Please enter a valid numbers"
+            };
+          }
         }
       }
 

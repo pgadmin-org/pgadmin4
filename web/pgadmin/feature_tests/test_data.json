@@ -7,12 +7,19 @@
       "4": ["", "Hello World", "text"],
       "5": ["\"\"", "", "text", "Two double quotes"],
       "6": ["\\\"\\\"", "\"\"", "text", "double backslash followed by a double quote"],
-      "7": ["\\\\\"\\\\\"", "\\\"\\\"", "text", "double backslash followed by a double quote"],
+      "7": ["\\\\\"\\\\\"", "\\\\\"\\\\\"", "text", "double backslash followed by a double quote"],
       "8": ["", "[null]", "text"],
       "9": ["", "[51,52]", "json"],
       "10": ["[61,62]", "[61,62]", "json"],
       "11": ["", "true", "bool"],
-      "12": ["", "[null]", "bool"]
+      "12": ["", "[null]", "bool"],
+      "13": ["", "[null]", "text[]"],
+      "14": ["{}", "{}", "text[]"],
+      "15": ["{data,,'',\"\",\\'\\',\\\"\\\"}", "{data,[null],,,'',\"\"}", "text[]"],
+      "16": ["{}", "{}", "int[]"],
+      "17": ["{123,,456}", "{123,[null],456}", "int[]"],
+      "18": ["", "[null]", "boolean[]"],
+      "19": ["{false,,true}", "{false,[null],true}", "boolean[]"]
     }
   }
 }

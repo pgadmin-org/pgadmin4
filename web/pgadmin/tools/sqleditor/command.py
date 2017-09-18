@@ -446,7 +446,8 @@ class TableCommand(GridCommand):
         query_res = dict()
         count = 0
         list_of_rowid = []
-        list_of_sql = []
+        operations = ('added', 'updated', 'deleted')
+        list_of_sql = {}
         _rowid = None
 
         if conn.connected():
@@ -457,7 +458,7 @@ class TableCommand(GridCommand):
             # Iterate total number of records to be updated/inserted
             for of_type in changed_data:
                 # No need to go further if its not add/update/delete operation
-                if of_type not in ('added', 'updated', 'deleted'):
+                if of_type not in operations:
                     continue
                 # if no data to be save then continue
                 if len(changed_data[of_type]) < 1:
@@ -480,6 +481,7 @@ class TableCommand(GridCommand):
 
                 # For newly added rows
                 if of_type == 'added':
+                    list_of_sql[of_type] = []
 
                     # When new rows are added, only changed columns data is
                     # sent from client side. But if column is not_null and has
@@ -506,12 +508,13 @@ class TableCommand(GridCommand):
                                               nsp_name=self.nsp_name,
                                               data_type=column_type,
                                               pk_names=pk_names)
-                        list_of_sql.append(sql)
+                        list_of_sql[of_type].append({'sql': sql, 'data': data})
                         # Reset column data
                         column_data = {}
 
                 # For updated rows
                 elif of_type == 'updated':
+                    list_of_sql[of_type] = []
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
                         pk = changed_data[of_type][each_row]['primary_keys']
@@ -521,11 +524,12 @@ class TableCommand(GridCommand):
                                               object_name=self.object_name,
                                               nsp_name=self.nsp_name,
                                               data_type=column_type)
-                        list_of_sql.append(sql)
-                        list_of_rowid.append(data)
+                        list_of_sql[of_type].append({'sql': sql, 'data': data})
+                        list_of_rowid.append(data.get(client_primary_key))
 
                 # For deleted rows
                 elif of_type == 'deleted':
+                    list_of_sql[of_type] = []
                     is_first = True
                     rows_to_delete = []
                     keys = None
@@ -559,33 +563,35 @@ class TableCommand(GridCommand):
                                           no_of_keys=no_of_keys,
                                           object_name=self.object_name,
                                           nsp_name=self.nsp_name)
-                    list_of_sql.append(sql)
+                    list_of_sql[of_type].append({'sql': sql, 'data': {}})
 
-            for i, sql in enumerate(list_of_sql):
-                if sql:
-                    status, res = conn.execute_void(sql)
-                    rows_affected = conn.rows_affected()
+            for opr, sqls in list_of_sql.items():
+                for item in sqls:
+                    if item['sql']:
+                        status, res = conn.execute_void(
+                            item['sql'], item['data'])
+                        rows_affected = conn.rows_affected()
 
-                    # store the result of each query in dictionary
-                    query_res[count] = {'status': status, 'result': res,
-                                        'sql': sql, 'rows_affected': rows_affected}
-                    count += 1
+                        # store the result of each query in dictionary
+                        query_res[count] = {'status': status, 'result': res,
+                                            'sql': sql, 'rows_affected': rows_affected}
 
-                    if not status:
-                        conn.execute_void('ROLLBACK;')
-                        # If we roll backed every thing then update the message for
-                        # each sql query.
-                        for val in query_res:
-                            if query_res[val]['status']:
-                                query_res[val]['result'] = 'Transaction ROLLBACK'
+                        if not status:
+                            conn.execute_void('ROLLBACK;')
+                            # If we roll backed every thing then update the message for
+                            # each sql query.
+                            for val in query_res:
+                                if query_res[val]['status']:
+                                    query_res[val]['result'] = 'Transaction ROLLBACK'
 
-                        # If list is empty set rowid to 1
-                        try:
-                            _rowid = list_of_rowid[i] if list_of_rowid else 1
-                        except Exception:
-                            _rowid = 0
+                            # If list is empty set rowid to 1
+                            try:
+                                _rowid = list_of_rowid[count] if list_of_rowid else 1
+                            except Exception:
+                                _rowid = 0
 
-                        return status, res, query_res, _rowid
+                            return status, res, query_res, _rowid
+                        count += 1
 
             # Commit the transaction if there is no error found
             conn.execute_void('COMMIT;')
