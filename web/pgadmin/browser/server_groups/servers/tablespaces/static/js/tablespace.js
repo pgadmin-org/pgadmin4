@@ -268,7 +268,7 @@ define('pgadmin.node.tablespace', [
                     alertify.confirm(
                       gettext('Move objects...'),
                       gettext(
-                        'Are you sure you wish to move objects %(old_tablespace)s to %s(new_tablespace)s',
+                        'Are you sure you wish to move the objects from %(old_tablespace)s to %(new_tablespace)s?',
                         {old_tablespace: args.old_tblspc, new_tablespace: args.tblspc}
                       ),
                       function() {
