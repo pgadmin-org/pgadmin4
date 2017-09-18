@@ -35,7 +35,7 @@ $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt || { 
 
 cd web
 /usr/bin/yarn install || { echo 'ERROR: Failed to install the required Javascript modules.' ; exit 1; }
-/usr/bin/yarn run bundle || { echo 'ERROR: Failed to bundle the Javascript code.' ; exit 1; }
+/usr/bin/yarn run bundle:prod || { echo 'ERROR: Failed to bundle the Javascript code.' ; exit 1; }
 cd ../
 
 echo "Running regression tests..."

@@ -242,7 +242,7 @@ REM Main function Ends
     ECHO Install Javascript dependencies
     call yarn install
     ECHO Bundle all Javascript
-    call yarn run bundle
+    call yarn run bundle:prod
 
     XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%

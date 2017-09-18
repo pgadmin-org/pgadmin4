@@ -26,7 +26,7 @@ install-node:
 	cd web && yarn install
 
 bundle:
-	cd web && yarn run bundle
+	cd web && yarn run bundle:prod
 
 bundle-dev:
 	cd web && yarn run bundle:dev

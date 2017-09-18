@@ -180,7 +180,7 @@ _complete_bundle() {
 
     pushd $SOURCEDIR/web
         yarn install
-        yarn run bundle
+        yarn run bundle:prod
     popd
 
     # copy the web directory to the bundle as it is required by runtime
@@ -191,6 +191,8 @@ _complete_bundle() {
     find . -name "tests" -type d -exec rm -rf "{}" \;
     find . -name "feature_tests" -type d -exec rm -rf "{}" \;
     find . -name ".DS_Store" -exec rm -f "{}" \;
+    find . -name "*.pyc" -exec rm -f "{}" \;
+    find . -name "*.pyo" -exec rm -f "{}" \;
 
     echo "SERVER_MODE = False" > config_distro.py
     echo "HELP_PATH = '../../../docs/en_US/html/'" >> config_distro.py

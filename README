@@ -30,6 +30,8 @@ To build the runtime, the following packages must be installed:
 - QT 4.6 or above, up to 5.5 (older versions may work, but haven't been tested,
   newer versions are not yet supported as Qt Webkit has been deprecated).
 - Python 2.6, 2.7 or 3.3+
+- Node.js v6.11.2+
+- Yarn v0.24.6+
 
 Assuming both qmake and python-config are in the path:
 
