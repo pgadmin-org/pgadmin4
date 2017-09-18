@@ -21,6 +21,7 @@ import traceback
 import json
 
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 if sys.version_info < (2, 7):
     import unittest2 as unit_test
@@ -171,7 +172,9 @@ def get_test_modules(arguments):
         exclude_pkgs += arguments['exclude'].split(',')
 
     if 'feature_tests' not in exclude_pkgs:
-        driver = webdriver.Chrome()
+        capabilites = DesiredCapabilities.CHROME
+        capabilites['loggingPrefs'] = { 'browser':'ALL' }
+        driver = webdriver.Chrome(desired_capabilities=capabilites)
         app_starter = AppStarter(driver, config)
         app_starter.start_app()
 

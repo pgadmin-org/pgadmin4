@@ -52,6 +52,16 @@ class BaseFeatureTest(BaseTestGenerator):
         pass
 
     def tearDown(self):
+
+        # Send the javascript console warnings, and errors on stderr
+        for entry in [
+            log for log in self.driver.get_log('browser')
+            if log['source'] == 'console-api' and log['level'] in [
+                'ERROR', 'WARNING'
+            ]
+        ]:
+            sys.stderr.write('[{0}] {1}\n'.format(entry['level'], entry['message']))
+
         python2_failures = hasattr(self, "_resultForDoCleanups") and self.current_test_failed()
 
         python3_failures = hasattr(self, '_outcome') and self.any_step_failed()
