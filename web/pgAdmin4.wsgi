@@ -14,6 +14,14 @@ root = os.path.dirname(os.path.realpath(__file__))
 if sys.path[0] != root:
     sys.path.insert(0, root)
 
+if sys.version_info[0] >= 3:
+    import builtins
+else:
+    import __builtin__ as builtins
+
+# Ensure the global server mode is set.
+builtins.SERVER_MODE = True
+
 import config
 
 # When running it as a WSGI application, directory for the configuration file
