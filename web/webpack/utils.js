@@ -144,7 +144,7 @@ const loadBundle= function(_module, _references, _order) {
   _order = _order || [];
 
   if (_module.startsWith('pgadmin')) {
-    module_path = path.resolve(__dirname, '../../', _module);
+    module_path = path.resolve(__dirname, '../', _module);
   } else {
     module_path = path.resolve(__dirname, './modules/', _module);
   }
