@@ -2,11 +2,12 @@ define('pgadmin.datagrid', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify', 'sources/pgadmin',
   'bundled_codemirror',
   'sources/sqleditor_utils', 'wcdocker'
-], function(gettext, url_for, $, _, alertify, pgAdmin, CodeMirror, sqlEditorUtils) {
+], function(gettext, url_for, $, _, alertify, pgAdmin, codemirror, sqlEditorUtils) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,
-      pgBrowser = pgAdmin.Browser;
+      pgBrowser = pgAdmin.Browser,
+      CodeMirror = codemirror.default;
 
     /* Return back, this has been called more than once */
     if (pgAdmin.DataGrid)
@@ -255,7 +256,7 @@ define('pgadmin.datagrid', [
                 this.setContent($content.get(0));
 
                 // Apply CodeMirror to filter text area.
-                this.filter_obj = codemirror.fromTextArea($sql_filter.get(0), {
+                this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
                   lineNumbers: true,
                   indentUnit: 4,
                   mode: "text/x-pgsql",
