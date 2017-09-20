@@ -105,6 +105,6 @@
 .opacity-5 {
   opacity: 0.5;  }
 
+.alertify .ajs-header,
 .alertify .ajs-body {
-  font-family: 'Open Sans';
-}
+  font-family: 'Open Sans'; }
