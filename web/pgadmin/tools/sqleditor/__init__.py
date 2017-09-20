@@ -1311,8 +1311,10 @@ def is_begin_required(query):
         return False
     if word_len == 5 and keyword.lower() == "start":
         return False
-    if word_len == 6 and keyword.lower() == "commit":
-        return False
+    if word_len == 6:
+        # SELECT is protected from dirty reads hence don't require transaction
+        if keyword.lower() in ["select", "commit"]:
+            return False
     if word_len == 3 and keyword.lower() == "end":
         return False
     if word_len == 8 and keyword.lower() == "rollback":
