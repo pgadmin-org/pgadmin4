@@ -281,7 +281,8 @@ define([
                 status bar element and next button is disabled
               */
               onSessionInvalid: function(msg) {
-                $('.error_msg_div p').html(msg).removeClass("hide");
+                $('.pg-prop-status-bar .alert-text').html(msg);
+                $('.pg-prop-status-bar').css("visibility", "visible");
 
                 // Enable disable Next button
                 this.updateButtons(false);
@@ -294,7 +295,8 @@ define([
                 status bar element and next button is disabled
               */
               onSessionValidated: function(sessHasChanged) {
-                $('.error_msg_div p').empty().addClass("hide");
+                $('.pg-prop-status-bar .alert-text').empty();
+                $('.pg-prop-status-bar').css("visibility", "hidden");
 
                 // Enable disable Next button
                 this.updateButtons(sessHasChanged);
