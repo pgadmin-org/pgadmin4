@@ -506,7 +506,6 @@ REM Main function Ends
 :CLEANUP_ENV
     ECHO Cleaning up private environment...
     rd "%PGBUILDPATH%\%VIRTUALENV%\Include" /S /Q
-    rd "%PGBUILDPATH%\%VIRTUALENV%\Scripts" /S /Q
     DEL /s "%PGBUILDPATH%\%VIRTUALENV%\pip-selfcheck.json"
 
     ECHO Cleaned up private environment successfully.
