@@ -124,11 +124,10 @@ application may be configured similarly to the example below:
 Now open the file ``C:\Program Files\pgAdmin4\web\pgAdmin4.wsgi`` with your favorite editor and add the code
 below which will activate Python virtual environment when Apache server runs.
 
-.. code-block:: apache
+.. code-block:: python
 
-            activate_this = 'C:\Program Files\pgAdmin4\venv\Scripts\activate_this.py'
-            execfile(activate_this, dict(__file__=activate_this))
-
+    activate_this = 'C:\Program Files\pgAdmin4\venv\Scripts\activate_this.py'
+    execfile(activate_this, dict(__file__=activate_this))
 
 **Note:** The changes made in ``pgAdmin4.wsgi`` file will revert when pgAdmin4 is either upgraded or downgraded.
     
@@ -143,7 +142,7 @@ application may be configured similarly to the example below:
     <VirtualHost *>
         ServerName pgadmin.example.com
 
-        WSGIDaemonProcess pgadmin processes=1 threads=25 python-home=/path/to/python/virtualenv/
+        WSGIDaemonProcess pgadmin processes=1 threads=25 python-home=/path/to/python/virtualenv
         WSGIScriptAlias / /opt/pgAdmin4/web/pgAdmin4.wsgi
 
         <Directory /opt/pgAdmin4/web>
