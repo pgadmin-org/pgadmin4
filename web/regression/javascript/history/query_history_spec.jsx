@@ -383,6 +383,45 @@ describe('QueryHistory', () => {
           expect(queryDetail.at(0).text()).toContain('third sql statement');
         });
       });
+
+      describe('when a fourth SQL query is executed', () => {
+        beforeEach(() => {
+          historyCollection.add({
+            query: 'fourth sql statement',
+            start_time: new Date(2017, 12, 12, 1, 33, 5, 99),
+            status: false,
+            row_affected: 0,
+            total_time: '26 msec',
+            message: 'ERROR: unexpected error from fourth sql message',
+          });
+
+          queryEntries = historyWrapper.find(QueryHistoryEntry);
+        });
+
+        it('displays fourth query SQL in the right pane', () => {
+          expect(queryDetail.at(0).text()).toContain('Error Message unexpected error from fourth sql message');
+        });
+      });
+
+      describe('when a fifth SQL query is executed', () => {
+        beforeEach(() => {
+          historyCollection.add({
+            query: 'fifth sql statement',
+            start_time: new Date(2017, 12, 12, 1, 33, 5, 99),
+            status: false,
+            row_affected: 0,
+            total_time: '26 msec',
+            message: 'unknown error',
+          });
+
+          queryEntries = historyWrapper.find(QueryHistoryEntry);
+        });
+
+        it('displays fourth query SQL in the right pane', () => {
+          expect(queryDetail.at(0).text()).toContain('Error Message unknown error');
+        });
+      });
+
     });
 
     describe('when several days of queries were executed', () => {
