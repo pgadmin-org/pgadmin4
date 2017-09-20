@@ -1537,6 +1537,22 @@ Failed to reset the connection to the server due to following error:
             resp.append(self.__notices.pop(0))
         return resp
 
+    def decode_to_utf8(self, value):
+        """
+        This method will decode values to utf-8
+        Args:
+            value: String to be decode
+
+        Returns:
+            Decoded string
+        """
+        if hasattr(str, 'decode'):
+            try:
+                value = value.decode('utf-8')
+            except:
+                pass
+        return value
+
     def _formatted_exception_msg(self, exception_obj, formatted_msg):
         """
         This method is used to parse the psycopg2.Error object and returns the
@@ -1548,7 +1564,6 @@ Failed to reset the connection to the server due to following error:
             formatted_msg: if True then function return the formatted exception message
 
         """
-
         if exception_obj.pgerror:
             errmsg = exception_obj.pgerror
         elif exception_obj.diag.message_detail:
@@ -1556,60 +1571,72 @@ Failed to reset the connection to the server due to following error:
         else:
             errmsg = str(exception_obj)
         # errmsg might contains encoded value, lets decode it
-        if hasattr(str, 'decode'):
-            errmsg = errmsg.decode('utf-8')
+        errmsg = self.decode_to_utf8(errmsg)
 
         # if formatted_msg is false then return from the function
         if not formatted_msg:
             return errmsg
 
-        errmsg += u'********** Error **********\n\n'
+        # Do not append if error starts with `ERROR:` as most pg related
+        # error starts with `ERROR:`
+        if not errmsg.startswith(u'ERROR:'):
+            errmsg = u'ERROR:  ' + errmsg + u'\n\n'
 
         if exception_obj.diag.severity is not None \
                 and exception_obj.diag.message_primary is not None:
-            errmsg += u"{}: {}".format(
+            ex_diag_message = u"{0}:  {1}".format(
                 exception_obj.diag.severity,
-                exception_obj.diag.message_primary.decode('utf-8') if
-                hasattr(str, 'decode') else exception_obj.diag.message_primary)
-
+                self.decode_to_utf8(exception_obj.diag.message_primary)
+            )
+            # If both errors are different then only append it
+            if errmsg and ex_diag_message and \
+                ex_diag_message.strip().strip('\n').lower() not in \
+                    errmsg.strip().strip('\n').lower():
+                errmsg += ex_diag_message
         elif exception_obj.diag.message_primary is not None:
-            errmsg += exception_obj.diag.message_primary.decode('utf-8') if \
-                hasattr(str, 'decode') else exception_obj.diag.message_primary
+            message_primary = self.decode_to_utf8(
+                exception_obj.diag.message_primary
+            )
+            if message_primary.lower() not in errmsg.lower():
+                errmsg += message_primary
 
         if exception_obj.diag.sqlstate is not None:
-            if not errmsg[:-1].endswith('\n'):
+            if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('SQL state: ')
-            errmsg += exception_obj.diag.sqlstate.decode('utf-8') if \
-                hasattr(str, 'decode') else exception_obj.diag.sqlstate
+            errmsg += self.decode_to_utf8(exception_obj.diag.sqlstate)
 
         if exception_obj.diag.message_detail is not None:
-            if not errmsg[:-1].endswith('\n'):
-                errmsg += '\n'
-            errmsg += gettext('Detail: ')
-            errmsg += exception_obj.diag.message_detail.decode('utf-8') if \
-                hasattr(str, 'decode') else exception_obj.diag.message_detail
+            if 'Detail:'.lower() not in errmsg.lower():
+                if not errmsg.endswith('\n'):
+                    errmsg += '\n'
+                errmsg += gettext('Detail: ')
+                errmsg += self.decode_to_utf8(
+                    exception_obj.diag.message_detail
+                )
 
         if exception_obj.diag.message_hint is not None:
-            if not errmsg[:-1].endswith('\n'):
-                errmsg += '\n'
-            errmsg += gettext('Hint: ')
-            errmsg += exception_obj.diag.message_hint.decode('utf-8') if \
-                hasattr(str, 'decode') else exception_obj.diag.message_hint
+            if 'Hint:'.lower() not in errmsg.lower():
+                if not errmsg.endswith('\n'):
+                    errmsg += '\n'
+                errmsg += gettext('Hint: ')
+                errmsg += self.decode_to_utf8(exception_obj.diag.message_hint)
 
         if exception_obj.diag.statement_position is not None:
-            if not errmsg[:-1].endswith('\n'):
-                errmsg += '\n'
-            errmsg += gettext('Character: ')
-            errmsg += exception_obj.diag.statement_position.decode('utf-8') if \
-                hasattr(str, 'decode') else exception_obj.diag.statement_position
+            if 'Character:'.lower() not in errmsg.lower():
+                if not errmsg.endswith('\n'):
+                    errmsg += '\n'
+                errmsg += gettext('Character: ')
+                errmsg += self.decode_to_utf8(
+                    exception_obj.diag.statement_position
+                )
 
         if exception_obj.diag.context is not None:
-            if not errmsg[:-1].endswith('\n'):
-                errmsg += '\n'
-            errmsg += gettext('Context: ')
-            errmsg += exception_obj.diag.context.decode('utf-8') if \
-                hasattr(str, 'decode') else exception_obj.diag.context
+            if 'Context:'.lower() not in errmsg.lower():
+                if not errmsg.endswith('\n'):
+                    errmsg += '\n'
+                errmsg += gettext('Context: ')
+                errmsg += self.decode_to_utf8(exception_obj.diag.context)
 
         return errmsg
 
