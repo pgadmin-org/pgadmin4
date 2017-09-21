@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ config.APP_NAME }}{% endblock %}
+{% block css_link %}
+{% if stylesheets is defined %}
+{% for stylesheet in stylesheets %}
+    <link type="text/css" rel="stylesheet" href="{{ stylesheet.url }}" browser-addon-name="{{ stylesheet.name }}"/>
+{% endfor %}
+{% endif %}
+{% endblock %}
 {% block init_script %}
 require(['require', 'app'], function(require, pgAdmin) {
 {% if jsentries is defined %}

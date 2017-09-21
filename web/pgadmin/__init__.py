@@ -159,16 +159,42 @@ class PgAdmin(Flask):
                           for key, value in menu_items.items())
         return menu_items
 
-    def get_javascript_entries(self, _for):
+    def get_addon_javascripts(self, _for):
         """
         Returns:
             list: javascript module entries to be loaded specified by '_for' in
             format of dictionary (name: ..., url: ...)
         """
-        res = []
+        scripts = []
+        module_names = []
+
+        # Remove duplicate javascripts from the list
         for module in self.submodules:
-            res += module.get_javascript_entries(_for)
-        return res
+            module_scripts = module.get_addon_javascripts(_for)
+            for s in module_scripts:
+                if s['name'] not in module_names:
+                    scripts.append(s)
+                    module_names.append(s['name'])
+
+        return scripts
+
+    def get_addon_stylesheets(self, _for):
+        """
+        Returns:
+            list: stylesheets to be loaded by the module specified by '_for'
+        """
+        stylesheets = []
+        module_names = []
+
+        # Remove duplicate javascripts from the list
+        for module in self.submodules:
+            module_scripts = module.get_addon_stylesheets(_for)
+            for s in module_scripts:
+                if s['name'] not in module_names:
+                    stylesheets.append(s)
+                    module_names.append(s['name'])
+
+        return stylesheets
 
 
 def _find_blueprint():

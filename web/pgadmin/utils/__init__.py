@@ -137,7 +137,7 @@ class PgAdminModule(Blueprint):
 
         return res
 
-    def get_javascript_entries(self, _for):
+    def get_addon_javascripts(self, _for):
         """
         Override the function to return the javascript module enteries as an
         array of dictionary (having name, url, dependencies) for the particular
@@ -151,7 +151,7 @@ class PgAdminModule(Blueprint):
 
         for module in self.submodules:
             try:
-                res += module.get_javascript_entries(_for)
+                res += module.get_addon_javascripts(_for)
             except Exception as ex:
                 current_app.logger.warning(
                     ("Failed to get the javascript entries for the module"
@@ -159,9 +159,32 @@ class PgAdminModule(Blueprint):
                         module, ex
                     )
                 )
-                current_app.exception(ex)
+                current_app.logger.exception(ex)
 
-                pass
+        return res
+
+    def get_addon_stylesheets(self, _for):
+        """
+        Override the function to return the list of stylesheets needs to be
+        loaded for a particular module.
+
+        Returns:
+            list: the javascript modules entries load during the particular
+            entires including entries of the submodules.
+        """
+        res = []
+
+        for module in self.submodules:
+            try:
+                res += module.get_addon_stylesheets(_for)
+            except Exception as ex:
+                current_app.logger.warning(
+                    ("Failed to get the addon stylesheet for the module"
+                     " - {0} with error message: {1}").format(
+                        module, ex
+                    )
+                )
+                current_app.logger.exception(ex)
 
         return res
 

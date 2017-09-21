@@ -302,7 +302,8 @@ def index():
         username=current_user.email,
         is_admin=current_user.has_role("Administrator"),
         _=gettext,
-        jsentries=current_app.get_javascript_entries('browser')
+        jsentries=current_app.get_addon_javascripts('browser'),
+        stylesheets=current_app.get_addon_stylesheets('browser')
     ))
 
     # Set the language cookie after login, so next time the user will have that

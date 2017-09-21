@@ -20,7 +20,7 @@ MODULE_NAME = 'tools'
 
 
 class ToolsModule(PgAdminModule):
-    def get_javascript_entries(self, _for):
+    def get_addon_javascripts(self, _for):
         res = []
 
         if _for == 'browser':
@@ -31,7 +31,7 @@ class ToolsModule(PgAdminModule):
                 )
             }]
 
-        res += PgAdminModule.get_javascript_entries(self, _for)
+        res += PgAdminModule.get_addon_javascripts(self, _for)
 
         return res
 
