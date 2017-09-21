@@ -60,6 +60,10 @@ vendor.shimConfig = {
       'deps': ['jquery', 'jquery.aciplugin'],
       'exports': 'aciPluginClass.plugins.aciTree',
     },
+    'jquery.acitree.utils': {
+      'deps': ['jquery', 'jquery.aciplugin'],
+      'exports': 'aciPluginClass.plugins.aciTreeUtils',
+    },
     'jquery.acisortable': {
       'deps': ['jquery', 'jquery.aciplugin'],
       'exports': 'aciPluginClass.plugins.aciSortable',
@@ -136,6 +140,7 @@ vendor.shimConfig = {
 
     // AciTree
     'jquery.acitree': 'node_modules/acitree/js/jquery.aciTree.min',
+    'jquery.acitree.utils': 'node_modules/acitree/js/jquery.aciTree.utils',
     'jquery.aciplugin': 'node_modules/acitree/js/jquery.aciPlugin.min',
     'jquery.acisortable': 'node_modules/acitree/js/jquery.aciSortable.min',
     'jquery.acifragment': 'node_modules/acitree/js/jquery.aciFragment.min',
@@ -168,7 +173,7 @@ vendor.entry = [
   'alertify', 'moment', 'jquery.event.drag', 'jquery.event.drop', 'jquery-ui', 'bean', 'flotr2',
   'jqueryui.position', 'jquery.contextmenu', 'snap.svg', 'dropzone',
   'bignumber', 'jquery.aciplugin', 'jquery.acifragment',
-  'jquery.acitree', 'jquery.acisortable', 'wcdocker',
+  'jquery.acitree', 'jquery.acitree.utils', 'jquery.acisortable', 'wcdocker',
   'backbone', 'backform', 'backgrid', 'bootstrap',
   'bootstrap.datetimepicker', 'bootstrap.switch', 'select2',
   'backgrid.filter', 'backgrid.sizeable.columns', 'backgrid.select.all',
