@@ -47,10 +47,13 @@ check-js: install-node linter
 	cd web && yarn run karma start -- --single-run
 
 # Include all clean sub-targets in clean
-clean: clean-appbundle clean-dist clean-docs clean-pip clean-src
+clean: clean-appbundle clean-docker clean-dist clean-docs clean-pip clean-src
 
 clean-appbundle:
 	rm -rf mac-build/
+
+clean-docker:
+	rm -rf docker-build/
 
 clean-dist:
 	rm -rf dist/
@@ -63,6 +66,9 @@ clean-pip:
 
 clean-src:
 	rm -rf src-build/
+
+docker:
+	./pkg/docker/build.sh
 
 docs:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx html
