@@ -28,7 +28,6 @@ RUN pip install -r /var/www/pgadmin/requirements.txt
 
 # Create required directories for config
 
-
 # Create required directories for running
 RUN mkdir -p /var/log/pgadmin
 RUN chown -R apache /var/log/pgadmin
