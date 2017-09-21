@@ -35,8 +35,7 @@ define('pgadmin.browser.utils', [], function() {
       {% if current_app.menu_items['%s_items' % key.lower()]|length > 0 %}
       obj.add_menus([{% for item in current_app.menu_items['%s_items' % key.lower()] %}{% if loop.index != 1 %}, {% endif %}{
         name: "{{ item.name }}",
-        {% if item.module %}module: {{ item.module }},
-        {% endif %}{% if item.url %}url: "{{ item.url }}",
+        {% if item.url %}url: "{{ item.url }}",
         {% endif %}{% if item.target %}target: "{{ item.target }}",
         {% endif %}{% if item.callback %}callback: "{{ item.callback }}",
         {% endif %}{% if item.category %}category: "{{ item.category }}",
@@ -50,5 +49,5 @@ define('pgadmin.browser.utils', [], function() {
       {% endfor %}
     },
   };
-  return pgBrowser;
+  return pgBrowser.utils;
 });

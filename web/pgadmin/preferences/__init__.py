@@ -19,7 +19,6 @@ from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import success_return, \
     make_response as ajax_response, internal_server_error
-from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.preferences import Preferences
 
 MODULE_NAME = 'preferences'
@@ -35,18 +34,6 @@ class PreferencesModule(PgAdminModule):
 
     def get_own_stylesheets(self):
         return [url_for('preferences.static', filename='css/preferences.css')]
-
-    def get_own_menuitems(self):
-        return {
-            'file_items': [
-                MenuItem(name='mnu_preferences',
-                         priority=999,
-                         module="pgAdmin.Preferences",
-                         callback='show',
-                         icon='fa fa-cog',
-                         label=gettext('Preferences'))
-            ]
-        }
 
     def get_exposed_url_endpoints(self):
         """

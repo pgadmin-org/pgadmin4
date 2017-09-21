@@ -12,12 +12,10 @@
 import traceback
 
 from flask import Response, request, render_template
-from flask_babel import gettext
 from flask_login import current_user
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request
-from pgadmin.utils.menu import MenuItem
 
 from pgadmin.model import db, Setting
 
@@ -26,24 +24,14 @@ MODULE_NAME = 'settings'
 
 class SettingsModule(PgAdminModule):
 
-    def get_own_menuitems(self):
-        return {
-            'file_items': [
-                MenuItem(name='mnu_resetlayout',
-                         priority=999,
-                         module="pgAdmin.Settings",
-                         callback='show',
-                         icon='fa fa-retweet',
-                         label=gettext('Reset Layout'))
-            ]
-        }
-
     def get_exposed_url_endpoints(self):
         """
         Returns:
             list: a list of url endpoints exposed to the client.
         """
-        return ['settings.store', 'settings.store_bulk', 'settings.reset_layout']
+        return [
+            'settings.store', 'settings.store_bulk', 'settings.reset_layout'
+        ]
 
 
 blueprint = SettingsModule(MODULE_NAME, __name__)

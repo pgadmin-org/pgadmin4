@@ -3,11 +3,15 @@
 {% block init_script %}
 require(['require', 'app'], function(require, pgAdmin) {
 {% if jsentries is defined %}
-  var entryFailedToLoad = function() {
+  var entryFailedToLoad = function(err) {
     pgAdmin.report_error(
       'Attention: Failed to load the javascript entry: ' + this.name
     );
-    console.warn()
+    if (console && console.warn) {
+      console.warn(err);
+      if (err.stack)
+      console.warn(err.stack);
+    }
   };
 {% for entry in jsentries %}
 
@@ -23,7 +27,7 @@ require(['require', 'app'], function(require, pgAdmin) {
 {% endif %}
 },
 function(err) {
-  if (console) {
+  if (console && console.warn) {
     console.warn(err);
     if (err.stack)
       console.warn(err.stack);

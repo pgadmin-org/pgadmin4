@@ -28,5 +28,5 @@ define([
   'pgadmin.node.trigger', 'pgadmin.node.edbvar', 'pgadmin.node.fts_template',
   'pgadmin.node.cast', 'pgadmin.node.fts_parser', 'pgadmin.node.column',
   'pgadmin.node.foreign_table', 'pgadmin.node.fts_dictionary',
-  'pgadmin.node.trigger_function', 'pgadmin.node.index',
+  'pgadmin.node.trigger_function', 'pgadmin.node.index', 'pgadmin.about'
 ], function() {});

@@ -30,9 +30,6 @@ class DashboardModule(PgAdminModule):
     def __init__(self, *args, **kwargs):
         super(DashboardModule, self).__init__(*args, **kwargs)
 
-    def get_own_menuitems(self):
-        return {}
-
     def get_own_stylesheets(self):
         """
         Returns:

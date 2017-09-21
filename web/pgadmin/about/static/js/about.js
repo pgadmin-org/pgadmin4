@@ -1,15 +1,28 @@
-define(
-  ['jquery', 'alertify', 'sources/pgadmin', 'underscore.string', 'sources/gettext',
-   'sources/url_for'
-  ],
-  function($, alertify, pgAdmin, S, gettext, url_for) {
+define([
+  'jquery', 'alertify', 'sources/pgadmin', 'sources/gettext',
+  'sources/url_for', 'pgadmin.browser.tool', 'pgadmin.browser.utils'
+], function($, alertify, pgAdmin, gettext, url_for, pgTool, pgUtils) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /* Return back, this has been called more than once */
     if (pgAdmin.About)
         return;
 
-    pgAdmin.About = {
+    pgAdmin.About = pgTool.extend({
+      Init: function() {
+        if (this.initialized) {
+          return false;
+        }
+        this.initialized = true;
+
+        pgAdmin.Browser.add_menus([{
+          name: 'mnu_about', module: this,
+          applies: ['help'], callback: 'about_show',
+          priority: 11, label:
+            gettext('About %(appname)s', {appname: pgUtils.app_name})
+        }]);
+        return this;
+      },
       about_show: function() {
         if (!alertify.aboutDialog) {
           alertify.dialog('aboutDialog', function factory() {
@@ -44,11 +57,12 @@ define(
         $.get(url_for('about.index'),
             function(data) {
               alertify.aboutDialog(
-                  S(gettext("About %s")).sprintf(pgAdmin.Browser.utils.app_name).value(), data
+                gettext('About %(appname)s', {appname: pgUtils.app_name}),
+                data
               ).resizeTo(800, 450);
             });
       }
-    };
+    });
 
     return pgAdmin.About;
   });

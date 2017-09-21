@@ -1,11 +1,12 @@
 define('pgadmin.settings',
   [
-    'jquery', 'alertify', 'sources/pgadmin', 'underscore', 'backform',
-    'sources/gettext', 'sources/url_for', 'pgadmin.backform'
+    'jquery', 'alertify', 'underscore', 'sources/gettext', 'sources/url_for',
+    'pgadmin.browser', 'pgadmin.browser.tool'
   ],
   // This defines the Preference/Options Dialog for pgAdmin IV.
-  function($, alertify, pgAdmin, _, Backform, gettext, url_for) {
-    pgAdmin = pgAdmin || window.pgAdmin || {};
+  function($, alertify, _, gettext, url_for, pgBrowser, pgTool) {
+
+    var pgAdmin = window.pgAdmin = window.pgAdmin || {};
 
     /*
      * Hmm... this module is already been initialized, we can refer to the old
@@ -14,12 +15,18 @@ define('pgadmin.settings',
     if (pgAdmin.Settings)
         return pgAdmin.Settings;
 
-    pgAdmin.Settings = {
-      init: function() {
+    pgAdmin.Settings = pgTool.extend({
+      Init: function() {
         if (this.initialized)
           return;
 
         this.initialized = true;
+
+        pgBrowser.add_menus([{
+          name: 'mnu_resetlayout', module: this,
+          applies: ['file'], callback: 'show',
+          priority: 999, label: gettext('Reset Layout')
+        }]);
       },
       // We will force unload method to not to save current layout
       // and reload the window
@@ -53,7 +60,7 @@ define('pgadmin.settings',
           }
         );
       }
-    };
+    });
 
     return pgAdmin.Settings;
   });

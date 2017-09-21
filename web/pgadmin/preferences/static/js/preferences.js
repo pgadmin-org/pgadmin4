@@ -1,8 +1,11 @@
 define('pgadmin.preferences', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify',
-  'sources/pgadmin', 'backform', 'pgadmin.browser', 'pgadmin.backform'
-], function(gettext, url_for, $, _, alertify, pgAdmin, Backform, pgBrowser) {
-  // This defines the Preference/Options Dialog for pgAdmin IV.
+  'sources/pgadmin', 'pgadmin.backform', 'pgadmin.browser',
+  'pgadmin.browser.tool'
+], function(
+  gettext, url_for, $, _, alertify, pgAdmin, Backform, pgBrowser, pgTool
+) {
+    // This defines the Preference/Options Dialog for pgAdmin IV.
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -12,12 +15,18 @@ define('pgadmin.preferences', [
     if (pgAdmin.Preferences)
         return pgAdmin.Preferences;
 
-    pgAdmin.Preferences = {
-      init: function() {
+    pgAdmin.Preferences = pgTool.extend({
+      Init: function() {
         if (this.initialized)
           return;
 
         this.initialized = true;
+
+        pgBrowser.add_menus([{
+          name: 'mnu_preferences', module: this,
+          applies: ['file'], callback: 'show',
+          priority: 999, label: gettext('Preferences')
+        }]);
 
         // Declare the Preferences dialog
         alertify.dialog('preferencesDlg', function() {
@@ -409,7 +418,7 @@ define('pgadmin.preferences', [
       show: function() {
         alertify.preferencesDlg(true).resizeTo('60%', '60%');
       }
-    };
+    });
 
     return pgAdmin.Preferences;
   });

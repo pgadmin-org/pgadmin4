@@ -131,11 +131,6 @@ class FileManagerModule(PgAdminModule):
             url_for('file_manager.static', filename='css/file_manager.css')
         ]
 
-    def get_own_menuitems(self):
-        return {
-            'file_items': []
-        }
-
     def get_exposed_url_endpoints(self):
         """
         Returns:

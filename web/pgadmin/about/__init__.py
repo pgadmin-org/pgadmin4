@@ -16,29 +16,11 @@ from flask import Response, render_template, __version__
 from flask_babel import gettext
 from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.menu import MenuItem
 
 import config
 
 
 class AboutModule(PgAdminModule):
-    def get_own_menuitems(self):
-        appname = config.APP_NAME
-        if hasattr(str, 'decode'):
-            appname = appname.decode('utf-8')
-        return {
-            'help_items': [
-                MenuItem(name='mnu_about',
-                         priority=999,
-                         module="pgAdmin.About",
-                         callback='about_show',
-                         icon='fa fa-info-circle',
-                         label=gettext(u'About %(appname)s',
-                                       appname=appname
-                                       )
-                         )
-            ]
-        }
 
     def get_exposed_url_endpoints(self):
         return ['about.index']
