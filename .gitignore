@@ -12,6 +12,7 @@
 .idea
 .vscode
 /dist
+/docker-build
 /mac-build
 /pip-build
 /src-build
