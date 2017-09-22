@@ -388,3 +388,14 @@ i.wcTabIcon {
 .wcFrameTitleBar.wcTabTop .wcFrameButtonBar {
   right: 30px !important;
 }
+
+.wcFloating .wcPanelTab .wcTabIcon {
+  display: block;
+  float: left;
+  margin-top: 8px;
+  border-radius: 2px;
+  padding: 0px 13px 5px 5px;
+  background-color: white;
+  background-size: 18px !important;
+  height: 18px;
+}

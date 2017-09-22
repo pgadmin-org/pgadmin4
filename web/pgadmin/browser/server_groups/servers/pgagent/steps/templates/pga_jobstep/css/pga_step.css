@@ -1,5 +1,5 @@
 .icon-pga_jobstep {
-  background-image: url('{{ url_for('NODE-pga_jobstep.static', filename='img/pga_jobstep.png') }}') !important;
+  background-image: url('{{ url_for('NODE-pga_jobstep.static', filename='img/pga_jobstep.svg') }}') !important;
   background-repeat: no-repeat;
   background-size: 20px !important;
   align-content: center;
@@ -8,7 +8,7 @@
 }
 
 .icon-coll-pga_jobstep {
-  background-image: url('{{ url_for('NODE-pga_jobstep.static', filename='img/coll-pga_jobstep.png') }}') !important;
+  background-image: url('{{ url_for('NODE-pga_jobstep.static', filename='img/coll-pga_jobstep.svg') }}') !important;
   background-repeat: no-repeat;
   background-size: 20px !important;
   align-content: center;
