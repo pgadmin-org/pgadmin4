@@ -63,6 +63,7 @@ Bug fixes
 | `Bug #2633 <https://redmine.postgresql.org/issues/2633>`_ - Fix pgAgent job step issues
 | `Bug #2634 <https://redmine.postgresql.org/issues/2634>`_ - Add New Server through Quick links
 | `Bug #2637 <https://redmine.postgresql.org/issues/2637>`_ - Fix Copy so it still works after query results have been copied
+| `Bug #2641 <https://redmine.postgresql.org/issues/2641>`_ - User management issues - styling and inability to edit users properly
 | `Bug #2644 <https://redmine.postgresql.org/issues/2644>`_ - Fix alertify notification messages where checkmark box disconnected from frame
 | `Bug #2646 <https://redmine.postgresql.org/issues/2646>`_ - Fix the path reference of load-node.gif which was referencing to vendor directory
 | `Bug #2654 <https://redmine.postgresql.org/issues/2654>`_ - Update datetime picker
@@ -70,8 +71,18 @@ Bug fixes
 | `Bug #2656 <https://redmine.postgresql.org/issues/2656>`_ - Change Datetimepicker to expand from bottom in pgAgent so calendar does not get hidden
 | `Bug #2657 <https://redmine.postgresql.org/issues/2657>`_ - Fix syntax error while saving changes for start/end time, weekdays, monthdays, month, hours, minutes while updating the pgAgent Job
 | `Bug #2659 <https://redmine.postgresql.org/issues/2659>`_ - Fix issue where unable to add/update variables for columns of a table
+| `Bug #2660 <https://redmine.postgresql.org/issues/2660>`_ - Not able to select rows in History Tab
 | `Bug #2668 <https://redmine.postgresql.org/issues/2668>`_ - Fix RE-SQL for triggers with a single arg
 | `Bug #2670 <https://redmine.postgresql.org/issues/2670>`_ - Improve datamodel validations for default Validator if user (developer) does not implement validate function in datamodel
 | `Bug #2681 <https://redmine.postgresql.org/issues/2681>`_ - Reset query tool options before running tests
 | `Bug #2684 <https://redmine.postgresql.org/issues/2684>`_ - Fix layout of password prompt dialogue
-
+| `Bug #2691 <https://redmine.postgresql.org/issues/2691>`_ - View data option is missing from pgAdmin4 2.0 version
+| `Bug #2692 <https://redmine.postgresql.org/issues/2692>`_ - Base type is missing for Domain on pgAdmin4
+| `Bug #2693 <https://redmine.postgresql.org/issues/2693>`_ - User list is not available on User mapping pgAdmin4
+| `Bug #2698 <https://redmine.postgresql.org/issues/2698>`_ - User can not create function due to missing return type
+| `Bug #2699 <https://redmine.postgresql.org/issues/2699>`_ - Filtered Rows issue on pgAdmin4
+| `Bug #2700 <https://redmine.postgresql.org/issues/2700>`_ - Cancel button is visible after query executed succesfully
+| `Bug #2707 <https://redmine.postgresql.org/issues/2707>`_ - Disable trigger button does not work on pgAdmin4
+| `Bug #2708 <https://redmine.postgresql.org/issues/2708>`_ - Tablespace name should displayed instead of %s(new_tablespace)s with Move Objects to another tablespace
+| `Bug #2709 <https://redmine.postgresql.org/issues/2709>`_ - Display user relations in schema prefixed by 'pg'
+| `Bug #2713 <https://redmine.postgresql.org/issues/2713>`_ - Exception when the server is restarted
