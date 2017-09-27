@@ -18,7 +18,7 @@ Underscore.string   387ab72d49     MIT          http://epeli.github.io/underscor
 Backform.js         5859b4f9db     MIT          https://github.com/AmiliaApp/backform
 Backbone            1.1.2          MIT          http://backbonejs.org
 font-Awesome        4.5            SIL OFL      http://fortawesome.github.io/Font-Awesome/
-font-mfizz          2.3            MIT          http://fizzed.com/oss/font-mfizz
+font-mfizz          2.4.1          MIT          http://fizzed.com/oss/font-mfizz
 backgrid.js         0.3.5          MIT          http://backgridjs.com/
 backbone.undo       0.2            MIT          http://backbone.undojs.com/
 bootstrap-switch    3.3.2          MIT          http://www.bootstrap-switch.org/
