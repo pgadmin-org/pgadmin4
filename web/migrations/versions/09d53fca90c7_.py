@@ -15,12 +15,11 @@ Create Date: 2017-03-13 12:27:30.543908
 
 """
 import base64
-
-import sys
-from alembic import op
-from pgadmin.model import db, Server
-import config
 import os
+import sys
+
+import config
+from pgadmin.model import db, Server
 from pgadmin.setup import get_version
 
 # revision identifiers, used by Alembic.

@@ -14,18 +14,17 @@ Revises:
 Create Date: 2017-03-13 11:15:16.401139
 
 """
-from alembic import op
 import base64
+import os
+
+import config
+import sqlalchemy as sa
+from alembic import op
 from flask import current_app
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import encrypt_password
-import os
-import sqlalchemy as sa
-
-import config
 from pgadmin.model import db, User, Role
 from pgadmin.setup import get_version
-
 from pgadmin.setup import user_info
 
 # revision identifiers, used by Alembic.

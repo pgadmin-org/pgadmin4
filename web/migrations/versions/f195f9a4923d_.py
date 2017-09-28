@@ -6,13 +6,11 @@ Revises: 3c1e4b6eda55
 Create Date: 2017-06-15 17:18:50.667139
 
 """
+import config
 from flask import current_app
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import verify_and_update_password
-
 from pgadmin.model import Keys, db, User, Role
-import config
-
 
 # revision identifiers, used by Alembic.
 revision = 'f195f9a4923d'

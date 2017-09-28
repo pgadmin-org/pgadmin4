@@ -6,8 +6,6 @@ Revises: 3c1e4b6eda55
 Create Date: 2017-07-07 16:03:23.842734
 
 """
-from alembic import op
-import sqlalchemy as sa
 from pgadmin.model import db
 
 
