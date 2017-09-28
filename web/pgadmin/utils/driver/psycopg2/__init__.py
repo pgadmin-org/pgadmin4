@@ -330,9 +330,11 @@ class Connection(BaseConnection):
 
         pg_conn = None
         password = None
+        passfile = None
         mgr = self.manager
 
         encpass = kwargs['password'] if 'password' in kwargs else None
+        passfile = kwargs['passfile'] if 'passfile' in kwargs else None
 
         if encpass is None:
             encpass = self.password or getattr(mgr, 'password', None)
@@ -385,7 +387,13 @@ class Connection(BaseConnection):
                 user=user,
                 password=password,
                 async=self.async,
-                sslmode=mgr.ssl_mode
+                passfile=passfile,
+                sslmode=mgr.ssl_mode,
+                sslcert=mgr.sslcert,
+                sslkey=mgr.sslkey,
+                sslrootcert=mgr.sslrootcert,
+                sslcrl=mgr.sslcrl,
+                sslcompression=True if mgr.sslcompression else False
             )
 
             # If connection is asynchronous then we will have to wait
@@ -1227,7 +1235,14 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
                 port=mgr.port,
                 database=self.db,
                 user=mgr.user,
-                password=password
+                password=password,
+                passfile=mgr.passfile,
+                sslmode=mgr.ssl_mode,
+                sslcert=mgr.sslcert,
+                sslkey=mgr.sslkey,
+                sslrootcert=mgr.sslrootcert,
+                sslcrl=mgr.sslcrl,
+                sslcompression=True if mgr.sslcompression else False
             )
 
         except psycopg2.Error as e:
@@ -1496,7 +1511,15 @@ Failed to reset the connection to the server due to following error:
                     port=self.manager.port,
                     database=self.db,
                     user=self.manager.user,
-                    password=password
+                    password=password,
+                    passfile=self.manager.passfile,
+                    sslmode=self.manager.ssl_mode,
+                    sslcert=self.manager.sslcert,
+                    sslkey=self.manager.sslkey,
+                    sslrootcert=self.manager.sslrootcert,
+                    sslcrl=self.manager.sslcrl,
+                    sslcompression=True if self.manager.sslcompression
+                    else False
                 )
 
                 # Get the cursor and run the query
@@ -1678,6 +1701,12 @@ class ServerManager(object):
         self.db_info = dict()
         self.server_types = None
         self.db_res = server.db_res
+        self.passfile = server.passfile
+        self.sslcert = server.sslcert
+        self.sslkey = server.sslkey
+        self.sslrootcert = server.sslrootcert
+        self.sslcrl = server.sslcrl
+        self.sslcompression = True if server.sslcompression else False
 
         for con in self.connections:
             self.connections[con]._release()

@@ -24,7 +24,7 @@ import config
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, Server, ServerGroup, User
 from pgadmin.utils.driver import get_driver
-
+from pgadmin.utils import get_storage_directory
 
 def has_any(data, keys):
     """
@@ -205,7 +205,51 @@ class ServerNode(PGChildNodeView):
            '((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$'
     pat4 = re.compile(EXP_IP4)
     pat6 = re.compile(EXP_IP6)
+    SSL_MODES = ['prefer','require', 'verify-ca', 'verify-full']
 
+    def check_ssl_fields(self, data):
+        """
+        This function will allow us to check and set defaults for
+        SSL fields
+
+        Args:
+            data: Response data
+
+        Returns:
+            Flag and Data
+        """
+        flag = False
+
+        if 'sslmode' in data and data['sslmode'] in self.SSL_MODES:
+            flag = True
+            ssl_fields = [
+                'sslcert', 'sslkey', 'sslrootcert', 'sslcrl', 'sslcompression'
+            ]
+            # Required SSL fields for SERVER mode from user
+            required_ssl_fields_server_mode = ['sslcert', 'sslkey']
+
+            for field in ssl_fields:
+                if field not in data:
+                    # In Server mode,
+                    # we will set dummy SSL certificate file path which will
+                    # prevent using default SSL certificates from web servers
+
+                    if config.SERVER_MODE and \
+                                    field in required_ssl_fields_server_mode:
+                        # Set file manager directory from preference
+                        import os
+                        storage_dir = get_storage_directory()
+                        file_extn = '.key' if field.endswith('key') else '.crt'
+                        dummy_ssl_file = os.path.join(
+                                storage_dir, '.postgresql',
+                                'postgresql' + file_extn
+                        )
+                        data[field] = dummy_ssl_file
+                    # For Desktop mode, we will allow to default
+                    else:
+                        data[field] = None
+
+        return flag, data
 
     def nodes(self, gid):
         res = []
@@ -356,7 +400,13 @@ class ServerNode(PGChildNodeView):
             'gid': 'servergroup_id',
             'comment': 'comment',
             'role': 'role',
-            'db_res': 'db_res'
+            'db_res': 'db_res',
+            'passfile': 'passfile',
+            'sslcert': 'sslcert',
+            'sslkey': 'sslkey',
+            'sslrootcert': 'sslrootcert',
+            'sslcrl': 'sslcrl',
+            'sslcompression': 'sslcompression'
         }
 
         disp_lbl = {
@@ -386,8 +436,6 @@ class ServerNode(PGChildNodeView):
                     errormsg=gettext('Host address not valid')
                     )
 
-
-
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
         connected = conn.connected()
@@ -405,7 +453,12 @@ class ServerNode(PGChildNodeView):
 
         for arg in config_param_map:
             if arg in data:
-                setattr(server, config_param_map[arg], data[arg])
+                value = data[arg]
+                # sqlite3 do not have boolean type so we need to convert
+                # it manually to integer
+                if arg == 'sslcompression':
+                    value = 1 if value else 0
+                setattr(server, config_param_map[arg], value)
                 idx += 1
 
         if idx == 0:
@@ -507,6 +560,8 @@ class ServerNode(PGChildNodeView):
         conn = manager.connection()
         connected = conn.connected()
 
+        is_ssl = True if server.ssl_mode in self.SSL_MODES else False
+
         return ajax_response(
             response={
                 'id': server.id,
@@ -524,7 +579,14 @@ class ServerNode(PGChildNodeView):
                 'version': manager.ver,
                 'sslmode': server.ssl_mode,
                 'server_type': manager.server_type if connected else 'pg',
-                'db_res': server.db_res.split(',') if server.db_res else None
+                'db_res': server.db_res.split(',') if server.db_res else None,
+                'passfile': server.passfile if server.passfile else None,
+                'sslcert': server.sslcert if is_ssl else None,
+                'sslkey': server.sslkey if is_ssl else None,
+                'sslrootcert': server.sslrootcert if is_ssl else None,
+                'sslcrl': server.sslcrl if is_ssl else None,
+                'sslcompression': True if is_ssl and server.sslcompression
+                else False
             }
         )
 
@@ -563,6 +625,9 @@ class ServerNode(PGChildNodeView):
                         errormsg=gettext('Host address not valid')
                     )
 
+        # To check ssl configuration
+        is_ssl, data = self.check_ssl_fields(data)
+
         server = None
 
         try:
@@ -578,7 +643,12 @@ class ServerNode(PGChildNodeView):
                 ssl_mode=data[u'sslmode'],
                 comment=data[u'comment'] if u'comment' in data else None,
                 role=data[u'role'] if u'role' in data else None,
-                db_res=','.join(data[u'db_res']) if u'db_res' in data else None
+                db_res=','.join(data[u'db_res']) if u'db_res' in data else None,
+                sslcert=data['sslcert'] if is_ssl else None,
+                sslkey=data['sslkey'] if is_ssl else None,
+                sslrootcert=data['sslrootcert'] if is_ssl else None,
+                sslcrl=data['sslcrl'] if is_ssl else None,
+                sslcompression=1 if is_ssl and data['sslcompression'] else 0
             )
             db.session.add(server)
             db.session.commit()
@@ -596,14 +666,21 @@ class ServerNode(PGChildNodeView):
                 if 'password' in data and data["password"] != '':
                     # login with password
                     have_password = True
+                    passfile = None
                     password = data['password']
                     password = encrypt(password, current_user.password)
+                elif 'passfile' in data and data["passfile"] != '':
+                    passfile = data['passfile']
+                    setattr(server, 'passfile', passfile)
+                    db.session.commit()
                 else:
                     # Attempt password less login
                     password = None
+                    passfile = None
 
                 status, errmsg = conn.connect(
                     password=password,
+                    passfile=passfile,
                     server_types=ServerType.types()
                 )
                 if hasattr(str, 'decode') and errmsg is not None:
@@ -749,6 +826,7 @@ class ServerNode(PGChildNodeView):
         ) if request.data else {}
 
         password = None
+        passfile = None
         save_password = False
 
         # Connect the Server
@@ -757,7 +835,8 @@ class ServerNode(PGChildNodeView):
 
         if 'password' not in data:
             conn_passwd = getattr(conn, 'password', None)
-            if conn_passwd is None and server.password is None:
+            if conn_passwd is None and server.password is None and \
+                    server.passfile is None:
                 # Return the password template in case password is not
                 # provided, or password has not been saved earlier.
                 return make_json_response(
@@ -770,6 +849,8 @@ class ServerNode(PGChildNodeView):
                         _=gettext
                     )
                 )
+            elif server.passfile and server.passfile != '':
+                passfile = server.passfile
             else:
                 password = conn_passwd or server.password
         else:
@@ -790,6 +871,7 @@ class ServerNode(PGChildNodeView):
         try:
             status, errmsg = conn.connect(
                 password=password,
+                passfile=passfile,
                 server_types=ServerType.types()
             )
         except Exception as e:
