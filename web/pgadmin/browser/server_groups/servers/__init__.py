@@ -711,6 +711,7 @@ class ServerNode(PGChildNodeView):
                 if 'password' in data and data["password"] != '':
                     # login with password
                     have_password = True
+                    passfile = None
                     password = data['password']
                     password = encrypt(password, current_user.password)
                 elif 'passfile' in data and data["passfile"] != '':
