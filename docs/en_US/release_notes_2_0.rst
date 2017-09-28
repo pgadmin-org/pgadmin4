@@ -15,10 +15,10 @@ Features
 | `Feature #2556 <https://redmine.postgresql.org/issues/2556>`_ - Allow for slow vs. fast connection failures
 | `Feature #2579 <https://redmine.postgresql.org/issues/2579>`_ - Default the file browser view to list, and make it configurable
 | `Feature #2597 <https://redmine.postgresql.org/issues/2597>`_ - Allow queries to be cancelled from the dashboard and display additional info in the subnode control
+| `Feature #2649 <https://redmine.postgresql.org/issues/2649>`_ - Support use of SSL certificates for authentication
+| `Feature #2650 <https://redmine.postgresql.org/issues/2650>`_ - Support use of pgpass files
 | `Feature #2662 <https://redmine.postgresql.org/issues/2662>`_ - Ship with pre-configured paths that can work in both Server and Desktop modes out of the box
 | `Feature #2689 <https://redmine.postgresql.org/issues/2689>`_ - Update icons with new designs and remove from menus to de-clutter the UI
-
-
 
 Bug fixes
 *********
