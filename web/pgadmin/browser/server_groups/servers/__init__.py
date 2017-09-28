@@ -48,7 +48,7 @@ def recovery_state(connection, postgres_version):
     recovery_check_sql = render_template("connect/sql/#{0}#/check_recovery.sql".format(postgres_version))
 
     status, result = connection.execute_dict(recovery_check_sql)
-    if status:
+    if status and 'rows' in result and len(result['rows']) > 0:
         in_recovery = result['rows'][0]['inrecovery']
         wal_paused = result['rows'][0]['isreplaypaused']
     else:

@@ -86,4 +86,5 @@ Bug fixes
 | `Bug #2707 <https://redmine.postgresql.org/issues/2707>`_ - Disable trigger button does not work on pgAdmin4
 | `Bug #2708 <https://redmine.postgresql.org/issues/2708>`_ - Tablespace name should displayed instead of %s(new_tablespace)s with Move Objects to another tablespace
 | `Bug #2709 <https://redmine.postgresql.org/issues/2709>`_ - Display user relations in schema prefixed by 'pg'
-| `Bug #2713 <https://redmine.postgresql.org/issues/2713>`_ - Exception when the server is restarted
+| `Bug #2713 <https://redmine.postgresql.org/issues/2713>`_ - Fix an exception seen sometimes when the server is restarted
+| `Bug #2742 <https://redmine.postgresql.org/issues/2742>`_ - Ensure using an alternate role to connect to a database doesn't cause an error when checking recovery state.
