@@ -8,8 +8,6 @@
 ##########################################################################
 
 from pgadmin.model import Version
-import config
-import sys
 
 
 def get_version():
@@ -17,12 +15,5 @@ def get_version():
         version = Version.query.filter_by(name='ConfigDB').first()
     except Exception:
         return -1
-
-    if int(version.value) > int(config.SETTINGS_SCHEMA_VERSION):
-        print(u"""
-    The database schema version is {0}, whilst the version required by the \
-    software is {1}.
-    Exiting...""".format(version.value, config.SETTINGS_SCHEMA_VERSION))
-        sys.exit(1)
 
     return version.value
