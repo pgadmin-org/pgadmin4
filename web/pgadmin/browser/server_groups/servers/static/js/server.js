@@ -10,6 +10,7 @@ define('pgadmin.node.server', [
 ) {
 
   if (!pgBrowser.Nodes['server']) {
+    var SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full'];
 
     var SecurityModel = pgBrowser.SecLabelModel = pgBrowser.Node.Model.extend({
       defaults: {
@@ -611,7 +612,13 @@ define('pgadmin.node.server', [
           connect_now: true,
           password: undefined,
           save_password: false,
-          db_res: ''
+          db_res: '',
+          passfile: undefined,
+          sslcompression: false,
+          sslcert: undefined,
+          sslkey: undefined,
+          sslrootcert: undefined,
+          sslcrl: undefined
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -654,13 +661,6 @@ define('pgadmin.node.server', [
           id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
-        },{
-          id: 'db_res', label: gettext('DB restriction'), type: 'select2', group: gettext('Advanced'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', select2: {multiple: true, allowClear: false,
-          tags: true, tokenSeparators: [','], first_empty: false, selectOnClose: true, emptyOptions: true}
-        },{
           id: 'port', label: gettext('Port'), type: 'int', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65535
         },{
@@ -688,7 +688,7 @@ define('pgadmin.node.server', [
           id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'sslmode', label: gettext('SSL mode'), type: 'options', group: gettext('Connection'),
+          id: 'sslmode', label: gettext('SSL mode'), type: 'options', group: gettext('SSL'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
           'options': [
             {label: 'Allow', value: 'allow'},
@@ -698,6 +698,96 @@ define('pgadmin.node.server', [
             {label: 'Verify-CA', value: 'verify-ca'},
             {label: 'Verify-Full', value: 'verify-full'}
           ]
+        },{
+          id: 'sslcert', label: gettext('Client certificate'), type: 'text',
+          group: gettext('SSL'), mode: ['edit', 'create'],
+          disabled: 'isSSL', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['sslmode']
+        },{
+          id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
+          group: gettext('SSL'), mode: ['edit', 'create'],
+          disabled: 'isSSL', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['sslmode']
+        },{
+          id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
+          group: gettext('SSL'), mode: ['edit', 'create'],
+          disabled: 'isSSL', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['sslmode']
+        },{
+          id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
+          group: gettext('SSL'), mode: ['edit', 'create'],
+          disabled: 'isSSL', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['sslmode']
+        },{
+          id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
+          mode: ['edit', 'create'], group: gettext('SSL'),
+          'options': { 'onText':   'True', 'offText':  'False',
+          'onColor':  'success', 'offColor': 'danger', 'size': 'small'},
+          deps: ['sslmode'], disabled: 'isSSL'
+        },{
+          id: 'sslcert', label: gettext('Client certificate'), type: 'text',
+          group: gettext('SSL'), mode: ['properties'],
+          deps: ['sslmode'],
+          visible: function(m) {
+            var sslcert = m.get('sslcert');
+            return !_.isUndefined(sslcert) && !_.isNull(sslcert);
+          }
+        },{
+          id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
+          group: gettext('SSL'), mode: ['properties'],
+          deps: ['sslmode'],
+          visible: function(m) {
+            var sslkey = m.get('sslkey');
+            return !_.isUndefined(sslkey) && !_.isNull(sslkey);
+          }
+        },{
+          id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
+          group: gettext('SSL'), mode: ['properties'],
+          deps: ['sslmode'],
+          visible: function(m) {
+            var sslrootcert = m.get('sslrootcert');
+            return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
+          }
+        },{
+          id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
+          group: gettext('SSL'), mode: ['properties'],
+          deps: ['sslmode'],
+          visible: function(m) {
+            var sslcrl = m.get('sslcrl');
+            return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
+          }
+        },{
+          id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
+          mode: ['properties'], group: gettext('SSL'),
+          'options': { 'onText':   'True', 'offText':  'False',
+          'onColor':  'success', 'offColor': 'danger', 'size': 'small'},
+          deps: ['sslmode'], visible: function(m) {
+            var sslmode = m.get('sslmode');
+            return _.indexOf(SSL_MODES, sslmode) != -1;
+          }
+        },{
+          id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
+        },{
+          id: 'db_res', label: gettext('DB restriction'), type: 'select2', group: gettext('Advanced'),
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', select2: {multiple: true, allowClear: false,
+          tags: true, tokenSeparators: [','], first_empty: false, selectOnClose: true, emptyOptions: true}
+        },{
+          id: 'passfile', label: gettext('Password File'), type: 'text',
+          group: gettext('Advanced'), mode: ['edit', 'create'],
+          disabled: 'isConnected', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*']
+        },{
+          id: 'passfile', label: gettext('Password File'), type: 'text',
+          group: gettext('Advanced'), mode: ['properties'],
+          visible: function(m) {
+            var passfile = m.get('passfile');
+            return !_.isUndefined(passfile) && !_.isNull(passfile);
+          }
         }],
         validate: function() {
           var err = {},
@@ -790,6 +880,14 @@ define('pgadmin.node.server', [
         },
         isConnected: function(model) {
           return model.get('connected');
+        },
+        isSSL: function(model) {
+          var ssl_mode = model.get('sslmode');
+          // If server is not connected and have required SSL option
+          if(model.get('connected')) {
+            return true;
+          }
+          return _.indexOf(SSL_MODES, ssl_mode) == -1;
         }
       }),
       connection_lost: function(i, resp) {

@@ -156,7 +156,8 @@ class FileManagerModule(PgAdminModule):
             'file_manager.get_trans_id',
             'file_manager.delete_trans_id',
             'file_manager.save_last_dir',
-            'file_manager.save_file_dialog_view'
+            'file_manager.save_file_dialog_view',
+            'file_manager.save_show_hidden_file_option'
         ]
 
     def get_file_size_preference(self):
@@ -180,6 +181,11 @@ class FileManagerModule(PgAdminModule):
             category_label=gettext('Options'),
             options=[{'label': gettext('List'), 'value': 'list'},
                      {'label': gettext('Grid'), 'value': 'grid'}]
+        )
+        self.show_hidden_files = self.preference.register(
+            'options', 'show_hidden_files',
+            gettext("Show hidden files and folders?"), 'boolean', False,
+            category_label=gettext('Options')
         )
 
 
@@ -243,13 +249,18 @@ def file_manager_config(trans_id):
     data = Filemanager.get_trasaction_selection(trans_id)
     pref = Preferences.module('file_manager')
     file_dialog_view = pref.preference('file_dialog_view').get()
+    show_hidden_files = pref.preference('show_hidden_files').get()
 
     return Response(response=render_template(
-        "file_manager/js/file_manager_config.json", _=gettext,
-        data=data,
-        file_dialog_view=file_dialog_view),
+            "file_manager/js/file_manager_config.json",
+            _=gettext,
+            data=data,
+            file_dialog_view=file_dialog_view,
+            show_hidden_files=show_hidden_files
+        ),
         status=200,
-        mimetype="application/json")
+        mimetype="application/json"
+    )
 
 
 @blueprint.route(
@@ -296,6 +307,17 @@ def save_last_directory_visited(trans_id):
 @login_required
 def save_file_dialog_view(trans_id):
     blueprint.file_dialog_view.set(req.json['view'])
+    return make_json_response(
+        data={'status': True}
+    )
+
+@blueprint.route(
+    "/save_show_hidden_file_option/<int:trans_id>", methods=["PUT"],
+    endpoint='save_show_hidden_file_option'
+)
+@login_required
+def save_show_hidden_file_option(trans_id):
+    blueprint.show_hidden_files.set(req.json['show_hidden'])
     return make_json_response(
         data={'status': True}
     )
@@ -521,12 +543,14 @@ class Filemanager(object):
             kernel32.SetThreadErrorMode(oldmode, ctypes.byref(oldmode))
 
     @staticmethod
-    def list_filesystem(dir, path, trans_data, file_type):
+    def list_filesystem(dir, path, trans_data, file_type, show_hidden):
         """
         It lists all file and folders within the given
         directory.
         """
         Filemanager.suspend_windows_warning()
+        is_show_hidden_files = show_hidden
+
         path = unquote(path)
         if hasattr(str, 'decode'):
             path = unquote(path).encode('utf-8').decode('utf-8')
@@ -595,8 +619,9 @@ class Filemanager(object):
                 protected = 0
                 system_path = os.path.join(os.path.join(orig_path, f))
 
-                # continue if file/folder is hidden
-                if is_folder_hidden(system_path) or f.startswith('.'):
+                # continue if file/folder is hidden (based on user preference)
+                if not is_show_hidden_files and \
+                    (is_folder_hidden(system_path) or f.startswith('.')):
                     continue
 
                 user_path = os.path.join(os.path.join(user_dir, f))
@@ -784,7 +809,8 @@ class Filemanager(object):
 
         return thefile
 
-    def getfolder(self, path=None, file_type="", name=None, req=None):
+    def getfolder(self, path=None, file_type="", name=None, req=None,
+                  show_hidden=False):
         """
         Returns files and folders in give path
         """
@@ -795,7 +821,7 @@ class Filemanager(object):
             if not dir.endswith('/'):
                 dir += u'/'
 
-        filelist = self.list_filesystem(dir, path, trans_data, file_type)
+        filelist = self.list_filesystem(dir, path, trans_data, file_type, show_hidden)
         return filelist
 
     def rename(self, old=None, new=None, req=None):

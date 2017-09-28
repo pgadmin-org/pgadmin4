@@ -43,6 +43,7 @@ var getFileName = function(name) {
 var loadData = function(url) {
   return $.ajax({
     async: false,
+    cache: false,
     url: url,
     dataType: 'jsonp',
     contentType: "application/json; charset=utf-8"
@@ -66,6 +67,16 @@ var save_file_dialog_view = function(view, trans_id) {
     type: 'POST',
     async: true,
     data: JSON.stringify({'view':view}),
+    contentType: 'application/json'
+  });
+};
+
+var save_show_hidden_file_option = function(option, trans_id) {
+  return $.ajax({
+    url: url_for('file_manager.save_show_hidden_file_option', {'trans_id': trans_id}),
+    type: 'PUT',
+    async: true,
+    data: JSON.stringify({'show_hidden': option}),
     contentType: 'application/json'
   });
 };
@@ -523,7 +534,8 @@ var getFolderInfo = function(path, file_type) {
   var post_data = {
     'path': path,
     'mode': 'getfolder',
-    'file_type': file_type || "*"
+    'file_type': file_type || "*",
+    'show_hidden': $('#show_hidden').prop('checked')
   };
 
   var lg = pgAdmin.FileUtils.lg;
@@ -1110,6 +1122,9 @@ pgAdmin.FileUtils = {
             have_all_types = false;
 
         var select_box = "<div class='change_file_types'>" +
+          gettext("Show hidden files and folders") +
+          "? <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)'>" +
+          "<span></span>" +
           "<select name='type'>";
 
         while(i < types_len) {
@@ -1139,6 +1154,31 @@ pgAdmin.FileUtils = {
             curr_path = $('.currentpath').val();
         getFolderInfo(curr_path, selected_val);
       });
+
+      // If user have preference to show hidden files
+      if (config.options.show_hidden_files) {
+        setTimeout(function() {
+          $("#show_hidden").click();
+        }, 10);
+      }
+      // handle show hidden files functionality
+      this.handleClick = function(cb) {
+        var data = {
+          'is_checked': false
+        };
+
+        if(cb.checked) {
+          $("div.allowed_file_types select").val("*").trigger("change");
+          data['is_checked'] = true;
+        } else {
+          // User wants to hide it again
+          $("div.allowed_file_types select").prop('selectedIndex', 0).trigger("change");
+          data['is_checked'] = false;
+        }
+        // Save it in preference
+        save_show_hidden_file_option(data['is_checked'], pgAdmin.FileUtils.transId);
+        return;
+      }
     }
 
     /*---------------------------------------------------------

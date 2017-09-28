@@ -14,8 +14,8 @@ things:
 
 1) Increment SCHEMA_VERSION below
 
-2) Modify setup.py to ensure that the appropriate changes are made to the
-   config database to upgrade it to the new version.
+2) Create an Alembic migratio to ensure that the appropriate changes are
+   made to the config database to upgrade it to the new version.
 """
 
 from flask_security import UserMixin, RoleMixin
@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 14
+SCHEMA_VERSION = 15
 
 ##########################################################################
 #
@@ -129,8 +129,15 @@ class Server(db.Model):
                            backref=db.backref('server', cascade="all, delete-orphan"),
                            lazy='joined')
     db_res = db.Column(db.Text(), nullable=True)
-
-
+    passfile = db.Column(db.Text(), nullable=True)
+    sslcert = db.Column(db.Text(), nullable=True)
+    sslkey = db.Column(db.Text(), nullable=True)
+    sslrootcert = db.Column(db.Text(), nullable=True)
+    sslcrl = db.Column(db.Text(), nullable=True)
+    sslcompression =db.Column(db.Integer(),
+                              db.CheckConstraint(
+                                  'sslcompression >= 0 AND sslcompression <= 1'
+                              ), nullable=False)
 
 
 class ModulePreference(db.Model):

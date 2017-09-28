@@ -555,7 +555,6 @@ button.list span {
 
 .allowed_file_types .change_file_types label {
   float: right;
-  padding-top: 3px;
 }
 
 .upload_file .file_upload_main {
@@ -725,4 +724,8 @@ a.dz-remove {
   width: 100%;
   height: 100%;
   background: #ccc;
+}
+
+div.change_file_types span {
+  padding-left:10px;
 }
