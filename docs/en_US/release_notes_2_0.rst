@@ -74,6 +74,7 @@ Bug fixes
 | `Bug #2660 <https://redmine.postgresql.org/issues/2660>`_ - Not able to select rows in History Tab
 | `Bug #2668 <https://redmine.postgresql.org/issues/2668>`_ - Fix RE-SQL for triggers with a single arg
 | `Bug #2670 <https://redmine.postgresql.org/issues/2670>`_ - Improve datamodel validations for default Validator if user (developer) does not implement validate function in datamodel
+| `Bug #2671 <https://redmine.postgresql.org/issues/2671>`_ - Fix array data type formating for bigint, real, float, double precision
 | `Bug #2681 <https://redmine.postgresql.org/issues/2681>`_ - Reset query tool options before running tests
 | `Bug #2684 <https://redmine.postgresql.org/issues/2684>`_ - Fix layout of password prompt dialogue
 | `Bug #2691 <https://redmine.postgresql.org/issues/2691>`_ - View data option is missing from pgAdmin4 2.0 version
