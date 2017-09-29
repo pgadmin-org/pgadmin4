@@ -35,7 +35,7 @@ from pgadmin.utils import env, IS_PY2, IS_WIN, fs_short_path
 
 # Name of the application to display in the UI
 APP_NAME = 'pgAdmin 4'
-APP_ICON = 'icon-postgres-alt'
+APP_ICON = 'pg-icon'
 
 ##########################################################################
 # Application settings
