@@ -712,6 +712,14 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
               postgres_version: version
             });
 
+            server_activity_columns.unshift({
+              name: "pg-backform-delete", label: "",
+              cell: terminateSessionCell,
+              editable: false, cell_priority: -1,
+              canDeleteRow: pgAdmin.Dashboard.can_terminate_session,
+              postgres_version: version
+            });
+
             var server_locks_columns = [{
                 name: "pid",
                 label: gettext('PID'),
@@ -1055,6 +1063,13 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
               cell_action: 'terminate',
               editable: false, cell_priority: -1,
               canDeleteRow: pgAdmin.Dashboard.can_take_action,
+              postgres_version: version
+            });
+            database_activity_columns.unshift({
+              name: "pg-backform-delete", label: "",
+              cell: terminateSessionCell,
+              editable: false, cell_priority: -1,
+              canDeleteRow: pgAdmin.Dashboard.can_terminate_session,
               postgres_version: version
             });
 
