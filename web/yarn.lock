@@ -2916,10 +2916,6 @@ font-awesome@^4.6.3, font-awesome@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/font-awesome/-/font-awesome-4.7.0.tgz#8fa8cf0411a1a31afd07b06d2902bb9fc815a133"
 
-font-mfizz@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/font-mfizz/-/font-mfizz-2.4.1.tgz#f2921705ab75c0f095df2a088e2d42811d98e49b"
-
 for-in@^0.1.3:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-0.1.8.tgz#d8773908e31256109952b1fdb9b3fa867d2775e1"
