@@ -167,4 +167,9 @@
   border: 1px solid #cccccc;
 }
 
+.dashboard-container .delete-cell .fa-times-circle:before {
+  color: red;
+  font-size: 14px;
+}
+
 /* CSS to make subnode control look preety in backgrid - END */
