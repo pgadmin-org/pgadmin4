@@ -16,6 +16,7 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
 
   var dashboardVisible = true,
     cancel_query_url = '',
+    terminate_session_url = '',
     is_super_user = false,
     current_user, maintenance_database,
     is_server_dashboard = false,
@@ -26,7 +27,7 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
         render: function () {
           this.$el.empty();
           this.$el.html(
-            "<i class='fa fa-times-circle' data-toggle='tooltip' " +
+            "<i class='fa fa-stop' data-toggle='tooltip' " +
             "title='" + gettext('Cancel the active query') +
             "'></i>"
           );
@@ -69,6 +70,72 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
                     refresh_grid();
                   } else {
                     alertify.error(gettext('An error occurred whilst cancelling the active query.'));
+                  }
+                },
+                error: function(xhr, status, error) {
+                  try {
+                    var err = $.parseJSON(xhr.responseText);
+                    if (err.success == 0) {
+                      alertify.error(err.errormsg);
+                    }
+                  } catch (e) {}
+                }
+              });
+            },
+            function(evt) {
+              return true;
+            }
+          );
+        }
+  });
+
+  var terminateSessionCell = Backgrid.Extension.DeleteCell.extend({
+        render: function () {
+          this.$el.empty();
+          this.$el.html(
+            "<i class='fa fa-times-circle' data-toggle='tooltip' " +
+            "title='" + gettext('Terminate the session') +
+            "'></i>"
+          );
+          this.delegateEvents();
+          return this;
+        },
+        deleteRow: function(e) {
+          var self = this;
+          e.preventDefault();
+
+          var canDeleteRow = Backgrid.callByNeed(
+            self.column.get('canDeleteRow'), self.column, self.model
+          );
+          // If we are not allowed to cancel the query, return from here
+          if(!canDeleteRow)
+            return;
+
+          // This will refresh the grid
+          var refresh_grid = function() {
+            if(is_server_dashboard) {
+              $('#btn_server_activity_refresh').click();
+            } else if(is_database_dashboard) {
+              $('#btn_database_activity_refresh').click();
+            }
+          };
+
+          var title = gettext('Terminate Session?'),
+            txtConfirm = gettext('Are you sure you wish to terminate the session?');
+
+          alertify.confirm(
+            title,
+            txtConfirm,
+            function(evt) {
+              $.ajax({
+                url: terminate_session_url + self.model.get('pid'),
+                type:'DELETE',
+                success: function(res) {
+                  if (res == gettext('Success')) {
+                    alertify.success(gettext('Active query terminateed successfully.'));
+                    refresh_grid();
+                  } else {
+                    alertify.error(gettext('An error occurred whilst terminateing the active query.'));
                   }
                 },
                 error: function(xhr, status, error) {
@@ -210,6 +277,7 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
                     m = b && b.Nodes[itemData._type];
 
                 cancel_query_url = url_for('dashboard.index') + 'cancel_query/';
+                terminate_session_url = url_for('dashboard.index') + 'terminate_session/';
 
                 // Check if user is super user
                 var server = treeHierarchy['server'];
@@ -239,12 +307,14 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
                         is_database_dashboard = true;
                         url += sid + '/' + did;
                         cancel_query_url += sid + '/' + did + '/';
+                        terminate_session_url += sid + '/' + did + '/';
                     } else if ('server' in treeHierarchy) {
                         sid = treeHierarchy.server._id;
                         is_server_dashboard = true;
                         is_database_dashboard = false;
                         url += sid;
                         cancel_query_url += sid + '/';
+                        terminate_session_url += sid + '/';
                     }
                 }
 
@@ -673,6 +743,14 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
               postgres_version: version
             });
 
+            server_activity_columns.unshift({
+              name: "pg-backform-delete", label: "",
+              cell: terminateSessionCell,
+              editable: false, cell_priority: -1,
+              canDeleteRow: pgAdmin.Dashboard.can_terminate_session,
+              postgres_version: version
+            });
+
             var server_locks_columns = [{
                 name: "pid",
                 label: gettext('PID'),
@@ -1009,6 +1087,13 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
               canDeleteRow: pgAdmin.Dashboard.can_cancel_active_query,
               postgres_version: version
             });
+            database_activity_columns.unshift({
+              name: "pg-backform-delete", label: "",
+              cell: terminateSessionCell,
+              editable: false, cell_priority: -1,
+              canDeleteRow: pgAdmin.Dashboard.can_terminate_session,
+              postgres_version: version
+            });
 
             var database_locks_columns = [{
                 name: "pid",
@@ -1222,7 +1307,45 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
             );
             return false;
           }
-        }
+        },
+        can_terminate_session: function(m) {
+          // We will validate if user is allowed to cancel the active query
+          // If there is only one active session means it probably our main
+          // connection session
+          var active_sessions = m.collection.where({'state': 'active'}),
+            pg_version = this.get('postgres_version') || null;
+
+          // With PG10, We have background process showing on dashboard
+          // We will not allow user to cancel them as they will fail with error
+          // anyway, so better usability we will throw our on notification
+
+          // Background processes do not have database field populated
+          if (pg_version && pg_version >= 100000 && !m.get('datname')) {
+            alertify.info(
+              gettext('You cannot terminate background worker processes.')
+            );
+            return false;
+          // If it is the last active connection on maintenance db then error out
+          } else if (maintenance_database == m.get('datname') &&
+              m.get('state') == 'active' && active_sessions.length == 1) {
+            alertify.error(
+              gettext('You are not allowed to terminate the main active session.')
+            );
+            return false;
+          } else if(is_super_user) {
+            // Super user can do anything
+            return true;
+          } else if (current_user && current_user == m.get('usename')) {
+            // Non-super user can terminate only their active queries
+            return true;
+          } else {
+            // Do not allow to cancel someone else session to non-super user
+            alertify.error(
+              gettext('Superuser privileges are required to terminate another users query.')
+            );
+            return false;
+          }
+        },
   };
 
   return pgAdmin.Dashboard;

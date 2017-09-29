@@ -478,3 +478,29 @@ def cancel_query(sid=None, did=None, pid=None):
         response=gettext("Success") if res else gettext("Failed"),
         status=200
     )
+
+@blueprint.route(
+    '/terminate_session/<int:sid>/<int:pid>', methods=['DELETE']
+)
+@blueprint.route(
+    '/terminate_session/<int:sid>/<int:did>/<int:pid>', methods=['DELETE']
+)
+@login_required
+@check_precondition
+def terminate_session(sid=None, did=None, pid=None):
+    """
+    This function terminate the specific session
+    :param sid: server id
+    :param did: database id
+    :param pid: session/process id
+    :return: Response
+    """
+    sql = "SELECT pg_terminate_backend({0});".format(pid)
+    status, res = g.conn.execute_scalar(sql)
+    if not status:
+        return internal_server_error(errormsg=res)
+
+    return ajax_response(
+        response=gettext("Success") if res else gettext("Failed"),
+        status=200
+    )
