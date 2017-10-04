@@ -1,8 +1,7 @@
 define('pgadmin.backform', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery',
   'backbone', 'backform', 'backgrid', 'sources/generated/codemirror',
-  'pgadmin.backgrid', 'select2'
-
+  'pgadmin.backgrid', 'select2',
 ],
 function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
@@ -24,15 +23,15 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
   // HTML markup global class names. More can be added by individual controls
   // using _.extend. Look at RadioControl as an example.
   _.extend(Backform, {
-    controlLabelClassName: "control-label pg-el-sm-3 pg-el-xs-12",
-    controlsClassName: "pgadmin-controls pg-el-sm-9 pg-el-xs-12",
-    groupClassName: "pgadmin-control-group form-group pg-el-xs-12",
-    setGroupClassName: "set-group pg-el-xs-12",
-    tabClassName: "backform-tab pg-el-xs-12",
-    setGroupContentClassName: "fieldset-content pg-el-xs-12"
-    });
+    controlLabelClassName: 'control-label pg-el-sm-3 pg-el-xs-12',
+    controlsClassName: 'pgadmin-controls pg-el-sm-9 pg-el-xs-12',
+    groupClassName: 'pgadmin-control-group form-group pg-el-xs-12',
+    setGroupClassName: 'set-group pg-el-xs-12',
+    tabClassName: 'backform-tab pg-el-xs-12',
+    setGroupContentClassName: 'fieldset-content pg-el-xs-12',
+  });
 
-  var controlMapper = Backform.controlMapper = {
+  Backform.controlMapper = {
     'int': ['uneditable-input', 'numeric', 'integer'],
     'text': ['uneditable-input', 'input', 'string'],
     'numeric': ['uneditable-input', 'numeric', 'numeric'],
@@ -45,10 +44,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     'uniqueColCollection': ['unique-col-collection', 'unique-col-collection', 'string'],
     'switch' : 'switch',
     'select2': 'select2',
-    'note': 'note'
+    'note': 'note',
   };
 
-  var getMappedControl = Backform.getMappedControl = function(type, mode) {
+  Backform.getMappedControl = function(type, mode) {
     if (type in Backform.controlMapper) {
       var m = Backform.controlMapper[type];
 
@@ -59,30 +58,30 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       var idx = 1, len = _.size(m);
 
       switch (mode) {
-        case 'properties':
-          idx = 0;
-          break;
-        case 'edit':
-        case 'create':
-        case 'control':
-          idx = 1;
-          break;
-        case 'cell':
-          idx = 2;
-          break;
-        default:
-          idx = 0;
-          break;
+      case 'properties':
+        idx = 0;
+        break;
+      case 'edit':
+      case 'create':
+      case 'control':
+        idx = 1;
+        break;
+      case 'cell':
+        idx = 2;
+        break;
+      default:
+        idx = 0;
+        break;
       }
 
       return m[idx > len ? 0 : idx];
     }
     return type;
-  }
+  };
 
 
   var BackformControlInit = Backform.Control.prototype.initialize,
-      BackformControlRemove = Backform.Control.prototype.remove;
+    BackformControlRemove = Backform.Control.prototype.remove;
 
   // Override the Backform.Control to allow to track changes in dependencies,
   // and rerender the View element
@@ -101,7 +100,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         _.each(deps, function(d) {
           var attrArr = d.split('.');
           var name = attrArr.shift();
-          self.listenTo(self.model, "change:" + name, self.render);
+          self.listenTo(self.model, 'change:' + name, self.render);
         });
       }
     },
@@ -109,10 +108,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     remove: function() {
       // Remove the events for the dependent fields in the model
       var self = this,
-          deps = self.field.get('deps');
+        deps = self.field.get('deps');
 
-      self.stopListening(self.model, "change:" + name, self.render);
-      self.stopListening(self.model.errorModel, "change:" + name, self.updateInvalid);
+      self.stopListening(self.model, 'change:' + name, self.render);
+      self.stopListening(self.model.errorModel, 'change:' + name, self.updateInvalid);
 
       if (deps && _.isArray(deps)) {
         _.each(deps, function(d) {
@@ -120,7 +119,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           var attrArr = d.split('.');
           var name = attrArr.shift();
 
-          self.stopListening(self.model, "change:" + name, self.render);
+          self.stopListening(self.model, 'change:' + name, self.render);
         });
       }
 
@@ -136,26 +135,26 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     },
 
     template: _.template([
-                  '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-                  '<div class="<%=Backform.controlsClassName%>">',
-                  '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%>>',
-                  '    <%-value%>',
-                  '  </span>',
-                  '</div>',
-                  '<% if (helpMessage && helpMessage.length) { %>',
-                  '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-                  '<% } %>',
-                  ].join("\n")),
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
+      '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%>>',
+      '    <%-value%>',
+      '  </span>',
+      '</div>',
+      '<% if (helpMessage && helpMessage.length) { %>',
+      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '<% } %>',
+    ].join('\n')),
 
     clearInvalid: function() {
       this.$el.removeClass(Backform.errorClassName);
-      this.$el.find(".pgadmin-control-error-message").remove();
+      this.$el.find('.pgadmin-control-error-message').remove();
       return this;
     },
 
     updateInvalid: function() {
       var self = this,
-          errorModel = this.model.errorModel;
+        errorModel = this.model.errorModel;
 
       if (!(errorModel instanceof Backbone.Model)) return this;
 
@@ -165,13 +164,12 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       * Find input which have name attribute.
       */
       this.$el.find(':input[name]').not('button').each(function(ix, el) {
-        var attrArr = $(el).attr('name').split('.'),
-        name = attrArr.shift(),
-        path = attrArr.join('.'),
-        error = self.keyPathAccessor(errorModel.toJSON(), $(el).attr('name'));
+        var error = self.keyPathAccessor(
+            errorModel.toJSON(), $(el).attr('name')
+          );
 
-      if (_.isEmpty(error)) return;
-      self.$el.addClass(Backform.errorClassName);
+        if (_.isEmpty(error)) return;
+        self.$el.addClass(Backform.errorClassName);
       });
     },
 
@@ -181,26 +179,26 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
      */
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-          }),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+        attributes = this.model.toJSON(),
+        attrArr = field.name.split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        rawValue = this.keyPathAccessor(attributes[name], path),
+        data = _.extend(field, {
+          rawValue: rawValue,
+          value: this.formatter.fromRaw(rawValue, this.model),
+          attributes: attributes,
+          formatter: this.formatter,
+        }),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
         visible:  evalF(data.visible, data, this.model),
-        required: evalF(data.required, data, this.model)
+        required: evalF(data.required, data, this.model),
       });
 
       // Clean up first
@@ -213,7 +211,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.updateInvalid();
 
       return this;
-    }
+    },
   });
 
   /*
@@ -223,10 +221,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
   _.extend(
     Backform.InputControl.prototype, {
       events: {
-        "change input": "onChange",
-        "blur input": "onChange",
-        "keyup input": "onKeyUp",
-        "focus input": "clearInvalid"
+        'change input': 'onChange',
+        'blur input': 'onChange',
+        'keyup input': 'onKeyUp',
+        'focus input': 'clearInvalid',
       },
       onKeyUp: function(ev) {
         if (this.key_timeout) {
@@ -236,7 +234,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         this.keyup_timeout = setTimeout(function() {
           this.onChange(ev);
         }.bind(this), 400);
-      }
+      },
     });
 
   /*
@@ -253,11 +251,11 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         Backform.TextareaControl.prototype.defaults, {rows: 5, helpMessage: null}
       ),
       events : {
-        "change textarea": "onChange",
-        "keyup textarea": "onKeyUp",
-        "paste textarea": "onChange",
-        "selectionchange textarea": "onChange",
-        "focus textarea": "clearInvalid"
+        'change textarea': 'onChange',
+        'keyup textarea': 'onKeyUp',
+        'paste textarea': 'onChange',
+        'selectionchange textarea': 'onChange',
+        'focus textarea': 'clearInvalid',
       },
       template: _.template([
         '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -270,8 +268,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         '  <% if (helpMessage && helpMessage.length) { %>',
         '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
         '  <% } %>',
-        '</div>'
-      ].join("\n")),
+        '</div>',
+      ].join('\n')),
       onKeyUp: function(ev) {
         if (this.key_timeout) {
           clearTimeout(this.key_timeout);
@@ -280,7 +278,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         this.keyup_timeout = setTimeout(function() {
           this.onChange(ev);
         }.bind(this), 400);
-      }
+      },
     });
 
   /*
@@ -299,7 +297,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         rawValue: rawValue,
         value: this.formatter.fromRaw(rawValue, this.model),
         attributes: attributes,
-        formatter: this.formatter
+        formatter: this.formatter,
       }),
       evalF = function(f, d, m) {
         return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
@@ -309,15 +307,15 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     _.extend(data, {
       disabled: evalF(data.disabled, data, this.model),
       visible:  evalF(data.visible, data, this.model),
-      required: evalF(data.required, data, this.model)
+      required: evalF(data.required, data, this.model),
     });
     // Evaluation the options
     if (_.isFunction(data.options)) {
       try {
-        data.options = data.options(this)
+        data.options = data.options(this);
       } catch(e) {
         // Do nothing
-        data.options = []
+        data.options = [];
         this.model.trigger('pgadmin-view:transform:error', this.model, this.field, e);
       }
     }
@@ -335,7 +333,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
   };
   _.extend(Backform.SelectControl.prototype.defaults, {helpMessage: null});
 
-  var ReadonlyOptionControl = Backform.ReadonlyOptionControl = Backform.SelectControl.extend({
+  Backform.ReadonlyOptionControl = Backform.SelectControl.extend({
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
@@ -348,12 +346,12 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       '<% if (helpMessage && helpMessage.length) { %>',
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
-      '</div>'
-    ].join("\n")),
+      '</div>',
+    ].join('\n')),
     events: {},
     getValueFromDOM: function() {
-      return this.formatter.toRaw(this.$el.find("span").text(), this.model);
-    }
+      return this.formatter.toRaw(this.$el.find('span').text(), this.model);
+    },
   });
 
   /*
@@ -365,7 +363,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     Backform.RadioControl.prototype, {
       updateInvalid: function() {
         var self = this,
-            errorModel = this.model.errorModel;
+          errorModel = this.model.errorModel;
 
         if (!(errorModel instanceof Backbone.Model)) return this;
 
@@ -375,10 +373,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
          * Find input which have name attribute.
          */
         this.$el.find(':input[name]').not('button').each(function(ix, el) {
-          var attrArr = $(el).attr('name').split('.'),
-              name = attrArr.shift(),
-              path = attrArr.join('.'),
-              error = self.keyPathAccessor(
+          var error = self.keyPathAccessor(
                 errorModel.toJSON(), $(el).attr('name')
               );
 
@@ -387,26 +382,26 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           self.$el.addClass(Backform.errorClassName).find(
             '[type="radio"]'
           ).append(
-          $("<div></div>").addClass(
+          $('<div></div>').addClass(
             'pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 pg-el-xs-8 help-block'
           ).text(error));
         });
-      }
+      },
     });
 
   // Requires the Bootstrap Switch to work.
-  var SwitchControl = Backform.SwitchControl = Backform.InputControl.extend({
+  Backform.SwitchControl = Backform.InputControl.extend({
     defaults: {
-      label: "",
+      label: '',
       options: {
         onText: 'Yes',
         offText: 'No',
         onColor: 'success',
         offColor: 'primary',
-        size: 'small'
+        size: 'small',
       },
       extraClasses: [],
-      helpMessage: null
+      helpMessage: null,
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -420,7 +415,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
       '</div>',
-    ].join("\n")),
+    ].join('\n')),
     getValueFromDOM: function() {
       return this.formatter.toRaw(
           this.$input.prop('checked'),
@@ -430,21 +425,21 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     events: {'switchChange.bootstrapSwitch': 'onChange'},
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-            },
-          options = _.defaults({
-              disabled: evalF(field.disabled, field, this.model)
-            }, this.field.get('options'), this.defaults.options,
+        attributes = this.model.toJSON(),
+        attrArr = field.name.split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        rawValue = this.keyPathAccessor(attributes[name], path),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        },
+        options = _.defaults({
+          disabled: evalF(field.disabled, field, this.model),
+        }, this.field.get('options'), this.defaults.options,
             $.fn.bootstrapSwitch.defaults);
 
       Backform.InputControl.prototype.render.apply(this, arguments);
-      this.$input = this.$el.find("input[type=checkbox]").first();
+      this.$input = this.$el.find('input[type=checkbox]').first();
 
       //Check & set additional properties
       this.$input.bootstrapSwitch(
@@ -452,15 +447,15 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           );
 
       return this;
-    }
+    },
   });
 
   // Backform Dialog view (in bootstrap tabbular form)
   // A collection of field models.
-  var Dialog = Backform.Dialog = Backform.Form.extend({
+  Backform.Dialog = Backform.Form.extend({
     /* Array of objects having attributes [label, fields] */
     schema: undefined,
-    tagName: "div",
+    tagName: 'div',
     legend: true,
     className: function() {
       return 'pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12';
@@ -492,7 +487,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         '<li role="presentation" <%=disabled ? "disabled" : ""%>>',
         ' <a data-toggle="tab" data-tab-index="<%=tabIndex%>" href="#<%=cId%>"',
         '  id="<%=hId%>" aria-controls="<%=cId%>">',
-        '<%=label%></a></li>'].join(" ")),
+        '<%=label%></a></li>'].join(' ')),
       'panel': _.template(
         '<div role="tabpanel" class="tab-pane <%=label%> pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
       )},
@@ -508,8 +503,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         self = this,
         idx=(this.tabIndex * 100),
         evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       this.$el
           .empty()
@@ -529,15 +524,14 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         }
         var el = $((tmpls['panel'])(_.extend(o, {'tabIndex': idx})))
               .appendTo(tabContent)
-              .removeClass('collapse').addClass('collapse'),
-            h = $((tmpls['header'])(o)).appendTo(tabHead);
+              .removeClass('collapse').addClass('collapse');
 
         o.fields.each(function(f) {
-          var cntr = new (f.get("control")) ({
+          var cntr = new (f.get('control')) ({
             field: f,
             model: m,
             dialog: self,
-            tabIndex: idx
+            tabIndex: idx,
           });
           el.append(cntr.render().$el);
           controls.push(cntr);
@@ -548,20 +542,20 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         ).off('hidden.bs.tab').on(
           'hidden.bs.tab', function() {
             self.hidden_tab = $(this).data('tabIndex');
-            }).on('shown.bs.tab', function() {
-              var self = this;
-              self.shown_tab = $(self).data('tabIndex');
-              m.trigger('pg-property-tab-changed', {
-                'model': m, 'shown': self.shown_tab, 'hidden': self.hidden_tab,
-                'tab': self
-              });
+          }).on('shown.bs.tab', function() {
+            var self = this;
+            self.shown_tab = $(self).data('tabIndex');
+            m.trigger('pg-property-tab-changed', {
+              'model': m, 'shown': self.shown_tab, 'hidden': self.hidden_tab,
+              'tab': self,
             });
+          });
       });
 
       var makeActive = tabHead.find('[id="' + c + '"]').first();
       if (makeActive.length == 1) {
         makeActive.parent().addClass('active');
-        tabContent.find('#' + makeActive.attr("aria-controls"))
+        tabContent.find('#' + makeActive.attr('aria-controls'))
           .addClass('in active');
       } else {
         tabHead.find('[role="presentation"]').first().addClass('active');
@@ -586,10 +580,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       }
       this.cleanup();
       Backform.Form.prototype.remove.apply(this, arguments);
-    }
+    },
   });
 
-  var Fieldset = Backform.Fieldset = Backform.Dialog.extend({
+  Backform.Fieldset = Backform.Dialog.extend({
     className: function() {
       return 'set-group pg-el-xs-12';
     },
@@ -605,8 +599,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         ' <% if (legend != false) { %>',
         '  <legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
         ' <% } %>',
-        '</fieldset>'
-      ].join("\n")),
+        '</fieldset>',
+      ].join('\n')),
       'content': _.template(
         '  <div id="<%= cId %>" class="<%=contentClass%>"></div>'
     )},
@@ -615,20 +609,20 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.cleanup();
 
       var m = this.model,
-          $el = this.$el,
-          tmpl = this.template,
-          controls = this.controls,
-          data = {
-            'className': _.result(this, 'className'),
-            'fieldsetClass': _.result(this, 'fieldsetClass'),
-            'legendClass': _.result(this, 'legendClass'),
-            'contentClass': _.result(this, 'contentClass'),
-            'collapse': _.result(this, 'collapse')
-          },
-          idx=(this.tabIndex * 100),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+        $el = this.$el,
+        tmpl = this.template,
+        controls = this.controls,
+        data = {
+          'className': _.result(this, 'className'),
+          'fieldsetClass': _.result(this, 'fieldsetClass'),
+          'legendClass': _.result(this, 'legendClass'),
+          'contentClass': _.result(this, 'contentClass'),
+          'collapse': _.result(this, 'collapse'),
+        },
+        idx=(this.tabIndex * 100),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       this.$el.empty();
 
@@ -642,14 +636,14 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           return;
 
         var d = _.extend({}, data, o),
-            h = $((tmpl['header'])(d)).appendTo($el),
-            el = $((tmpl['content'])(d)).appendTo(h);
+          h = $((tmpl['header'])(d)).appendTo($el),
+          el = $((tmpl['content'])(d)).appendTo(h);
 
         o.fields.each(function(f) {
-          var cntr = new (f.get("control")) ({
+          var cntr = new (f.get('control')) ({
             field: f,
             model: m,
-            tabIndex: idx
+            tabIndex: idx,
           });
           el.append(cntr.render().$el);
           controls.push(cntr);
@@ -659,18 +653,18 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       return this;
     },
     getValueFromDOM: function() {
-      return "";
+      return '';
     },
-    events: {}
+    events: {},
   });
 
-  var generateGridColumnsFromModel = Backform.generateGridColumnsFromModel =
+  Backform.generateGridColumnsFromModel =
     function(node_info, m, type, cols, node) {
       var groups = Backform.generateViewSchema(node_info, m, type, node, true, true),
-          schema = [],
-          columns = [],
-          func,
-          idx = 0;
+        schema = [],
+        columns = [],
+        func,
+        idx = 0;
 
       // Create another array if cols is of type object & store its keys in that array,
       // If cols is object then chances that we have custom width class attached with in.
@@ -700,7 +694,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       } else if(_.isObject(cols)) {
         var tblCols = Object.keys(cols);
         func = function(f) {
-          var val = (f.name in cols) && cols[f.name];
+          var val = (f.name in cols) && cols[f.name],
+            i;
 
           if (_.isNull(val) || _.isUndefined(val)) {
             f.cell_priority = -1;
@@ -711,7 +706,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
               f.cell_priority = val['index'];
               idx = (idx > val['index']) ? idx + 1 : val['index'];
             } else {
-              var i = _.indexOf(tblCols, f.name);
+              i = _.indexOf(tblCols, f.name);
               f.cell_priority = idx = ((i > idx) ? i : idx);
               idx = idx + 1;
             }
@@ -730,7 +725,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
             }
           }
           if (_.isString(val)) {
-            var i = _.indexOf(tblCols, f.name);
+            i = _.indexOf(tblCols, f.name);
 
             f.cell_priority = idx = ((i > idx) ? i : idx);
             idx = idx + 1;
@@ -744,7 +739,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       }
 
       // Prepare columns for backgrid
-      _.each(groups, function(group, key) {
+      _.each(groups, function(group) {
         _.each(group.fields, function(f) {
           if (!f.cell) {
             return;
@@ -761,56 +756,56 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         'columns': _.sortBy(columns, function(c) {
           return c.cell_priority;
         }),
-        'schema': schema
+        'schema': schema,
       };
     };
 
-  var UniqueColCollectionControl = Backform.UniqueColCollectionControl = Backform.Control.extend({
+  Backform.UniqueColCollectionControl = Backform.Control.extend({
     initialize: function() {
-        Backform.Control.prototype.initialize.apply(this, arguments);
+      Backform.Control.prototype.initialize.apply(this, arguments);
 
-        var uniqueCol = this.field.get('uniqueCol') || [],
-            m = this.field.get('model'),
-            schema = m.prototype.schema || m.__super__.schema,
-            columns = [],
-            self = this;
+      var uniqueCol = this.field.get('uniqueCol') || [],
+        m = this.field.get('model'),
+        schema = m.prototype.schema || m.__super__.schema,
+        columns = [],
+        self = this;
 
-        _.each(schema, function(s) {
-          columns.push(s.id);
-        });
+      _.each(schema, function(s) {
+        columns.push(s.id);
+      });
 
         // Check if unique columns provided are also in model attributes.
-        if (uniqueCol.length > _.intersection(columns, uniqueCol).length) {
-            var errorMsg = "Developer: Unique columns [ "+_.difference(uniqueCol, columns)+" ] not found in collection model [ " + columns +" ]."
-            alert (errorMsg);
-        }
+      if (uniqueCol.length > _.intersection(columns, uniqueCol).length) {
+        var errorMsg = 'Developer: Unique columns [ '+_.difference(uniqueCol, columns)+' ] not found in collection model [ ' + columns +' ].';
+        alert (errorMsg);
+      }
 
-        var collection = self.collection = self.model.get(self.field.get('name'));
+      var collection = self.collection = self.model.get(self.field.get('name'));
 
-        if (!collection) {
-          collection = self.collection = new (pgAdmin.Browser.Node.Collection)(
+      if (!collection) {
+        collection = self.collection = new (pgAdmin.Browser.Node.Collection)(
               null,
-              {
-                model: self.field.get('model'),
-                silent: true,
-                handler: self.model,
-                top: self.model.top || self.model,
-                attrName: self.field.get('name')
-              });
-          self.model.set(self.field.get('name'), collection, {silent: true});
-        }
-
-        if (this.field.get('version_compatible')) {
-          self.listenTo(collection, "add", self.collectionChanged);
-          self.listenTo(collection, "change", self.collectionChanged);
-        }
-    },
-    cleanup: function() {
-      this.stopListening(this.collection, "change", this.collectionChanged);
+          {
+            model: self.field.get('model'),
+            silent: true,
+            handler: self.model,
+            top: self.model.top || self.model,
+            attrName: self.field.get('name'),
+          });
+        self.model.set(self.field.get('name'), collection, {silent: true});
+      }
 
       if (this.field.get('version_compatible')) {
-        this.stopListening(self.collection, "add", this.collectionChanged);
-        this.stopListening(self.collection, "change", this.collectionChanged);
+        self.listenTo(collection, 'add', self.collectionChanged);
+        self.listenTo(collection, 'change', self.collectionChanged);
+      }
+    },
+    cleanup: function() {
+      this.stopListening(this.collection, 'change', this.collectionChanged);
+
+      if (this.field.get('version_compatible')) {
+        this.stopListening(self.collection, 'add', this.collectionChanged);
+        this.stopListening(self.collection, 'change', this.collectionChanged);
       }
       if (this.grid) {
         this.grid.remove();
@@ -820,36 +815,36 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     },
     collectionChanged: function(newModel, coll, op) {
       var uniqueCol = this.field.get('uniqueCol') || [],
-          uniqueChangedAttr = [],
-          self = this;
+        uniqueChangedAttr = [],
+        self = this;
       // Check if changed model attributes are also in unique columns. And then only check for uniqueness.
       if (newModel.attributes) {
         _.each(uniqueCol, function(col) {
-            if (_.has(newModel.attributes,col))
+          if (_.has(newModel.attributes,col))
             {
-               uniqueChangedAttr.push(col);
-            }
+            uniqueChangedAttr.push(col);
+          }
         });
         if(uniqueChangedAttr.length == 0) {
-            return;
+          return;
         }
       } else {
         return;
       }
 
       var collection = this.model.get(this.field.get('name'));
-      this.stopListening(collection, "change", this.collectionChanged);
+      this.stopListening(collection, 'change', this.collectionChanged);
       // Check if changed attribute's value of new/updated model also exist for another model in collection.
       // If duplicate value exists then set the attribute's value of new/updated model to its previous values.
       var m = undefined,
-          oldModel = undefined;
+        oldModel = undefined;
       collection.each(function(model) {
         if (newModel != model) {
-          var duplicateAttrValues = []
+          var duplicateAttrValues = [];
           _.each(uniqueCol, function(attr) {
             var attrValue = newModel.get(attr);
             if (!_.isUndefined(attrValue) && attrValue == model.get(attr)) {
-              duplicateAttrValues.push(attrValue)
+              duplicateAttrValues.push(attrValue);
             }
           });
           if (duplicateAttrValues.length == uniqueCol.length) {
@@ -878,16 +873,16 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           var idx = collection.indexOf(oldModel);
           if (idx > -1) {
             var newRow = self.grid.body.rows[idx].$el;
-            newRow.addClass("new");
+            newRow.addClass('new');
             $(newRow).pgMakeVisible('backform-tab');
             setTimeout(function() {
-              newRow.removeClass("new");
-              }, 3000);
+              newRow.removeClass('new');
+            }, 3000);
           }
         }
       }
 
-      this.listenTo(collection, "change", this.collectionChanged);
+      this.listenTo(collection, 'change', this.collectionChanged);
     },
     render: function() {
       // Clean up existing elements
@@ -896,20 +891,20 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.$el.empty();
 
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-           }),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+        attributes = this.model.toJSON(),
+        attrArr = field.name.split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        rawValue = this.keyPathAccessor(attributes[name], path),
+        data = _.extend(field, {
+          rawValue: rawValue,
+          value: this.formatter.fromRaw(rawValue, this.model),
+          attributes: attributes,
+          formatter: this.formatter,
+        }),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       // Evaluate the disabled, visible, required, canAdd, & canDelete option
       _.extend(data, {
@@ -923,9 +918,9 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           ),
         canAddRow: data.canAddRow,
         canDelete: evalF.apply(this.field, [data.canDelete, data, this.model]),
-        canEdit: evalF.apply(this.field, [data.canEdit, data, this.model])
+        canEdit: evalF.apply(this.field, [data.canEdit, data, this.model]),
       });
-      _.extend(data, {add_label: ""});
+      _.extend(data, {add_label: ''});
 
       // This control is not visible, we should remove it.
       if (!data.visible) {
@@ -945,11 +940,11 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     },
     showGridControl: function(data) {
       var self = this,
-          gridHeader = _.template([
+        gridHeader = _.template([
           '<div class="subnode-header">',
           '  <label class="control-label pg-el-sm-10"><%-label%></label>',
           '  <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></button>',
-          '</div>'].join("\n")),
+          '</div>'].join('\n')),
         gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode"></div>').append(
             gridHeader(data)
             );
@@ -964,35 +959,35 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       }
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
-          gridSchema = Backform.generateGridColumnsFromModel(
+        gridSchema = Backform.generateGridColumnsFromModel(
             data.node_info, subnode, this.field.get('mode'), data.columns
             );
 
       // Set visibility of Add button
       if (data.mode == 'properties') {
-        $(gridBody).find("button.add").remove();
+        $(gridBody).find('button.add').remove();
       }
 
       // Insert Delete Cell into Grid
       if (!data.disabled && data.canDelete) {
-          gridSchema.columns.unshift({
-            name: "pg-backform-delete", label: "",
-            cell: Backgrid.Extension.DeleteCell,
-            editable: false, cell_priority: -1,
-            canDeleteRow: data.canDeleteRow
-          });
+        gridSchema.columns.unshift({
+          name: 'pg-backform-delete', label: '',
+          cell: Backgrid.Extension.DeleteCell,
+          editable: false, cell_priority: -1,
+          canDeleteRow: data.canDeleteRow,
+        });
       }
 
       // Insert Edit Cell into Grid
       if (data.disabled == false && data.canEdit) {
-          var editCell = Backgrid.Extension.ObjectCell.extend({
-            schema: gridSchema.schema
-          });
+        var editCell = Backgrid.Extension.ObjectCell.extend({
+          schema: gridSchema.schema,
+        });
 
-          gridSchema.columns.unshift({
-            name: "pg-backform-edit", label: "", cell : editCell,
-            cell_priority: -2, canEditRow: data.canEditRow
-          });
+        gridSchema.columns.unshift({
+          name: 'pg-backform-edit', label: '', cell : editCell,
+          cell_priority: -2, canEditRow: data.canEditRow,
+        });
       }
 
       var collection = this.model.get(data.name);
@@ -1007,7 +1002,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
             var idx = that.indexOf(m);
             if (idx > -1) {
               var row = self.grid.body.rows[idx],
-                  editCell = row.$el.find(".subnode-edit-in-process").parent();
+                editCell = row.$el.find('.subnode-edit-in-process').parent();
               // Only close row if it's open.
               if (editCell.length > 0){
                 var event = new Event('click');
@@ -1016,15 +1011,15 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
             }
           }
         });
-      }
+      };
       // Listen for any row which is about to enter in edit mode.
-      collection.on( "enteringEditMode", cellEditing, collection);
+      collection.on( 'enteringEditMode', cellEditing, collection);
 
       // Initialize a new Grid instance
-      var grid = self.grid = new Backgrid.Grid({
+      self.grid = new Backgrid.Grid({
         columns: gridSchema.columns,
         collection: collection,
-        className: "backgrid table-bordered"
+        className: 'backgrid table-bordered',
       });
 
       // Render subNode grid
@@ -1032,8 +1027,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
       // Combine Edit and Delete Cell
       if (data.canDelete && data.canEdit) {
-        $(subNodeGrid).find("th.pg-backform-delete").remove();
-        $(subNodeGrid).find("th.pg-backform-edit").attr("colspan", "2");
+        $(subNodeGrid).find('th.pg-backform-delete').remove();
+        $(subNodeGrid).find('th.pg-backform-edit').attr('colspan', '2');
       }
 
       var $dialog =  gridBody.append(subNodeGrid);
@@ -1046,52 +1041,52 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
                             data.canAddRow.apply(self, [self.model]) : true;
           if (canAddRow) {
               // Close any existing expanded row before adding new one.
-              _.each(self.grid.body.rows, function(row){
-                var editCell = row.$el.find(".subnode-edit-in-process").parent();
+            _.each(self.grid.body.rows, function(row){
+              var editCell = row.$el.find('.subnode-edit-in-process').parent();
                 // Only close row if it's open.
-                if (editCell.length > 0){
-                  var event = new Event('click');
-                  editCell[0].dispatchEvent(event);
-                }
-              });
+              if (editCell.length > 0){
+                var event = new Event('click');
+                editCell[0].dispatchEvent(event);
+              }
+            });
 
-              var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
+            var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
 
               // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
               // There should be only one empty row.
-              if (!allowMultipleEmptyRows && collection) {
-                var isEmpty = false;
-                collection.each(function(model) {
-                  var modelValues = [];
-                  _.each(model.attributes, function(val, key) {
-                    modelValues.push(val);
-                  })
-                  if(!_.some(modelValues, _.identity)) {
-                    isEmpty = true;
-                  }
+            if (!allowMultipleEmptyRows && collection) {
+              var isEmpty = false;
+              collection.each(function(model) {
+                var modelValues = [];
+                _.each(model.attributes, function(val) {
+                  modelValues.push(val);
                 });
-                if(isEmpty) {
-                  return false;
+                if(!_.some(modelValues, _.identity)) {
+                  isEmpty = true;
                 }
-              }
-
-              $(self.grid.body.$el.find($("tr.new"))).removeClass("new")
-              var m = new (data.model) (null, {
-                silent: true,
-                handler: collection,
-                top: self.model.top || self.model,
-                collection: collection,
-                node_info: self.model.node_info
               });
-              collection.add(m);
+              if(isEmpty) {
+                return false;
+              }
+            }
 
-              var idx = collection.indexOf(m),
-                  newRow = self.grid.body.rows[idx].$el;
+            $(self.grid.body.$el.find($('tr.new'))).removeClass('new');
+            var m = new (data.model) (null, {
+              silent: true,
+              handler: collection,
+              top: self.model.top || self.model,
+              collection: collection,
+              node_info: self.model.node_info,
+            });
+            collection.add(m);
 
-              newRow.addClass("new");
-              $(newRow).pgMakeVisible('backform-tab');
+            var idx = collection.indexOf(m),
+              newRow = self.grid.body.rows[idx].$el;
 
-              return false;
+            newRow.addClass('new');
+            $(newRow).pgMakeVisible('backform-tab');
+
+            return false;
           }
         });
       }
@@ -1099,48 +1094,48 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       return $dialog;
     },
     clearInvalid: function() {
-      this.$el.removeClass("subnode-error");
-      this.$el.find(".pgadmin-control-error-message").remove();
+      this.$el.removeClass('subnode-error');
+      this.$el.find('.pgadmin-control-error-message').remove();
       return this;
     },
     updateInvalid: function() {
       var self = this,
-      errorModel = this.model.errorModel;
+        errorModel = this.model.errorModel;
 
       if (!(errorModel instanceof Backbone.Model)) return this;
 
       this.clearInvalid();
 
-      this.$el.find('.subnode-body').each(function(ix, el) {
+      this.$el.find('.subnode-body').each(function() {
         var error = self.keyPathAccessor(errorModel.toJSON(), self.field.get('name'));
 
         if (_.isEmpty(error)) return;
 
-        self.$el.addClass("subnode-error").append(
-          $("<div></div>").addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
+        self.$el.addClass('subnode-error').append(
+          $('<div></div>').addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
           );
       });
-    }
+    },
   });
 
-  var SubNodeCollectionControl = Backform.SubNodeCollectionControl = Backform.Control.extend({
+  Backform.SubNodeCollectionControl = Backform.Control.extend({
     row: Backgrid.Row,
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-           }),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+        attributes = this.model.toJSON(),
+        attrArr = field.name.split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        rawValue = this.keyPathAccessor(attributes[name], path),
+        data = _.extend(field, {
+          rawValue: rawValue,
+          value: this.formatter.fromRaw(rawValue, this.model),
+          attributes: attributes,
+          formatter: this.formatter,
+        }),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       // Evaluate the disabled, visible, required, canAdd, cannEdit & canDelete option
       _.extend(data, {
@@ -1150,10 +1145,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         canAdd: evalF(data.canAdd, data, this.model),
         canAddRow: data.canAddRow,
         canEdit: evalF(data.canEdit, data, this.model),
-        canDelete: evalF(data.canDelete, data, this.model)
+        canDelete: evalF(data.canDelete, data, this.model),
       });
       // Show Backgrid Control
-      var grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
+      var grid = (data.subnode == undefined) ? '' : this.showGridControl(data);
 
       // Clean up first
       this.$el.removeClass(Backform.hiddenClassName);
@@ -1174,14 +1169,13 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.clearInvalid();
 
       var attrArr = self.field.get('name').split('.'),
-        name = attrArr.shift(),
         path = attrArr.join('.'),
         error = self.keyPathAccessor(errorModel.toJSON(), path);
 
       if (_.isEmpty(error)) return;
 
       self.$el.addClass('subnode-error').append(
-        $("<div></div>").addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
+        $('<div></div>').addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
         );
     },
     cleanup: function() {
@@ -1190,27 +1184,27 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         this.grid.remove();
       }
       if (this.collection) {
-        this.collection.off( "enteringEditMode");
+        this.collection.off( 'enteringEditMode');
       }
     },
     clearInvalid: function() {
       this.$el.removeClass('subnode-error');
-      this.$el.find(".pgadmin-control-error-message").remove();
+      this.$el.find('.pgadmin-control-error-message').remove();
       return this;
     },
     showGridControl: function(data) {
       var self = this,
-          gridHeader = ["<div class='subnode-header'>",
-          "  <label class='control-label pg-el-sm-10'>" + data.label + "</label>" ,
-          "  <button class='btn-sm btn-default add fa fa-plus'></button>",
-          "</div>"].join("\n"),
-        gridBody = $("<div class='pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode'></div>").append(gridHeader);
+        gridHeader = ['<div class=\'subnode-header\'>',
+          '  <label class=\'control-label pg-el-sm-10\'>' + data.label + '</label>' ,
+          '  <button class=\'btn-sm btn-default add fa fa-plus\'></button>',
+          '</div>'].join('\n'),
+        gridBody = $('<div class=\'pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode\'></div>').append(gridHeader);
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
-          gridSchema = Backform.generateGridColumnsFromModel(
+        gridSchema = Backform.generateGridColumnsFromModel(
             data.node_info, subnode, this.field.get('mode'), data.columns, data.schema_node
             ),
-          pgBrowser = window.pgAdmin.Browser;
+        pgBrowser = window.pgAdmin.Browser;
 
       // Clean up existing grid if any (in case of re-render)
       if (self.grid) {
@@ -1219,34 +1213,34 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
       // Set visibility of Add button
       if (data.disabled || data.canAdd == false) {
-        $(gridBody).find("button.add").remove();
+        $(gridBody).find('button.add').remove();
       }
 
       // Insert Delete Cell into Grid
       if (data.disabled == false && data.canDelete) {
-          gridSchema.columns.unshift({
-            name: "pg-backform-delete", label: "",
-            cell: Backgrid.Extension.DeleteCell,
-            editable: false, cell_priority: -1,
-            canDeleteRow: data.canDeleteRow,
-            customDeleteMsg: data.customDeleteMsg,
-            customDeleteTitle: data.customDeleteTitle
-          });
+        gridSchema.columns.unshift({
+          name: 'pg-backform-delete', label: '',
+          cell: Backgrid.Extension.DeleteCell,
+          editable: false, cell_priority: -1,
+          canDeleteRow: data.canDeleteRow,
+          customDeleteMsg: data.customDeleteMsg,
+          customDeleteTitle: data.customDeleteTitle,
+        });
       }
 
       // Insert Edit Cell into Grid
       if (data.disabled == false && data.canEdit) {
-          var editCell = Backgrid.Extension.ObjectCell.extend({
-            schema: gridSchema.schema
+        var editCell = Backgrid.Extension.ObjectCell.extend({
+            schema: gridSchema.schema,
           }),
           canEdit = self.field.has('canEdit') &&
           self.field.get('canEdit') || true;
 
-          gridSchema.columns.unshift({
-            name: "pg-backform-edit", label: "", cell : editCell,
-            cell_priority: -2, editable: canEdit,
-            canEditRow: data.canEditRow
-          });
+        gridSchema.columns.unshift({
+          name: 'pg-backform-edit', label: '', cell : editCell,
+          cell_priority: -2, editable: canEdit,
+          canEditRow: data.canEditRow,
+        });
       }
 
       var collection = self.model.get(data.name);
@@ -1255,7 +1249,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         collection = new (pgBrowser.Node.Collection)(null, {
           handler: self.model.handler || self.model,
           model: data.model, top: self.model.top || self.model,
-          silent: true
+          silent: true,
         });
         self.model.set(data.name, collection, {silent: true});
       }
@@ -1270,7 +1264,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
             var idx = self.indexOf(m);
             if (idx > -1) {
               var row = grid.body.rows[idx],
-                  editCell = row.$el.find(".subnode-edit-in-process").parent();
+                editCell = row.$el.find('.subnode-edit-in-process').parent();
               // Only close row if it's open.
               if (editCell.length > 0){
                 var event = new Event('click');
@@ -1279,16 +1273,16 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
             }
           }
         });
-      }
+      };
       // Listen for any row which is about to enter in edit mode.
-      collection.on( "enteringEditMode", cellEditing, collection);
+      collection.on( 'enteringEditMode', cellEditing, collection);
 
       // Initialize a new Grid instance
       var grid = self.grid = new Backgrid.Grid({
-          columns: gridSchema.columns,
-          collection: collection,
-          row: this.row,
-          className: "backgrid table-bordered"
+        columns: gridSchema.columns,
+        collection: collection,
+        row: this.row,
+        className: 'backgrid table-bordered',
       });
 
       // Render subNode grid
@@ -1296,21 +1290,21 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
       // Combine Edit and Delete Cell
       if (data.canDelete && data.canEdit) {
-        $(subNodeGrid).find("th.pg-backform-delete").remove();
-        $(subNodeGrid).find("th.pg-backform-edit").attr("colspan", "2");
+        $(subNodeGrid).find('th.pg-backform-delete').remove();
+        $(subNodeGrid).find('th.pg-backform-edit').attr('colspan', '2');
       }
 
       var $dialog =  gridBody.append(subNodeGrid);
 
       // Add button callback
       $dialog.find('button.add').click(function(e) {
-         e.preventDefault();
+        e.preventDefault();
         var canAddRow = _.isFunction(data.canAddRow) ?
                             data.canAddRow.apply(self, [self.model]) : true;
         if (canAddRow) {
           // Close any existing expanded row before adding new one.
           _.each(grid.body.rows, function(row){
-            var editCell = row.$el.find(".subnode-edit-in-process").parent();
+            var editCell = row.$el.find('.subnode-edit-in-process').parent();
             // Only close row if it's open.
             if (editCell.length > 0){
               var event = new Event('click');
@@ -1321,8 +1315,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           grid.insertRow({});
 
           var newRow = $(grid.body.rows[collection.length - 1].$el);
-          newRow.attr("class", "new").click(function(e) {
-            $(this).attr("class", "editable");
+          newRow.attr('class', 'new').click(function() {
+            $(this).attr('class', 'editable');
           });
           $(newRow).pgMakeVisible('backform-tab');
           return false;
@@ -1330,7 +1324,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       });
 
       return $dialog;
-    }
+    },
   });
 
   /*
@@ -1340,12 +1334,12 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
    * When the user clicks on the SQL tab, we will send the modified data to the
    * server and fetch the SQL for it.
    */
-  var SqlTabControl = Backform.SqlTabControl = Backform.Control.extend({
+  Backform.SqlTabControl = Backform.Control.extend({
     defaults: {
-      label: "",
-      controlsClassName: "pgadmin-controls pg-el-sm-12 SQL",
+      label: '',
+      controlsClassName: 'pgadmin-controls pg-el-sm-12 SQL',
       extraClasses: [],
-      helpMessage: null
+      helpMessage: null,
     },
     template: _.template([
       '<div class="<%=controlsClassName%>">',
@@ -1353,8 +1347,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
-      '</div>'
-    ].join("\n")),
+      '</div>',
+    ].join('\n')),
     /*
      * Initialize the SQL Tab control properly
      */
@@ -1368,7 +1362,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       _.bindAll(this, 'onTabChange', 'onPanelResized');
     },
     getValueFromDOM: function() {
-        return this.formatter.toRaw(this.$el.find("textarea").val(), this.model);
+      return this.formatter.toRaw(this.$el.find('textarea').val(), this.model);
     },
     render: function() {
       if (this.sqlCtrl) {
@@ -1383,17 +1377,16 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       Backform.Control.prototype.render.apply(this, arguments);
 
       this.sqlCtrl = CodeMirror.fromTextArea(
-        (this.$el.find("textarea")[0]), {
-        lineNumbers: true,
-        lineWrapping: true,
-        mode: "text/x-pgsql",
-        readOnly: true,
-        extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-        tabSize: pgAdmin.Browser.editor_options.tabSize,
-        lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
-        autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
-        matchBrackets: pgAdmin.Browser.editor_options.brace_matching
-      });
+        (this.$el.find('textarea')[0]), {
+          lineNumbers: true,
+          mode: 'text/x-pgsql',
+          readOnly: true,
+          extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+          tabSize: pgAdmin.Browser.editor_options.tabSize,
+          lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+          autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+          matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
+        });
 
       /*
        * We will listen to the tab change event to check, if the SQL tab has
@@ -1414,11 +1407,11 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         if(this.model.sessChanged()) {
           if (_.size(this.model.errorModel.attributes) == 0) {
             var self = this,
-                node = self.field.get('schema_node'),
-                msql_url = node.generate_url.apply(
+              node = self.field.get('schema_node'),
+              msql_url = node.generate_url.apply(
                   node, [
                     null, 'msql', this.field.get('node_data'), !self.model.isNew(),
-                    this.field.get('node_info')
+                    this.field.get('node_info'),
                   ]);
 
                   // Fetching the modified SQL
@@ -1429,8 +1422,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
               type: 'GET',
               cache: false,
               data: self.model.toJSON(true, 'GET'),
-              dataType: "json",
-              contentType: "application/json"
+              dataType: 'json',
+              contentType: 'application/json',
             }).done(function(res) {
               self.sqlCtrl.clearHistory();
               self.sqlCtrl.setValue(res.data);
@@ -1455,14 +1448,14 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         var $tabContent = o.container.find(
               '.backform-tab > .tab-content'
             ).first(),
-            $sqlPane = $tabContent.find(
+          $sqlPane = $tabContent.find(
               'div[role=tabpanel].tab-pane.SQL'
             );
         if ($sqlPane.hasClass('active')) {
           $sqlPane.find('.CodeMirror').css(
             'cssText',
             'height: ' + ($tabContent.height() + 8) + 'px !important;'
-          )
+          );
         }
       }
     },
@@ -1478,20 +1471,20 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.model.off('pg-browser-resized', this.onPanelResized, this);
 
       Backform.Control.__super__.remove.apply(this, arguments);
-    }
-});
+    },
+  });
    /*
    * Numeric input Control functionality just like backgrid
    */
-  var NumericControl = Backform.NumericControl = Backform.InputControl.extend({
+  Backform.NumericControl = Backform.InputControl.extend({
     defaults: {
-      type: "number",
-      label: "",
+      type: 'number',
+      label: '',
       min: undefined,
       max: undefined,
       maxlength: 255,
       extraClasses: [],
-      helpMessage: null
+      helpMessage: null,
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -1500,8 +1493,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
-      '</div>'
-    ].join("\n"))
+      '</div>',
+    ].join('\n')),
   });
 
   ///////
@@ -1509,37 +1502,38 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
   //
   // It will be used by the grid, properties, and dialog view generation
   // functions.
-  var generateViewSchema = Backform.generateViewSchema = function(
+  Backform.generateViewSchema = function(
       node_info, Model, mode, node, treeData, noSQL, subschema
       ) {
     var proto = (Model && Model.prototype) || Model,
-        schema = subschema || (proto && proto.schema),
-        pgBrowser = window.pgAdmin.Browser, fields = [],
-        groupInfo = {};
+      schema = subschema || (proto && proto.schema),
+      pgBrowser = window.pgAdmin.Browser, fields = [],
+      groupInfo = {};
 
     // 'schema' has the information about how to generate the form.
     if (schema && _.isArray(schema)) {
       var evalASFunc = evalASFunc = function(prop) {
         return ((prop && proto[prop] &&
-              typeof proto[prop] == "function") ? proto[prop] : prop);
+              typeof proto[prop] == 'function') ? proto[prop] : prop);
       };
       var groups = {},
-          server_info = node_info && ('server' in node_info) &&
+        server_info = node_info && ('server' in node_info) &&
             pgBrowser.serverInfo && pgBrowser.serverInfo[node_info.server._id],
-          in_catalog = node_info && ('catalog' in node_info);
+        in_catalog = node_info && ('catalog' in node_info),
+        ver_in_limit;
 
       _.each(schema, function(s) {
         // Do we understand - what control, we're creating
         // here?
         if (s.type == 'group') {
-          var ver_in_limit = (_.isUndefined(server_info) ? true :
+          var visible = true;
+          ver_in_limit = (_.isUndefined(server_info) ? true :
               ((_.isUndefined(s.server_type) ? true :
                 (server_info.type in s.server_type)) &&
               (_.isUndefined(s.min_version) ? true :
                (server_info.version >= s.min_version)) &&
               (_.isUndefined(s.max_version) ? true :
-               (server_info.version <= s.max_version)))),
-              visible = true;
+               (server_info.version <= s.max_version))));
 
           if (s.mode && _.isObject(s.mode))
             visible = (_.indexOf(s.mode, mode) > -1);
@@ -1549,7 +1543,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           groupInfo[s.id] = {
             label: s.label || s.id,
             version_compatible: ver_in_limit,
-            visible: visible
+            visible: visible,
           };
           return;
         }
@@ -1559,8 +1553,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           // Each field is kept in specified group, or in
           // 'General' category.
           var group = s.group || gettext('General'),
-              control = s.control || Backform.getMappedControl(s.type, mode),
-              cell =  s.cell || Backform.getMappedControl(s.type, 'cell');
+            control = s.control || Backform.getMappedControl(s.type, mode),
+            cell =  s.cell || Backform.getMappedControl(s.type, 'cell');
 
           if (control == null) {
             return;
@@ -1568,15 +1562,15 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
           // Generate the empty group list (if not exists)
           groups[group] = (groups[group] || []);
-          var ver_in_limit = (_.isUndefined(server_info) ? true :
+          ver_in_limit = (_.isUndefined(server_info) ? true :
                 ((_.isUndefined(s.server_type) ? true :
                   (server_info.type in s.server_type)) &&
                 (_.isUndefined(s.min_version) ? true :
                  (server_info.version >= s.min_version)) &&
                 (_.isUndefined(s.max_version) ? true :
-                 (server_info.version <= s.max_version)))),
-              disabled = ((mode == 'properties') || !ver_in_limit || in_catalog),
-              schema_node = (s.node && _.isString(s.node) &&
+                 (server_info.version <= s.max_version))));
+          var disabled = ((mode == 'properties') || !ver_in_limit || in_catalog),
+            schema_node = (s.node && _.isString(s.node) &&
                   s.node in pgBrowser.Nodes &&  pgBrowser.Nodes[s.node]) || node;
 
           var o = _.extend(_.clone(s), {
@@ -1604,7 +1598,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
             visible: evalASFunc(s.visible),
             node: node,
             node_data: treeData,
-            version_compatible: ver_in_limit
+            version_compatible: ver_in_limit,
           });
           delete o.id;
 
@@ -1632,14 +1626,14 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
       if (!noSQL && node && node.hasSQL && (mode == 'create' || mode == 'edit')) {
         groups[gettext('SQL')] = [{
-            name: 'sql',
-            visible: true,
-            disabled: false,
-            type: 'text',
-            control: 'sql-tab',
-            node_info: node_info,
-            schema_node: node,
-            node_data: treeData
+          name: 'sql',
+          visible: true,
+          disabled: false,
+          type: 'text',
+          control: 'sql-tab',
+          node_info: node_info,
+          schema_node: node,
+          node_data: treeData,
         }];
       }
 
@@ -1661,10 +1655,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
   var Select2Formatter = function() {};
   _.extend(Select2Formatter.prototype, {
-    fromRaw: function(rawData, model) {
+    fromRaw: function(rawData) {
       return encodeURIComponent(rawData);
     },
-    toRaw: function(formattedData, model) {
+    toRaw: function(formattedData) {
       if (_.isArray(formattedData)) {
         return _.map(formattedData, decodeURIComponent);
       } else {
@@ -1674,19 +1668,19 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           return null;
         }
       }
-    }
+    },
   });
 
   /*
    *  Backform Select2 control.
    */
-  var Select2Control = Backform.Select2Control = Backform.SelectControl.extend({
+  Backform.Select2Control = Backform.SelectControl.extend({
     defaults: _.extend({}, Backform.SelectControl.prototype.defaults, {
       select2: {
         first_empty: true,
         multiple: false,
-        emptyOptions: false
-      }
+        emptyOptions: false,
+      },
     }),
     formatter: Select2Formatter,
     template: _.template([
@@ -1711,8 +1705,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       ' <% if (helpMessage && helpMessage.length) { %>',
       ' <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       ' <% } %>',
-      '</div>'
-    ].join("\n")),
+      '</div>',
+    ].join('\n')),
     render: function() {
 
       if(this.$sel && this.$sel.select2 &&
@@ -1721,42 +1715,42 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       }
 
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-          }),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+        attributes = this.model.toJSON(),
+        attrArr = field.name.split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        rawValue = this.keyPathAccessor(attributes[name], path),
+        data = _.extend(field, {
+          rawValue: rawValue,
+          value: this.formatter.fromRaw(rawValue, this.model),
+          attributes: attributes,
+          formatter: this.formatter,
+        }),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       data.select2 = data.select2 || {};
       _.defaults(data.select2, this.defaults.select2, {
         first_empty: true,
         multiple: false,
-        emptyOptions: false
+        emptyOptions: false,
       });
 
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
         visible:  evalF(data.visible, data, this.model),
-        required: evalF(data.required, data, this.model)
+        required: evalF(data.required, data, this.model),
       });
 
       // Evaluation the options
       if (_.isFunction(data.options)) {
         try {
-          data.options = data.options(this)
+          data.options = data.options(this);
         } catch(e) {
           // Do nothing
-          data.options = []
+          data.options = [];
           this.model.trigger(
             'pgadmin-view:transform:error', this.model, this.field, e
           );
@@ -1772,10 +1766,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.$el.html(this.template(data)).addClass(field.name);
 
       var select2Opts = _.extend({
-              disabled: data.disabled
-            }, field.select2, {
-                options: (this.field.get('options') || this.defaults.options)
-            });
+        disabled: data.disabled,
+      }, field.select2, {
+        options: (this.field.get('options') || this.defaults.options),
+      });
 
       // If disabled then no need to show placeholder
       if(data.disabled || data.mode === 'properties') {
@@ -1791,7 +1785,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         select2Opts.data = data.rawValue;
       }
 
-      this.$sel = this.$el.find("select").select2(select2Opts);
+      this.$sel = this.$el.find('select').select2(select2Opts);
 
       // Add or remove tags from select2 control
       if (data.select2.tags && data.select2.emptyOptions) {
@@ -1799,7 +1793,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         this.$sel.trigger('change.select2');
         this.$sel.on('select2:unselect', function(evt) {
 
-          $(this).find('option[value="'+evt.params.data.text.replace("'","\\'").replace('"','\\"')+'"]').remove();
+          $(this).find('option[value="'+evt.params.data.text.replace('\'','\\\'').replace('"','\\"')+'"]').remove();
           $(this).trigger('change.select2');
           if ($(this).val() == null) {
             $(this).empty();
@@ -1811,7 +1805,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
       // Select the highlighted item on Tab press.
       if (this.$sel) {
-        this.$sel.data('select2').on("keypress", function(ev) {
+        this.$sel.data('select2').on('keypress', function(ev) {
           var self = this;
 
           // keycode 9 is for TAB key
@@ -1830,16 +1824,16 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       var val = Backform.SelectControl.prototype.getValueFromDOM.apply(
                   this, arguments
                 ),
-        select2Opts = _.extend({}, this.field.get("select2") || this.defaults.select2);
+        select2Opts = _.extend({}, this.field.get('select2') || this.defaults.select2);
 
       if (select2Opts.multiple && val == null) {
         return [];
       }
       return val;
-    }
+    },
   });
 
-  var FieldsetControl = Backform.FieldsetControl = Backform.Fieldset.extend({
+  Backform.FieldsetControl = Backform.Fieldset.extend({
     initialize: function(opts) {
       Backform.Control.prototype.initialize.apply(
         this, arguments
@@ -1858,7 +1852,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         _.each(deps, function(d) {
           var attrArr = d.split('.'),
             name = attrArr.shift();
-          self.listenTo(self.model, "change:" + name, self.render);
+          self.listenTo(self.model, 'change:' + name, self.render);
         });
       }
     },
@@ -1866,14 +1860,14 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     orig_render: Backform.Fieldset.prototype.render,
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       if (!field.version_compatible ||
           !evalF(field.visible, field, this.model)) {
         this.cleanup();
-        this.$el.empty()
+        this.$el.empty();
       } else {
         this.orig_render.apply(this, arguments);
       }
@@ -1896,14 +1890,13 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     fieldsetClass: 'inline-fieldset',
     legendClass: '',
     contentClass: '',
-    collapse: false
+    collapse: false,
   });
-
 
   // Backform Tab Control (in bootstrap tabbular)
   // A collection of field models.
-  var TabControl = Backform.TabControl = Backform.FieldsetControl.extend({
-    tagName: "div",
+  Backform.TabControl = Backform.FieldsetControl.extend({
+    tagName: 'div',
     className: 'inline-tab-panel',
     tabPanelClassName: 'inline-tab-panel',
     initialize: function(opts) {
@@ -1915,17 +1908,14 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     // Render using Backform.Dialog (tabular UI) (only if this control is
     // visible).
     orig_render: Backform.Dialog.prototype.render,
-    template: Backform.Dialog.prototype.template
+    template: Backform.Dialog.prototype.template,
   });
-
 
   // Backform Tab Control (in bootstrap tabbular)
   // A collection of field models.
-  var PlainFieldsetControl = Backform.PlainFieldsetControl = Backform.FieldsetControl.extend({
-    initialize: function(opts) {
-      Backform.FieldsetControl.prototype.initialize.apply(
-        this, arguments
-        );
+  Backform.PlainFieldsetControl = Backform.FieldsetControl.extend({
+    initialize: function() {
+      Backform.FieldsetControl.prototype.initialize.apply(this, arguments);
     },
     template: {
       'header': _.template([
@@ -1933,8 +1923,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         ' <% if (legend != false) { %>',
         '  <legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %></legend>',
         ' <% } %>',
-        '</fieldset>'
-      ].join("\n")),
+        '</fieldset>',
+      ].join('\n')),
       'content': _.template(
         '  <div id="<%= cId %>" class="<%=contentClass%>"></div>'
     )},
@@ -1945,14 +1935,14 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
   /*
    * Control For Code Mirror SQL text area.
    */
-  var SqlFieldControl = Backform.SqlFieldControl = Backform.TextareaControl.extend({
+  Backform.SqlFieldControl = Backform.TextareaControl.extend({
 
     defaults: {
-      label: "",
+      label: '',
       extraClasses: [], // Add default control height
       helpMessage: null,
       maxlength: 4096,
-      rows: undefined
+      rows: undefined,
     },
 
     // Customize template to add new styles
@@ -1967,13 +1957,13 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
-      '</div>'
-    ].join("\n")),
+      '</div>',
+    ].join('\n')),
 
     /*
      * Initialize the SQL Field control properly
      */
-    initialize: function(o) {
+    initialize: function() {
       Backform.TextareaControl.prototype.initialize.apply(this, arguments);
       this.sqlCtrl = null;
 
@@ -2001,40 +1991,40 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       Backform.TextareaControl.prototype.render.apply(this, arguments);
 
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-          }),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+        attributes = this.model.toJSON(),
+        attrArr = field.name.split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        rawValue = this.keyPathAccessor(attributes[name], path),
+        data = _.extend(field, {
+          rawValue: rawValue,
+          value: this.formatter.fromRaw(rawValue, this.model),
+          attributes: attributes,
+          formatter: this.formatter,
+        }),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       // Evaluate the disabled, visible option
       var isDisabled = evalF(data.disabled, data, this.model),
-          isVisible = evalF(data.visible, data, this.model),
-          self = this;
+        isVisible = evalF(data.visible, data, this.model),
+        self = this;
 
       self.sqlCtrl = CodeMirror.fromTextArea(
-            (self.$el.find("textarea")[0]), {
-            lineNumbers: true,
-            mode: "text/x-pgsql",
-            extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-            tabSize: pgAdmin.Browser.editor_options.tabSize,
-            lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
-            autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
-            matchBrackets: pgAdmin.Browser.editor_options.brace_matching
-          });
+            (self.$el.find('textarea')[0]), {
+              lineNumbers: true,
+              mode: 'text/x-pgsql',
+              extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+              tabSize: pgAdmin.Browser.editor_options.tabSize,
+              lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+              autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+              matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
+            });
 
       // Disable editor
       if (isDisabled) {
-        self.sqlCtrl.setOption("readOnly", "nocursor");
+        self.sqlCtrl.setOption('readOnly', 'nocursor');
         var cm = self.sqlCtrl.getWrapperElement();
         if (cm) {
           cm.className += ' cm_disabled';
@@ -2055,7 +2045,6 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.sqlCtrl.on('focus', this.onFocus);
       this.sqlCtrl.on('blur', this.onBlur);
 
-      var self = this;
       // Refresh SQL Field to refresh the control lazily after it renders
       setTimeout(function() {
         self.refreshTextArea.apply(self);
@@ -2090,25 +2079,25 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         this.$el.empty();
       }
 
-      this.model.off("pg-property-tab-changed", this.refreshTextArea, this);
+      this.model.off('pg-property-tab-changed', this.refreshTextArea, this);
 
       Backform.TextareaControl.prototype.remove.apply(this, arguments);
-    }
+    },
   });
 
   // We will use this control just as a annotate in Backform
-  var NoteControl = Backform.NoteControl = Backform.Control.extend({
+  Backform.NoteControl = Backform.Control.extend({
     defaults: {
-      label: gettext("Note"),
+      label: gettext('Note'),
       text: '',
       extraClasses: [],
-      noteClass: 'backform_control_notes'
+      noteClass: 'backform_control_notes',
     },
     template: _.template([
       '<div class="<%=noteClass%> pg-el-xs-12 <%=extraClasses.join(\' \')%>">',
       '<label class="control-label"><%=label%>:</label>',
-      '<span><%=text%></span></div>'
-    ].join("\n"))
+      '<span><%=text%></span></div>',
+    ].join('\n')),
   });
 
   /*
@@ -2119,10 +2108,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
   * - Create File
   * - Opening Storage Manager Dialog itself.
   */
-  var FileControl = Backform.FileControl = Backform.InputControl.extend({
+  Backform.FileControl = Backform.InputControl.extend({
     defaults: {
-      type: "text",
-      label: "",
+      type: 'text',
+      label: '',
       min: undefined,
       max: undefined,
       maxlength: 255,
@@ -2130,7 +2119,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       dialog_title: '',
       btn_primary: '',
       helpMessage: null,
-      dialog_type: 'select_file'
+      dialog_type: 'select_file',
     },
     initialize: function(){
       Backform.InputControl.prototype.initialize.apply(this, arguments);
@@ -2141,145 +2130,144 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-        '<div class="file_selection_ctrl form-control">',
-          '<input type="<%=type%>" class="browse_file_input form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-          '<button class="btn fa fa-ellipsis-h select_item pull-right" <%=disabled ? "disabled" : ""%> ></button>',
-          '<% if (helpMessage && helpMessage.length) { %>',
-          '<span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-          '<% } %>',
-        '</div>',
-      '</div>'
-    ].join("\n")),
+      '<div class="file_selection_ctrl form-control">',
+      '<input type="<%=type%>" class="browse_file_input form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '<button class="btn fa fa-ellipsis-h select_item pull-right" <%=disabled ? "disabled" : ""%> ></button>',
+      '<% if (helpMessage && helpMessage.length) { %>',
+      '<span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '<% } %>',
+      '</div>',
+      '</div>',
+    ].join('\n')),
     events: function() {
       // Inherit all default events of InputControl
       return _.extend({}, Backform.InputControl.prototype.events, {
-        "click .select_item": "onSelect"
+        'click .select_item': 'onSelect',
       });
     },
-    onSelect: function(ev) {
+    onSelect: function() {
       var dialog_type = this.field.get('dialog_type'),
-          supp_types = this.field.get('supp_types'),
-          btn_primary = this.field.get('btn_primary'),
-          dialog_title = this.field.get('dialog_title'),
-          params = {
-            supported_types: supp_types,
-            dialog_type: dialog_type,
-            dialog_title: dialog_title,
-            btn_primary: btn_primary
-          };
+        supp_types = this.field.get('supp_types'),
+        btn_primary = this.field.get('btn_primary'),
+        dialog_title = this.field.get('dialog_title'),
+        params = {
+          supported_types: supp_types,
+          dialog_type: dialog_type,
+          dialog_title: dialog_title,
+          btn_primary: btn_primary,
+        };
 
       pgAdmin.FileManager.init();
       pgAdmin.FileManager.show_dialog(params);
     },
     storage_dlg_hander: function(value) {
-      var field = _.defaults(this.field.toJSON(), this.defaults),
-          attrArr = this.field.get("name").split('.'),
-          name = attrArr.shift();
+      var attrArr = this.field.get('name').split('.'),
+        name = attrArr.shift();
 
       // Set selected value into the model
       this.model.set(name, decodeURI(value));
     },
     clearInvalid: function() {
       Backform.InputControl.prototype.clearInvalid.apply(this, arguments);
-      this.$el.removeClass("pgadmin-file-has-error");
+      this.$el.removeClass('pgadmin-file-has-error');
       return this;
     },
     updateInvalid: function() {
       Backform.InputControl.prototype.updateInvalid.apply(this, arguments);
       // Introduce a new class to fix the error icon placement on the control
-      this.$el.addClass("pgadmin-file-has-error");
-    }
+      this.$el.addClass('pgadmin-file-has-error');
+    },
   });
 
-  var DatetimepickerControl = Backform.DatetimepickerControl =
+  Backform.DatetimepickerControl =
       Backform.InputControl.extend({
-    defaults: {
-      type: "text",
-      label: "",
-      options: {
-        format: "YYYY-MM-DD HH:mm:ss Z",
-        showClear: true,
-        showTodayButton: true,
-        toolbarPlacement: 'top',
-        widgetPositioning: {
-          horizontal: 'auto',
-          vertical: 'bottom'
+        defaults: {
+          type: 'text',
+          label: '',
+          options: {
+            format: 'YYYY-MM-DD HH:mm:ss Z',
+            showClear: true,
+            showTodayButton: true,
+            toolbarPlacement: 'top',
+            widgetPositioning: {
+              horizontal: 'auto',
+              vertical: 'bottom',
+            },
+          },
+          placeholder: 'YYYY-MM-DD HH:mm:ss Z',
+          extraClasses: [],
+          helpMessage: null,
         },
-      },
-      placeholder: "YYYY-MM-DD HH:mm:ss Z",
-      extraClasses: [],
-      helpMessage: null
-    },
-    events: {
-      "blur input": "onChange",
-      "change input": "onChange",
-      "changeDate input": "onChange",
-      "focus input": "clearInvalid",
-      'db.change': "onChange",
-      'click': 'openPicker'
-    },
-    openPicker: function() {
-      if (this.has_datepicker) {
-        this.$el.find("input").datetimepicker('show');
-      }
-    },
-    template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="input-group  <%=Backform.controlsClassName%>">',
-      ' <input type="text" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      ' <span class="input-group-addon">',
-      '  <span class="fa fa-calendar"></span>',
-      ' </span>',
-      '</div>',
-      '<% if (helpMessage && helpMessage.length) { %>',
-      ' <div class="<%=Backform.controlsClassName%>">',
-      '   <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      ' </div>',
-      '<% } %>'
-    ].join("\n")),
-    render: function() {
-      var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-          }),
-          evalF = function(f, m) {
-            return (_.isFunction(f) ? !!f(m) : !!f);
-          };
+        events: {
+          'blur input': 'onChange',
+          'change input': 'onChange',
+          'changeDate input': 'onChange',
+          'focus input': 'clearInvalid',
+          'db.change': 'onChange',
+          'click': 'openPicker',
+        },
+        openPicker: function() {
+          if (this.has_datepicker) {
+            this.$el.find('input').datetimepicker('show');
+          }
+        },
+        template: _.template([
+          '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+          '<div class="input-group  <%=Backform.controlsClassName%>">',
+          ' <input type="text" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+          ' <span class="input-group-addon">',
+          '  <span class="fa fa-calendar"></span>',
+          ' </span>',
+          '</div>',
+          '<% if (helpMessage && helpMessage.length) { %>',
+          ' <div class="<%=Backform.controlsClassName%>">',
+          '   <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+          ' </div>',
+          '<% } %>',
+        ].join('\n')),
+        render: function() {
+          var field = _.defaults(this.field.toJSON(), this.defaults),
+            attributes = this.model.toJSON(),
+            attrArr = field.name.split('.'),
+            name = attrArr.shift(),
+            path = attrArr.join('.'),
+            rawValue = this.keyPathAccessor(attributes[name], path),
+            data = _.extend(field, {
+              rawValue: rawValue,
+              value: this.formatter.fromRaw(rawValue, this.model),
+              attributes: attributes,
+              formatter: this.formatter,
+            }),
+            evalF = function(f, m) {
+              return (_.isFunction(f) ? !!f(m) : !!f);
+            };
 
       // Evaluate the disabled, visible, and required option
-      _.extend(data, {
-        disabled: evalF(data.disabled, this.model),
-        visible:  evalF(data.visible, this.model),
-        required: evalF(data.required, this.model)
-      });
-      if (!data.disabled) {
-        data.placeholder = data.placeholder || this.defaults.placeholder;
-      }
+          _.extend(data, {
+            disabled: evalF(data.disabled, this.model),
+            visible:  evalF(data.visible, this.model),
+            required: evalF(data.required, this.model),
+          });
+          if (!data.disabled) {
+            data.placeholder = data.placeholder || this.defaults.placeholder;
+          }
 
       // Clean up first
-      if (this.has_datepicker)
-        this.$el.find("input").datetimepicker('destroy');
-      this.$el.empty();
-      this.$el.removeClass(Backform.hiddenClassName);
+          if (this.has_datepicker)
+            this.$el.find('input').datetimepicker('destroy');
+          this.$el.empty();
+          this.$el.removeClass(Backform.hiddenClassName);
 
 
-      this.$el.html(this.template(data)).addClass(field.name);
+          this.$el.html(this.template(data)).addClass(field.name);
 
-      if (!data.visible) {
-        this.has_datepicker = false;
-        this.$el.addClass(Backform.hiddenClassName);
-      } else {
-        this.has_datepicker = true;
-        var self = this;
-        this.$el.find("input").first().datetimepicker(
+          if (!data.visible) {
+            this.has_datepicker = false;
+            this.$el.addClass(Backform.hiddenClassName);
+          } else {
+            this.has_datepicker = true;
+            var self = this;
+            this.$el.find('input').first().datetimepicker(
           _.extend({
             keyBinds: {
               enter: function(widget) {
@@ -2309,22 +2297,22 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
                     self.$el.find('input').first().blur();
                   }, 10);
                 }
-              }
-            }
-          }, this.defaults.options, this.field.get("options"),
+              },
+            },
+          }, this.defaults.options, this.field.get('options'),
           {'date': data.value})
         );
-      }
-      this.updateInvalid();
+          }
+          this.updateInvalid();
 
-      return this;
-    },
-    cleanup: function() {
-      if (this.has_datepicker)
-        this.$el.find("input").datetimepicker('destroy');
-      this.$el.empty();
-    }
-  });
+          return this;
+        },
+        cleanup: function() {
+          if (this.has_datepicker)
+            this.$el.find('input').datetimepicker('destroy');
+          this.$el.empty();
+        },
+      });
 
   return Backform;
 });

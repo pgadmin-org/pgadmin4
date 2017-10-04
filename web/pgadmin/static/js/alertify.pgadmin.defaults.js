@@ -1,134 +1,134 @@
 define(
-    ['sources/gettext', 'alertify', 'underscore.string'],
-function(gettext, alertify, S) {
-  alertify.defaults.transition = "zoom";
-  alertify.defaults.theme.ok = "btn btn-primary";
-  alertify.defaults.theme.cancel = "btn btn-danger";
-  alertify.defaults.theme.input = "form-control";
+    ['sources/gettext', 'alertify', 'jquery'],
+function(gettext, alertify, $) {
+  alertify.defaults.transition = 'zoom';
+  alertify.defaults.theme.ok = 'btn btn-primary';
+  alertify.defaults.theme.cancel = 'btn btn-danger';
+  alertify.defaults.theme.input = 'form-control';
   alertify.pgIframeDialog || alertify.dialog('pgIframeDialog', function() {
     var iframe;
     return {
         // dialog constructor function, this will be called when the user calls
         // alertify.pgIframeDialog(message)
-        main:function(message){
+      main:function(message){
             //set the videoId setting and return current instance for chaining.
-            return this.set({
-                'pg_msg': message
-            });
-        },
+        return this.set({
+          'pg_msg': message,
+        });
+      },
         // we only want to override two options (padding and overflow).
-        setup: function(){
-            return {
-                options:{
+      setup: function(){
+        return {
+          options:{
                     //disable both padding and overflow control.
-                    padding : !1,
-                    overflow: !1,
-                }
-            };
-        },
+            padding : !1,
+            overflow: !1,
+          },
+        };
+      },
         // This will be called once the DOM is ready and will never be invoked
         // again. Here we create the iframe to embed the video.
-        build:function() {
+      build:function() {
             // create the iframe element
-            iframe = document.createElement('iframe');
+        iframe = document.createElement('iframe');
 
-            iframe.src = "";
-            iframe.frameBorder = "no";
-            iframe.width = "100%";
-            iframe.height = "100%";
+        iframe.src = '';
+        iframe.frameBorder = 'no';
+        iframe.width = '100%';
+        iframe.height = '100%';
 
             // add it to the dialog
-            this.elements.content.appendChild(iframe);
+        this.elements.content.appendChild(iframe);
 
             //give the dialog initial height (half the screen height).
-            this.elements.body.style.minHeight = screen.height * .5 + 'px';
-        },
+        this.elements.body.style.minHeight = screen.height * .5 + 'px';
+      },
         // dialog custom settings
-        settings:{
-            pg_msg: undefined
-        },
+      settings:{
+        pg_msg: undefined,
+      },
         // listen and respond to changes in dialog settings.
-        settingUpdated: function(key, oldValue, newValue){
-            switch(key){
-               case 'pg_msg':
-                  var doc = iframe.contentWindow || iframe.contentDocument;
-                  if (doc.document) {
-                    doc = doc.document;
-                  }
+      settingUpdated: function(key, oldValue, newValue){
+        switch(key){
+        case 'pg_msg':
+          var doc = iframe.contentWindow || iframe.contentDocument;
+          if (doc.document) {
+            doc = doc.document;
+          }
 
-                  doc.open();
-                  doc.write(newValue);
-                  doc.close();
+          doc.open();
+          doc.write(newValue);
+          doc.close();
 
-                  break;
-            }
-        },
+          break;
+        }
+      },
         // listen to internal dialog events.
-        hooks: {
+      hooks: {
             // triggered when a dialog option gets update.
             // warning! this will not be triggered for settings updates.
-            onupdate: function(option,oldValue, newValue){
-                switch(option){
-                    case 'resizable':
-                        if(newValue){
-                            this.elements.content.removeAttribute('style');
-                            iframe && iframe.removeAttribute('style');
-                        }else{
-                            this.elements.content.style.minHeight = 'inherit';
-                            iframe && (iframe.style.minHeight = 'inherit');
-                        }
-                    break;
-                }
+        onupdate: function(option,oldValue, newValue){
+          switch(option){
+          case 'resizable':
+            if(newValue){
+              this.elements.content.removeAttribute('style');
+              iframe && iframe.removeAttribute('style');
+            }else{
+              this.elements.content.style.minHeight = 'inherit';
+              iframe && (iframe.style.minHeight = 'inherit');
             }
-        }
+            break;
+          }
+        },
+      },
     };
   });
   alertify.pgNotifier = function(type, xhr, promptmsg, onJSONResult) {
-      var msg = xhr.responseText,
-          contentType = xhr.getResponseHeader('Content-Type');
+    var msg = xhr.responseText,
+      contentType = xhr.getResponseHeader('Content-Type');
 
-      if (xhr.status == 0) {
-        msg = gettext('Connection to the server has been lost.');
-        promptmsg = gettext('Connection Lost');
-      } else {
-        if (contentType) {
-          try {
-            if (contentType.indexOf('application/json') == 0) {
-              var resp = $.parseJSON(msg);
+    if (xhr.status == 0) {
+      msg = gettext('Connection to the server has been lost.');
+      promptmsg = gettext('Connection Lost');
+    } else {
+      if (contentType) {
+        try {
+          if (contentType.indexOf('application/json') == 0) {
+            var resp = $.parseJSON(msg);
 
-              if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
+            if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
                   onJSONResult && typeof(onJSONResult) == 'function') {
-                return onJSONResult(resp.result);
-              }
-              msg = _.escape(resp.result) || _.escape(resp.errormsg) || "Unknown error";
+              return onJSONResult(resp.result);
             }
-            if (contentType.indexOf('text/html') == 0) {
-              var alertMessage = promptmsg;
-              if (type === 'error') {
-                alertMessage = '\
+            msg = _.escape(resp.result) || _.escape(resp.errormsg) || 'Unknown error';
+          }
+          if (contentType.indexOf('text/html') == 0) {
+            var alertMessage = promptmsg;
+            if (type === 'error') {
+              alertMessage = '\
                   <div class="media font-red-3 text-14">\
                     <div class="media-body media-middle">\
                       <div class="alert-text">' + promptmsg + '</div><br/>\
                       <div class="alert-text">' + gettext('Click for details.') + '</div>\
                     </div>\
                   </div>';
-              }
+            }
 
-              alertify.notify(
+            alertify.notify(
                 alertMessage, type, 0, function() {
                   alertify.pgIframeDialog().show().set({frameless: false}).set(
                     'pg_msg', msg
                   );
                 });
-                return;
-            }
-          } catch (e) {
-            alertify.alert().show().set('message', e.message).set('title', "Error");
+            return;
           }
+        } catch (e) {
+          alertify.alert().show().set('message', e.message).set('title', 'Error');
         }
       }
-      alertify.alert().show().set(
-        'message', msg.replace(new RegExp('\r?\n','g'), '<br />')
+    }
+    alertify.alert().show().set(
+        'message', msg.replace(new RegExp(/\r?\n/,'g'), '<br />')
         ).set('title', promptmsg);
   };
 
@@ -146,7 +146,7 @@ function(gettext, alertify, S) {
     self.pgResizeTimeout = setTimeout(
       function() {
         var $el = $(this.elements.dialog),
-            w = $el.width();
+          w = $el.width();
 
         this.pgResizeTimeout = null;
 
@@ -186,7 +186,7 @@ function(gettext, alertify, S) {
 
   alertify.pgDialogBuild = function() {
     this.set('onshow', function() {
-      this.elements.dialog.classList.add('pg-el-container')
+      this.elements.dialog.classList.add('pg-el-container');
       alertifyDialogResized.apply(this, arguments);
     });
     this.set('onresize', alertifyDialogStartResizing.bind(this, true));
@@ -202,10 +202,8 @@ function(gettext, alertify, S) {
       return;
     }
 
-    var msg = xhr.responseText,
-        contentType = xhr.getResponseHeader('Content-Type'),
-        msg = xhr.responseText,
-        jsonResp = contentType &&
+    var contentType = xhr.getResponseHeader('Content-Type'),
+      jsonResp = contentType &&
           contentType.indexOf('application/json') == 0 &&
             $.parseJSON(xhr.responseText);
 
@@ -218,7 +216,7 @@ function(gettext, alertify, S) {
         ) : (
         xhr.status == 428 &&
           jsonResp.errormsg &&
-            jsonResp.errormsg == gettext("Connection to the server has been lost.")
+            jsonResp.errormsg == gettext('Connection to the server has been lost.')
         )
       )
     ) {
@@ -231,60 +229,60 @@ function(gettext, alertify, S) {
 
       // Check the status of the maintenance server connection.
       var server = pgBrowser.Nodes['server'],
-          ctx = {
-            resp: jsonResp,
-            xhr: xhr,
-            args: args
-          },
-          reconnectServer = function() {
-            var ctx = this,
-                onServerConnect = function(_sid, _i, _d) {
+        ctx = {
+          resp: jsonResp,
+          xhr: xhr,
+          args: args,
+        },
+        reconnectServer = function() {
+          var ctx = this,
+            onServerConnect = function(_sid, _i, _d) {
                   // Yay - server is reconnected.
-                  if (this.args.info.server._id == _sid) {
-                    pgBrowser.Events.off(
+              if (this.args.info.server._id == _sid) {
+                pgBrowser.Events.off(
                       'pgadmin:server:connected', onServerConnect
                     );
-                    pgBrowser.Events.off(
+                pgBrowser.Events.off(
                       'pgadmin:server:connect:cancelled', onConnectCancel
                     );
 
                     // Do we need to connect the disconnected server now?
-                    if (
+                if (
                       this.resp.data.database &&
                       this.resp.data.database != _d.db
                     ) {
                       // Server is connected now, we will need to inform the
                       // database to connect it now.
-                      pgBrowser.Events.trigger(
+                  pgBrowser.Events.trigger(
                         'pgadmin:database:connection:lost', this.args.item,
                         this.resp, true
                       );
-                    }
-                  }
-                }.bind(ctx),
-                onConnectCancel = function(_sid, _item, _data) {
+                }
+              }
+            }.bind(ctx),
+            onConnectCancel = function(_sid, _item, _data) {
                   // User has cancelled the operation in between.
-                  if (_sid == this.args.info.server.id) {
-                    pgBrowser.Events.off('pgadmin:server:connected', onServerConnect);
-                    pgBrowser.Events.off('pgadmin:server:connect:cancelled', onConnectCancel);
+              if (_sid == this.args.info.server.id) {
+                pgBrowser.Events.off('pgadmin:server:connected', onServerConnect);
+                pgBrowser.Events.off('pgadmin:server:connect:cancelled', onConnectCancel);
 
                     // Connection to the database will also be cancelled
-                    pgBrowser.Events.trigger(
+                pgBrowser.Events.trigger(
                       'pgadmin:database:connect:cancelled', _sid,
                       this.resp.data.database || _data.db, _item, _data
                     );
-                  }
-                }.bind(ctx);
+              }
+            }.bind(ctx);
 
-            pgBrowser.Events.on('pgadmin:server:connected', onServerConnect);
-            pgBrowser.Events.on('pgadmin:server:connect:cancelled', onConnectCancel);
+          pgBrowser.Events.on('pgadmin:server:connected', onServerConnect);
+          pgBrowser.Events.on('pgadmin:server:connect:cancelled', onConnectCancel);
 
             // Connection to the server has been lost, we need to inform the
             // server first to take the action first.
-            pgBrowser.Events.trigger(
+          pgBrowser.Events.trigger(
               'pgadmin:server:connection:lost', this.args.item, this.resp
             );
-          }.bind(ctx);
+        }.bind(ctx);
 
       $.ajax({
         url: server.generate_url(
@@ -309,7 +307,7 @@ function(gettext, alertify, S) {
         },
         error: function() {
           reconnectServer();
-        }
+        },
       });
       return true;
     }
@@ -317,14 +315,14 @@ function(gettext, alertify, S) {
   };
 
   var alertifySuccess = alertify.success,
-      alertifyError   = alertify.error;
+    alertifyError   = alertify.error;
 
   /*
   For adding the jasmine test cases, we needed to refer the original success,
    and error functions, as orig_success and orig_error respectively.
   */
   _.extend(alertify, {
-    orig_success: alertifySuccess, orig_error: alertifyError
+    orig_success: alertifySuccess, orig_error: alertifyError,
   });
 
   _.extend(alertify, {
@@ -364,7 +362,7 @@ function(gettext, alertify, S) {
       </div>';
       var alert = alertify.notify(alertMessage, timeout);
       return alert;
-    }
+    },
   });
 
   return alertify;

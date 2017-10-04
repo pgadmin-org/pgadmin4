@@ -2,10 +2,10 @@ define([],
   function () {
     var sizePrettify = function (rawSize) {
       var size = Math.abs(rawSize),
-          limit = 10 * 1024,
-          limit2 = limit - 1,
-          cnt = 0,
-          sizeUnits = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
+        limit = 10 * 1024,
+        limit2 = limit - 1,
+        cnt = 0,
+        sizeUnits = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
 
       if (size < limit)
         return size + ' ' + sizeUnits[cnt]; // return in bytes format
@@ -20,5 +20,5 @@ define([],
       }
     };
 
-  return sizePrettify;
-});
+    return sizePrettify;
+  });
