@@ -2324,8 +2324,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           }, this.defaults.options, this.field.get('options'),
           {'date': data.value})
         );
-      }
-      this.updateInvalid();
+          }
+          this.updateInvalid();
 
       return this;
     },
