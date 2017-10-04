@@ -458,6 +458,7 @@ define('pgadmin.backgrid', [
           column = this.column,
           val = this.formatter.toRaw(this.$input.prop('checked'), model);
 
+        this.enterEditMode();
         // on bootstrap change we also need to change model's value
         model.set(column.get('name'), val);
       },
@@ -776,14 +777,14 @@ define('pgadmin.backgrid', [
                     ],
             gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>");
 
-        this.$el.attr('tabindex', '1');
+      this.$el.attr('tabindex', '1');
 
-        gridCols.unshift({
-          name: "pg-backform-delete", label: "",
-          cell: Backgrid.Extension.DeleteCell,
-          //headerCell: Backgrid.Extension.CustomHeaderIconCell,
-          editable: false, cell_priority: -1
-        });
+      gridCols.unshift({
+        name: "pg-backform-delete", label: "",
+        cell: Backgrid.Extension.DeleteCell,
+        //headerCell: Backgrid.Extension.CustomHeaderIconCell,
+        editable: false, cell_priority: -1
+      });
 
           this.$el.empty();
           var grid = self.grid = new Backgrid.Grid({
