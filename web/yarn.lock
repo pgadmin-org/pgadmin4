@@ -5973,7 +5973,7 @@ react-addons-test-utils@~15.4.2:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-"react-dom@file:../web/pgadmin/static/vendor/react-dom":
+"react-dom@file:pgadmin/static/vendor/react-dom":
   version "15.4.2"
   dependencies:
     fbjs "^0.8.1"
@@ -5994,7 +5994,7 @@ react-style-proptype@^3.0.0:
   dependencies:
     prop-types "^15.5.4"
 
-"react@file:../web/pgadmin/static/vendor/react":
+"react@file:pgadmin/static/vendor/react":
   version "15.4.2"
   dependencies:
     fbjs "^0.8.4"
@@ -7378,7 +7378,7 @@ watchpack@^1.4.0:
     chokidar "^1.7.0"
     graceful-fs "^4.1.2"
 
-"webcabin-docker@file:../web/pgadmin/static/vendor/webcabin-docker":
+"webcabin-docker@file:pgadmin/static/vendor/webcabin-docker":
   version "2.2.2"
   dependencies:
     FileSaver "^0.10.0"

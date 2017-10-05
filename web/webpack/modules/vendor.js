@@ -205,7 +205,6 @@ vendor.stylesheets = [
   'node_modules/alertifyjs/build/css/themes/bootstrap.css',
   'node_modules/bootstrap/dist/css/bootstrap-theme.css',
   'node_modules/font-awesome/css/font-awesome.css',
-  'node_modules/font-mfizz/font/font-mfizz.css',
   'node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
   'node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
   'node_modules/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css',

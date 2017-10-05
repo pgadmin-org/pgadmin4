@@ -525,6 +525,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         var el = $((tmpls['panel'])(_.extend(o, {'tabIndex': idx})))
               .appendTo(tabContent)
               .removeClass('collapse').addClass('collapse');
+        $((tmpls['header'])(o)).appendTo(tabHead);
 
         o.fields.each(function(f) {
           var cntr = new (f.get('control')) ({
