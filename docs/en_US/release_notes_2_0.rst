@@ -2,7 +2,7 @@
 Version 2.0
 ***********
 
-Release date: 2017-09-xx
+Release date: 2017-10-05
 
 This release contains a number of features and fixes reported since the release of pgAdmin4 1.6
 
