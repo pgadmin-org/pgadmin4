@@ -163,7 +163,7 @@ class PgAdmin(Flask):
         """
         Returns:
             list: javascript module entries to be loaded specified by '_for' in
-            format of dictionary (name: ..., url: ...)
+            format of dictionary (name: ..., url: ..., external: True/False)
         """
         scripts = []
         module_names = []

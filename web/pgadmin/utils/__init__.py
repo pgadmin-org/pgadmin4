@@ -146,6 +146,7 @@ class PgAdminModule(Blueprint):
         Returns:
             list: the javascript modules entries load during the particular
             entires including entries of the submodules.
+            format: dict({name: ..., url: ..., external: True/False})
         """
         res = []
 

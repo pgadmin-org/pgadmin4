@@ -33,9 +33,7 @@
             require.config({
                 baseUrl: '',
                 waitSeconds: 0,
-                shim: {
-                  {% block require_shim %}{% endblock %}
-                },
+                shim: { {% block require_shim %}{% endblock %}},
                 paths: {
                     'vendor': '{{ url_for("static", filename="js/generated/vendor") }}',
                     'codemirror': '{{ url_for("static", filename="js/generated/codemirror") }}',
@@ -51,7 +49,10 @@
                     'pgadmin.browser.messages': "{{ url_for('browser.index') }}" + "js/messages",
                     'pgadmin.server.supported_servers': "{{ url_for('browser.index') }}" + "server/supported_servers",
                     'pgadmin.user_management.current_user': "{{ url_for('user_management.index') }}" + "current_user",
-                    'translations': "{{ url_for('tools.index') }}" + "translations",{% block require_paths %}{% endblock %}
+                    'translations': "{{ url_for('tools.index') }}" + "translations",{% if jsentries is defined %}{% for entry in jsentries %}{% if entry.external is defined and entry.external %}
+
+                    '{{ entry.name }}': "{{ entry.url }}",{% endif %}{% endfor %}{% endif %}{% block require_paths %}{% endblock %}
+
                 }
             });
 

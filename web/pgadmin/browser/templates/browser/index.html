@@ -8,6 +8,7 @@
 {% endif %}
 {% endblock %}
 {% block init_script %}
+
 require(['require', 'app'], function(require, pgAdmin) {
 {% if jsentries is defined %}
   var entryFailedToLoad = function(err) {
@@ -20,7 +21,7 @@ require(['require', 'app'], function(require, pgAdmin) {
       console.warn(err.stack);
     }
   };
-{% for entry in jsentries %}
+{% for entry in jsentries %}{% if entry.external is not defined or not entry.external %}
 
   // Loading the module - {{ entry.name }}
   require(
@@ -30,7 +31,8 @@ require(['require', 'app'], function(require, pgAdmin) {
       'name': '{{ entry.name }}',
       'url': '{{ entry.url  }}'
     })
-  );{% endfor %}
+  );{% endif %}{% endfor %}
+
 {% endif %}
 },
 function(err) {
