@@ -555,6 +555,15 @@ def utils():
     insert_pair_brackets_perf = prefs.preference('insert_pair_brackets')
     insert_pair_brackets = insert_pair_brackets_perf.get()
 
+    # Try to fetch current libpq version from the driver
+    try:
+        from config import PG_DEFAULT_DRIVER
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        pg_libpq_version = driver.libpq_version()
+    except:
+        pg_libpq_version = 0
+
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
     return make_response(
@@ -569,7 +578,8 @@ def utils():
             editor_wrap_code=editor_wrap_code,
             editor_brace_matching=brace_matching,
             editor_insert_pair_brackets=insert_pair_brackets,
-            app_name=config.APP_NAME
+            app_name=config.APP_NAME,
+            pg_libpq_version=pg_libpq_version
         ),
         200, {'Content-Type': 'application/x-javascript'})
 

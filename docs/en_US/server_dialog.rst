@@ -88,9 +88,11 @@ Use the fields in the *Advanced* tab to configure a connection:
 * The DB restriction field allows you to enter an SQL restriction that will be used against the pg_database table to
   limit the databases that you see. For example, you might enter: *live_db test_db* so that only live_db and test_db are
   shown in the pgAdmin browser. Separate entries with a comma or tab as you type.
-* Specify the password file which allow user to login without providing password, see Section 31 of the Postgres documentation:
+* Specify the password file which allow user to login without providing password, see Section 33.15 of the Postgres documentation:
 
-   https://www.postgresql.org/docs/9.6/static/libpq-pgpass.html
+   https://www.postgresql.org/docs/current/static/libpq-pgpass.html
+
+*NOTE:* The password file option is only supported when pgAdmin is using libpq v10.0 or later to connect to the server.
 
 * Click the *Save* button to save work.
 * Click the *Cancel* button to exit without saving work.

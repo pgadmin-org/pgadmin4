@@ -24,6 +24,7 @@ define('pgadmin.browser.utils',
     insertPairBrackets: '{{ editor_insert_pair_brackets }}' == 'True',
     braceMatching: '{{ editor_brace_matching }}' == 'True',
     app_name: '{{ app_name }}',
+    pg_libpq_version: {{pg_libpq_version|e}},
 
     counter: {total: 0, loaded: 0},
     registerScripts: function (ctx) {
