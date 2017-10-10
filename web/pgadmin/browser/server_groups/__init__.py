@@ -13,9 +13,9 @@ import simplejson as json
 from abc import ABCMeta, abstractmethod
 
 import six
-from flask import request, render_template, make_response, jsonify, current_app
+from flask import request, jsonify
 from flask_babel import gettext
-from flask_security import current_user
+from flask_security import current_user, login_required
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import NodeView
 from pgadmin.utils.ajax import make_json_response, gone, \
@@ -95,6 +95,7 @@ class ServerGroupView(NodeView):
     parent_ids = []
     ids = [{'type': 'int', 'id': 'gid'}]
 
+    @login_required
     def list(self):
         res = []
 
@@ -108,6 +109,7 @@ class ServerGroupView(NodeView):
 
         return ajax_response(response=res, status=200)
 
+    @login_required
     def delete(self, gid):
         """Delete a server group node in the settings database"""
 
@@ -149,6 +151,7 @@ class ServerGroupView(NodeView):
 
         return make_json_response(result=request.form)
 
+    @login_required
     def update(self, gid):
         """Update the server-group properties"""
 
@@ -195,6 +198,7 @@ class ServerGroupView(NodeView):
             )
         )
 
+    @login_required
     def properties(self, gid):
         """Update the server-group properties"""
 
@@ -217,6 +221,7 @@ class ServerGroupView(NodeView):
                 status=200
             )
 
+    @login_required
     def create(self):
         """Creates new server-group """
         data = request.form if request.form else json.loads(
@@ -261,21 +266,27 @@ class ServerGroupView(NodeView):
                 success=0,
                 errormsg=gettext('No server group name was specified'))
 
+    @login_required
     def sql(self, gid):
         return make_json_response(status=422)
 
+    @login_required
     def modified_sql(self, gid):
         return make_json_response(status=422)
 
+    @login_required
     def statistics(self, gid):
         return make_json_response(status=422)
 
+    @login_required
     def dependencies(self, gid):
         return make_json_response(status=422)
 
+    @login_required
     def dependents(self, gid):
         return make_json_response(status=422)
 
+    @login_required
     def nodes(self, gid=None):
         """Return a JSON document listing the server groups for the user"""
         nodes = []
