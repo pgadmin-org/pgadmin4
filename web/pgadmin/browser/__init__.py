@@ -621,8 +621,8 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
     # parameter to slash_url_suffix function.
     @blueprint.route('/reset_password' + slash_url_suffix(
         '/browser/reset_password', '<token>'),
-                     methods=['GET', 'POST'],
-                     endpoint='reset_password')
+        methods=['GET', 'POST'],
+        endpoint='reset_password')
     @anonymous_user_required
     def reset_password(token):
         """View function that handles a reset password request."""
