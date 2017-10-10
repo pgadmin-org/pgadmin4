@@ -16,7 +16,6 @@ from importlib import import_module
 
 from flask import Flask, abort, request, current_app, session, url_for
 from flask_babel import Babel, gettext
-from flask_htmlmin import HTMLMIN
 from flask_login import user_logged_in, user_logged_out
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
@@ -590,6 +589,7 @@ def create_app(app_name=None):
     ##########################################################################
     # HTMLMIN doesn't work with Python 2.6.
     if not config.DEBUG and sys.version_info >= (2,7):
+        from flask_htmlmin import HTMLMIN
         HTMLMIN(app)
 
     @app.context_processor
