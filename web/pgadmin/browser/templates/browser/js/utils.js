@@ -23,6 +23,7 @@ define('pgadmin.browser.utils', [], function() {
     insertPairBrackets: '{{ editor_insert_pair_brackets }}' == 'True',
     braceMatching: '{{ editor_brace_matching }}' == 'True',
     app_name: '{{ app_name }}',
+    pg_libpq_version: {{pg_libpq_version|e}},
     addMenus: function (obj) {
       // Generate the menu items only when all the initial scripts
       // were loaded completely.

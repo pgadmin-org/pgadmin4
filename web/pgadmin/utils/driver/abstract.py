@@ -32,6 +32,9 @@ class BaseDriver(object):
     * Version (string):
         Current version string for the database server
 
+    * libpq_version (string):
+        Current version string for the used libpq library
+
     Abstract Methods:
     -------- -------
     * get_connection(*args, **kwargs)
@@ -49,6 +52,10 @@ class BaseDriver(object):
 
     @abstractproperty
     def Version(cls):
+        pass
+
+    @abstractproperty
+    def libpq_version(cls):
         pass
 
     @abstractmethod

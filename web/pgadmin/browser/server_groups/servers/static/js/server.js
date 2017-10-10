@@ -779,7 +779,7 @@ define('pgadmin.node.server', [
         },{
           id: 'passfile', label: gettext('Password File'), type: 'text',
           group: gettext('Advanced'), mode: ['edit', 'create'],
-          disabled: 'isConnected', control: Backform.FileControl,
+          disabled: 'isConnectedWithValidLib', control: Backform.FileControl,
           dialog_type: 'select_file', supp_types: ['*']
         },{
           id: 'passfile', label: gettext('Password File'), type: 'text',
@@ -888,6 +888,14 @@ define('pgadmin.node.server', [
             return true;
           }
           return _.indexOf(SSL_MODES, ssl_mode) == -1;
+        },
+        isConnectedWithValidLib: function(model) {
+          if(model.get('connected')) {
+            return true;
+          }
+          // older version of libpq do not support 'passfile' parameter in
+          // connect method, valid libpq must have version >= 100000
+          return pgBrowser.utils.pg_libpq_version < 100000;
         }
       }),
       connection_lost: function(i, resp) {

@@ -2043,6 +2043,18 @@ class Driver(BaseDriver):
             "Driver Version information for psycopg2 is not available!"
         )
 
+    def libpq_version(cls):
+        """
+        Returns the loaded libpq version
+        """
+        version = getattr(psycopg2, '__libpq_version__', None)
+        if version:
+            return version
+
+        raise Exception(
+            "libpq version information is not available!"
+        )
+
     def get_connection(
             self, sid, database=None, conn_id=None, auto_reconnect=True
     ):
