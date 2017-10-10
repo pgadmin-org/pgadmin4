@@ -71,8 +71,8 @@
     "jquery-ui": "^1.12.1",
     "moment": "^2.18.1",
     "prop-types": "^15.5.10",
-    "react": "file:../web/pgadmin/static/vendor/react",
-    "react-dom": "file:../web/pgadmin/static/vendor/react-dom",
+    "react": "file:pgadmin/static/vendor/react",
+    "react-dom": "file:pgadmin/static/vendor/react-dom",
     "react-split-pane": "^0.1.63",
     "requirejs": "~2.3.3",
     "select2": "^4.0.3",
@@ -82,7 +82,7 @@
     "underscore": "^1.8.3",
     "underscore.string": "^3.3.4",
     "watchify": "~3.9.0",
-    "webcabin-docker": "file:../web/pgadmin/static/vendor/webcabin-docker"
+    "webcabin-docker": "file:pgadmin/static/vendor/webcabin-docker"
   },
   "scripts": {
     "linter": "yarn run eslint pgadmin/static/jsx/**/*.jsx pgadmin/static/js/selection/*.js regression/javascript/**/*.jsx regression/javascript/**/*.js *.js",
