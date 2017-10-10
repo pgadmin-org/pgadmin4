@@ -13,7 +13,7 @@ import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for
 from flask_babel import gettext
-from flask_security import current_user
+from flask_security import current_user, login_required
 from pgadmin.browser.server_groups.servers.types import ServerType
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
@@ -73,6 +73,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         """
         return sg.ServerGroupModule.NODE_TYPE
 
+    @login_required
     def get_nodes(self, gid):
         """Return a JSON document listing the server groups for the user"""
         servers = Server.query.filter_by(user_id=current_user.id,
@@ -276,6 +277,7 @@ class ServerNode(PGChildNodeView):
 
         return flag, data
 
+    @login_required
     def nodes(self, gid):
         res = []
         """
@@ -324,7 +326,7 @@ class ServerNode(PGChildNodeView):
 
         return make_json_response(result=res)
 
-
+    @login_required
     def node(self, gid, sid):
         """Return a JSON document listing the server groups for the user"""
         server = Server.query.filter_by(user_id=current_user.id,
@@ -371,6 +373,7 @@ class ServerNode(PGChildNodeView):
             )
         )
 
+    @login_required
     def delete(self, gid, sid):
         """Delete a server node in the settings database."""
         servers = Server.query.filter_by(user_id=current_user.id, id=sid)
@@ -401,6 +404,7 @@ class ServerNode(PGChildNodeView):
         return make_json_response(success=1,
                                   info=gettext("Server deleted"))
 
+    @login_required
     def update(self, gid, sid):
         """Update the server settings"""
         server = Server.query.filter_by(
@@ -520,6 +524,7 @@ class ServerNode(PGChildNodeView):
             )
         )
 
+    @login_required
     def list(self, gid):
         """
         Return list of attributes of all servers.
@@ -561,6 +566,7 @@ class ServerNode(PGChildNodeView):
             response=res
         )
 
+    @login_required
     def properties(self, gid, sid):
         """Return list of attributes of a server"""
         server = Server.query.filter_by(
@@ -615,6 +621,7 @@ class ServerNode(PGChildNodeView):
             }
         )
 
+    @login_required
     def create(self, gid):
         """Add a server node to the settings database"""
         required_args = [
@@ -752,12 +759,15 @@ class ServerNode(PGChildNodeView):
                 errormsg=str(e)
             )
 
+    @login_required
     def sql(self, gid, sid):
         return make_json_response(data='')
 
+    @login_required
     def modified_sql(self, gid, sid):
         return make_json_response(data='')
 
+    @login_required
     def statistics(self, gid, sid):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -781,9 +791,11 @@ class ServerNode(PGChildNodeView):
             )
         )
 
+    @login_required
     def dependencies(self, gid, sid):
         return make_json_response(data='')
 
+    @login_required
     def dependents(self, gid, sid):
         return make_json_response(data='')
 

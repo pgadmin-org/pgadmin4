@@ -8,10 +8,7 @@
 ##########################################################################
 
 """A blueprint module implementing the dashboard frame."""
-MODULE_NAME = 'dashboard'
-
 from functools import wraps
-
 from flask import render_template, url_for, Response, g
 from flask_babel import gettext
 from flask_security import login_required
@@ -24,6 +21,8 @@ from pgadmin.utils.menu import Panel
 from pgadmin.utils.preferences import Preferences
 
 from config import PG_DEFAULT_DRIVER
+
+MODULE_NAME = 'dashboard'
 
 
 class DashboardModule(PgAdminModule):

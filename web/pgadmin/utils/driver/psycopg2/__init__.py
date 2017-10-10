@@ -1997,8 +1997,8 @@ class Driver(BaseDriver):
         assert (sid is not None and isinstance(sid, int))
         managers = None
 
-        if session['_id'] not in self.managers:
-            self.managers[session['_id']] = managers = dict()
+        if session.sid not in self.managers:
+            self.managers[session.sid] = managers = dict()
             if '__pgsql_server_managers' in session:
                 session_managers = session['__pgsql_server_managers'].copy()
                 session['__pgsql_server_managers'] = dict()
@@ -2013,7 +2013,7 @@ class Driver(BaseDriver):
                     manager._restore(session_managers[server_id])
                     manager.update_session()
         else:
-            managers = self.managers[session['_id']]
+            managers = self.managers[session.sid]
 
         managers['pinged'] = datetime.datetime.now()
         if str(sid) not in managers:
@@ -2101,9 +2101,9 @@ class Driver(BaseDriver):
         manager = self.connection_manager(sid)
         if manager is not None:
             manager.release()
-        if session['_id'] in self.managers and \
-                str(sid) in self.managers[session['_id']]:
-            del self.managers[session['_id']][str(sid)]
+        if session.sid in self.managers and \
+                str(sid) in self.managers[session.sid]:
+            del self.managers[session.sid][str(sid)]
 
     def gc(self):
         """
@@ -2111,7 +2111,7 @@ class Driver(BaseDriver):
         server for more than config.MAX_SESSION_IDLE_TIME.
         """
 
-        # Mininum session idle is 20 minutes
+        # Minimum session idle is 20 minutes
         max_idle_time = max(config.MAX_SESSION_IDLE_TIME or 60, 20)
         session_idle_timeout = datetime.timedelta(minutes=max_idle_time)
 
@@ -2120,11 +2120,11 @@ class Driver(BaseDriver):
         for sess in self.managers:
             sess_mgr = self.managers[sess]
 
-            if sess == session.get('_id'):
+            if sess == session.sid:
                 sess_mgr['pinged'] = curr_time
                 continue
 
-            if (curr_time - sess_mgr['pinged'] >= session_idle_timeout):
+            if curr_time - sess_mgr['pinged'] >= session_idle_timeout:
                 for mgr in [m for m in sess_mgr if isinstance(m,
                                                               ServerManager)]:
                     mgr.release()
