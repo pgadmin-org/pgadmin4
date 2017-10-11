@@ -73,6 +73,9 @@ docker:
 docs:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx html
 
+docs-pdf:
+	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx latexpdf
+
 msg-compile:
 	cd web && pybabel compile -d pgadmin/translations
 
