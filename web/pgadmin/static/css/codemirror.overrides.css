@@ -73,3 +73,11 @@
 .CodeMirror-gutters {
   z-index: 2;
 }
+
+.sql_textarea {
+  height: 100%;
+}
+
+.sql_textarea .CodeMirror-scroll {
+  z-index: 0;
+}
