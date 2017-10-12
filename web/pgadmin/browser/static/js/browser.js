@@ -148,7 +148,7 @@ define(
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<textarea id="sql-textarea" name="sql-textarea"></textarea>'
+        content: '<div class="sql_textarea"><textarea id="sql-textarea" name="sql-textarea"></textarea></div>'
       }),
       // Dependencies of the object
       'dependencies': new pgAdmin.Browser.Panel({
