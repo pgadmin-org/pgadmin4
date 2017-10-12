@@ -1,0 +1,76 @@
+This directory contains the files required to create a docker container running pgAdmin.
+
+Building
+========
+
+Whilst you can just use the Dockerfile directly, it requires that various pre-configuration steps are performed, for
+example, the pgAdmin web code must be copied to ./web and yarn install/yarn run bundle must be executed.
+requirements.txt is also expected to be in this directory, and the pre-built docs must be in web/docs.
+
+The recommended (and easy) way to build the container is to do:
+
+cd $PGADMIN_SRC/
+workon pgadmin-venv
+make docker
+
+This will call the build script $PGADMIN_SRC/pkg/docker/build.sh which will prepare a staging directory containing all
+the required files, then build the container and push it to your repo.
+
+Running
+=======
+
+The container will accept the following variables at startup:
+
+PGADMIN_DEFAULT_EMAIL
+---------------------
+
+Default: container@pgadmin.org)
+
+This is the email address used when setting up the initial administrator account to login to pgAdmin.
+
+PGADMIN_DEFAULT_PASSWORD
+------------------------
+
+Default: Conta1ner
+
+This is the password used when setting up the initial administrator account to login to pgAdmin.
+
+PGADMIN_ENABLE_TLS
+------------------
+
+Default: Conta1ner
+
+If set to the default, False, the container will listen on port 80 for connections in plain text. If set to True, the
+container will listen on port 443 for TLS connections.
+
+When TLS is enabled, a certificate and key must be provided. Typically these should be stored on the host file system
+and mounted from the container. The expected paths are /certs/server.crt and /certs/server.key
+
+PGADMIN_SERVER_NAME
+-------------------
+
+Default: pgadmin4
+
+This variable allows you to specify the value used for the Apache HTTPD ServerName directive. This is commonly used to
+ensure the CN of the TLS certificate matches what the server expects.
+
+Examples
+========
+
+Run a simple container over port 80:
+
+docker run -p 80:80 \
+           -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
+           -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
+           -d pgadmin4
+
+Run a TLS secured container:
+
+docker run -p 443:443 \
+           -v "/path/to/certificate.cert:/certs/server.cert" \
+           -v "/path/to/certificate.key:/certs/server.key" \
+           -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
+           -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
+           -e "PGADMIN_ENABLE_TLS=True" \
+           -e "PGADMIN_SERVER_NAME=pgadmin.domain.com" \
+           -d pgadmin4

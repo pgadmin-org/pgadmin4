@@ -88,7 +88,7 @@ echo "}" >> docker-build/web/config_distro.py
 # Copy the Docker specific assets into place
 cp pkg/docker/Dockerfile docker-build/
 cp pkg/docker/entry.sh docker-build/
-cp pkg/docker/pgadmin4.conf docker-build/
+cp pkg/docker/pgadmin4.conf.j2 docker-build/
 cp requirements.txt docker-build/
 
 # Build the container
