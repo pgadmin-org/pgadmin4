@@ -12,4 +12,6 @@
 export PGADMIN_SETUP_EMAIL=${PGADMIN_DEFAULT_EMAIL}
 export PGADMIN_SETUP_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
 
+j2 /templates/pgadmin4.conf.j2 > /etc/httpd/conf.d/pgadmin4.conf
+
 /usr/sbin/httpd -D FOREGROUND
