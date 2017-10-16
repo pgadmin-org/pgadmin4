@@ -555,6 +555,9 @@ def utils():
     insert_pair_brackets_perf = prefs.preference('insert_pair_brackets')
     insert_pair_brackets = insert_pair_brackets_perf.get()
 
+    # This will be opposite of use_space option
+    editor_indent_with_tabs = False if editor_use_spaces else True
+
     # Try to fetch current libpq version from the driver
     try:
         from config import PG_DEFAULT_DRIVER
@@ -578,6 +581,7 @@ def utils():
             editor_wrap_code=editor_wrap_code,
             editor_brace_matching=brace_matching,
             editor_insert_pair_brackets=insert_pair_brackets,
+            editor_indent_with_tabs=editor_indent_with_tabs,
             app_name=config.APP_NAME,
             pg_libpq_version=pg_libpq_version
         ),

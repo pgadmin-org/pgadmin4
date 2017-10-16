@@ -109,7 +109,6 @@ define('tools.querytool', [
       $('.editor-title').text(_.unescape(self.editor_title));
       self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
         lineNumbers: true,
-        indentUnit: 4,
         mode: self.handler.server_type === "gpdb" ? "text/x-gpsql" : "text/x-pgsql",
         foldOptions: {
           widget: "\u2026"
@@ -120,6 +119,8 @@ define('tools.querytool', [
         },
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
         extraKeys: pgBrowser.editor_shortcut_keys,
+        indentWithTabs: pgAdmin.Browser.editor_options.indent_with_tabs,
+        indentUnit: pgAdmin.Browser.editor_options.tabSize,
         tabSize: pgAdmin.Browser.editor_options.tabSize,
         lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
         autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
@@ -153,7 +154,6 @@ define('tools.querytool', [
 
       self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
         lineNumbers: true,
-        indentUnit: 4,
         styleSelectedText: true,
         mode: self.handler.server_type === "gpdb" ? "text/x-gpsql" : "text/x-pgsql",
         foldOptions: {
@@ -165,6 +165,8 @@ define('tools.querytool', [
         },
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
         extraKeys: pgBrowser.editor_shortcut_keys,
+        indentWithTabs: pgAdmin.Browser.editor_options.indent_with_tabs,
+        indentUnit: pgAdmin.Browser.editor_options.tabSize,
         tabSize: pgAdmin.Browser.editor_options.tabSize,
         lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
         scrollbarStyle: 'simple',

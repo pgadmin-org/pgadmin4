@@ -2049,6 +2049,8 @@
             lineNumbers: true,
             mode: "text/x-pgsql",
             extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+            indentWithTabs: pgAdmin.Browser.editor_options.indent_with_tabs,
+            indentUnit: pgAdmin.Browser.editor_options.tabSize,
             tabSize: pgAdmin.Browser.editor_options.tabSize,
             lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
             autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,

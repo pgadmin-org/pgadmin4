@@ -117,9 +117,13 @@ class SqlEditorModule(PgAdminModule):
             category_label=gettext('Display'),
             min_val=-1,
             max_val=999999,
-            help_str=gettext('The length of time to display the query info notifier after execution has completed. '
-                             'A value of -1 disables the notifier and a value of 0 displays it until clicked. '
-                             'Values greater than 1 display the notifier for the number of seconds specified.')
+            help_str=gettext(
+                'The length of time to display the query info notifier after '
+                'execution has completed. A value of -1 disables the notifier '
+                'and a value of 0 displays it until clicked. Values greater '
+                'than 1 display the notifier for the number of seconds '
+                'specified.'
+            )
         )
 
         self.open_in_new_tab = self.preference.register(
@@ -172,10 +176,13 @@ class SqlEditorModule(PgAdminModule):
             min_val=0.1,
             max_val=10,
             category_label=gettext('Display'),
-            help_str=gettext('The font size to use for the SQL text boxes and editors. '
-                             'The value specified is in "em" units, in which 1 is the default relative font size. '
-                             'For example, to increase the font size by 20 percent use a value of 1.2, or to reduce '
-                             'by 20 percent, use a value of 0.8. Minimum 0.1, maximum 10.')
+            help_str=gettext(
+                'The font size to use for the SQL text boxes and editors. '
+                'The value specified is in "em" units, in which 1 is the '
+                'default relative font size. For example, to increase the '
+                'font size by 20 percent use a value of 1.2, or to reduce '
+                'by 20 percent, use a value of 0.8. Minimum 0.1, maximum 10.'
+            )
         )
 
         self.tab_size = self.preference.register(
@@ -184,35 +191,48 @@ class SqlEditorModule(PgAdminModule):
             min_val=2,
             max_val=8,
             category_label=gettext('Options'),
-            help_str=gettext('The number of spaces per tab. Minimum 2, maximum 8.')
+            help_str=gettext(
+                'The number of spaces per tab. Minimum 2, maximum 8.'
+            )
         )
 
         self.use_spaces = self.preference.register(
             'Options', 'use_spaces',
             gettext("Use spaces?"), 'boolean', False,
             category_label=gettext('Options'),
-            help_str=gettext('Specifies whether or not to insert spaces instead of tabs when the tab key is used.')
+            help_str=gettext(
+                'Specifies whether or not to insert spaces instead of tabs '
+                'when the tab key or auto-indent are used.'
+            )
         )
 
         self.wrap_code = self.preference.register(
             'Options', 'wrap_code',
             gettext("Line wrapping?"), 'boolean', False,
             category_label=gettext('Options'),
-            help_str=gettext('Specifies whether or not to wrap SQL code in the editor.')
+            help_str=gettext(
+                'Specifies whether or not to wrap SQL code in the editor.'
+            )
         )
 
         self.insert_pair_brackets = self.preference.register(
             'Options', 'insert_pair_brackets',
             gettext("Insert bracket pairs?"), 'boolean', True,
             category_label=gettext('Options'),
-            help_str=gettext('Specifies whether or not to insert paired brackets in the editor.')
+            help_str=gettext(
+                'Specifies whether or not to insert paired brackets in the '
+                'editor.'
+            )
         )
 
         self.brace_matching = self.preference.register(
             'Options', 'brace_matching',
             gettext("Brace matching?"), 'boolean', True,
             category_label=gettext('Options'),
-            help_str=gettext('Specifies whether or not to highlight matched braces in the editor.')
+            help_str=gettext(
+                'Specifies whether or not to highlight matched braces '
+                'in the editor.'
+            )
         )
 
 
@@ -222,7 +242,9 @@ blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
 @blueprint.route('/')
 @login_required
 def index():
-    return bad_request(errormsg=gettext('This URL cannot be requested directly.'))
+    return bad_request(
+        errormsg=gettext('This URL cannot be requested directly.')
+    )
 
 
 def update_session_grid_transaction(trans_id, data):
@@ -248,7 +270,9 @@ def check_transaction_status(trans_id):
 
     # Return from the function if transaction id not found
     if str(trans_id) not in grid_data:
-        return False, gettext('Transaction ID not found in the session.'), None, None, None
+        return False, gettext(
+            'Transaction ID not found in the session.'
+        ), None, None, None
 
     # Fetch the object for the specified transaction id.
     # Use pickle.loads function to get the command object
