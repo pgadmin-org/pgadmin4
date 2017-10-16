@@ -260,9 +260,10 @@ define('pgadmin.datagrid', [
                 // Apply CodeMirror to filter text area.
                 this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
                   lineNumbers: true,
-                  indentUnit: 4,
                   mode: "text/x-pgsql",
                   extraKeys: pgBrowser.editor_shortcut_keys,
+                  indentWithTabs: pgAdmin.Browser.editor_options.indent_with_tabs,
+                  indentUnit: pgAdmin.Browser.editor_options.tabSize,
                   tabSize: pgBrowser.editor_options.tabSize,
                   lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
                   autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,

@@ -2013,15 +2013,17 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         self = this;
 
       self.sqlCtrl = CodeMirror.fromTextArea(
-            (self.$el.find('textarea')[0]), {
-              lineNumbers: true,
-              mode: 'text/x-pgsql',
-              extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-              tabSize: pgAdmin.Browser.editor_options.tabSize,
-              lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
-              autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
-              matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
-            });
+          (self.$el.find("textarea")[0]), {
+            lineNumbers: true,
+            mode: "text/x-pgsql",
+            extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+            indentWithTabs: pgAdmin.Browser.editor_options.indent_with_tabs,
+            indentUnit: pgAdmin.Browser.editor_options.tabSize,
+            tabSize: pgAdmin.Browser.editor_options.tabSize,
+            lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+            autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+            matchBrackets: pgAdmin.Browser.editor_options.brace_matching
+          });
 
       // Disable editor
       if (isDisabled) {
