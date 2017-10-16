@@ -72,7 +72,7 @@ class HelpModule(PgAdminModule):
         self.pg_help_path = self.help_preference.register(
             'help', 'pg_help_path',
             gettext("PostgreSQL Help Path"), 'text',
-            'http://www.postgresql.org/docs/$VERSION$/static/',
+            'https://www.postgresql.org/docs/$VERSION$/static/',
             category_label=gettext('Help'),
             help_str=gettext(
                 'Path to the PostgreSQL documentation. $VERSION$ will be replaced with the major.minor version number.')
@@ -81,7 +81,7 @@ class HelpModule(PgAdminModule):
         self.edbas_help_path = self.help_preference.register(
             'help', 'edbas_help_path',
             gettext("EDB Advanced Server Help Path"), 'text',
-            'http://www.enterprisedb.com/docs/en/$VERSION$/pg/',
+            'https://www.enterprisedb.com/docs/en/$VERSION$/pg/',
             category_label=gettext('Help'),
             help_str=gettext(
                 'Path to the EDB Advanced Server documentation. $VERSION$ will be replaced with the major.minor version number.')
