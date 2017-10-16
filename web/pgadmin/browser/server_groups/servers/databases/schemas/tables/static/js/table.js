@@ -635,8 +635,8 @@ define('pgadmin.node.table', [
               }
             },{
               id: 'check_constraint', label: gettext('Check constraint'),
-              model: pgBrowser.Nodes['check_constraints'].model,
-              subnode: pgBrowser.Nodes['check_constraints'].model,
+              model: pgBrowser.Nodes['check_constraint'].model,
+              subnode: pgBrowser.Nodes['check_constraint'].model,
               editable: false, type: 'collection',
               group: gettext('Check'), mode: ['edit', 'create'],
               canEdit: true, canDelete: true, deps:['is_partitioned'],

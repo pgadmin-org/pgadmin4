@@ -46,7 +46,7 @@ class CheckConstraintModule(CollectionNodeModule):
       - Load the module script for the Check Constraint, when any of the
         Check node is initialized.
     """
-    NODE_TYPE = 'check_constraints'
+    NODE_TYPE = 'check_constraint'
     COLLECTION_LABEL = _("Check Constraints")
 
     def __init__(self, *args, **kwargs):
@@ -115,7 +115,7 @@ class CheckConstraintView(PGChildNodeView):
     -------
 
     * module_js():
-      - Load JS file (check-constraints.js) for this module.
+      - Load JS file (check_constraint.js) for this module.
 
     * check_precondition(f):
       - Works as a decorator.
@@ -326,10 +326,10 @@ class CheckConstraintView(PGChildNodeView):
             return gone(_("""Could not find the check constraint."""))
 
         if "convalidated" in rset['rows'][0] and rset['rows'][0]["convalidated"]:
-            icon = "icon-check_constraints_bad"
+            icon = "icon-check_constraint_bad"
             valid = False
         else:
-            icon = "icon-check_constraints"
+            icon = "icon-check_constraint"
             valid = True
         res = self.blueprint.generate_browser_node(
                 rset['rows'][0]['oid'],
@@ -364,10 +364,10 @@ class CheckConstraintView(PGChildNodeView):
 
         for row in rset['rows']:
             if "convalidated" in row and row["convalidated"]:
-                icon = "icon-check_constraints_bad"
+                icon = "icon-check_constraint_bad"
                 valid = False
             else:
-                icon = "icon-check_constraints"
+                icon = "icon-check_constraint"
                 valid = True
             res.append(
                 self.blueprint.generate_browser_node(
@@ -423,10 +423,10 @@ class CheckConstraintView(PGChildNodeView):
 
         for row in rset['rows']:
             if "convalidated" in row and row["convalidated"]:
-                icon = "icon-check_constraints_bad"
+                icon = "icon-check_constraint_bad"
                 valid = False
             else:
-                icon = "icon-check_constraints"
+                icon = "icon-check_constraint"
                 valid = True
             res.append(
                 self.blueprint.generate_browser_node(
@@ -555,10 +555,10 @@ class CheckConstraintView(PGChildNodeView):
                     return internal_server_error(errormsg=res)
 
             if "convalidated" in res['rows'][0] and res['rows'][0]["convalidated"]:
-                icon = "icon-check_constraints_bad"
+                icon = "icon-check_constraint_bad"
                 valid = False
             else:
-                icon = "icon-check_constraints"
+                icon = "icon-check_constraint"
                 valid = True
 
             return jsonify(
@@ -673,10 +673,10 @@ class CheckConstraintView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             if "convalidated" in res['rows'][0] and res['rows'][0]["convalidated"]:
-                icon = 'icon-check_constraints_bad'
+                icon = 'icon-check_constraint_bad'
                 valid = False
             else:
-                icon = 'icon-check_constraints'
+                icon = 'icon-check_constraint'
                 valid = True
 
             return jsonify(
