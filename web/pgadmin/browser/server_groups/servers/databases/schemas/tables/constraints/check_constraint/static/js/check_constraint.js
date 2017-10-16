@@ -6,10 +6,10 @@ define('pgadmin.node.check_constraint', [
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Check Constraint Node
-  if (!pgBrowser.Nodes['check_constraints']) {
-    pgAdmin.Browser.Nodes['check_constraints'] = pgBrowser.Node.extend({
+  if (!pgBrowser.Nodes['check_constraint']) {
+    pgAdmin.Browser.Nodes['check_constraint'] = pgBrowser.Node.extend({
       getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
-      type: 'check_constraints',
+      type: 'check_constraint',
       label: gettext('Check'),
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
@@ -26,13 +26,13 @@ define('pgadmin.node.check_constraint', [
         this.initialized = true;
 
         pgBrowser.add_menus([{
-          name: 'create_check_constraints_on_coll', node: 'coll-constraints', module: this,
+          name: 'create_check_constraint_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Check...'),
-          icon: 'wcTabIcon icon-check_constraints', data: {action: 'create', check: true},
+          icon: 'wcTabIcon icon-check_constraint', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
-          name: 'validate_check_constraint', node: 'check_constraints', module: this,
+          name: 'validate_check_constraint', node: 'check_constraint', module: this,
           applies: ['object', 'context'], callback: 'validate_check_constraint',
           category: 'validate', priority: 4, label: gettext('Validate check constraint'),
           icon: 'fa fa-link', enable : 'is_not_valid', data: {action: 'edit', check: true}
@@ -67,7 +67,7 @@ define('pgadmin.node.check_constraint', [
                 alertify.success(res.info);
                 t.removeIcon(i);
                 data.valid = true;
-                data.icon = 'icon-check_constraints';
+                data.icon = 'icon-check_constraint';
                 t.addIcon(i, {icon: data.icon});
                 setTimeout(function() {t.deselect(i);}, 10);
                 setTimeout(function() {t.select(i);}, 100);
@@ -227,5 +227,5 @@ define('pgadmin.node.check_constraint', [
 
   }
 
-  return pgBrowser.Nodes['check_constraints'];
+  return pgBrowser.Nodes['check_constraint'];
 });
