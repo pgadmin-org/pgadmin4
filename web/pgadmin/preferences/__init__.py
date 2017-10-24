@@ -151,7 +151,7 @@ def save(pid):
     """
     data = request.form if request.form else json.loads(request.data.decode())
 
-    res, msg = Preferences.save(data['mid'], data['cid'], data['id'], data['value'])
+    res, msg = Preferences.save(data['mid'], data['category_id'], data['id'], data['value'])
 
     if not res:
         return internal_server_error(errormsg=msg)

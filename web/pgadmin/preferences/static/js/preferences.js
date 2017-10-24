@@ -301,7 +301,8 @@ define('pgadmin.preferences', [
                   if (d.preferences && _.isArray(d.preferences)) {
                     _.each(d.preferences, function(p) {
                       preferences.add({
-                        'id': p.id, 'value': p.value, 'cid': d.id, 'mid': d.mid
+                        'id': p.id, 'value': p.value, 'category_id': d.id,
+                        'mid': d.mid, 'name': p.name,
                       });
                       /*
                        * We don't know until now, how to render the control for
