@@ -1,4 +1,3 @@
 define(function () {
-  var translations = {{ translations|tojson }};
-  return [];
+  return {{ translations|tojson }};
 });
