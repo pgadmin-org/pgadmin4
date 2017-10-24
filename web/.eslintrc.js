@@ -44,5 +44,6 @@ module.exports = {
       'error',
       'always-multiline'
     ],
-  }
+    'no-console': ["error", { allow: ["warn", "error"] }],
+  },
 };
