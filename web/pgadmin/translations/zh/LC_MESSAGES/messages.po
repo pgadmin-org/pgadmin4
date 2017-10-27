@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-09-28 10:28+0100\n"
+"POT-Creation-Date: 2017-10-27 13:53+0200\n"
 "PO-Revision-Date: 2017-11-14 23:55+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: pgadmin/__init__.py:450 pgadmin/__init__.py:490
+#: pgadmin/__init__.py:449 pgadmin/__init__.py:489
 #, python-format
 msgid "Auto-detected %s installation with the data directory at %s"
 msgstr "自动检测到%s的安装,数据目录在%s "
@@ -38,13 +38,13 @@ msgid "Desktop"
 msgstr "桌面"
 
 #: pgadmin/about/static/js/about.js:23
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1048
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1074
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1056
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1082
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:184
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:263
-#: pgadmin/preferences/static/js/preferences.js:367
-#: pgadmin/preferences/static/js/preferences.js:390
-#: pgadmin/tools/datagrid/static/js/datagrid.js:273
+#: pgadmin/preferences/static/js/preferences.js:368
+#: pgadmin/preferences/static/js/preferences.js:391
+#: pgadmin/tools/datagrid/static/js/datagrid.js:274
 #: pgadmin/tools/import_export/static/js/import_export.js:378
 #: pgadmin/tools/maintenance/static/js/maintenance.js:283
 msgid "OK"
@@ -95,8 +95,8 @@ msgstr "显示系统对象么？"
 
 #: pgadmin/browser/__init__.py:196 pgadmin/tools/debugger/__init__.py:67
 #: pgadmin/tools/sqleditor/__init__.py:117
-#: pgadmin/tools/sqleditor/__init__.py:128
-#: pgadmin/tools/sqleditor/__init__.py:174
+#: pgadmin/tools/sqleditor/__init__.py:132
+#: pgadmin/tools/sqleditor/__init__.py:178
 msgid "Display"
 msgstr "显示"
 
@@ -122,26 +122,26 @@ msgstr "缺少必需的属性。"
 msgid "Connection to the server has been lost."
 msgstr "到服务器的连接已丢失。"
 
-#: pgadmin/browser/server_groups/__init__.py:125
+#: pgadmin/browser/server_groups/__init__.py:127
 msgid "The specified server group cannot be deleted."
 msgstr "指定的服务器组不能删除"
 
-#: pgadmin/browser/server_groups/__init__.py:137
-#: pgadmin/browser/server_groups/__init__.py:168
-#: pgadmin/browser/server_groups/__init__.py:210
+#: pgadmin/browser/server_groups/__init__.py:139
+#: pgadmin/browser/server_groups/__init__.py:171
+#: pgadmin/browser/server_groups/__init__.py:214
 msgid "The specified server group could not be found."
 msgstr "找不到指定的服务器组"
 
-#: pgadmin/browser/server_groups/__init__.py:178
-#: pgadmin/browser/server_groups/__init__.py:248
+#: pgadmin/browser/server_groups/__init__.py:181
+#: pgadmin/browser/server_groups/__init__.py:253
 msgid "The specified server group already exists."
 msgstr ""
 
-#: pgadmin/browser/server_groups/__init__.py:262
+#: pgadmin/browser/server_groups/__init__.py:267
 msgid "No server group name was specified"
 msgstr "没有指定服务器组名称"
 
-#: pgadmin/browser/server_groups/__init__.py:301
+#: pgadmin/browser/server_groups/__init__.py:312
 msgid "Could not find the server group."
 msgstr ""
 
@@ -149,11 +149,11 @@ msgstr ""
 msgid "Servers"
 msgstr "服务器"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:321
+#: pgadmin/browser/server_groups/servers/__init__.py:323
 msgid "The specified server group with id# {0} could not be found."
 msgstr "找不到标识为＃{0}的服务器组。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:383
+#: pgadmin/browser/server_groups/servers/__init__.py:386
 msgid ""
 "The specified server could not be found.\n"
 "Does the user have permission to access the server?"
@@ -161,70 +161,70 @@ msgstr ""
 "找不到指定的服务器。\n"
 " 用户是否有权访问服务器？"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:402
+#: pgadmin/browser/server_groups/servers/__init__.py:405
 msgid "Server deleted"
 msgstr "服务器已经被删除"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:413
-#: pgadmin/browser/server_groups/servers/__init__.py:574
-#: pgadmin/browser/server_groups/servers/__init__.py:1171
+#: pgadmin/browser/server_groups/servers/__init__.py:417
+#: pgadmin/browser/server_groups/servers/__init__.py:580
+#: pgadmin/browser/server_groups/servers/__init__.py:1183
 msgid "Could not find the required server."
 msgstr "找不到所需的服务器"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:438
+#: pgadmin/browser/server_groups/servers/__init__.py:442
 msgid "name"
 msgstr "名称"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:439
+#: pgadmin/browser/server_groups/servers/__init__.py:443
 #: pgadmin/browser/server_groups/servers/static/js/server.js:661
 msgid "Host name/address"
 msgstr "主机名称/地址"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:440
+#: pgadmin/browser/server_groups/servers/__init__.py:444
 #: pgadmin/browser/server_groups/servers/static/js/server.js:664
 msgid "Port"
 msgstr "端口"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:441
+#: pgadmin/browser/server_groups/servers/__init__.py:445
 #: pgadmin/browser/server_groups/servers/static/js/server.js:667
 msgid "Maintenance database"
 msgstr "维护数据库"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:442
+#: pgadmin/browser/server_groups/servers/__init__.py:446
 #: pgadmin/browser/server_groups/servers/static/js/server.js:670
 msgid "Username"
 msgstr "用户名"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:443
+#: pgadmin/browser/server_groups/servers/__init__.py:447
 msgid "SSL Mode"
 msgstr "SSL 模式"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:444
+#: pgadmin/browser/server_groups/servers/__init__.py:448
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:453
 #: pgadmin/browser/server_groups/servers/static/js/server.js:658
 msgid "Comments"
 msgstr "注释"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:445
+#: pgadmin/browser/server_groups/servers/__init__.py:449
 #: pgadmin/browser/server_groups/servers/static/js/server.js:688
 #: pgadmin/tools/user_management/static/js/user_management.js:72
 msgid "Role"
 msgstr "角色"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:461
-#: pgadmin/browser/server_groups/servers/__init__.py:650
+#: pgadmin/browser/server_groups/servers/__init__.py:465
+#: pgadmin/browser/server_groups/servers/__init__.py:657
 msgid "Host address not valid"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:474
+#: pgadmin/browser/server_groups/servers/__init__.py:478
 msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "服务器在连接时, '{0}'不允许修改。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:492
+#: pgadmin/browser/server_groups/servers/__init__.py:496
 msgid "No parameters were changed!"
 msgstr "没有参数发生改变！"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:639
+#: pgadmin/browser/server_groups/servers/__init__.py:646
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:482
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:356
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:264
@@ -262,7 +262,7 @@ msgstr "没有参数发生改变！"
 msgid "Could not find the required parameter (%s)."
 msgstr "找不到所需的参数 (%s)"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:719
+#: pgadmin/browser/server_groups/servers/__init__.py:726
 #, python-format
 msgid ""
 "Unable to connect to server:\n"
@@ -273,93 +273,93 @@ msgstr ""
 "\n"
 "%s"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:779
+#: pgadmin/browser/server_groups/servers/__init__.py:789
 msgid "Server has no active connection for generating statistics."
 msgstr "服务器有没有活动的连接，所以没有生成统计信息"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:842
-#: pgadmin/browser/server_groups/servers/__init__.py:981
-#: pgadmin/browser/server_groups/servers/__init__.py:1105
+#: pgadmin/browser/server_groups/servers/__init__.py:854
+#: pgadmin/browser/server_groups/servers/__init__.py:993
+#: pgadmin/browser/server_groups/servers/__init__.py:1117
 msgid "Server not found."
 msgstr "服务器未找到"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:847
-#: pgadmin/browser/server_groups/servers/__init__.py:1110
+#: pgadmin/browser/server_groups/servers/__init__.py:859
+#: pgadmin/browser/server_groups/servers/__init__.py:1122
 #: pgadmin/utils/driver/psycopg2/__init__.py:351
 #: pgadmin/utils/driver/psycopg2/__init__.py:1227
 #: pgadmin/utils/driver/psycopg2/__init__.py:1503
 msgid "Unauthorized request."
 msgstr "未经授权的请求"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:960
+#: pgadmin/browser/server_groups/servers/__init__.py:972
 msgid "Server connected."
 msgstr "服务器已连接"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:989
+#: pgadmin/browser/server_groups/servers/__init__.py:1001
 msgid "Server could not be disconnected."
 msgstr "服务器不能被断开"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:993
+#: pgadmin/browser/server_groups/servers/__init__.py:1005
 msgid "Server disconnected."
 msgstr "服务器已经断开连接"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1013
+#: pgadmin/browser/server_groups/servers/__init__.py:1025
 msgid "Could not reload the server configuration."
 msgstr "不可以重新加载服务器配置"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1017
+#: pgadmin/browser/server_groups/servers/__init__.py:1029
 msgid "Server configuration reloaded."
 msgstr "已经重新加载服务器配置"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1021
+#: pgadmin/browser/server_groups/servers/__init__.py:1033
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:183
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:982
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1706
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1813
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2422
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2722
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2791
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2862
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2912
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2967
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3101
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3214
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3312
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3361
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3400
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:984
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1708
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1815
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2424
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2724
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2793
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2864
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2914
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2969
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3103
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3216
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3314
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3363
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3402
 msgid ""
 "Not connected to the server or the connection to the server has been "
 "closed."
 msgstr "未连接到服务器或与服务器的连接已关闭。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1058
+#: pgadmin/browser/server_groups/servers/__init__.py:1070
 msgid "Named restore point created: {0}"
 msgstr "命名还原点已创建: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1088
+#: pgadmin/browser/server_groups/servers/__init__.py:1100
 #, fuzzy
 msgid "Could not find the required parameter(s)."
 msgstr "找不到所需的参数 (%s)"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1097
+#: pgadmin/browser/server_groups/servers/__init__.py:1109
 #: pgadmin/browser/server_groups/servers/static/js/server.js:469
 #: pgadmin/tools/user_management/__init__.py:98
 msgid "Passwords do not match."
 msgstr "密码不匹配"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1124
+#: pgadmin/browser/server_groups/servers/__init__.py:1136
 msgid "Incorrect password."
 msgstr "密码不正确"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1152
+#: pgadmin/browser/server_groups/servers/__init__.py:1164
 msgid "Password changed successfully."
 msgstr "成功更改密码"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1202
+#: pgadmin/browser/server_groups/servers/__init__.py:1214
 msgid "WAL replay paused"
 msgstr "WAL 重演已暂停"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1205
+#: pgadmin/browser/server_groups/servers/__init__.py:1217
 msgid "Please connect the server!"
 msgstr "请连接服务器"
 
@@ -402,7 +402,7 @@ msgid ""
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/types.py:57
-#: pgadmin/help/__init__.py:84
+#: pgadmin/help/__init__.py:70
 msgid "Paths"
 msgstr "路径"
 
@@ -598,9 +598,9 @@ msgstr "转换中..."
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:332
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/static/js/server_group.js:39
-#: pgadmin/dashboard/static/js/dashboard.js:745
-#: pgadmin/dashboard/static/js/dashboard.js:772
-#: pgadmin/dashboard/static/js/dashboard.js:1077
+#: pgadmin/dashboard/static/js/dashboard.js:785
+#: pgadmin/dashboard/static/js/dashboard.js:812
+#: pgadmin/dashboard/static/js/dashboard.js:1126
 msgid "Name"
 msgstr "名称"
 
@@ -983,8 +983,8 @@ msgstr "事件触发器..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:110
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:310
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:346
-#: pgadmin/dashboard/static/js/dashboard.js:755
-#: pgadmin/dashboard/static/js/dashboard.js:1082
+#: pgadmin/dashboard/static/js/dashboard.js:795
+#: pgadmin/dashboard/static/js/dashboard.js:1131
 #: pgadmin/tools/backup/static/js/backup.js:199
 #: pgadmin/tools/restore/static/js/restore.js:160
 msgid "Owner"
@@ -1291,13 +1291,13 @@ msgstr "类型"
 #: pgadmin/tools/maintenance/static/js/maintenance.js:58
 #: pgadmin/tools/maintenance/static/js/maintenance.js:85
 #: pgadmin/tools/maintenance/static/js/maintenance.js:98
-#: pgadmin/tools/sqleditor/__init__.py:160
-#: pgadmin/tools/sqleditor/__init__.py:166
-#: pgadmin/tools/sqleditor/__init__.py:186
+#: pgadmin/tools/sqleditor/__init__.py:164
+#: pgadmin/tools/sqleditor/__init__.py:170
 #: pgadmin/tools/sqleditor/__init__.py:193
-#: pgadmin/tools/sqleditor/__init__.py:200
-#: pgadmin/tools/sqleditor/__init__.py:207
-#: pgadmin/tools/sqleditor/__init__.py:214
+#: pgadmin/tools/sqleditor/__init__.py:202
+#: pgadmin/tools/sqleditor/__init__.py:212
+#: pgadmin/tools/sqleditor/__init__.py:221
+#: pgadmin/tools/sqleditor/__init__.py:231
 msgid "Options"
 msgstr "选项"
 
@@ -1400,8 +1400,8 @@ msgstr "用户映射..."
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:29
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:28
-#: pgadmin/dashboard/static/js/dashboard.js:599
-#: pgadmin/dashboard/static/js/dashboard.js:936
+#: pgadmin/dashboard/static/js/dashboard.js:629
+#: pgadmin/dashboard/static/js/dashboard.js:976
 msgid "User"
 msgstr "用户"
 
@@ -2265,8 +2265,8 @@ msgid "Trigger Functions"
 msgstr "触发器函数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:44
-#: pgadmin/dashboard/static/js/dashboard.js:733
-#: pgadmin/dashboard/static/js/dashboard.js:1065
+#: pgadmin/dashboard/static/js/dashboard.js:773
+#: pgadmin/dashboard/static/js/dashboard.js:1114
 msgid "Mode"
 msgstr "模式"
 
@@ -3024,7 +3024,7 @@ msgstr "主键?"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:387
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:44
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:51
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2251
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2253
 msgid "Yes"
 msgstr "是"
 
@@ -3035,7 +3035,7 @@ msgstr "是"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:387
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:45
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:52
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2251
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2253
 msgid "No"
 msgstr "否"
 
@@ -4801,9 +4801,9 @@ msgstr "级联"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:30
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:29
-#: pgadmin/dashboard/static/js/dashboard.js:594
-#: pgadmin/dashboard/static/js/dashboard.js:683
-#: pgadmin/dashboard/static/js/dashboard.js:750
+#: pgadmin/dashboard/static/js/dashboard.js:624
+#: pgadmin/dashboard/static/js/dashboard.js:723
+#: pgadmin/dashboard/static/js/dashboard.js:790
 msgid "Database"
 msgstr "数据库"
 
@@ -4822,12 +4822,12 @@ msgid "Disconnect Database..."
 msgstr "断开数据库..."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:139
-#: pgadmin/browser/server_groups/servers/static/js/server.js:937
+#: pgadmin/browser/server_groups/servers/static/js/server.js:945
 msgid "Connection lost"
 msgstr "连接丢失"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:140
-#: pgadmin/browser/server_groups/servers/static/js/server.js:938
+#: pgadmin/browser/server_groups/servers/static/js/server.js:946
 msgid "Would you like to reconnect to the database?"
 msgstr "你愿意重新连接到数据库吗？"
 
@@ -5701,7 +5701,7 @@ msgstr "类型"
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:139
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:127
 #: pgadmin/browser/static/js/browser.js:146
-#: pgadmin/dashboard/static/js/dashboard.js:146
+#: pgadmin/dashboard/static/js/dashboard.js:173
 #: pgadmin/static/js/backform.pgadmin.js:1657
 msgid "SQL"
 msgstr "SQL"
@@ -5756,8 +5756,8 @@ msgid "Fail"
 msgstr "失败"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:191
-#: pgadmin/dashboard/__init__.py:488
-#: pgadmin/dashboard/static/js/dashboard.js:67
+#: pgadmin/dashboard/__init__.py:487 pgadmin/dashboard/__init__.py:513
+#: pgadmin/dashboard/static/js/dashboard.js:93
 msgid "Success"
 msgstr "成功"
 
@@ -6386,7 +6386,7 @@ msgid "Ok"
 msgstr "确定"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:415
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1051
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1059
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:186
 #: pgadmin/browser/static/js/node.js:1266
 #: pgadmin/misc/file_manager/static/js/file_manager.js:135
@@ -6397,7 +6397,7 @@ msgstr "确定"
 #: pgadmin/misc/file_manager/static/js/file_manager.js:407
 #: pgadmin/misc/file_manager/static/js/file_manager.js:508
 #: pgadmin/misc/file_manager/static/js/file_manager.js:630
-#: pgadmin/preferences/static/js/preferences.js:369
+#: pgadmin/preferences/static/js/preferences.js:370
 #: pgadmin/tools/backup/static/js/backup.js:452
 #: pgadmin/tools/backup/static/js/backup.js:665
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:294
@@ -6405,7 +6405,7 @@ msgstr "确定"
 #: pgadmin/tools/import_export/static/js/import_export.js:383
 #: pgadmin/tools/maintenance/static/js/maintenance.js:286
 #: pgadmin/tools/restore/static/js/restore.js:384
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:427
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:429
 msgid "Cancel"
 msgstr "取消"
 
@@ -6526,7 +6526,7 @@ msgstr ""
 msgid "Host address must be valid IPv4 or IPv6 address."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:974
+#: pgadmin/browser/server_groups/servers/static/js/server.js:982
 msgid "Connect to Server"
 msgstr "连接到服务器"
 
@@ -6626,8 +6626,8 @@ msgstr "请输入用户'{0}'的密码以连接服务器 - '{1}'"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:31
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:30
-#: pgadmin/dashboard/static/js/dashboard.js:614
-#: pgadmin/dashboard/static/js/dashboard.js:951
+#: pgadmin/dashboard/static/js/dashboard.js:644
+#: pgadmin/dashboard/static/js/dashboard.js:991
 msgid "Backend start"
 msgstr "Backend start"
 
@@ -6639,8 +6639,8 @@ msgstr "Backend start"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:41
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:15
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:40
-#: pgadmin/dashboard/static/js/dashboard.js:609
-#: pgadmin/dashboard/static/js/dashboard.js:946
+#: pgadmin/dashboard/static/js/dashboard.js:639
+#: pgadmin/dashboard/static/js/dashboard.js:986
 msgid "Client"
 msgstr "Client"
 
@@ -6652,8 +6652,8 @@ msgstr "Client"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:16
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:41
-#: pgadmin/dashboard/static/js/dashboard.js:604
-#: pgadmin/dashboard/static/js/dashboard.js:941
+#: pgadmin/dashboard/static/js/dashboard.js:634
+#: pgadmin/dashboard/static/js/dashboard.js:981
 msgid "Application"
 msgstr "Application"
 
@@ -6715,8 +6715,8 @@ msgstr "Streaming Replication"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:17
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:42
-#: pgadmin/dashboard/static/js/dashboard.js:628
-#: pgadmin/dashboard/static/js/dashboard.js:965
+#: pgadmin/dashboard/static/js/dashboard.js:658
+#: pgadmin/dashboard/static/js/dashboard.js:1005
 msgid "Waiting?"
 msgstr "Waiting?"
 
@@ -6762,7 +6762,7 @@ msgstr ""
 msgid "Error retrieving details for the node."
 msgstr "检索节点的详细信息时出错"
 
-#: pgadmin/browser/static/js/browser.js:1992
+#: pgadmin/browser/static/js/browser.js:1993
 #, python-format
 msgid "Are you sure you wish to close the %s browser?"
 msgstr ""
@@ -6895,7 +6895,7 @@ msgstr "此对话框的帮助"
 #: pgadmin/browser/static/js/node.js:1254
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:30
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:40
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:421
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:423
 msgid "Save"
 msgstr "保存"
 
@@ -6947,8 +6947,8 @@ msgstr "管理"
 msgid "Tools"
 msgstr "工具"
 
-#: pgadmin/browser/templates/browser/index.html:164 pgadmin/help/__init__.py:90
-#: pgadmin/help/__init__.py:99
+#: pgadmin/browser/templates/browser/index.html:164 pgadmin/help/__init__.py:76
+#: pgadmin/help/__init__.py:85
 msgid "Help"
 msgstr "帮助"
 
@@ -6973,258 +6973,298 @@ msgid ""
 "target=\"_new\">here</a> for more information."
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:58
+#: pgadmin/dashboard/__init__.py:57
 msgid "Dashboard"
 msgstr "仪表板"
 
-#: pgadmin/dashboard/__init__.py:75
+#: pgadmin/dashboard/__init__.py:74
 msgid "Dashboards"
 msgstr "仪表板"
 
-#: pgadmin/dashboard/__init__.py:79
+#: pgadmin/dashboard/__init__.py:78
 msgid "Session statistics refresh rate"
 msgstr "会话统计刷新率"
+
+#: pgadmin/dashboard/__init__.py:80 pgadmin/dashboard/__init__.py:88
+#: pgadmin/dashboard/__init__.py:96 pgadmin/dashboard/__init__.py:104
+#: pgadmin/dashboard/__init__.py:112
+msgid "Graphs"
+msgstr "图表"
 
 #: pgadmin/dashboard/__init__.py:81 pgadmin/dashboard/__init__.py:89
 #: pgadmin/dashboard/__init__.py:97 pgadmin/dashboard/__init__.py:105
 #: pgadmin/dashboard/__init__.py:113
-msgid "Graphs"
-msgstr "图表"
-
-#: pgadmin/dashboard/__init__.py:82 pgadmin/dashboard/__init__.py:90
-#: pgadmin/dashboard/__init__.py:98 pgadmin/dashboard/__init__.py:106
-#: pgadmin/dashboard/__init__.py:114
 msgid "The number of seconds between graph samples."
 msgstr "图表采样间隔的秒数"
 
-#: pgadmin/dashboard/__init__.py:87
+#: pgadmin/dashboard/__init__.py:86
 msgid "Transaction throughput refresh rate"
 msgstr "事务吞吐量刷新率"
 
-#: pgadmin/dashboard/__init__.py:95
+#: pgadmin/dashboard/__init__.py:94
 msgid "Tuples in refresh rate"
 msgstr "元组插入刷新率"
 
-#: pgadmin/dashboard/__init__.py:103
+#: pgadmin/dashboard/__init__.py:102
 msgid "Tuples out refresh rate"
 msgstr "元组读取刷新率"
 
-#: pgadmin/dashboard/__init__.py:111
+#: pgadmin/dashboard/__init__.py:110
 msgid "Block I/O statistics refresh rate"
 msgstr "数据块 I/O 统计刷新率"
 
-#: pgadmin/dashboard/__init__.py:178 pgadmin/dashboard/__init__.py:193
-#: pgadmin/dashboard/static/js/dashboard.js:520
+#: pgadmin/dashboard/__init__.py:177 pgadmin/dashboard/__init__.py:192
+#: pgadmin/dashboard/static/js/dashboard.js:550
 msgid "Please connect to the selected server to view the table."
 msgstr "请连接到所选的服务器，以便查看表"
 
-#: pgadmin/dashboard/__init__.py:183 pgadmin/dashboard/__init__.py:198
-#: pgadmin/dashboard/static/js/dashboard.js:395
+#: pgadmin/dashboard/__init__.py:182 pgadmin/dashboard/__init__.py:197
+#: pgadmin/dashboard/static/js/dashboard.js:425
 msgid "Please connect to the selected server to view the graph."
 msgstr "请连接到所选的服务器，以便查看图表"
 
-#: pgadmin/dashboard/__init__.py:208
+#: pgadmin/dashboard/__init__.py:207
 #, fuzzy
 msgid "Please connect to the selected database to view the table."
 msgstr "请连接到所选的服务器，以便查看表"
 
-#: pgadmin/dashboard/__init__.py:213
+#: pgadmin/dashboard/__init__.py:212
 #, fuzzy
 msgid "Please connect to the selected database to view the graph."
 msgstr "请连接到所选的服务器，以便查看图表"
 
-#: pgadmin/dashboard/__init__.py:488
+#: pgadmin/dashboard/__init__.py:487 pgadmin/dashboard/__init__.py:513
 msgid "Failed"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:30
+#: pgadmin/dashboard/static/js/dashboard.js:35
 msgid "Cancel the active query"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:56
+#: pgadmin/dashboard/static/js/dashboard.js:41
+msgid "Terminate the session"
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:72
 msgid "Cancel Active Query?"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:57
+#: pgadmin/dashboard/static/js/dashboard.js:73
 msgid "Are you sure you wish to cancel the active query?"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:68
+#: pgadmin/dashboard/static/js/dashboard.js:74
 msgid "Active query cancelled successfully."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:71
+#: pgadmin/dashboard/static/js/dashboard.js:75
 msgid "An error occurred whilst cancelling the active query."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:115
-msgid "View the active session details"
+#: pgadmin/dashboard/static/js/dashboard.js:78
+msgid "Terminate Session?"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:131
-msgid "Backend type"
+#: pgadmin/dashboard/static/js/dashboard.js:79
+msgid "Are you sure you wish to terminate the session?"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:133
-#: pgadmin/dashboard/static/js/dashboard.js:140
-#: pgadmin/dashboard/static/js/dashboard.js:144
-#: pgadmin/dashboard/static/js/dashboard.js:149
-msgid "Details"
+#: pgadmin/dashboard/static/js/dashboard.js:80
+msgid "Session terminateed successfully."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:138
-msgid "Query started at"
+#: pgadmin/dashboard/static/js/dashboard.js:81
+msgid "An error occurred whilst terminateing the active query."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:142
+msgid "View the active session details"
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:158
+msgid "Backend type"
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:160
+#: pgadmin/dashboard/static/js/dashboard.js:167
+#: pgadmin/dashboard/static/js/dashboard.js:171
+#: pgadmin/dashboard/static/js/dashboard.js:176
+msgid "Details"
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:165
+msgid "Query started at"
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:169
 msgid "Last state changed at"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:187
-#: pgadmin/dashboard/static/js/dashboard.js:274
+#: pgadmin/dashboard/static/js/dashboard.js:214
+#: pgadmin/dashboard/static/js/dashboard.js:304
 msgid "An error occurred whilst loading the dashboard."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:285
+#: pgadmin/dashboard/static/js/dashboard.js:315
 msgid "Please connect to the selected server to view the dashboard."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:399
+#: pgadmin/dashboard/static/js/dashboard.js:429
 msgid "An error occurred whilst rendering the graph."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:524
+#: pgadmin/dashboard/static/js/dashboard.js:554
 #, fuzzy
 msgid "An error occurred whilst rendering the table."
 msgstr "获取查询工具选项时发生错误"
 
-#: pgadmin/dashboard/static/js/dashboard.js:589
-#: pgadmin/dashboard/static/js/dashboard.js:678
-#: pgadmin/dashboard/static/js/dashboard.js:931
-#: pgadmin/dashboard/static/js/dashboard.js:1015
+#: pgadmin/dashboard/static/js/dashboard.js:619
+#: pgadmin/dashboard/static/js/dashboard.js:718
+#: pgadmin/dashboard/static/js/dashboard.js:971
+#: pgadmin/dashboard/static/js/dashboard.js:1064
 #, fuzzy
 msgid "PID"
 msgstr "Oid"
 
-#: pgadmin/dashboard/static/js/dashboard.js:619
-#: pgadmin/dashboard/static/js/dashboard.js:956
+#: pgadmin/dashboard/static/js/dashboard.js:649
+#: pgadmin/dashboard/static/js/dashboard.js:996
 #, fuzzy
 msgid "State"
 msgstr "已启动"
 
-#: pgadmin/dashboard/static/js/dashboard.js:636
-#: pgadmin/dashboard/static/js/dashboard.js:973
+#: pgadmin/dashboard/static/js/dashboard.js:666
+#: pgadmin/dashboard/static/js/dashboard.js:1013
 #, fuzzy
 msgid "Wait Event"
 msgstr "Wait event type"
 
-#: pgadmin/dashboard/static/js/dashboard.js:641
-#: pgadmin/dashboard/static/js/dashboard.js:978
+#: pgadmin/dashboard/static/js/dashboard.js:671
+#: pgadmin/dashboard/static/js/dashboard.js:1018
 msgid "Blocking PIDs"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:688
-#: pgadmin/dashboard/static/js/dashboard.js:1020
+#: pgadmin/dashboard/static/js/dashboard.js:728
+#: pgadmin/dashboard/static/js/dashboard.js:1069
 #, fuzzy
 msgid "Lock type"
 msgstr "源类型"
 
-#: pgadmin/dashboard/static/js/dashboard.js:693
-#: pgadmin/dashboard/static/js/dashboard.js:1025
+#: pgadmin/dashboard/static/js/dashboard.js:733
+#: pgadmin/dashboard/static/js/dashboard.js:1074
 #, fuzzy
 msgid "Target relation"
 msgstr "相关性"
 
-#: pgadmin/dashboard/static/js/dashboard.js:698
-#: pgadmin/dashboard/static/js/dashboard.js:1030
+#: pgadmin/dashboard/static/js/dashboard.js:738
+#: pgadmin/dashboard/static/js/dashboard.js:1079
 msgid "Page"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:703
-#: pgadmin/dashboard/static/js/dashboard.js:1035
+#: pgadmin/dashboard/static/js/dashboard.js:743
+#: pgadmin/dashboard/static/js/dashboard.js:1084
 #, fuzzy
 msgid "Tuple"
 msgstr "规则"
 
-#: pgadmin/dashboard/static/js/dashboard.js:708
-#: pgadmin/dashboard/static/js/dashboard.js:1040
+#: pgadmin/dashboard/static/js/dashboard.js:748
+#: pgadmin/dashboard/static/js/dashboard.js:1089
 msgid "vXID (target)"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:713
-#: pgadmin/dashboard/static/js/dashboard.js:1045
+#: pgadmin/dashboard/static/js/dashboard.js:753
+#: pgadmin/dashboard/static/js/dashboard.js:1094
 msgid "XID (target)"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:718
-#: pgadmin/dashboard/static/js/dashboard.js:1050
+#: pgadmin/dashboard/static/js/dashboard.js:758
+#: pgadmin/dashboard/static/js/dashboard.js:1099
 #, fuzzy
 msgid "Class"
 msgstr "任务类"
 
-#: pgadmin/dashboard/static/js/dashboard.js:723
-#: pgadmin/dashboard/static/js/dashboard.js:1055
+#: pgadmin/dashboard/static/js/dashboard.js:763
+#: pgadmin/dashboard/static/js/dashboard.js:1104
 #, fuzzy
 msgid "Object ID"
 msgstr "对象文件"
 
-#: pgadmin/dashboard/static/js/dashboard.js:728
-#: pgadmin/dashboard/static/js/dashboard.js:1060
+#: pgadmin/dashboard/static/js/dashboard.js:768
+#: pgadmin/dashboard/static/js/dashboard.js:1109
 msgid "vXID (owner)"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:738
-#: pgadmin/dashboard/static/js/dashboard.js:1070
+#: pgadmin/dashboard/static/js/dashboard.js:778
+#: pgadmin/dashboard/static/js/dashboard.js:1119
 #, fuzzy
 msgid "Granted?"
 msgstr "创建"
 
-#: pgadmin/dashboard/static/js/dashboard.js:760
-#: pgadmin/dashboard/static/js/dashboard.js:1087
+#: pgadmin/dashboard/static/js/dashboard.js:800
+#: pgadmin/dashboard/static/js/dashboard.js:1136
 #, fuzzy
 msgid "XID"
 msgstr "Oid"
 
-#: pgadmin/dashboard/static/js/dashboard.js:765
-#: pgadmin/dashboard/static/js/dashboard.js:1092
+#: pgadmin/dashboard/static/js/dashboard.js:805
+#: pgadmin/dashboard/static/js/dashboard.js:1141
 #, fuzzy
 msgid "Prepared at"
 msgstr "准备事务"
 
-#: pgadmin/dashboard/static/js/dashboard.js:777
+#: pgadmin/dashboard/static/js/dashboard.js:817
 #, fuzzy
 msgid "Category"
 msgstr "类别类型"
 
-#: pgadmin/dashboard/static/js/dashboard.js:782
+#: pgadmin/dashboard/static/js/dashboard.js:822
 #, fuzzy
 msgid "Setting"
 msgstr "存储设置"
 
-#: pgadmin/dashboard/static/js/dashboard.js:787
+#: pgadmin/dashboard/static/js/dashboard.js:827
 #, fuzzy
 msgid "Unit"
 msgstr "没有标题"
 
-#: pgadmin/dashboard/static/js/dashboard.js:792
+#: pgadmin/dashboard/static/js/dashboard.js:832
 #, fuzzy
 msgid "Description"
 msgstr "节数"
 
-#: pgadmin/dashboard/static/js/dashboard.js:1196
-msgid "You cannot cancel background worker processes."
+#: pgadmin/dashboard/static/js/dashboard.js:1239
+msgid "cancel"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1203
-msgid "You are not allowed to cancel the main active session."
+#: pgadmin/dashboard/static/js/dashboard.js:1239
+msgid "terminate"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1209
+#: pgadmin/dashboard/static/js/dashboard.js:1248
+msgid "You cannot "
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:1250
+msgid " background worker processes."
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:1257
+msgid "You are not allowed to "
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:1259
+msgid " the main active session."
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:1265
 msgid "The session is already in idle state."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1221
-msgid "Superuser privileges are required to cancel another users query."
+#: pgadmin/dashboard/static/js/dashboard.js:1277
+msgid "Superuser privileges are required to "
+msgstr ""
+
+#: pgadmin/dashboard/static/js/dashboard.js:1279
+msgid " another users query."
 msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:5
@@ -7339,7 +7379,7 @@ msgid "PostgreSQL Documentation"
 msgstr "PostgreSQL 文档"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:57
-#: pgadmin/help/__init__.py:35 pgadmin/help/__init__.py:60
+#: pgadmin/help/__init__.py:35
 msgid "pgAdmin Website"
 msgstr "pgAdmin 主页"
 
@@ -7421,29 +7461,29 @@ msgstr ""
 msgid "Online Help"
 msgstr "在线帮助"
 
-#: pgadmin/help/__init__.py:42 pgadmin/help/__init__.py:67
+#: pgadmin/help/__init__.py:42
 msgid "PostgreSQL Website"
 msgstr "PostgreSQL 网站"
 
-#: pgadmin/help/__init__.py:76
+#: pgadmin/help/__init__.py:62
 msgid "SQL Help"
 msgstr "SQL 帮助"
 
-#: pgadmin/help/__init__.py:88
+#: pgadmin/help/__init__.py:74
 msgid "PostgreSQL Help Path"
 msgstr "PostgreSQL 帮助路径"
 
-#: pgadmin/help/__init__.py:91
+#: pgadmin/help/__init__.py:77
 msgid ""
 "Path to the PostgreSQL documentation. $VERSION$ will be replaced with the"
 " major.minor version number."
 msgstr "PostgreSQL文档的路径。$VERSION$将替换为major.minor版本号。"
 
-#: pgadmin/help/__init__.py:97
+#: pgadmin/help/__init__.py:83
 msgid "EDB Advanced Server Help Path"
 msgstr "EDB Advanced Server 帮助路径"
 
-#: pgadmin/help/__init__.py:100
+#: pgadmin/help/__init__.py:86
 msgid ""
 "Path to the EDB Advanced Server documentation. $VERSION$ will be replaced"
 " with the major.minor version number."
@@ -7684,8 +7724,8 @@ msgid "No statistics are available for the selected object."
 msgstr "没有可用于所选对象的统计数字可用于所选对象"
 
 #: pgadmin/preferences/__init__.py:54
-#: pgadmin/preferences/static/js/preferences.js:361
-#: pgadmin/preferences/static/js/preferences.js:375
+#: pgadmin/preferences/static/js/preferences.js:362
+#: pgadmin/preferences/static/js/preferences.js:376
 msgid "Preferences"
 msgstr "首选项"
 
@@ -7707,7 +7747,7 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:335
+#: pgadmin/preferences/static/js/preferences.js:336
 msgid "Category is not selected."
 msgstr ""
 
@@ -7753,7 +7793,7 @@ msgstr "没有改变"
 msgid "General"
 msgstr "通常"
 
-#: pgadmin/static/js/backform.pgadmin.js:2125
+#: pgadmin/static/js/backform.pgadmin.js:2127
 #: pgadmin/tools/backup/static/js/backup.js:79
 #: pgadmin/tools/backup/static/js/backup.js:85
 msgid "Note"
@@ -7824,7 +7864,7 @@ msgid "Reset Password"
 msgstr "重置密码"
 
 #: pgadmin/tools/__init__.py:57 pgadmin/tools/datagrid/__init__.py:75
-#: pgadmin/tools/sqleditor/__init__.py:225
+#: pgadmin/tools/sqleditor/__init__.py:246
 msgid "This URL cannot be requested directly."
 msgstr "此 URL 不能直接被请求"
 
@@ -8183,15 +8223,15 @@ msgstr ""
 msgid "View/Edit Data"
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:367
+#: pgadmin/tools/datagrid/static/js/datagrid.js:368
 msgid "Edit Data - "
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:478
+#: pgadmin/tools/datagrid/static/js/datagrid.js:479
 msgid "Query - "
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:530
+#: pgadmin/tools/datagrid/static/js/datagrid.js:531
 msgid "Query Tool Initialize Error"
 msgstr "查询工具初始化错误"
 
@@ -8277,7 +8317,7 @@ msgid "Paste Row"
 msgstr "粘贴行"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:122
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2237
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2239
 msgid "Delete Row(s)"
 msgstr "删除行"
 
@@ -8376,12 +8416,12 @@ msgid "Timing"
 msgstr "计时"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:247
-#: pgadmin/tools/sqleditor/__init__.py:159
+#: pgadmin/tools/sqleditor/__init__.py:163
 msgid "Auto commit?"
 msgstr "自动提交么?"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:253
-#: pgadmin/tools/sqleditor/__init__.py:165
+#: pgadmin/tools/sqleditor/__init__.py:169
 msgid "Auto rollback?"
 msgstr "自动回滚么?"
 
@@ -8421,7 +8461,7 @@ msgid "Debugger"
 msgstr "调试器"
 
 #: pgadmin/tools/debugger/__init__.py:66
-#: pgadmin/tools/sqleditor/__init__.py:127
+#: pgadmin/tools/sqleditor/__init__.py:131
 msgid "Open in new browser tab"
 msgstr ""
 
@@ -8505,9 +8545,9 @@ msgstr ""
 #: pgadmin/tools/debugger/__init__.py:1573
 #: pgadmin/tools/debugger/__init__.py:1598
 #: pgadmin/tools/debugger/__init__.py:1614
-#: pgadmin/tools/sqleditor/__init__.py:268
-#: pgadmin/tools/sqleditor/__init__.py:441
-#: pgadmin/tools/sqleditor/__init__.py:1124
+#: pgadmin/tools/sqleditor/__init__.py:292
+#: pgadmin/tools/sqleditor/__init__.py:465
+#: pgadmin/tools/sqleditor/__init__.py:1148
 #: pgadmin/tools/sqleditor/command.py:179
 #: pgadmin/tools/sqleditor/command.py:411
 msgid "Not connected to server or connection with the server has been closed."
@@ -8576,7 +8616,7 @@ msgid "Local variables"
 msgstr "本地变量"
 
 #: pgadmin/tools/debugger/static/js/direct.js:1569
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:208
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:210
 msgid "Messages"
 msgstr "消息"
 
@@ -8588,7 +8628,7 @@ msgstr "结果"
 msgid "Stack"
 msgstr "堆栈"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1653
+#: pgadmin/tools/debugger/static/js/direct.js:1655
 msgid "Loading..."
 msgstr "加载中..."
 
@@ -9029,40 +9069,40 @@ msgid ""
 "number of seconds specified."
 msgstr "执行完成后显示查询信息通知程序的时间长度。值-1禁用通知程序，值0显示直到单击。大于1的值显示指定的秒数的通知程序。"
 
-#: pgadmin/tools/sqleditor/__init__.py:129
+#: pgadmin/tools/sqleditor/__init__.py:133
 msgid "If set to True, the Query Tool will be opened in a new browser tab."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:135
+#: pgadmin/tools/sqleditor/__init__.py:139
 msgid "Verbose output?"
 msgstr "详细输出?"
 
-#: pgadmin/tools/sqleditor/__init__.py:136
-#: pgadmin/tools/sqleditor/__init__.py:142
-#: pgadmin/tools/sqleditor/__init__.py:148
-#: pgadmin/tools/sqleditor/__init__.py:154
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:198
+#: pgadmin/tools/sqleditor/__init__.py:140
+#: pgadmin/tools/sqleditor/__init__.py:146
+#: pgadmin/tools/sqleditor/__init__.py:152
+#: pgadmin/tools/sqleditor/__init__.py:158
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:200
 msgid "Explain"
 msgstr "解释"
 
-#: pgadmin/tools/sqleditor/__init__.py:141
+#: pgadmin/tools/sqleditor/__init__.py:145
 msgid "Show costs?"
 msgstr "显示代价信息？"
 
-#: pgadmin/tools/sqleditor/__init__.py:147
+#: pgadmin/tools/sqleditor/__init__.py:151
 msgid "Show buffers?"
 msgstr "显示的缓冲区信息？"
 
-#: pgadmin/tools/sqleditor/__init__.py:153
+#: pgadmin/tools/sqleditor/__init__.py:157
 #, fuzzy
 msgid "Show timing?"
 msgstr "显示时间信息"
 
-#: pgadmin/tools/sqleditor/__init__.py:171
+#: pgadmin/tools/sqleditor/__init__.py:175
 msgid "Font size"
 msgstr "字体大小"
 
-#: pgadmin/tools/sqleditor/__init__.py:175
+#: pgadmin/tools/sqleditor/__init__.py:179
 #, fuzzy
 msgid ""
 "The font size to use for the SQL text boxes and editors. The value "
@@ -9074,70 +9114,70 @@ msgstr ""
 "用于SQL文本框和编辑器的字体大小。 指定的值以\"em\"为单位，其中1是默认的相对字体大小。 例如，要将字体大小增加20% "
 "，请使用值1.2，或者减少 20% ，使用值0.8。 最小0.1，最大10。"
 
-#: pgadmin/tools/sqleditor/__init__.py:183
+#: pgadmin/tools/sqleditor/__init__.py:190
 msgid "Tab size"
 msgstr "Tab大小"
 
-#: pgadmin/tools/sqleditor/__init__.py:187
+#: pgadmin/tools/sqleditor/__init__.py:194
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
 msgstr "Tab 代表空格的数量，最小2，最大为8"
 
-#: pgadmin/tools/sqleditor/__init__.py:192
+#: pgadmin/tools/sqleditor/__init__.py:201
 msgid "Use spaces?"
 msgstr "使用空间吗？"
 
-#: pgadmin/tools/sqleditor/__init__.py:194
+#: pgadmin/tools/sqleditor/__init__.py:203
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
-"key is used."
-msgstr "指定是否在使用Tab键时插入空格而不是制表符。"
+"key or auto-indent are used."
+msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:199
+#: pgadmin/tools/sqleditor/__init__.py:211
 #, fuzzy
 msgid "Line wrapping?"
 msgstr "用户映射"
 
-#: pgadmin/tools/sqleditor/__init__.py:201
+#: pgadmin/tools/sqleditor/__init__.py:213
 msgid "Specifies whether or not to wrap SQL code in the editor."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:206
+#: pgadmin/tools/sqleditor/__init__.py:220
 msgid "Insert bracket pairs?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:208
+#: pgadmin/tools/sqleditor/__init__.py:222
 msgid "Specifies whether or not to insert paired brackets in the editor."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:213
+#: pgadmin/tools/sqleditor/__init__.py:230
 msgid "Brace matching?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:215
+#: pgadmin/tools/sqleditor/__init__.py:232
 msgid "Specifies whether or not to highlight matched braces in the editor."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:251
-#: pgadmin/tools/sqleditor/__init__.py:375
-#: pgadmin/tools/sqleditor/__init__.py:1087
+#: pgadmin/tools/sqleditor/__init__.py:273
+#: pgadmin/tools/sqleditor/__init__.py:399
+#: pgadmin/tools/sqleditor/__init__.py:1111
 msgid "Transaction ID not found in the session."
 msgstr "事务 ID 在该会话中找不到"
 
-#: pgadmin/tools/sqleditor/__init__.py:448
-#: pgadmin/tools/sqleditor/__init__.py:1127
+#: pgadmin/tools/sqleditor/__init__.py:472
+#: pgadmin/tools/sqleditor/__init__.py:1151
 #, fuzzy
 msgid "Either transaction object or session object not found."
 msgstr "可能是事务对象或者会话对象找不到."
 
-#: pgadmin/tools/sqleditor/__init__.py:808
+#: pgadmin/tools/sqleditor/__init__.py:832
 msgid "No primary key found for this object, so unable to save records."
 msgstr "该对象没有找到主键，所以无法保存记录"
 
-#: pgadmin/tools/sqleditor/__init__.py:1494
+#: pgadmin/tools/sqleditor/__init__.py:1518
 msgid "File type not supported"
 msgstr "不支持的文件类型"
 
-#: pgadmin/tools/sqleditor/__init__.py:1644
+#: pgadmin/tools/sqleditor/__init__.py:1668
 msgid "Transaction status check failed."
 msgstr "事务状态检查失败"
 
@@ -9153,178 +9193,178 @@ msgstr "筛选字符串为空"
 msgid "Data cannot be saved for the current object."
 msgstr "当前对象的数据不能保存"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:188
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:190
 msgid "Data Output"
 msgstr "数据输出"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:218
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:220
 msgid "Query History"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:251
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:253
 msgid "The data has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:255
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:412
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:257
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:414
 msgid "The text has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:424
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:426
 msgid "Don't save"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:460
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:462
 msgid "Save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:952
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:954
 msgid "Fetching all records..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1334
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1615
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2505
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1336
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1617
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2507
 msgid "Unsaved changes"
 msgstr "未保存的更改"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1335
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2506
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1337
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2508
 msgid "Are you sure you wish to discard the current changes?"
 msgstr "是否确实要放弃当前更改？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1359
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1361
 msgid "Clear history"
 msgstr "清除历史记录"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1360
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1362
 msgid "Are you sure you wish to clear the history?"
 msgstr "是否确实要清除历史记录？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1616
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1618
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr "数据已修改，但未保存。 确定要放弃更改吗?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1646
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1648
 msgid "Initializing query execution."
 msgstr "初始化查询执行。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1653
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3187
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1655
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3189
 msgid "Waiting for the query execution to complete..."
 msgstr "等待查询执行完成..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1739
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1741
 #, python-format
 msgid "Query returned successfully in %s."
 msgstr "耗时%s 成功返回查询"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1775
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1884
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1777
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1886
 msgid "Loading data from the database server and rendering..."
 msgstr "从数据库服务器加载数据并渲染.."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1890
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1892
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1891
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1893
 #, python-format
 msgid "%s rows affected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2228
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2230
 msgid "Row(s) deleted"
 msgstr "删除行"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2232
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2234
 msgid "Operation failed"
 msgstr "操作失败"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2233
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2235
 msgid ""
 "There are unsaved changes in grid, Please save them first to avoid "
 "inconsistency in data"
 msgstr "网格中有未保存的更改，请先保存它们，以避免数据不一致"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2238
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2240
 msgid "Are you sure you wish to delete selected row(s)?"
 msgstr "是否确实要删除选定的行？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2299
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2301
 msgid "Saving the updated data..."
 msgstr "保存更新后的数据..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2378
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2380
 #, python-format
 msgid "%s."
 msgstr "%s."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2414
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2416
 msgid "Data saved successfully."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2540
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2542
 msgid "Loading the file..."
 msgstr "加载文件..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2586
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2588
 msgid "Saving the queries in the file..."
 msgstr "将查询保存在文件..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2597
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2599
 msgid "File saved successfully."
 msgstr "文件保存成功。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2692
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2694
 msgid "Loading the existing filter options..."
 msgstr "加载现有的筛选器选项..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2762
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2832
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2764
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2834
 msgid "Applying the new filter..."
 msgstr "应用新的筛选器..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2885
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2887
 msgid "Removing the filter..."
 msgstr "移除筛选器..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2936
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2938
 msgid "Applying the filter..."
 msgstr "应用筛选器..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3074
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3076
 msgid "Setting the limit on the result..."
 msgstr "设置限制的结果......"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3151
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3153
 msgid "Initializing the query execution!"
 msgstr "初始化查询执行！"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3440
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3446
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
 msgid "Error occurred while setting verbose option in explain"
 msgstr "在解释设置verbose选项时发生错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3478
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3484
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3480
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3486
 msgid "Error occurred while setting costs option in explain"
 msgstr "在解释设置成本选项时发生错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3515
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3521
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3517
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3523
 msgid "Error occurred while setting buffers option in explain"
 msgstr "在解释设置缓冲区选项时发生错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3551
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3557
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3553
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3559
 msgid "Error occurred while setting timing option in explain"
 msgstr "在解释设置计时选项时发生错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3655
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3657
 msgid "Error occurred while getting query tool options "
 msgstr "获取查询工具选项时发生错误"
 
@@ -9656,7 +9696,7 @@ msgstr "找不到指定的数据库"
 #~ msgstr ""
 
 #~ msgid ""
-#~ msgstr "不完整的定义。 请提供语言环境或复制排序规则或LC_CTYPE/LC_COLLATE"
+#~ msgstr "查询已修改，但未保存。确定要放弃更改吗？"
 
 #~ msgid "Host Agent"
 #~ msgstr ""
@@ -9847,58 +9887,11 @@ msgstr "找不到指定的数据库"
 #~ msgid "{0} Binary Path"
 #~ msgstr "{0} 二进制文件路径"
 
-#~ msgid ""
-#~ "Path to the directory containing the "
-#~ "{0} utility programs (pg_dump, pg_restore "
-#~ "etc)."
-#~ msgstr "包含{0} 实用程序（pg_dump，pg_restore等）的目录的路径。"
-
-#~ msgid ""
-#~ "Could not find the collation object "
-#~ "in the database. It may have been"
-#~ " removed by another user."
-#~ msgstr "在数据库中找不到排序规则对象。 可能已被其他用户删除。"
-
-#~ msgid ""
-#~ "Could not find the required parameter"
-#~ "                                 (%s)."
-#~ msgstr "找不到所需的参数 (%s)"
-
-#~ msgid ""
-#~ "\n"
-#~ "Could not find the foreign table in the database.\n"
-#~ "It may have been removed by another user or\n"
-#~ "shifted to the another schema.\n"
-#~ msgstr ""
-#~ "在数据库中找不到外部表。\n"
-#~ "它可能已被另一个用户删除或转移到另一个模式"
-
-#~ msgid ""
-#~ "Could not find the foreign table "
-#~ "in the database. It may have been"
-#~ " removed by another user or shifted"
-#~ " to the another schema."
-#~ msgstr ""
-#~ "在数据库中找不到外部表。\n"
-#~ "它可能已被另一个用户删除或转移到另一个模式"
-
-#~ msgid ""
-#~ "Could not generate reversed engineered query for the FTS Dictionary.\n"
-#~ "{0}"
-#~ msgstr "无法生成反向工程的查询 FTS 字典"
-
 #~ msgid "Could not generate reversed engineered query for FTS Dictionary node."
 #~ msgstr "无法生成反向工程的查询 FTS 字典节点"
 
 #~ msgid "Could not find the FTS template node in the database."
 #~ msgstr "在数据库中找不到 FTS 模板节点"
-
-#~ msgid ""
-#~ "\n"
-#~ "Could not find the function in the database.\n"
-#~ "\n"
-#~ "It may have been removed by another user or moved to another schema.\n"
-#~ msgstr "在数据库中找不到该函数。它可能已被另一个用户删除或移动到另一个模式。"
 
 #~ msgid "UNSAFE"
 #~ msgstr "名称"
@@ -9948,25 +9941,6 @@ msgstr "找不到指定的数据库"
 #~ msgid "Please specify the value for label."
 #~ msgstr "请指定标签的值"
 
-#~ msgid ""
-#~ "Please specify the connection string for"
-#~ " the remote database server. Each "
-#~ "parameter setting is in the form "
-#~ "keyword = value. Spaces around the "
-#~ "equal sign are optional. To write "
-#~ "an empty value, or a value "
-#~ "containing spaces, surround it with "
-#~ "single quotes, e.g., keyword = \\'a "
-#~ "value\\'. Single quotes and backslashes "
-#~ "within the value must be escaped "
-#~ "with a backslash, i.e., \\' and "
-#~ "\\\\.<br>For more information, please see "
-#~ "the documentation on %s"
-#~ msgstr ""
-#~ "请指定远程数据库服务器的连接字符串。 每个参数设置的格式为keyword = "
-#~ "value。等号周围的空格是可选的。要写入空值或包含空格的值，请用单引号括起来，例如keyword = "
-#~ "\\'值\\'。值中的单引号和反斜杠必须使用反斜杠（即\\'和\\\\）进行转义。<br>有关详细信息，请参阅%s上的文档"
-
 #~ msgid "\" + error_msg + \""
 #~ msgstr "\"+ err.errormsg + \""
 
@@ -9984,13 +9958,6 @@ msgstr "找不到指定的数据库"
 
 #~ msgid "Hostname or address must be specified."
 #~ msgstr "主机名或地址必须指定"
-
-#~ msgid ""
-#~ "Please click <a class=\"alert-link\" "
-#~ "href=\"{0}\" target=\"_new\">here</a> for more\n"
-#~ ""
-#~ "    information."
-#~ msgstr "请点击 <a class=\"alert-link\" href=\"{0}\" target=\"_new\">这里</a> 查看更多信息"
 
 #~ msgid "Error initializing script - "
 #~ msgstr "报错,初始化脚本-"
@@ -10018,11 +9985,6 @@ msgstr "找不到指定的数据库"
 
 #~ msgid "Too many logs generated!"
 #~ msgstr ""
-
-#~ msgid ""
-#~ "No permission to operate on"
-#~ "                                   specified path."
-#~ msgstr "没有在指定路径上操作的权限。"
 
 #~ msgid "Save as"
 #~ msgstr "另存为"
@@ -10060,46 +10022,14 @@ msgstr "找不到指定的数据库"
 #~ msgid " untitled"
 #~ msgstr "没有标题"
 
-#~ msgid ""
-#~ "The debugger plugin is not enabled. "
-#~ "Please add the plugin to the "
-#~ "shared_preload_libraries setting in the "
-#~ "postgresql.conf file and restart the "
-#~ "database server."
-#~ msgstr ""
-#~ "调试器插件未启用。 "
-#~ "请将插件添加到shared_preload_libraries设置在postgresql.conf文件中并重新启动数据库服务器。"
-
 #~ msgid "Target Aborted."
 #~ msgstr "目标已中止"
-
-#~ msgid ""
-#~ "Specifies the string that represents a"
-#~ " null value. The default is \\\\N "
-#~ "(backslash-N) in text format, and an "
-#~ "unquoted empty string in CSV format. "
-#~ "You might prefer an empty string "
-#~ "even in text format for cases "
-#~ "where you don't want to distinguish "
-#~ "nulls from empty strings. This option"
-#~ " is not allowed when using binary "
-#~ "format."
-#~ msgstr ""
-#~ "指定表示空值的字符串。默认值为文本格式的\\\\ "
-#~ "N(反斜杠-N)和CSV格式的无引号空字符串。你可能喜欢一个空字符串，即使在文本格式的情况下你不想将空字符串与空字符串区分开。 "
-#~ "使用二进制格式时，不允许使用此选项。"
 
 #~ msgid "Specifies whether or not to wrap SQL code in editor."
 #~ msgstr ""
 
 #~ msgid "History"
 #~ msgstr "历史"
-
-#~ msgid ""
-#~ "The query has been modified, but "
-#~ "not saved. Are you sure you wish"
-#~ " to discard the changes?"
-#~ msgstr "查询已修改，但未保存。确定要放弃更改吗？"
 
 #~ msgid "Total query runtime: %s."
 #~ msgstr "总查询运行时: %s."
@@ -10109,4 +10039,19 @@ msgstr "找不到指定的数据库"
 
 #~ msgid "Retrieving information about the columns returned..."
 #~ msgstr "检索列信息时返回..."
+
+#~ msgid "You cannot cancel background worker processes."
+#~ msgstr ""
+
+#~ msgid "You are not allowed to cancel the main active session."
+#~ msgstr ""
+
+#~ msgid "Superuser privileges are required to cancel another users query."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Specifies whether or not to insert "
+#~ "spaces instead of tabs when the "
+#~ "tab key is used."
+#~ msgstr "指定是否在使用Tab键时插入空格而不是制表符。"
 
