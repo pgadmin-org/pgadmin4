@@ -85,7 +85,8 @@ LANGUAGES = {
     'en': 'English',
     'zh': 'Chinese (Simplified)',
     'de': 'German',
-    'pl': 'Polish'
+    'pl': 'Polish',
+    'ja': 'Japanese'
 }
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
