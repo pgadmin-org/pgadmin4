@@ -17,7 +17,7 @@ from importlib import import_module
 from flask import Flask, abort, request, current_app, session, url_for
 from flask_babel import Babel, gettext
 from flask_login import user_logged_in, user_logged_out
-from flask_security import Security, SQLAlchemyUserDatastore
+from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_mail import Mail
 from flask_security.utils import login_user
 from werkzeug.datastructures import ImmutableDict
@@ -242,13 +242,17 @@ def create_app(app_name=None):
         language = 'en'
         if config.SERVER_MODE is False:
             # Get the user language preference from the miscellaneous module
-            misc_preference = Preferences.module('miscellaneous', False)
-            if misc_preference:
-                user_languages = misc_preference.preference(
-                    'user_language'
-                )
-                if user_languages:
-                    language = user_languages.get() or language
+            if current_user.is_authenticated:
+                user_id = current_user.id
+            else:
+                user = user_datastore.get_user(config.DESKTOP_USER)
+                if user is not None:
+                    user_id = user.id
+            user_language = Preferences.raw_value(
+                'miscellaneous', 'user_language', None, user_id
+            )
+            if user_language is not None:
+                language = user_language
         else:
             # If language is available in get request then return the same
             # otherwise check the session or cookie

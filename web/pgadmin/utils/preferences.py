@@ -473,6 +473,41 @@ class Preferences(object):
             options, help_str, category_label
         )
 
+    @staticmethod
+    def raw_value(_module, _preference, _category=None, _user_id=None):
+        # Find the entry for this module in the configuration database.
+        module = ModulePrefTable.query.filter_by(name=_module).first()
+
+        if module is None:
+            return None
+
+        if _category is None:
+            _category = _module
+
+        if _user_id is None:
+            _user_id = getattr(current_user, 'id', None)
+            if _user_id is None:
+                return None
+
+        cat = PrefCategoryTbl.query.filter_by(mid=module.id).filter_by(name=_category).first()
+
+        if cat is None:
+            return None
+
+        pref = PrefTable.query.filter_by(name=_preference).filter_by(cid=cat.id).first()
+
+        if pref is None:
+            return None
+
+        user_pref  = UserPrefTable.query.filter_by(
+            pid=pref.id
+        ).filter_by(uid=_user_id).first()
+
+        if user_pref is not None:
+            return user_pref.value
+
+        return None
+
     @classmethod
     def module(cls, name, create=True):
         """
