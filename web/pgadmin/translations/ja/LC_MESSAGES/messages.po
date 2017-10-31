@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-27 13:53+0200\n"
+"POT-Creation-Date: 2017-10-31 09:07+0000\n"
 "PO-Revision-Date: 2017-10-19 20:19+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: pgadmin/__init__.py:449 pgadmin/__init__.py:489
+#: pgadmin/__init__.py:453 pgadmin/__init__.py:493
 #, python-format
 msgid "Auto-detected %s installation with the data directory at %s"
 msgstr "%sインストール（データディレクトリ %s）が自動検知されました"
@@ -9442,19 +9442,19 @@ msgstr "日付時刻オプションとしてデータが不正です"
 msgid "Invalid value for an options option."
 msgstr "選択オプションとしてデータが不正です"
 
-#: pgadmin/utils/preferences.py:515
+#: pgadmin/utils/preferences.py:550
 msgid "Could not fine the specified module."
 msgstr "指定されたモジュールが見つかりません"
 
-#: pgadmin/utils/preferences.py:520
+#: pgadmin/utils/preferences.py:555
 msgid "Module '{0}' is no longer in use."
 msgstr "モジュール「{0}」はもう利用できません"
 
-#: pgadmin/utils/preferences.py:533
+#: pgadmin/utils/preferences.py:568
 msgid "Module '{0}' does not have category with id '{1}'"
 msgstr "モジュール「{0}」は ID「{1}」のカテゴリではありません"
 
-#: pgadmin/utils/preferences.py:547
+#: pgadmin/utils/preferences.py:582
 msgid "Could not find the specified preference."
 msgstr "指定された優先順が見つかりません"
 
@@ -9555,7 +9555,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "{0}バイナリパス"
 
 #~ msgid ""
-#~ msgstr "クエリが変更されましたが保存されていません。変更を破棄しますか？"
+#~ msgstr "タブキーが使われたときにスペースを挿入するかどうかを指定します"
 
 #~ msgid "Couldnot find the database on the server."
 #~ msgstr "サーバにデータベースが見つかりませんでした"
@@ -9955,10 +9955,4 @@ msgstr "指定されたデータベースが見つかりませんでした"
 
 #~ msgid "Superuser privileges are required to cancel another users query."
 #~ msgstr "他のユーザのクエリをキャンセルするには、スーパユーザ権限が必要です"
-
-#~ msgid ""
-#~ "Specifies whether or not to insert "
-#~ "spaces instead of tabs when the "
-#~ "tab key is used."
-#~ msgstr "タブキーが使われたときにスペースを挿入するかどうかを指定します"
 

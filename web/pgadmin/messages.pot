@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-27 13:53+0200\n"
+"POT-Creation-Date: 2017-10-31 09:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: pgadmin/__init__.py:449 pgadmin/__init__.py:489
+#: pgadmin/__init__.py:453 pgadmin/__init__.py:493
 #, python-format
 msgid "Auto-detected %s installation with the data directory at %s"
 msgstr ""
@@ -9290,19 +9290,19 @@ msgstr ""
 msgid "Invalid value for an options option."
 msgstr ""
 
-#: pgadmin/utils/preferences.py:515
+#: pgadmin/utils/preferences.py:550
 msgid "Could not fine the specified module."
 msgstr ""
 
-#: pgadmin/utils/preferences.py:520
+#: pgadmin/utils/preferences.py:555
 msgid "Module '{0}' is no longer in use."
 msgstr ""
 
-#: pgadmin/utils/preferences.py:533
+#: pgadmin/utils/preferences.py:568
 msgid "Module '{0}' does not have category with id '{1}'"
 msgstr ""
 
-#: pgadmin/utils/preferences.py:547
+#: pgadmin/utils/preferences.py:582
 msgid "Could not find the specified preference."
 msgstr ""
 

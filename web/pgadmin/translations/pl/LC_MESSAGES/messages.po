@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-27 13:53+0200\n"
+"POT-Creation-Date: 2017-10-31 09:07+0000\n"
 "PO-Revision-Date: 2017-04-05 19:03+0200\n"
 "Last-Translator: grzegorz <begina.felicysym@wp.eu>\n"
 "Language: pl\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: pgadmin/__init__.py:449 pgadmin/__init__.py:489
+#: pgadmin/__init__.py:453 pgadmin/__init__.py:493
 #, python-format
 msgid "Auto-detected %s installation with the data directory at %s"
 msgstr "Wykryto automatycznie instalację %s z folderem danych %s"
@@ -9515,19 +9515,19 @@ msgstr "Niepoprawna wartość dla opcji daty i czasu."
 msgid "Invalid value for an options option."
 msgstr "Niepoprawna wartość dla opcji z opcjami."
 
-#: pgadmin/utils/preferences.py:515
+#: pgadmin/utils/preferences.py:550
 msgid "Could not fine the specified module."
 msgstr "Nie udało się znaleźć wskazanego modułu"
 
-#: pgadmin/utils/preferences.py:520
+#: pgadmin/utils/preferences.py:555
 msgid "Module '{0}' is no longer in use."
 msgstr "Moduł '{0}' nie jest już używany."
 
-#: pgadmin/utils/preferences.py:533
+#: pgadmin/utils/preferences.py:568
 msgid "Module '{0}' does not have category with id '{1}'"
 msgstr "Moduł '{0}' nie ma kategorii o id '{1}'"
 
-#: pgadmin/utils/preferences.py:547
+#: pgadmin/utils/preferences.py:582
 msgid "Could not find the specified preference."
 msgstr "Nie udało się znaleźć wskazanej preferencji."
 
@@ -9938,13 +9938,4 @@ msgstr "Nie znaleziono wskazanej bazy danych."
 
 #~ msgid "Superuser privileges are required to cancel another users query."
 #~ msgstr ""
-
-#~ msgid ""
-#~ "Specifies whether or not to insert "
-#~ "spaces instead of tabs when the "
-#~ "tab key is used."
-#~ msgstr ""
-#~ "Określa czy używać do wstawień spacji"
-#~ " zamiast tabulacji, gdy wciśnie się "
-#~ "klawisz tab."
 
