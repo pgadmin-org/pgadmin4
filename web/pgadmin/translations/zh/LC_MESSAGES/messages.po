@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-27 13:53+0200\n"
+"POT-Creation-Date: 2017-10-31 09:07+0000\n"
 "PO-Revision-Date: 2017-11-14 23:55+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: pgadmin/__init__.py:449 pgadmin/__init__.py:489
+#: pgadmin/__init__.py:453 pgadmin/__init__.py:493
 #, python-format
 msgid "Auto-detected %s installation with the data directory at %s"
 msgstr "自动检测到%s的安装,数据目录在%s "
@@ -9522,19 +9522,19 @@ msgstr "datetime 选项的无效值"
 msgid "Invalid value for an options option."
 msgstr "选项配置的无效"
 
-#: pgadmin/utils/preferences.py:515
+#: pgadmin/utils/preferences.py:550
 msgid "Could not fine the specified module."
 msgstr "找不到指定的模块"
 
-#: pgadmin/utils/preferences.py:520
+#: pgadmin/utils/preferences.py:555
 msgid "Module '{0}' is no longer in use."
 msgstr "模块'{0}'不再使用"
 
-#: pgadmin/utils/preferences.py:533
+#: pgadmin/utils/preferences.py:568
 msgid "Module '{0}' does not have category with id '{1}'"
 msgstr "模块'{0}'没有 id 为'{1}'类别"
 
-#: pgadmin/utils/preferences.py:547
+#: pgadmin/utils/preferences.py:582
 msgid "Could not find the specified preference."
 msgstr "找不到指定的首选项"
 
@@ -9696,7 +9696,7 @@ msgstr "找不到指定的数据库"
 #~ msgstr ""
 
 #~ msgid ""
-#~ msgstr "查询已修改，但未保存。确定要放弃更改吗？"
+#~ msgstr "指定是否在使用Tab键时插入空格而不是制表符。"
 
 #~ msgid "Host Agent"
 #~ msgstr ""
@@ -10048,10 +10048,4 @@ msgstr "找不到指定的数据库"
 
 #~ msgid "Superuser privileges are required to cancel another users query."
 #~ msgstr ""
-
-#~ msgid ""
-#~ "Specifies whether or not to insert "
-#~ "spaces instead of tabs when the "
-#~ "tab key is used."
-#~ msgstr "指定是否在使用Tab键时插入空格而不是制表符。"
 
