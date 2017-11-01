@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-11-01 12:58+0000\n"
+"POT-Creation-Date: 2017-11-01 15:18+0000\n"
 "PO-Revision-Date: 2017-04-05 19:03+0200\n"
 "Last-Translator: grzegorz <begina.felicysym@wp.eu>\n"
 "Language: pl\n"
@@ -116,10 +116,18 @@ msgstr "Niezaimplementowana metoda ({0}) na tym adresie url ({1})"
 msgid "Required properties are missing."
 msgstr "Brak wymaganych własności."
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:200
+#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:215
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:234
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:463
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:127
 #: pgadmin/browser/utils.py:322
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:91
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:221
+#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
 msgid "Connection to the server has been lost."
 msgstr "Stracono połączenie z serwerem."
 
@@ -222,8 +230,8 @@ msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "'{0}' nie mmoże być modyfikowany, gdy połączono z serwerem."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:496
-msgid "No parameters were changed!"
-msgstr "Parametry nie zmieniły się!"
+msgid "No parameters were changed."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:646
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:482
@@ -360,8 +368,8 @@ msgid "WAL replay paused"
 msgstr "Wstrzymano odtwarzanie WAL"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1217
-msgid "Please connect the server!"
-msgstr "Należy połączyć z serwerem!"
+msgid "Please connect the server."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/gpdb.py:15
 msgid "Greenplum Database Binary Path"
@@ -1736,6 +1744,7 @@ msgid "Validate?"
 msgstr "Sprawdzić?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:117
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:175
 msgid "Check cannot be empty."
 msgstr "Sprawdzenie nie może być puste."
 
@@ -1850,24 +1859,25 @@ msgid "Inherited From"
 msgstr "Dziedziczone Z"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:267
-msgid "Column Name cannot be empty!"
-msgstr "Nazwa kolumny nie może być pusta!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:168
+msgid "Column Name cannot be empty."
+msgstr "Nazwa kolumny nie może być pusta."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:275
-msgid "Column Datatype cannot be empty!"
-msgstr "Typ danych kolumny nie może być pusty!"
+msgid "Column Datatype cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:428
 msgid "No Inherit"
 msgstr "Brak Dziedziczenia"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:452
-msgid "Constraint Name cannot be empty!"
-msgstr "Nazwa Ograniczenia nie może być pusta!"
+msgid "Constraint Name cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:458
-msgid "Constraint Check cannot be empty!"
-msgstr "Kontrola Ograniczenia nie może być pusta!"
+msgid "Constraint Check cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:500
 msgid "Foreign Table"
@@ -1941,12 +1951,12 @@ msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:35
-msgid "Token cannot be empty!"
-msgstr "Token nie może być pusty!"
+msgid "Token cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:43
-msgid "Dictionary name cannot be empty!"
-msgstr "Nazwa słownika nie może być pusta!"
+msgid "Dictionary name cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:151
 msgid "Select token"
@@ -1978,17 +1988,23 @@ msgstr "Konfiguracja Kopiowania"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:556
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:162
-msgid "Name must be specified!"
-msgstr "Nazwa musi być określona!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:118
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:143
+#: pgadmin/browser/server_groups/servers/static/js/server.js:851
+msgid "Name must be specified."
+msgstr "Nazwa musi być określona."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:565
-msgid "Select parser or configuration to copy!"
-msgstr "Wybierz analizator składni lub konfigurację do skopiowania!"
+msgid "Select parser or configuration to copy."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:574
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:176
-msgid "Schema must be selected!"
-msgstr "Koniecznie wskaż schemat!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
+msgid "Schema must be selected."
+msgstr "Koniecznie wskaż schemat."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:48
@@ -2018,12 +2034,12 @@ msgid "FTS Dictionary dropped"
 msgstr "Słownik FTS skasowany"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:29
-msgid "Option cannot be empty!"
-msgstr "Opcja nie może być pusta!"
+msgid "Option cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:35
-msgid "Value cannot be empty!"
-msgstr "Wartość nie może być pusta!"
+msgid "Value cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:64
 msgid "FTS Dictionary"
@@ -2041,8 +2057,8 @@ msgid "Template"
 msgstr "Szablon"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:169
-msgid "Template must be selected!"
-msgstr "Koniecznie wskaż szablon!"
+msgid "Template must be selected."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:12
@@ -2112,13 +2128,6 @@ msgstr "Funkcja Lextypes"
 msgid "Headline function"
 msgstr "Funkcja nagłówkowa"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:118
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:143
-#: pgadmin/browser/server_groups/servers/static/js/server.js:851
-msgid "Name must be specified."
-msgstr "Nazwa musi być określona."
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:156
 msgid "Start function must be selected."
 msgstr "Musisz wskazać funkcję startową."
@@ -2134,11 +2143,6 @@ msgstr "Musisz wskazać funkcję kończącą."
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:183
 msgid "Lextype function must be selected."
 msgstr "Funkcja lextype musi być wskazana."
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:192
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
-msgid "Schema must be selected."
-msgstr "Koniecznie wskaż schemat."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:12
@@ -2486,17 +2490,6 @@ msgstr "Czas własny"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:12
 msgid "Packages"
 msgstr "Pakiety"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:227
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:200
-#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:200
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:234
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:463
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:127
-#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
-msgid "Connection to the server has been lost!"
-msgstr "Stracono połączenie z serwerem!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:223
 msgid "Could not find the package."
@@ -3095,10 +3088,6 @@ msgstr "Bez Dziedziczenia?"
 msgid "Don't validate?"
 msgstr "Bez weryfikacji?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:175
-msgid "Check cannot be empty!"
-msgstr "Sprawdzenie nie może być puste!"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:54
 msgid "Exclusion Constraints"
 msgstr "Ograniczenia Wykluczające"
@@ -3424,10 +3413,6 @@ msgstr "Kolejność sortowania"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:139
 msgid "NULLs"
 msgstr "NULLe"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:168
-msgid "Column Name cannot be empty."
-msgstr "Nazwa kolumny nie może być pusta."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:236
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:242
@@ -6787,8 +6772,8 @@ msgid "Error retrieving properties - %s"
 msgstr "Błąd odczytu atrybutów - %s"
 
 #: pgadmin/browser/static/js/node.js:412
-msgid "Please wait while we fetch information about the node from the server!"
-msgstr "Poczekaj na odczyt informacji o węźle z serwera!"
+msgid "Please wait while we fetch information about the node from the server..."
+msgstr ""
 
 #: pgadmin/browser/static/js/node.js:551
 #, python-format
@@ -7704,6 +7689,9 @@ msgid "Reset Layout"
 msgstr "Wyczyść Układ"
 
 #: pgadmin/settings/__init__.py:80 pgadmin/tools/backup/__init__.py:200
+#: pgadmin/tools/debugger/__init__.py:97
+#: pgadmin/tools/import_export/__init__.py:155
+#: pgadmin/tools/maintenance/__init__.py:150
 #: pgadmin/tools/restore/__init__.py:131
 #: pgadmin/tools/user_management/__init__.py:118
 msgid "This URL cannot be called directly."
@@ -8414,12 +8402,6 @@ msgstr ""
 "Jeśli ustawiono na True, Debugger zostanie otwarty w nowej zakładce "
 "przeglądarki."
 
-#: pgadmin/tools/debugger/__init__.py:97
-#: pgadmin/tools/import_export/__init__.py:155
-#: pgadmin/tools/maintenance/__init__.py:150
-msgid "This URL cannot be called directly!"
-msgstr "Ten URL nie może być wywołany bezpośrednio!"
-
 #: pgadmin/tools/debugger/__init__.py:221
 msgid "Functions with a colon in the name cannot be debugged."
 msgstr "Funkcje z dwukropkiem w nazwie nie mogą być debugowane."
@@ -8949,8 +8931,8 @@ msgid "Restoring backup on the server '{0}'..."
 msgstr "Odtworzenie kopii zapasowej na serwerze '{0}'..."
 
 #: pgadmin/tools/restore/__init__.py:196
-msgid "File couldn't be found!"
-msgstr "Plik nie został znaleziony!"
+msgid "File could not be found."
+msgstr ""
 
 #: pgadmin/tools/restore/static/js/restore.js:85
 msgid "Custom or tar"
@@ -9140,8 +9122,8 @@ msgid "Transaction status check failed."
 msgstr "Nie udało się sprawdzić statusu transakcji."
 
 #: pgadmin/tools/sqleditor/command.py:70
-msgid "This feature has not been implemented for object type '{0}'!"
-msgstr "Ta funkcja nie została zaimplementowana dla obiektu typu '{0}'!"
+msgid "This feature has not been implemented for object type '{0}'."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/command.py:245
 msgid "Filter string is empty."
@@ -9299,8 +9281,8 @@ msgid "Setting the limit on the result..."
 msgstr "Ustawianie limitu na wynik..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3153
-msgid "Initializing the query execution!"
-msgstr "Początek wykonywania zapytania!"
+msgid "Initializing query execution..."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
@@ -9499,11 +9481,9 @@ msgstr "Sterownik '{0}' nie został zaimplementowany."
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:365
 msgid ""
-"Failed to decrypt the saved password!\n"
+"Failed to decrypt the saved password.\n"
 "Error: {0}"
 msgstr ""
-"NIepowodzenie odcyfrowania zapisanego hasła!\n"
-"Błąd: {0}"
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:503
 msgid ""
@@ -9907,40 +9887,6 @@ msgstr "Nie znaleziono wskazanej bazy danych."
 #~ msgid "Handler Function cannot be empty"
 #~ msgstr "Funkcja Uchwytu nie może być pusta"
 
-#~ msgid ""
-#~ "Definition incomplete. Please provide Locale"
-#~ " OR Copy Collation OR LC_TYPE/LC_COLLATE"
-#~ msgstr ""
-#~ "Niepełna definicja. Należy zapewnić Locale "
-#~ "LUB Copy Collation LUB LC_TYPE/LC_COLLATE"
-
-#~ msgid ""
-#~ "Definition incomplete, Please provide Locale"
-#~ " OR Copy collation OR LC_TYPE/LC_COLLATE!"
-#~ msgstr ""
-#~ "Niepełna definicja, Należy zapewnić Locale "
-#~ "LUB Copy Collation LUB LC_TYPE/LC_COLLATE!"
-
-#~ msgid ""
-#~ "ERROR: Could not generate reversed "
-#~ "engineered query for the FTS "
-#~ "Configuration!\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Nie można wygenerować zapytania odwróconej "
-#~ "inżynierii dla Konfiguracji FTS.\n"
-#~ "\n"
-#~ "{0}"
-
-#~ msgid ""
-#~ "ERROR: Could not generate reversed "
-#~ "engineered query for FTS Configuration "
-#~ "node!"
-#~ msgstr ""
-#~ "BŁĄD: Nie można wygenerować zapytania "
-#~ "odwróconej inżynierii dla węzła Konfiguracji"
-#~ " FTS!"
-
 #~ msgid "Could not find the specified %s"
 #~ msgstr "Nie znaleziono wskazanego %s"
 
@@ -9959,19 +9905,6 @@ msgstr "Nie znaleziono wskazanej bazy danych."
 #~ msgid "Changing of type table will clear columns collection"
 #~ msgstr "Zmiana tabeli typu spowoduje wyczyszczenie kolekcji kolumn"
 
-#~ msgid ""
-#~ "Above control will be used to "
-#~ "Create/Attach/Detach partitions.<br><ul><li>Create Mode:"
-#~ " User will be able to create N"
-#~ " number of partitions. Mode switch "
-#~ "control is disabled in this "
-#~ "scenario.</li><li>Edit Mode: User will be "
-#~ "able to create/attach/detach N number of"
-#~ " partitions.In attach mode there will "
-#~ "be list of suitable tables to be"
-#~ " attached.</li></ul>"
-#~ msgstr ""
-
 #~ msgid "Scale should not be less than  %(value)s"
 #~ msgstr ""
 
@@ -9987,73 +9920,17 @@ msgstr "Nie znaleziono wskazanej bazy danych."
 #~ msgid "An error occurred whilst terminateing the active query."
 #~ msgstr ""
 
-#~ msgid ""
-#~ "pgAdmin is an open source administration"
-#~ " and management tool for the "
-#~ "PostgreSQL database. The tools include a"
-#~ " graphical administration interface, an SQL"
-#~ " query tool, a procedural code "
-#~ "debugger and much more. The tool "
-#~ "is designed to answer the needs of"
-#~ " developers, DBAs and system administrators"
-#~ " alike."
-#~ msgstr ""
-#~ "pgAdmin to OpenSursowe narzędzia do "
-#~ "administracji i zarządzania bazą danych "
-#~ "PostgreSQL. Posiadają graficzny interfejs "
-#~ "zarządzania, narzędzie kwerend SQL, debugger"
-#~ " kodu proceduralnego i wiele innych. "
-#~ "Zaprojektowane jako odpowiedź na potrzeby "
-#~ "programistów, jak również administratorów "
-#~ "systemowych i baz danych."
-
 #~ msgid "Definition incomplete"
 #~ msgstr "Definicja niepełna"
 
 #~ msgid "Nothing changed"
 #~ msgstr "Nic się nie zmieniło"
 
-#~ msgid ""
-#~ "The SQL below will be executed on"
-#~ " the database server to grant the "
-#~ "selected privileges. Please click on "
-#~ "<b>Finish</b> to complete the process. "
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The length of time to display the"
-#~ " query info notifier after execution "
-#~ "has completed. A value of -1 "
-#~ "disables the notifier and a value "
-#~ "of 0 displays it until clicked. "
-#~ "Values greater than 1 display the "
-#~ "notifier for the number of seconds "
-#~ "specified."
-#~ msgstr ""
-#~ "Długość czasu wyświetlenia powiadomienia o "
-#~ "informacjach zapytania po zakończeniu jego "
-#~ "wykonania. Wartość -1 wyłącza powiadomienie"
-#~ " a wartość 0 wyświetla je do "
-#~ "kliknięcia. Wartości większe od 1 "
-#~ "wyświetlają powiadomienie przez wskazaną "
-#~ "liczbę sekund."
-
 #~ msgid "Row(s) deleted"
 #~ msgstr "Wiersz(e) usunięto"
 
-#~ msgid ""
-#~ "There are unsaved changes in grid, "
-#~ "Please save them first to avoid "
-#~ "inconsistency in data"
-#~ msgstr ""
-#~ "Są niezapisane dane w siatce danych, "
-#~ "Należy je najpierw zapisać by uniknąć"
-#~ " niespójności danych"
-
 #~ msgid "Error occurred while setting verbose option in explain"
 #~ msgstr ""
-#~ "Wystąpił błąd podczas ustawienia opcji "
-#~ "szczegółowości w planie zapytania"
 
 #~ msgid "Error occurred while setting costs option in explain"
 #~ msgstr "Wystąpił błąd podczas ustawienia opcji kosztów w planie zapytania"
@@ -10072,4 +9949,74 @@ msgstr "Nie znaleziono wskazanej bazy danych."
 
 #~ msgid "Could not fine the specified module."
 #~ msgstr "Nie udało się znaleźć wskazanego modułu"
+
+#~ msgid "No parameters were changed!"
+#~ msgstr "Parametry nie zmieniły się!"
+
+#~ msgid "Please connect the server!"
+#~ msgstr "Należy połączyć z serwerem!"
+
+#~ msgid "Column Name cannot be empty!"
+#~ msgstr "Nazwa kolumny nie może być pusta!"
+
+#~ msgid "Column Datatype cannot be empty!"
+#~ msgstr "Typ danych kolumny nie może być pusty!"
+
+#~ msgid "Constraint Name cannot be empty!"
+#~ msgstr "Nazwa Ograniczenia nie może być pusta!"
+
+#~ msgid "Constraint Check cannot be empty!"
+#~ msgstr "Kontrola Ograniczenia nie może być pusta!"
+
+#~ msgid "Token cannot be empty!"
+#~ msgstr "Token nie może być pusty!"
+
+#~ msgid "Dictionary name cannot be empty!"
+#~ msgstr "Nazwa słownika nie może być pusta!"
+
+#~ msgid "Name must be specified!"
+#~ msgstr "Nazwa musi być określona!"
+
+#~ msgid "Select parser or configuration to copy!"
+#~ msgstr "Wybierz analizator składni lub konfigurację do skopiowania!"
+
+#~ msgid "Schema must be selected!"
+#~ msgstr "Koniecznie wskaż schemat!"
+
+#~ msgid "Option cannot be empty!"
+#~ msgstr "Opcja nie może być pusta!"
+
+#~ msgid "Value cannot be empty!"
+#~ msgstr "Wartość nie może być pusta!"
+
+#~ msgid "Template must be selected!"
+#~ msgstr "Koniecznie wskaż szablon!"
+
+#~ msgid "Connection to the server has been lost!"
+#~ msgstr "Stracono połączenie z serwerem!"
+
+#~ msgid "Check cannot be empty!"
+#~ msgstr "Sprawdzenie nie może być puste!"
+
+#~ msgid "Please wait while we fetch information about the node from the server!"
+#~ msgstr "Poczekaj na odczyt informacji o węźle z serwera!"
+
+#~ msgid "This URL cannot be called directly!"
+#~ msgstr "Ten URL nie może być wywołany bezpośrednio!"
+
+#~ msgid "File couldn't be found!"
+#~ msgstr "Plik nie został znaleziony!"
+
+#~ msgid "This feature has not been implemented for object type '{0}'!"
+#~ msgstr "Ta funkcja nie została zaimplementowana dla obiektu typu '{0}'!"
+
+#~ msgid "Initializing the query execution!"
+#~ msgstr "Początek wykonywania zapytania!"
+
+#~ msgid ""
+#~ "Failed to decrypt the saved password!\n"
+#~ "Error: {0}"
+#~ msgstr ""
+#~ "NIepowodzenie odcyfrowania zapisanego hasła!\n"
+#~ "Błąd: {0}"
 

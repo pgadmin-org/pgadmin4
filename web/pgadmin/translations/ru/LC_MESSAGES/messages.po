@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-11-01 12:58+0000\n"
+"POT-Creation-Date: 2017-11-01 15:18+0000\n"
 "PO-Revision-Date: 2017-10-30 22:39+0300\n"
 "Last-Translator: Alexander Lakhin <a.lakhin@postgrespro.ru>\n"
 "Language: ru\n"
@@ -114,10 +114,18 @@ msgstr "Нереализованный метод ({0}) для данного а
 msgid "Required properties are missing."
 msgstr "Требуемые свойства отсутствуют."
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:200
+#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:215
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:234
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:463
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:127
 #: pgadmin/browser/utils.py:322
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:91
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:221
+#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
 msgid "Connection to the server has been lost."
 msgstr "Подключение к серверу было потеряно."
 
@@ -220,8 +228,8 @@ msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "Параметр '{0}' нельзя изменять при установленном подключении к серверу."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:496
-msgid "No parameters were changed!"
-msgstr "Никакие параметры не были изменены!"
+msgid "No parameters were changed."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:646
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:482
@@ -360,8 +368,8 @@ msgid "WAL replay paused"
 msgstr "Воспроизведение WAL приостановлено"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1217
-msgid "Please connect the server!"
-msgstr "Пожалуйста, подключитесь к серверу."
+msgid "Please connect the server."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/gpdb.py:15
 msgid "Greenplum Database Binary Path"
@@ -1742,6 +1750,7 @@ msgid "Validate?"
 msgstr "Проверять?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:117
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:175
 msgid "Check cannot be empty."
 msgstr "Проверка не может быть пустой."
 
@@ -1856,24 +1865,25 @@ msgid "Inherited From"
 msgstr "Наследуется из"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:267
-msgid "Column Name cannot be empty!"
-msgstr "Имя столбца не может быть пустым!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:168
+msgid "Column Name cannot be empty."
+msgstr "Имя столбца не может быть пустым."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:275
-msgid "Column Datatype cannot be empty!"
-msgstr "Тип данных столбца не может быть пустым!"
+msgid "Column Datatype cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:428
 msgid "No Inherit"
 msgstr "Не наследуется"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:452
-msgid "Constraint Name cannot be empty!"
-msgstr "Имя ограничения не может быть пустым!"
+msgid "Constraint Name cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:458
-msgid "Constraint Check cannot be empty!"
-msgstr "Ограничение проверки не может быть пустым!"
+msgid "Constraint Check cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:500
 msgid "Foreign Table"
@@ -1949,12 +1959,12 @@ msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:35
-msgid "Token cannot be empty!"
-msgstr "Фрагмент не может быть пустым!"
+msgid "Token cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:43
-msgid "Dictionary name cannot be empty!"
-msgstr "Имя словаря не может быть пустым!"
+msgid "Dictionary name cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:151
 msgid "Select token"
@@ -1986,17 +1996,23 @@ msgstr "Скопировать конфигурацию"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:556
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:162
-msgid "Name must be specified!"
-msgstr "Необходимо задать имя!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:118
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:143
+#: pgadmin/browser/server_groups/servers/static/js/server.js:851
+msgid "Name must be specified."
+msgstr "Необходимо задать имя."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:565
-msgid "Select parser or configuration to copy!"
-msgstr "Выберите анализатор или копируемую конфигурацию!"
+msgid "Select parser or configuration to copy."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:574
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:176
-msgid "Schema must be selected!"
-msgstr "Необходимо выбрать схему!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
+msgid "Schema must be selected."
+msgstr "Необходимо выбрать схему."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:48
@@ -2026,12 +2042,12 @@ msgid "FTS Dictionary dropped"
 msgstr "Словарь FTS удалён"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:29
-msgid "Option cannot be empty!"
-msgstr "Параметр не может быть пустым!"
+msgid "Option cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:35
-msgid "Value cannot be empty!"
-msgstr "Значение не может быть пустым!"
+msgid "Value cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:64
 msgid "FTS Dictionary"
@@ -2049,8 +2065,8 @@ msgid "Template"
 msgstr "Шаблон"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:169
-msgid "Template must be selected!"
-msgstr "Необходимо выбрать шаблон!"
+msgid "Template must be selected."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:12
@@ -2120,13 +2136,6 @@ msgstr "Функция лекс. типов"
 msgid "Headline function"
 msgstr "Функция выдержек"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:118
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:143
-#: pgadmin/browser/server_groups/servers/static/js/server.js:851
-msgid "Name must be specified."
-msgstr "Необходимо задать имя."
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:156
 msgid "Start function must be selected."
 msgstr "Необходимо выбрать функцию начала."
@@ -2142,11 +2151,6 @@ msgstr "Необходимо выбрать функцию окончания."
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:183
 msgid "Lextype function must be selected."
 msgstr "Необходимо выбрать функцию лекс. типов."
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:192
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
-msgid "Schema must be selected."
-msgstr "Необходимо выбрать схему."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:12
@@ -2494,17 +2498,6 @@ msgstr "Время самой функции"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:12
 msgid "Packages"
 msgstr "Пакеты"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:227
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:200
-#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:200
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:234
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:463
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:127
-#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
-msgid "Connection to the server has been lost!"
-msgstr "Подключение к серверу было потеряно!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:223
 msgid "Could not find the package."
@@ -3103,10 +3096,6 @@ msgstr "Не наследуется?"
 msgid "Don't validate?"
 msgstr "Не проверять?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:175
-msgid "Check cannot be empty!"
-msgstr "Проверка не может быть пустой!"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:54
 msgid "Exclusion Constraints"
 msgstr "Ограничения-исключения"
@@ -3432,10 +3421,6 @@ msgstr "Порядок сортировки"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:139
 msgid "NULLs"
 msgstr "NULL"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:168
-msgid "Column Name cannot be empty."
-msgstr "Имя столбца не может быть пустым."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:236
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:242
@@ -6827,8 +6812,8 @@ msgid "Error retrieving properties - %s"
 msgstr "Ошибка при получении свойств: %s"
 
 #: pgadmin/browser/static/js/node.js:412
-msgid "Please wait while we fetch information about the node from the server!"
-msgstr "Подождите, пока с сервера загружается информация об узле."
+msgid "Please wait while we fetch information about the node from the server..."
+msgstr ""
 
 #: pgadmin/browser/static/js/node.js:551
 #, python-format
@@ -7752,6 +7737,9 @@ msgid "Reset Layout"
 msgstr "Сброс интерфейса"
 
 #: pgadmin/settings/__init__.py:80 pgadmin/tools/backup/__init__.py:200
+#: pgadmin/tools/debugger/__init__.py:97
+#: pgadmin/tools/import_export/__init__.py:155
+#: pgadmin/tools/maintenance/__init__.py:150
 #: pgadmin/tools/restore/__init__.py:131
 #: pgadmin/tools/user_management/__init__.py:118
 msgid "This URL cannot be called directly."
@@ -8458,12 +8446,6 @@ msgstr "Открыть в новой вкладке браузера"
 msgid "If set to True, the Debugger will be opened in a new browser tab."
 msgstr "Если выбрано, отладчик будет открыт в новой вкладке браузера."
 
-#: pgadmin/tools/debugger/__init__.py:97
-#: pgadmin/tools/import_export/__init__.py:155
-#: pgadmin/tools/maintenance/__init__.py:150
-msgid "This URL cannot be called directly!"
-msgstr "Эту ссылку нельзя открывать непосредственно!"
-
 #: pgadmin/tools/debugger/__init__.py:221
 msgid "Functions with a colon in the name cannot be debugged."
 msgstr "Функции с двоеточием в имени отлаживать нельзя."
@@ -9007,8 +8989,8 @@ msgid "Restoring backup on the server '{0}'..."
 msgstr "Восстановление резервной копии на сервере '{0}'..."
 
 #: pgadmin/tools/restore/__init__.py:196
-msgid "File couldn't be found!"
-msgstr "Не удалось найти файл!"
+msgid "File could not be found."
+msgstr ""
 
 #: pgadmin/tools/restore/static/js/restore.js:85
 msgid "Custom or tar"
@@ -9202,8 +9184,8 @@ msgid "Transaction status check failed."
 msgstr "Ошибка при проверке состояния транзакции."
 
 #: pgadmin/tools/sqleditor/command.py:70
-msgid "This feature has not been implemented for object type '{0}'!"
-msgstr "Эта функция не реализована для объектов типа '{0}'!"
+msgid "This feature has not been implemented for object type '{0}'."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/command.py:245
 msgid "Filter string is empty."
@@ -9363,8 +9345,8 @@ msgid "Setting the limit on the result..."
 msgstr "Установка ограничения набора результатов..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3153
-msgid "Initializing the query execution!"
-msgstr "Начинается выполнение запроса."
+msgid "Initializing query execution..."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
@@ -9565,11 +9547,9 @@ msgstr "Драйвер '{0}' не реализован."
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:365
 msgid ""
-"Failed to decrypt the saved password!\n"
+"Failed to decrypt the saved password.\n"
 "Error: {0}"
 msgstr ""
-"Расшифровать сохранённый пароль не удалось!\n"
-"Ошибка: {0}"
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:503
 msgid ""
@@ -9656,39 +9636,7 @@ msgstr "Не удалось найти указанную базу данных.
 #~ msgstr "Функция-обработчик не может быть неопределённой"
 
 #~ msgid ""
-#~ "Definition incomplete. Please provide Locale"
-#~ " OR Copy Collation OR LC_TYPE/LC_COLLATE"
 #~ msgstr ""
-#~ "Определение неполное. Задайте локаль или "
-#~ "копируемое правило сортировки либо "
-#~ "LC_TYPE/LC_COLLATE."
-
-#~ msgid ""
-#~ "Definition incomplete, Please provide Locale"
-#~ " OR Copy collation OR LC_TYPE/LC_COLLATE!"
-#~ msgstr ""
-#~ "Определение неполное Задайте локаль или "
-#~ "копируемое правило сортировки или "
-#~ "LC_TYPE/LC_COLLATE."
-
-#~ msgid ""
-#~ "ERROR: Could not generate reversed "
-#~ "engineered query for the FTS "
-#~ "Configuration!\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Ошибка: не удалось получить определение "
-#~ "конфигурации FTS в виде SQL-запроса!\n"
-#~ "{0}"
-
-#~ msgid ""
-#~ "ERROR: Could not generate reversed "
-#~ "engineered query for FTS Configuration "
-#~ "node!"
-#~ msgstr ""
-#~ "Ошибка: не удалось получить определение "
-#~ "узла конфигурации FTS в виде "
-#~ "SQL-запроса!"
 
 #~ msgid "Could not find the specified %s"
 #~ msgstr "Не удалось найти указанный объект %s"
@@ -9708,28 +9656,6 @@ msgstr "Не удалось найти указанную базу данных.
 #~ msgid "Changing of type table will clear columns collection"
 #~ msgstr "Смена типа таблицы приведёт к очистке набора столбцов"
 
-#~ msgid ""
-#~ "Above control will be used to "
-#~ "Create/Attach/Detach partitions.<br><ul><li>Create Mode:"
-#~ " User will be able to create N"
-#~ " number of partitions. Mode switch "
-#~ "control is disabled in this "
-#~ "scenario.</li><li>Edit Mode: User will be "
-#~ "able to create/attach/detach N number of"
-#~ " partitions.In attach mode there will "
-#~ "be list of suitable tables to be"
-#~ " attached.</li></ul>"
-#~ msgstr ""
-#~ "Размещённые выше элементы управления будут "
-#~ "использоваться для создания/присоединения/отсоединения "
-#~ "секций.<br><ul><li>Режим создания: пользователь "
-#~ "сможет создать N секций. Переключение "
-#~ "режима в этом случае "
-#~ "отключается.</li><li>Режим редактирования: пользователь"
-#~ " сможет создавать/присоединять/отсоединять N "
-#~ "секций. В режиме присоединения будет "
-#~ "показан список подходящих таблиц.</li></ul>"
-
 #~ msgid "Scale should not be less than  %(value)s"
 #~ msgstr "Масштаб не должен быть меньше чем %(value)s"
 
@@ -9745,74 +9671,14 @@ msgstr "Не удалось найти указанную базу данных.
 #~ msgid "An error occurred whilst terminateing the active query."
 #~ msgstr "При попытке завершить активный запрос произошла ошибка."
 
-#~ msgid ""
-#~ "pgAdmin is an open source administration"
-#~ " and management tool for the "
-#~ "PostgreSQL database. The tools include a"
-#~ " graphical administration interface, an SQL"
-#~ " query tool, a procedural code "
-#~ "debugger and much more. The tool "
-#~ "is designed to answer the needs of"
-#~ " developers, DBAs and system administrators"
-#~ " alike."
-#~ msgstr ""
-#~ "pgAdmin — инструмент для администрирования "
-#~ "и управления базами данных PostgreSQL с"
-#~ " открытым исходным кодом. Он включает "
-#~ "графический интерфейс администрирования, "
-#~ "SQL-запросник, отладчик процедурного кода и"
-#~ " многое другое. Он разработан для "
-#~ "удовлетворения потребностей разработчиков, "
-#~ "администраторов баз данных и системных "
-#~ "администраторов."
-
 #~ msgid "Definition incomplete"
 #~ msgstr "Определение неполное"
 
 #~ msgid "Nothing changed"
 #~ msgstr "Нет изменений"
 
-#~ msgid ""
-#~ "The SQL below will be executed on"
-#~ " the database server to grant the "
-#~ "selected privileges. Please click on "
-#~ "<b>Finish</b> to complete the process. "
-#~ msgstr ""
-#~ "Выбранные права будут назначены в "
-#~ "результате выполнения показанного SQL-скрипта "
-#~ "на сервере. Нажмите <b>Закончить</b>, чтобы"
-#~ " завершить этот процесс. "
-
-#~ msgid ""
-#~ "The length of time to display the"
-#~ " query info notifier after execution "
-#~ "has completed. A value of -1 "
-#~ "disables the notifier and a value "
-#~ "of 0 displays it until clicked. "
-#~ "Values greater than 1 display the "
-#~ "notifier for the number of seconds "
-#~ "specified."
-#~ msgstr ""
-#~ "Продолжительность отображения уведомления с "
-#~ "информацией о запросе после его "
-#~ "выполнения. При значении -1 это "
-#~ "уведомление отключается, а при значении "
-#~ "0 остаётся на экране, пока не "
-#~ "будет скрыто пользователем. Значения больше"
-#~ " 0 задают продолжительность отображения в"
-#~ " секундах."
-
 #~ msgid "Row(s) deleted"
 #~ msgstr "Строки удалены"
-
-#~ msgid ""
-#~ "There are unsaved changes in grid, "
-#~ "Please save them first to avoid "
-#~ "inconsistency in data"
-#~ msgstr ""
-#~ "В редакторе данных есть несохранённые "
-#~ "изменения. Сначала сохраните их во "
-#~ "избежание несогласованности данных"
 
 #~ msgid "Error occurred while setting verbose option in explain"
 #~ msgstr "Ошибка при изменении свойства VERBOSE команды EXPLAIN"
@@ -9834,4 +9700,74 @@ msgstr "Не удалось найти указанную базу данных.
 
 #~ msgid "Could not fine the specified module."
 #~ msgstr "Не удалось найти указанный модуль."
+
+#~ msgid "No parameters were changed!"
+#~ msgstr "Никакие параметры не были изменены!"
+
+#~ msgid "Please connect the server!"
+#~ msgstr "Пожалуйста, подключитесь к серверу."
+
+#~ msgid "Column Name cannot be empty!"
+#~ msgstr "Имя столбца не может быть пустым!"
+
+#~ msgid "Column Datatype cannot be empty!"
+#~ msgstr "Тип данных столбца не может быть пустым!"
+
+#~ msgid "Constraint Name cannot be empty!"
+#~ msgstr "Имя ограничения не может быть пустым!"
+
+#~ msgid "Constraint Check cannot be empty!"
+#~ msgstr "Ограничение проверки не может быть пустым!"
+
+#~ msgid "Token cannot be empty!"
+#~ msgstr "Фрагмент не может быть пустым!"
+
+#~ msgid "Dictionary name cannot be empty!"
+#~ msgstr "Имя словаря не может быть пустым!"
+
+#~ msgid "Name must be specified!"
+#~ msgstr "Необходимо задать имя!"
+
+#~ msgid "Select parser or configuration to copy!"
+#~ msgstr "Выберите анализатор или копируемую конфигурацию!"
+
+#~ msgid "Schema must be selected!"
+#~ msgstr "Необходимо выбрать схему!"
+
+#~ msgid "Option cannot be empty!"
+#~ msgstr "Параметр не может быть пустым!"
+
+#~ msgid "Value cannot be empty!"
+#~ msgstr "Значение не может быть пустым!"
+
+#~ msgid "Template must be selected!"
+#~ msgstr "Необходимо выбрать шаблон!"
+
+#~ msgid "Connection to the server has been lost!"
+#~ msgstr "Подключение к серверу было потеряно!"
+
+#~ msgid "Check cannot be empty!"
+#~ msgstr "Проверка не может быть пустой!"
+
+#~ msgid "Please wait while we fetch information about the node from the server!"
+#~ msgstr "Подождите, пока с сервера загружается информация об узле."
+
+#~ msgid "This URL cannot be called directly!"
+#~ msgstr "Эту ссылку нельзя открывать непосредственно!"
+
+#~ msgid "File couldn't be found!"
+#~ msgstr "Не удалось найти файл!"
+
+#~ msgid "This feature has not been implemented for object type '{0}'!"
+#~ msgstr "Эта функция не реализована для объектов типа '{0}'!"
+
+#~ msgid "Initializing the query execution!"
+#~ msgstr "Начинается выполнение запроса."
+
+#~ msgid ""
+#~ "Failed to decrypt the saved password!\n"
+#~ "Error: {0}"
+#~ msgstr ""
+#~ "Расшифровать сохранённый пароль не удалось!\n"
+#~ "Ошибка: {0}"
 

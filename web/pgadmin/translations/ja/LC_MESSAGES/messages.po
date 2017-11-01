@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-11-01 12:58+0000\n"
+"POT-Creation-Date: 2017-11-01 15:18+0000\n"
 "PO-Revision-Date: 2017-10-19 20:19+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
@@ -115,10 +115,18 @@ msgstr "この URL（{1}）ではメソッド（{0}）が実装されていま�
 msgid "Required properties are missing."
 msgstr "必須のプロパティが入力されていません"
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:200
+#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:215
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:234
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:463
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:127
 #: pgadmin/browser/utils.py:322
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:91
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:221
+#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
 msgid "Connection to the server has been lost."
 msgstr "サーバへの接続が切断されました"
 
@@ -221,8 +229,8 @@ msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "サーバに接続している間は、「{0}」は変更できません"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:496
-msgid "No parameters were changed!"
-msgstr "変更されたパラメータがありません！"
+msgid "No parameters were changed."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:646
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:482
@@ -356,8 +364,8 @@ msgid "WAL replay paused"
 msgstr "WALの再生を一時停止しました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1217
-msgid "Please connect the server!"
-msgstr "サーバに接続してください！"
+msgid "Please connect the server."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/gpdb.py:15
 msgid "Greenplum Database Binary Path"
@@ -1724,6 +1732,7 @@ msgid "Validate?"
 msgstr "有効"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:117
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:175
 msgid "Check cannot be empty."
 msgstr "チェックは必須です"
 
@@ -1838,24 +1847,25 @@ msgid "Inherited From"
 msgstr "継承元"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:267
-msgid "Column Name cannot be empty!"
-msgstr "カラム名は必須です！"
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:168
+msgid "Column Name cannot be empty."
+msgstr "カラム名は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:275
-msgid "Column Datatype cannot be empty!"
-msgstr "カラムのデータ型は必須です！"
+msgid "Column Datatype cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:428
 msgid "No Inherit"
 msgstr "継承しない"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:452
-msgid "Constraint Name cannot be empty!"
-msgstr "制約名は必須です！"
+msgid "Constraint Name cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:458
-msgid "Constraint Check cannot be empty!"
-msgstr "チェックは必須です！"
+msgid "Constraint Check cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:500
 msgid "Foreign Table"
@@ -1929,12 +1939,12 @@ msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:35
-msgid "Token cannot be empty!"
-msgstr "トークンは必須です！"
+msgid "Token cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:43
-msgid "Dictionary name cannot be empty!"
-msgstr "辞書名は必須です"
+msgid "Dictionary name cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:151
 msgid "Select token"
@@ -1966,16 +1976,22 @@ msgstr "コピー設定…"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:556
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:162
-msgid "Name must be specified!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:118
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:143
+#: pgadmin/browser/server_groups/servers/static/js/server.js:851
+msgid "Name must be specified."
 msgstr "名称は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:565
-msgid "Select parser or configuration to copy!"
-msgstr "コピー設定かパーサを選択"
+msgid "Select parser or configuration to copy."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:574
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:176
-msgid "Schema must be selected!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
+msgid "Schema must be selected."
 msgstr "スキーマは必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:54
@@ -2006,12 +2022,12 @@ msgid "FTS Dictionary dropped"
 msgstr "全文検索辞書が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:29
-msgid "Option cannot be empty!"
-msgstr "オプションは必須です！"
+msgid "Option cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:35
-msgid "Value cannot be empty!"
-msgstr "値は必須です！"
+msgid "Value cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:64
 msgid "FTS Dictionary"
@@ -2029,8 +2045,8 @@ msgid "Template"
 msgstr "テンプレート"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:169
-msgid "Template must be selected!"
-msgstr "テンプレートは必須です"
+msgid "Template must be selected."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:12
@@ -2098,13 +2114,6 @@ msgstr "Lextypes関数"
 msgid "Headline function"
 msgstr "Headline関数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:118
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:143
-#: pgadmin/browser/server_groups/servers/static/js/server.js:851
-msgid "Name must be specified."
-msgstr "名称は必須です"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:156
 msgid "Start function must be selected."
 msgstr "開始関数は必須です"
@@ -2120,11 +2129,6 @@ msgstr "終了関数は必須です"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:183
 msgid "Lextype function must be selected."
 msgstr "Lextype関数は必須です"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:192
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
-msgid "Schema must be selected."
-msgstr "スキーマは必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:12
@@ -2470,17 +2474,6 @@ msgstr "自身の実行時間"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:12
 msgid "Packages"
 msgstr "パッケージ"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:227
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:200
-#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:200
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:234
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:463
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:127
-#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
-msgid "Connection to the server has been lost!"
-msgstr "サーバへの接続が切断されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:223
 msgid "Could not find the package."
@@ -3079,10 +3072,6 @@ msgstr "継承しない"
 msgid "Don't validate?"
 msgstr "無効化しますか？"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:175
-msgid "Check cannot be empty!"
-msgstr "CHECK 制約は必須です！"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:54
 msgid "Exclusion Constraints"
 msgstr "除外制約"
@@ -3408,10 +3397,6 @@ msgstr "ソート順"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:139
 msgid "NULLs"
 msgstr "NULL"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:168
-msgid "Column Name cannot be empty."
-msgstr "カラム名は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:236
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:242
@@ -6756,8 +6741,8 @@ msgid "Error retrieving properties - %s"
 msgstr "プロパティ取得エラー - %s"
 
 #: pgadmin/browser/static/js/node.js:412
-msgid "Please wait while we fetch information about the node from the server!"
-msgstr "サーバからノードに関する情報を取得するまでお待ちください"
+msgid "Please wait while we fetch information about the node from the server..."
+msgstr ""
 
 #: pgadmin/browser/static/js/node.js:551
 #, python-format
@@ -7671,6 +7656,9 @@ msgid "Reset Layout"
 msgstr "レイアウトをリセット"
 
 #: pgadmin/settings/__init__.py:80 pgadmin/tools/backup/__init__.py:200
+#: pgadmin/tools/debugger/__init__.py:97
+#: pgadmin/tools/import_export/__init__.py:155
+#: pgadmin/tools/maintenance/__init__.py:150
 #: pgadmin/tools/restore/__init__.py:131
 #: pgadmin/tools/user_management/__init__.py:118
 msgid "This URL cannot be called directly."
@@ -8373,12 +8361,6 @@ msgstr "新しいブラウザタブで開く"
 msgid "If set to True, the Debugger will be opened in a new browser tab."
 msgstr "True の場合、デバッガが新しいブラウザタブで開きます"
 
-#: pgadmin/tools/debugger/__init__.py:97
-#: pgadmin/tools/import_export/__init__.py:155
-#: pgadmin/tools/maintenance/__init__.py:150
-msgid "This URL cannot be called directly!"
-msgstr "このURLは直接呼び出せません！"
-
 #: pgadmin/tools/debugger/__init__.py:221
 msgid "Functions with a colon in the name cannot be debugged."
 msgstr "名前にコロンを含む関数はデバッグできません"
@@ -8891,8 +8873,8 @@ msgid "Restoring backup on the server '{0}'..."
 msgstr "サーバ「{0}」のバックアップをリストア中…"
 
 #: pgadmin/tools/restore/__init__.py:196
-msgid "File couldn't be found!"
-msgstr "ファイルが見つかりませんでした！"
+msgid "File could not be found."
+msgstr ""
 
 #: pgadmin/tools/restore/static/js/restore.js:85
 msgid "Custom or tar"
@@ -9077,8 +9059,8 @@ msgid "Transaction status check failed."
 msgstr "トランザクション状態のチェックに失敗しました"
 
 #: pgadmin/tools/sqleditor/command.py:70
-msgid "This feature has not been implemented for object type '{0}'!"
-msgstr "オブジェクトタイプ「{0}」の機能が実装されていません"
+msgid "This feature has not been implemented for object type '{0}'."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/command.py:245
 msgid "Filter string is empty."
@@ -9236,8 +9218,8 @@ msgid "Setting the limit on the result..."
 msgstr "結果の上限を設定中…"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3153
-msgid "Initializing the query execution!"
-msgstr "クエリ実行を初期化中！"
+msgid "Initializing query execution..."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
@@ -9436,11 +9418,9 @@ msgstr "ドライバ「{0}」が実装されていません"
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:365
 msgid ""
-"Failed to decrypt the saved password!\n"
+"Failed to decrypt the saved password.\n"
 "Error: {0}"
 msgstr ""
-"保存されたパスワードの復号に失敗しました\n"
-"エラー： {0}"
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:503
 msgid ""
@@ -9527,7 +9507,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "{0}バイナリパス"
 
 #~ msgid ""
-#~ msgstr "タブキーが使われたときにスペースを挿入するかどうかを指定します"
+#~ msgstr "グリッドに保存されていない変更があります。データが矛盾しないようにするために、まずは保存してください"
 
 #~ msgid "Couldnot find the database on the server."
 #~ msgstr "サーバにデータベースが見つかりませんでした"
@@ -9934,33 +9914,6 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgid "Handler Function cannot be empty"
 #~ msgstr "ハンドラ関数は必須です"
 
-#~ msgid ""
-#~ "Definition incomplete. Please provide Locale"
-#~ " OR Copy Collation OR LC_TYPE/LC_COLLATE"
-#~ msgstr "定義が未完了です。ロケールかコピーコレーションか LC_TYPE/LC_COLLATE を指定してください"
-
-#~ msgid ""
-#~ "Definition incomplete, Please provide Locale"
-#~ " OR Copy collation OR LC_TYPE/LC_COLLATE!"
-#~ msgstr "定義が未完了です。ロケールかコピーコレーションか LC_TYPE/LC_COLLATE を指定してください！"
-
-#~ msgid ""
-#~ "ERROR: Could not generate reversed "
-#~ "engineered query for the FTS "
-#~ "Configuration!\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "エラー： 全文検索設定のリバースエンジンクエリが生成できませんでした。\n"
-#~ "{0}"
-
-#~ msgid ""
-#~ "ERROR: Could not generate reversed "
-#~ "engineered query for FTS Configuration "
-#~ "node!"
-#~ msgstr ""
-#~ "エラー： 全文検索設定ノードのリバースエンジンクエリが生成できませんでした。\n"
-#~ "{0}"
-
 #~ msgid "Could not find the specified %s"
 #~ msgstr "指定された %s が見つかりませんでした"
 
@@ -9979,23 +9932,6 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgid "Changing of type table will clear columns collection"
 #~ msgstr "タイプテーブルを変更するとカラムコレクションがクリアされます"
 
-#~ msgid ""
-#~ "Above control will be used to "
-#~ "Create/Attach/Detach partitions.<br><ul><li>Create Mode:"
-#~ " User will be able to create N"
-#~ " number of partitions. Mode switch "
-#~ "control is disabled in this "
-#~ "scenario.</li><li>Edit Mode: User will be "
-#~ "able to create/attach/detach N number of"
-#~ " partitions.In attach mode there will "
-#~ "be list of suitable tables to be"
-#~ " attached.</li></ul>"
-#~ msgstr ""
-#~ "上記の制御は、パーティションの作成、取り付け、取り外しに使われます。<br><ul><li>作成モード： "
-#~ "ユーザはN個のパーティションを作成することができます。このとき、モードの変更制御は使うことができません。</li><li>編集モード："
-#~ " "
-#~ "ユーザはN個のパーティションの作成、取り付け、取り外しをすることができます。取り付けモードでは、取り付け可能なテーブルのリストが表示されます。</li></ul>"
-
 #~ msgid "Scale should not be less than  %(value)s"
 #~ msgstr "スケールは %(value)s 以上を指定してください"
 
@@ -10011,57 +9947,14 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgid "An error occurred whilst terminateing the active query."
 #~ msgstr ""
 
-#~ msgid ""
-#~ "pgAdmin is an open source administration"
-#~ " and management tool for the "
-#~ "PostgreSQL database. The tools include a"
-#~ " graphical administration interface, an SQL"
-#~ " query tool, a procedural code "
-#~ "debugger and much more. The tool "
-#~ "is designed to answer the needs of"
-#~ " developers, DBAs and system administrators"
-#~ " alike."
-#~ msgstr ""
-#~ "pgAdmin は PostgreSQL "
-#~ "データべースのためのオープンソース管理ツールです。グラフィカルな管理インターフェース、SQL "
-#~ "クエリツール、関数コードデバッガ等の機能があります。開発者、DBA、システム管理者のニーズに応えるように設計されています。"
-
 #~ msgid "Definition incomplete"
 #~ msgstr "定義が不完全"
 
 #~ msgid "Nothing changed"
 #~ msgstr "変更なし"
 
-#~ msgid ""
-#~ "The SQL below will be executed on"
-#~ " the database server to grant the "
-#~ "selected privileges. Please click on "
-#~ "<b>Finish</b> to complete the process. "
-#~ msgstr ""
-#~ "選択された権限を付与するために、データベースサーバで以下の SQL が実行されます。処理を完了するにには "
-#~ "<b>完了</b> をクリックしてください"
-
-#~ msgid ""
-#~ "The length of time to display the"
-#~ " query info notifier after execution "
-#~ "has completed. A value of -1 "
-#~ "disables the notifier and a value "
-#~ "of 0 displays it until clicked. "
-#~ "Values greater than 1 display the "
-#~ "notifier for the number of seconds "
-#~ "specified."
-#~ msgstr ""
-#~ "クエリ実行完了後にクエリ情報通知を表示する時間。-1 を指定すると無効になり、0 "
-#~ "を指定するとクリックするまで表示されます。1 以上の値を指定すると、通知がその秒数表示されます"
-
 #~ msgid "Row(s) deleted"
 #~ msgstr "行が削除されました"
-
-#~ msgid ""
-#~ "There are unsaved changes in grid, "
-#~ "Please save them first to avoid "
-#~ "inconsistency in data"
-#~ msgstr "グリッドに保存されていない変更があります。データが矛盾しないようにするために、まずは保存してください"
 
 #~ msgid "Error occurred while setting verbose option in explain"
 #~ msgstr "EXPLAIN の VERBOSE オプションの設定中にエラーが発生しました"
@@ -10083,4 +9976,74 @@ msgstr "指定されたデータベースが見つかりませんでした"
 
 #~ msgid "Could not fine the specified module."
 #~ msgstr "指定されたモジュールが見つかりません"
+
+#~ msgid "No parameters were changed!"
+#~ msgstr "変更されたパラメータがありません！"
+
+#~ msgid "Please connect the server!"
+#~ msgstr "サーバに接続してください！"
+
+#~ msgid "Column Name cannot be empty!"
+#~ msgstr "カラム名は必須です！"
+
+#~ msgid "Column Datatype cannot be empty!"
+#~ msgstr "カラムのデータ型は必須です！"
+
+#~ msgid "Constraint Name cannot be empty!"
+#~ msgstr "制約名は必須です！"
+
+#~ msgid "Constraint Check cannot be empty!"
+#~ msgstr "チェックは必須です！"
+
+#~ msgid "Token cannot be empty!"
+#~ msgstr "トークンは必須です！"
+
+#~ msgid "Dictionary name cannot be empty!"
+#~ msgstr "辞書名は必須です"
+
+#~ msgid "Name must be specified!"
+#~ msgstr "名称は必須です"
+
+#~ msgid "Select parser or configuration to copy!"
+#~ msgstr "コピー設定かパーサを選択"
+
+#~ msgid "Schema must be selected!"
+#~ msgstr "スキーマは必須です"
+
+#~ msgid "Option cannot be empty!"
+#~ msgstr "オプションは必須です！"
+
+#~ msgid "Value cannot be empty!"
+#~ msgstr "値は必須です！"
+
+#~ msgid "Template must be selected!"
+#~ msgstr "テンプレートは必須です"
+
+#~ msgid "Connection to the server has been lost!"
+#~ msgstr "サーバへの接続が切断されました"
+
+#~ msgid "Check cannot be empty!"
+#~ msgstr "CHECK 制約は必須です！"
+
+#~ msgid "Please wait while we fetch information about the node from the server!"
+#~ msgstr "サーバからノードに関する情報を取得するまでお待ちください"
+
+#~ msgid "This URL cannot be called directly!"
+#~ msgstr "このURLは直接呼び出せません！"
+
+#~ msgid "File couldn't be found!"
+#~ msgstr "ファイルが見つかりませんでした！"
+
+#~ msgid "This feature has not been implemented for object type '{0}'!"
+#~ msgstr "オブジェクトタイプ「{0}」の機能が実装されていません"
+
+#~ msgid "Initializing the query execution!"
+#~ msgstr "クエリ実行を初期化中！"
+
+#~ msgid ""
+#~ "Failed to decrypt the saved password!\n"
+#~ "Error: {0}"
+#~ msgstr ""
+#~ "保存されたパスワードの復号に失敗しました\n"
+#~ "エラー： {0}"
 
