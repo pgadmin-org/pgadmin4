@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-11-01 12:58+0000\n"
+"POT-Creation-Date: 2017-11-01 15:18+0000\n"
 "PO-Revision-Date: 2017-11-14 23:55+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -115,10 +115,18 @@ msgstr "未实现的方法 ({0}) 为此 url ({1})"
 msgid "Required properties are missing."
 msgstr "缺少必需的属性。"
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:200
+#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:215
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:234
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:463
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:127
 #: pgadmin/browser/utils.py:322
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:91
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:221
+#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
 msgid "Connection to the server has been lost."
 msgstr "到服务器的连接已丢失。"
 
@@ -221,8 +229,8 @@ msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "服务器在连接时, '{0}'不允许修改。"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:496
-msgid "No parameters were changed!"
-msgstr "没有参数发生改变！"
+msgid "No parameters were changed."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:646
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:482
@@ -360,8 +368,8 @@ msgid "WAL replay paused"
 msgstr "WAL 重演已暂停"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1217
-msgid "Please connect the server!"
-msgstr "请连接服务器"
+msgid "Please connect the server."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/gpdb.py:15
 msgid "Greenplum Database Binary Path"
@@ -1738,6 +1746,7 @@ msgid "Validate?"
 msgstr "验证?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:117
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:175
 msgid "Check cannot be empty."
 msgstr "检查不能为空"
 
@@ -1852,28 +1861,26 @@ msgid "Inherited From"
 msgstr "继承自"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:267
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:168
 #, fuzzy
-msgid "Column Name cannot be empty!"
+msgid "Column Name cannot be empty."
 msgstr "列名称不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:275
-#, fuzzy
-msgid "Column Datatype cannot be empty!"
-msgstr "列数据类型不能为空!"
+msgid "Column Datatype cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:428
 msgid "No Inherit"
 msgstr "无继承"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:452
-#, fuzzy
-msgid "Constraint Name cannot be empty!"
-msgstr "约束名称不能为空！"
+msgid "Constraint Name cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:458
-#, fuzzy
-msgid "Constraint Check cannot be empty!"
-msgstr "约束检查不能为空！"
+msgid "Constraint Check cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:500
 msgid "Foreign Table"
@@ -1948,14 +1955,12 @@ msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:35
-#, fuzzy
-msgid "Token cannot be empty!"
-msgstr "标记不能为空!"
+msgid "Token cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:43
-#, fuzzy
-msgid "Dictionary name cannot be empty!"
-msgstr "词典名称不能为空！"
+msgid "Dictionary name cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:151
 msgid "Select token"
@@ -1987,17 +1992,23 @@ msgstr "复制配置"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:556
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:162
-msgid "Name must be specified!"
-msgstr "必须指定名称!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:118
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:143
+#: pgadmin/browser/server_groups/servers/static/js/server.js:851
+msgid "Name must be specified."
+msgstr "名称必须指定"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:565
-msgid "Select parser or configuration to copy!"
-msgstr "选择分析器或复制配置！"
+msgid "Select parser or configuration to copy."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:574
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:176
-msgid "Schema must be selected!"
-msgstr "模式必须选择!"
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
+msgid "Schema must be selected."
+msgstr "必须选中模式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:48
@@ -2028,14 +2039,12 @@ msgid "FTS Dictionary dropped"
 msgstr "FTS 分析器删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:29
-#, fuzzy
-msgid "Option cannot be empty!"
-msgstr "选项不能为空！"
+msgid "Option cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:35
-#, fuzzy
-msgid "Value cannot be empty!"
-msgstr "值不能为空！"
+msgid "Value cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:64
 #, fuzzy
@@ -2054,8 +2063,8 @@ msgid "Template"
 msgstr "模板"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:169
-msgid "Template must be selected!"
-msgstr "模板必须选择!"
+msgid "Template must be selected."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:12
@@ -2124,13 +2133,6 @@ msgstr "Lextypes 函数"
 msgid "Headline function"
 msgstr "标题函数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:118
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:143
-#: pgadmin/browser/server_groups/servers/static/js/server.js:851
-msgid "Name must be specified."
-msgstr "名称必须指定"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:156
 msgid "Start function must be selected."
 msgstr "启动函数必须选择"
@@ -2146,11 +2148,6 @@ msgstr "必须选择终止函数"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:183
 msgid "Lextype function must be selected."
 msgstr "必须选择Lextype函数"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser.js:192
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
-msgid "Schema must be selected."
-msgstr "必须选中模式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:12
@@ -2503,17 +2500,6 @@ msgstr "自己时间"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:12
 msgid "Packages"
 msgstr "包"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:227
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:200
-#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:200
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:234
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:463
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:127
-#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
-msgid "Connection to the server has been lost!"
-msgstr "到服务器的连接已丢失！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:223
 #, fuzzy
@@ -3128,11 +3114,6 @@ msgstr "没有继承吗？"
 msgid "Don't validate?"
 msgstr "不验证么?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:175
-#, fuzzy
-msgid "Check cannot be empty!"
-msgstr "检查不能为空 ！"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:54
 msgid "Exclusion Constraints"
 msgstr "排他约束"
@@ -3459,11 +3440,6 @@ msgstr "排序顺序"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:139
 msgid "NULLs"
 msgstr "空值"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:168
-#, fuzzy
-msgid "Column Name cannot be empty."
-msgstr "列名称不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:236
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:242
@@ -6804,8 +6780,8 @@ msgid "Error retrieving properties - %s"
 msgstr "检索属性-%s时，出错"
 
 #: pgadmin/browser/static/js/node.js:412
-msgid "Please wait while we fetch information about the node from the server!"
-msgstr "请稍候我们从服务器获取有关节点的信息!"
+msgid "Please wait while we fetch information about the node from the server..."
+msgstr ""
 
 #: pgadmin/browser/static/js/node.js:551
 #, python-format
@@ -7740,6 +7716,9 @@ msgid "Reset Layout"
 msgstr "重置布局"
 
 #: pgadmin/settings/__init__.py:80 pgadmin/tools/backup/__init__.py:200
+#: pgadmin/tools/debugger/__init__.py:97
+#: pgadmin/tools/import_export/__init__.py:155
+#: pgadmin/tools/maintenance/__init__.py:150
 #: pgadmin/tools/restore/__init__.py:131
 #: pgadmin/tools/user_management/__init__.py:118
 #, fuzzy
@@ -8448,13 +8427,6 @@ msgstr ""
 msgid "If set to True, the Debugger will be opened in a new browser tab."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:97
-#: pgadmin/tools/import_export/__init__.py:155
-#: pgadmin/tools/maintenance/__init__.py:150
-#, fuzzy
-msgid "This URL cannot be called directly!"
-msgstr "此 URL 不能被直接调用 ！"
-
 #: pgadmin/tools/debugger/__init__.py:221
 msgid "Functions with a colon in the name cannot be debugged."
 msgstr "函数名称中存在冒号无法调试"
@@ -8970,9 +8942,8 @@ msgid "Restoring backup on the server '{0}'..."
 msgstr "还原备份在服务器'{0}'"
 
 #: pgadmin/tools/restore/__init__.py:196
-#, fuzzy
-msgid "File couldn't be found!"
-msgstr "找不到指定的规则。"
+msgid "File could not be found."
+msgstr ""
 
 #: pgadmin/tools/restore/static/js/restore.js:85
 msgid "Custom or tar"
@@ -9161,8 +9132,8 @@ msgid "Transaction status check failed."
 msgstr "事务状态检查失败"
 
 #: pgadmin/tools/sqleditor/command.py:70
-msgid "This feature has not been implemented for object type '{0}'!"
-msgstr "对象类型 '{0}'的这个特性没有实现！"
+msgid "This feature has not been implemented for object type '{0}'."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/command.py:245
 msgid "Filter string is empty."
@@ -9320,8 +9291,8 @@ msgid "Setting the limit on the result..."
 msgstr "设置限制的结果......"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3153
-msgid "Initializing the query execution!"
-msgstr "初始化查询执行！"
+msgid "Initializing query execution..."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
@@ -9520,11 +9491,9 @@ msgstr "驱动程序'{0}'没有实现"
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:365
 msgid ""
-"Failed to decrypt the saved password!\n"
+"Failed to decrypt the saved password.\n"
 "Error: {0}"
 msgstr ""
-"无法解密已储存的密码！\n"
-"错误:{0}"
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:503
 msgid ""
@@ -9672,7 +9641,7 @@ msgstr "找不到指定的数据库"
 #~ msgstr ""
 
 #~ msgid ""
-#~ msgstr "指定是否在使用Tab键时插入空格而不是制表符。"
+#~ msgstr "网格中有未保存的更改，请先保存它们，以避免数据不一致"
 
 #~ msgid "Host Agent"
 #~ msgstr ""
@@ -10031,31 +10000,6 @@ msgstr "找不到指定的数据库"
 #~ msgid "Handler Function cannot be empty"
 #~ msgstr "处理函数不能为空"
 
-#~ msgid ""
-#~ "Definition incomplete. Please provide Locale"
-#~ " OR Copy Collation OR LC_TYPE/LC_COLLATE"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Definition incomplete, Please provide Locale"
-#~ " OR Copy collation OR LC_TYPE/LC_COLLATE!"
-#~ msgstr "不完整的定义。 请提供语言环境或复制排序规则或LC_CTYPE / LC_COLLATE"
-
-#~ msgid ""
-#~ "ERROR: Could not generate reversed "
-#~ "engineered query for the FTS "
-#~ "Configuration!\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "错误：无法为FTS配置生成反向工程查询！\n"
-#~ " {0}“"
-
-#~ msgid ""
-#~ "ERROR: Could not generate reversed "
-#~ "engineered query for FTS Configuration "
-#~ "node!"
-#~ msgstr "错误：无法为FTS配置节点生成反向工程查询！"
-
 #~ msgid "Could not find the specified %s"
 #~ msgstr "找不到指定的 %s"
 
@@ -10074,19 +10018,6 @@ msgstr "找不到指定的数据库"
 #~ msgid "Changing of type table will clear columns collection"
 #~ msgstr "类型表的改变将清除列集合"
 
-#~ msgid ""
-#~ "Above control will be used to "
-#~ "Create/Attach/Detach partitions.<br><ul><li>Create Mode:"
-#~ " User will be able to create N"
-#~ " number of partitions. Mode switch "
-#~ "control is disabled in this "
-#~ "scenario.</li><li>Edit Mode: User will be "
-#~ "able to create/attach/detach N number of"
-#~ " partitions.In attach mode there will "
-#~ "be list of suitable tables to be"
-#~ " attached.</li></ul>"
-#~ msgstr ""
-
 #~ msgid "Scale should not be less than  %(value)s"
 #~ msgstr ""
 
@@ -10102,50 +10033,14 @@ msgstr "找不到指定的数据库"
 #~ msgid "An error occurred whilst terminateing the active query."
 #~ msgstr ""
 
-#~ msgid ""
-#~ "pgAdmin is an open source administration"
-#~ " and management tool for the "
-#~ "PostgreSQL database. The tools include a"
-#~ " graphical administration interface, an SQL"
-#~ " query tool, a procedural code "
-#~ "debugger and much more. The tool "
-#~ "is designed to answer the needs of"
-#~ " developers, DBAs and system administrators"
-#~ " alike."
-#~ msgstr "pgAdmin是一个开源的PostgreSQL数据库管理工具。这些工具包括图形管理界面，SQL查询工具，存储过程代码调试器等等。该工具旨在满足开发人员，DBA和系统管理员的需求。"
-
 #~ msgid "Definition incomplete"
 #~ msgstr "-- 定义不完整"
 
 #~ msgid "Nothing changed"
 #~ msgstr "没有改变"
 
-#~ msgid ""
-#~ "The SQL below will be executed on"
-#~ " the database server to grant the "
-#~ "selected privileges. Please click on "
-#~ "<b>Finish</b> to complete the process. "
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The length of time to display the"
-#~ " query info notifier after execution "
-#~ "has completed. A value of -1 "
-#~ "disables the notifier and a value "
-#~ "of 0 displays it until clicked. "
-#~ "Values greater than 1 display the "
-#~ "notifier for the number of seconds "
-#~ "specified."
-#~ msgstr "执行完成后显示查询信息通知程序的时间长度。值-1禁用通知程序，值0显示直到单击。大于1的值显示指定的秒数的通知程序。"
-
 #~ msgid "Row(s) deleted"
 #~ msgstr "删除行"
-
-#~ msgid ""
-#~ "There are unsaved changes in grid, "
-#~ "Please save them first to avoid "
-#~ "inconsistency in data"
-#~ msgstr "网格中有未保存的更改，请先保存它们，以避免数据不一致"
 
 #~ msgid "Error occurred while setting verbose option in explain"
 #~ msgstr "在解释设置verbose选项时发生错误"
@@ -10167,4 +10062,74 @@ msgstr "找不到指定的数据库"
 
 #~ msgid "Could not fine the specified module."
 #~ msgstr "找不到指定的模块"
+
+#~ msgid "No parameters were changed!"
+#~ msgstr "没有参数发生改变！"
+
+#~ msgid "Please connect the server!"
+#~ msgstr "请连接服务器"
+
+#~ msgid "Column Name cannot be empty!"
+#~ msgstr "列名称不能为空"
+
+#~ msgid "Column Datatype cannot be empty!"
+#~ msgstr "列数据类型不能为空!"
+
+#~ msgid "Constraint Name cannot be empty!"
+#~ msgstr "约束名称不能为空！"
+
+#~ msgid "Constraint Check cannot be empty!"
+#~ msgstr "约束检查不能为空！"
+
+#~ msgid "Token cannot be empty!"
+#~ msgstr "标记不能为空!"
+
+#~ msgid "Dictionary name cannot be empty!"
+#~ msgstr "词典名称不能为空！"
+
+#~ msgid "Name must be specified!"
+#~ msgstr "必须指定名称!"
+
+#~ msgid "Select parser or configuration to copy!"
+#~ msgstr "选择分析器或复制配置！"
+
+#~ msgid "Schema must be selected!"
+#~ msgstr "模式必须选择!"
+
+#~ msgid "Option cannot be empty!"
+#~ msgstr "选项不能为空！"
+
+#~ msgid "Value cannot be empty!"
+#~ msgstr "值不能为空！"
+
+#~ msgid "Template must be selected!"
+#~ msgstr "模板必须选择!"
+
+#~ msgid "Connection to the server has been lost!"
+#~ msgstr "到服务器的连接已丢失！"
+
+#~ msgid "Check cannot be empty!"
+#~ msgstr "检查不能为空 ！"
+
+#~ msgid "Please wait while we fetch information about the node from the server!"
+#~ msgstr "请稍候我们从服务器获取有关节点的信息!"
+
+#~ msgid "This URL cannot be called directly!"
+#~ msgstr "此 URL 不能被直接调用 ！"
+
+#~ msgid "File couldn't be found!"
+#~ msgstr "找不到指定的规则。"
+
+#~ msgid "This feature has not been implemented for object type '{0}'!"
+#~ msgstr "对象类型 '{0}'的这个特性没有实现！"
+
+#~ msgid "Initializing the query execution!"
+#~ msgstr "初始化查询执行！"
+
+#~ msgid ""
+#~ "Failed to decrypt the saved password!\n"
+#~ "Error: {0}"
+#~ msgstr ""
+#~ "无法解密已储存的密码！\n"
+#~ "错误:{0}"
 
