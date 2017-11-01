@@ -362,7 +362,7 @@ class Connection(BaseConnection):
             except Exception as e:
                 current_app.logger.exception(e)
                 return False, \
-                       _("Failed to decrypt the saved password!\nError: {0}").format(
+                       _("Failed to decrypt the saved password.\nError: {0}").format(
                            str(e)
                        )
 

@@ -3143,7 +3143,7 @@ define('tools.querytool', [
 
         self.trigger(
           'pgadmin-sqleditor:loading-icon:show',
-          gettext("Initializing the query execution!")
+          gettext("Initializing query execution...")
         );
 
         $("#btn-flash").prop('disabled', true);

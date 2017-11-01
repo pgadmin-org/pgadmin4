@@ -198,7 +198,7 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                        "Connection to the server has been lost!"
+                        "Connection to the server has been lost."
                     )
                 )
 

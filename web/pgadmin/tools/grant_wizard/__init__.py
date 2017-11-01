@@ -112,7 +112,7 @@ def check_precondition(f):
         # If DB not connected then return error to browser
         if not server_info['conn'].connected():
             return precondition_required(
-                gettext("Connection to the server has been lost!")
+                gettext("Connection to the server has been lost.")
             )
 
         # Set template path for sql scripts

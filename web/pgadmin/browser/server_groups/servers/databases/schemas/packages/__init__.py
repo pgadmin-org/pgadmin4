@@ -145,7 +145,7 @@ class PackageView(PGChildNodeView):
                 if not self.conn.connected():
                     return precondition_required(
                         _(
-                            "Connection to the server has been lost!"
+                            "Connection to the server has been lost."
                         )
                     )
                 self.template_path = 'package/ppas/#{0}#'.format(self.manager.version)

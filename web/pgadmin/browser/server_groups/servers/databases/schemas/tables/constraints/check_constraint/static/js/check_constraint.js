@@ -172,7 +172,7 @@ define('pgadmin.node.check_constraint', [
               errmsg;
 
           if (_.isUndefined(this.get('consrc')) || String(this.get('consrc')).replace(/^\s+|\s+$/g, '') == '') {
-            err['consrc'] = gettext('Check cannot be empty!');
+            err['consrc'] = gettext('Check cannot be empty.');
             errmsg = errmsg || err['consrc'];
           }
 

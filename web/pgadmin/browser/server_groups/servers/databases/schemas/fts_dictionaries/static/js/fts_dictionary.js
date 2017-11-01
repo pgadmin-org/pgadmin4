@@ -26,13 +26,13 @@ define('pgadmin.node.fts_dictionary', [
 
             if (_.isUndefined(this.get('option')) ||
                 String(this.get('option')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = gettext('Option cannot be empty!');
+                var msg = gettext('Option cannot be empty.');
                 this.errorModel.set('option',msg);
                 return msg;
             }
             if (_.isUndefined(this.get('value')) ||
                 String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = gettext('Value cannot be empty!');
+                var msg = gettext('Value cannot be empty.');
                 this.errorModel.set('value',msg);
                 return msg;
             }
@@ -159,21 +159,21 @@ define('pgadmin.node.fts_dictionary', [
 
           // Validate FTS Dictionary name
           if (_.isUndefined(name) || _.isNull(name) || String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Name must be specified!');
+            var msg = gettext('Name must be specified.');
             this.errorModel.set('name', msg);
             return msg;
           }
 
           // Validate template name
           else if (_.isUndefined(template) || _.isNull(template) || String(template).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Template must be selected!');
+            var msg = gettext('Template must be selected.');
             this.errorModel.set('template', msg);
             return msg;
           }
 
           // Validate schema
           else if (_.isUndefined(schema) || _.isNull(schema) || String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Schema must be selected!');
+            var msg = gettext('Schema must be selected.');
             this.errorModel.set('schema', msg);
             return msg;
           }

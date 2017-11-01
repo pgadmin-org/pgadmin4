@@ -32,7 +32,7 @@ class ConnectionLost(HTTPException):
 
     def get_response(self, environ=None):
         return service_unavailable(
-            _("Connection to the server has been lost!"),
+            _("Connection to the server has been lost."),
             info="CONNECTION_LOST",
             data={
                 'sid': self.sid,

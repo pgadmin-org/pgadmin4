@@ -460,7 +460,7 @@ rolmembership:{
 
                 if not self.conn.connected():
                     return precondition_required(
-                        _("Connection to the server has been lost!")
+                        _("Connection to the server has been lost.")
                     )
 
                 ver = self.manager.version
