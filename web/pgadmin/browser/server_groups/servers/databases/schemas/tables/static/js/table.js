@@ -219,7 +219,7 @@ define('pgadmin.node.table', [
 
           alertify.confirm(
             gettext('Reset statistics'),
-            S(gettext('Are you sure you want to reset the statistics for table %s?')).sprintf(d._label).value(),
+            S(gettext('Are you sure you want to reset the statistics for table "%s"?')).sprintf(d._label).value(),
             function (e) {
               if (e) {
                 var data = d;

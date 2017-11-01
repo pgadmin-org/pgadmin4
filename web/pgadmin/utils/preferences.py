@@ -547,7 +547,7 @@ class Preferences(object):
         # Can't find the reference for it in the configuration database,
         # create on for it.
         if module is None:
-            return False, gettext("Could not fine the specified module.")
+            return False, gettext("Could not find the specified module.")
 
         m = cls.modules[module.name]
 

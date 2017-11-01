@@ -168,7 +168,7 @@ define('pgadmin.node.tablespace', [
             alertify.dialog('move_objects_dlg' ,function factory() {
               return {
                 main: function() {
-                 var title = gettext('Move objects to another tablespace ');
+                 var title = gettext('Move objects to another tablespace');
                  this.set('title', title);
                 },
                 build: function() {

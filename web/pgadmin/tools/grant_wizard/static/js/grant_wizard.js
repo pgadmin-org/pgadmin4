@@ -1003,7 +1003,7 @@ define([
                   page_title: _('Final (Review Selection) (step 3 of 3)'),
                   show_description: _('The SQL below will be executed on the ' +
                                 'database server to grant the selected privileges. ' +
-                                'Please click on <b>Finish</b> to complete the process. '),
+                                'Please click on <b>Finish</b> to complete the process.'),
                   model: newModel,
                   view: new(function() {
 

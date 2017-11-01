@@ -325,7 +325,7 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                gettext("Couldnot find the foreign data wrapper information.")
+                gettext("Could not find the foreign data wrapper information.")
             )
 
         if res['rows'][0]['fdwoptions'] is not None:
@@ -568,7 +568,7 @@ class ForeignDataWrapperView(PGChildNodeView):
 
             if len(res['rows']) == 0:
                 return gone(
-                    gettext("Couldnot find the foreign data wrapper information.")
+                    gettext("Could not find the foreign data wrapper information.")
                 )
 
             if res['rows'][0]['fdwoptions'] is not None:

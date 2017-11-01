@@ -255,7 +255,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           alertify.confirm(
             gettext('Reset statistics'),
-            S(gettext('Are you sure you want to reset the statistics for table %s?')).sprintf(d._label).value(),
+            S(gettext('Are you sure you want to reset the statistics for table "%s"?')).sprintf(d._label).value(),
             function (e) {
               if (e) {
                 var data = d;
@@ -733,7 +733,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
                 if (!_.isUndefined(tbl_name) &&
                     tbl_name !== '' && column_collection.length !== 0) {
-                  var msg = gettext('Changing of type table will clear columns collection');
+                  var msg = gettext('Changing of table type will clear columns collection.');
                   alertify.confirm(msg, function (e) {
                     if (e) {
                       // User clicks Ok, lets clear columns collection
@@ -975,9 +975,9 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         },{
           id: 'partition_note', label: gettext('Partition'),
           type: 'note', group: 'partition',
-          text: gettext('Above control will be used to Create/Attach/Detach partitions.<br>' +
+          text: gettext('The control above is used to Create/Attach/Detach partitions.<br>' +
             '<ul><li>Create Mode: User will be able to create N number of partitions. Mode switch control is disabled in this scenario.</li>' +
-            '<li>Edit Mode: User will be able to create/attach/detach N number of partitions.' +
+            '<li>Edit Mode: User will be able to create/attach/detach N number of partitions. ' +
             'In attach mode there will be list of suitable tables to be attached.</li></ul>'),
           visible: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)

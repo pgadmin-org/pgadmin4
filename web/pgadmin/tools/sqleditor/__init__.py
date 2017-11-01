@@ -113,7 +113,7 @@ class SqlEditorModule(PgAdminModule):
                 'The length of time to display the query info notifier after '
                 'execution has completed. A value of -1 disables the notifier '
                 'and a value of 0 displays it until clicked. Values greater '
-                'than 1 display the notifier for the number of seconds '
+                'than 0 display the notifier for the number of seconds '
                 'specified.'
             )
         )

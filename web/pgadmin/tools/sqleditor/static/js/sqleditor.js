@@ -2220,12 +2220,12 @@ define('tools.querytool', [
               } else {
                 $("#btn-save").prop('disabled', true);
               }
-              alertify.success(gettext("Row(s) deleted"));
+              alertify.success(gettext("Row(s) deleted."));
           } else {
             // There are other data to needs to be updated on server
             if(is_updated) {
               alertify.alert(gettext("Operation failed"),
-                    gettext("There are unsaved changes in grid, Please save them first to avoid inconsistency in data")
+                    gettext("There are unsaved changes in the grid. Please save them first to avoid data inconsistencies.")
                   );
               return;
             }
@@ -3432,13 +3432,13 @@ define('tools.querytool', [
           success: function (res) {
             if (res.success == undefined || !res.success) {
               alertify.alert('Explain options error',
-                gettext("Error occurred while setting verbose option in explain")
+                gettext("Error occurred while setting verbose option in explain.")
               );
             }
           },
           error: function (e) {
             alertify.alert('Explain options error',
-              gettext("Error occurred while setting verbose option in explain")
+              gettext("Error occurred while setting verbose option in explain.")
             );
             return;
           }
@@ -3470,13 +3470,13 @@ define('tools.querytool', [
           success: function (res) {
             if (res.success == undefined || !res.success) {
               alertify.alert('Explain options error',
-                gettext("Error occurred while setting costs option in explain")
+                gettext("Error occurred while setting costs option in explain.")
               );
             }
           },
           error: function (e) {
             alertify.alert('Explain options error',
-              gettext("Error occurred while setting costs option in explain")
+              gettext("Error occurred while setting costs option in explain.")
             );
           }
         });
@@ -3507,13 +3507,13 @@ define('tools.querytool', [
           success: function (res) {
             if (res.success == undefined || !res.success) {
               alertify.alert('Explain options error',
-                gettext("Error occurred while setting buffers option in explain")
+                gettext("Error occurred while setting buffers option in explain.")
               );
             }
           },
           error: function (e) {
             alertify.alert('Explain options error',
-              gettext("Error occurred while setting buffers option in explain")
+              gettext("Error occurred while setting buffers option in explain.")
             );
           }
         });
@@ -3543,13 +3543,13 @@ define('tools.querytool', [
           success: function (res) {
             if (res.success == undefined || !res.success) {
               alertify.alert('Explain options error',
-                gettext("Error occurred while setting timing option in explain")
+                gettext("Error occurred while setting timing option in explain.")
               );
             }
           },
           error: function (e) {
             alertify.alert('Explain options error',
-              gettext("Error occurred while setting timing option in explain")
+              gettext("Error occurred while setting timing option in explain.")
             );
           }
         });
@@ -3647,7 +3647,7 @@ define('tools.querytool', [
           error: function (e) {
             updateUI();
             alertify.alert('Get Preferences error',
-              gettext("Error occurred while getting query tool options ")
+              gettext("Error occurred while getting query tool options.")
             );
           }
         });
