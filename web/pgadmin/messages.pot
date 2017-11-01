@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-31 09:07+0000\n"
+"POT-Creation-Date: 2017-11-01 12:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1011,6 +1011,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:651
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:328
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:247
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:191
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:66
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:374
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:565
@@ -1185,7 +1186,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:328
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:571
-msgid "Couldnot find the foreign data wrapper information."
+msgid "Could not find the foreign data wrapper information."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:488
@@ -1466,7 +1467,7 @@ msgid "Validator Function"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:255
-msgid "Handler Function cannot be empty"
+msgid "Handler Function cannot be empty."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:67
@@ -1505,6 +1506,7 @@ msgid "Schema dropped"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:771
+#: pgadmin/static/js/backform.pgadmin.js:1467
 msgid "Definition incomplete."
 msgstr ""
 
@@ -1605,9 +1607,10 @@ msgid "Could not find the collation object in the database."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:432
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:168
 msgid ""
 "Definition incomplete. Please provide Locale OR Copy Collation OR "
-"LC_TYPE/LC_COLLATE"
+"LC_TYPE/LC_COLLATE."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:501
@@ -1638,12 +1641,6 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:123
 msgid "LC_TYPE"
-msgstr ""
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:168
-msgid ""
-"Definition incomplete, Please provide Locale OR Copy collation OR "
-"LC_TYPE/LC_COLLATE!"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:53
@@ -1916,15 +1913,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:864
 msgid ""
-"ERROR: Could not generate reversed engineered query for the FTS "
-"Configuration!\n"
+"Could not generate reversed engineered query for the FTS Configuration.\n"
 "{0}"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:873
-msgid ""
-"ERROR: Could not generate reversed engineered query for FTS Configuration"
-" node!"
+msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:35
@@ -2187,7 +2181,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:395
 #, python-format
-msgid "Could not find the specified %s"
+msgid "Could not find the specified %s."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:446
@@ -2497,7 +2491,7 @@ msgid "The specified package could not be found.\n"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:456
-msgid "Packge dropped"
+msgid "Package dropped"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:108
@@ -2616,10 +2610,6 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:173
 msgid "Cycled"
-msgstr ""
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:191
-msgid "Securitiy Labels"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:238
@@ -3059,7 +3049,7 @@ msgid "The specified check constraint could not be found.\n"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:626
-msgid "Check Constraint dropped."
+msgid "Check constraint dropped."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:900
@@ -3548,7 +3538,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:258
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:222
 #, python-format
-msgid "Are you sure you want to reset the statistics for table %s?"
+msgid "Are you sure you want to reset the statistics for table \"%s\"?"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:307
@@ -3634,7 +3624,7 @@ msgid "Of type"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:736
-msgid "Changing of type table will clear columns collection"
+msgid "Changing of table type will clear columns collection."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:763
@@ -3732,12 +3722,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:978
 msgid ""
-"Above control will be used to Create/Attach/Detach "
+"The control above is used to Create/Attach/Detach "
 "partitions.<br><ul><li>Create Mode: User will be able to create N number "
 "of partitions. Mode switch control is disabled in this "
 "scenario.</li><li>Edit Mode: User will be able to create/attach/detach N "
-"number of partitions.In attach mode there will be list of suitable tables"
-" to be attached.</li></ul>"
+"number of partitions. In attach mode there will be list of suitable "
+"tables to be attached.</li></ul>"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:993
@@ -4409,12 +4399,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:220
 #, python-format
-msgid "Scale should not be less than  %(value)s"
+msgid "Scale should not be less than %(value)s"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:222
 #, python-format
-msgid "Scale should not be greater than  %(value)s"
+msgid "Scale should not be greater than %(value)s"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:269
@@ -6393,7 +6383,7 @@ msgid "Object owner"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:171
-msgid "Move objects to another tablespace "
+msgid "Move objects to another tablespace"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:181
@@ -6882,11 +6872,11 @@ msgid "Are you sure you wish to terminate the session?"
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:80
-msgid "Session terminateed successfully."
+msgid "Session terminated successfully."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:81
-msgid "An error occurred whilst terminateing the active query."
+msgid "An error occurred whilst terminating the active query."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:142
@@ -7147,10 +7137,10 @@ msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:11
 msgid ""
-"pgAdmin is an open source administration and management tool for the "
-"PostgreSQL database. The tools include a graphical administration "
-"interface, an SQL query tool, a procedural code debugger and much more. "
-"The tool is designed to answer the needs of developers, DBAs and system "
+"pgAdmin is an Open Source administration and management tool for the "
+"PostgreSQL database. It includes a graphical administration interface, an"
+" SQL query tool, a procedural code debugger and much more. The tool is "
+"designed to answer the needs of developers, DBAs and system "
 "administrators alike."
 msgstr ""
 
@@ -7570,12 +7560,8 @@ msgstr ""
 msgid "Click for details."
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:1467
-msgid "Definition incomplete"
-msgstr ""
-
 #: pgadmin/static/js/backform.pgadmin.js:1471
-msgid "Nothing changed"
+msgid "Nothing changed."
 msgstr ""
 
 #: pgadmin/static/js/backform.pgadmin.js:1584
@@ -8492,7 +8478,7 @@ msgstr ""
 msgid ""
 "The SQL below will be executed on the database server to grant the "
 "selected privileges. Please click on <b>Finish</b> to complete the "
-"process. "
+"process."
 msgstr ""
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1058
@@ -8839,7 +8825,7 @@ msgstr ""
 msgid ""
 "The length of time to display the query info notifier after execution has"
 " completed. A value of -1 disables the notifier and a value of 0 displays"
-" it until clicked. Values greater than 1 display the notifier for the "
+" it until clicked. Values greater than 0 display the notifier for the "
 "number of seconds specified."
 msgstr ""
 
@@ -9045,7 +9031,7 @@ msgid "%s rows affected."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2230
-msgid "Row(s) deleted"
+msgid "Row(s) deleted."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2234
@@ -9054,8 +9040,8 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2235
 msgid ""
-"There are unsaved changes in grid, Please save them first to avoid "
-"inconsistency in data"
+"There are unsaved changes in the grid. Please save them first to avoid "
+"data inconsistencies."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2240
@@ -9114,26 +9100,26 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
-msgid "Error occurred while setting verbose option in explain"
+msgid "Error occurred while setting verbose option in explain."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3480
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3486
-msgid "Error occurred while setting costs option in explain"
+msgid "Error occurred while setting costs option in explain."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3517
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3523
-msgid "Error occurred while setting buffers option in explain"
+msgid "Error occurred while setting buffers option in explain."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3553
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3559
-msgid "Error occurred while setting timing option in explain"
+msgid "Error occurred while setting timing option in explain."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3657
-msgid "Error occurred while getting query tool options "
+msgid "Error occurred while getting query tool options."
 msgstr ""
 
 #: pgadmin/tools/user_management/__init__.py:104
@@ -9145,7 +9131,8 @@ msgid "Missing field: '{0}'"
 msgstr ""
 
 #: pgadmin/tools/user_management/__init__.py:285
-msgid "User Deleted."
+#: pgadmin/tools/user_management/static/js/user_management.js:313
+msgid "User deleted."
 msgstr ""
 
 #: pgadmin/tools/user_management/static/js/user_management.js:21
@@ -9212,10 +9199,6 @@ msgstr ""
 
 #: pgadmin/tools/user_management/static/js/user_management.js:289
 msgid "Cannot delete currently logged in user."
-msgstr ""
-
-#: pgadmin/tools/user_management/static/js/user_management.js:313
-msgid "User deleted."
 msgstr ""
 
 #: pgadmin/tools/user_management/static/js/user_management.js:316
@@ -9291,7 +9274,7 @@ msgid "Invalid value for an options option."
 msgstr ""
 
 #: pgadmin/utils/preferences.py:550
-msgid "Could not fine the specified module."
+msgid "Could not find the specified module."
 msgstr ""
 
 #: pgadmin/utils/preferences.py:555
