@@ -67,7 +67,7 @@ class ObjectRegistry(ABCMeta):
             return (ObjectRegistry.registry[name])(**kwargs)
 
         raise NotImplementedError(
-            gettext("This feature has not been implemented for object type '{0}'!").format(name)
+            gettext("This feature has not been implemented for object type '{0}'.").format(name)
         )
 
 

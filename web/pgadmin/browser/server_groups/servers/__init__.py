@@ -493,7 +493,7 @@ class ServerNode(PGChildNodeView):
         if idx == 0:
             return make_json_response(
                 success=0,
-                errormsg=gettext('No parameters were changed!')
+                errormsg=gettext('No parameters were changed.')
             )
 
         try:
@@ -1214,7 +1214,7 @@ class ServerNode(PGChildNodeView):
                     info=gettext('WAL replay paused'),
                     data={'in_recovery': True, 'wal_pause': pause}
                 )
-            return gone(errormsg=_('Please connect the server!'))
+            return gone(errormsg=_('Please connect the server.'))
         except Exception as e:
             current_app.logger.error(
                 'WAL replay pause/resume failed'

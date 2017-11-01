@@ -264,7 +264,7 @@ define('pgadmin.node.foreign_table', [
       var errmsg = null;
 
       if (_.isUndefined(this.get('attname')) || String(this.get('attname')).replace(/^\s+|\s+$/g, '') == '') {
-        errmsg = gettext('Column Name cannot be empty!');
+        errmsg = gettext('Column Name cannot be empty.');
         this.errorModel.set('attname', errmsg);
       } else {
         this.errorModel.unset('attname');
@@ -272,7 +272,7 @@ define('pgadmin.node.foreign_table', [
 
       if (_.isUndefined(this.get('datatype')) || String(this.get('datatype'))
       .replace(/^\s+|\s+$/g, '') == '') {
-        errmsg = gettext('Column Datatype cannot be empty!');
+        errmsg = gettext('Column Datatype cannot be empty.');
         this.errorModel.set('datatype', errmsg);
       } else {
         this.errorModel.unset('datatype');
@@ -449,13 +449,13 @@ define('pgadmin.node.foreign_table', [
       errmsg;
 
       if (_.isUndefined(this.get('conname')) || String(this.get('conname')).replace(/^\s+|\s+$/g, '') == '') {
-        err['conname'] = gettext('Constraint Name cannot be empty!');
+        err['conname'] = gettext('Constraint Name cannot be empty.');
         errmsg = errmsg || err['conname'];
       }
 
       if (_.isUndefined(this.get('consrc')) || String(this.get('consrc'))
       .replace(/^\s+|\s+$/g, '') == '') {
-        err['consrc'] = gettext('Constraint Check cannot be empty!');
+        err['consrc'] = gettext('Constraint Check cannot be empty.');
         errmsg = errmsg || err['consrc'];
       }
 

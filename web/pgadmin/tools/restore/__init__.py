@@ -193,7 +193,7 @@ def create_restore_job(sid):
     if _file is None:
         return make_json_response(
             success=0,
-            errormsg=_("File couldn't be found!")
+            errormsg=_("File could not be found.")
         )
 
     # Fetch the server details like hostname, port, roles etc

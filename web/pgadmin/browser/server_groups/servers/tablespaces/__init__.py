@@ -121,11 +121,11 @@ class TablespaceView(PGChildNodeView):
             # If DB not connected then return error to browser
             if not self.conn.connected():
                 current_app.logger.warning(
-                    "Connection to the server has been lost!"
+                    "Connection to the server has been lost."
                 )
                 return precondition_required(
                     gettext(
-                        "Connection to the server has been lost!"
+                        "Connection to the server has been lost."
                     )
                 )
 
