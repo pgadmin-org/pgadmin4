@@ -77,8 +77,8 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
           } else {
             title = gettext('Terminate Session?');
             txtConfirm = gettext('Are you sure you wish to terminate the session?');
-            txtSuccess = gettext('Session terminateed successfully.')
-            txtError = gettext('An error occurred whilst terminateing the active query.')
+            txtSuccess = gettext('Session terminated successfully.')
+            txtError = gettext('An error occurred whilst terminating the active query.')
             action_url = terminate_session_url + self.model.get('pid')
           }
 

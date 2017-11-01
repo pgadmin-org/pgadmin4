@@ -392,7 +392,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         if fnid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                     _("Could not find the specified %s").format(self.node_type)
+                     _("Could not find the specified %s.").format(self.node_type)
                 )
 
             row = rset['rows'][0]

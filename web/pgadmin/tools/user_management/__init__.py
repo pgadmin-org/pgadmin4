@@ -282,7 +282,7 @@ def delete(uid):
 
         return make_json_response(
             success=1,
-            info=_("User Deleted."),
+            info=_("User deleted."),
             data={}
         )
     except Exception as e:

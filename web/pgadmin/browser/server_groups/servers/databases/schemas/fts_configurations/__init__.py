@@ -862,7 +862,7 @@ class FtsConfigurationView(PGChildNodeView):
             if not status:
                 return internal_server_error(
                     _(
-                        "ERROR: Could not generate reversed engineered query for the FTS Configuration!\n{0}"
+                        "Could not generate reversed engineered query for the FTS Configuration.\n{0}"
                     ).format(
                         res
                     )
@@ -871,7 +871,7 @@ class FtsConfigurationView(PGChildNodeView):
             if res is None:
                 return gone(
                     _(
-                        "ERROR: Could not generate reversed engineered query for FTS Configuration node!")
+                        "Could not generate reversed engineered query for FTS Configuration node.")
                 )
 
             return ajax_response(response=res)

@@ -164,8 +164,8 @@ define('pgadmin.node.collation', [
               || String(this.get('copy_collation')).replace(/^\s+|\s+$/g, '') == '')) {
             copy_coll_flag = true;
           }
-          if (locale_flag && (lc_coll_flag || lc_coll_flag) && copy_coll_flag) {
-            msg = gettext('Definition incomplete, Please provide Locale OR Copy collation OR LC_TYPE/LC_COLLATE!');
+          if (locale_flag && (lc_coll_flag || lc_type_flag) && copy_coll_flag) {
+            msg = gettext('Definition incomplete. Please provide Locale OR Copy Collation OR LC_TYPE/LC_COLLATE.');
             err['locale'] = msg
           }
           return null;

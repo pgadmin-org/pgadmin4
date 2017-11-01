@@ -1464,11 +1464,11 @@
             });
           } else {
             this.sqlCtrl.clearHistory();
-            this.sqlCtrl.setValue('-- ' + gettext('Definition incomplete'));
+            this.sqlCtrl.setValue('-- ' + gettext('Definition incomplete.'));
           }
         } else {
           this.sqlCtrl.clearHistory();
-          this.sqlCtrl.setValue('-- ' + gettext('Nothing changed'));
+          this.sqlCtrl.setValue('-- ' + gettext('Nothing changed.'));
         }
         this.sqlCtrl.refresh.apply(this.sqlCtrl);
       }

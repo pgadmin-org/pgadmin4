@@ -453,7 +453,7 @@ class PackageView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info=_("Packge dropped"),
+                info=_("Package dropped"),
                 data={
                     'id': pkgid,
                     'scid': scid,
