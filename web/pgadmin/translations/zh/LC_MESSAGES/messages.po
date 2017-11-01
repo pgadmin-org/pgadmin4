@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-31 09:07+0000\n"
+"POT-Creation-Date: 2017-11-01 12:58+0000\n"
 "PO-Revision-Date: 2017-11-14 23:55+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -1022,6 +1022,7 @@ msgstr "当"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:651
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:328
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:247
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:191
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:66
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:374
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:565
@@ -1197,8 +1198,8 @@ msgstr "找不到指定的外部数据包装"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:328
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:571
-msgid "Couldnot find the foreign data wrapper information."
-msgstr "无法找到外部数据包装信息"
+msgid "Could not find the foreign data wrapper information."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:488
 msgid "The specified foreign data wrapper could not be found.\n"
@@ -1481,8 +1482,8 @@ msgid "Validator Function"
 msgstr "验证程序函数"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:255
-msgid "Handler Function cannot be empty"
-msgstr "处理函数不能为空"
+msgid "Handler Function cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:67
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:268
@@ -1523,6 +1524,7 @@ msgid "Schema dropped"
 msgstr "模式已被删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:771
+#: pgadmin/static/js/backform.pgadmin.js:1467
 msgid "Definition incomplete."
 msgstr "定义不完整"
 
@@ -1623,9 +1625,10 @@ msgid "Could not find the collation object in the database."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:432
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:168
 msgid ""
 "Definition incomplete. Please provide Locale OR Copy Collation OR "
-"LC_TYPE/LC_COLLATE"
+"LC_TYPE/LC_COLLATE."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:501
@@ -1657,13 +1660,6 @@ msgstr "LC_COLLATE"
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:123
 msgid "LC_TYPE"
 msgstr "LC_TYPE"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:168
-#, fuzzy
-msgid ""
-"Definition incomplete, Please provide Locale OR Copy collation OR "
-"LC_TYPE/LC_COLLATE!"
-msgstr "不完整的定义。 请提供语言环境或复制排序规则或LC_CTYPE / LC_COLLATE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:53
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:12
@@ -1942,21 +1938,14 @@ msgid "FTS Configuration dropped"
 msgstr "FTS 配置删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:864
-#, fuzzy
 msgid ""
-"ERROR: Could not generate reversed engineered query for the FTS "
-"Configuration!\n"
+"Could not generate reversed engineered query for the FTS Configuration.\n"
 "{0}"
 msgstr ""
-"错误：无法为FTS配置生成反向工程查询！\n"
-" {0}“"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:873
-#, fuzzy
-msgid ""
-"ERROR: Could not generate reversed engineered query for FTS Configuration"
-" node!"
-msgstr "错误：无法为FTS配置节点生成反向工程查询！"
+msgid "Could not generate reversed engineered query for FTS Configuration node."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:35
 #, fuzzy
@@ -2230,9 +2219,9 @@ msgid "Functions"
 msgstr "函数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:395
-#, fuzzy, python-format
-msgid "Could not find the specified %s"
-msgstr "找不到指定的 %s"
+#, python-format
+msgid "Could not find the specified %s."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:446
 msgid "Could not find the function node in the database."
@@ -2543,8 +2532,8 @@ msgid "The specified package could not be found.\n"
 msgstr "找不到指定的包。\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:456
-msgid "Packge dropped"
-msgstr "包已经被删除"
+msgid "Package dropped"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:108
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:700
@@ -2667,10 +2656,6 @@ msgstr "高速缓存"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:173
 msgid "Cycled"
 msgstr "循环"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:191
-msgid "Securitiy Labels"
-msgstr "安全标签"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:238
 msgid "Current value cannot be empty."
@@ -3120,9 +3105,8 @@ msgid "The specified check constraint could not be found.\n"
 msgstr "找不到指定的 check 约束。 \n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:626
-#, fuzzy
-msgid "Check Constraint dropped."
-msgstr "Check 约束被删除"
+msgid "Check constraint dropped."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:900
 msgid "Check constraint updated."
@@ -3615,9 +3599,9 @@ msgstr "重置统计"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:258
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:222
-#, fuzzy, python-format
-msgid "Are you sure you want to reset the statistics for table %s?"
-msgstr "你确实要重置表 %s的统计信息？"
+#, python-format
+msgid "Are you sure you want to reset the statistics for table \"%s\"?"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:307
 #, python-format
@@ -3702,8 +3686,8 @@ msgid "Of type"
 msgstr "的类型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:736
-msgid "Changing of type table will clear columns collection"
-msgstr "类型表的改变将清除列集合"
+msgid "Changing of table type will clear columns collection."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:763
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:765
@@ -3800,12 +3784,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:978
 msgid ""
-"Above control will be used to Create/Attach/Detach "
+"The control above is used to Create/Attach/Detach "
 "partitions.<br><ul><li>Create Mode: User will be able to create N number "
 "of partitions. Mode switch control is disabled in this "
 "scenario.</li><li>Edit Mode: User will be able to create/attach/detach N "
-"number of partitions.In attach mode there will be list of suitable tables"
-" to be attached.</li></ul>"
+"number of partitions. In attach mode there will be list of suitable "
+"tables to be attached.</li></ul>"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:993
@@ -4484,12 +4468,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:220
 #, python-format
-msgid "Scale should not be less than  %(value)s"
+msgid "Scale should not be less than %(value)s"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:222
 #, python-format
-msgid "Scale should not be greater than  %(value)s"
+msgid "Scale should not be greater than %(value)s"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:269
@@ -6579,7 +6563,7 @@ msgid "Object owner"
 msgstr "对象所有者"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:171
-msgid "Move objects to another tablespace "
+msgid "Move objects to another tablespace"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:181
@@ -7070,11 +7054,11 @@ msgid "Are you sure you wish to terminate the session?"
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:80
-msgid "Session terminateed successfully."
+msgid "Session terminated successfully."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:81
-msgid "An error occurred whilst terminateing the active query."
+msgid "An error occurred whilst terminating the active query."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:142
@@ -7351,12 +7335,12 @@ msgstr "开源"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:11
 msgid ""
-"pgAdmin is an open source administration and management tool for the "
-"PostgreSQL database. The tools include a graphical administration "
-"interface, an SQL query tool, a procedural code debugger and much more. "
-"The tool is designed to answer the needs of developers, DBAs and system "
+"pgAdmin is an Open Source administration and management tool for the "
+"PostgreSQL database. It includes a graphical administration interface, an"
+" SQL query tool, a procedural code debugger and much more. The tool is "
+"designed to answer the needs of developers, DBAs and system "
 "administrators alike."
-msgstr "pgAdmin是一个开源的PostgreSQL数据库管理工具。这些工具包括图形管理界面，SQL查询工具，存储过程代码调试器等等。该工具旨在满足开发人员，DBA和系统管理员的需求。"
+msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:19
 msgid "Quick Links"
@@ -7780,14 +7764,9 @@ msgstr ""
 msgid "Click for details."
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:1467
-#, fuzzy
-msgid "Definition incomplete"
-msgstr "-- 定义不完整"
-
 #: pgadmin/static/js/backform.pgadmin.js:1471
-msgid "Nothing changed"
-msgstr "没有改变"
+msgid "Nothing changed."
+msgstr ""
 
 #: pgadmin/static/js/backform.pgadmin.js:1584
 msgid "General"
@@ -8710,7 +8689,7 @@ msgstr ""
 msgid ""
 "The SQL below will be executed on the database server to grant the "
 "selected privileges. Please click on <b>Finish</b> to complete the "
-"process. "
+"process."
 msgstr ""
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1058
@@ -9065,9 +9044,9 @@ msgstr "查询信息通告程序超时"
 msgid ""
 "The length of time to display the query info notifier after execution has"
 " completed. A value of -1 disables the notifier and a value of 0 displays"
-" it until clicked. Values greater than 1 display the notifier for the "
+" it until clicked. Values greater than 0 display the notifier for the "
 "number of seconds specified."
-msgstr "执行完成后显示查询信息通知程序的时间长度。值-1禁用通知程序，值0显示直到单击。大于1的值显示指定的秒数的通知程序。"
+msgstr ""
 
 #: pgadmin/tools/sqleditor/__init__.py:133
 msgid "If set to True, the Query Tool will be opened in a new browser tab."
@@ -9277,8 +9256,8 @@ msgid "%s rows affected."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2230
-msgid "Row(s) deleted"
-msgstr "删除行"
+msgid "Row(s) deleted."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2234
 msgid "Operation failed"
@@ -9286,9 +9265,9 @@ msgstr "操作失败"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2235
 msgid ""
-"There are unsaved changes in grid, Please save them first to avoid "
-"inconsistency in data"
-msgstr "网格中有未保存的更改，请先保存它们，以避免数据不一致"
+"There are unsaved changes in the grid. Please save them first to avoid "
+"data inconsistencies."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2240
 msgid "Are you sure you wish to delete selected row(s)?"
@@ -9346,27 +9325,27 @@ msgstr "初始化查询执行！"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
-msgid "Error occurred while setting verbose option in explain"
-msgstr "在解释设置verbose选项时发生错误"
+msgid "Error occurred while setting verbose option in explain."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3480
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3486
-msgid "Error occurred while setting costs option in explain"
-msgstr "在解释设置成本选项时发生错误"
+msgid "Error occurred while setting costs option in explain."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3517
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3523
-msgid "Error occurred while setting buffers option in explain"
-msgstr "在解释设置缓冲区选项时发生错误"
+msgid "Error occurred while setting buffers option in explain."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3553
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3559
-msgid "Error occurred while setting timing option in explain"
-msgstr "在解释设置计时选项时发生错误"
+msgid "Error occurred while setting timing option in explain."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3657
-msgid "Error occurred while getting query tool options "
-msgstr "获取查询工具选项时发生错误"
+msgid "Error occurred while getting query tool options."
+msgstr ""
 
 #: pgadmin/tools/user_management/__init__.py:104
 msgid "Invalid email address."
@@ -9377,8 +9356,9 @@ msgid "Missing field: '{0}'"
 msgstr "缺少字段: '{0}'"
 
 #: pgadmin/tools/user_management/__init__.py:285
-msgid "User Deleted."
-msgstr "用户已删除。"
+#: pgadmin/tools/user_management/static/js/user_management.js:313
+msgid "User deleted."
+msgstr "删除用户。"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:21
 msgid "Filter by email"
@@ -9445,10 +9425,6 @@ msgstr "不能删除用户。"
 #: pgadmin/tools/user_management/static/js/user_management.js:289
 msgid "Cannot delete currently logged in user."
 msgstr "不能删除当前登录的用户。"
-
-#: pgadmin/tools/user_management/static/js/user_management.js:313
-msgid "User deleted."
-msgstr "删除用户。"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:316
 msgid "Error during deleting user."
@@ -9523,8 +9499,8 @@ msgid "Invalid value for an options option."
 msgstr "选项配置的无效"
 
 #: pgadmin/utils/preferences.py:550
-msgid "Could not fine the specified module."
-msgstr "找不到指定的模块"
+msgid "Could not find the specified module."
+msgstr ""
 
 #: pgadmin/utils/preferences.py:555
 msgid "Module '{0}' is no longer in use."
@@ -10048,4 +10024,147 @@ msgstr "找不到指定的数据库"
 
 #~ msgid "Superuser privileges are required to cancel another users query."
 #~ msgstr ""
+
+#~ msgid "Couldnot find the foreign data wrapper information."
+#~ msgstr "无法找到外部数据包装信息"
+
+#~ msgid "Handler Function cannot be empty"
+#~ msgstr "处理函数不能为空"
+
+#~ msgid ""
+#~ "Definition incomplete. Please provide Locale"
+#~ " OR Copy Collation OR LC_TYPE/LC_COLLATE"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Definition incomplete, Please provide Locale"
+#~ " OR Copy collation OR LC_TYPE/LC_COLLATE!"
+#~ msgstr "不完整的定义。 请提供语言环境或复制排序规则或LC_CTYPE / LC_COLLATE"
+
+#~ msgid ""
+#~ "ERROR: Could not generate reversed "
+#~ "engineered query for the FTS "
+#~ "Configuration!\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "错误：无法为FTS配置生成反向工程查询！\n"
+#~ " {0}“"
+
+#~ msgid ""
+#~ "ERROR: Could not generate reversed "
+#~ "engineered query for FTS Configuration "
+#~ "node!"
+#~ msgstr "错误：无法为FTS配置节点生成反向工程查询！"
+
+#~ msgid "Could not find the specified %s"
+#~ msgstr "找不到指定的 %s"
+
+#~ msgid "Packge dropped"
+#~ msgstr "包已经被删除"
+
+#~ msgid "Securitiy Labels"
+#~ msgstr "安全标签"
+
+#~ msgid "Check Constraint dropped."
+#~ msgstr "Check 约束被删除"
+
+#~ msgid "Are you sure you want to reset the statistics for table %s?"
+#~ msgstr "你确实要重置表 %s的统计信息？"
+
+#~ msgid "Changing of type table will clear columns collection"
+#~ msgstr "类型表的改变将清除列集合"
+
+#~ msgid ""
+#~ "Above control will be used to "
+#~ "Create/Attach/Detach partitions.<br><ul><li>Create Mode:"
+#~ " User will be able to create N"
+#~ " number of partitions. Mode switch "
+#~ "control is disabled in this "
+#~ "scenario.</li><li>Edit Mode: User will be "
+#~ "able to create/attach/detach N number of"
+#~ " partitions.In attach mode there will "
+#~ "be list of suitable tables to be"
+#~ " attached.</li></ul>"
+#~ msgstr ""
+
+#~ msgid "Scale should not be less than  %(value)s"
+#~ msgstr ""
+
+#~ msgid "Scale should not be greater than  %(value)s"
+#~ msgstr ""
+
+#~ msgid "Move objects to another tablespace "
+#~ msgstr ""
+
+#~ msgid "Session terminateed successfully."
+#~ msgstr ""
+
+#~ msgid "An error occurred whilst terminateing the active query."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "pgAdmin is an open source administration"
+#~ " and management tool for the "
+#~ "PostgreSQL database. The tools include a"
+#~ " graphical administration interface, an SQL"
+#~ " query tool, a procedural code "
+#~ "debugger and much more. The tool "
+#~ "is designed to answer the needs of"
+#~ " developers, DBAs and system administrators"
+#~ " alike."
+#~ msgstr "pgAdmin是一个开源的PostgreSQL数据库管理工具。这些工具包括图形管理界面，SQL查询工具，存储过程代码调试器等等。该工具旨在满足开发人员，DBA和系统管理员的需求。"
+
+#~ msgid "Definition incomplete"
+#~ msgstr "-- 定义不完整"
+
+#~ msgid "Nothing changed"
+#~ msgstr "没有改变"
+
+#~ msgid ""
+#~ "The SQL below will be executed on"
+#~ " the database server to grant the "
+#~ "selected privileges. Please click on "
+#~ "<b>Finish</b> to complete the process. "
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The length of time to display the"
+#~ " query info notifier after execution "
+#~ "has completed. A value of -1 "
+#~ "disables the notifier and a value "
+#~ "of 0 displays it until clicked. "
+#~ "Values greater than 1 display the "
+#~ "notifier for the number of seconds "
+#~ "specified."
+#~ msgstr "执行完成后显示查询信息通知程序的时间长度。值-1禁用通知程序，值0显示直到单击。大于1的值显示指定的秒数的通知程序。"
+
+#~ msgid "Row(s) deleted"
+#~ msgstr "删除行"
+
+#~ msgid ""
+#~ "There are unsaved changes in grid, "
+#~ "Please save them first to avoid "
+#~ "inconsistency in data"
+#~ msgstr "网格中有未保存的更改，请先保存它们，以避免数据不一致"
+
+#~ msgid "Error occurred while setting verbose option in explain"
+#~ msgstr "在解释设置verbose选项时发生错误"
+
+#~ msgid "Error occurred while setting costs option in explain"
+#~ msgstr "在解释设置成本选项时发生错误"
+
+#~ msgid "Error occurred while setting buffers option in explain"
+#~ msgstr "在解释设置缓冲区选项时发生错误"
+
+#~ msgid "Error occurred while setting timing option in explain"
+#~ msgstr "在解释设置计时选项时发生错误"
+
+#~ msgid "Error occurred while getting query tool options "
+#~ msgstr "获取查询工具选项时发生错误"
+
+#~ msgid "User Deleted."
+#~ msgstr "用户已删除。"
+
+#~ msgid "Could not fine the specified module."
+#~ msgstr "找不到指定的模块"
 

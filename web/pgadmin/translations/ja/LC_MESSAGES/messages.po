@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-31 09:07+0000\n"
+"POT-Creation-Date: 2017-11-01 12:58+0000\n"
 "PO-Revision-Date: 2017-10-19 20:19+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
@@ -1014,6 +1014,7 @@ msgstr "日時"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:651
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:328
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:247
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:191
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:66
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:374
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:565
@@ -1188,8 +1189,8 @@ msgstr "指定された外部データラッパが見つかりませんでした
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:328
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:571
-msgid "Couldnot find the foreign data wrapper information."
-msgstr "外部データラッパの情報が見つかりませんでした"
+msgid "Could not find the foreign data wrapper information."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:488
 msgid "The specified foreign data wrapper could not be found.\n"
@@ -1469,8 +1470,8 @@ msgid "Validator Function"
 msgstr "バリデータ関数"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:255
-msgid "Handler Function cannot be empty"
-msgstr "ハンドラ関数は必須です"
+msgid "Handler Function cannot be empty."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:67
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:268
@@ -1510,6 +1511,7 @@ msgid "Schema dropped"
 msgstr "スキーマを削除しました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:771
+#: pgadmin/static/js/backform.pgadmin.js:1467
 msgid "Definition incomplete."
 msgstr "定義が完了できませんでした"
 
@@ -1610,10 +1612,11 @@ msgid "Could not find the collation object in the database."
 msgstr "コレーションオブジェクトがデータベースに見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:432
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:168
 msgid ""
 "Definition incomplete. Please provide Locale OR Copy Collation OR "
-"LC_TYPE/LC_COLLATE"
-msgstr "定義が未完了です。ロケールかコピーコレーションか LC_TYPE/LC_COLLATE を指定してください"
+"LC_TYPE/LC_COLLATE."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:501
 msgid "The specified collation could not be found.\n"
@@ -1644,12 +1647,6 @@ msgstr "LC_COLLATE"
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:123
 msgid "LC_TYPE"
 msgstr "LC_TYPE"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:168
-msgid ""
-"Definition incomplete, Please provide Locale OR Copy collation OR "
-"LC_TYPE/LC_COLLATE!"
-msgstr "定義が未完了です。ロケールかコピーコレーションか LC_TYPE/LC_COLLATE を指定してください！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:53
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:12
@@ -1923,20 +1920,13 @@ msgstr "全文検索設定が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:864
 msgid ""
-"ERROR: Could not generate reversed engineered query for the FTS "
-"Configuration!\n"
+"Could not generate reversed engineered query for the FTS Configuration.\n"
 "{0}"
 msgstr ""
-"エラー： 全文検索設定のリバースエンジンクエリが生成できませんでした。\n"
-"{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:873
-msgid ""
-"ERROR: Could not generate reversed engineered query for FTS Configuration"
-" node!"
+msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
-"エラー： 全文検索設定ノードのリバースエンジンクエリが生成できませんでした。\n"
-"{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:35
 msgid "Token cannot be empty!"
@@ -2198,8 +2188,8 @@ msgstr "関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:395
 #, python-format
-msgid "Could not find the specified %s"
-msgstr "指定された %s が見つかりませんでした"
+msgid "Could not find the specified %s."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:446
 msgid "Could not find the function node in the database."
@@ -2508,8 +2498,8 @@ msgid "The specified package could not be found.\n"
 msgstr "指定されたパッケージが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:456
-msgid "Packge dropped"
-msgstr "パッケージが削除されました"
+msgid "Package dropped"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:108
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:700
@@ -2628,10 +2618,6 @@ msgstr "キャッシュ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:173
 msgid "Cycled"
 msgstr "周回"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:191
-msgid "Securitiy Labels"
-msgstr "セキュリティラベル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:238
 msgid "Current value cannot be empty."
@@ -3070,8 +3056,8 @@ msgid "The specified check constraint could not be found.\n"
 msgstr "指定された CHECK 制約が見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:626
-msgid "Check Constraint dropped."
-msgstr "CHECK 制約が削除されました"
+msgid "Check constraint dropped."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:900
 msgid "Check constraint updated."
@@ -3559,8 +3545,8 @@ msgstr "統計をリセット"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:258
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:222
 #, python-format
-msgid "Are you sure you want to reset the statistics for table %s?"
-msgstr "%s テーブルの統計情報をリセットしますか？"
+msgid "Are you sure you want to reset the statistics for table \"%s\"?"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:307
 #, python-format
@@ -3645,8 +3631,8 @@ msgid "Of type"
 msgstr "タイプ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:736
-msgid "Changing of type table will clear columns collection"
-msgstr "タイプテーブルを変更するとカラムコレクションがクリアされます"
+msgid "Changing of table type will clear columns collection."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:763
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:765
@@ -3743,16 +3729,13 @@ msgstr "パーティションを取り外しますか？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:978
 msgid ""
-"Above control will be used to Create/Attach/Detach "
+"The control above is used to Create/Attach/Detach "
 "partitions.<br><ul><li>Create Mode: User will be able to create N number "
 "of partitions. Mode switch control is disabled in this "
 "scenario.</li><li>Edit Mode: User will be able to create/attach/detach N "
-"number of partitions.In attach mode there will be list of suitable tables"
-" to be attached.</li></ul>"
+"number of partitions. In attach mode there will be list of suitable "
+"tables to be attached.</li></ul>"
 msgstr ""
-"上記の制御は、パーティションの作成、取り付け、取り外しに使われます。<br><ul><li>作成モード： "
-"ユーザはN個のパーティションを作成することができます。このとき、モードの変更制御は使うことができません。</li><li>編集モード： "
-"ユーザはN個のパーティションの作成、取り付け、取り外しをすることができます。取り付けモードでは、取り付け可能なテーブルのリストが表示されます。</li></ul>"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:993
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1048
@@ -4430,13 +4413,13 @@ msgstr "長さ/精度は %(value)s 以下を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:220
 #, python-format
-msgid "Scale should not be less than  %(value)s"
-msgstr "スケールは %(value)s 以上を指定してください"
+msgid "Scale should not be less than %(value)s"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:222
 #, python-format
-msgid "Scale should not be greater than  %(value)s"
-msgstr "スケールは %(value)s 以下を指定してください"
+msgid "Scale should not be greater than %(value)s"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:269
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:275
@@ -6532,8 +6515,8 @@ msgid "Object owner"
 msgstr "オブジェクト所有者"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:171
-msgid "Move objects to another tablespace "
-msgstr "オブジェクトを他のテーブルスペースに移動"
+msgid "Move objects to another tablespace"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:181
 #: pgadmin/browser/templates/browser/index.html:176
@@ -7023,11 +7006,11 @@ msgid "Are you sure you wish to terminate the session?"
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:80
-msgid "Session terminateed successfully."
+msgid "Session terminated successfully."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:81
-msgid "An error occurred whilst terminateing the active query."
+msgid "An error occurred whilst terminating the active query."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/dashboard.js:142
@@ -7288,14 +7271,12 @@ msgstr "オープンソース"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:11
 msgid ""
-"pgAdmin is an open source administration and management tool for the "
-"PostgreSQL database. The tools include a graphical administration "
-"interface, an SQL query tool, a procedural code debugger and much more. "
-"The tool is designed to answer the needs of developers, DBAs and system "
+"pgAdmin is an Open Source administration and management tool for the "
+"PostgreSQL database. It includes a graphical administration interface, an"
+" SQL query tool, a procedural code debugger and much more. The tool is "
+"designed to answer the needs of developers, DBAs and system "
 "administrators alike."
 msgstr ""
-"pgAdmin は PostgreSQL データべースのためのオープンソース管理ツールです。グラフィカルな管理インターフェース、SQL "
-"クエリツール、関数コードデバッガ等の機能があります。開発者、DBA、システム管理者のニーズに応えるように設計されています。"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:19
 msgid "Quick Links"
@@ -7713,13 +7694,9 @@ msgstr "接続切断"
 msgid "Click for details."
 msgstr "詳細"
 
-#: pgadmin/static/js/backform.pgadmin.js:1467
-msgid "Definition incomplete"
-msgstr "定義が不完全"
-
 #: pgadmin/static/js/backform.pgadmin.js:1471
-msgid "Nothing changed"
-msgstr "変更なし"
+msgid "Nothing changed."
+msgstr ""
 
 #: pgadmin/static/js/backform.pgadmin.js:1584
 msgid "General"
@@ -8637,8 +8614,8 @@ msgstr "最終確認 (3/3)"
 msgid ""
 "The SQL below will be executed on the database server to grant the "
 "selected privileges. Please click on <b>Finish</b> to complete the "
-"process. "
-msgstr "選択された権限を付与するために、データベースサーバで以下の SQL が実行されます。処理を完了するにには <b>完了</b> をクリックしてください"
+"process."
+msgstr ""
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1058
 msgid "Grant Wizard"
@@ -8987,11 +8964,9 @@ msgstr "クエリ情報通知タイムアウト"
 msgid ""
 "The length of time to display the query info notifier after execution has"
 " completed. A value of -1 disables the notifier and a value of 0 displays"
-" it until clicked. Values greater than 1 display the notifier for the "
+" it until clicked. Values greater than 0 display the notifier for the "
 "number of seconds specified."
 msgstr ""
-"クエリ実行完了後にクエリ情報通知を表示する時間。-1 を指定すると無効になり、0 を指定するとクリックするまで表示されます。1 "
-"以上の値を指定すると、通知がその秒数表示されます"
 
 #: pgadmin/tools/sqleditor/__init__.py:133
 msgid "If set to True, the Query Tool will be opened in a new browser tab."
@@ -9197,8 +9172,8 @@ msgid "%s rows affected."
 msgstr "%s 行を取得しました"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2230
-msgid "Row(s) deleted"
-msgstr "行が削除されました"
+msgid "Row(s) deleted."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2234
 msgid "Operation failed"
@@ -9206,9 +9181,9 @@ msgstr "処理に失敗しました"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2235
 msgid ""
-"There are unsaved changes in grid, Please save them first to avoid "
-"inconsistency in data"
-msgstr "グリッドに保存されていない変更があります。データが矛盾しないようにするために、まずは保存してください"
+"There are unsaved changes in the grid. Please save them first to avoid "
+"data inconsistencies."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2240
 msgid "Are you sure you wish to delete selected row(s)?"
@@ -9266,27 +9241,27 @@ msgstr "クエリ実行を初期化中！"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
-msgid "Error occurred while setting verbose option in explain"
-msgstr "EXPLAIN の VERBOSE オプションの設定中にエラーが発生しました"
+msgid "Error occurred while setting verbose option in explain."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3480
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3486
-msgid "Error occurred while setting costs option in explain"
-msgstr "EXPLAIN の COSTS オプションの設定中にエラーが発生しました"
+msgid "Error occurred while setting costs option in explain."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3517
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3523
-msgid "Error occurred while setting buffers option in explain"
-msgstr "EXPLAIN の BUFFERS オプションの設定中にエラーが発生しました"
+msgid "Error occurred while setting buffers option in explain."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3553
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3559
-msgid "Error occurred while setting timing option in explain"
-msgstr "EXPLAIN の TIMING オプションの設定中にエラーが発生しました"
+msgid "Error occurred while setting timing option in explain."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3657
-msgid "Error occurred while getting query tool options "
-msgstr "EXPLAIN の クエリツールオプションの取得中にエラーが発生しました"
+msgid "Error occurred while getting query tool options."
+msgstr ""
 
 #: pgadmin/tools/user_management/__init__.py:104
 msgid "Invalid email address."
@@ -9297,7 +9272,8 @@ msgid "Missing field: '{0}'"
 msgstr "フィールドの不足： 「{0}」"
 
 #: pgadmin/tools/user_management/__init__.py:285
-msgid "User Deleted."
+#: pgadmin/tools/user_management/static/js/user_management.js:313
+msgid "User deleted."
 msgstr "ユーザが削除されました"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:21
@@ -9365,10 +9341,6 @@ msgstr "ユーザが削除できませんでした"
 #: pgadmin/tools/user_management/static/js/user_management.js:289
 msgid "Cannot delete currently logged in user."
 msgstr "ユーザで現在ログに記録中のため、削除できません"
-
-#: pgadmin/tools/user_management/static/js/user_management.js:313
-msgid "User deleted."
-msgstr "ユーザが削除されました"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:316
 msgid "Error during deleting user."
@@ -9443,8 +9415,8 @@ msgid "Invalid value for an options option."
 msgstr "選択オプションとしてデータが不正です"
 
 #: pgadmin/utils/preferences.py:550
-msgid "Could not fine the specified module."
-msgstr "指定されたモジュールが見つかりません"
+msgid "Could not find the specified module."
+msgstr ""
 
 #: pgadmin/utils/preferences.py:555
 msgid "Module '{0}' is no longer in use."
@@ -9955,4 +9927,160 @@ msgstr "指定されたデータベースが見つかりませんでした"
 
 #~ msgid "Superuser privileges are required to cancel another users query."
 #~ msgstr "他のユーザのクエリをキャンセルするには、スーパユーザ権限が必要です"
+
+#~ msgid "Couldnot find the foreign data wrapper information."
+#~ msgstr "外部データラッパの情報が見つかりませんでした"
+
+#~ msgid "Handler Function cannot be empty"
+#~ msgstr "ハンドラ関数は必須です"
+
+#~ msgid ""
+#~ "Definition incomplete. Please provide Locale"
+#~ " OR Copy Collation OR LC_TYPE/LC_COLLATE"
+#~ msgstr "定義が未完了です。ロケールかコピーコレーションか LC_TYPE/LC_COLLATE を指定してください"
+
+#~ msgid ""
+#~ "Definition incomplete, Please provide Locale"
+#~ " OR Copy collation OR LC_TYPE/LC_COLLATE!"
+#~ msgstr "定義が未完了です。ロケールかコピーコレーションか LC_TYPE/LC_COLLATE を指定してください！"
+
+#~ msgid ""
+#~ "ERROR: Could not generate reversed "
+#~ "engineered query for the FTS "
+#~ "Configuration!\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "エラー： 全文検索設定のリバースエンジンクエリが生成できませんでした。\n"
+#~ "{0}"
+
+#~ msgid ""
+#~ "ERROR: Could not generate reversed "
+#~ "engineered query for FTS Configuration "
+#~ "node!"
+#~ msgstr ""
+#~ "エラー： 全文検索設定ノードのリバースエンジンクエリが生成できませんでした。\n"
+#~ "{0}"
+
+#~ msgid "Could not find the specified %s"
+#~ msgstr "指定された %s が見つかりませんでした"
+
+#~ msgid "Packge dropped"
+#~ msgstr "パッケージが削除されました"
+
+#~ msgid "Securitiy Labels"
+#~ msgstr "セキュリティラベル"
+
+#~ msgid "Check Constraint dropped."
+#~ msgstr "CHECK 制約が削除されました"
+
+#~ msgid "Are you sure you want to reset the statistics for table %s?"
+#~ msgstr "%s テーブルの統計情報をリセットしますか？"
+
+#~ msgid "Changing of type table will clear columns collection"
+#~ msgstr "タイプテーブルを変更するとカラムコレクションがクリアされます"
+
+#~ msgid ""
+#~ "Above control will be used to "
+#~ "Create/Attach/Detach partitions.<br><ul><li>Create Mode:"
+#~ " User will be able to create N"
+#~ " number of partitions. Mode switch "
+#~ "control is disabled in this "
+#~ "scenario.</li><li>Edit Mode: User will be "
+#~ "able to create/attach/detach N number of"
+#~ " partitions.In attach mode there will "
+#~ "be list of suitable tables to be"
+#~ " attached.</li></ul>"
+#~ msgstr ""
+#~ "上記の制御は、パーティションの作成、取り付け、取り外しに使われます。<br><ul><li>作成モード： "
+#~ "ユーザはN個のパーティションを作成することができます。このとき、モードの変更制御は使うことができません。</li><li>編集モード："
+#~ " "
+#~ "ユーザはN個のパーティションの作成、取り付け、取り外しをすることができます。取り付けモードでは、取り付け可能なテーブルのリストが表示されます。</li></ul>"
+
+#~ msgid "Scale should not be less than  %(value)s"
+#~ msgstr "スケールは %(value)s 以上を指定してください"
+
+#~ msgid "Scale should not be greater than  %(value)s"
+#~ msgstr "スケールは %(value)s 以下を指定してください"
+
+#~ msgid "Move objects to another tablespace "
+#~ msgstr "オブジェクトを他のテーブルスペースに移動"
+
+#~ msgid "Session terminateed successfully."
+#~ msgstr ""
+
+#~ msgid "An error occurred whilst terminateing the active query."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "pgAdmin is an open source administration"
+#~ " and management tool for the "
+#~ "PostgreSQL database. The tools include a"
+#~ " graphical administration interface, an SQL"
+#~ " query tool, a procedural code "
+#~ "debugger and much more. The tool "
+#~ "is designed to answer the needs of"
+#~ " developers, DBAs and system administrators"
+#~ " alike."
+#~ msgstr ""
+#~ "pgAdmin は PostgreSQL "
+#~ "データべースのためのオープンソース管理ツールです。グラフィカルな管理インターフェース、SQL "
+#~ "クエリツール、関数コードデバッガ等の機能があります。開発者、DBA、システム管理者のニーズに応えるように設計されています。"
+
+#~ msgid "Definition incomplete"
+#~ msgstr "定義が不完全"
+
+#~ msgid "Nothing changed"
+#~ msgstr "変更なし"
+
+#~ msgid ""
+#~ "The SQL below will be executed on"
+#~ " the database server to grant the "
+#~ "selected privileges. Please click on "
+#~ "<b>Finish</b> to complete the process. "
+#~ msgstr ""
+#~ "選択された権限を付与するために、データベースサーバで以下の SQL が実行されます。処理を完了するにには "
+#~ "<b>完了</b> をクリックしてください"
+
+#~ msgid ""
+#~ "The length of time to display the"
+#~ " query info notifier after execution "
+#~ "has completed. A value of -1 "
+#~ "disables the notifier and a value "
+#~ "of 0 displays it until clicked. "
+#~ "Values greater than 1 display the "
+#~ "notifier for the number of seconds "
+#~ "specified."
+#~ msgstr ""
+#~ "クエリ実行完了後にクエリ情報通知を表示する時間。-1 を指定すると無効になり、0 "
+#~ "を指定するとクリックするまで表示されます。1 以上の値を指定すると、通知がその秒数表示されます"
+
+#~ msgid "Row(s) deleted"
+#~ msgstr "行が削除されました"
+
+#~ msgid ""
+#~ "There are unsaved changes in grid, "
+#~ "Please save them first to avoid "
+#~ "inconsistency in data"
+#~ msgstr "グリッドに保存されていない変更があります。データが矛盾しないようにするために、まずは保存してください"
+
+#~ msgid "Error occurred while setting verbose option in explain"
+#~ msgstr "EXPLAIN の VERBOSE オプションの設定中にエラーが発生しました"
+
+#~ msgid "Error occurred while setting costs option in explain"
+#~ msgstr "EXPLAIN の COSTS オプションの設定中にエラーが発生しました"
+
+#~ msgid "Error occurred while setting buffers option in explain"
+#~ msgstr "EXPLAIN の BUFFERS オプションの設定中にエラーが発生しました"
+
+#~ msgid "Error occurred while setting timing option in explain"
+#~ msgstr "EXPLAIN の TIMING オプションの設定中にエラーが発生しました"
+
+#~ msgid "Error occurred while getting query tool options "
+#~ msgstr "EXPLAIN の クエリツールオプションの取得中にエラーが発生しました"
+
+#~ msgid "User Deleted."
+#~ msgstr "ユーザが削除されました"
+
+#~ msgid "Could not fine the specified module."
+#~ msgstr "指定されたモジュールが見つかりません"
 
