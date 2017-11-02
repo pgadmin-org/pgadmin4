@@ -10,7 +10,7 @@ CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
     COST {{data.procost}}
 {% endif %}
     {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %} {% endif %}{% if data.proisstrict %}STRICT {% endif %}{% if data.prosecdef %}SECURITY DEFINER {% endif %}{% if data.proiswindow %}WINDOW{% endif -%}
-{% if data.prorows %}
+{% if data.prorows and (data.prorows | int) > 0 %}
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 

@@ -24,7 +24,7 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 {% if data.proparallel == 'r' %}PARALLEL RESTRICTED{% elif data.proparallel == 's' %}PARALLEL SAFE{% endif %}{% endif %}
 {% if data.procost %}
 
-    COST {{data.procost}}{% endif %}{% if data.prorows %}
+    COST {{data.procost}}{% endif %}{% if data.prorows and (data.prorows | int) > 0 %}
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 

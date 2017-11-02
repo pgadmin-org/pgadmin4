@@ -1132,7 +1132,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             fun_change_args = ['lanname', 'prosrc', 'probin', 'prosrc_c',
                                'provolatile', 'proisstrict', 'prosecdef',
                                'proparallel', 'procost', 'proleakproof',
-                               'arguments']
+                               'arguments', 'prorows']
 
             data['change_func'] = False
             for arg in fun_change_args:

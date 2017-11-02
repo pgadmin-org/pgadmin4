@@ -17,7 +17,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% i
 {% if data.proisstrict %}STRICT {% endif %}
 {% if data.prosecdef %}SECURITY DEFINER {% endif %}{% if data.procost %}
 
-    COST {{data.procost}}{% endif %}{% if data.prorows %}
+    COST {{data.procost}}{% endif %}{% if data.prorows and (data.prorows | int) > 0 %}
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
