@@ -41,6 +41,11 @@ class BrowserModule(PgAdminModule):
             gettext("Show system objects?"), 'boolean', False,
             category_label=gettext('Display')
         )
+        self.table_row_count_threshold = self.preference.register(
+            'properties', 'table_row_count_threshold',
+            gettext("Count rows if estimated less than"), 'integer', 2000,
+            category_label=gettext('Properties')
+        )
 
     def get_exposed_url_endpoints(self):
         """

@@ -7,7 +7,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
   (select nspname FROM pg_namespace WHERE oid = {{scid}}::oid ) as parent_schema,
   nsp.nspname as schema,
   pg_get_userbyid(rel.relowner) AS relowner, rel.relhasoids, rel.relispartition,
-  rel.relhassubclass, rel.reltuples, des.description, con.conname, con.conkey,
+  rel.relhassubclass, rel.reltuples::bigint, des.description, con.conname, con.conkey,
 	EXISTS(select 1 FROM pg_trigger
 			JOIN pg_proc pt ON pt.oid=tgfoid AND pt.proname='logtrigger'
 			JOIN pg_proc pc ON pc.pronamespace=pt.pronamespace AND pc.proname='slonyversion'

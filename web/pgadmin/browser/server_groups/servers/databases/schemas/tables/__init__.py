@@ -21,6 +21,7 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from .utils import BaseTableView
+from pgadmin.utils.preferences import Preferences
 
 
 class TableModule(SchemaChildModule):
@@ -553,8 +554,42 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         if len(res['rows']) == 0:
                 return gone(gettext("The specified table could not be found."))
 
+        # We will check the threshold set by user before executing
+        # the query because that can cause performance issues
+        # with large result set
+        pref = Preferences.module('browser')
+        table_row_count_pref = pref.preference('table_row_count_threshold')
+        table_row_count_threshold = table_row_count_pref.get()
+        estimated_row_count = int(res['rows'][0].get('reltuples', 0))
+
+        # If estimated rows are greater than threshold then
+        if estimated_row_count and \
+                estimated_row_count > table_row_count_threshold:
+            res['rows'][0]['rows_cnt'] = str(table_row_count_threshold) + '+'
+
+        # If estimated rows is lower than threshold then calculate the count
+        elif estimated_row_count and \
+                table_row_count_threshold >= estimated_row_count:
+            SQL = render_template(
+                "/".join(
+                    [self.table_template_path, 'get_table_row_count.sql']
+                ), data=res['rows'][0]
+            )
+
+            status, count = self.conn.execute_scalar(SQL)
+
+            if not status:
+                return internal_server_error(errormsg=count)
+
+            res['rows'][0]['rows_cnt'] = count
+
+        # If estimated_row_count is zero then set the row count with same
+        elif not estimated_row_count:
+            res['rows'][0]['rows_cnt'] = estimated_row_count
+
         return super(TableView, self).properties(
-            gid, sid, did, scid, tid, res)
+            gid, sid, did, scid, tid, res
+        )
 
     @BaseTableView.check_precondition
     def types(self, gid, sid, did, scid, tid=None, clid=None):
