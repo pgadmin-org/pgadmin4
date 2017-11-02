@@ -26,7 +26,7 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 {% if data.proiswindow %}WINDOW {% endif %}
 {% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's') %}
 {% if data.proparallel == 'r' %}PARALLEL RESTRICTED{% elif data.proparallel == 's' %}PARALLEL SAFE{% endif %}{% endif -%}
-{% if data.prorows %}
+{% if data.prorows and (data.prorows | int) > 0 %}
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 

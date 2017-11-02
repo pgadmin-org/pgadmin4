@@ -13,7 +13,7 @@ CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
 {% if data.proisstrict %}STRICT {% endif %}
 {% if data.prosecdef %}SECURITY DEFINER {% endif %}
 {% if data.proiswindow %}WINDOW{% endif %}
-{% if data.prorows %}
+{% if data.prorows and (data.prorows | int) > 0 %}
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
