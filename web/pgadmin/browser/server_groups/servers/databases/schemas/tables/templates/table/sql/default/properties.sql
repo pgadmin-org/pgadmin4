@@ -9,7 +9,7 @@ FROM (
 		END) as spcname,
 		(select nspname FROM pg_namespace WHERE oid = {{scid}}::oid ) as schema,
 		pg_get_userbyid(rel.relowner) AS relowner, rel.relhasoids,
-		rel.relhassubclass, rel.reltuples, des.description, con.conname, con.conkey,
+		rel.relhassubclass, rel.reltuples::bigint, des.description, con.conname, con.conkey,
 		EXISTS(select 1 FROM pg_trigger
 				JOIN pg_proc pt ON pt.oid=tgfoid AND pt.proname='logtrigger'
 				JOIN pg_proc pc ON pc.pronamespace=pt.pronamespace AND pc.proname='slonyversion'
