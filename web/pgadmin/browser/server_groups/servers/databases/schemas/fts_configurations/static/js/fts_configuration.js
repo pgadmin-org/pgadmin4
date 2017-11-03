@@ -13,11 +13,11 @@ define('pgadmin.node.fts_configuration', [
         keys: ['token'],
         // Define the schema for the token/dictionary list
         schema: [{
-          id: 'token', label: gettext('Token'), type:'text', group: null,
+          id: 'token', label:'Token', type:'text', group: null,
           cellHeaderClasses:'width_percent_50',
           editable: false, cell: 'string', url: 'tokens'
         },{
-          id: 'dictname', label: gettext('Dictionaries'), type: 'text', group:null,
+          id: 'dictname', label: 'Dictionaries', type: 'text', group:null,
           cellHeaderClasses:'width_percent_50', editable: true,
           cell:Backgrid.Extension.MultiSelectAjaxCell, url: 'dictionaries'
         }],

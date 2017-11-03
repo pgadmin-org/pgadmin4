@@ -736,12 +736,12 @@ define('pgadmin.node.server', [
           id: 'sslmode', label: gettext('SSL mode'), type: 'options', group: gettext('SSL'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
           'options': [
-            {label: gettext('Allow'), value: 'allow'},
-            {label: gettext('Prefer'), value: 'prefer'},
-            {label: gettext('Require'), value: 'require'},
-            {label: gettext('Disable'), value: 'disable'},
-            {label: gettext('Verify-CA'), value: 'verify-ca'},
-            {label: gettext('Verify-Full'), value: 'verify-full'}
+            {label: 'Allow', value: 'allow'},
+            {label: 'Prefer', value: 'prefer'},
+            {label: 'Require', value: 'require'},
+            {label: 'Disable', value: 'disable'},
+            {label: 'Verify-CA', value: 'verify-ca'},
+            {label: 'Verify-Full', value: 'verify-full'}
           ]
         },{
           id: 'sslcert', label: gettext('Client certificate'), type: 'text',

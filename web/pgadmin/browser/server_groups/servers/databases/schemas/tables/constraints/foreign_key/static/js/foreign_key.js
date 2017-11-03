@@ -38,11 +38,11 @@ define('pgadmin.node.foreign_key', [
       referenced: undefined
     },
     schema: [{
-        id: 'local_column', label: gettext('Local'), type:'text', editable: false,
+        id: 'local_column', label:'Local', type:'text', editable: false,
         cellHeaderClasses: 'width_percent_50', cell:'string',
         headerCell: Backgrid.Extension.CustomHeaderCell
       },{
-        id: 'referenced', label: gettext('Referenced'), type: 'text', editable: false,
+        id: 'referenced', label:'Referenced', type: 'text', editable: false,
         cell:'string', cellHeaderClasses: 'width_percent_50',
         headerCell: Backgrid.Extension.CustomHeaderCell
       }]

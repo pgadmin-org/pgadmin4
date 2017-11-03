@@ -550,13 +550,13 @@ define('pgadmin.node.column', [
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'notInSchema'
         },{
-          id: 'attoptions', label: gettext('Variables'), type: 'collection',
+          id: 'attoptions', label: 'Variables', type: 'collection',
           group: gettext('Variables'), control: 'unique-col-collection',
           model: VariablesModel, uniqueCol : ['name'],
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true
         }, pgBrowser.SecurityGroupSchema, {
-          id: 'attacl', label: gettext('Privileges'), type: 'collection',
+          id: 'attacl', label: 'Privileges', type: 'collection',
           group: 'security', control: 'unique-col-collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
           privileges: ['a','r','w','x']}),

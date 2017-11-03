@@ -64,13 +64,13 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
      },
      keys:['pt_column'],
      schema: [{
-       id: 'key_type', label: gettext('Key type'), type:'select2', editable: true,
+       id: 'key_type', label:'Key type', type:'select2', editable: true,
        cell:'select2', cellHeaderClasses: 'width_percent_25',
        select2: {allowClear: false},
        options:[{
-         label: gettext('Column'), value: 'column'
+         label: 'Column', value: 'column'
        },{
-         label: gettext('Expression'), value: 'expression'
+         label: 'Expression', value: 'expression'
        }]
      },{
        id: 'pt_column', label: gettext('Column'), type:'text',
@@ -179,7 +179,7 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
          return true;
        }
      },{
-       id: 'expression', label: gettext('Expression'), type:'text',
+       id: 'expression', label:'Expression', type:'text',
        cell:Backgrid.Extension.StringDepCell,
        cellHeaderClasses: 'width_percent_45',
        deps: ['key_type'],
@@ -258,7 +258,7 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
         return false;
       }, cellFunction: getPartitionCell
     },{
-      id: 'values_from', label: gettext('From'), type:'text',
+      id: 'values_from', label:'From', type:'text',
       cell:Backgrid.Extension.StringDepCell,
       cellHeaderClasses: 'width_percent_20',
       editable: function(m) {
@@ -270,7 +270,7 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
        return false;
       }
     },{
-      id: 'values_to', label: gettext('To'), type:'text',
+      id: 'values_to', label:'To', type:'text',
       cell:Backgrid.Extension.StringDepCell,
       cellHeaderClasses: 'width_percent_20',
       editable: function(m) {
@@ -282,7 +282,7 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
         return false;
       }
     },{
-      id: 'values_in', label: gettext('In'), type:'text',
+      id: 'values_in', label:'In', type:'text',
       cell:Backgrid.Extension.StringDepCell,
       cellHeaderClasses: 'width_percent_25',
       editable: function(m) {
