@@ -757,33 +757,32 @@ define('pgadmin.backgrid', [
 
       /**
      Custom InputArrayCellEditor for editing user input array for debugger.
-     */
-    var InputArrayCellEditor = Backgrid.Extension.InputArrayCellEditor =
-      Backgrid.CellEditor.extend({
-        tagName: 'div',
+   */
+  var InputArrayCellEditor = Backgrid.Extension.InputArrayCellEditor =
+    Backgrid.CellEditor.extend({
+      tagName: "div",
 
-        events: {
-          'blur': 'lostFocus',
-        },
+    events: {
+      'blur': 'lostFocus'
+    },
 
-        render: function () {
-          var self = this,
-            arrayValuesCol = this.model.get(this.column.get('name')),
-            gridCols = [{
-              name: 'value', label:'Array Values', type: 'text', cell:'string',
-              headerCell: Backgrid.Extension.CustomHeaderIconCell,
-              cellHeaderClasses: 'width_percent_100',
-            }],
-            gridBody = $('<div class="pgadmin-control-group backgrid form-group col-xs-12 object subnode"></div>');
+    render: function () {
+        var self = this,
+            arrayValuesCol = this.model.get(this.column.get("name")),
+            tbl = $("<table></table>").appendTo(this.$el),
+            gridCols = [
+                    {name: 'value', label: gettext('Array Values'), type: 'text', cell:'string', headerCell: Backgrid.Extension.CustomHeaderIconCell, cellHeaderClasses: 'width_percent_100'},
+                    ],
+            gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>");
 
-          $('<table></table>').appendTo(this.$el);
-          this.$el.attr('tabindex', '1');
+        this.$el.attr('tabindex', '1');
 
-          gridCols.unshift({
-            name: 'pg-backform-delete', label: '',
-            cell: Backgrid.Extension.DeleteCell,
-            editable: false, cell_priority: -1,
-          });
+        gridCols.unshift({
+          name: "pg-backform-delete", label: "",
+          cell: Backgrid.Extension.DeleteCell,
+          //headerCell: Backgrid.Extension.CustomHeaderIconCell,
+          editable: false, cell_priority: -1
+        });
 
           this.$el.empty();
           var grid = self.grid = new Backgrid.Grid({

@@ -230,13 +230,13 @@ define([
 
             var def_val_list = [],
             gridCols = [
-              {name: 'name', label:'Name', type:'text', editable: false, cell:'string' },
-              {name: 'type', label:'Type', type: 'text', editable: false, cell:'string' },
-              {name: 'is_null', label:'Null?', type: 'boolean', cell: 'boolean' },
-              {name: 'expr', label:'Expression?', type: 'boolean', cellFunction: cellExprControlFunction, editable: disableExpressionControl },
-              {name: 'value', label:'Value', type: 'text', editable: true, cellFunction: cellFunction, headerCell: value_header },
-              {name: 'use_default', label:'Use Default?', type: 'boolean', cell:"boolean", editable: disableDefaultCell },
-              {name: 'default_value', label:'Default value', type: 'text', editable: false, cell:'string' }
+              {name: 'name', label: gettext('Name'), type:'text', editable: false, cell:'string' },
+              {name: 'type', label: gettext('Type'), type: 'text', editable: false, cell:'string' },
+              {name: 'is_null', label: gettext('Null?'), type: 'boolean', cell: 'boolean' },
+              {name: 'expr', label: gettext('Expression?'), type: 'boolean', cellFunction: cellExprControlFunction, editable: disableExpressionControl },
+              {name: 'value', label: gettext('Value'), type: 'text', editable: true, cellFunction: cellFunction, headerCell: value_header },
+              {name: 'use_default', label: gettext('Use Default?'), type: 'boolean', cell:"boolean", editable: disableDefaultCell },
+              {name: 'default_value', label: gettext('Default value'), type: 'text', editable: false, cell:'string' }
             ];
 
             var my_obj = [];

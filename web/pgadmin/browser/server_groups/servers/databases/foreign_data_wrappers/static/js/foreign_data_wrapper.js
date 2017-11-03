@@ -143,7 +143,7 @@ define('pgadmin.node.foreign_data_wrapper', [
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'fdwoptions', label: 'Options', type: 'collection', group: gettext('Options'),
+          id: 'fdwoptions', label: gettext('Options'), type: 'collection', group: gettext('Options'),
           model: OptionsModel, control: 'unique-col-collection', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, uniqueCol : ['fdwoption'],
           columns: ['fdwoption','fdwvalue']
@@ -153,7 +153,7 @@ define('pgadmin.node.foreign_data_wrapper', [
         },{
           id: 'security', label: gettext('Security'), type: 'group'
         },{
-            id: 'fdwacl', label: 'Privileges', type: 'collection',
+            id: 'fdwacl', label: gettext('Privileges'), type: 'collection',
             group: 'security', mode: ['edit', 'create'], canAdd: true,
             canDelete: true, uniqueCol : ['grantee'],
             model: pgBrowser.Node.PrivilegeRoleModel.extend({

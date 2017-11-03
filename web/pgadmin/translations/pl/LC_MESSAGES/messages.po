@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-11-01 15:18+0000\n"
+"POT-Creation-Date: 2017-11-03 13:07+0000\n"
 "PO-Revision-Date: 2017-04-05 19:03+0200\n"
 "Last-Translator: grzegorz <begina.felicysym@wp.eu>\n"
 "Language: pl\n"
@@ -101,7 +101,15 @@ msgstr "Pokaż obiekty systemowe"
 msgid "Display"
 msgstr "Wyświetl"
 
-#: pgadmin/browser/__init__.py:451 pgadmin/browser/collection.py:247
+#: pgadmin/browser/__init__.py:200
+msgid "Count rows if estimated less than"
+msgstr ""
+
+#: pgadmin/browser/__init__.py:201 pgadmin/browser/static/js/browser.js:120
+msgid "Properties"
+msgstr "Właściwości"
+
+#: pgadmin/browser/__init__.py:456 pgadmin/browser/collection.py:247
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:701
 msgid "Nodes"
@@ -216,6 +224,7 @@ msgstr "Komentarze"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:449
 #: pgadmin/browser/server_groups/servers/static/js/server.js:688
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:179
 #: pgadmin/tools/user_management/static/js/user_management.js:72
 msgid "Role"
 msgstr "Rola"
@@ -256,7 +265,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:332
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:515
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:429
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:865
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:900
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:578
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:505
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:583
@@ -472,7 +481,7 @@ msgstr "Odłączono od bazy danych."
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:821
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:436
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:409
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1026
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1061
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:650
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:607
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:706
@@ -603,12 +612,19 @@ msgstr "Rzutowanie..."
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:74
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:403
 #: pgadmin/browser/server_groups/servers/static/js/server.js:635
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:134
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:332
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/static/js/server_group.js:39
 #: pgadmin/dashboard/static/js/dashboard.js:785
 #: pgadmin/dashboard/static/js/dashboard.js:812
 #: pgadmin/dashboard/static/js/dashboard.js:1126
+#: pgadmin/misc/depends/static/js/depends.js:96
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:228
+#: pgadmin/tools/debugger/static/js/direct.js:994
+#: pgadmin/tools/debugger/static/js/direct.js:1113
+#: pgadmin/tools/debugger/static/js/direct.js:1167
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:125
 msgid "Name"
 msgstr "Nazwa"
 
@@ -1156,6 +1172,7 @@ msgstr "Rozszerzenie..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:325
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:144
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:113
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:120
 msgid "Schema"
 msgstr "Schemat"
 
@@ -1243,23 +1260,7 @@ msgstr "Wskazany serwer obcy nie został znaleziony.\n"
 msgid "Foreign Server dropped"
 msgstr "Serwer obcy skasowany"
 
-#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:58
-msgid "Foreign Server"
-msgstr "Serwer Obcy"
-
-#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:77
-#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:82
-#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:87
-msgid "Foreign Server..."
-msgstr "Serwer Obcy..."
-
-#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:136
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:87
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:254
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:337
-msgid "Type"
-msgstr "Typ"
-
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:17
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:147
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/static/js/user_mapping.js:16
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/static/js/user_mapping.js:136
@@ -1307,7 +1308,48 @@ msgstr "Typ"
 msgid "Options"
 msgstr "Opcje"
 
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:18
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/static/js/user_mapping.js:19
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:19
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:51
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:483
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:19
+#: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:179
+#: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:245
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:32
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:173
+#: pgadmin/misc/statistics/static/js/statistics.js:115
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:232
+#: pgadmin/tools/debugger/static/js/direct.js:995
+#: pgadmin/tools/debugger/static/js/direct.js:1115
+#: pgadmin/tools/debugger/static/js/direct.js:1169
+msgid "Value"
+msgstr "Wartość"
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:58
+msgid "Foreign Server"
+msgstr "Serwer Obcy"
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:77
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:82
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:87
+msgid "Foreign Server..."
+msgstr "Serwer Obcy..."
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:136
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:87
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:254
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:337
+#: pgadmin/misc/depends/static/js/depends.js:83
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:229
+#: pgadmin/tools/debugger/static/js/direct.js:1114
+#: pgadmin/tools/debugger/static/js/direct.js:1168
+msgid "Type"
+msgstr "Typ"
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:152
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:156
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:156
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:163
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:121
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:221
@@ -1325,6 +1367,7 @@ msgstr "Opcje"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:60
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:349
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:367
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:558
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:997
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:1000
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1052
@@ -1344,6 +1387,7 @@ msgstr "Opcje"
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:465
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:469
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:474
+#: pgadmin/browser/server_groups/servers/static/js/privilege.js:149
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:350
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:362
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:589
@@ -1374,17 +1418,6 @@ msgstr "Wskazane mapowanie użytkownika nie zostało znalezione.\n"
 msgid "User Mapping dropped"
 msgstr "Mapowanie Użytkownika skasowane"
 
-#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/static/js/user_mapping.js:19
-#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:19
-#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:483
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:19
-#: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:179
-#: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:245
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:32
-#: pgadmin/misc/statistics/static/js/statistics.js:115
-msgid "Value"
-msgstr "Wartość"
-
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/static/js/user_mapping.js:61
 msgid "User Mapping"
 msgstr "Mapowanie Użytkownika"
@@ -1411,6 +1444,7 @@ msgid "User"
 msgstr "Użytkownik"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:480
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:16
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:143
@@ -1555,6 +1589,7 @@ msgstr "Nie udało się znaleźć wskazanego obiektu katalogu."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:132
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.js:118
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:331
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:366
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:458
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:466
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:467
@@ -1583,6 +1618,7 @@ msgstr "catalog_object_column"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:23
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:403
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:63
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:76
 msgid "Column"
 msgstr "Kolumna"
@@ -1832,8 +1868,8 @@ msgstr "Tabela obca skasowana"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1257
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1302
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1325
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1375
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1360
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1410
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1252
 msgid "-- Please create column(s) first..."
 msgstr "-- Należy najpierw utworzyć kolumnę(y)... "
@@ -1948,6 +1984,14 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:873
 msgid "Could not generate reversed engineered query for FTS Configuration node."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:16
+msgid "Token"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:20
+msgid "Dictionaries"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:35
@@ -2435,6 +2479,14 @@ msgstr "Funkcje wyzwalacza"
 msgid "Trigger function..."
 msgstr "Funkcja wyzwalacza..."
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:151
+msgid "trigger"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:152
+msgid "event_trigger"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/default/coll_stats.sql:3
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/default/stats.sql:2
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/default/coll_stats.sql:3
@@ -2526,6 +2578,7 @@ msgstr "Widzialność"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/static/js/edbvar.js:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:552
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:553
 msgid "Variables"
 msgstr "Zmienne"
@@ -2712,6 +2765,7 @@ msgstr "Etykieta"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:186
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:253
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:234
 msgid "Default value"
 msgstr "Wartość domyślna"
 
@@ -2766,9 +2820,10 @@ msgid "Default Privileges: Tables"
 msgstr "Domyślne Uprawnienia: Tabele"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:386
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:48
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:13
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:427
+#: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:118
 msgid "Tables"
 msgstr "Tabele"
 
@@ -2856,24 +2911,24 @@ msgstr "Schemat docelowy nie może być pusty."
 msgid "Target object cannot be empty."
 msgstr "Obiekt docelowy nie może być pusty."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:299
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:300
 msgid "Could not find the table."
 msgstr "Nie znaleziono tabeli."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:565
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1229
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:566
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1264
 msgid "The specified table could not be found."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1029
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1064
 msgid "The specified table could not be found.\n"
 msgstr "Wskazana tabela nie została znaleziona.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1109
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1144
 msgid "Trigger(s) have been enabled"
 msgstr "Wyzwalacz(e) zostały włączone"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1110
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1145
 msgid "Trigger(s) have been disabled"
 msgstr "Wyzwalacz(e) zostały wyłączone"
 
@@ -3239,6 +3294,17 @@ msgstr "Klucz obcy skasowany."
 msgid "Foreign key updated."
 msgstr "Klucz obcy zmieniony."
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:41
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:141
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:148
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:161
+msgid "Local"
+msgstr "Lokalny"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:45
+msgid "Referenced"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:140
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:245
 msgid "Select column"
@@ -3387,6 +3453,7 @@ msgstr "Oid"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:53
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:11
+#: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:119
 msgid "Indexes"
 msgstr "Indeksy"
 
@@ -3717,6 +3784,17 @@ msgstr "Z komentarzami?"
 msgid "Partition Type"
 msgstr ""
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:825
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:827
+msgid "Range"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:827
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:829
+#: pgadmin/misc/file_manager/__init__.py:182
+msgid "List"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:844
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:846
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:923
@@ -3834,6 +3912,15 @@ msgstr "Reguła systemowa?"
 msgid "Please specify name."
 msgstr "Proszę podać nazwę."
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:67
+msgid "Key type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:73
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:182
+msgid "Expression"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:208
 msgid "Partition key type cannot be empty."
 msgstr ""
@@ -3848,6 +3935,18 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:244
 msgid "Operation"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:261
+msgid "From"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:273
+msgid "To"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:285
+msgid "In"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:309
@@ -4694,12 +4793,6 @@ msgstr "Bariera bezpieczeństwa"
 msgid "Check options"
 msgstr "Opcje sprawdzenia"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:141
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:148
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:161
-msgid "Local"
-msgstr "Lokalny"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:143
 msgid "Cascaded"
 msgstr "Kaskadowe"
@@ -4710,6 +4803,7 @@ msgstr "Kaskadowe"
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:2
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:165
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:171
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:176
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:30
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:4
@@ -6244,6 +6338,14 @@ msgstr "Zaznacz pole wyboru dla ról by dołączyć WITH ADMIN OPTION."
 msgid "Roles shown with a check mark have the WITH ADMIN OPTION set."
 msgstr "Role pokazane z zaznaczeniem mają ustawione WITH ADMIN OPTION."
 
+#: pgadmin/browser/server_groups/servers/static/js/privilege.js:51
+msgid "Grantee"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/static/js/privilege.js:161
+msgid "Grantor"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/static/js/privilege.js:265
 msgid "A grantee must be selected."
 msgstr "Należy wskazać uprawnionego."
@@ -6410,6 +6512,36 @@ msgstr "Tryb SSL"
 msgid "SSL"
 msgstr ""
 
+#: pgadmin/browser/server_groups/servers/static/js/server.js:694
+msgid "Allow"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/static/js/server.js:695
+msgid "Prefer"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/static/js/server.js:696
+msgid "Require"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/static/js/server.js:697
+#: pgadmin/tools/backup/static/js/backup.js:228
+#: pgadmin/tools/backup/static/js/backup.js:232
+#: pgadmin/tools/backup/static/js/backup.js:238
+#: pgadmin/tools/restore/static/js/restore.js:187
+#: pgadmin/tools/restore/static/js/restore.js:191
+#: pgadmin/tools/restore/static/js/restore.js:194
+msgid "Disable"
+msgstr "Wyłącz"
+
+#: pgadmin/browser/server_groups/servers/static/js/server.js:698
+msgid "Verify-CA"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/static/js/server.js:699
+msgid "Verify-Full"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/static/js/server.js:702
 #: pgadmin/browser/server_groups/servers/static/js/server.js:732
 msgid "Client certificate"
@@ -6525,6 +6657,14 @@ msgstr "Nowa przestrzeń tabel"
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:113
 msgid "Object type"
 msgstr "Typ obiektu"
+
+#: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:117
+msgid "All"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:120
+msgid "Materialized views"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:123
 msgid "Object owner"
@@ -6683,10 +6823,6 @@ msgstr "Grupa Serwerów..."
 #: pgadmin/browser/static/js/browser.js:25
 msgid "Please select an object in the tree view."
 msgstr "Należy wybrać obiekt na panelu drzewa."
-
-#: pgadmin/browser/static/js/browser.js:120
-msgid "Properties"
-msgstr "Właściwości"
 
 #: pgadmin/browser/static/js/browser.js:156
 msgid "Dependencies"
@@ -7515,10 +7651,6 @@ msgstr "Ostatnio przeglądany folder"
 msgid "File dialog view"
 msgstr ""
 
-#: pgadmin/misc/file_manager/__init__.py:182
-msgid "List"
-msgstr ""
-
 #: pgadmin/misc/file_manager/__init__.py:183
 msgid "Grid"
 msgstr ""
@@ -7735,6 +7867,10 @@ msgstr ""
 
 #: pgadmin/static/js/backgrid.pgadmin.js:389
 msgid "Delete Row"
+msgstr ""
+
+#: pgadmin/static/js/backgrid.pgadmin.js:812
+msgid "Array Values"
 msgstr ""
 
 #: pgadmin/static/js/selection/clipboard.js:71
@@ -8007,15 +8143,6 @@ msgstr "Zawrzeć instrukcję CREATE DATABASE"
 #: pgadmin/tools/backup/static/js/backup.js:224
 msgid "Include DROP DATABASE statement"
 msgstr "Zawrzeć instrukcję DROP DATABASE"
-
-#: pgadmin/tools/backup/static/js/backup.js:228
-#: pgadmin/tools/backup/static/js/backup.js:232
-#: pgadmin/tools/backup/static/js/backup.js:238
-#: pgadmin/tools/restore/static/js/restore.js:187
-#: pgadmin/tools/restore/static/js/restore.js:191
-#: pgadmin/tools/restore/static/js/restore.js:194
-msgid "Disable"
-msgstr "Wyłącz"
 
 #: pgadmin/tools/backup/static/js/backup.js:237
 msgid "$ quoting"
@@ -8534,9 +8661,25 @@ msgstr "Ustawienie pułapki"
 msgid "Please enter a value for the parameter."
 msgstr "Należy wprowadzić wartość parametru."
 
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:230
+msgid "Null?"
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:231
+msgid "Expression?"
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:233
+msgid "Use Default?"
+msgstr ""
+
 #: pgadmin/tools/debugger/static/js/direct.js:385
 msgid "Waiting for another session to invoke the target..."
 msgstr "Oczekiwanie na inną sesję by wywołała cel..."
+
+#: pgadmin/tools/debugger/static/js/direct.js:996
+msgid "Line No."
+msgstr ""
 
 #: pgadmin/tools/debugger/static/js/direct.js:1558
 msgid "Local variables"
@@ -8590,6 +8733,10 @@ msgstr "Krok"
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:64
 msgid "Please select any database object type."
 msgstr "Należy wybrać jakiś obiekt bazy danych/"
+
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:106
+msgid "Object Type"
+msgstr ""
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:177
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:187
@@ -10012,11 +10159,4 @@ msgstr "Nie znaleziono wskazanej bazy danych."
 
 #~ msgid "Initializing the query execution!"
 #~ msgstr "Początek wykonywania zapytania!"
-
-#~ msgid ""
-#~ "Failed to decrypt the saved password!\n"
-#~ "Error: {0}"
-#~ msgstr ""
-#~ "NIepowodzenie odcyfrowania zapisanego hasła!\n"
-#~ "Błąd: {0}"
 
