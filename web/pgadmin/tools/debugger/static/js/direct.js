@@ -991,9 +991,9 @@ define([
         });
 
         var stackGridCols = [
-          {name: 'name', label:'Name', type:'text', editable: false, cell:'string'},
-          {name: 'value', label:'Value', type:'text', editable: false, cell:'string'},
-          {name: 'line_no', label:'Line No.', type:'text', editable: false, cell:'string'}
+          {name: 'name', label: gettext('Name'), type:'text', editable: false, cell:'string'},
+          {name: 'value', label: gettext('Value'), type:'text', editable: false, cell:'string'},
+          {name: 'line_no', label: gettext('Line No.'), type:'text', editable: false, cell:'string'}
         ];
 
         var my_obj = [];
@@ -1110,9 +1110,9 @@ define([
         });
 
         var gridCols = [
-          {name: 'name', label:'Name', type:'text', editable: false, cell:'string'},
-          {name: 'type', label:'Type', type: 'text', editable: false, cell:'string'},
-          {name: 'value', label:'Value', type: 'text', cell: 'string'}
+          {name: 'name', label: gettext('Name'), type:'text', editable: false, cell:'string'},
+          {name: 'type', label: gettext('Type'), type: 'text', editable: false, cell:'string'},
+          {name: 'value', label: gettext('Value'), type: 'text', cell: 'string'}
         ];
 
         var my_obj = [];
@@ -1164,9 +1164,9 @@ define([
         self.ParametersCollection.prototype.on('change', self.deposit_parameter_value, self);
 
         var paramGridCols = [
-          {name: 'name', label:'Name', type:'text', editable: false, cell:'string'},
-          {name: 'type', label:'Type', type: 'text', editable: false, cell:'string'},
-          {name: 'value', label:'Value', type: 'text', cell: 'string'}
+          {name: 'name', label: gettext('Name'), type:'text', editable: false, cell:'string'},
+          {name: 'type', label: gettext('Type'), type: 'text', editable: false, cell:'string'},
+          {name: 'value', label: gettext('Value'), type: 'text', cell: 'string'}
         ];
 
         var param_obj = [];

@@ -809,7 +809,7 @@
             arrayValuesCol = this.model.get(this.column.get("name")),
             tbl = $("<table></table>").appendTo(this.$el),
             gridCols = [
-                    {name: 'value', label:'Array Values', type: 'text', cell:'string', headerCell: Backgrid.Extension.CustomHeaderIconCell, cellHeaderClasses: 'width_percent_100'},
+                    {name: 'value', label: gettext('Array Values'), type: 'text', cell:'string', headerCell: Backgrid.Extension.CustomHeaderIconCell, cellHeaderClasses: 'width_percent_100'},
                     ],
             gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>");
 
