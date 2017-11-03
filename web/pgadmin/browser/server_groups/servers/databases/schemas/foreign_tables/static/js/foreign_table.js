@@ -46,9 +46,9 @@ define('pgadmin.node.foreign_table', [
       value: undefined
     },
     schema: [
-      {id: 'option', label: gettext('Option'), type:'text', editable: true, cellHeaderClasses: 'width_percent_30'},
+      {id: 'option', label:'Option', type:'text', editable: true, cellHeaderClasses: 'width_percent_30'},
       {
-        id: 'value', label: gettext('Value'), type: 'text', editable: true, cellHeaderClasses: 'width_percent_50'
+        id: 'value', label:'Value', type: 'text', editable: true, cellHeaderClasses: 'width_percent_50'
       }
     ],
     validate: function() {

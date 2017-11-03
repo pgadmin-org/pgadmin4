@@ -103,7 +103,7 @@ define([
 
     },{
       name: "object_type",
-      label: gettext("Object Type"),
+      label: "Object Type",
       editable: false,
       cell: Backgrid.Cell.extend({
         render: function() {
@@ -117,12 +117,12 @@ define([
       })
     },{
       name: "nspname",
-      label: gettext("Schema"),
+      label: "Schema",
       cell: "string",
       editable: false
     },{
       name: "name_with_args",
-      label: gettext("Name"),
+      label: "Name",
       cell: "string",
       editable: false
     }];

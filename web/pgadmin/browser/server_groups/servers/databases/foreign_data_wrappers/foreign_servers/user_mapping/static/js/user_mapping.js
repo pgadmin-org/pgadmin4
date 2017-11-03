@@ -133,7 +133,7 @@ define('pgadmin.node.user_mapping', [
           id: 'um_oid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties'],
         },{
-          id: 'umoptions', label: gettext('Options'), type: 'collection', group: gettext("Options"),
+          id: 'umoptions', label: 'Options', type: 'collection', group: gettext("Options"),
           model: OptionsModel, control: 'unique-col-collection', mode: ['create', 'edit'],
           canAdd: true, canDelete: true, uniqueCol : ['umoption']
         }
