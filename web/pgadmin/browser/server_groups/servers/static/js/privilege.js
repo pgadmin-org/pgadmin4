@@ -48,7 +48,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
      */
     privileges:[],
     schema: [{
-      id: 'grantee', label: gettext('Grantee'), type:'text', group: null,
+      id: 'grantee', label:'Grantee', type:'text', group: null,
       editable: true, cellHeaderClasses: 'width_percent_40',
       node: 'role',
       disabled : function(m) {
@@ -146,7 +146,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         }
       }),
     },{
-      id: 'privileges', label: gettext('Privileges'),
+      id: 'privileges', label:'Privileges',
       type: 'collection', model: PrivilegeModel, group: null,
       cell: 'privilege', control: 'text', cellHeaderClasses: 'width_percent_40',
       disabled : function(column, collection) {
@@ -158,7 +158,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
                 this.attributes.node_info.server.user.name == column.get('grantor'));
       }
     },{
-      id: 'grantor', label: gettext('Grantor'), type: 'text', disabled: true,
+      id: 'grantor', label: 'Grantor', type: 'text', disabled: true,
       cell: 'node-list-by-name', node: 'role'
     }],
 
