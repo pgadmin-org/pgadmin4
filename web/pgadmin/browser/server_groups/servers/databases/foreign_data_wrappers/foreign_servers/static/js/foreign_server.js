@@ -14,8 +14,8 @@ define('pgadmin.node.foreign_server', [
 
         // Defining schema for the Options model
         schema: [
-          {id: 'fsrvoption', label:'Options', type:'text', cellHeaderClasses:'width_percent_50', group: null, editable: true},
-          {id: 'fsrvvalue', label:'Value', type: 'text', cellHeaderClasses:'width_percent_50', group:null, editable: true},
+          {id: 'fsrvoption', label: gettext('Options'), type:'text', cellHeaderClasses:'width_percent_50', group: null, editable: true},
+          {id: 'fsrvvalue', label: gettext('Value'), type: 'text', cellHeaderClasses:'width_percent_50', group:null, editable: true},
         ],
 
         /* validate function is used to validate the input given by
@@ -144,12 +144,12 @@ define('pgadmin.node.foreign_server', [
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'fsrvoptions', label: 'Options', type: 'collection', group: gettext("Options"),
+          id: 'fsrvoptions', label: gettext('Options'), type: 'collection', group: gettext("Options"),
           model: OptionsModel, control: 'unique-col-collection', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, uniqueCol : ['fsrvoption'],
           columns: ['fsrvoption','fsrvvalue']
          }, pgBrowser.SecurityGroupSchema, {
-            id: 'fsrvacl', label: 'Privileges', type: 'collection', group: 'security',
+            id: 'fsrvacl', label: gettext('Privileges'), type: 'collection', group: 'security',
             model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
             mode: ['edit', 'create'], canAdd: true, canDelete: true, uniqueCol : ['grantee']
          },{
