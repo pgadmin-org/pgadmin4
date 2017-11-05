@@ -888,9 +888,9 @@ define('pgadmin.node.table', [
           editable: false, type: 'select2', select2: {allowClear: false},
           group: 'partition', deps: ['is_partitioned'],
           options:[{
-            label: 'Range', value: 'range'
+            label: gettext('Range'), value: 'range'
           },{
-            label: 'List', value: 'list'
+            label: gettext('List'), value: 'list'
           }],
           mode:['create'],
           visible: function(m) {

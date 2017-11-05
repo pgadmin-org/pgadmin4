@@ -79,7 +79,7 @@ define('misc.depends', [
               columns: [
                 {
                   name : 'type',
-                  label: 'Type',
+                  label: gettext('Type'),
                   // Extend it to render the icon as per the type.
                   cell: Backgrid.Cell.extend({
                     render: function() {
@@ -92,7 +92,7 @@ define('misc.depends', [
                 },
                 {
                   name : 'name',
-                  label: 'Name',
+                  label: gettext('Name'),
                   cell: 'string',
                   editable: false
                 },

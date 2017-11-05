@@ -131,7 +131,7 @@ define([
     },
     schema: [
       {
-        id: 'name', label:'Name', type:'text', cellHeaderClasses: 'width_percent_30',
+        id: 'name', label: gettext('Name'), type:'text', cellHeaderClasses: 'width_percent_30',
         editable: function(m) {
           return (m instanceof Backbone.Collection) ? true : m.isNew();
         },
@@ -170,13 +170,13 @@ define([
         }
       },
       {
-        id: 'value', label:'Value', type: 'text', editable: true,
+        id: 'value', label: gettext('Value'), type: 'text', editable: true,
         cellFunction: cellFunction, cellHeaderClasses: 'width_percent_40'
       },
-      {id: 'database', label:'Database', type: 'text', editable: true,
+      {id: 'database', label: gettext('Database'), type: 'text', editable: true,
       node: 'database', cell: Backgrid.Extension.NodeListByNameCell
       },
-      {id: 'role', label:'Role', type: 'text', editable: true,
+      {id: 'role', label: gettext('Role'), type: 'text', editable: true,
       node: 'role', cell: Backgrid.Extension.NodeListByNameCell}
     ],
     toJSON: function() {

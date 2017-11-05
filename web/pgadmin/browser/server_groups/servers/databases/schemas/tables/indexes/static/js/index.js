@@ -363,7 +363,7 @@ define('pgadmin.node.index', [
           type: 'text', disabled: 'inSchemaWithModelCheck', mode: ['create', 'edit'],
           control: 'sql-field', visible: true, group: gettext('Definition')
         },{
-          id: 'columns', label: 'Columns', type: 'collection', deps: ['amname'],
+          id: 'columns', label: gettext('Columns'), type: 'collection', deps: ['amname'],
           group: gettext('Definition'), model: ColumnModel, mode: ['edit', 'create'],
           canAdd: function(m) {
             // We will disable it if it's in 'edit' mode

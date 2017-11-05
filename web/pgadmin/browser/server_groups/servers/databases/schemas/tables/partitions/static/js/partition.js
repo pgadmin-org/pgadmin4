@@ -822,9 +822,9 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           editable: false, type: 'select2', select2: {allowClear: false},
           group: 'partition', deps: ['is_partitioned'],
           options:[{
-            label: 'Range', value: 'range'
+            label: gettext('Range'), value: 'range'
           },{
-            label: 'List', value: 'list'
+            label: gettext('List'), value: 'list'
           }],
           mode:['create'],
           visible: function(m) {
