@@ -121,8 +121,8 @@ define('pgadmin.datagrid', [
             d = pgAdmin.Browser.tree.itemData(i);
         if (d === undefined) {
           alertify.alert(
-            'Data Grid Error',
-            'No object selected.'
+            gettext('Data Grid Error'),
+            gettext('No object selected.')
           );
           return;
         }
@@ -174,8 +174,8 @@ define('pgadmin.datagrid', [
             d = pgAdmin.Browser.tree.itemData(i);
         if (d === undefined) {
           alertify.alert(
-            'Data Grid Error',
-            'No object selected.'
+            gettext('Data Grid Error'),
+            gettext('No object selected.')
           );
           return;
         }
@@ -289,14 +289,14 @@ define('pgadmin.datagrid', [
                       }
                       else {
                         alertify.alert(
-                          'Validation Error',
+                          gettext('Validation Error'),
                             res.data.result
                         );
                       }
                     },
                     error: function(e) {
                       alertify.alert(
-                        'Validation Error',
+                        gettext('Validation Error'),
                         e
                       );
                     }
@@ -412,7 +412,7 @@ define('pgadmin.datagrid', [
           },
           error: function(e) {
             alertify.alert(
-              'SQL Tool Initialize Error'
+              gettext('Query Tool Initialization Error')
             );
           }
         });
@@ -426,8 +426,8 @@ define('pgadmin.datagrid', [
           d = pgAdmin.Browser.tree.itemData(i);
         if (d === undefined) {
           alertify.alert(
-            'Query tool Error',
-            'No object selected.'
+            gettext('Query Tool Error'),
+            gettext('No object selected.')
           );
           return;
         }

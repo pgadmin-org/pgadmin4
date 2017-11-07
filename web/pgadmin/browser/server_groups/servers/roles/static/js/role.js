@@ -64,7 +64,7 @@ define('pgadmin.node.role', [
   });
 
   var switchOptions = {
-    'onText': 'Yes', 'offText': 'No',
+    'onText': gettext('Yes'), 'offText': gettext('No'),
     'size': 'mini'
   };
 

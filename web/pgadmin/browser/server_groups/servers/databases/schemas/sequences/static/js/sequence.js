@@ -173,7 +173,7 @@ define('pgadmin.node.sequence', [
           id: 'cycled', label: gettext('Cycled'), type: 'switch',
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           options: {
-            'onText': 'Yes', 'offText': 'No',
+            'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }

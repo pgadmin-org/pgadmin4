@@ -194,7 +194,7 @@ define('pgadmin.node.extension', [
             id: 'relocatable', label: gettext('Relocatable?'), cell: 'switch',
             group: gettext('Definition'), type: 'switch', mode: ['properties'],
             options: {
-              'onText': 'Yes', 'offText': 'No',
+              'onText': gettext('Yes'), 'offText': gettext('No'),
               'onColor': 'success', 'offColor': 'primary',
               'size': 'small'
             }

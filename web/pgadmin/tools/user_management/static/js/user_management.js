@@ -105,7 +105,7 @@ define([
             },{
               id: 'active', label: gettext('Active'),
               type: 'switch', cell: 'switch', cellHeaderClasses:'width_percent_10',
-              options: { 'onText': 'Yes', 'offText': 'No'},
+              options: { 'onText': gettext('Yes'), 'offText': gettext('No')},
               editable: function(m) {
                 if(m instanceof Backbone.Collection) {
                   return true;
@@ -304,8 +304,8 @@ define([
                   self.model.destroy();
                 } else {
                   alertify.confirm(
-                    'Delete user?',
-                    'Are you sure you wish to delete this user?',
+                    gettext('Delete user?'),
+                    gettext('Are you sure you wish to delete this user?'),
                     function(evt) {
                       self.model.destroy({
                         wait: true,
@@ -323,7 +323,7 @@ define([
                   );
                 }
               } else {
-                alertify.alert("This user cannot be deleted.",
+                alertify.alert(gettext("This user cannot be deleted."),
                   function(){
                     return true;
                   }

@@ -433,7 +433,7 @@ define([
                 },
                 error: function(e) {
                   Alertify.alert(
-                    'Debugger target Initialize Error',
+                    gettext('Debugger Target Initialization Error'),
                     e.responseJSON.errormsg
                   );
                 }
@@ -444,7 +444,7 @@ define([
             try {
               var err = $.parseJSON(xhr.responseText);
               if (err.success == 0) {
-                Alertify.alert('Debugger Error', err.errormsg);
+                Alertify.alert(gettext('Debugger Error'), err.errormsg);
               }
             } catch (e) {}
           }

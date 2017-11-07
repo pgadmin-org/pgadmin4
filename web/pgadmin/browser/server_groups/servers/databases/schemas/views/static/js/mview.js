@@ -292,18 +292,18 @@ define('pgadmin.node.mview', [
           dataType: "json",
           success: function(res) {
             if (res.success == 1) {
-              alertify.success('View refreshed successfully');
+              alertify.success(gettext('View refreshed successfully'));
             }
             else {
               alertify.alert(
-                'Error refreshing view',
+                gettext('Error refreshing view'),
                   res.data.result
               );
             }
           },
           error: function(e) {
             var errmsg = $.parseJSON(e.responseText);
-            alertify.alert('Error refreshing view', errmsg.errormsg);
+            alertify.alert(gettext('Error refreshing view'), errmsg.errormsg);
           }
         });
 

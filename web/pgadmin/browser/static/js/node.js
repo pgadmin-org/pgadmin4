@@ -627,7 +627,7 @@ define(
           if (!(_.isFunction(obj.canDropCascade) ?
                 obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
                 Alertify.error(
-                S('The %s "%s" cannot be dropped!')
+                S( gettext('The %s "%s" cannot be dropped.'))
                 .sprintf(obj.label, d.label).value(),
                 10
                 );
@@ -641,7 +641,7 @@ define(
           if (!(_.isFunction(obj.canDrop) ?
               obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
             Alertify.error(
-              S('The %s "%s" cannot be dropped!')
+              S( gettext('The %s "%s" cannot be dropped.'))
               .sprintf(obj.label, d.label).value(),
               10
             );

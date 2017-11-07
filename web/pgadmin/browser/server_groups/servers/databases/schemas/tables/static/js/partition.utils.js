@@ -242,7 +242,7 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
       id: 'oid', label: gettext('OID'), type: 'text'
     },{
       id: 'is_attach', label:gettext('Operation'), cell: 'switch',
-      type: 'switch', options: { 'onText': 'Attach', 'offText': 'Create'},
+      type: 'switch', options: { 'onText': gettext('Attach'), 'offText': gettext('Create')},
       cellHeaderClasses: 'width_percent_5',
       editable: function(m) {
         if (m instanceof Backbone.Model && m.isNew() && !m.top.isNew())

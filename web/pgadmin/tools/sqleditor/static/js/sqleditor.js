@@ -2710,7 +2710,7 @@ define('tools.querytool', [
             } else {
               setTimeout(
                 function () {
-                  alertify.alert('Get Filter Error', res.data.result);
+                  alertify.alert(gettext('Get Filter Error'), res.data.result);
                 }, 10
               );
             }
@@ -2730,7 +2730,7 @@ define('tools.querytool', [
             }
             setTimeout(
               function () {
-                alertify.alert('Get Filter Error', msg);
+                alertify.alert(gettext('Get Filter Error'), msg);
               }, 10
             );
           }
@@ -2779,7 +2779,7 @@ define('tools.querytool', [
                   queryToolActions.executeQuery(self);
                 }
                 else {
-                  alertify.alert('Filter By Selection Error', res.data.result);
+                  alertify.alert(gettext('Filter By Selection Error'), res.data.result);
                 }
               }
             );
@@ -2789,7 +2789,7 @@ define('tools.querytool', [
             setTimeout(
               function () {
                 if (e.readyState == 0) {
-                  alertify.alert('Filter By Selection Error',
+                  alertify.alert(gettext('Filter By Selection Error'),
                     gettext("Not connected to the server or the connection to the server has been closed.")
                   );
                   return;
@@ -2800,7 +2800,7 @@ define('tools.querytool', [
                   e.responseJSON.errormsg != undefined)
                   msg = e.responseJSON.errormsg;
 
-                alertify.alert('Filter By Selection Error', msg);
+                alertify.alert(gettext('Filter By Selection Error'), msg);
               }, 10
             );
           }
@@ -2849,7 +2849,7 @@ define('tools.querytool', [
                   queryToolActions.executeQuery(self);
                 }
                 else {
-                  alertify.alert('Filter Exclude Selection Error', res.data.result);
+                  alertify.alert(gettext('Filter Exclude Selection Error'), res.data.result);
                 }
               }, 10
             );
@@ -2860,7 +2860,7 @@ define('tools.querytool', [
             setTimeout(
               function () {
                 if (e.readyState == 0) {
-                  alertify.alert('Filter Exclude Selection Error',
+                  alertify.alert(gettext('Filter Exclude Selection Error'),
                     gettext("Not connected to the server or the connection to the server has been closed.")
                   );
                   return;
@@ -2871,7 +2871,7 @@ define('tools.querytool', [
                   e.responseJSON.errormsg != undefined)
                   msg = e.responseJSON.errormsg;
 
-                alertify.alert('Filter Exclude Selection Error', msg);
+                alertify.alert(gettext('Filter Exclude Selection Error'), msg);
               }, 10
             );
           }
@@ -2900,7 +2900,7 @@ define('tools.querytool', [
                   queryToolActions.executeQuery(self);
                 }
                 else {
-                  alertify.alert('Remove Filter Error', res.data.result);
+                  alertify.alert(gettext('Remove Filter Error'), res.data.result);
                 }
               }
             );
@@ -2910,7 +2910,7 @@ define('tools.querytool', [
             setTimeout(
               function () {
                 if (e.readyState == 0) {
-                  alertify.alert('Remove Filter Error',
+                  alertify.alert(gettext('Remove Filter Error'),
                     gettext("Not connected to the server or the connection to the server has been closed.")
                   );
                   return;
@@ -2921,7 +2921,7 @@ define('tools.querytool', [
                   e.responseJSON.errormsg != undefined)
                   msg = e.responseJSON.errormsg;
 
-                alertify.alert('Remove Filter Error', msg);
+                alertify.alert(gettext('Remove Filter Error'), msg);
               }
             );
           }
@@ -2955,7 +2955,7 @@ define('tools.querytool', [
                   queryToolActions.executeQuery(self);
                 }
                 else {
-                  alertify.alert('Apply Filter Error', res.data.result);
+                  alertify.alert(gettext('Apply Filter Error'), res.data.result);
                 }
               }, 10
             );
@@ -2965,7 +2965,7 @@ define('tools.querytool', [
             setTimeout(
               function () {
                 if (e.readyState == 0) {
-                  alertify.alert('Apply Filter Error',
+                  alertify.alert(gettext('Apply Filter Error'),
                     gettext("Not connected to the server or the connection to the server has been closed.")
                   );
                   return;
@@ -2976,7 +2976,7 @@ define('tools.querytool', [
                   e.responseJSON.errormsg != undefined)
                   msg = e.responseJSON.errormsg;
 
-                alertify.alert('Apply Filter Error', msg);
+                alertify.alert(gettext('Apply Filter Error'), msg);
               }, 10
             );
           }
@@ -3090,7 +3090,7 @@ define('tools.querytool', [
                   queryToolActions.executeQuery(self);
                 }
                 else
-                  alertify.alert('Change limit Error', res.data.result);
+                  alertify.alert(gettext('Change limit Error'), res.data.result);
               }, 10
             );
           },
@@ -3099,7 +3099,7 @@ define('tools.querytool', [
             setTimeout(
               function () {
                 if (e.readyState == 0) {
-                  alertify.alert('Change limit Error',
+                  alertify.alert(gettext('Change limit Error'),
                     gettext("Not connected to the server or the connection to the server has been closed.")
                   );
                   return;
@@ -3110,7 +3110,7 @@ define('tools.querytool', [
                   e.responseJSON.errormsg != undefined)
                   msg = e.responseJSON.errormsg;
 
-                alertify.alert('Change limit Error', msg);
+                alertify.alert(gettext('Change limit Error'), msg);
               }, 10
             );
           }
@@ -3303,14 +3303,14 @@ define('tools.querytool', [
             }
             else {
               self.disable_tool_buttons(false);
-              alertify.alert('Cancel Query Error', res.data.result);
+              alertify.alert(gettext('Cancel Query Error'), res.data.result);
             }
           },
           error: function (e) {
             self.disable_tool_buttons(false);
 
             if (e.readyState == 0) {
-              alertify.alert('Cancel Query Error',
+              alertify.alert(gettext('Cancel Query Error'),
                 gettext("Not connected to the server or the connection to the server has been closed.")
               );
               return;
@@ -3321,7 +3321,7 @@ define('tools.querytool', [
               e.responseJSON.errormsg != undefined)
               msg = e.responseJSON.errormsg;
 
-            alertify.alert('Cancel Query Error', msg);
+            alertify.alert(gettext('Cancel Query Error'), msg);
           }
         });
       },
@@ -3355,11 +3355,11 @@ define('tools.querytool', [
           data: JSON.stringify(auto_rollback),
           success: function (res) {
             if (!res.data.status)
-              alertify.alert('Auto Rollback Error', res.data.result);
+              alertify.alert(gettext('Auto Rollback Error'), res.data.result);
           },
           error: function (e) {
             if (e.readyState == 0) {
-              alertify.alert('Auto Rollback Error',
+              alertify.alert(gettext('Auto Rollback Error'),
                 gettext("Not connected to the server or the connection to the server has been closed.")
               );
               return;
@@ -3370,7 +3370,7 @@ define('tools.querytool', [
               e.responseJSON.errormsg != undefined)
               msg = e.responseJSON.errormsg;
 
-            alertify.alert('Auto Rollback Error', msg);
+            alertify.alert(gettext('Auto Rollback Error'), msg);
           }
         });
       },
@@ -3394,11 +3394,11 @@ define('tools.querytool', [
           data: JSON.stringify(auto_commit),
           success: function (res) {
             if (!res.data.status)
-              alertify.alert('Auto Commit Error', res.data.result);
+              alertify.alert(gettext('Auto Commit Error'), res.data.result);
           },
           error: function (e) {
             if (e.readyState == 0) {
-              alertify.alert('Auto Commit Error',
+              alertify.alert(gettext('Auto Commit Error'),
                 gettext("Not connected to the server or the connection to the server has been closed.")
               );
               return;
@@ -3409,7 +3409,7 @@ define('tools.querytool', [
               e.responseJSON.errormsg != undefined)
               msg = e.responseJSON.errormsg;
 
-            alertify.alert('Auto Commit Error', msg);
+            alertify.alert(gettext('Auto Commit Error'), msg);
           }
         });
       },
@@ -3438,13 +3438,13 @@ define('tools.querytool', [
           data: JSON.stringify(data),
           success: function (res) {
             if (res.success == undefined || !res.success) {
-              alertify.alert('Explain options error',
+              alertify.alert(gettext('Explain options error'),
                 gettext("Error occurred while setting verbose option in explain.")
               );
             }
           },
           error: function (e) {
-            alertify.alert('Explain options error',
+            alertify.alert(gettext('Explain options error'),
               gettext("Error occurred while setting verbose option in explain.")
             );
             return;
@@ -3476,13 +3476,13 @@ define('tools.querytool', [
           data: JSON.stringify(data),
           success: function (res) {
             if (res.success == undefined || !res.success) {
-              alertify.alert('Explain options error',
+              alertify.alert(gettext('Explain options error'),
                 gettext("Error occurred while setting costs option in explain.")
               );
             }
           },
           error: function (e) {
-            alertify.alert('Explain options error',
+            alertify.alert(gettext('Explain options error'),
               gettext("Error occurred while setting costs option in explain.")
             );
           }
@@ -3513,13 +3513,13 @@ define('tools.querytool', [
           data: JSON.stringify(data),
           success: function (res) {
             if (res.success == undefined || !res.success) {
-              alertify.alert('Explain options error',
+              alertify.alert(gettext('Explain options error'),
                 gettext("Error occurred while setting buffers option in explain.")
               );
             }
           },
           error: function (e) {
-            alertify.alert('Explain options error',
+            alertify.alert(gettext('Explain options error'),
               gettext("Error occurred while setting buffers option in explain.")
             );
           }
@@ -3549,13 +3549,13 @@ define('tools.querytool', [
           data: JSON.stringify(data),
           success: function (res) {
             if (res.success == undefined || !res.success) {
-              alertify.alert('Explain options error',
+              alertify.alert(gettext('Explain options error'),
                 gettext("Error occurred while setting timing option in explain.")
               );
             }
           },
           error: function (e) {
-            alertify.alert('Explain options error',
+            alertify.alert(gettext('Explain options error'),
               gettext("Error occurred while setting timing option in explain.")
             );
           }
@@ -3653,7 +3653,7 @@ define('tools.querytool', [
           },
           error: function (e) {
             updateUI();
-            alertify.alert('Get Preferences error',
+            alertify.alert(gettext('Get Preferences error'),
               gettext("Error occurred while getting query tool options.")
             );
           }

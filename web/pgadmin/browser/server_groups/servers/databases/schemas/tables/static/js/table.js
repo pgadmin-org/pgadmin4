@@ -979,13 +979,13 @@ define('pgadmin.node.table', [
                     }
                     else {
                       alertify.alert(
-                        'Error fetching tables to be attached', res.data.result
+                        gettext('Error fetching tables to be attached'), res.data.result
                       );
                     }
                   },
                   error: function(e) {
                     var errmsg = $.parseJSON(e.responseText);
-                    alertify.alert('Error fetching tables to be attached.', errmsg.errormsg);
+                    alertify.alert(gettext('Error fetching tables to be attached'), errmsg.errormsg);
                   }
                 });
               }

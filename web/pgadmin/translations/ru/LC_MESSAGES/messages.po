@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-11-05 08:29-0500\n"
+"POT-Creation-Date: 2017-11-06 19:46-0500\n"
 "PO-Revision-Date: 2017-11-01 19:01+0300\n"
 "Last-Translator: Alexander Lakhin <a.lakhin@postgrespro.ru>\n"
 "Language: ru\n"
@@ -889,6 +889,55 @@ msgstr "Контекст"
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:257
 msgid "System cast?"
 msgstr "Системное приведение?"
+
+#: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:260
+#: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:197
+#: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:129
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:170
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:249
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:268
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:176
+#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:180
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:502
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:783
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:800
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:387
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:396
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:67
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:44
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:51
+#: pgadmin/static/js/backform.pgadmin.js:425
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2253
+#: pgadmin/tools/user_management/static/js/user_management.js:108
+msgid "Yes"
+msgstr "Да"
+
+#: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:260
+#: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:197
+#: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:129
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:170
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:249
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:268
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:176
+#: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:180
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:502
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:784
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:801
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:139
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:387
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:396
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:67
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:45
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:52
+#: pgadmin/static/js/backform.pgadmin.js:426
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2253
+#: pgadmin/tools/user_management/static/js/user_management.js:108
+msgid "No"
+msgstr "Нет"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:265
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:97
@@ -3032,27 +3081,6 @@ msgstr "Столбец..."
 msgid "Primary key?"
 msgstr "Первичный ключ?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:192
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:783
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:800
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:387
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:44
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:51
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2253
-msgid "Yes"
-msgstr "Да"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:192
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:784
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:801
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:139
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:387
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:45
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:52
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2253
-msgid "No"
-msgstr "Нет"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:348
 msgid "Inherited from table"
 msgstr "Наследуется из таблицы"
@@ -3818,6 +3846,13 @@ msgstr "Ключи секционирования"
 msgid "Are you sure you wish to detach this partition?"
 msgstr "Вы действительно хотите отсоединить эту секцию?"
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:939
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:945
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:982
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:988
+msgid "Error fetching tables to be attached"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:978
 msgid ""
 "The control above is used to Create/Attach/Detach "
@@ -3954,6 +3989,17 @@ msgstr "Выражение ключа разбиения не может быт�
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:244
 msgid "Operation"
 msgstr "Операция"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:245
+msgid "Attach"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:245
+#: pgadmin/browser/static/js/browser.js:235
+#: pgadmin/misc/file_manager/static/js/file_manager.js:505
+#: pgadmin/misc/file_manager/static/js/file_manager.js:609
+msgid "Create"
+msgstr "Создать"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:261
 msgid "From"
@@ -4817,6 +4863,15 @@ msgstr "Фактор заполнения"
 msgid "Please enter view definition."
 msgstr "Введите определение представления."
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:295
+msgid "View refreshed successfully"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:299
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:306
+msgid "Error refreshing view"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:68
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:74
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:80
@@ -4853,6 +4908,7 @@ msgstr "Каскадно"
 #: pgadmin/dashboard/static/js/dashboard.js:624
 #: pgadmin/dashboard/static/js/dashboard.js:723
 #: pgadmin/dashboard/static/js/dashboard.js:790
+#: pgadmin/misc/depends/static/js/depends.js:233
 msgid "Database"
 msgstr "База данных"
 
@@ -6532,6 +6588,24 @@ msgstr "Подключено?"
 msgid "Connection"
 msgstr "Соединение"
 
+#: pgadmin/browser/server_groups/servers/static/js/server.js:648
+#: pgadmin/browser/server_groups/servers/static/js/server.js:728
+#: pgadmin/browser/server_groups/servers/static/js/server.js:766
+#: pgadmin/misc/statistics/static/js/statistics.js:82
+#: pgadmin/preferences/static/js/preferences.js:193
+#: pgadmin/static/js/backgrid.pgadmin.js:457
+msgid "True"
+msgstr "Да"
+
+#: pgadmin/browser/server_groups/servers/static/js/server.js:648
+#: pgadmin/browser/server_groups/servers/static/js/server.js:728
+#: pgadmin/browser/server_groups/servers/static/js/server.js:766
+#: pgadmin/misc/statistics/static/js/statistics.js:83
+#: pgadmin/preferences/static/js/preferences.js:194
+#: pgadmin/static/js/backgrid.pgadmin.js:458
+msgid "False"
+msgstr "Нет"
+
 #: pgadmin/browser/server_groups/servers/static/js/server.js:655
 msgid "Connect now?"
 msgstr "Подключиться сейчас?"
@@ -6871,6 +6945,7 @@ msgid "Server Group..."
 msgstr "Группа серверов..."
 
 #: pgadmin/browser/static/js/browser.js:25
+#: pgadmin/misc/depends/static/js/depends.js:357
 msgid "Please select an object in the tree view."
 msgstr "Выберите объект в дереве."
 
@@ -6881,12 +6956,6 @@ msgstr "Зависимости"
 #: pgadmin/browser/static/js/browser.js:167
 msgid "Dependents"
 msgstr "Зависимые"
-
-#: pgadmin/browser/static/js/browser.js:235
-#: pgadmin/misc/file_manager/static/js/file_manager.js:505
-#: pgadmin/misc/file_manager/static/js/file_manager.js:609
-msgid "Create"
-msgstr "Создать"
 
 #: pgadmin/browser/static/js/browser.js:315
 msgid "No object selected"
@@ -6997,6 +7066,11 @@ msgstr ""
 #, python-format
 msgid "DROP CASCADE %s?"
 msgstr "DROP CASCADE %s?"
+
+#: pgadmin/browser/static/js/node.js:630 pgadmin/browser/static/js/node.js:644
+#, python-format
+msgid "The %s \"%s\" cannot be dropped."
+msgstr ""
 
 #: pgadmin/browser/static/js/node.js:637
 #, python-format
@@ -7690,6 +7764,11 @@ msgstr "сек."
 msgid "Execution time"
 msgstr "Время выполнения"
 
+#: pgadmin/misc/depends/static/js/depends.js:235
+#: pgadmin/misc/depends/static/js/depends.js:236
+msgid "Restriction"
+msgstr ""
+
 #: pgadmin/misc/depends/static/js/depends.js:277
 #: pgadmin/misc/sql/static/js/sql.js:124
 #: pgadmin/misc/statistics/static/js/statistics.js:271
@@ -7701,6 +7780,29 @@ msgstr "Ошибка при получении информации — %s"
 #: pgadmin/misc/statistics/static/js/statistics.js:280
 msgid "Failed to retrieve data from the server."
 msgstr "Не удалось получить данные с сервера."
+
+#: pgadmin/misc/depends/static/js/depends.js:313
+#: pgadmin/tools/datagrid/static/js/datagrid.js:125
+#: pgadmin/tools/datagrid/static/js/datagrid.js:178
+#: pgadmin/tools/datagrid/static/js/datagrid.js:430
+msgid "No object selected."
+msgstr ""
+
+#: pgadmin/misc/depends/static/js/depends.js:313
+msgid "No dependent information is available for the current object."
+msgstr ""
+
+#: pgadmin/misc/depends/static/js/depends.js:314
+msgid "Fetching dependent information from the server..."
+msgstr ""
+
+#: pgadmin/misc/depends/static/js/depends.js:357
+msgid "No dependency information is available for the current object."
+msgstr ""
+
+#: pgadmin/misc/depends/static/js/depends.js:358
+msgid "Fetching dependency information from the server..."
+msgstr ""
 
 #: pgadmin/misc/file_manager/__init__.py:170
 msgid "Maximum file upload size (MB)"
@@ -7838,16 +7940,6 @@ msgstr "Вы действительно хотите заменить этот �
 msgid "No SQL could be generated for the selected object."
 msgstr "Для выбранного объекта нельзя сгенерировать SQL."
 
-#: pgadmin/misc/statistics/static/js/statistics.js:82
-#: pgadmin/preferences/static/js/preferences.js:193
-msgid "True"
-msgstr "Да"
-
-#: pgadmin/misc/statistics/static/js/statistics.js:83
-#: pgadmin/preferences/static/js/preferences.js:194
-msgid "False"
-msgstr "Нет"
-
 #: pgadmin/misc/statistics/static/js/statistics.js:184
 msgid "No statistics are available for the selected object."
 msgstr "Нет статистики для выделенного объекта."
@@ -7926,6 +8018,10 @@ msgstr "Общие"
 msgid "Note"
 msgstr "Замечание"
 
+#: pgadmin/static/js/backgrid.pgadmin.js:348
+msgid "This object is not user editable."
+msgstr ""
+
 #: pgadmin/static/js/backgrid.pgadmin.js:388
 msgid "Are you sure you wish to delete this row?"
 msgstr "Вы действительно хотите удалить эту строку?"
@@ -7933,6 +8029,10 @@ msgstr "Вы действительно хотите удалить эту ст�
 #: pgadmin/static/js/backgrid.pgadmin.js:389
 msgid "Delete Row"
 msgstr "Удалить строку"
+
+#: pgadmin/static/js/backgrid.pgadmin.js:421
+msgid "This object cannot be deleted."
+msgstr ""
 
 #: pgadmin/static/js/backgrid.pgadmin.js:812
 msgid "Array Values"
@@ -8343,9 +8443,27 @@ msgstr "Отфильтрованные строки..."
 msgid "View/Edit Data"
 msgstr "Просмотр/редактирование данных"
 
+#: pgadmin/tools/datagrid/static/js/datagrid.js:124
+#: pgadmin/tools/datagrid/static/js/datagrid.js:177
+msgid "Data Grid Error"
+msgstr ""
+
+#: pgadmin/tools/datagrid/static/js/datagrid.js:292
+#: pgadmin/tools/datagrid/static/js/datagrid.js:299
+msgid "Validation Error"
+msgstr ""
+
 #: pgadmin/tools/datagrid/static/js/datagrid.js:368
 msgid "Edit Data - "
 msgstr "Редактирование данных — "
+
+#: pgadmin/tools/datagrid/static/js/datagrid.js:415
+msgid "Query Tool Initialization Error"
+msgstr ""
+
+#: pgadmin/tools/datagrid/static/js/datagrid.js:429
+msgid "Query Tool Error"
+msgstr ""
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:479
 msgid "Query - "
@@ -8665,6 +8783,7 @@ msgstr ""
 #: pgadmin/tools/debugger/__init__.py:1573
 #: pgadmin/tools/debugger/__init__.py:1598
 #: pgadmin/tools/debugger/__init__.py:1614
+#: pgadmin/tools/debugger/static/js/direct.js:1481
 #: pgadmin/tools/sqleditor/__init__.py:292
 #: pgadmin/tools/sqleditor/__init__.py:465
 #: pgadmin/tools/sqleditor/__init__.py:1148
@@ -8723,9 +8842,54 @@ msgstr "Отладить"
 msgid "Set breakpoint"
 msgstr "Установить точку останова"
 
+#: pgadmin/tools/debugger/static/js/debugger.js:436
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:672
+msgid "Debugger Target Initialization Error"
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/debugger.js:447
+#: pgadmin/tools/debugger/static/js/direct.js:54
+#: pgadmin/tools/debugger/static/js/direct.js:116
+#: pgadmin/tools/debugger/static/js/direct.js:123
+#: pgadmin/tools/debugger/static/js/direct.js:151
+#: pgadmin/tools/debugger/static/js/direct.js:158
+#: pgadmin/tools/debugger/static/js/direct.js:194
+#: pgadmin/tools/debugger/static/js/direct.js:201
+#: pgadmin/tools/debugger/static/js/direct.js:236
+#: pgadmin/tools/debugger/static/js/direct.js:243
+#: pgadmin/tools/debugger/static/js/direct.js:271
+#: pgadmin/tools/debugger/static/js/direct.js:278
+#: pgadmin/tools/debugger/static/js/direct.js:403
+#: pgadmin/tools/debugger/static/js/direct.js:410
+#: pgadmin/tools/debugger/static/js/direct.js:591
+#: pgadmin/tools/debugger/static/js/direct.js:652
+#: pgadmin/tools/debugger/static/js/direct.js:700
+#: pgadmin/tools/debugger/static/js/direct.js:707
+#: pgadmin/tools/debugger/static/js/direct.js:738
+#: pgadmin/tools/debugger/static/js/direct.js:745
+#: pgadmin/tools/debugger/static/js/direct.js:775
+#: pgadmin/tools/debugger/static/js/direct.js:782
+#: pgadmin/tools/debugger/static/js/direct.js:827
+#: pgadmin/tools/debugger/static/js/direct.js:834
+#: pgadmin/tools/debugger/static/js/direct.js:899
+#: pgadmin/tools/debugger/static/js/direct.js:906
+#: pgadmin/tools/debugger/static/js/direct.js:964
+#: pgadmin/tools/debugger/static/js/direct.js:1225
+#: pgadmin/tools/debugger/static/js/direct.js:1256
+#: pgadmin/tools/debugger/static/js/direct.js:1428
+#: pgadmin/tools/debugger/static/js/direct.js:1449
+#: pgadmin/tools/debugger/static/js/direct.js:1488
+msgid "Debugger Error"
+msgstr ""
+
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:89
 msgid "Please enter a value for the parameter."
 msgstr "Введите значение параметра."
+
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:214
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:711
+msgid "Debugger Set Arguments Error"
+msgstr ""
 
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:230
 msgid "Null?"
@@ -8739,12 +8903,106 @@ msgstr ""
 msgid "Use Default?"
 msgstr ""
 
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:665
+msgid "Debugger Set arguments error"
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:690
+msgid "Debugger Listener Startup Error"
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:55
+msgid "Error while setting debugging breakpoint."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:117
+#: pgadmin/tools/debugger/static/js/direct.js:124
+msgid "Error while fetching breakpoint information."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:152
+#: pgadmin/tools/debugger/static/js/direct.js:159
+msgid "Error while starting debugging session."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:195
+#: pgadmin/tools/debugger/static/js/direct.js:202
+msgid "Error while executing requested debugging information."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:237
+#: pgadmin/tools/debugger/static/js/direct.js:244
+msgid "Error while fetching variable information."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:272
+#: pgadmin/tools/debugger/static/js/direct.js:279
+msgid "Error while fetching stack information."
+msgstr ""
+
 #: pgadmin/tools/debugger/static/js/direct.js:385
 msgid "Waiting for another session to invoke the target..."
 msgstr "Ожидание другого сеанса для вызова цели..."
 
+#: pgadmin/tools/debugger/static/js/direct.js:404
+#: pgadmin/tools/debugger/static/js/direct.js:411
+#: pgadmin/tools/debugger/static/js/direct.js:592
+#: pgadmin/tools/debugger/static/js/direct.js:653
+msgid "Error while polling result."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:546
+msgid "Debugger poll end execution error"
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:701
+#: pgadmin/tools/debugger/static/js/direct.js:708
+msgid "Error while executing continue in debugging session."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:739
+#: pgadmin/tools/debugger/static/js/direct.js:746
+msgid "Error while executing step over in debugging session."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:776
+#: pgadmin/tools/debugger/static/js/direct.js:783
+msgid "Error while executing step into in debugging session."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:828
+#: pgadmin/tools/debugger/static/js/direct.js:835
+msgid "Error while executing stop in debugging session."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:900
+#: pgadmin/tools/debugger/static/js/direct.js:907
+msgid "Error while toggling breakpoint."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:965
+msgid "Error while clearing all breakpoint."
+msgstr ""
+
 #: pgadmin/tools/debugger/static/js/direct.js:996
 msgid "Line No."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:1226
+msgid "Error while depositing variable value."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:1257
+msgid "Error while selecting frame."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:1429
+#: pgadmin/tools/debugger/static/js/direct.js:1450
+msgid "Error while starting debugging listener."
+msgstr ""
+
+#: pgadmin/tools/debugger/static/js/direct.js:1489
+msgid "Error while fetching messages information."
 msgstr ""
 
 #: pgadmin/tools/debugger/static/js/direct.js:1558
@@ -9498,26 +9756,90 @@ msgstr "Файл сохранён успешно."
 msgid "Loading the existing filter options..."
 msgstr "Загрузка параметров существующего фильтра..."
 
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2713
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2733
+msgid "Get Filter Error"
+msgstr ""
+
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2764
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2834
 msgid "Applying the new filter..."
 msgstr "Применение нового фильтра..."
 
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2782
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2792
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2803
+msgid "Filter By Selection Error"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2852
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2863
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2874
+msgid "Filter Exclude Selection Error"
+msgstr ""
+
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2887
 msgid "Removing the filter..."
 msgstr "Удаление фильтра..."
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2903
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2913
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2924
+msgid "Remove Filter Error"
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2938
 msgid "Applying the filter..."
 msgstr "Применение фильтра..."
 
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2958
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2968
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2979
+msgid "Apply Filter Error"
+msgstr ""
+
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3076
 msgid "Setting the limit on the result..."
 msgstr "Установка ограничения набора результатов..."
 
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3093
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3102
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3113
+msgid "Change limit Error"
+msgstr ""
+
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3153
 msgid "Initializing query execution..."
 msgstr "Начинается выполнение запроса..."
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3306
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3313
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3324
+msgid "Cancel Query Error"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3358
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3362
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3373
+msgid "Auto Rollback Error"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3397
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3401
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3412
+msgid "Auto Commit Error"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3441
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3447
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3479
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3485
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3516
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3522
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3552
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3558
+msgid "Explain options error"
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3442
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3448
@@ -9538,6 +9860,10 @@ msgstr "Ошибка при изменении свойства BUFFERS кома
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3559
 msgid "Error occurred while setting timing option in explain."
 msgstr "Ошибка при изменении свойства TIMING команды EXPLAIN."
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3656
+msgid "Get Preferences error"
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3657
 msgid "Error occurred while getting query tool options."
@@ -9622,9 +9948,21 @@ msgstr "Удалить пользователя нельзя."
 msgid "Cannot delete currently logged in user."
 msgstr "Удалить пользователя, подключённого в данный момент, нельзя."
 
+#: pgadmin/tools/user_management/static/js/user_management.js:307
+msgid "Delete user?"
+msgstr ""
+
+#: pgadmin/tools/user_management/static/js/user_management.js:308
+msgid "Are you sure you wish to delete this user?"
+msgstr ""
+
 #: pgadmin/tools/user_management/static/js/user_management.js:316
 msgid "Error during deleting user."
 msgstr "Ошибка при удалении пользователя."
+
+#: pgadmin/tools/user_management/static/js/user_management.js:326
+msgid "This user cannot be deleted."
+msgstr ""
 
 #: pgadmin/tools/user_management/static/js/user_management.js:364
 msgid "Close"

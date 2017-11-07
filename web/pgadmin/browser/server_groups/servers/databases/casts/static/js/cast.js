@@ -257,7 +257,7 @@ define('pgadmin.node.cast', [
           id: 'syscast', label: gettext('System cast?'),
           cell: 'switch', type: 'switch', mode: ['properties'], disabled: true,
           options: {
-            'onText': 'Yes', 'offText': 'No',
+            'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }

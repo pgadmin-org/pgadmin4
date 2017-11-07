@@ -499,7 +499,7 @@ define('pgadmin.node.column', [
           id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
           type: 'switch', disabled: 'inSchemaWithColumnCheck', cellHeaderClasses:'width_percent_20',
           group: gettext('Definition'), editable: 'editable_check_for_table',
-          options: { onText: 'Yes', offText: 'No', onColor: 'success', offColor: 'primary' }
+          options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success', offColor: 'primary' }
         },{
           id: 'attstattarget', label: gettext('Statistics'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck', mode: ['properties', 'edit'],
