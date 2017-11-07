@@ -126,7 +126,7 @@ define('pgadmin.node.language', [
         },{
           id: 'trusted', label: gettext('Trusted?'), type: 'switch',
           options: {
-            'onText': 'Yes', 'offText': 'No',
+            'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           },

@@ -167,7 +167,7 @@ define('pgadmin.node.domain', [
           id: 'sysdomain', label: gettext('System domain?'), cell: 'boolean',
           type: 'switch', mode: ['properties'],
           options: {
-            'onText': 'Yes', 'offText': 'No',
+            'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }
@@ -246,7 +246,7 @@ define('pgadmin.node.domain', [
           id: 'typnotnull', label: gettext('Not Null?'), cell: 'boolean',
           type: 'switch', group: gettext('Definition'),
           options: {
-            'onText': 'Yes', 'offText': 'No',
+            'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }

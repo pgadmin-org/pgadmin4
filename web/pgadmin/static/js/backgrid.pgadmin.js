@@ -318,9 +318,9 @@ define('pgadmin.backgrid', [
             this.model.trigger(
               'pg-sub-node:opened', this.model, this
             );
-          }
-        } else {
-          Alertify.alert('This object is not editable by user',
+        }
+      } else {
+          Alertify.alert(gettext("This object is not user editable."),
             function(){
               return true;
             });
@@ -389,7 +389,7 @@ define('pgadmin.backgrid', [
             function() { return true; }
           );
         } else {
-          Alertify.alert('This object cannot be deleted',
+          Alertify.alert(gettext("This object cannot be deleted."),
             function(){
               return true;
             }
@@ -420,17 +420,18 @@ define('pgadmin.backgrid', [
 
       /**
     SwitchCell renders a Bootstrap Switch in backgrid cell
-    */
-    Backgrid.Extension.SwitchCell = Backgrid.BooleanCell.extend({
-      defaults: {
-        options: _.defaults({
-          onText: 'True',
-          offText: 'False',
-          onColor: 'success',
-          offColor: 'default',
-          size: 'mini',
-        }, $.fn.bootstrapSwitch.defaults),
-      },
+  */
+  $.fn.bootstrapSwitch = jQuery.fn.bootstrapSwitch;
+  var SwitchCell = Backgrid.Extension.SwitchCell = Backgrid.BooleanCell.extend({
+    defaults: {
+      options: _.defaults({
+        onText: gettext('True'),
+        offText: gettext('False'),
+        onColor: 'success',
+        offColor: 'default',
+        size: 'mini'
+        }, $.fn.bootstrapSwitch.defaults)
+    },
 
       className: 'switch-cell',
 

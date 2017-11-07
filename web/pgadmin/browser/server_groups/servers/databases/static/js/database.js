@@ -393,7 +393,7 @@ define('pgadmin.node.database', [
           editable: false, type: 'switch', group: gettext('Definition'),
           mode: ['properties'], disabled: true,
           options: {
-            'onText': 'Yes', 'offText': 'No',
+            'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }

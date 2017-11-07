@@ -394,8 +394,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     defaults: {
       label: '',
       options: {
-        onText: 'Yes',
-        offText: 'No',
+        onText: gettext('Yes'),
+        offText: gettext('No'),
         onColor: 'success',
         offColor: 'primary',
         size: 'small',

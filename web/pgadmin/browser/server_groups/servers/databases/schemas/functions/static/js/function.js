@@ -265,7 +265,7 @@ define('pgadmin.node.function', [
           id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
           group: gettext('Options'), disabled: 'isDisabled',
           options: {
-            'onText': 'Yes', 'offText': 'No',
+            'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
            }

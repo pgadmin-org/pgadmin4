@@ -645,7 +645,7 @@ define('pgadmin.node.server', [
         },{
           id: 'connected', label: gettext('Connected?'), type: 'switch',
           mode: ['properties'], group: gettext('Connection'), 'options': {
-            'onText':   'True', 'offText':  'False', 'onColor':  'success',
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'onColor':  'success',
             'offColor': 'danger', 'size': 'small'
           }
         },{
@@ -725,7 +725,7 @@ define('pgadmin.node.server', [
         },{
           id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
           mode: ['edit', 'create'], group: gettext('SSL'),
-          'options': { 'onText':   'True', 'offText':  'False',
+          'options': { 'onText':   gettext('True'), 'offText':  gettext('False'),
           'onColor':  'success', 'offColor': 'danger', 'size': 'small'},
           deps: ['sslmode'], disabled: 'isSSL'
         },{
@@ -763,7 +763,7 @@ define('pgadmin.node.server', [
         },{
           id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
           mode: ['properties'], group: gettext('SSL'),
-          'options': { 'onText':   'True', 'offText':  'False',
+          'options': { 'onText':  gettext('True'), 'offText':  gettext('False'),
           'onColor':  'success', 'offColor': 'danger', 'size': 'small'},
           deps: ['sslmode'], visible: function(m) {
             var sslmode = m.get('sslmode');

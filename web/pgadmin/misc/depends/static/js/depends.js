@@ -229,10 +229,10 @@ define('misc.depends', [
            * it should be 'Restriction'.
            */
           if (this.dependent && (node.type == 'tablespace' || node.type == 'role'))
-            this.dependentGrid.columns.models[2].set({'label': 'Database'});
+            this.dependentGrid.columns.models[2].set({'label': gettext('Database')});
           else {
-            this.dependenciesGrid.columns.models[2].set({'label': 'Restriction'});
-            this.dependentGrid.columns.models[2].set({'label': 'Restriction'});
+            this.dependenciesGrid.columns.models[2].set({'label': gettext('Restriction')});
+            this.dependentGrid.columns.models[2].set({'label': gettext('Restriction')});
           }
 
           // Hide message container and show grid container.
@@ -309,8 +309,8 @@ define('misc.depends', [
           self.dependentCollection,
           self.dependentsPanels,
           node.generate_url(item, 'dependent', data, true),
-          ['No object selected.', 'No dependent information is available for the current object.',
-            'Fetching dependent information from the server...'],
+          [gettext('No object selected.'), gettext('No dependent information is available for the current object.'),
+            gettext('Fetching dependent information from the server...')],
           node,
           item,
           data._type
@@ -353,8 +353,8 @@ define('misc.depends', [
           self.dependenciesCollection,
           self.dependenciesPanels,
           node.generate_url(item, 'dependency', data, true),
-          ['Please select an object in the tree view.', 'No dependency information is available for the current object.',
-            'Fetching dependency information from the server...'],
+          [gettext('Please select an object in the tree view.'), gettext('No dependency information is available for the current object.'),
+            gettext('Fetching dependency information from the server...')],
           node,
           item,
           data._type

@@ -216,7 +216,7 @@ define([
               },
               error: function(e) {
                 Alertify.alert(
-                  'Debugger Set arguments error'
+                  gettext('Debugger Set Arguments Error')
                 );
               }
             });
@@ -667,14 +667,14 @@ define([
                       },
                       error: function(e) {
                         Alertify.alert(
-                          'Debugger Set arguments error'
+                          gettext('Debugger Set arguments error')
                         );
                       }
                     });
                   },
                   error: function(e) {
                     Alertify.alert(
-                      'Debugger target Initialize Error',
+                      gettext('Debugger Target Initialization Error'),
                       e.responseJSON.errormsg
                     );
                   }
@@ -692,7 +692,7 @@ define([
                   },
                   error: function(e) {
                     Alertify.alert(
-                      'Debugger listener starting error',
+                      gettext('Debugger Listener Startup Error'),
                       e.responseJSON.errormsg
                     );
                   }
@@ -713,7 +713,7 @@ define([
                   },
                   error: function(e) {
                     Alertify.alert(
-                      'Debugger Set arguments error'
+                      gettext('Debugger Set Arguments Error')
                     );
                   }
                 });
