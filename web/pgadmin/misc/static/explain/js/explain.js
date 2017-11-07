@@ -64,7 +64,7 @@ Snap.plugin(function (Snap, Element, Paper, glob) {
           );
 
       if (curr_line) {
-        lines = lines.slice(0, lines.length - 2);
+        lines = lines.slice(0, lines.length - 1);
       }
       lines = lines.concat(tmpArr);
       curr_line = lines[lines.length - 1];
@@ -207,7 +207,7 @@ var offsetX = 200,
 var ARROW_WIDTH = 10,
     ARROW_HEIGHT = 10,
     DEFAULT_ARROW_SIZE = 2;
-var TXT_ALLIGN = 5,
+var TXT_ALIGN = 5,
     TXT_SIZE = "15px";
 var TOTAL_WIDTH = undefined,
     TOTAL_HEIGHT = undefined;
@@ -376,9 +376,10 @@ var PlanModel = Backbone.Model.extend({
         if (isSubPlan) {
           g.rect(
             currentXpos - this.get('width') + pWIDTH + xMargin,
-            currentYpos - yMargin,
+            currentYpos - this.get('height') + pHEIGHT + yMargin - TXT_ALIGN,
             this.get('width') - xMargin,
-            this.get('height'), 5
+            this.get('height') + (currentYpos - yMargin),
+            5
           ).attr({
               stroke: '#444444',
               'strokeWidth': 1.2,
@@ -461,8 +462,8 @@ var PlanModel = Backbone.Model.extend({
                             this.get('Schema')+"."+this.get('image_text'));
         var label = g.g();
         g.multitext(
-          currentXpos + (pWIDTH / 2),
-          currentYpos + pHEIGHT - TXT_ALLIGN,
+          currentXpos + (pWIDTH / 2) + TXT_ALIGN,
+          currentYpos + pHEIGHT - TXT_ALIGN,
           node_label,
           150,
           {"font-size": TXT_SIZE ,"text-anchor":"middle"}
@@ -531,7 +532,7 @@ var MainPlanModel = Backbone.Model.extend({
            data['xpos'] = 0;
            data['ypos'] = 0;
            data['width'] = plan.get('width') + (xMargin * 2);
-           data['height'] = plan.get('height') + (yMargin * 2);
+           data['height'] = plan.get('height') + (yMargin * 4);
 
            delete data['Plan'];
         }
