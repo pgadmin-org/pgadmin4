@@ -1278,7 +1278,7 @@ void BrowserWindow::pause(int seconds)
     QTime dieTime = QTime::currentTime().addSecs(seconds);
 
     while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);    
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
 // Display the about box
