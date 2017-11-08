@@ -242,7 +242,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         'select_sql': [{'get': 'select_sql'}],
         'insert_sql': [{'get': 'insert_sql'}],
         'update_sql': [{'get': 'update_sql'}],
-        'delete_sql': [{'get': 'delete_sql'}]
+        'delete_sql': [{'get': 'delete_sql'}],
+        'count_rows': [{'get': 'count_rows'}]
     })
 
     @BaseTableView.check_precondition
@@ -346,7 +347,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
                     icon="icon-partition" if 'is_partitioned' in row and row['is_partitioned'] else "icon-table",
                     tigger_count=row['triggercount'],
                     has_enable_triggers=row['has_enable_triggers'],
-                    is_partitioned=row['is_partitioned'] if 'is_partitioned' in row else False
+                    is_partitioned=row['is_partitioned'] if 'is_partitioned' in row else False,
+                    rows_cnt=0
                 ))
 
         return make_json_response(
@@ -1460,5 +1462,40 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         schema.
         """
         return BaseTableView.get_table_statistics(self, scid, tid)
+
+    @BaseTableView.check_precondition
+    def count_rows(self, gid, sid, did, scid, tid):
+        """
+        Count the rows of a table.
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            tid: Table Id
+
+        Returns the total rows of a table.
+        """
+        data = {}
+        data['schema'], data['name'] = \
+            super(TableView, self).get_schema_and_table_name(tid)
+
+        SQL = render_template(
+            "/".join(
+                [self.table_template_path, 'get_table_row_count.sql']
+            ), data=data
+        )
+
+        status, count = self.conn.execute_scalar(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=count)
+
+        return make_json_response(
+            status=200,
+            info=gettext("Table rows counted"),
+            data={'total_rows': count}
+        )
+
 
 TableView.register_node_view(blueprint)

@@ -90,6 +90,11 @@ define('pgadmin.node.table', [
           applies: ['object', 'context'], callback: 'reset_table_stats',
           category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
           icon: 'fa fa-bar-chart', enable : 'canCreate'
+        },{
+          name: 'count_table_rows', node: 'table', module: this,
+          applies: ['object', 'context'], callback: 'count_table_rows',
+          category: 'Count', priority: 2, label: gettext('Count Rows'),
+          enable: true
         }
         ]);
         pgBrowser.Events.on(
@@ -206,8 +211,8 @@ define('pgadmin.node.table', [
             }
           }, function() {}
         );
-       },
-       reset_table_stats: function(args) {
+        },
+        reset_table_stats: function(args) {
           var input = args || {},
             obj = this,
             t = pgBrowser.tree,
@@ -255,7 +260,41 @@ define('pgadmin.node.table', [
             },
             function() {}
           );
-       }
+        },
+        count_table_rows: function(args) {
+          var input = args || {},
+          obj = this,
+          t = pgBrowser.tree,
+          i = input.item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          if (!d)
+            return false;
+
+          // Fetch the total rows of a table
+          $.ajax({
+            url: obj.generate_url(i, 'count_rows' , d, true),
+            type:'GET',
+            success: function(res) {
+                alertify.success(res.info);
+                d.rows_cnt = res.data.total_rows;
+                t.unload(i);
+                t.setInode(i);
+                t.deselect(i);
+                setTimeout(function() {
+                  t.select(i);
+                }, 10);
+            },
+            error: function(xhr, status, error) {
+              try {
+                var err = $.parseJSON(xhr.responseText);
+                if (err.success == 0) {
+                  alertify.error(err.errormsg);
+                }
+              } catch (e) {}
+              t.unload(i);
+            }
+          });
+        }
       },
       model: pgBrowser.Node.Model.extend({
         defaults: {
@@ -781,7 +820,24 @@ define('pgadmin.node.table', [
         },{
           id: 'rows_cnt', label: gettext('Rows (counted)'), cell: 'string',
           type: 'text', mode: ['properties'], group: gettext('Advanced'),
-          disabled: 'inSchema'
+          disabled: 'inSchema', control: Backform.InputControl.extend({
+            formatter: {
+               fromRaw: function (rawData, model) {
+                  var t = pgAdmin.Browser.tree,
+                  i = t.selected(),
+                  d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+                  // Return the actual rows count if the selected node has already counted.
+                  if(d && d.rows_cnt && parseInt(d.rows_cnt, 10) > 0)
+                    return d.rows_cnt;
+                  else
+                    return rawData;
+               },
+               toRaw: function (formattedData, model) {
+                  return formattedData;
+               }
+            }
+          })
         },{
           id: 'relhassubclass', label: gettext('Inherits tables?'), cell: 'switch',
           type: 'switch', mode: ['properties'], group: gettext('Advanced'),

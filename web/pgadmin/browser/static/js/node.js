@@ -453,7 +453,7 @@ define(
        *
        * args must be a object containing:
        *   action - create/edit/properties
-       *   item   - The properties of the item (tree ndoe item)
+       *   item   - The properties of the item (tree node item)
        *
        * NOTE:
        * if item is not provided, the action will be done on the
