@@ -174,12 +174,19 @@ BrowserWindow::~BrowserWindow()
 // Save the window geometry on close
 void BrowserWindow::closeEvent(QCloseEvent *event)
 {
-    QSettings settings;
-    settings.setValue("Browser/Geometry", saveGeometry());
-    settings.setValue("Browser/WindowState", saveState());
-    QMainWindow::closeEvent(event);
+    if (QMessageBox::Yes == QMessageBox::question(this, "Exit the application?", "Are you sure you want to exit the application?", QMessageBox::Yes | QMessageBox::No))
+    {
+        QSettings settings;
+        settings.setValue("Browser/Geometry", saveGeometry());
+        settings.setValue("Browser/WindowState", saveState());
+        QMainWindow::closeEvent(event);
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
 }
-
 
 // Create the actions for the window
 void BrowserWindow::createActions()
