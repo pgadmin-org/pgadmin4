@@ -101,7 +101,7 @@ define('pgadmin.datagrid', [
          });
         }
 
-        pgAdmin.Browser.add_menu_category('view_data', gettext('View/Edit Data'), 100, 'fa fa-th');
+        pgAdmin.Browser.add_menu_category('view_data', gettext('View/Edit Data'), 100, '');
         pgAdmin.Browser.add_menus(menus);
 
         // Creating a new pgAdmin.Browser frame to show the data.
