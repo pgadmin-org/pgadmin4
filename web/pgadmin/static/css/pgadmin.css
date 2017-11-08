@@ -230,6 +230,7 @@
 
 .pg-el-container[el=sm] .pg-el-sm-12 {
   width: 100%;
+  margin-bottom: 5%;
 }
 .pg-el-container[el=sm] .pg-el-sm-11 {
   width: 91.66666666666666%;
@@ -305,6 +306,7 @@
 /* Medium container */
 .pg-el-container[el=md] .pg-el-md-12 {
   width: 100%;
+  margin-bottom: 3%;
 }
 .pg-el-container[el=md] .pg-el-md-11 {
   width: 91.66666666666666%;
@@ -343,6 +345,7 @@
 /* Large container */
 .pg-el-container[el=lg] .pg-el-lg-12 {
   width: 100%;
+  margin-bottom: 2%;
 }
 .pg-el-container[el=lg] .pg-el-lg-11 {
   width: 91.66666666666666%;
