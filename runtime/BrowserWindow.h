@@ -145,6 +145,10 @@ private:
     QString m_regMessage;
 #endif
 
+#ifdef _WIN32
+    QString m_regMessage;
+#endif
+
 #ifdef PGADMIN4_USE_WEBENGINE
     QWebEngineDownloadItem *m_download;
 #else
