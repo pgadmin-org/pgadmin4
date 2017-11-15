@@ -197,6 +197,27 @@ int main(int argc, char * argv[])
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
+#ifdef _WIN32
+    // Set registry "HKEY_CLASSES_ROOT\.css\Content Type" to value "text/css" to avoid rendering issue in windows OS.
+    QString infoMsgStr("");
+    QSettings css_keys("HKEY_CLASSES_ROOT", QSettings::NativeFormat);
+
+    // If key already exists then check for existing value and it differs then only change it.
+    if (css_keys.childGroups().contains(".css", Qt::CaseInsensitive))
+    {
+        QSettings set("HKEY_CLASSES_ROOT\\.css", QSettings::NativeFormat);
+        if (set.value("Content Type").toString() != "text/css")
+        {
+            set.setValue("Content Type", "text/css");
+            // If error while setting registry then it should be issue with permissions.
+            if (set.status() == QSettings::NoError)
+                infoMsgStr = "pgAdmin 4 application has reset the registry key 'HKEY_CLASSES_ROOT\\css\\Content Type' to 'text/css' to fix a system  misconfiguration that can lead to rendering problems.";
+            else
+                infoMsgStr = "Failed to reset the registry key 'HKEY_CLASSES_ROOT\\css\\Content Type' to 'text/css'. Try to run with Administrator privileges.";
+        }
+    }
+#endif
+
     /* In windows and linux, it is required to set application level proxy
      * becuase socket bind logic to find free port gives socket creation error
      * when system proxy is configured. We are also setting
@@ -385,6 +406,9 @@ int main(int argc, char * argv[])
     BrowserWindow browserWindow(appServerUrl);
     browserWindow.setWindowTitle(PGA_APP_NAME);
     browserWindow.setWindowIcon(QIcon(":/pgAdmin4.ico"));
+#ifdef _WIN32
+    browserWindow.setRegistryMessage(infoMsgStr);
+#endif
     browserWindow.show();
 
     // Go!
