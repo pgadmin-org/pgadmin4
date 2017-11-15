@@ -57,6 +57,10 @@ public:
     BrowserWindow(QString url);
     ~BrowserWindow();
 
+#ifdef _WIN32
+    void setRegistryMessage(const QString &msg);
+#endif
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -79,6 +83,7 @@ private slots:
 #ifdef PGADMIN4_USE_WEBENGINE
     void downloadRequested(QWebEngineDownloadItem *download);
 #endif
+    void urlLoadingFinished(bool);
 
 public slots:
     void download(const QNetworkRequest &request);
@@ -133,6 +138,10 @@ private:
     QString m_dir;
     QNetworkReply *m_reply;
 
+#ifdef _WIN32
+    QString m_regMessage;
+#endif
+
 #ifdef PGADMIN4_USE_WEBENGINE
     QWebEngineDownloadItem *m_download;
 #else
@@ -144,6 +153,9 @@ private:
     void pause(int seconds = 1);
     int  findURLTab(const QUrl &name);
     void enableDisableToolButtons(WebViewWindow *webViewPtr);
+#ifdef _WIN32
+    QString getRegistryMessage();
+#endif
 
 #ifdef __APPLE__
   #ifdef PGADMIN4_USE_WEBENGINE

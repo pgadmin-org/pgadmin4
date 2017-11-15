@@ -63,6 +63,10 @@ BrowserWindow::BrowserWindow(QString url)
 
     m_appServerUrl = url;
 
+#ifdef _WIN32
+    m_regMessage = "";
+#endif
+
     // Setup the shortcuts
     createActions();
 
@@ -137,6 +141,9 @@ BrowserWindow::BrowserWindow(QString url)
     m_mainWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 #endif
 
+    // Register the signal when base URL loading is finished.
+    connect(m_mainWebView, SIGNAL(loadFinished(bool )),this, SLOT(urlLoadingFinished(bool )));
+
     // Restore the geometry, or set a nice default
     QSettings settings;
 
@@ -185,6 +192,33 @@ void BrowserWindow::closeEvent(QCloseEvent *event)
     else
     {
         event->ignore();
+    }
+}
+
+#ifdef _WIN32
+// Set the message when change in registry value.
+void BrowserWindow::setRegistryMessage(const QString &msg)
+{
+    m_regMessage = msg;
+}
+
+QString BrowserWindow::getRegistryMessage()
+{
+    return m_regMessage;
+}
+#endif
+
+void BrowserWindow::urlLoadingFinished(bool res)
+{
+    if (res)
+    {
+#ifdef _WIN32
+        // Check if registry value is set by application then display information message to user.
+        // If message is empty string means no value set by application in registry.
+        QString message = getRegistryMessage();
+        if (message != QString(""))
+            QMessageBox::information(this, tr("Registry change"), message);
+#endif
     }
 }
 
