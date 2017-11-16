@@ -11,6 +11,8 @@
     font-size: 14px;
     font-weight: bold;
     border-radius: 0;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   /* Overrides alertify js headers hovering behaviour*/
