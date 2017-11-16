@@ -2707,6 +2707,8 @@ define('tools.querytool', [
                 self.gridView.filter_obj.setValue('');
               else
                 self.gridView.filter_obj.setValue(res.data.result);
+              // Set focus on filter area
+              self.gridView.filter_obj.focus();
             } else {
               setTimeout(
                 function () {
