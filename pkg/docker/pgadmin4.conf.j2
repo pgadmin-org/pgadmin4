@@ -17,7 +17,7 @@ LoadModule ssl_module modules/mod_ssl.so
     SSLCertificateFile "/certs/server.cert"
     SSLCertificateKeyFile "/certs/server.key"
 
-    ServerName pgadmin4
+    ServerName {{ PGADMIN_SERVER_NAME }}
     WSGIDaemonProcess pgadmin processes=1 threads=25
     WSGIScriptAlias / /var/www/pgadmin/pgAdmin4.wsgi
 
