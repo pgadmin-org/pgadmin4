@@ -37,7 +37,7 @@ linter:
 check: install-node bundle linter
 	cd web && yarn run karma start -- --single-run && python regression/runtests.py
 
-check-python: install-node bundle
+check-python:
 	cd web && python regression/runtests.py --exclude feature_tests
 
 check-feature: install-node bundle
