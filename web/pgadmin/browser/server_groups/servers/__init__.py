@@ -694,21 +694,18 @@ class ServerNode(PGChildNodeView):
                 manager.update(server)
                 conn = manager.connection()
 
-                have_password =  False
+                have_password = False
+                password = None
+                passfile = None
                 if 'password' in data and data["password"] != '':
                     # login with password
                     have_password = True
-                    passfile = None
                     password = data['password']
                     password = encrypt(password, current_user.password)
                 elif 'passfile' in data and data["passfile"] != '':
                     passfile = data['passfile']
                     setattr(server, 'passfile', passfile)
                     db.session.commit()
-                else:
-                    # Attempt password less login
-                    password = None
-                    passfile = None
 
                 status, errmsg = conn.connect(
                     password=password,
