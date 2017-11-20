@@ -1092,10 +1092,8 @@ define([
                         error: function(m, jqxhr) {
                           alertify.pgNotifier(
                             "error", jqxhr,
-                            S(
-                              gettext("Error saving properties: %s")
-                              ).sprintf(jqxhr.statusText).value()
-                            );
+                            gettext("Error saving properties")
+                          );
 
                             // Release wizard objects
                             self.releaseObjects();
