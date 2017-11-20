@@ -92,6 +92,7 @@ public slots:
     void downloadFileProgress(qint64 , qint64 );
     void progressCanceled();
     void current_dir_path(const QString &dir);
+    void replyReady();
 #ifdef PGADMIN4_USE_WEBENGINE
     void createNewTabWindow(QWebEnginePage * &);
     void downloadEngineFileProgress(qint64 , qint64 );
@@ -137,6 +138,8 @@ private:
     QString m_last_open_folder_path;
     QString m_dir;
     QNetworkReply *m_reply;
+    bool is_readyReadSignaled;
+    qint64 m_readBytes;
 
 #ifdef _WIN32
     QString m_regMessage;
