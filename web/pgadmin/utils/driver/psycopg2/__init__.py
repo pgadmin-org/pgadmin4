@@ -81,8 +81,8 @@ pg_types_to_string_type = psycopg2.extensions.new_type(
         # date, timestamp, timestamptz, bigint, double precision
         1700, 1082, 1114, 1184, 20, 701,
 
-        # real
-        700
+        # real, time without time zone
+        700, 1083, 1183
     ),
     'TYPECAST_TO_STRING', psycopg2.STRING
 )
