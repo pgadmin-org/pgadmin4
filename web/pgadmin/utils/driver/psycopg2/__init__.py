@@ -822,6 +822,18 @@ WHERE
             else:
                 quote = csv.QUOTE_NONE
 
+            if hasattr(str, 'decode'):
+                # Decode the field_separator
+                try:
+                    field_separator = field_separator.decode('utf-8')
+                except:
+                    pass
+                # Decode the quote_char
+                try:
+                    quote_char = quote_char.decode('utf-8')
+                except:
+                    pass
+
             csv_writer = csv.DictWriter(
                 res_io, fieldnames=header, delimiter=field_separator,
                 quoting=quote,
