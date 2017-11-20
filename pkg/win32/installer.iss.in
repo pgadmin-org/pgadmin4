@@ -20,7 +20,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}\{#MyAppVersion}
 DefaultGroupName={#MyAppName}
 DisableWelcomePage=no
-DisableProgramGroupPage=yes
+DisableProgramGroupPage=auto
 LicenseFile=Resources\license.rtf
 OutputBaseFilename=setup
 SetupIconFile=Resources\pgAdmin4.ico
@@ -30,6 +30,7 @@ PrivilegesRequired=admin
 ChangesEnvironment=yes
 ;UninstallFilesDir={app}\{#MyAppVersion}
 ArchitecturesInstallIn64BitMode={#MyAppArchitecturesMode}
+AllowNoIcons=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
