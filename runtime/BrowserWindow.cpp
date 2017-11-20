@@ -57,6 +57,8 @@ BrowserWindow::BrowserWindow(QString url)
     m_last_open_folder_path = "";
     m_dir = "";
     m_reply = NULL;
+    is_readyReadSignaled = false;
+    m_readBytes = 0;
 #ifdef PGADMIN4_USE_WEBENGINE
     m_download = NULL;
 #endif
@@ -542,7 +544,40 @@ void BrowserWindow::download(const QNetworkRequest &request)
                     m_downloadStarted = 1;
                     m_downloadCancelled = 0;
 
+                    // Download is started so open the file
+                    if (!m_file)
+                    {
+                        if (!m_downloadFilename.isEmpty())
+                        {
+                            m_file = new QFile(m_downloadFilename);
+                            if (!m_file->open(QIODevice::WriteOnly))
+                            {
+                                qDebug() << "Error opening file: " << m_downloadFilename;
+                                m_downloadFilename.clear();
+                                m_defaultFilename.clear();
+                                m_downloadStarted = 0;
+                                return;
+                            }
+
+                            // Create progress bar dialog
+                            m_progressDialog = new QProgressDialog (tr("Downloading file: %1 ").arg(m_defaultFilename), "Cancel", 0, 100, this);
+                            m_progressDialog->setWindowModality(Qt::WindowModal);
+                            m_progressDialog->setWindowTitle(tr("Download progress"));
+                            m_progressDialog->setMinimumWidth(450);
+                            m_progressDialog->setMinimumHeight(80);
+                            m_progressDialog->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
+                            // Register slot for file download cancel request
+                            QObject::connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(progressCanceled()));
+                            m_reply = reply;
+
+                            // Show downloading progress bar
+                            m_progressDialog->show();
+                        }
+                    }
+
                     // Connect the signals for downloadProgress and downloadFinished
+                    connect( reply, SIGNAL(readyRead()), this, SLOT(replyReady()));
                     connect( reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadFileProgress(qint64, qint64)) );
                     connect( reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
                 }
@@ -578,62 +613,61 @@ void BrowserWindow::downloadEngineFileProgress(qint64 readData, qint64 totalData
 }
 #endif
 
-// Below slot will be called when file download is in progress
-void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
+// Below slot will be called when data are available for download.
+void BrowserWindow::replyReady()
 {
-    QNetworkReply *reply = ((QNetworkReply*)sender());
-    QNetworkRequest request = reply->request();
-    QVariant v = request.attribute(QNetworkRequest::User);
-
+    is_readyReadSignaled = true;
     // When download is canceled by user then no need to write data to file
     if (m_downloadCancelled)
         return;
 
-    if(reply != NULL && reply->error() != QNetworkReply::NoError)
+    // Write the data received from network to file.
+    if (m_reply != NULL && m_file != NULL)
+    {
+        QByteArray data= m_reply->readAll();
+        int l_size = data.size();
+        m_readBytes += (qint64)(l_size);
+        m_file->write(data);
+        // Calculate size in MB to be displayed in progress bar dialog.
+        if (m_progressDialog) {
+            qreal k_bytes = (((qreal)m_readBytes) / 1024);
+            qreal m_bytes = (k_bytes / 1024);
+            QString f_str = QString::number(m_bytes, 'f', 1);
+            QString set_str = QString("Downloaded ") + f_str + QString(" MB");
+            m_progressDialog->setLabelText(set_str);
+        }
+    }
+}
+
+// Below slot will be called when file download is in progress
+void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
+{
+    // When download is canceled by user then no need to write data to file
+    if (m_downloadCancelled)
+        return;
+
+    if(m_reply != NULL && m_reply->error() != QNetworkReply::NoError)
     {
         qDebug() << "Network error occurred whilst downloading: " << m_defaultFilename;
         return;
     }
 
-    // Download is started so open the file
-    if (!m_file)
-    {
-        m_file = new QFile(m_downloadFilename);
-        if (!m_file->open(QIODevice::WriteOnly))
-        {
-            qDebug() << "Error opening file: " << m_downloadFilename;
-            m_downloadFilename.clear();
-            m_defaultFilename.clear();
-            m_downloadStarted = 0;
-            return;
-        }
-
-        // Create progress bar dialog
-        m_progressDialog = new QProgressDialog (tr("Downloading file: %1 ").arg(m_defaultFilename), "Cancel", readData, totalData, this);
-        m_progressDialog->setWindowModality(Qt::WindowModal);
-        m_progressDialog->setWindowTitle(tr("Download progress"));
-        m_progressDialog->setMinimumWidth(450);
-        m_progressDialog->setMinimumHeight(80);
-        m_progressDialog->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
-
-        // Register slot for file download cancel request
-        QObject::connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(progressCanceled()));
-        m_reply = reply;
-
-        // Show downloading progress bar
-        m_progressDialog->show();
-    }
-
     if (m_file)
     {
-        // Write data to file
-        m_file->write(reply->read(readData));
-        m_progressDialog->setValue(readData);
-
-        // As read data and totalData difference is zero means downloading is finished.
-        if ((totalData - readData) == 0 ||
-            (readData != 0 && totalData == -1))
+        // Only update the status in progress bar as percentage.
+        if (!is_readyReadSignaled)
         {
+            m_progressDialog->setRange(0, totalData);
+            m_progressDialog->setValue(readData);
+        }
+
+        // Check if download is finished without readyRead signal then write the data.
+        if(m_reply->isFinished() && !is_readyReadSignaled)
+        {
+            // Write data to file
+            m_file->write(m_reply->read(readData));
+            is_readyReadSignaled = false;
+
             // As downloading is finished so remove progress bar dialog
             if (m_progressDialog)
             {
@@ -656,7 +690,10 @@ void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
             if (m_reply)
               m_reply = NULL;
         }
-    }
+
+        if(m_reply->isFinished() && readData == totalData)
+            m_readBytes = 0;
+     }
 }
 
 // Below slot will be called when user cancel the downloading file which is in progress.
@@ -692,6 +729,8 @@ void BrowserWindow::progressCanceled()
     m_downloadFilename.clear();
     m_defaultFilename.clear();
     m_downloadStarted = 0;
+    is_readyReadSignaled = false;
+    m_readBytes = 0;
 }
 
 #ifdef PGADMIN4_USE_WEBENGINE
@@ -743,6 +782,8 @@ void BrowserWindow::downloadFinished()
     m_defaultFilename.clear();
     m_downloadStarted = 0;
     m_downloadCancelled = 0;
+    is_readyReadSignaled = false;
+    m_readBytes = 0;
 
     if (m_file)
     {
@@ -833,6 +874,40 @@ void BrowserWindow::unsupportedContent(QNetworkReply * reply)
         {
             m_downloadStarted = 1;
             m_downloadCancelled = 0;
+
+            // Download is started so open the file
+            if (!m_file)
+            {
+                if (!m_downloadFilename.isEmpty())
+                {
+                    m_file = new QFile(m_downloadFilename);
+                    if (!m_file->open(QIODevice::WriteOnly))
+                    {
+                        qDebug() << "Error opening file: " << m_downloadFilename;
+                        m_downloadFilename.clear();
+                        m_defaultFilename.clear();
+                        m_downloadStarted = 0;
+                        return;
+                    }
+
+                    // Create progress bar dialog
+                    m_progressDialog = new QProgressDialog (tr("Downloading file: %1 ").arg(m_defaultFilename), "Cancel", 0, 100, this);
+                    m_progressDialog->setWindowModality(Qt::WindowModal);
+                    m_progressDialog->setWindowTitle(tr("Download progress"));
+                    m_progressDialog->setMinimumWidth(450);
+                    m_progressDialog->setMinimumHeight(80);
+                    m_progressDialog->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
+                    // Register slot for file download cancel request
+                    QObject::connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(progressCanceled()));
+                    m_reply = reply;
+
+                    // Show downloading progress bar
+                    m_progressDialog->show();
+                }
+            }
+
+            connect( reply, SIGNAL(readyRead()), this, SLOT(replyReady()));
             connect( reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadFileProgress(qint64, qint64)));
             connect( reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
         }
