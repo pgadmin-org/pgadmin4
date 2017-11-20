@@ -46,7 +46,8 @@ Hover over an icon to display a tooltip that describes the icon's functionality:
 +----------------------+---------------------------------------------------------------------------------------------------+
 | *Copy*               | Click the *Copy* icon to copy the currently selected row.                                         |
 +----------------------+---------------------------------------------------------------------------------------------------+
-| *Paste*              | Click the *Paste* icon to paste the content that is currently on the clipboard.                   |
+| *Paste*              | Click the *Paste* icon to paste the content that is currently on the clipboard. You can control   |
+|                      | the copied data settings through *Preferences -> SQL Editor -> Results grid* dialogue.            |
 +----------------------+---------------------------------------------------------------------------------------------------+
 | *Add New Row*        | Use the *Add New Row* icon to add a new row in the output panel.                                  |
 +----------------------+---------------------------------------------------------------------------------------------------+
@@ -102,7 +103,8 @@ Hover over an icon to display a tooltip that describes the icon's functionality:
 |                      | the SQL editor panel or the *History* tab.                                                        |
 +----------------------+---------------------------------------------------------------------------------------------------+
 | *Download as CSV*    | Click the *Download as CSV* icon to download the result set of the current query to a             |
-|                      | comma-separated list.                                                                             |
+|                      | comma-separated list. You can control the CSV settings through                                    |
+|                      | *Preferences -> SQL Editor -> CSV output* dialogue.                                               |
 +----------------------+---------------------------------------------------------------------------------------------------+
 
 

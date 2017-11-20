@@ -14,6 +14,7 @@ function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
     var selectedRanges = grid.getSelectionModel().getSelectedRanges();
     var dataView = grid.getData();
     var rows = grid.getSelectedRows();
+    var CSVOptions = grid.CSVOptions;
 
     if (RangeSelectionHelper.areAllRangesCompleteRows(grid, selectedRanges)) {
       self.copied_rows = rows.map(function (rowIndex) {
@@ -24,7 +25,7 @@ function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
       self.copied_rows = [];
       setPasteRowButtonEnablement(self.can_edit, false);
     }
-    var csvText = rangeBoundaryNavigator.rangesToCsv(dataView.getItems(), columnDefinitions, selectedRanges);
+    var csvText = rangeBoundaryNavigator.rangesToCsv(dataView.getItems(), columnDefinitions, selectedRanges, CSVOptions);
     if (csvText) {
       clipboard.copyTextToClipboard(csvText);
     }

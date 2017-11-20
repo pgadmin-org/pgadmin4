@@ -54,7 +54,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.find_by_xpath("//*[contains(@class, 'slick-row')]/*[1]").click()
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
 
-        self.assertEqual("'Some-Name','6','some info'",
+        self.assertEqual('"Some-Name"\t"6"\t"some info"',
                          pyperclip.paste())
 
     def _test_copies_columns(self):
@@ -65,9 +65,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.find_by_xpath("//*[@data-test='output-column-header' and contains(., 'some_column')]").click()
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
 
-        self.assertTrue("'Some-Name'" in pyperclip.paste())
-        self.assertTrue("'Some-Other-Name'" in pyperclip.paste())
-        self.assertTrue("'Yet-Another-Name'" in pyperclip.paste())
+        self.assertTrue('"Some-Name"' in pyperclip.paste())
+        self.assertTrue('"Some-Other-Name"' in pyperclip.paste())
+        self.assertTrue('"Yet-Another-Name"' in pyperclip.paste())
 
     def _test_history_tab(self):
         self.__clear_query_tool()

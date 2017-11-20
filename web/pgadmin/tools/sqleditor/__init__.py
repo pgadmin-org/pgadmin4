@@ -227,6 +227,83 @@ class SqlEditorModule(PgAdminModule):
             )
         )
 
+        self.csv_quoting = self.preference.register(
+            'CSV_output', 'csv_quoting',
+            gettext("CSV quoting"), 'options', 'strings',
+            category_label=gettext('CSV Output'),
+            options=[{'label': 'None', 'value': 'none'},
+                     {'label': 'All', 'value': 'all'},
+                     {'label': 'Strings', 'value': 'strings'}],
+            select2={
+                'allowClear': False,
+                'tags': False
+            }
+        )
+
+        self.csv_quote_char = self.preference.register(
+            'CSV_output', 'csv_quote_char',
+            gettext("CSV quote character"), 'options', '"',
+            category_label=gettext('CSV Output'),
+            options=[{'label': '"', 'value': '"'},
+                     {'label': '\'', 'value': '\''}],
+            select2={
+                'allowClear': False,
+                'tags': True
+            }
+        )
+
+        self.csv_field_separator = self.preference.register(
+            'CSV_output', 'csv_field_separator',
+            gettext("CSV field separator"), 'options', ',',
+            category_label=gettext('CSV output'),
+            options=[{'label': ';', 'value': ';'},
+                     {'label': ',', 'value': ','},
+                     {'label': '|', 'value': '|'},
+                     {'label': 'Tab', 'value': '\t'}],
+            select2={
+                'allowClear': False,
+                'tags': True
+            }
+        )
+
+        self.results_grid_quoting = self.preference.register(
+            'Results_grid', 'results_grid_quoting',
+            gettext("Result copy quoting"), 'options', 'strings',
+            category_label=gettext('Results grid'),
+            options=[{'label': 'None', 'value': 'none'},
+                     {'label': 'All', 'value': 'all'},
+                     {'label': 'Strings', 'value': 'strings'}],
+            select2={
+                'allowClear': False,
+                'tags': False
+            }
+        )
+
+        self.results_grid_quote_char = self.preference.register(
+            'Results_grid', 'results_grid_quote_char',
+            gettext("Result copy quote character"), 'options', '"',
+            category_label=gettext('Results grid'),
+            options=[{'label': '"', 'value': '"'},
+                     {'label': '\'', 'value': '\''}],
+            select2={
+                'allowClear': False,
+                'tags': True
+            }
+        )
+
+        self.results_grid_field_separator = self.preference.register(
+            'Results_grid', 'results_grid_field_separator',
+            gettext("Result copy field separator"), 'options', '\t',
+            category_label=gettext('Results grid'),
+            options=[{'label': ';', 'value': ';'},
+                     {'label': ',', 'value': ','},
+                     {'label': '|', 'value': '|'},
+                     {'label': 'Tab', 'value': '\t'}],
+            select2={
+                'allowClear': False,
+                'tags': True
+            }
+        )
 
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
 
@@ -1626,7 +1703,9 @@ def start_query_download_tool(trans_id):
                     r.call_on_close(cleanup)
                     return r
 
-                r = Response(gen(), mimetype='text/csv')
+                r = Response(gen(quote=blueprint.csv_quoting.get(),
+                    quote_char=blueprint.csv_quote_char.get(),
+                    field_separator=blueprint.csv_field_separator.get()), mimetype='text/csv')
 
                 if 'filename' in data and data['filename'] != "":
                     filename = data['filename']

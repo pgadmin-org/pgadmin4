@@ -73,6 +73,7 @@ class PgadminPage:
         self.find_by_partial_link_text("Query Tool").click()
         self.click_tab('Query -')
 
+
     def enable_menu_item(self, menu_item, wait_time):
         start_time = time.time()
         # wait until menu becomes enabled.
