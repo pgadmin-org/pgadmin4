@@ -1723,7 +1723,7 @@
       '   <% var option = options[i]; %>',
       '   <option ',
       '    <% if (option.image) { %> data-image=<%=option.image%> <%}%>',
-      '    value=<%= formatter.fromRaw(option.value) %>',
+      '    value=<%- formatter.fromRaw(option.value) %>',
       '    <% if (option.selected) {%>selected="selected"<%} else {%>',
       '    <% if (!select2.multiple && option.value === rawValue) {%>selected="selected"<%}%>',
       '    <% if (select2.multiple && rawValue && rawValue.indexOf(option.value) != -1){%>selected="selected" data-index="rawValue.indexOf(option.value)"<%}%>',

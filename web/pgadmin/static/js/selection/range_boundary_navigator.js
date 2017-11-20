@@ -57,7 +57,7 @@ function (RangeSelectionHelper) {
       }.bind(this));
     },
 
-    rangesToCsv: function (data, columnDefinitions, selectedRanges) {
+    rangesToCsv: function (data, columnDefinitions, selectedRanges, CSVOptions) {
 
       var rowRangeBounds = selectedRanges.map(function (range) {
         return [range.fromRow, range.toRow];
@@ -70,8 +70,9 @@ function (RangeSelectionHelper) {
         colRangeBounds = this.removeFirstColumn(colRangeBounds);
       }
 
-      var csvRows = this.mapOver2DArray(rowRangeBounds, colRangeBounds, this.csvCell.bind(this, data, columnDefinitions), function (rowData) {
-        return rowData.join(',');
+      var csvRows = this.mapOver2DArray(rowRangeBounds, colRangeBounds, this.csvCell.bind(this, data, columnDefinitions, CSVOptions), function (rowData) {
+        var field_separator = CSVOptions.field_separator || '\t';
+        return rowData.join(field_separator);
       });
 
       return csvRows.join('\n');
@@ -102,15 +103,28 @@ function (RangeSelectionHelper) {
       return unionedColRanges;
     },
 
-    csvCell: function (data, columnDefinitions, rowId, colId) {
-      var val = data[rowId][columnDefinitions[colId].field];
+    csvCell: function (data, columnDefinitions, CSVOptions, rowId, colId) {
+      var val = data[rowId][columnDefinitions[colId].field],
+        quoting = CSVOptions.quoting || 'strings',
+        quote_char = CSVOptions.quote_char || '"';
 
-      if (val && _.isObject(val)) {
-        val = '\'' + JSON.stringify(val) + '\'';
-      } else if (val && typeof val != 'number' && typeof val != 'boolean') {
-        val = '\'' + val.toString() + '\'';
-      } else if (_.isNull(val) || _.isUndefined(val)) {
-        val = '';
+      if (quoting == 'all') {
+        if (val && _.isObject(val)) {
+          val = quote_char + JSON.stringify(val) + quote_char;
+        } else if (val) {
+          val = quote_char + val.toString() + quote_char;
+        } else if (_.isNull(val) || _.isUndefined(val)) {
+          val = '';
+        }
+      }
+      else if(quoting == 'strings') {
+        if (val && _.isObject(val)) {
+          val = quote_char + JSON.stringify(val) + quote_char;
+        } else if (val && typeof val != 'number' && typeof val != 'boolean') {
+          val = quote_char + val.toString() + quote_char;
+        } else if (_.isNull(val) || _.isUndefined(val)) {
+          val = '';
+        }
       }
       return val;
     },

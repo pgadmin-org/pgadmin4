@@ -22,11 +22,12 @@ describe('copyData', function () {
 
   beforeEach(function () {
     SlickGrid = Slick.Grid;
-    var data = [{'id': 1, 'brand':'leopord', 'size':'12', '__temp_PK': '123'},
-                {'id': 2, 'brand':'lion', 'size':'13', '__temp_PK': '456'},
-                {'id': 3, 'brand':'puma', 'size':'9', '__temp_PK': '789'}],
+    var data = [{'id': 1, 'brand':'leopord', 'size':12, '__temp_PK': '123'},
+                {'id': 2, 'brand':'lion', 'size':13, '__temp_PK': '456'},
+                {'id': 3, 'brand':'puma', 'size':9, '__temp_PK': '789'}],
       dataView = new Slick.Data.DataView();
 
+    var CSVOptions = {'quoting': 'strings', 'quote_char': '"', 'field_separator': ','};
     var columns = [
       {
         id: 'row-header-column',
@@ -66,6 +67,7 @@ describe('copyData', function () {
     buttonPasteRow = $('<button id="btn-paste-row" disabled></button>');
     $('body').append(buttonPasteRow);
     grid = new SlickGrid('#grid', dataView, columns, {});
+    grid.CSVOptions = CSVOptions;
     dataView.setItems(data, '__temp_PK');
     grid.setSelectionModel(new XCellSelectionModel());
     sqlEditor = {slickgrid: grid};
@@ -93,8 +95,8 @@ describe('copyData', function () {
       expect(sqlEditor.copied_rows.length).toBe(2);
 
       expect(clipboard.copyTextToClipboard).toHaveBeenCalled();
-      expect(clipboard.copyTextToClipboard.calls.mostRecent().args[0]).toContain('1,\'leopord\',\'12\'');
-      expect(clipboard.copyTextToClipboard.calls.mostRecent().args[0]).toContain('3,\'puma\',\'9\'');
+      expect(clipboard.copyTextToClipboard.calls.mostRecent().args[0]).toContain('1,"leopord",12');
+      expect(clipboard.copyTextToClipboard.calls.mostRecent().args[0]).toContain('3,"puma",9');
     });
 
     describe('when the user can edit the grid', function () {

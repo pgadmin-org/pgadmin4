@@ -792,6 +792,20 @@ define('tools.querytool', [
             handleQueryOutputKeyboardEvent(event, args);
           });
         } else {
+          var pref_cache = undefined;
+          args.grid.CSVOptions = {};
+
+          if (self.handler.is_new_browser_tab) {
+            pref_cache = window.opener.pgAdmin.Browser.preferences_cache;
+          } else {
+            pref_cache = window.top.pgAdmin.Browser.preferences_cache;
+          }
+
+          // Get CSV options from preferences cache
+          args.grid.CSVOptions.quoting = _.findWhere(pref_cache, {'module': 'sqleditor', 'name': 'results_grid_quoting'}).value;
+          args.grid.CSVOptions.quote_char = _.findWhere(pref_cache, {'module': 'sqleditor', 'name': 'results_grid_quote_char'}).value;
+          args.grid.CSVOptions.field_separator =  _.findWhere(pref_cache, {'module': 'sqleditor', 'name': 'results_grid_field_separator'}).value;
+
           handleQueryOutputKeyboardEvent(event, args);
         }
       });
@@ -1236,7 +1250,20 @@ define('tools.querytool', [
 
     // Callback function for copy button click.
     on_copy_row: function () {
-      var self = this;
+      var self = this,
+          pref_cache = undefined;
+      self.grid.CSVOptions = {};
+
+      if (self.handler.is_new_browser_tab) {
+        pref_cache = window.opener.pgAdmin.Browser.preferences_cache;
+      } else {
+        pref_cache = window.top.pgAdmin.Browser.preferences_cache;
+      }
+
+      // Get CSV options from preferences cache
+      self.grid.CSVOptions.quoting = _.findWhere(pref_cache, {'module': 'sqleditor', 'name': 'results_grid_quoting'}).value;
+      self.grid.CSVOptions.quote_char = _.findWhere(pref_cache, {'module': 'sqleditor', 'name': 'results_grid_quote_char'}).value;
+      self.grid.CSVOptions.field_separator =  _.findWhere(pref_cache, {'module': 'sqleditor', 'name': 'results_grid_field_separator'}).value;
 
       // Trigger the copy signal to the SqlEditorController class
       self.handler.trigger(
@@ -1244,6 +1271,7 @@ define('tools.querytool', [
         self,
         self.handler
       );
+
     },
 
     // Callback function for paste button click.
@@ -1496,7 +1524,7 @@ define('tools.querytool', [
 
     keyAction: function (event) {
       keyboardShortcuts.processEvent(this.handler, queryToolActions, event);
-    },
+    }
   });
 
   /* Defining controller class for data grid, which actually
@@ -3649,7 +3677,6 @@ define('tools.querytool', [
               explain_timing = res.data.explain_timing;
               auto_commit = res.data.auto_commit;
               auto_rollback = res.data.auto_rollback;
-
               updateUI();
             }
           },

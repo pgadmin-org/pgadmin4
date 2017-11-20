@@ -697,7 +697,6 @@ WHERE
             params: Additional parameters
             formatted_exception_msg: For exception
             records: Number of initial records
-
         Returns:
             Generator response
         """
@@ -787,7 +786,7 @@ WHERE
                 )
             return new_results
 
-        def gen():
+        def gen(quote='strings', quote_char="'", field_separator=','):
 
             results = cur.fetchmany(records)
             if not results:
@@ -816,9 +815,17 @@ WHERE
 
             res_io = StringIO()
 
+            if quote == 'strings':
+                quote = csv.QUOTE_NONNUMERIC
+            elif quote == 'all':
+                quote = csv.QUOTE_ALL
+            else:
+                quote = csv.QUOTE_NONE
+
             csv_writer = csv.DictWriter(
-                res_io, fieldnames=header, delimiter=u',',
-                quoting=csv.QUOTE_NONNUMERIC
+                res_io, fieldnames=header, delimiter=field_separator,
+                quoting=quote,
+                quotechar=quote_char
             )
 
             csv_writer.writeheader()
@@ -837,8 +844,9 @@ WHERE
                 res_io = StringIO()
 
                 csv_writer = csv.DictWriter(
-                    res_io, fieldnames=header, delimiter=u',',
-                    quoting=csv.QUOTE_NONNUMERIC
+                    res_io, fieldnames=header, delimiter=field_separator,
+                    quoting=quote,
+                    quotechar=quote_char
                 )
 
                 if IS_PY2:

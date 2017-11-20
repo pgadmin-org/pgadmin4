@@ -48,6 +48,14 @@ Use the *Help* dialog to customize links to support documentation.
 
 Expand the **SQL Editor** node to specify your preferences for the SQL Editor tool.
 
+.. image:: images/preferences_sql_csv_output.png
+
+Use the options in the *CSV Output* dialog to control the CSV output.
+
+* Use the *CSV field separator* option to specify the field separator for the CSV output.
+* Use the *CSV quote character* option to specify the quote character for the CSV output.
+* Use the *CSV quoting* option to specify which type of fields need quoting.
+
 .. image:: images/preferences_sql_display.png
 
 Use the *Display* dialog to specify your preferences for the SQL Editor display.
@@ -75,6 +83,14 @@ Use the options in the *Options* dialog to manage modifications to a SQL stateme
 * Move the *Line wrapping* switch to the *True* to wrap the long lines in the editor.
 * Move the *Tab size* field to specify the number of spaces per tab in the editor.
 * Move the *Use spaces* switch to the *True* to insert spaces instead of tabs.
+
+.. image:: images/preferences_sql_result_grid.png
+
+Use the options in the *Results grid* dialog to control the copied data from the result grid.
+
+* Use the *Result copy field separator* option to specify the field separator for copied data.
+* Use the *Result copy quote character* option to specify the quote character for the copied data.
+* Use the *Result copy quoting* option to specify which type of fields need quoting.
 
 Expand the **Storage** node to specify a maximum file size for uploads.
 

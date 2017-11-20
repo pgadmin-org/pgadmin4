@@ -132,7 +132,7 @@ describe('RangeBoundaryNavigator', function () {
   });
 
   describe('#rangesToCsv', function () {
-    var data, columnDefinitions, ranges;
+    var data, columnDefinitions, ranges, CSVOptions;
     beforeEach(function () {
       data = [{'id':1, 'animal':'leopard', 'size':'12'},
               {'id':2, 'animal':'lion', 'size':'13'},
@@ -143,16 +143,21 @@ describe('RangeBoundaryNavigator', function () {
                             {name: 'animal', field: 'animal', pos: 1},
                             {name: 'size', field: 'size', pos: 2}];
       ranges = [new Slick.Range(0, 0, 0, 2), new Slick.Range(3, 0, 3, 2)];
+
+      CSVOptions = [{'quoting': 'all', 'quote_char': '"', 'field_separator': ','},
+                    {'quoting': 'strings', 'quote_char': '"', 'field_separator': ';'},
+                    {'quoting': 'strings', 'quote_char': '\'', 'field_separator': '|'},
+                    {'quoting': 'none', 'quote_char': '"', 'field_separator': '\t'}];
     });
 
-    it('returns csv for the provided ranges', function () {
-      var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, ranges);
-      expect(csvResult).toEqual('1,\'leopard\',\'12\'\n4,\'tiger\',\'10\'');
+    it('returns csv for the provided ranges for CSV options quoting All with char " with field separator ,', function () {
+      var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, ranges, CSVOptions[0]);
+      expect(csvResult).toEqual('"1","leopard","12"\n"4","tiger","10"');
     });
 
-    describe('when no cells are selected', function () {
+    describe('when no cells are selected for CSV options quoting Strings with char " with field separator ;', function () {
       it('should return an empty string', function () {
-        var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, []);
+        var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, [], CSVOptions[1]);
 
         expect(csvResult).toEqual('');
       });
@@ -167,14 +172,14 @@ describe('RangeBoundaryNavigator', function () {
         ranges = [new Slick.Range(0, 0, 0, 3), new Slick.Range(3, 0, 3, 3)];
       });
 
-      it('returns csv for the columns with data', function () {
-        var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, ranges);
+      it('returns csv for the columns with data for CSV options quoting Strings with char \' with field separator |', function () {
+        var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, ranges, CSVOptions[2]);
 
-        expect(csvResult).toEqual('1,\'leopard\',\'12\'\n4,\'tiger\',\'10\'');
+        expect(csvResult).toEqual('1|\'leopard\'|\'12\'\n4|\'tiger\'|\'10\'');
       });
-      describe('when no cells are selected', function () {
+      describe('when no cells are selected for CSV options quoting none with field separator tab', function () {
         it('should return an empty string', function () {
-          var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, []);
+          var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, [], CSVOptions[3]);
 
           expect(csvResult).toEqual('');
         });

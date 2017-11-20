@@ -31,7 +31,7 @@ class _Preference(object):
 
     def __init__(
             self, cid, name, label, _type, default, help_str=None, min_val=None,
-            max_val=None, options=None
+            max_val=None, options=None, select2=None
     ):
         """
         __init__
@@ -53,6 +53,7 @@ class _Preference(object):
         :param min_val: minimum value
         :param max_val: maximum value
         :param options: options (Array of list objects)
+        :param select2: select2 options (object)
 
         :returns: nothing
         """
@@ -65,6 +66,7 @@ class _Preference(object):
         self.min_val = min_val
         self.max_val = max_val
         self.options = options
+        self.select2 = select2
 
         # Look into the configuration table to find out the id of the specific
         # preference.
@@ -129,6 +131,8 @@ class _Preference(object):
             for opt in self.options:
                 if 'value' in opt and opt['value'] == res.value:
                     return res.value
+            if self.select2 and self.select2['tags']:
+                return res.value
             return self.default
         if self._type == 'text':
             if res.value == '':
@@ -190,7 +194,7 @@ class _Preference(object):
                 if 'value' in opt and opt['value'] == value:
                     has_value = True
 
-            if not has_value:
+            if not has_value and self.select2 and not self.select2['tags']:
                 return False, gettext("Invalid value for an options option.")
 
         pref = UserPrefTable.query.filter_by(
@@ -226,6 +230,7 @@ class _Preference(object):
             'min_val': self.min_val,
             'max_val': self.max_val,
             'options': self.options,
+            'select2': self.select2,
             'value': self.get()
         }
         return res
@@ -365,7 +370,8 @@ class Preferences(object):
 
     def register(
             self, category, name, label, _type, default, min_val=None,
-            max_val=None, options=None, help_str=None, category_label=None
+            max_val=None, options=None, help_str=None, category_label=None,
+            select2=None
     ):
         """
         register
@@ -386,6 +392,7 @@ class Preferences(object):
         :param options:
         :param help_str:
         :param category_label:
+        :param select2: select2 control extra options
         """
         cat = self.__category(category, category_label)
         if name in cat['preferences']:
@@ -400,7 +407,7 @@ class Preferences(object):
 
         (cat['preferences'])[name] = res = _Preference(
             cat['id'], name, label, _type, default, help_str, min_val,
-            max_val, options
+            max_val, options, select2
         )
 
         return res

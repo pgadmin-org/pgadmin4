@@ -66,7 +66,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
 
-        self.assertEqual("'Some-Name','6','some info'",
+        self.assertEqual('"Some-Name"\t"6"\t"some info"',
                          pyperclip.paste())
 
     def _copies_columns(self):
@@ -75,9 +75,9 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
 
         self.assertEqual(
-            """'Some-Name'
-'Some-Other-Name'
-'Yet-Another-Name'""",
+            """\"Some-Name"
+"Some-Other-Name"
+"Yet-Another-Name\"""",
             pyperclip.paste())
 
     def _copies_row_using_keyboard_shortcut(self):
@@ -86,7 +86,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
         ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
-        self.assertEqual("'Some-Name','6','some info'",
+        self.assertEqual('"Some-Name"\t"6"\t"some info"',
                          pyperclip.paste())
 
     def _copies_column_using_keyboard_shortcut(self):
@@ -96,9 +96,9 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
         self.assertEqual(
-            """'Some-Name'
-'Some-Other-Name'
-'Yet-Another-Name'""",
+            """\"Some-Name"
+"Some-Other-Name"
+"Yet-Another-Name\"""",
             pyperclip.paste())
 
     def _copies_rectangular_selection(self):
@@ -112,8 +112,8 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             .release(bottom_right_cell).perform()
         ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
-        self.assertEqual("""'Some-Other-Name','22'
-'Yet-Another-Name','14'""", pyperclip.paste())
+        self.assertEqual("""\"Some-Other-Name"\t"22"
+"Yet-Another-Name"\t"14\"""", pyperclip.paste())
 
     def _shift_resizes_rectangular_selection(self):
         pyperclip.copy("old clipboard contents")
@@ -128,8 +128,8 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         ActionChains(self.page.driver).key_down(Keys.SHIFT).send_keys(Keys.ARROW_RIGHT).key_up(Keys.SHIFT).perform()
         ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
-        self.assertEqual("""'Some-Other-Name','22','some other info'
-'Yet-Another-Name','14','cool info'""", pyperclip.paste())
+        self.assertEqual("""\"Some-Other-Name"\t"22"\t"some other info"
+"Yet-Another-Name"\t"14"\t"cool info\"""", pyperclip.paste())
 
     def _shift_resizes_column_selection(self):
         pyperclip.copy("old clipboard contents")
@@ -141,9 +141,9 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
         self.assertEqual(
-            """'Some-Name','6'
-'Some-Other-Name','22'
-'Yet-Another-Name','14'""",
+            """\"Some-Name"\t"6"
+"Some-Other-Name"\t"22"
+"Yet-Another-Name"\t"14\"""",
             pyperclip.paste())
 
     def _mouseup_outside_grid_still_makes_a_selection(self):
@@ -160,7 +160,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
         ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
-        self.assertEqual("'cool info'", pyperclip.paste())
+        self.assertEqual('"cool info"', pyperclip.paste())
 
     def after(self):
         self.page.close_query_tool()
