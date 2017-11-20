@@ -1153,10 +1153,8 @@ define(
               error: function(m, jqxhr) {
                 Alertify.pgNotifier(
                   "error", jqxhr,
-                  S(
-                    gettext("Error saving properties: %s")
-                    ).sprintf(jqxhr.statusText).value()
-                  );
+                  gettext("Error saving properties")
+                );
 
                 // Hide progress cursor
                 $('.obj_properties').removeClass('show_progress');
