@@ -1,6 +1,6 @@
 pyperclip~=1.5.27
-selenium==3.3.3; python_version < '2.7';
-selenium==3.7.0; python_version >= '2.7';
+selenium==3.3.3; python_version < '2.7'
+selenium==3.7.0; python_version >= '2.7'
 testscenarios==0.5.0
 testtools==2.0.0
 traceback2==1.4.0
