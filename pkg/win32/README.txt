@@ -12,7 +12,7 @@ To generate a pgAdmin 4 installer for Windows bit, the following packages must b
 3. PostgreSQL installation
   - PostgreSQL 9.1 or above from http://www.postgresql.org/
 
-4. Inno Setup Installer
+4. Inno Setup Installer (unicode)
    - 5.0 and above from http://www.jrsoftware.org/isdl.php
 
 5. Microsoft visual studio (2008 and above)
