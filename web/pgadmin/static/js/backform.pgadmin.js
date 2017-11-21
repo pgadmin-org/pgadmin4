@@ -248,7 +248,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
   _.extend(
     Backform.TextareaControl.prototype, {
       defaults: _.extend(
-        Backform.TextareaControl.prototype.defaults, {rows: 5, helpMessage: null}
+        Backform.TextareaControl.prototype.defaults,
+        {rows: 5, helpMessage: null, maxlength: null}
       ),
       events : {
         'change textarea': 'onChange',
@@ -262,7 +263,10 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         '<div class="<%=Backform.controlsClassName%>">',
         '  <textarea ',
         '    class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>"',
-        '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
+        '  <% if (maxlength) { %>',
+        '    maxlength="<%=maxlength%>"',
+        '  <% } %>',
+        '    placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
         '    rows=<%=rows ? rows : ""%>',
         '    <%=required ? "required" : ""%>><%-value%></textarea>',
         '  <% if (helpMessage && helpMessage.length) { %>',
