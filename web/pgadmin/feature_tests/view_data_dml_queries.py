@@ -65,8 +65,9 @@ CREATE TABLE public.defaults
     text_null4 text COLLATE pg_catalog."default",
     json_defaults json DEFAULT '[51, 52]'::json,
     json_null json,
-    boolean_defaults boolean DEFAULT true,
+    boolean_true boolean DEFAULT true,
     boolean_null boolean,
+    boolean_false boolean,
     text_arr text[],
     text_arr_empty text[],
     text_arr_null text[],
@@ -194,12 +195,17 @@ CREATE TABLE public.defaults
             self.page.find_by_xpath("//*[contains(@class, 'pg_text_editor')]"
                                     "//button[contains(@class, 'fa-save')]").click()
         else:
+            # Boolean editor test for to True click
             if data[1] == 'true':
-                checkbox_el = cell_el.find_element_by_xpath(".//input")
+                checkbox_el = cell_el.find_element_by_xpath(".//*[contains(@class, 'multi-checkbox')]")
                 checkbox_el.click()
-                ActionChains(self.driver).move_to_element(checkbox_el).double_click(
-                    checkbox_el
-                ).perform()
+            # Boolean editor test for to False click
+            elif data[1] == 'false':
+                checkbox_el = cell_el.find_element_by_xpath(".//*[contains(@class, 'multi-checkbox')]")
+                # Sets true
+                checkbox_el.click()
+                # Sets false
+                ActionChains(self.driver).click(checkbox_el).perform()
 
     def _tables_node_expandable(self):
         self.page.toggle_open_tree_item(self.server['name'])

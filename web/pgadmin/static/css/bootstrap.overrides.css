@@ -1399,3 +1399,31 @@ body {
   font-size: 8px;
   color: #888888;
 }
+
+/* CSS for custom checkbox editor in SlickGrid */
+.multi-checkbox .check {
+  display: inline-block;
+  vertical-align: top;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #333;
+  margin: 3px;
+  text-align: center;
+  line-height: 15px;
+}
+
+.multi-checkbox .check.unchecked {
+  background: #fff;
+}
+
+.multi-checkbox .check.partial {
+  background: #cccccc;
+}
+
+.multi-checkbox .check.checked:after {
+  content: "\2713";
+}
+
+.multi-checkbox .check.partial:after {
+  content: "\fe56";
+}
