@@ -2163,9 +2163,6 @@
     },
     initialize: function(){
       Backform.InputControl.prototype.initialize.apply(this, arguments);
-
-      // Listen click events of Storage Manager dialog buttons
-      pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:'+this.field.get('dialog_type'), this.storage_dlg_hander, this);
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -2199,14 +2196,29 @@
 
       pgAdmin.FileManager.init();
       pgAdmin.FileManager.show_dialog(params);
+      // Listen click events of Storage Manager dialog buttons
+      this.listen_file_dlg_events();
     },
     storage_dlg_hander: function(value) {
       var field = _.defaults(this.field.toJSON(), this.defaults),
           attrArr = this.field.get("name").split('.'),
           name = attrArr.shift();
 
+      this.remove_file_dlg_event_listeners();
+
       // Set selected value into the model
       this.model.set(name, decodeURI(value));
+    },
+    storage_close_dlg_hander: function() {
+      this.remove_file_dlg_event_listeners();
+    },
+    listen_file_dlg_events: function() {
+      pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:'+this.field.get('dialog_type'), this.storage_dlg_hander, this);
+      pgAdmin.Browser.Events.on('pgadmin-storage:cancel_btn:'+this.field.get('dialog_type'), this.storage_close_dlg_hander, this);
+    },
+    remove_file_dlg_event_listeners: function() {
+      pgAdmin.Browser.Events.off('pgadmin-storage:finish_btn:'+this.field.get('dialog_type'), this.storage_dlg_hander, this);
+      pgAdmin.Browser.Events.off('pgadmin-storage:cancel_btn:'+this.field.get('dialog_type'), this.storage_close_dlg_hander, this);
     },
     clearInvalid: function() {
       Backform.InputControl.prototype.clearInvalid.apply(this, arguments);

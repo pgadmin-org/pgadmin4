@@ -159,6 +159,7 @@ define('misc.file_manager', [
                 $(innerbody).find('*').off();
                 innerbody.remove();
                 removeTransId(trans_id);
+                pgAdmin.Browser.Events.trigger('pgadmin-storage:cancel_btn:storage_dialog');
               }
             },
             build: function() {
@@ -285,6 +286,7 @@ define('misc.file_manager', [
                 $(innerbody).find('*').off();
                 innerbody.remove();
                 removeTransId(trans_id);
+                pgAdmin.Browser.Events.trigger('pgadmin-storage:cancel_btn:select_file');
               }
             },
             build: function() {
@@ -409,6 +411,7 @@ define('misc.file_manager', [
                 $(innerbody).find('*').off();
                 innerbody.remove();
                 removeTransId(trans_id);
+                pgAdmin.Browser.Events.trigger('pgadmin-storage:cancel_btn:select_folder');
               }
             },
             build: function() {
@@ -632,6 +635,7 @@ define('misc.file_manager', [
                 $(innerbody).find('*').off();
                 innerbody.remove();
                 removeTransId(trans_id);
+                pgAdmin.Browser.Events.trigger('pgadmin-storage:cancel_btn:create_file');
               }
             },
             build: function() {
