@@ -5,7 +5,7 @@
 {# Below will change object owner #}
 {% if data.typeowner and data.typeowner != o_data.typeowner %}
 ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
-    OWNER TO {{ data.typeowner }};
+    OWNER TO {{ conn|qtIdent(data.typeowner) }};
 
 {% endif %}
 {#======================================#}

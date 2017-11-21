@@ -57,7 +57,7 @@ CREATE TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% els
 
 ALTER TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% else %}{{ conn|qtIdent(data.name) }}{% endif %}
 
-    OWNER TO {{data.typeowner}};
+    OWNER TO {{ conn|qtIdent(data.typeowner) }};
 {% endif %}
 {###  Type Comments ###}
 {% if data and data.description %}
