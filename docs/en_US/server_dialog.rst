@@ -16,6 +16,8 @@ Use the fields in the *General* tab to identify the server:
 * Use the *Name* field to add a descriptive name for the server; the name specified will be displayed in the *pgAdmin*
   tree control of the client.
 * Use the drop-down list box in the *Server group* field to specify the *pgAdmin* tree control parent node for the server.
+* Use the color-picker in the *Background* field to specify the background color for the server.
+* Use the color-picker in the *Foreground* field to specify the foreground color for the server.
 * Uncheck the checkbox next to *Connect now?* to instruct pgAdmin not to attempt a connection upon completion of the
   dialog. The default enables connection.
 * Provide a comment about the server in the *Comments* field.

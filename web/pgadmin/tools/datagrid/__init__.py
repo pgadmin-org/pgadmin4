@@ -26,7 +26,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.preferences import Preferences
-
+from pgadmin.model import Server
 
 class DataGridModule(PgAdminModule):
     """
@@ -216,6 +216,23 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         new_browser_tab = 'false'
 
+    # Fetch the server details
+    #
+    bgcolor = None
+    fgcolor = None
+    if str(trans_id) in session['gridData']:
+        # Fetch the object for the specified transaction id.
+        # Use pickle.loads function to get the command object
+        session_obj = session['gridData'][str(trans_id)]
+        trans_obj = pickle.loads(session_obj['command_obj'])
+        s = Server.query.filter_by(id=trans_obj.sid).first()
+        if s and s.bgcolor:
+            # If background is set to white means we do not have to change the
+            # title background else change it as per user specified background
+            if s.bgcolor != '#ffffff':
+                bgcolor = s.bgcolor
+            fgcolor = s.fgcolor or 'black'
+
     return render_template(
         "datagrid/index.html", _=gettext, uniqueId=trans_id,
         is_query_tool=is_query_tool,
@@ -224,7 +241,9 @@ def panel(trans_id, is_query_tool, editor_title):
         is_linux=is_linux_platform,
         is_new_browser_tab=new_browser_tab,
         server_type=server_type,
-        client_platform=user_agent.platform
+        client_platform=user_agent.platform,
+        bgcolor=bgcolor,
+        fgcolor=fgcolor
     )
 
 
