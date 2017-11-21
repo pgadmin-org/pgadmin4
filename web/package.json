@@ -79,6 +79,7 @@
     "shim-loader": "^1.0.1",
     "slickgrid": "git+https://github.com/6pac/SlickGrid.git#2.3.7",
     "snapsvg": "^0.5.1",
+    "spectrum-colorpicker": "^1.8.0",
     "underscore": "^1.8.3",
     "underscore.string": "^3.3.4",
     "watchify": "~3.9.0",

@@ -42,7 +42,6 @@ def has_any(data, keys):
 
     return False
 
-
 def recovery_state(connection, postgres_version):
     recovery_check_sql = render_template("connect/sql/#{0}#/check_recovery.sql".format(postgres_version))
 
@@ -54,6 +53,38 @@ def recovery_state(connection, postgres_version):
         in_recovery = None
         wal_paused = None
     return in_recovery, wal_paused
+
+def server_icon_and_background(is_connected, manager, server):
+    """
+
+    Args:
+        is_connected: Flag to check if server is connected
+        manager: Connection manager
+        server: Sever object
+
+    Returns:
+        Server Icon CSS class
+    """
+    server_background_color = ''
+    if server and server.bgcolor:
+        server_background_color = ' {0}'.format(
+            server.bgcolor
+        )
+        # If user has set font color also
+        if server.fgcolor:
+            server_background_color = '{0} {1}'.format(
+                server_background_color,
+                server.fgcolor
+            )
+
+    if is_connected:
+        return 'icon-{0}{1}'.format(
+            manager.server_type, server_background_color
+        )
+    else:
+        return 'icon-server-not-connected{0}'.format(
+            server_background_color
+        )
 
 
 class ServerModule(sg.ServerGroupPluginModule):
@@ -86,14 +117,14 @@ class ServerModule(sg.ServerGroupPluginModule):
             connected = conn.connected()
             in_recovery = None
             wal_paused = None
+
             if connected:
                 in_recovery, wal_paused = recovery_state(conn, manager.version)
             yield self.generate_browser_node(
                 "%d" % (server.id),
                 gid,
                 server.name,
-                "icon-server-not-connected" if not connected else
-                "icon-{0}".format(manager.server_type),
+                server_icon_and_background(connected, manager, server),
                 True,
                 self.NODE_TYPE,
                 connected=connected,
@@ -280,8 +311,7 @@ class ServerNode(PGChildNodeView):
                     "%d" % (server.id),
                     gid,
                     server.name,
-                    "icon-server-not-connected" if not connected else
-                    "icon-{0}".format(manager.server_type),
+                    server_icon_and_background(connected, manager, server),
                     True,
                     self.node_type,
                     connected=connected,
@@ -334,8 +364,7 @@ class ServerNode(PGChildNodeView):
                 "%d" % (server.id),
                 gid,
                 server.name,
-                "icon-server-not-connected" if not connected else
-                "icon-{0}".format(manager.server_type),
+                server_icon_and_background(connected, manager, server),
                 True,
                 self.node_type,
                 connected=connected,
@@ -410,7 +439,9 @@ class ServerNode(PGChildNodeView):
             'sslkey': 'sslkey',
             'sslrootcert': 'sslrootcert',
             'sslcrl': 'sslcrl',
-            'sslcompression': 'sslcompression'
+            'sslcompression': 'sslcompression',
+            'bgcolor': 'bgcolor',
+            'fgcolor': 'fgcolor'
         }
 
         disp_lbl = {
@@ -490,8 +521,7 @@ class ServerNode(PGChildNodeView):
             node=self.blueprint.generate_browser_node(
                 "%d" % (server.id), server.servergroup_id,
                 server.name,
-                "icon-server-not-connected" if not connected else
-                "icon-{0}".format(manager.server_type),
+                server_icon_and_background(connected, manager, server),
                 True,
                 self.node_type,
                 connected=False,
@@ -585,6 +615,8 @@ class ServerNode(PGChildNodeView):
                 'version': manager.ver,
                 'sslmode': server.ssl_mode,
                 'server_type': manager.server_type if connected else 'pg',
+                'bgcolor': server.bgcolor,
+                'fgcolor': server.fgcolor,
                 'db_res': server.db_res.split(',') if server.db_res else None,
                 'passfile': server.passfile if server.passfile else None,
                 'sslcert': server.sslcert if is_ssl else None,
@@ -655,7 +687,12 @@ class ServerNode(PGChildNodeView):
                 sslkey=data['sslkey'] if is_ssl else None,
                 sslrootcert=data['sslrootcert'] if is_ssl else None,
                 sslcrl=data['sslcrl'] if is_ssl else None,
-                sslcompression=1 if is_ssl and data['sslcompression'] else 0
+                sslcompression=1 if is_ssl and data['sslcompression'] else 0,
+                bgcolor=data['bgcolor'] if u'bgcolor' in data
+                else None,
+                fgcolor = data['fgcolor'] if u'fgcolor' in data
+                else None
+
             )
             db.session.add(server)
             db.session.commit()
@@ -710,7 +747,7 @@ class ServerNode(PGChildNodeView):
                 node=self.blueprint.generate_browser_node(
                     "%d" % server.id, server.servergroup_id,
                     server.name,
-                    'icon-{0}'.format(manager.server_type) if manager and manager.server_type else "icon-pg",
+                    server_icon_and_background(connected, manager, server),
                     True,
                     self.node_type,
                     user=user,
@@ -943,9 +980,7 @@ class ServerNode(PGChildNodeView):
                 success=1,
                 info=gettext("Server connected."),
                 data={
-                    'icon': 'icon-{0}'.format(
-                        manager.server_type
-                    ),
+                    'icon': server_icon_and_background(True, manager, server),
                     'connected': True,
                     'server_type': manager.server_type,
                     'type': manager.server_type,
@@ -976,7 +1011,7 @@ class ServerNode(PGChildNodeView):
                 success=1,
                 info=gettext("Server disconnected."),
                 data={
-                    'icon': 'icon-server-not-connected',
+                    'icon': server_icon_and_background(False, manager, server),
                     'connected': False
                 }
             )

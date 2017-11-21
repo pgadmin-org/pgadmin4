@@ -652,6 +652,13 @@ define('pgadmin.node.server', [
           id: 'version', label: gettext('Version'), type: 'text', group: null,
           mode: ['properties'], visible: 'isConnected'
         },{
+          id: 'bgcolor', label: gettext('Background'), type: 'color',
+          group: null, mode: ['edit', 'create'], disabled: 'isfgColorSet',
+          deps: ['fgcolor']
+        },{
+          id: 'fgcolor', label: gettext('Foreground'), type: 'color',
+          group: null, mode: ['edit', 'create'], disabled: 'isConnected',
+        },{
           id: 'connect_now', controlLabel: gettext('Connect now?'), type: 'checkbox',
           group: null, mode: ['create']
         },{
@@ -880,6 +887,23 @@ define('pgadmin.node.server', [
         },
         isConnected: function(model) {
           return model.get('connected');
+        },
+        isfgColorSet: function(model) {
+          var bgcolor = model.get('bgcolor'),
+              fgcolor = model.get('fgcolor');
+
+          if(model.get('connected')) {
+            return true;
+          }
+          // If fgcolor is set and bgcolor is not set then force bgcolor
+          // to set as white
+          if(_.isUndefined(bgcolor) || _.isNull(bgcolor) || !bgcolor) {
+            if(fgcolor) {
+              model.set('bgcolor', '#ffffff');
+            }
+          }
+
+          return false;
         },
         isSSL: function(model) {
           var ssl_mode = model.get('sslmode');

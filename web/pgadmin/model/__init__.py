@@ -138,6 +138,8 @@ class Server(db.Model):
                               db.CheckConstraint(
                                   'sslcompression >= 0 AND sslcompression <= 1'
                               ), nullable=False)
+    bgcolor = db.Column(db.Text(10), nullable=True)
+    fgcolor = db.Column(db.Text(10), nullable=True)
 
 
 class ModulePreference(db.Model):

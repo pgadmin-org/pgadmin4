@@ -284,7 +284,7 @@
                 </button>
             </div>
         </div>
-        <div class="editor-title"></div>
+        <div class="editor-title" style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% else %}{{ bgcolor or '#2C76B4' }}{% endif %}; color: {{ fgcolor or 'white' }};"></div>
         <div id="filter" class="filter-container hidden">
             <div class="filter-title">Filter</div>
             <div class="sql-textarea">

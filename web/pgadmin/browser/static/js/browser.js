@@ -1520,7 +1520,15 @@ define(
           }
       }
 
-      if (_old._pid != _new._pid || _old._label != _new._label) {
+      // If server icon/background changes then also we need to re-create it
+      if(_old._type == 'server' && _new._type == 'server' &&
+          ( _old._pid != _new._pid ||
+            _old._label != _new._label ||
+            _old.icon != _new.icon )
+      ) {
+        ctx.op = 'RECREATE';
+        traversePath();
+      } else if (_old._pid != _new._pid || _old._label != _new._label) {
         ctx.op = 'RECREATE';
         traversePath();
       } else {

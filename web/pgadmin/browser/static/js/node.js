@@ -752,6 +752,48 @@ define(
         // Here call data grid method to render query tool
         pgAdmin.DataGrid.show_query_tool('', i);
       },
+
+      // Logic to change the server background colour
+      // There is no way of applying CSS to parent element so we have to
+      // do it via JS code only
+      change_server_background: function(item, data) {
+        if (!item || !data)
+          return;
+
+        // Go further only if node type is a Server
+        if (data && data._type && data._type == 'server') {
+          var element = $(item).find('span.aciTreeItem').first() || null,
+            // First element will be icon and second will be colour code
+            bgcolor = data.icon.split(" ")[1] || null,
+            fgcolor = data.icon.split(" ")[2] || '';
+
+          if(bgcolor) {
+            // li tag for the current branch
+            var first_level_element = element.parents()[3] || null,
+              dynamic_class = 'pga_server_' + data._id + '_bgcolor',
+              style_tag;
+
+            // Prepare dynamic style tag
+            style_tag = "<style id=" + dynamic_class + " type='text/css'> \n";
+            style_tag += "." + dynamic_class + ' .aciTreeItem {';
+            style_tag += " border-radius: 3px; margin-bottom: 2px;";
+            style_tag += " background: " + bgcolor + "} \n";
+            if(fgcolor) {
+              style_tag += "." + dynamic_class + ' .aciTreeText {';
+              style_tag += " color: " + fgcolor + ";} \n"
+            }
+            style_tag += "</style>";
+
+            // Prepare dynamic style tag using template
+            $('#' + dynamic_class).remove();
+            $(style_tag).appendTo("head");
+
+            if(first_level_element)
+              $(first_level_element).addClass(dynamic_class);
+          }
+        }
+      },
+
       added: function(item, data, browser) {
         var b = browser || pgBrowser,
             t = b.tree,
@@ -777,6 +819,8 @@ define(
             }
           );
         }
+
+        pgBrowser.Node.callbacks.change_server_background(item, data);
       },
       // Callback called - when a node is selected in browser tree.
       selected: function(item, data, browser) {

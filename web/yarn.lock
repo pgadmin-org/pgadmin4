@@ -6655,6 +6655,10 @@ spdx-license-ids@^1.0.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-1.2.2.tgz#c9df7a3424594ade6bd11900d596696dc06bac57"
 
+spectrum-colorpicker@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/spectrum-colorpicker/-/spectrum-colorpicker-1.8.0.tgz#b926cf5002c0a77860b5f8351e1c093c65200107"
+
 sprintf-js@^1.0.3:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.1.1.tgz#36be78320afe5801f6cea3ee78b6e5aab940ea0c"

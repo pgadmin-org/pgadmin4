@@ -36,3 +36,4 @@ jQuery-UI           1.11.3         MIT          https://jqueryui.com/
 BigNumber           3.0.1          MIT          http://mikemcl.github.io/bignumber.js
 Source Code Pro     1.1            SIL OFL      https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700
 Open Sans           2.0            AL           https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700
+Spectrum            1.8            MIT          https://bgrins.github.io/spectrum/
