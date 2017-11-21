@@ -86,12 +86,12 @@
   },
   "scripts": {
     "linter": "yarn run eslint pgadmin/static/jsx/**/*.jsx pgadmin/static/js/selection/*.js regression/javascript/**/*.jsx regression/javascript/**/*.js *.js",
-    "webpacker": "yarn run webpack -- --config webpack.config.js --progress",
-    "webpacker:watch": "yarn run webpack -- --config webpack.config.js --progress --watch",
+    "webpacker": "yarn run webpack --config webpack.config.js --progress",
+    "webpacker:watch": "yarn run webpack --config webpack.config.js --progress --watch",
     "bundle:watch": "yarn run linter && yarn run webpacker:watch",
     "bundle:dev": "yarn run linter && yarn run webpacker",
     "bundle": "cross-env NODE_ENV=production yarn run bundle:dev",
-    "test:karma-once": "yarn run linter && yarn run karma start -- --single-run",
+    "test:karma-once": "yarn run linter && yarn run karma start --single-run",
     "test:karma": "yarn run linter && yarn run karma start",
     "test:feature": "yarn run bundle && python regression/runtests.py --pkg feature_tests",
     "test": "yarn run test:karma-once && yarn run bundle && python regression/runtests.py"
