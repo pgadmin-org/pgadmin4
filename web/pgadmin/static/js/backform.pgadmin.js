@@ -2173,6 +2173,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
       this.remove_file_dlg_event_listeners();
 
+      this.remove_file_dlg_event_listeners();
+
       // Set selected value into the model
       this.model.set(name, decodeURI(value));
     },
