@@ -1404,20 +1404,21 @@ body {
 .multi-checkbox .check {
   display: inline-block;
   vertical-align: top;
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   border: 1px solid #333;
   margin: 3px;
   text-align: center;
-  line-height: 15px;
+  line-height: 16px;
 }
 
+.multi-checkbox .check.checked,
 .multi-checkbox .check.unchecked {
   background: #fff;
 }
 
 .multi-checkbox .check.partial {
-  background: #cccccc;
+  background: #e8e8e8;
 }
 
 .multi-checkbox .check.checked:after {
@@ -1425,5 +1426,5 @@ body {
 }
 
 .multi-checkbox .check.partial:after {
-  content: "\fe56";
+  content: "\003F";
 }
