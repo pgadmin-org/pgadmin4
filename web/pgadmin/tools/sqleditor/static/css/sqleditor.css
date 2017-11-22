@@ -521,3 +521,7 @@ input.editor-checkbox:focus {
 .pg_buttons {
   text-align:right;
 }
+
+#datagrid .slick-row .slick-cell {
+  white-space: pre;
+}
