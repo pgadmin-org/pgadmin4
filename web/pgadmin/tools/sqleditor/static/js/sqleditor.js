@@ -668,12 +668,14 @@ define('tools.querytool', [
             }
           }
         }
+
         // Disable rows having default values
         if (!_.isUndefined(self.handler.rows_to_disable) &&
-          _.indexOf(self.handler.rows_to_disable, i) !== -1
-        ) {
+            self.handler.rows_to_disable.length > 0 &&
+            _.indexOf(self.handler.rows_to_disable, i) !== -1) {
           cssClass += ' disabled_row';
         }
+
         return {'cssClasses': cssClass};
       };
 
@@ -825,16 +827,17 @@ define('tools.querytool', [
         // so that cell edit is enabled for that row.
         var grid = args.grid,
           row_data = grid.getDataItem(args.row),
-          is_primary_key = _.all(
-            _.values(
-              _.pick(
-                row_data, self.primary_keys
-              )
-            ),
-            function (val) {
-              return val != undefined
-            }
-          );
+          is_primary_key = self.primary_keys &&
+            _.all(
+              _.values(
+                _.pick(
+                  row_data, self.primary_keys
+                )
+              ),
+              function (val) {
+                return val != undefined
+              }
+            );
 
         // temp_new_rows is available only for view data.
         if (is_primary_key && self.handler.temp_new_rows) {
