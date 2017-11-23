@@ -236,25 +236,28 @@ define('tools.querytool', [
         // Listen on the panel closed event and notify user to save modifications.
         _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function (p) {
           if (p.isVisible()) {
-            p.on(wcDocker.EVENT.CLOSING, function () {
-              // Only if we can edit data then perform this check
-              var notify = false, msg;
-              if (self.handler.can_edit) {
-                var data_store = self.handler.data_store;
-                if (data_store && (_.size(data_store.added) ||
-                  _.size(data_store.updated))) {
-                  msg = gettext("The data has changed. Do you want to save changes?");
+            if(self.handler.prompt_save_changes) {
+              p.on(wcDocker.EVENT.CLOSING, function () {
+                // Only if we can edit data then perform this check
+                var notify = false, msg;
+                if (self.handler.can_edit) {
+                  var data_store = self.handler.data_store;
+                  if (data_store && (_.size(data_store.added) ||
+                    _.size(data_store.updated))) {
+                    msg = gettext("The data has changed. Do you want to save changes?");
+                    notify = true;
+                  }
+                } else if (self.handler.is_query_tool && self.handler.is_query_changed) {
+                  msg = gettext("The text has changed. Do you want to save changes?");
                   notify = true;
                 }
-              } else if (self.handler.is_query_tool && self.handler.is_query_changed) {
-                msg = gettext("The text has changed. Do you want to save changes?");
-                notify = true;
-              }
-              if (notify) {
-                return self.user_confirmation(p, msg);
-              }
-              return true;
-            });
+                if (notify) {
+                  return self.user_confirmation(p, msg);
+                }
+                return true;
+              });
+            }
+
             // Set focus on query tool of active panel
             p.on(wcDocker.EVENT.GAIN_FOCUS, function () {
               if (!$(p.$container).hasClass('wcPanelTabContentHidden')) {
@@ -1571,7 +1574,7 @@ define('tools.querytool', [
        * call the render method of the grid view to render the backgrid
        * header and loading icon and start execution of the sql query.
        */
-      start: function (is_query_tool, editor_title, script_sql, is_new_browser_tab, server_type) {
+      start: function (is_query_tool, editor_title, script_sql, is_new_browser_tab, server_type, prompt_save_changes) {
         var self = this;
 
         self.is_query_tool = is_query_tool;
@@ -1586,6 +1589,7 @@ define('tools.querytool', [
         self.fetching_rows = false;
         self.close_on_save = false;
         self.server_type = server_type;
+        self.prompt_save_changes = prompt_save_changes;
 
         // We do not allow to call the start multiple times.
         if (self.gridView)

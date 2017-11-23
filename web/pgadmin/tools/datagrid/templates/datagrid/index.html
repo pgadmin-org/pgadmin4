@@ -369,6 +369,6 @@ require(['{{ url_for('sqleditor.static', filename='js/generated/sqleditor.js') }
 
     // Start the query tool.
     sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}",
-                    script_sql, {{ is_new_browser_tab }}, "{{ server_type }}");
+                    script_sql, {{ is_new_browser_tab }}, "{{ server_type }}", {{ prompt_save_changes }});
 });
 {% endblock %}

@@ -227,6 +227,26 @@ class SqlEditorModule(PgAdminModule):
             )
         )
 
+        self.show_prompt_save_query_changes = self.preference.register(
+            'Options', 'prompt_save_query_changes',
+            gettext("Prompt to save unsaved query changes?"), 'boolean', True,
+            category_label=gettext('Options'),
+            help_str=gettext(
+                'Specifies whether or not to prompt user to save unsaved '
+                'query on query tool exit.'
+            )
+        )
+
+        self.show_prompt_save_data_changes = self.preference.register(
+            'Options', 'prompt_save_data_changes',
+            gettext("Prompt to save unsaved data changes?"), 'boolean', True,
+            category_label=gettext('Options'),
+            help_str=gettext(
+                'Specifies whether or not to prompt user to save unsaved '
+                'data on data grid exit.'
+            )
+        )
+
         self.csv_quoting = self.preference.register(
             'CSV_output', 'csv_quoting',
             gettext("CSV quoting"), 'options', 'strings',
