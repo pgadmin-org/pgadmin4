@@ -216,6 +216,11 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         new_browser_tab = 'false'
 
+    if is_query_tool == 'true':
+        prompt_save_changes = pref.preference('prompt_save_query_changes').get()
+    else:
+        prompt_save_changes = pref.preference('prompt_save_data_changes').get()
+
     # Fetch the server details
     #
     bgcolor = None
@@ -243,7 +248,10 @@ def panel(trans_id, is_query_tool, editor_title):
         server_type=server_type,
         client_platform=user_agent.platform,
         bgcolor=bgcolor,
-        fgcolor=fgcolor
+        fgcolor=fgcolor,
+        # convert python boolean value to equivalent js boolean literal before
+        # passing it to html template.
+        prompt_save_changes='true' if prompt_save_changes else 'false'
     )
 
 
