@@ -917,7 +917,8 @@ define('tools.querytool', [
           // fetch asynchronous
           setTimeout(self.fetch_next.bind(self));
         }
-      })
+      });
+
       // Resize SlickGrid when window resize
       $(window).resize(function () {
         // Resize grid only when 'Data Output' panel is visible.
@@ -1025,9 +1026,36 @@ define('tools.querytool', [
 
     /* This function is responsible to render output grid */
     grid_resize: function (grid) {
-      var h = $($('#editor-panel').find('.wcFrame')[1]).height() - 35;
-      $('#datagrid').css({'height': h + 'px'});
+      var prev_height = $('#datagrid').height(),
+        h = $($('#editor-panel').find('.wcFrame')[1]).height() - 35,
+        prev_viewport = grid.getViewport(),
+        prev_viewport_rows = grid.getRenderedRange(),
+        prev_cell = grid.getActiveCell();
+
+      // Apply css only if necessary, To avoid DOM operation
+      if (prev_height != h) {
+        $('#datagrid').css({'height': h + 'px'});
+      }
+
       grid.resizeCanvas();
+
+      /*
+       * If there is an active cell from user then we have to go to that cell
+       */
+      if(prev_cell) {
+        grid.scrollCellIntoView(prev_cell.row, prev_cell.cell);
+      }
+
+      // If already displaying from first row
+      if (prev_viewport.top == prev_viewport_rows.top) {
+        return
+      }
+      // if user has scroll to the end/last row
+      else if (prev_viewport.bottom - 2 == prev_viewport_rows.bottom) {
+        grid.scrollRowIntoView(prev_viewport.bottom);
+      } else {
+        grid.scrollRowIntoView(prev_viewport.bottom - 2);
+      }
     },
 
     /* This function is responsible to create and render the
