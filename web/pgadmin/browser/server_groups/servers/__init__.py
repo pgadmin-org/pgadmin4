@@ -24,7 +24,6 @@ import config
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, Server, ServerGroup, User
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils import get_storage_directory
 
 def has_any(data, keys):
     """
@@ -270,10 +269,9 @@ class ServerNode(PGChildNodeView):
                                     field in required_ssl_fields_server_mode:
                         # Set file manager directory from preference
                         import os
-                        storage_dir = get_storage_directory()
                         file_extn = '.key' if field.endswith('key') else '.crt'
                         dummy_ssl_file = os.path.join(
-                                storage_dir, '.postgresql',
+                                '<STORAGE_DIR>', '.postgresql',
                                 'postgresql' + file_extn
                         )
                         data[field] = dummy_ssl_file
