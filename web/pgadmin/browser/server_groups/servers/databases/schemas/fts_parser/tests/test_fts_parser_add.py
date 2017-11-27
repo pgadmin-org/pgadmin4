@@ -53,7 +53,7 @@ class FtsParserAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema.")
 
-        self.fts_parser_name = "fts_parser_%s" % str(uuid.uuid4())[1:4]
+        self.fts_parser_name = "fts_parser_%s" % str(uuid.uuid4())[1:8]
         self.data = \
             {
                 "name": self.fts_parser_name,

@@ -31,7 +31,7 @@ class TablespaceGetTestCase(BaseTestGenerator):
                       " not configured for server: %s" % self.server['name']
             # Skip the test case if tablespace_path not found.
             self.skipTest(message)
-        self.tablespace_name = "tablespace_delete_%s" % str(uuid.uuid4())[1:6]
+        self.tablespace_name = "tablespace_delete_%s" % str(uuid.uuid4())[1:8]
         self.tablespace_id = tablespace_utils.create_tablespace(
             self.server, self.tablespace_name)
         self.server_id = parent_node_dict["server"][-1]["server_id"]

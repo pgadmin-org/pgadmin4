@@ -45,7 +45,7 @@ class TypesAddTestCase(BaseTestGenerator):
     def runTest(self):
         """ This function will add type under schema node. """
         db_user = self.server["username"]
-        self.type_name = "test_type_add_%s" % (str(uuid.uuid4())[1:6])
+        self.type_name = "test_type_add_%s" % (str(uuid.uuid4())[1:8])
         data = {"name": self.type_name,
                 "is_sys_type": False,
                 "typtype": "c",

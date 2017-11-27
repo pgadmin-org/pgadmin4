@@ -43,8 +43,8 @@ class ForeignTableAddTestCase(BaseTestGenerator):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
         self.schema_id = self.schema_data['schema_id']
-        self.fdw_name = "fdw_%s" % (str(uuid.uuid4())[1:4])
-        self.fsrv_name = "fsrv_%s" % (str(uuid.uuid4())[1:4])
+        self.fdw_name = "fdw_%s" % (str(uuid.uuid4())[1:8])
+        self.fsrv_name = "fsrv_%s" % (str(uuid.uuid4())[1:8])
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
         self.fsrv_id = fsrv_utils.create_fsrv(self.server, self.db_name,
@@ -81,7 +81,7 @@ class ForeignTableAddTestCase(BaseTestGenerator):
             "ftoptions": [],
             "inherits": [],
             "ftsrvname": self.fsrv_name,
-            "name": "ft_%s" % (str(uuid.uuid4())[1:4]),
+            "name": "ft_%s" % (str(uuid.uuid4())[1:8]),
             "owner": self.server["username"],
             "relacl": [],
             "seclabels": [],

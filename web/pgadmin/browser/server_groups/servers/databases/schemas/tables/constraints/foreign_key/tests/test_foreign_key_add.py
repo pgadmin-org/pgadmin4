@@ -47,13 +47,13 @@ class ForeignKeyAddTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to add a foreign "
                             "key constraint.")
         self.local_table_name = "table_foreignkey_%s" % \
-                                (str(uuid.uuid4())[1:6])
+                                (str(uuid.uuid4())[1:8])
         self.local_table_id = tables_utils.create_table(self.server,
                                                         self.db_name,
                                                         self.schema_name,
                                                         self.local_table_name)
         self.foreign_table_name = "table_foreignkey_%s" % \
-                                  (str(uuid.uuid4())[1:6])
+                                  (str(uuid.uuid4())[1:8])
         self.foreign_table_id = tables_utils.create_table(
             self.server, self.db_name, self.schema_name,
             self.foreign_table_name)
@@ -61,7 +61,7 @@ class ForeignKeyAddTestCase(BaseTestGenerator):
     def runTest(self):
         """This function will add foreign key table column."""
         foreignkey_name = "test_foreignkey_add_%s" % \
-                          (str(uuid.uuid4())[1:6])
+                          (str(uuid.uuid4())[1:8])
         data = {"name": foreignkey_name,
                 "columns": [{"local_column": "id",
                              "references": self.foreign_table_id,

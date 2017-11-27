@@ -36,8 +36,8 @@ class PackagePutTestCase(BaseTestGenerator):
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
         self.db_name = parent_node_dict["database"][-1]["db_name"]
-        self.pkg_name= "pkg_%s" % str(uuid.uuid4())[1:4]
-        self.proc_name = "proc_%s" % str(uuid.uuid4())[1:4]
+        self.pkg_name= "pkg_%s" % str(uuid.uuid4())[1:8]
+        self.proc_name = "proc_%s" % str(uuid.uuid4())[1:8]
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
         server_con = server_utils.connect_server(self, self.server_id)

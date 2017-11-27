@@ -43,11 +43,11 @@ class RulesDeleteTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to delete rule.")
-        self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:6])
+        self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
-        self.rule_name = "test_rule_delete_%s" % (str(uuid.uuid4())[1:6])
+        self.rule_name = "test_rule_delete_%s" % (str(uuid.uuid4())[1:8])
         self.rule_id = rules_utils.create_rule(self.server, self.db_name,
                                                self.schema_name,
                                                self.table_name,

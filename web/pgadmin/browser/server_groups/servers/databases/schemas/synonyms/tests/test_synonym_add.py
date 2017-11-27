@@ -53,7 +53,7 @@ class SynonymAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add the synonym.")
         self.sequence_name = "test_sequence_synonym_%s" % \
-                             str(uuid.uuid4())[1:6]
+                             str(uuid.uuid4())[1:8]
         self.sequence_id = sequence_utils.create_sequences(
             self.server, self.db_name, self.schema_name, self.sequence_name)
 
@@ -68,7 +68,7 @@ class SynonymAddTestCase(BaseTestGenerator):
             "synobjname": self.sequence_name,
             "synobjschema": self.schema_name,
             "targettype": "Sequence",
-            "name": "synonym_add_%s" % (str(uuid.uuid4())[1:6])
+            "name": "synonym_add_%s" % (str(uuid.uuid4())[1:8])
         }
 
         response = self.tester.post(

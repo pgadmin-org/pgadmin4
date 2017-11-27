@@ -37,7 +37,7 @@ class EventTriggerAddTestCase(BaseTestGenerator):
         self.schema_id = self.schema_data['schema_id']
         self.extension_name = "postgres_fdw"
         self.db_name = parent_node_dict["database"][-1]["db_name"]
-        self.func_name = "trigger_func_%s" % str(uuid.uuid4())[1:6]
+        self.func_name = "trigger_func_%s" % str(uuid.uuid4())[1:8]
         self.db_user = self.server["username"]
         server_con = server_utils.connect_server(self, self.server_id)
         if not server_con["info"] == "Server connected.":
@@ -76,7 +76,7 @@ class EventTriggerAddTestCase(BaseTestGenerator):
             "eventfunname": "%s.%s" % (self.schema_name, self.func_name),
             "eventname": "DDL_COMMAND_END",
             "eventowner": self.db_user,
-            "name": "event_trigger_add_%s" % (str(uuid.uuid4())[1:6]),
+            "name": "event_trigger_add_%s" % (str(uuid.uuid4())[1:8]),
             "providers": []
         }
         response = self.tester.post(

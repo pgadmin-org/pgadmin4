@@ -42,7 +42,7 @@ class SequenceDeleteTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add sequence.")
-        self.sequence_name = "test_sequence_delete_%s" % str(uuid.uuid4())[1:6]
+        self.sequence_name = "test_sequence_delete_%s" % str(uuid.uuid4())[1:8]
         self.sequence_id = sequence_utils.create_sequences(
             self.server, self.db_name, self.schema_name, self.sequence_name)
 

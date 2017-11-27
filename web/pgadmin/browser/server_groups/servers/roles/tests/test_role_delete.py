@@ -23,7 +23,7 @@ class LoginRoleDeleteTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self.role_name = "role_delete_%s" % str(uuid.uuid4())[1:6]
+        self.role_name = "role_delete_%s" % str(uuid.uuid4())[1:8]
         self.role_id = roles_utils.create_role(self.server, self.role_name)
         self.server_id = parent_node_dict["server"][-1]["server_id"]
         role_dict = {"server_id": self.server_id, "role_id": self.role_id,

@@ -48,16 +48,16 @@ class ForeignGetDeleteTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to fetch a foreign "
                             "key constraint.")
         self.local_table_name = "local_table_foreignkey_get_%s" % \
-                                (str(uuid.uuid4())[1:6])
+                                (str(uuid.uuid4())[1:8])
         self.local_table_id = tables_utils.create_table(
             self.server, self.db_name, self.schema_name, self.local_table_name)
         self.foreign_table_name = "foreign_table_foreignkey_get_%s" % \
-                                  (str(uuid.uuid4())[1:6])
+                                  (str(uuid.uuid4())[1:8])
         self.foreign_table_id = tables_utils.create_table(
             self.server, self.db_name, self.schema_name,
             self.foreign_table_name)
         self.foreign_key_name = "test_foreignkey_get_%s" % \
-                                (str(uuid.uuid4())[1:6])
+                                (str(uuid.uuid4())[1:8])
         self.foreign_key_id = fk_utils.create_foreignkey(
             self.server, self.db_name, self.schema_name, self.local_table_name,
             self.foreign_table_name)

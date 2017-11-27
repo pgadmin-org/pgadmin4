@@ -39,7 +39,7 @@ class ResourceGroupsPutTestCase(BaseTestGenerator):
                               " and below."
                     self.skipTest(message)
         self.resource_group_name = "test_resource_group_put%s" % \
-                                   str(uuid.uuid4())[1:6]
+                                   str(uuid.uuid4())[1:8]
         self.resource_group_id = resource_groups_utils.create_resource_groups(
             self.server, self.resource_group_name)
 
@@ -50,7 +50,7 @@ class ResourceGroupsPutTestCase(BaseTestGenerator):
         if not resource_grp_response:
             raise Exception("Could not find the resource group to fetch.")
         self.resource_group_name = "test_resource_group_put%s" % \
-                                   str(uuid.uuid4())[1:6]
+                                   str(uuid.uuid4())[1:8]
         data = {"id": self.resource_group_id,
                 "name": self.resource_group_name}
         response = self.tester.put('{0}{1}/{2}/{3}'.format(

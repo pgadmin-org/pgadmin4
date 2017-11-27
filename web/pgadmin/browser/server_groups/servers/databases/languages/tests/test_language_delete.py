@@ -29,7 +29,7 @@ class LanguagesDeleteTestCase(BaseTestGenerator):
         self.server_id = self.server_data["server_id"]
         self.db_id = self.server_data['db_id']
         self.db_name = self.server_data["db_name"]
-        self.lang_name = "language_%s" % str(uuid.uuid4())[1:4]
+        self.lang_name = "language_%s" % str(uuid.uuid4())[1:8]
 
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,

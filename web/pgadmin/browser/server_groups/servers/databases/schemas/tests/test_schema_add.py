@@ -42,7 +42,7 @@ class SchemaAddTestCase(BaseTestGenerator):
             "defseqacl": [],
             "deftblacl": [],
             "deftypeacl": [],
-            "name": "test_schema_{0}".format(str(uuid.uuid4())[1:6]),
+            "name": "test_schema_{0}".format(str(uuid.uuid4())[1:8]),
             "namespaceowner": db_user,
             "nspacl": [
                 {

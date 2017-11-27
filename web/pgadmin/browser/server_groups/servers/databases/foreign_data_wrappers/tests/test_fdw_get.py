@@ -34,7 +34,7 @@ class FDWDGetTestCase(BaseTestGenerator):
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
-        self.fdw_name = "fdw_{0}".format(str(uuid.uuid4())[1:4])
+        self.fdw_name = "fdw_{0}".format(str(uuid.uuid4())[1:8])
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
 

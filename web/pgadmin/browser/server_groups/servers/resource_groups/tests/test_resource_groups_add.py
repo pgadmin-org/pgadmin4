@@ -42,7 +42,7 @@ class ResourceGroupsAddTestCase(BaseTestGenerator):
     def runTest(self):
         """This function will add resource groups under server node"""
         self.resource_group = "test_resource_group_add%s" % \
-                              str(uuid.uuid4())[1:6]
+                              str(uuid.uuid4())[1:8]
         data = {"name": self.resource_group,
                 "cpu_rate_limit": 0,
                 "dirty_rate_limit": 0}

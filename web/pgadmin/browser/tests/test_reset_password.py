@@ -29,7 +29,7 @@ class ResetPasswordTestCase(BaseTestGenerator):
 
         # This test case validates the invalid/incorrect email field
         ('TestCase for Validating Invalid_Email', dict(
-            email=str(uuid.uuid4())[1:6] + '@xyz.com',
+            email=str(uuid.uuid4())[1:8] + '@xyz.com',
             respdata='Specified user does not exist')),
 
         # This test case validates the valid email id

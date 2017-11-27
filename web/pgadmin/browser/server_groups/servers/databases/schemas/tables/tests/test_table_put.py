@@ -86,7 +86,7 @@ class TableUpdateTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
-        self.table_name = "test_table_put_%s" % (str(uuid.uuid4())[1:6])
+        self.table_name = "test_table_put_%s" % (str(uuid.uuid4())[1:8])
 
         self.is_partition = False
         if hasattr(self, 'server_min_version'):

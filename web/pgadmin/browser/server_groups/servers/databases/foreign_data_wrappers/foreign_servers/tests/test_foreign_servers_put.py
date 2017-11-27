@@ -39,8 +39,8 @@ class ForeignServerPutTestCase(BaseTestGenerator):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
         self.extension_name = "cube"
-        self.fdw_name = "fdw_%s" % (str(uuid.uuid4())[1:6])
-        self.fsrv_name = "test_fsrv_put_%s" % (str(uuid.uuid4())[1:6])
+        self.fdw_name = "fdw_%s" % (str(uuid.uuid4())[1:8])
+        self.fsrv_name = "test_fsrv_put_%s" % (str(uuid.uuid4())[1:8])
         self.extension_id = extension_utils.create_extension(
             self.server, self.db_name, self.extension_name, self.schema_name)
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,

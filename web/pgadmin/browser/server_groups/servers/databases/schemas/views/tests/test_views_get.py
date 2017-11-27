@@ -31,11 +31,11 @@ class ViewsGetTestCase(BaseTestGenerator):
         ('Get view under schema node', dict(url='/browser/view/obj/',
                                             view_name=
                                             "test_view_get_%s" %
-                                            (str(uuid.uuid4())[1:6]),
+                                            (str(uuid.uuid4())[1:8]),
                                             sql_query=view_sql)),
         ('Get materialized view under schema node',
          dict(url='/browser/mview/obj/',
-              view_name="test_mview_get_%s" % (str(uuid.uuid4())[1:6]),
+              view_name="test_mview_get_%s" % (str(uuid.uuid4())[1:8]),
               sql_query=m_view_sql))
     ]
 

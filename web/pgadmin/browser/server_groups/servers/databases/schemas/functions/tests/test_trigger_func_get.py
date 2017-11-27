@@ -38,7 +38,7 @@ class TriggerFuncGetTestCase(BaseTestGenerator):
         schema_info = parent_node_dict["schema"][-1]
         server_id = schema_info["server_id"]
         db_id = schema_info["db_id"]
-        func_name = "test_event_get_%s" % str(uuid.uuid4())[1:6]
+        func_name = "test_event_get_%s" % str(uuid.uuid4())[1:8]
         db_user = self.server["username"]
         server_con = server_utils.connect_server(self, server_id)
         if not server_con["info"] == "Server connected.":

@@ -48,7 +48,7 @@ class LanguagesAddTestCase(BaseTestGenerator):
             "lanowner": db_user,
             "lanproc": "plpgsql_call_handler",
             "lanval": "fmgr_c_validator",
-            "name": "language_%s" % str(uuid.uuid4())[1:4],
+            "name": "language_%s" % str(uuid.uuid4())[1:8],
             "seclabels": [],
             "template_list":
                 [
