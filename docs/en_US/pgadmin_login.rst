@@ -7,8 +7,6 @@ The pgAdmin Login Dialog
 Use the *pgAdmin Login* dialog to log in to pgAdmin:
 
 .. image:: images/pgadmin_login.png
-    :scale: 100%
-    :align: center
 
 Use the fields in the *pgAdmin Login* dialog to authenticate your connection:
 
