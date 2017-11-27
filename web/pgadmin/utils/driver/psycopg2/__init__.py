@@ -1589,11 +1589,29 @@ Failed to reset the connection to the server due to following error:
         Returns:
             Decoded string
         """
+        is_error = False
         if hasattr(str, 'decode'):
             try:
                 value = value.decode('utf-8')
+            except UnicodeDecodeError:
+                # Let's try with python's preferred encoding
+                # On Windows lc_messages mostly has environment dependent
+                # encoding like 'French_France.1252'
+                try:
+                    import locale
+                    pref_encoding = locale.getpreferredencoding()
+                    value = value.decode(pref_encoding)\
+                        .encode('utf-8')\
+                        .decode('utf-8')
+                except:
+                    is_error = True
             except:
-                pass
+                is_error = True
+
+        # If still not able to decode then
+        if is_error:
+            value = value.decode('ascii', 'ignore')
+
         return value
 
     def _formatted_exception_msg(self, exception_obj, formatted_msg):
