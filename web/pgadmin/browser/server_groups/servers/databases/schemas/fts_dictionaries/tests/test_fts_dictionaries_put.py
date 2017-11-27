@@ -39,7 +39,7 @@ class FtsDictionaryPutTestCase(BaseTestGenerator):
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
-        self.fts_dict_name = "fts_dict_%s" % str(uuid.uuid4())[1:4]
+        self.fts_dict_name = "fts_dict_%s" % str(uuid.uuid4())[1:8]
 
         self.fts_dict_id = fts_dict_utils.create_fts_dictionary(
             self.server,

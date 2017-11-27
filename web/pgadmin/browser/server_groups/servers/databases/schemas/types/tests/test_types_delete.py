@@ -41,7 +41,7 @@ class TypesDeleteTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to delete a type.")
-        self.type_name = "test_type_delete_%s" % (str(uuid.uuid4())[1:6])
+        self.type_name = "test_type_delete_%s" % (str(uuid.uuid4())[1:8])
         self.type_id = types_utils.create_type(self.server, self.db_name,
                                                self.schema_name, self.type_name
                                                )

@@ -43,14 +43,14 @@ class ColumnAddTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
-        self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:6])
+        self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
 
     def runTest(self):
         """This function will add column under table node."""
-        self.column_name = "test_column_add_%s" % (str(uuid.uuid4())[1:6])
+        self.column_name = "test_column_add_%s" % (str(uuid.uuid4())[1:8])
         data = {"name": self.column_name,
                 "cltype": "\"char\"",
                 "attacl": [],

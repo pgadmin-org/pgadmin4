@@ -25,7 +25,7 @@ class LoginRolePutTestCase(BaseTestGenerator):
 
     def setUp(self):
         self.server_id = parent_node_dict["server"][-1]["server_id"]
-        self.role_name = "role_put_%s" % str(uuid.uuid4())[1:6]
+        self.role_name = "role_put_%s" % str(uuid.uuid4())[1:8]
         self.role_id = roles_utils.create_role(self.server, self.role_name)
         role_dict = {"server_id": self.server_id, "role_id": self.role_id,
                      "role_name": self.role_name}

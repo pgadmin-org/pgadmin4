@@ -38,7 +38,7 @@ class TriggerFuncDeleteTestCase(BaseTestGenerator):
         schema_info = parent_node_dict["schema"][-1]
         server_id = schema_info["server_id"]
         db_id = schema_info["db_id"]
-        func_name = "test_event_delete_%s" % str(uuid.uuid4())[1:6]
+        func_name = "test_event_delete_%s" % str(uuid.uuid4())[1:8]
         server_con = server_utils.connect_server(self, server_id)
         if not server_con["info"] == "Server connected.":
             raise Exception("Could not connect to server to add resource "

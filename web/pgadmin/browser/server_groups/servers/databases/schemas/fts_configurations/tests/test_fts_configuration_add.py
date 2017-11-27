@@ -43,7 +43,7 @@ class FTSConfiguraionAddTestCase(BaseTestGenerator):
         self.server_id = schema_data['server_id']
         self.db_id = schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
-        self.fts_parser_name = "fts_parser_%s" % str(uuid.uuid4())[1:4]
+        self.fts_parser_name = "fts_parser_%s" % str(uuid.uuid4())[1:8]
         self.fts_parser_id = fts_parser_utils.create_fts_parser(
             self.server, self.db_name, self.schema_name, self.fts_parser_name)
 
@@ -64,7 +64,7 @@ class FTSConfiguraionAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema.")
 
-        self.fts_conf_name = "fts_conf_%s" % str(uuid.uuid4())[1:4]
+        self.fts_conf_name = "fts_conf_%s" % str(uuid.uuid4())[1:8]
         data = \
             {
                 "name": self.fts_conf_name,

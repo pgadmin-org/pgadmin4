@@ -45,18 +45,18 @@ class TriggersAddTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a trigger.")
-        self.table_name = "table_trigger_%s" % (str(uuid.uuid4())[1:6])
+        self.table_name = "table_trigger_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
-        self.func_name = "trigger_func_add_%s" % str(uuid.uuid4())[1:6]
+        self.func_name = "trigger_func_add_%s" % str(uuid.uuid4())[1:8]
         self.function_info = \
             trigger_funcs_utils.create_trigger_function_with_trigger(
             self.server, self.db_name, self.schema_name, self.func_name)
 
     def runTest(self):
         """This function will trigger under table node."""
-        trigger_name = "test_trigger_add_%s" % (str(uuid.uuid4())[1:6])
+        trigger_name = "test_trigger_add_%s" % (str(uuid.uuid4())[1:8])
         data = {"name": trigger_name,
                 "is_row_trigger": True,
                 "fires": "BEFORE",

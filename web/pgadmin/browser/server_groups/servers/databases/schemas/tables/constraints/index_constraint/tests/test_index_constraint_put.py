@@ -26,9 +26,9 @@ class IndexConstraintUpdateTestCase(BaseTestGenerator):
     """This class will update index constraint(primary key or unique key) of
     table column"""
     primary_key_name = "test_primarykey_put_%s" % \
-                       (str(uuid.uuid4())[1:6])
+                       (str(uuid.uuid4())[1:8])
     unique_key_name = "test_uniquekey_put_%s" % \
-                      (str(uuid.uuid4())[1:6])
+                      (str(uuid.uuid4())[1:8])
     data = {"oid": "", "comment": "this is test comment"}
     scenarios = [
         ('Update primary Key constraint of table',
@@ -59,7 +59,7 @@ class IndexConstraintUpdateTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to add a index "
                             "constraint(primary key or unique key).")
         cls.table_name = "table_indexconstraint_%s" % \
-                         (str(uuid.uuid4())[1:6])
+                         (str(uuid.uuid4())[1:8])
         cls.table_id = tables_utils.create_table(cls.server,
                                                  cls.db_name,
                                                  cls.schema_name,

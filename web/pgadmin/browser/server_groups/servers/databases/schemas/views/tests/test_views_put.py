@@ -32,11 +32,11 @@ class ViewsUpdateTestCase(BaseTestGenerator):
         ('Update view under schema node', dict(url='/browser/view/obj/',
                                                view_name=
                                                "test_view_put_%s" %
-                                               (str(uuid.uuid4())[1:6]),
+                                               (str(uuid.uuid4())[1:8]),
                                                sql_query=view_sql)),
         ('Update materialized view under schema node',
          dict(url='/browser/mview/obj/',
-              view_name="test_mview_put_%s" % (str(uuid.uuid4())[1:6]),
+              view_name="test_mview_put_%s" % (str(uuid.uuid4())[1:8]),
               sql_query=m_view_sql))
     ]
 

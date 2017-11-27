@@ -53,7 +53,7 @@ class SequenceAddTestCase(BaseTestGenerator):
             "increment": "1",
             "maximum": "100000",
             "minimum": "1",
-            "name": "test_sequence_add_%s" % (str(uuid.uuid4())[1:6]),
+            "name": "test_sequence_add_%s" % (str(uuid.uuid4())[1:8]),
             "relacl": [
                 {
                     "grantee": db_user,

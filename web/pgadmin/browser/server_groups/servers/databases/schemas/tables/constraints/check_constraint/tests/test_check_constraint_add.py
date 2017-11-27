@@ -47,7 +47,7 @@ class CheckConstraintAddTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to add a check "
                             "constraint.")
         self.table_name = "table_checkconstraint_add_%s" % \
-                          (str(uuid.uuid4())[1:6])
+                          (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server,
                                                   self.db_name,
                                                   self.schema_name,
@@ -56,7 +56,7 @@ class CheckConstraintAddTestCase(BaseTestGenerator):
     def runTest(self):
         """This function will add check constraint to table."""
         check_constraint_name = "test_checkconstraint_add_%s" % \
-                                (str(uuid.uuid4())[1:6])
+                                (str(uuid.uuid4())[1:8])
         data = {"name": check_constraint_name,
                 "consrc": " (id > 0)",
                 "convalidated": True,

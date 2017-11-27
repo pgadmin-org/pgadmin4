@@ -91,7 +91,7 @@ def get_db_data(db_owner):
       }
     ],
         "encoding": "UTF8",
-        "name": "db_add_%s" % str(uuid.uuid4())[1:6],
+        "name": "db_add_%s" % str(uuid.uuid4())[1:8],
         "privileges": [],
         "securities": [],
         "variables": []

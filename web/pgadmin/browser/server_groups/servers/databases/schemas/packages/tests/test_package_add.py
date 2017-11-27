@@ -64,7 +64,7 @@ class PackageAddTestCase(BaseTestGenerator):
 
         data = \
             {
-                "name": "pkg_%s" % str(uuid.uuid4())[1:4],
+                "name": "pkg_%s" % str(uuid.uuid4())[1:8],
                 "owner": self.server["username"],
                 "pkgacl": [],
                 "pkgbodysrc": "PROCEDURE p1() is \n"

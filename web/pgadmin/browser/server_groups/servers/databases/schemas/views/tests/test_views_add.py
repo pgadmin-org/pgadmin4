@@ -21,7 +21,7 @@ from regression.python_test_utils import test_utils as utils
 
 class ViewsAddTestCase(BaseTestGenerator):
     """This class will add new view under schema node."""
-    view_name = "test_view_add_%s" % (str(uuid.uuid4())[1:6])
+    view_name = "test_view_add_%s" % (str(uuid.uuid4())[1:8])
     v_data = {"schema": "",
               "owner": "",
               "datacl": [],
@@ -29,7 +29,7 @@ class ViewsAddTestCase(BaseTestGenerator):
               "name": view_name,
               "definition": "SELECT 'Hello World';"
               }
-    m_view_name = "test_mview_add_%s" % (str(uuid.uuid4())[1:6])
+    m_view_name = "test_mview_add_%s" % (str(uuid.uuid4())[1:8])
     m_view_data = {"spcname": "pg_default",
                    "toast_autovacuum_enabled": False,
                    "autovacuum_enabled": False,

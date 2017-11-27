@@ -95,7 +95,7 @@ class TriggerFuncAddTestCase(BaseTestGenerator):
         trigger_func_types = data['prorettypename'].split('/')
         for func_type in trigger_func_types:
             data['prorettypename'] = func_type
-            data["name"] = "test_event_add_%s" % str(uuid.uuid4())[1:6]
+            data["name"] = "test_event_add_%s" % str(uuid.uuid4())[1:8]
             if schema_id:
                 data['pronamespace'] = schema_id
             else:

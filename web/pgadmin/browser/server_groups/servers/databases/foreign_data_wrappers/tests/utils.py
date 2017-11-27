@@ -35,7 +35,7 @@ def get_fdw_data(schema_name, db_user):
             ],
         "fdwoptions": [],
         "fdwowner": db_user,
-        "name": "fdw_add_%s" % (str(uuid.uuid4())[1:6])
+        "name": "fdw_add_%s" % (str(uuid.uuid4())[1:8])
     }
     return data
 

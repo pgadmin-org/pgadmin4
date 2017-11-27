@@ -25,9 +25,9 @@ class IndexConstraintGetTestCase(BaseTestGenerator):
     """This class will fetch the index constraint(primary key or unique key) of
     table column"""
     primary_key_name = "test_primarykey_delete_%s" % \
-                       (str(uuid.uuid4())[1:6])
+                       (str(uuid.uuid4())[1:8])
     unique_key_name = "test_uniquekey_delete_%s" % \
-                      (str(uuid.uuid4())[1:6])
+                      (str(uuid.uuid4())[1:8])
     scenarios = [
         ('Fetch primary Key constraint of table',
          dict(url='/browser/primary_key/obj/', name=primary_key_name,
@@ -57,7 +57,7 @@ class IndexConstraintGetTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to add a index "
                             "constraint(primary key or unique key).")
         cls.table_name = "table_indexconstraint_%s" % \
-                         (str(uuid.uuid4())[1:6])
+                         (str(uuid.uuid4())[1:8])
         cls.table_id = tables_utils.create_table(cls.server,
                                                  cls.db_name,
                                                  cls.schema_name,

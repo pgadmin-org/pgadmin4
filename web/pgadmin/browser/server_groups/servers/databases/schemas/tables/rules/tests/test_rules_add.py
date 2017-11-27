@@ -43,14 +43,14 @@ class RulesAddTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a rule.")
-        self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:6])
+        self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
 
     def runTest(self):
         """This function will rule under table node."""
-        rule_name = "test_rule_add_%s" % (str(uuid.uuid4())[1:6])
+        rule_name = "test_rule_add_%s" % (str(uuid.uuid4())[1:8])
         data = {"schema": self.schema_name,
                 "view": self.table_name,
                 "name": rule_name,

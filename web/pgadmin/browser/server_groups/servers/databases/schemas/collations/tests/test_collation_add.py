@@ -30,7 +30,7 @@ class CollationAddTestCase(BaseTestGenerator):
         self.database_info = parent_node_dict["database"][-1]
         self.db_name = self.database_info["db_name"]
         # Change the db name, so that schema will create in newly created db
-        self.schema_name = "schema_get_%s" % str(uuid.uuid4())[1:6]
+        self.schema_name = "schema_get_%s" % str(uuid.uuid4())[1:8]
         connection = utils.get_db_connection(self.db_name,
                                              self.server['username'],
                                              self.server['db_password'],
@@ -59,7 +59,7 @@ class CollationAddTestCase(BaseTestGenerator):
 
         data = {
             "copy_collation": "pg_catalog.\"C\"",
-            "name": "collation_add_%s" % str(uuid.uuid4())[1:6],
+            "name": "collation_add_%s" % str(uuid.uuid4())[1:8],
             "owner": self.server["username"],
             "schema": schema_name
         }
