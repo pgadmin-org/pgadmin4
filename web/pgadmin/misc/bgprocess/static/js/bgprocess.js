@@ -159,8 +159,12 @@ define('misc.bgprocess', [
         while (ie < err.length) {
           res.push('<li class="pg-bg-res-err">' + escapeHTML(err[ie++][1]) + '</li>');
         }
+
         if (res.length) {
           self.logs.append(res.join(''));
+          setTimeout(function() {
+            self.logs[0].scrollTop = self.logs[0].scrollHeight;
+          });
         }
 
         if (self.stime) {
@@ -301,9 +305,16 @@ define('misc.bgprocess', [
           ).append(
             $('<span></span>').text(' ' + gettext('seconds'))
           );
-          self.container.find('.pg-bg-status').empty().append(
+          var $status_bar = $(self.container.find('.pg-bg-status'));
+          $status_bar.empty().append(
             self.curr_status
           );
+
+          if (self.exit_code === 0) {
+            $status_bar.addClass('bg-success');
+          } else if (self.exit_code == 1){
+            $status_bar.addClass('bg-failed');
+          }
         } else {
           self.show_detailed_view.apply(self)
         }
@@ -336,7 +347,9 @@ define('misc.bgprocess', [
         if (is_new) {
           // set logs
           $logs.html(self.logs);
-
+          setTimeout(function() {
+            self.logs[0].scrollTop = self.logs[0].scrollHeight;
+          });
           // set bgprocess detailed description
           $header.find('.bg-detailed-desc').html(self.detailed_desc);
         }
