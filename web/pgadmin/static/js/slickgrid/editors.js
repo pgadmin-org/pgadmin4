@@ -387,12 +387,12 @@
     this.loadValue = function (item) {
       var data = defaultValue = item[args.column.field];
       if (data && typeof data === "object" && !Array.isArray(data)) {
-        data = JSON.stringify(data);
+        data = JSON.stringify(data, null, 4);
       } else if (Array.isArray(data)) {
         var temp = [];
         $.each(data, function(i, val) {
           if (typeof val === "object") {
-            temp.push(JSON.stringify(val));
+            temp.push(JSON.stringify(val, null, 4));
           } else {
             temp.push(val)
           }
@@ -722,12 +722,12 @@
     this.loadValue = function (item) {
       var data = defaultValue = item[args.column.field];
       if (typeof data === "object" && !Array.isArray(data)) {
-        data = JSON.stringify(data);
+        data = JSON.stringify(data, null, 4);
       } else if (Array.isArray(data)) {
         var temp = [];
         $.each(data, function(i, val) {
           if (typeof val === "object") {
-            temp.push(JSON.stringify(val));
+            temp.push(JSON.stringify(val, null, 4));
           } else {
             temp.push(val)
           }
