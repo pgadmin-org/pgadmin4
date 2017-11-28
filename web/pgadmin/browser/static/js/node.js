@@ -285,10 +285,16 @@ define(
                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\
                   </div>\
                     <div class="alert-text">' + msg + '</div>\
+                    <div class="close-error-bar">\
+                      <a class="close-error">x</a>\
+                    </div>\
                 </div>\
               </div>';
             if(!_.isUndefined(that.statusBar)) {
               that.statusBar.html(alertMessage).css("visibility", "visible");
+              that.statusBar.find("a.close-error").bind("click", function(e) {
+                 this.empty().css("visibility", "hidden");
+              }.bind(that.statusBar));
             }
             callback(true);
 

@@ -1176,6 +1176,16 @@ form[name="change_password_form"] .help-block {
   overflow: hidden;
 }
 
+.close-error-bar {
+  background: #d0021b;
+  padding: 5px;
+}
+
+.close-error-bar a {
+  color: #FFFFFF;
+  cursor: pointer;
+}
+
 .user_management .search_users form {
   margin: 0;
 }

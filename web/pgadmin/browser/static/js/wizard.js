@@ -96,6 +96,9 @@ function(_, Backbone, pgAdmin, pgBrowser) {
        + "            </div>"
        + "            <div class='alert-text'>"
        + "            </div>"
+       + "            <div class='close-error-bar'>"
+       + "              <a class='close-error'>x</a>"
+       + "            </div>"
        + "          </div>"
        + "        </div>"
        + "      </div>"
@@ -128,6 +131,7 @@ function(_, Backbone, pgAdmin, pgBrowser) {
       "click button.wizard-maximize-event" : "onMaximize",
       "click button.wizard-finish" : "finishWizard",
       "click button.wizard-help" : "onDialogHelp",
+      "click a.close-error" : "closeErrorMsg",
     },
     initialize: function(options) {
       this.options = _.extend({}, this.options, options.options);
@@ -223,6 +227,10 @@ function(_, Backbone, pgAdmin, pgBrowser) {
         else {
           this.options.disable_prev = false;
         }
+    },
+    closeErrorMsg: function() {
+      $(this.el).find('.pg-prop-status-bar .alert-text').empty();
+      $(this.el).find('.pg-prop-status-bar').css("visibility", "hidden");
     },
     beforeNext: function(){
       return this.evalASFunc(this.currPage.beforeNext);

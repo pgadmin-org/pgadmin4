@@ -478,8 +478,8 @@ define([
               prepare: function() {
                 var self = this,
                   footerTpl = _.template([
-                    '<div class="pg-prop-footer">',
-                      '<div class="pg-prop-status-bar" style="visibility:hidden">',
+                    '<div class="pg-prop-footer" style="visibility:hidden;">',
+                      '<div class="pg-prop-status-bar">',
                         '<div class="media error-in-footer bg-red-1 border-red-2 font-red-3 text-14">',
                           '<div class="media-body media-middle">',
                             '<div class="alert-icon error-icon">',
@@ -487,12 +487,12 @@ define([
                             '</div>',
                             '<div class="alert-text">',
                             '</div>',
+                            '<div class="close-error-bar"><a class="close-error">x</a></div>',
                           '</div>',
                         '</div>',
                       '</div>',
                     '</div>'].join("\n")),
-                  $footer = $(footerTpl()),
-                  $statusBar = $footer.find('.pg-prop-status-bar'),
+                  $statusBar = $(footerTpl()),
                   UserRow = Backgrid.Row.extend({
                     userInvalidColor: "lightYellow",
 
@@ -644,7 +644,7 @@ define([
 
                 this.$content = $("<div class='user_management object subnode'></div>").append(
                     headerTpl(data)).append($gridBody
-                    ).append($footer);
+                    ).append($statusBar);
 
                 $(this.elements.body.childNodes[0]).addClass(
                   'alertify_tools_dialog_backgrid_properties');
@@ -656,6 +656,11 @@ define([
                   userFilter(userCollection).render().el);
 
                 userCollection.fetch();
+
+                this.$content.find('a.close-error').click(function(e) {
+                  $statusBar.find('.alert-text').empty();
+                  $statusBar.css("visibility", "hidden");
+                });
 
                 this.$content.find('button.add').first().click(function(e) {
                   e.preventDefault();
