@@ -170,7 +170,13 @@ window.onload = function(e){
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"></a>
                     <ul class="dropdown-menu navbar-inverse">
-                        <li><a href="{{ url_for('security.change_password') }}">{{ _('Change Password') }}</a></li>
+                        <li>
+                            <a href="#" onclick="pgAdmin.Browser.UserManagement.change_password(
+                              '{{ url_for('security.change_password') }}'
+                            )">
+                                {{ _('Change Password') }}
+                            </a>
+                        </li>
                         <li class="divider"></li>
                         {% if is_admin %}
                         <li><a href="#" onclick="pgAdmin.Browser.UserManagement.show_users()">{{ _('Users') }}</a></li>

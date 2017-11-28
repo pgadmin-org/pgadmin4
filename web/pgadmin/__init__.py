@@ -281,6 +281,12 @@ def create_app(app_name=None):
         # TODO: Figure out how to disable /logout and /login
         app.config['SECURITY_RECOVERABLE'] = True
         app.config['SECURITY_CHANGEABLE'] = True
+        # Now we'll open change password page in alertify dialog
+        # we don't want it to redirect to main page after password
+        # change operation so we will open the same password change page again.
+        app.config.update(
+            dict(SECURITY_POST_CHANGE_VIEW='security.change_password')
+        )
 
     # Create database connection object and mailer
     db.init_app(app)

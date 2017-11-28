@@ -37,6 +37,91 @@ define([
 
         return this;
       },
+
+      // Callback to draw change password Dialog.
+      change_password: function(url) {
+        var title = gettext('Change Password');
+
+        if(!alertify.ChangePassword) {
+          alertify.dialog('ChangePassword' ,function factory() {
+            return {
+              main: function(title, url) {
+                this.set({
+                  'title': title,
+                  'url': url
+                });
+              },
+              build: function() {
+                alertify.pgDialogBuild.apply(this)
+              },
+              settings:{
+                  url: undefined
+              },
+              setup:function() {
+                return {
+                  buttons: [{
+                    text: '', key: 112,
+                    className: 'btn btn-default pull-left fa fa-lg fa-question',
+                    attrs:{
+                      name:'dialog_help', type:'button', label: gettext('Change Password'),
+                      url: url_for(
+                        'help.static', {
+                          'filename': 'change_user_password.html'
+                        })
+                    }
+                  },{
+                    text: gettext('Close'), key: 27,
+                    className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                    attrs:{name:'close', type:'button'}
+                  }],
+                  // Set options for dialog
+                  options: {
+                    //disable both padding and overflow control.
+                    padding : !1,
+                    overflow: !1,
+                    modal: false,
+                    resizable: true,
+                    maximizable: true,
+                    pinnable: false,
+                    closableByDimmer: false,
+                    closable: false
+                  }
+                };
+              },
+              hooks: {
+                // Triggered when the dialog is closed
+                onclose: function() {
+                  // Clear the view
+                  return setTimeout((function() {
+                    return alertify.ChangePassword().destroy();
+                  }), 500);
+                }
+              },
+              prepare: function() {
+                // create the iframe element
+                var iframe = document.createElement('iframe');
+                iframe.frameBorder = "no";
+                iframe.width = "100%";
+                iframe.height = "100%";
+                iframe.src = this.setting('url');
+                // add it to the dialog
+                this.elements.content.appendChild(iframe);
+              },
+              callback: function(e) {
+                if (e.button.element.name == "dialog_help") {
+                  e.cancel = true;
+                  pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
+                    null, null, e.button.element.getAttribute('label'));
+                  return;
+                }
+              }
+            };
+          });
+        }
+
+        alertify.ChangePassword(title, url).resizeTo('75%','70%');
+      },
+
       // Callback to draw User Management Dialog.
       show_users: function(action, item, params) {
         if (!userInfo['is_admin']) return;
