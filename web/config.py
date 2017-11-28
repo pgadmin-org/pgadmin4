@@ -270,6 +270,10 @@ MAIL_USERNAME = ''
 MAIL_PASSWORD = ''
 MAIL_DEBUG = False
 
+# Flask-Security overrides Flask-Mail's MAIL_DEFAULT_SENDER setting, so
+# that should be set as such:
+SECURITY_EMAIL_SENDER = 'no-reply@localhost'
+
 ##########################################################################
 # Mail content settings
 ##########################################################################
