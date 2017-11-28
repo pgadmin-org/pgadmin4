@@ -21,6 +21,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as ft_utils
 
 
 class ForeignTableAddTestCase(BaseTestGenerator):
@@ -49,6 +50,7 @@ class ForeignTableAddTestCase(BaseTestGenerator):
                                            self.fdw_name)
         self.fsrv_id = fsrv_utils.create_fsrv(self.server, self.db_name,
                                               self.fsrv_name, self.fdw_name)
+        self.ft_name = "ft_%s" % (str(uuid.uuid4())[1:8])
 
     def runTest(self):
         """This function will add foreign table under test database."""
@@ -81,7 +83,7 @@ class ForeignTableAddTestCase(BaseTestGenerator):
             "ftoptions": [],
             "inherits": [],
             "ftsrvname": self.fsrv_name,
-            "name": "ft_%s" % (str(uuid.uuid4())[1:8]),
+            "name": self.ft_name,
             "owner": self.server["username"],
             "relacl": [],
             "seclabels": [],
@@ -97,6 +99,10 @@ class ForeignTableAddTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        """ This function disconnect the test database. """
+        """ This function disconnect the test database and delete test
+        foreign table object. """
+        ft_utils.delete_foregin_table(self.server, self.db_name,
+                                      self.schema_name, self.ft_name
+                                      )
 
         database_utils.disconnect_database(self, self.server_id, self.db_id)

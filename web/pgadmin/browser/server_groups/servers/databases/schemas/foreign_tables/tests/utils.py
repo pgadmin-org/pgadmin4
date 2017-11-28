@@ -81,3 +81,28 @@ def verify_foreign_table(server, db_name, fsrv_name):
         return fts
     except Exception:
         traceback.print_exc(file=sys.stderr)
+
+
+def delete_foregin_table(server, db_name, schema_name, ft_name):
+    """
+    This function delete Foreign table object.
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param ft_name: Foreign table object
+    :type ft_name: str
+    :param schema_name: schema name
+    :type schema_name: str
+    :return: None
+        """
+    connection = get_db_connection(db_name,
+                                   server['username'],
+                                   server['db_password'],
+                                   server['host'],
+                                   server['port'],
+                                   server['sslmode'])
+    pg_cursor = connection.cursor()
+    pg_cursor.execute("DROP FOREIGN TABLE %s.%s" % (schema_name, ft_name))
+    connection.commit()
+    connection.close()
