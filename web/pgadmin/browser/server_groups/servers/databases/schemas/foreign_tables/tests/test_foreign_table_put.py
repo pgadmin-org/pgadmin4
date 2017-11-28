@@ -95,6 +95,10 @@ class ForeignTablePutTestCase(BaseTestGenerator):
         self.assertEquals(put_response.status_code, 200)
 
     def tearDown(self):
-        """ This function disconnect the test database. """
+        """ This function disconnect the test database and delete test
+        foreign table object. """
+        ft_utils.delete_foregin_table(self.server, self.db_name,
+                                      self.schema_name, self.ft_name
+                                      )
 
         database_utils.disconnect_database(self, self.server_id, self.db_id)
