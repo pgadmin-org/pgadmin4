@@ -281,6 +281,9 @@ REM Main function Ends
     ECHO Removing Sphinx
     pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
 
+    ECHO Fixing backports.csv - adding missing __init__.py
+    type nul >> "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\backports\__init__.py"
+
     ECHO Assembling runtime environment...
     CD "%WD%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
