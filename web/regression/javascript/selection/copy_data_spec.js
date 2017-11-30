@@ -23,8 +23,8 @@ describe('copyData', function () {
   beforeEach(function () {
     SlickGrid = Slick.Grid;
     var data = [{'id': 1, 'brand':'leopord', 'size':12, '__temp_PK': '123'},
-                {'id': 2, 'brand':'lion', 'size':13, '__temp_PK': '456'},
-                {'id': 3, 'brand':'puma', 'size':9, '__temp_PK': '789'}],
+        {'id': 2, 'brand':'lion', 'size':13, '__temp_PK': '456'},
+        {'id': 3, 'brand':'puma', 'size':9, '__temp_PK': '789'}],
       dataView = new Slick.Data.DataView();
 
     var CSVOptions = {'quoting': 'strings', 'quote_char': '"', 'field_separator': ','};

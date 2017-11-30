@@ -135,19 +135,19 @@ describe('RangeBoundaryNavigator', function () {
     var data, columnDefinitions, ranges, CSVOptions;
     beforeEach(function () {
       data = [{'id':1, 'animal':'leopard', 'size':'12'},
-              {'id':2, 'animal':'lion', 'size':'13'},
-              {'id':3, 'animal':'cougar', 'size':'9'},
-              {'id':4, 'animal':'tiger', 'size':'10'}];
+        {'id':2, 'animal':'lion', 'size':'13'},
+        {'id':3, 'animal':'cougar', 'size':'9'},
+        {'id':4, 'animal':'tiger', 'size':'10'}];
 
       columnDefinitions = [{name: 'id', field: 'id', pos: 0},
-                            {name: 'animal', field: 'animal', pos: 1},
-                            {name: 'size', field: 'size', pos: 2}];
+        {name: 'animal', field: 'animal', pos: 1},
+        {name: 'size', field: 'size', pos: 2}];
       ranges = [new Slick.Range(0, 0, 0, 2), new Slick.Range(3, 0, 3, 2)];
 
       CSVOptions = [{'quoting': 'all', 'quote_char': '"', 'field_separator': ','},
-                    {'quoting': 'strings', 'quote_char': '"', 'field_separator': ';'},
-                    {'quoting': 'strings', 'quote_char': '\'', 'field_separator': '|'},
-                    {'quoting': 'none', 'quote_char': '"', 'field_separator': '\t'}];
+        {'quoting': 'strings', 'quote_char': '"', 'field_separator': ';'},
+        {'quoting': 'strings', 'quote_char': '\'', 'field_separator': '|'},
+        {'quoting': 'none', 'quote_char': '"', 'field_separator': '\t'}];
     });
 
     it('returns csv for the provided ranges for CSV options quoting All with char " with field separator ,', function () {
