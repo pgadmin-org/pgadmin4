@@ -540,7 +540,9 @@ def create_app(app_name=None):
             ):
                 abort(401)
 
-        if not config.SERVER_MODE:
+    if not config.SERVER_MODE:
+        @app.before_first_request
+        def before_first_request():
             user = user_datastore.get_user(config.DESKTOP_USER)
 
             # Throw an error if we failed to find the desktop user, to give
