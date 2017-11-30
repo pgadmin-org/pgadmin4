@@ -700,6 +700,7 @@ def poll(trans_id):
                         col_type = dict()
                         col_type['type_code'] = col['type_code']
                         col_type['type_name'] = None
+                        col_type['internal_size'] = col['internal_size']
                         columns[col['name']] = col_type
 
                         if rset:
@@ -719,7 +720,29 @@ def poll(trans_id):
                     for col_info in columns.values():
                         for col_type in types:
                             if col_type['oid'] == col_info['type_code']:
-                                col_info['type_name'] = col_type['typname']
+                                typname = col_type['typname']
+
+                                # If column is of type character, character[],
+                                # character varying and character varying[]
+                                # then add internal size to it's name for the
+                                # correct sql query.
+                                if col_info['internal_size'] >= 0:
+                                    if (
+                                        typname == 'character' or
+                                        typname == 'character varying'
+                                    ):
+                                        typname = typname + '(' + \
+                                            str(col_info['internal_size']) + \
+                                            ')'
+                                    elif (
+                                        typname == 'character[]' or
+                                        typname == 'character varying[]'
+                                    ):
+                                        typname = typname[:-2] + '(' + \
+                                            str(col_info['internal_size']) + \
+                                            ')[]'
+
+                                col_info['type_name'] = typname
 
                     session_obj['columns_info'] = columns
                 # status of async_fetchmany_2darray is True and result is none
