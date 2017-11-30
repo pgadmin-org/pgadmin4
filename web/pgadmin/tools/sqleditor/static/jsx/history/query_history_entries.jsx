@@ -91,10 +91,10 @@ export default class QueryHistoryEntries extends React.Component {
     return (
       entriesGroupedByDate[key].map((entry, index) =>
         <li key={`group-${parentIndex}-entry-${index}`}
-            className='list-item'
-            tabIndex={0}
-            onClick={() => this.props.onSelectEntry(startingEntryIndex + index)}
-            onKeyDown={this.navigateUpAndDown}>
+          className='list-item'
+          tabIndex={0}
+          onClick={() => this.props.onSelectEntry(startingEntryIndex + index)}
+          onKeyDown={this.navigateUpAndDown}>
           <QueryHistoryEntry
             historyEntry={entry}
             isSelected={(startingEntryIndex + index) === this.props.selectedEntry}/>
@@ -143,7 +143,7 @@ export default class QueryHistoryEntries extends React.Component {
   render() {
     return (
       <div id='query_list'
-           className="query-history">
+        className="query-history">
         {this.retrieveGroups()}
       </div>
     );

@@ -92,10 +92,10 @@ export default class QueryHistory extends React.Component {
   render() {
     return (
       <SplitPane defaultSize='50%' split='vertical' pane1Style={queryEntryListDivStyle}
-                 pane2Style={queryDetailDivStyle}>
+        pane2Style={queryDetailDivStyle}>
         <QueryHistoryEntries historyEntries={this.state.history}
-                             selectedEntry={this.state.selectedEntry}
-                             onSelectEntry={this.selectHistoryEntry}
+          selectedEntry={this.state.selectedEntry}
+          onSelectEntry={this.selectHistoryEntry}
         />
         <QueryHistoryDetail historyEntry={this.state.currentHistoryDetail}/>
       </SplitPane>);
