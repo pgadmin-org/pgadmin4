@@ -45,11 +45,11 @@ class ResetPasswordTestCase(BaseTestGenerator):
     def runTest(self):
         """This function checks reset password functionality."""
 
-        response = self.tester.get('/reset')
+        response = self.tester.get('/browser/reset_password')
         self.assertTrue('Recover pgAdmin 4 Password' in response.data.decode(
             'utf-8'))
         response = self.tester.post(
-            '/reset', data=dict(email=self.email),
+            '/browser/reset_password', data=dict(email=self.email),
             follow_redirects=True)
         self.assertTrue(self.respdata in response.data.decode('utf-8'))
 

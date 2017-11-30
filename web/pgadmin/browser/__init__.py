@@ -769,7 +769,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
             user=user, token=token)
 
 
-    @blueprint.route("/forgot_password", endpoint="forgot_password",
+    @blueprint.route("/reset_password", endpoint="forgot_password",
                      methods=['GET', 'POST'])
     @anonymous_user_required
     def forgot_password():
@@ -819,10 +819,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
 
     # We are not in app context so cannot use url_for('browser.forgot_password')
-    # So hard code the url '/browser/forgot_password' while passing as
+    # So hard code the url '/browser/reset_password' while passing as
     # parameter to slash_url_suffix function.
-    @blueprint.route('/forgot_password' + slash_url_suffix(
-        '/browser/forgot_password', '<token>'),
+    @blueprint.route('/reset_password' + slash_url_suffix(
+        '/browser/reset_password', '<token>'),
                      methods=['GET', 'POST'],
                      endpoint='reset_password')
     @anonymous_user_required
