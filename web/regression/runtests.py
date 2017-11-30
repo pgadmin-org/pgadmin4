@@ -52,6 +52,12 @@ if sys.path[0] != root:
 
 from pgadmin import create_app
 import config
+
+if config.SERVER_MODE is True:
+    config.SECURITY_RECOVERABLE = True
+    config.SECURITY_CHANGEABLE = True
+    config.SECURITY_POST_CHANGE_VIEW = 'browser.change_password'
+
 from regression import test_setup
 from regression.feature_utils.app_starter import AppStarter
 
