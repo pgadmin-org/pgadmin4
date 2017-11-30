@@ -313,6 +313,7 @@ define('pgadmin.node.role', [
       dialogHelp: url_for('help.static', {'filename': 'role_dialog.html'}),
       label: gettext('Login/Group Role'),
       hasSQL: true,
+      width: '550px',
       canDrop: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
             server = treeData['server'];
