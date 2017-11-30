@@ -1,7 +1,6 @@
 define('pgadmin.datagrid', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify', 'sources/pgadmin',
-  'bundled_codemirror',
-  'sources/sqleditor_utils', 'wcdocker'
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'bundled_codemirror', 'sources/sqleditor_utils', 'wcdocker'
 ], function(gettext, url_for, $, _, alertify, pgAdmin, codemirror, sqlEditorUtils) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
@@ -244,14 +243,20 @@ define('pgadmin.datagrid', [
                     { text: "OK", className: "btn btn-primary" },
                     { text: "Cancel", className: "btn btn-danger" }
                   ],
-                  options: { modal: 0, resizable: false, maximizable: false, pinnable: false}
+                  options: { modal: 0, resizable: true, maximizable: false, pinnable: false}
                 };
               },
-
-              build:function() {},
+              build: function() {
+                alertify.pgDialogBuild.apply(this)
+              },
               prepare:function() {
-		        var $content = $(this.message),
-                    $sql_filter = $content.find('#sql_filter');
+                var self = this,
+                  $content = $(this.message),
+                  $sql_filter = $content.find('#sql_filter');
+
+                $(this.elements.body.childNodes[0]).addClass(
+                  'dataview_filter_dialog'
+                );
 
                 this.setContent($content.get(0));
 
@@ -267,6 +272,11 @@ define('pgadmin.datagrid', [
                   autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
                   matchBrackets: pgAdmin.Browser.editor_options.brace_matching
                 });
+
+                setTimeout(function() {
+                  // Set focus on editor
+                  self.filter_obj.focus();
+                }, 500);
               },
 
               callback: function(closeEvent) {
@@ -310,7 +320,8 @@ define('pgadmin.datagrid', [
         var content = '';
         $.get(url_for('datagrid.filter'),
           function(data) {
-            alertify.filterDialog('Data Filter', data, baseUrl, validateUrl).resizeTo(600, 400);
+            alertify.filterDialog('Data Filter', data, baseUrl, validateUrl)
+                    .resizeTo(300, 200);
           }
         );
       },
