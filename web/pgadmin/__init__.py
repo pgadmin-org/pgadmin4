@@ -211,6 +211,23 @@ def create_app(app_name=None):
     if not app_name:
         app_name = config.APP_NAME
 
+    # Only enable password related functionality in server mode.
+    if config.SERVER_MODE is True:
+        # Some times we need to access these config params where application
+        # context is not available (we can't use current_app.config in those
+        # cases even with current_app.app_context())
+        # So update these params in config itself.
+        # And also these updated config values will picked up by application
+        # since we are updating config before the application instance is
+        # created.
+
+        config.SECURITY_RECOVERABLE = True
+        config.SECURITY_CHANGEABLE = True
+        # Now we'll open change password page in alertify dialog
+        # we don't want it to redirect to main page after password
+        # change operation so we will open the same password change page again.
+        config.SECURITY_POST_CHANGE_VIEW = 'browser.change_password'
+
     """Create the Flask application, startup logging and dynamically load
     additional modules (blueprints) that are found in this directory."""
     app = PgAdmin(__name__, static_url_path='/static')
@@ -312,18 +329,6 @@ def create_app(app_name=None):
         config.SQLITE_PATH.replace(u'\\', u'/'),
         getattr(config, 'SQLITE_TIMEOUT', 500)
     )
-
-    # Only enable password related functionality in server mode.
-    if config.SERVER_MODE is True:
-        # TODO: Figure out how to disable /logout and /login
-        app.config['SECURITY_RECOVERABLE'] = True
-        app.config['SECURITY_CHANGEABLE'] = True
-        # Now we'll open change password page in alertify dialog
-        # we don't want it to redirect to main page after password
-        # change operation so we will open the same password change page again.
-        app.config.update(
-            dict(SECURITY_POST_CHANGE_VIEW='security.change_password')
-        )
 
     # Create database connection object and mailer
     db.init_app(app)
