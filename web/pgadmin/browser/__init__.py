@@ -8,19 +8,32 @@
 ##########################################################################
 
 import json
+import logging
 from abc import ABCMeta, abstractmethod, abstractproperty
-
 import six
+from socket import error as SOCKETErrorException
+from smtplib import SMTPConnectError, SMTPResponseException,\
+    SMTPServerDisconnected, SMTPDataError,SMTPHeloError, SMTPException, \
+    SMTPAuthenticationError, SMTPSenderRefused, SMTPRecipientsRefused
 from flask import current_app, render_template, url_for, make_response, flash,\
-    Response
+    Response, request, after_this_request, redirect
 from flask_babel import gettext
-from flask_login import current_user
-from flask_security import login_required
+from flask_login import current_user, login_required
+from flask_security.decorators import anonymous_user_required
 from flask_gravatar import Gravatar
 from pgadmin.settings import get_setting
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.preferences import Preferences
+from werkzeug.datastructures import MultiDict
+from flask_security.views import _security, _commit, _render_json, _ctx
+from flask_security.changeable import change_user_password
+from flask_security.recoverable import reset_password_token_status, \
+    generate_reset_password_token, update_password
+from flask_security.utils import config_value, do_flash, get_url, get_message,\
+    slash_url_suffix, login_user, send_mail
+from flask_security.signals import reset_password_instructions_sent
+
 
 import config
 from pgadmin import current_blueprint
@@ -528,6 +541,7 @@ def index():
 
     return response
 
+
 @blueprint.route("/js/utils.js")
 @login_required
 def utils():
@@ -677,3 +691,188 @@ def get_nodes():
         nodes.extend(submodule.get_nodes())
 
     return make_json_response(data=nodes)
+
+# Only register route if SECURITY_CHANGEABLE is set to True
+# We can't access app context here so cannot
+# use app.config['SECURITY_CHANGEABLE']
+if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
+    @blueprint.route("/change_password", endpoint="change_password",
+                     methods=['GET', 'POST'])
+    @login_required
+    def change_password():
+        """View function which handles a change password request."""
+
+        has_error = False
+        form_class = _security.change_password_form
+
+        if request.json:
+            form = form_class(MultiDict(request.json))
+        else:
+            form = form_class()
+
+        if form.validate_on_submit():
+            try:
+                change_user_password(current_user, form.new_password.data)
+            except SOCKETErrorException as e:
+                # Handle socket errors which are not covered by SMTPExceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'SMTP Socket error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+            except (SMTPConnectError, SMTPResponseException,
+                    SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
+                    SMTPException, SMTPAuthenticationError, SMTPSenderRefused,
+                    SMTPRecipientsRefused) as e:
+                # Handle smtp specific exceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'SMTP error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+            except Exception as e:
+                # Handle other exceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'Error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+
+            if request.json is None and not has_error:
+                after_this_request(_commit)
+                do_flash(*get_message('PASSWORD_CHANGE'))
+                return redirect(get_url(_security.post_change_view) or
+                                get_url(_security.post_login_view))
+
+        if request.json and not has_error:
+            form.user = current_user
+            return _render_json(form)
+
+        return _security.render_template(
+            config_value('CHANGE_PASSWORD_TEMPLATE'),
+            change_password_form=form,
+            **_ctx('change_password'))
+
+
+# Only register route if SECURITY_RECOVERABLE is set to True
+if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
+
+    def send_reset_password_instructions(user):
+        """Sends the reset password instructions email for the specified user.
+
+        :param user: The user to send the instructions to
+        """
+        token = generate_reset_password_token(user)
+        reset_link = url_for('browser.reset_password', token=token,
+                             _external=True)
+
+        send_mail(config_value('EMAIL_SUBJECT_PASSWORD_RESET'), user.email,
+                  'reset_instructions',
+                  user=user, reset_link=reset_link)
+
+        reset_password_instructions_sent.send(
+            current_app._get_current_object(),
+            user=user, token=token)
+
+
+    @blueprint.route("/forgot_password", endpoint="forgot_password",
+                     methods=['GET', 'POST'])
+    @anonymous_user_required
+    def forgot_password():
+        """View function that handles a forgotten password request."""
+        has_error = False
+        form_class = _security.forgot_password_form
+
+        if request.json:
+            form = form_class(MultiDict(request.json))
+        else:
+            form = form_class()
+
+        if form.validate_on_submit():
+            try:
+                send_reset_password_instructions(form.user)
+            except SOCKETErrorException as e:
+                # Handle socket errors which are not covered by SMTPExceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'SMTP Socket error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+            except (SMTPConnectError, SMTPResponseException,
+                    SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
+                    SMTPException, SMTPAuthenticationError, SMTPSenderRefused,
+                    SMTPRecipientsRefused) as e:
+
+                # Handle smtp specific exceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'SMTP error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+            except Exception as e:
+                # Handle other exceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'Error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+
+            if request.json is None and not has_error:
+                do_flash(*get_message('PASSWORD_RESET_REQUEST',
+                                      email=form.user.email))
+
+        if request.json and not has_error:
+            return _render_json(form, include_user=False)
+
+        return _security.render_template(
+            config_value('FORGOT_PASSWORD_TEMPLATE'),
+            forgot_password_form=form,
+            **_ctx('forgot_password'))
+
+
+    # We are not in app context so cannot use url_for('browser.forgot_password')
+    # So hard code the url '/browser/forgot_password' while passing as
+    # parameter to slash_url_suffix function.
+    @blueprint.route('/forgot_password' + slash_url_suffix(
+        '/browser/forgot_password', '<token>'),
+                     methods=['GET', 'POST'],
+                     endpoint='reset_password')
+    @anonymous_user_required
+    def reset_password(token):
+        """View function that handles a reset password request."""
+
+        expired, invalid, user = reset_password_token_status(token)
+
+        if invalid:
+            do_flash(*get_message('INVALID_RESET_PASSWORD_TOKEN'))
+        if expired:
+            do_flash(*get_message('PASSWORD_RESET_EXPIRED', email=user.email,
+                                  within=_security.reset_password_within))
+        if invalid or expired:
+            return redirect(url_for('browser.forgot_password'))
+        has_error = False
+        form = _security.reset_password_form()
+
+        if form.validate_on_submit():
+            try:
+                update_password(user, form.password.data)
+            except SOCKETErrorException as e:
+                # Handle socket errors which are not covered by SMTPExceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'SMTP Socket error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+            except (SMTPConnectError, SMTPResponseException,
+                    SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
+                    SMTPException, SMTPAuthenticationError, SMTPSenderRefused,
+                    SMTPRecipientsRefused) as e:
+
+                # Handle smtp specific exceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'SMTP error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+            except Exception as e:
+                # Handle other exceptions.
+                logging.exception(str(e), exc_info=True)
+                flash(gettext(u'Error: {}\nYour password has not been changed.').format(e), 'danger')
+                has_error = True
+
+            if not has_error:
+                after_this_request(_commit)
+                do_flash(*get_message('PASSWORD_RESET'))
+                login_user(user)
+                return redirect(get_url(_security.post_reset_view) or
+                                get_url(_security.post_login_view))
+
+        return _security.render_template(
+            config_value('RESET_PASSWORD_TEMPLATE'),
+            reset_password_form=form,
+            reset_password_token=token,
+            **_ctx('reset_password'))
