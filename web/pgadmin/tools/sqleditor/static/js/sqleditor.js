@@ -2415,6 +2415,7 @@ define('tools.querytool', [
                 }
 
                 grid.setSelectedRows([]);
+
                 // Reset data store
                 self.data_store = {
                   'added': {},
@@ -2422,38 +2423,40 @@ define('tools.querytool', [
                   'deleted': {},
                   'added_index': {},
                   'updated_index': {}
-                }
+                };
 
                 // Reset old primary key data now
                 self.primary_keys_data = {};
 
-                    // Clear msgs after successful save
-                    $('.sql-editor-message').html('');
-                } else {
-                  // Something went wrong while saving data on the db server
-                  $("#btn-flash").prop('disabled', false);
-                  $('.sql-editor-message').text(res.data.result);
-                  var err_msg = S(gettext("%s.")).sprintf(res.data.result).value();
-                  alertify.error(err_msg, 20);
-                  grid.setSelectedRows([]);
-                  // To highlight the row at fault
-                  if(_.has(res.data, '_rowid') &&
-                      (!_.isUndefined(res.data._rowid)|| !_.isNull(res.data._rowid))) {
+                // Clear msgs after successful save
+                $('.sql-editor-message').html('');
+
+                alertify.success(gettext("Data saved successfully."));
+              } else {
+                // Something went wrong while saving data on the db server
+                $("#btn-flash").prop('disabled', false);
+                $('.sql-editor-message').text(res.data.result);
+                var err_msg = S(gettext("%s.")).sprintf(res.data.result).value();
+                alertify.error(err_msg, 20);
+                grid.setSelectedRows([]);
+                // To highlight the row at fault
+                if(_.has(res.data, '_rowid') &&
+                  (!_.isUndefined(res.data._rowid)|| !_.isNull(res.data._rowid))) {
                     var _row_index = self._find_rowindex(res.data._rowid);
                     if(_row_index in self.data_store.added_index) {
                       // Remove new row index from temp_list if save operation
                       // fails
                       var index = self.handler.temp_new_rows.indexOf(res.data._rowid);
                       if (index > -1) {
-                         self.handler.temp_new_rows.splice(index, 1);
+                        self.handler.temp_new_rows.splice(index, 1);
                       }
-                     self.data_store.added[self.data_store.added_index[_row_index]].err = true
+                      self.data_store.added[self.data_store.added_index[_row_index]].err = true
                     } else if (_row_index in self.data_store.updated_index) {
-                     self.data_store.updated[self.data_store.updated_index[_row_index]].err = true
+                      self.data_store.updated[self.data_store.updated_index[_row_index]].err = true
                     }
                   }
-                  grid.gotoCell(_row_index, 1);
-                }
+                grid.gotoCell(_row_index, 1);
+              }
 
               // Update the sql results in history tab
               _.each(res.data.query_result, function (r) {
@@ -2469,7 +2472,6 @@ define('tools.querytool', [
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
                 grid.invalidate();
-                alertify.success(gettext("Data saved successfully."));
                 if (self.close_on_save) {
                   self.close();
                 }
