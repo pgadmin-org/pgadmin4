@@ -196,6 +196,30 @@ http://www.tylerbutler.com/2012/05/how-to-install-python-pip-and-virtualenv-on-w
 Once a virtual environment has been created and enabled, setup can continue
 from step 4 above.
 
+Building the Web Assets
+-----------------------
+
+pgAdmin is dependent on a number of third party Javascript libraries. These,
+along with it's own Javascript code, SCSS/CSS code and images must be
+compiled into a "bundle" which is transferred to the browser for execution
+and rendering. This is far more efficient than simply requesting each
+asset as it's needed by the client.
+
+To create the bundle, you will need the 'yarn' package management tool to be
+installed. Then, you can run the following commands on a *nix system to
+download the required packages and build the bundle:
+
+    (pgadmin4) $ cd $PGADMIN4_SRC
+    (pgadmin4) $ make node-install
+    (pgadmin4) $ make bundle
+
+On Windows systems (where "make" is not available, the following commands
+can be used:
+
+    C:\> cd $PGADMIN4_SRC\web
+    C:\$PGADMIN4_SRC\web> yarn install
+    C:\$PGADMIN4_SRC\web> yarn run bundle
+
 Configuring the Runtime
 -----------------------
 
