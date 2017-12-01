@@ -380,7 +380,10 @@ TODO LIST FOR BACKUP:
           if (pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
-            alertify.alert(gettext("Please select server or child node from the browser tree."));
+            alertify.alert(
+              gettext("Backup Error"),
+              gettext("Please select server or child node from the browser tree.")
+            );
             break;
           }
         }
@@ -407,7 +410,10 @@ TODO LIST FOR BACKUP:
             return;
           }
         } else {
-          alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
+          alertify.alert(
+            gettext('Backup Error'),
+            S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value()
+          );
           return;
         }
 
@@ -595,7 +601,10 @@ TODO LIST FOR BACKUP:
           if (pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
-            alertify.alert(gettext("Please select server or child node from tree."));
+            alertify.alert(
+              gettext("Backup Error"),
+              gettext("Please select server or child node from tree.")
+            );
             break;
           }
         }
@@ -618,11 +627,14 @@ TODO LIST FOR BACKUP:
 
         if(preference) {
           if (!preference.value) {
-            alertify.alert(msg);
+            alertify.alert(gettext('Configuration required'), msg);
             return;
           }
         } else {
-          alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
+          alertify.alert(
+            gettext('Backup Error'),
+            S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value()
+          );
           return;
         }
 

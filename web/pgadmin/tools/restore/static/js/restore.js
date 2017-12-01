@@ -310,7 +310,10 @@ define('tools.restore', [
           if (pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
-            alertify.alert(gettext("Please select server or child node from tree."));
+            alertify.alert(
+              gettext("Restore Error"),
+              gettext("Please select server or child node from tree.")
+            );
             break;
           }
         }
@@ -337,7 +340,10 @@ define('tools.restore', [
             return;
           }
         } else {
-          alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
+          alertify.alert(
+            gettext("Restore Error"),
+            S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value()
+          );
           return;
         }
 

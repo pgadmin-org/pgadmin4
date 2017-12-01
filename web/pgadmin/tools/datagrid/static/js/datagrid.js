@@ -423,6 +423,7 @@ define('pgadmin.datagrid', [
           },
           error: function(e) {
             alertify.alert(
+              gettext('Error'),
               gettext('Query Tool Initialization Error')
             );
           }

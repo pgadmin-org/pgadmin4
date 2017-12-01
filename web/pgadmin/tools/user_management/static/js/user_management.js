@@ -408,7 +408,9 @@ define([
                   );
                 }
               } else {
-                alertify.alert(gettext("This user cannot be deleted."),
+                alertify.alert(
+                  gettext("Error"),
+                  gettext("This user cannot be deleted."),
                   function(){
                     return true;
                   }
@@ -627,7 +629,10 @@ define([
                   },
                   error: function(e) {
                     setTimeout(function() {
-                      alertify.alert(gettext('Cannot load user roles.'));
+                      alertify.alert(
+                        gettext('Error'),
+                        gettext('Cannot load user roles.')
+                      );
                     },100);
                   }
                 });
