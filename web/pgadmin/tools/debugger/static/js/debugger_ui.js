@@ -216,7 +216,8 @@ define([
               },
               error: function(e) {
                 Alertify.alert(
-                  gettext('Debugger Set Arguments Error')
+                  gettext('Debugger Error'),
+                  gettext('Unable to fetch the arguments from server')
                 );
               }
             });
@@ -667,7 +668,8 @@ define([
                       },
                       error: function(e) {
                         Alertify.alert(
-                          gettext('Debugger Set arguments error')
+                          gettext('Debugger Error'),
+                          gettext('Unable to set the arguments on the server')
                         );
                       }
                     });
@@ -713,7 +715,8 @@ define([
                   },
                   error: function(e) {
                     Alertify.alert(
-                      gettext('Debugger Set Arguments Error')
+                      gettext('Debugger Error'),
+                      gettext('Unable to set the arguments on the server')
                     );
                   }
                 });
