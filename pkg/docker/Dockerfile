@@ -38,6 +38,12 @@ RUN mkdir -p /certs
 RUN chown -R apache /certs
 RUN chmod 700 /certs
 
+# Push logs to the container's output streams
+RUN ln -sf /proc/self/fd/1 /var/log/httpd/access_log && \
+    ln -sf /proc/self/fd/1 /var/log/httpd/ssl_access_log && \
+    ln -sf /proc/self/fd/2 /var/log/httpd/error_log && \
+    ln -sf /proc/self/fd/2 /var/log/httpd/ssl_error_log
+
 # Apache config time
 RUN mkdir -p /templates
 COPY pgadmin4.conf.j2 /templates/
