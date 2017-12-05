@@ -125,6 +125,9 @@ define('misc.file_manager', [
                   break;
               }
             },
+            prepare: function() {
+              this.__internal.buttons[0].element.disabled = true;
+            },
             setup:function() {
               return {
                 buttons:[
@@ -248,6 +251,9 @@ define('misc.file_manager', [
               default:
                   break;
               }
+            },
+            prepare: function() {
+              this.__internal.buttons[0].element.disabled = true;
             },
             setup:function() {
               return {
@@ -376,6 +382,9 @@ define('misc.file_manager', [
                   break;
               }
             },
+            prepare: function() {
+              this.__internal.buttons[0].element.disabled = true;
+            },
             setup:function() {
               return {
                 buttons:[
@@ -500,6 +509,9 @@ define('misc.file_manager', [
               default:
                   break;
               }
+            },
+            prepare: function() {
+              this.__internal.buttons[0].element.disabled = true;
             },
             setup:function() {
               return {
