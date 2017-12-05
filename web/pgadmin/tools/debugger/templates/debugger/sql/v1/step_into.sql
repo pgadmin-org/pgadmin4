@@ -6,6 +6,6 @@ SELECT
     (SELECT
         s.args
      FROM pldbg_get_stack({{session_id}}::INTEGER) s
-     WHERE s.func = p.func AND s.pkg = p.pkg) AS args
+     WHERE s.func = p.func AND s.pkg = p.pkg ORDER BY s.level LIMIT 1) AS args
 FROM pldbg_step_into({{session_id}}::INTEGER) p
 {% endif %}

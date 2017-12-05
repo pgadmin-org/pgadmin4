@@ -980,6 +980,7 @@ define([
 
         var DebuggerStackModel = Backbone.Model.extend({
           defaults: {
+            frame_id: 0,
             name: undefined,
             value: undefined,
             line_no: undefined
@@ -992,17 +993,22 @@ define([
         });
 
         var stackGridCols = [
-          {name: 'name', label: gettext('Name'), type:'text', editable: false, cell:'string'},
-          {name: 'value', label: gettext('Value'), type:'text', editable: false, cell:'string'},
-          {name: 'line_no', label: gettext('Line No.'), type:'text', editable: false, cell:'string'}
+          {name: 'name', label: gettext('Name'), type:'text',
+            editable: false, cell:'string'},
+          {name: 'value', label: gettext('Value'), type:'text',
+            editable: false, cell:'string'},
+          {name: 'line_no', label: gettext('Line No.'), type:'text',
+            editable: false, cell:'string'}
         ];
 
         var my_obj = [];
-        if (result.length != 0)
-        {
-          for (var i = 0; i < result.length; i++) {
-            my_obj.push({ "name": result[i].targetname, "value": result[i].args, "line_no": result[i].linenumber });
-          }
+        for (var i = 0; i < result.length; i++) {
+          my_obj.push({
+            "frame_id": i,
+            "name": result[i].targetname,
+            "value": result[i].args,
+            "line_no": result[i].linenumber
+          });
         }
 
         var stackColl = this.stackColl = new StackCollection(my_obj);
@@ -1019,14 +1025,11 @@ define([
             },
             rowClick: function(e) {
               //Find which row is selected and depending on that send the frame id
-              for (var i = 0; i < this.model.collection.length; i++) {
-                if (this.model.collection.models[i].get('name') == this.model.get('name')) {
-                  self.frame_id_ = i;
-                  break;
-                }
-              }
+              self.frame_id = this.model.get('frame_id');
               this.model.trigger('backgrid:row:selected', this);
-              self.stack_grid.$el.find("td").css("background-color", this.disabledColor);
+              self.stack_grid.$el.find("td").css(
+                "background-color", this.disabledColor
+              );
               this.$el.find("td").css("background-color", this.highlightColor);
             }
           }),
@@ -1037,7 +1040,10 @@ define([
         stack_grid.render();
 
         // Render the stack grid into stack panel
-        pgTools.DirectDebug.stack_pane_panel.$container.find('.stack_pane').append(stack_grid.el);
+        pgTools.DirectDebug.stack_pane_panel
+                           .$container
+                           .find('.stack_pane')
+                           .append(stack_grid.el);
 
       },
 
@@ -1236,7 +1242,7 @@ define([
         // Make ajax call to listen the database message
         var baseUrl = url_for('debugger.select_frame', {
                         'trans_id': pgTools.DirectDebug.trans_id,
-                        'frame_id': self.frame_id_
+                        'frame_id': self.frame_id
                       });
         $.ajax({
           url: baseUrl,
