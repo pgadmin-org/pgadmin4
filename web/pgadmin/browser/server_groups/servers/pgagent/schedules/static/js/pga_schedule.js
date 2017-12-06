@@ -77,6 +77,9 @@ define('pgadmin.node.pga_schedule', [
           return this;
         }
       }),
+      DatetimeCell = Backgrid.Extension.MomentCell.extend({
+        editor: Backgrid.Extension.DatetimePickerEditor
+      }),
       BooleanArrayFormatter = function(selector, indexes) {
         var self = this;
 
@@ -263,18 +266,20 @@ define('pgadmin.node.pga_schedule', [
           cellHeaderClasses: 'width_percent_5'
         },{
           id: 'jscstart', label: gettext('Start'), type: 'text',
-          control: 'datetimepicker', cell: 'moment',
+          control: 'datetimepicker', cell: DatetimeCell,
           disabled: function() { return false; }, displayInUTC: false,
           displayFormat: 'YYYY-MM-DD HH:mm:ss Z',
           modelFormat: 'YYYY-MM-DD HH:mm:ss Z', options: {
             format: 'YYYY-MM-DD HH:mm:ss Z',
+            minDate: moment().add(0, 'm')
           }, cellHeaderClasses: 'width_percent_25'
         },{
           id: 'jscend', label: gettext('End'), type: 'text',
-          control: 'datetimepicker', cell: 'moment',
+          control: 'datetimepicker', cell: DatetimeCell,
           disabled: function() { return false; }, displayInUTC: false,
           displayFormat: 'YYYY-MM-DD HH:mm:ss Z', options: {
-            format: 'YYYY-MM-DD HH:mm:ss Z', useCurrent: false
+            format: 'YYYY-MM-DD HH:mm:ss Z', useCurrent: false,
+            minDate: moment().add(0, 'm')
           }, cellHeaderClasses: 'width_percent_25',
           modelFormat: 'YYYY-MM-DD HH:mm:ss Z'
         },{
@@ -466,6 +471,21 @@ define('pgadmin.node.pga_schedule', [
             errMsg = errMsg || msg;
           } else {
             this.errorModel.unset('jscend');
+          }
+
+          // End time must be greater than Start time
+          if(!errMsg) {
+            var start_time = this.get('jscstart'),
+              end_time = this.get('jscend'), elapsed_time,
+              start_time_js =  start_time.split(' '),
+              end_time_js =  end_time.split(' ');
+              start_time_js = moment(start_time_js[0] + ' ' + start_time_js[1]);
+              end_time_js = moment(end_time_js[0] + ' ' + end_time_js[1]);
+
+              if(end_time_js.isBefore(start_time_js)) {
+                errMsg = gettext('Start time must be less than end time');
+                this.errorModel.set('jscstart', errMsg);
+              }
           }
 
           return errMsg;

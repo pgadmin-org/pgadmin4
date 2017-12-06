@@ -2322,18 +2322,27 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           }, this.defaults.options, this.field.get('options'),
           {'date': data.value})
         );
-          }
-          this.updateInvalid();
+      }
+      this.updateInvalid();
 
-          return this;
-        },
-        cleanup: function() {
-          if (this.has_datepicker)
-            this.$el.find('input').datetimepicker('destroy');
-          this.$el.empty();
-        },
-      });
-
+      return this;
+    },
+    clearInvalid: function() {
+      Backform.InputControl.prototype.clearInvalid.apply(this, arguments);
+      this.$el.removeClass("pgadmin-datepicker-has-error");
+      return this;
+    },
+    updateInvalid: function() {
+      Backform.InputControl.prototype.updateInvalid.apply(this, arguments);
+      // Introduce a new class to fix the error icon placement on the control
+      this.$el.addClass("pgadmin-datepicker-has-error");
+    },
+    cleanup: function() {
+      if (this.has_datepicker)
+        this.$el.find("input").datetimepicker('destroy');
+      this.$el.empty();
+    }
+  });
 
   // Color Picker control
   var ColorControl = Backform.ColorControl = Backform.InputControl.extend({

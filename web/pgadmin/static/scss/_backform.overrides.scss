@@ -25,3 +25,10 @@
     right: 40px !important;
   }
 }
+
+.pgadmin-datepicker-has-error {
+  .pgadmin-controls:before {
+    right: 50px !important;
+    z-index: 3;
+  }
+}
