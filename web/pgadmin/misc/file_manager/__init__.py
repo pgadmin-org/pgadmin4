@@ -20,7 +20,8 @@ import config
 import codecs
 
 import simplejson as json
-from flask import render_template, Response, session, request as req, url_for
+from flask import render_template, Response, session, request as req, \
+    url_for, current_app
 from flask_babel import gettext
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
@@ -1040,6 +1041,7 @@ class Filemanager(object):
         status = True
         err_msg = None
         is_startswith_bom = False
+        is_binary = False
 
         # check if file type is text or binary
         text_chars = bytearray([7, 8, 9, 10, 12, 13, 27]) \
@@ -1082,6 +1084,11 @@ class Filemanager(object):
         except Exception as ex:
             status = False
             err_msg = u"Error: {0}".format(str(ex))
+
+        # Remove root storage path from error message
+        # when running in Server mode
+        if not status and not current_app.PGADMIN_RUNTIME:
+            err_msg = err_msg.replace(get_storage_directory(), '')
 
         return status, err_msg, is_binary, is_startswith_bom, enc
 
