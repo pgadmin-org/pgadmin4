@@ -20,7 +20,7 @@ var argv = require('minimist')(process.argv.slice(2)),
     'debugger': {modules: ['codemirror', 'nodes']},
     'tools_nodes': {modules: ['tools', 'nodes']}
   },
-  script_args = argv.production ? ' -p ' : '';
+  script_args = argv.production ? '-p' : '';
 
 const verbose = argv.verbose? true : false,
   nodebug = argv.nodebug ? true : false,
@@ -49,6 +49,7 @@ function usage(_msg) {
   logger.debug2(' --production Generated a production build');
   logger.debug2(' --verbose Show detailed debug messages');
   logger.debug2(' --wait Run the webpack in wait mode.');
+  logger.debug2(' --progress Show compilation progress in percentage.');
   logger.debug2(' --help Print the usage help');
   logger.debug2('');
   logger.info('NOTE:');
@@ -65,7 +66,11 @@ if (argv.wait) {
   if (!argv.module) {
     usage('You must specify the module to be built when used with the \'--wait\' option.');
   }
-  script_args = ` -w ${script_args}`
+  script_args = `-w ${script_args}`;
+}
+
+if (argv.progress) {
+  script_args = `--progress ${script_args}`;
 }
 
 logger.show_debug(!nodebug);
