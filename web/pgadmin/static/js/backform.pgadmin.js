@@ -1,7 +1,7 @@
 define('pgadmin.backform', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery',
   'backbone', 'backform', 'backgrid', 'sources/generated/codemirror',
-  'pgadmin.backgrid', 'select2', 'spectrum',
+  'pgadmin.backgrid', 'select2', 'spectrum-colorpicker',
 ],
 function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 

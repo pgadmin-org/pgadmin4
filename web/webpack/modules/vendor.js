@@ -121,6 +121,9 @@ vendor.shimConfig = {
     'backgrid.sizeable.columns': {
       'deps': ['backgrid'],
     },
+    'spectrum-colorpicker': {
+      deps: ['jquery'], exports: '$.fn.spectrum',
+    },
   },
   alias: {
     'babel-polyfill': 'node_modules/babel-polyfill/dist/polyfill',
@@ -160,6 +163,7 @@ vendor.shimConfig = {
     'backgrid.filter': 'node_modules/backgrid-filter/backgrid-filter',
     'backgrid.sizeable.columns': 'node_modules/backgrid-sizeable-columns/backgrid-sizeable-columns',
     'backgrid.select.all': 'node_modules/backgrid-select-all/backgrid-select-all',
+    'spectrum-colorpicker': 'node_modules/spectrum-colorpicker/spectrum',
   }
 };
 
@@ -177,6 +181,7 @@ vendor.entry = [
   'backbone', 'backform', 'backgrid', 'bootstrap',
   'bootstrap.datetimepicker', 'bootstrap.switch', 'select2',
   'backgrid.filter', 'backgrid.sizeable.columns', 'backgrid.select.all',
+  'spectrum-colorpicker',
 ];
 
 vendor.module = {
@@ -215,6 +220,7 @@ vendor.stylesheets = [
   'node_modules/jquery-contextmenu/dist/jquery.contextMenu.css',
   'pgadmin/static/vendor/webcabin-docker/Build/wcDocker.css',
   'node_modules/acitree/css/aciTree.css',
+  'node_modules/spectrum-colorpicker/spectrum.css',
 
   'node_modules/codemirror/lib/codemirror.css',
   'node_modules/codemirror/addon/dialog/dialog.css',
