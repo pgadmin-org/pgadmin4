@@ -78,6 +78,12 @@ pushd web
         echo Adding $FILE
         tar cf - $FILE | (cd ../src-build/$TARBALL_NAME/web; tar xf -)
     done
+
+    for FILE in `find webpack/references -name "*.json" -type f`
+    do
+        echo Adding $FILE
+        tar cf - $FILE | (cd ../src-build/$TARBALL_NAME/web; tar xf -)
+    done
 popd
 
 # Create the tarball

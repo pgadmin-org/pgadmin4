@@ -66,6 +66,12 @@ do
     tar cf - $FILE | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
+for FILE in `find webpack/references -name "*.json" -type f`
+do
+    echo Adding $FILE
+    tar cf - $FILE | (cd ../pip-build/web; tar xf -)
+done
+
 cd ../docs
 for FILE in `git ls-files`
 do
