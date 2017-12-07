@@ -1,4 +1,4 @@
-# Japanese translations for PROJECT.
+# Japanese translations for pgAdmin 4.
 # Copyright (C) 2017 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
