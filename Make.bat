@@ -253,9 +253,10 @@ REM Main function Ends
     FOR /R "%PGBUILDPATH%\web" %%f in (tests feature_tests __pycache__ node_modules) do RD /Q /S "%%f"
     RD /Q /S "%PGBUILDPATH%\web\regression"
     RD /Q /S "%PGBUILDPATH%\web\tools"
+    RD /Q /S "%PGBUILDPATH%\web\webpack\.cache"
     DEL /q "%PGBUILDPATH%\web\pgadmin4.db"
     DEL /q "%PGBUILDPATH%\web\config_local.py"
-    
+
     ECHO Creating config_distro.py
     ECHO SERVER_MODE = False > "%PGBUILDPATH%\web\config_distro.py"
     ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%PGBUILDPATH%\web\config_distro.py"

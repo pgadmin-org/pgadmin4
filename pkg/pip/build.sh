@@ -60,7 +60,7 @@ done
 yarn install
 yarn run bundle:prod
 
-for FILE in `find pgadmin -name generated -type d | egrep "static\/css/generated|static\/js/generated"`
+for FILE in `find pgadmin -name generated -type d | egrep "static\/css\/generated|static\/js\/generated"`
 do
     echo Adding $FILE
     tar cf - $FILE | (cd ../pip-build/pgadmin4; tar xf -)
