@@ -12,3 +12,4 @@ Contents:
    
    debugger
    query_tool
+   editgrid
