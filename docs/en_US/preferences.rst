@@ -101,14 +101,6 @@ Use the fields on the *CSV Output* panel to control the CSV output.
 * Use the *CSV quote character* drop-down listbox to specify the quote character that will be used in CSV output.
 * Use the *CSV quoting* drop-down listbox to select the fields that will be quoted in the CSV output; select *Strings*, *All*, or *None*.
 
-.. image:: images/preferences_sql_csv_output.png
-
-Use the options in the *CSV Output* dialog to control the CSV output.
-
-* Use the *CSV field separator* option to specify the field separator for the CSV output.
-* Use the *CSV quote character* option to specify the quote character for the CSV output.
-* Use the *CSV quoting* option to specify which type of fields need quoting.
-
 .. image:: images/preferences_sql_display.png
 
 Use the fields on the *Display* panel to specify your preferences for the SQL Editor display.
