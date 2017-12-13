@@ -1,99 +1,172 @@
 .. _preferences:
 
-*******************
-pgAdmin Preferences
-*******************
+**********************
+The Preferences Dialog
+**********************
 
-pgAdmin 4 has a selection of configuration options (*Preferences*) that you can use to customize your pgAdmin client. To open the *Preferences* dialog, select *Preferences* from the *File* menu.
+Use options on the *Preferences* dialog to customize the behavior of the client. To open the *Preferences* dialog, select *Preferences* from the *File* menu.  The left pane of the *Preferences* dialog displays a tree control; each node of the tree control provides access to options that are related to the node under which they are displayed.
 
-.. image:: images/preferences_tree.png
+* Use the plus sign (+) to the left of a node name to expand a segment of the tree control.
+* Use the minus sign (-) to the left of a node name to close that node.
 
-The left pane of the *Preferences* dialog displays a tree control; each node of the tree control provides access to options that are related to the selected node.
+**The Browser Node**
 
-* Use the plus sign (+) to the left of a node to expand a segment of the tree control.
-* Click the minus sign (-) to the left of a node to close that node.
-
-Expand the **Browser** node of the tree control to personalize your workspace.
+Use preferences found in the *Browser* node of the tree control to personalize your workspace.
 
 .. image:: images/preferences_browser_display.png
 
-Use the options on the *Display* dialog to specify general display preferences:
+Use the fields on the *Display* panel to specify general display preferences:
 
-Move the *Show system objects* switch to the *True* position to display system objects in the *pgAdmin* tree control. This option instructs pgAdmin to display objects such as system schemas (e.g. pg_temp*) and system columns (e.g. xmin, ctid) in the tree control.
+* When the *Show system objects* switch is set to *True*, the client will display system objects such as system schemas (for example, *pg_temp*) or system columns (for example,  *xmin* or *ctid*) in the tree control. 
 
-Use the options on the *Nodes* dialog to select the object types that will be displayed in the *pgAdmin* tree control.
+Use the fields on the *Nodes* panel to select the object types that will be displayed in the *Browser* tree control:
 
 .. image:: images/preferences_browser_nodes.png
 
-The right pane of the *Preferences* dialog displays a list of database objects. Slide the switch located next to each object to *Show* or *Hide* the database object. When querying system catalogs, you can reduce the number of object types displayed to increase speed.
+* The panel displays a list of database objects; slide the switch located next to each object to *Show* or *Hide* the database object. When querying system catalogs, you can reduce the number of object types displayed to increase speed.
 
-Expand the **Dashboards** node to specify your graphing preferences.
+Use fields on the *Properties* panel to specify browser properties:
+
+.. image:: images/preferences_browser_properties.png
+
+* Include a value in the *Count rows if estimated less than* field to perform a SELECT count(*) if the estimated number of rows in a table (as read from the table statistics) is below the specified limit.  After performing the SELECT count(*), pgAdmin will display the row count.  The default is 2000.
+
+**The Dashboards Node** 
+
+Expand the *Dashboards* node to specify your dashboard display preferences.
 
 .. image:: images/preferences_dashboard_graphs.png
 
-Use the options on the *Graphs* dialog specify a refresh rate for statistics, transaction throughput and tuples. The rate you specify will affect a corresponding graph on the *Dashboard* tab of the *pgAdmin* tabbed browser.
+Use the fields on the *Graphs* panel to specify your display preferences for the graphs on the *Dashboard* tab: 
 
-Expand the **Paths** node to specify the locations of supporting files.
+* Use the *Block I/O statistics refresh rate* field to specify the number of seconds between block I/O statistic samples displayed in graphs.
+
+* Use the *Session statistics refresh rate* field to specify the number of seconds between session statistic samples displayed in graphs.
+
+* Use the *Transaction throughput refresh rate* field to specify the number of seconds between transaction throughput samples displayed in graphs.
+
+* Use the *Tuples in refresh rate* field to specify the number of seconds between tuples-in samples displayed in graphs.
+
+* Use the *Tuples out refresh rate* field to specify the number of seconds between tuples-out samples displayed in graphs.
+
+**The Debugger Node** 
+
+Expand the *Debugger* node to specify your debugger display preferences.
+
+.. image:: images/preferences_debugger_display.png
+
+* When the *Open in new browser tab* switch is set to *True*, the Debugger will open in a new browser tab when invoked.
+
+**The Miscellaneous Node** 
+
+Expand the *Miscellaneous* node to specify miscellaneous display preferences.
+
+.. image:: images/preferences_misc_user_language.png
+
+* Use the *User language* drop-down listbox to select the display language for the client.
+
+**The Paths Node** 
+
+Expand the *Paths* node to specify the locations of supporting utility and help files.
 
 .. image:: images/preferences_paths_binary.png
 
-Use the fields in the *Binary paths* node to specify paths to the PostgreSQL binary utilities and EnterpriseDB Postgres Advanced Server binary utilities.
+Use the fields on the *Binary paths* panel to specify the path to the directory that contains the utility programs (pg_dump, pg_restore, and pg_dumpall) for monitored databases:
+
+* Use the *EDB Advanced Server Binary Path* field to specify the location of the EDB Postgres Advanced Server utility programs.  If this path is not set, pgAdmin will attempt to find the utilities in standard locations used by EnterpriseDB.
+
+* Use the *Greenplum Database Binary Path* field to specify the location of the Greenplum database utility programs.  If this path is not set, pgAdmin will attempt to find the utilities in standard locations used by Greenplum.
+
+* Use the *PostgreSQL Binary Path* field to specify the location of the PostgreSQL utility programs.  If this path is not set, pgAdmin will attempt to find the utilities in standard locations used by PostgreSQL.
 
 .. image:: images/preferences_paths_help.png
 
-Use the *Help* dialog to customize links to support documentation.
+Use the fields on the *Help* panel to specify the location of help files.  
 
-* Use the *EDB Advanced Server Help Path* to find a link path for EnterpriseDB Postgres Advanced Server documentation on the company website. This link is editable: substitute the applicable PostgreSQL version number for *$VERSION$*, or provide an alternate link path.
-* Use the *PostgreSQL Help Path* to find a link path to the current set of PostgreSQL core documentation. This link is editable: substitute the applicable PostgreSQL version number for *$VERSION$*, or provide an alternate link path.
+* Use the *EDB Advanced Server Help Path* to specify the path to EDB Postgres Advanced Server documentation.
 
-Expand the **SQL Editor** node to specify your preferences for the SQL Editor tool.
+* Use the *PostgreSQL Help Path* to specify the path to PostgreSQL documentation.
+
+Please note: the default help paths include the *VERSION* placeholder; the $VERSION$ placeholder will be replaced by the current database version.
+
+**The SQL Editor Node** 
+
+Expand the *SQL Editor* node to access panels that allow you to specify your preferences for the SQL Editor tool.
 
 .. image:: images/preferences_sql_csv_output.png
 
-Use the options in the *CSV Output* dialog to control the CSV output.
+Use the fields on the *CSV Output* panel to control the CSV output.
 
-* Use the *CSV field separator* option to specify the field separator for the CSV output.
-* Use the *CSV quote character* option to specify the quote character for the CSV output.
-* Use the *CSV quoting* option to specify which type of fields need quoting.
+* Use the *CSV field separator* drop-down listbox to specify the separator character that will be used in CSV output.
+* Use the *CSV quote character* drop-down listbox to specify the quote character that will be used in CSV output.
+* Use the *CSV quoting* drop-down listbox to select the fields that will be quoted in the CSV output; select *Strings*, *All*, or *None*.
 
 .. image:: images/preferences_sql_display.png
 
-Use the *Display* dialog to specify your preferences for the SQL Editor display.
+Use the fields on the *Display* panel to specify your preferences for the SQL Editor display.
 
-* Use the *Query info notifier timeout* to control the behaviour of the notifier that is displayed when query execution completes. A value of *-1* will disable the notifier, and a value of 0 will display it until clicked. If a positive value above zero is specified, the notifier will be displayed for the specified number of seconds. The default is *5*.
+* When the *Open in new browser tab* switch is set to *True*, each new instance of the SQL Editor will open in a new browser tab.
 
-.. image:: images/preferences_sql_explain_options.png
+* Use the *Query info notifier timeout* field to control the behaviour of the notifier that is displayed when query execution completes. A value of *-1* will disable the notifier, and a value of 0 will display it until clicked. If a positive value above zero is specified, the notifier will be displayed for the specified number of seconds. The default is *5*.
 
-Use the options on the *Explain Options* dialog to specify the level of detail included in a graphical EXPLAIN.
+.. image:: images/preferences_sql_explain.png
 
-* Move the *Buffers* switch to the *True* position to include information on buffer usage.
-* Move the *Costs* switch to the *True* position to include information on the estimated startup and total cost of each plan, as well as the estimated number of rows and the estimated width of each row.
-* Move the *Timing* switch to the *True* position to include actual startup time and time spent in each node in the output.
-* Move the *Verbose* switch to the *True* position to display additional information regarding the plan.
+Use the fields on the *Explain* panel to specify the level of detail included in a graphical EXPLAIN.
+
+* When the *Show Buffers?* switch is set to *True*, graphical explain details will include information about buffer usage.
+
+* When the *Show Costs?* switch is set to *True*, graphical explain details will include information about the estimated startup and total cost of each plan, as well as the estimated number of rows and the estimated width of each row.
+
+* When the *Show Timing?* switch is set to *True*, graphical explain details will include the startup time and time spent in each node in the output.
+
+* When the *Verbose output?* switch is set to *True*, graphical explain details will include extended information about the query execution plan.
 
 .. image:: images/preferences_sql_options.png
 
-Use the options in the *Options* dialog to manage modifications to a SQL statement.
+Use the fields on the *Options* panel to manage editor preferences.
 
-* Move the *Auto-Commit* switch to the *True* position to commit a SQL statement upon completion.
-* Move the *Auto-Rollback* switch to the *True* to rollback a SQL statement to the beginning of the statement or to a prior rollback.
-* Move the *Brace matching* switch to the *True* to highlight the matched braces in editor.
-* Move the *Font size* field to specify the font size.
-* Move the *Insert bracket pairs* switch to the *True* to insert pair brackets in the editor.
-* Move the *Line wrapping* switch to the *True* to wrap the long lines in the editor.
-* Move the *Tab size* field to specify the number of spaces per tab in the editor.
-* Move the *Use spaces* switch to the *True* to insert spaces instead of tabs.
+* When the *Auto-Commit?* switch is set to *True*, each successful query is committed after execution.
 
-.. image:: images/preferences_sql_result_grid.png
+* When the *Auto-Rollback?* switch is set to *True*, failed queries are rolled back.
 
-Use the options in the *Results grid* dialog to control the copied data from the result grid.
+* When the *Brace matching?* switch is set to *True*, the editor will highlight pairs of matched braces.
 
-* Use the *Result copy field separator* option to specify the field separator for copied data.
-* Use the *Result copy quote character* option to specify the quote character for the copied data.
-* Use the *Result copy quoting* option to specify which type of fields need quoting.
+* Use the *Font size* field to specify the font size that will be used in text boxes and editors.
 
-Expand the **Storage** node to specify a maximum file size for uploads.
+* When the *Insert bracket pairs?* switch is set to *True*, the editor will automatically insert paired brackets.
+
+* When the *Line wrapping* switch is set to *True*, the editor will implement line-wrapping behavior.
+
+* When the *Prompt to save unsaved data changes?* switch is set to *True*, the editor will prompt the user to saved unsaved data when exiting the data editor.
+
+* When the *Prompt to save unsaved query changes?* switch is set to *True*, the editor will prompt the user to saved unsaved query modifications when exiting the query tool.
+
+* Use the *Tab size* field to specify the number of spaces per tab character in the editor.
+
+* When the *Use spaces* switch is set to *True*, the editor will insert spaces (instead of tab characters) when the tab key or auto-indent are used.
+
+.. image:: images/preferences_sql_results_grid.png
+
+Use the fields on the *Results grid* panel to specify your formatting preferences for copied data.
+
+* Use the *Result copy field separator* drop-down listbox to select the field separator for copied data.
+* Use the *Result copy quote character* drop-down listbox to select the quote character for copied data.
+* Use the *Result copy quoting* drop-down listbox to select which type of fields require quoting; select *All*, *None*, or *Strings*.
+
+**The Storage Node** 
+
+Expand the *Storage* node to specify your storage preferences.
 
 .. image:: images/preferences_storage_options.png
 
-Use the *Maximum file upload size(MB)* in the *Options* node of the **Storage** node to specify the maximum file size for an upload.
+Use the fields on the *Options* panel to specify storage preferences.
+
+* Use the *File dialog view* drop-down listbox to select the style of icons and display format that will be displayed when you open the file manager; select *List* to display a list view, or *Grid* to display folder icons.
+
+* Use the *Last directory visited* field to specify the name of the folder in which the file manager will open.
+
+* Use the *Maximum file upload size(MB)* field on the *Options* panel of the **Storage** node to specify the maximum file size for an upload.
+
+* When the *Show hidden files and folders?* switch is set to *True*, the file manager will display hidden files and folders. 
+
+
