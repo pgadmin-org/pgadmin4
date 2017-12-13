@@ -343,8 +343,8 @@ function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Backgrid) {
       Backgrid.Extension.Select2Cell.prototype.initialize.apply(this, arguments);
 
       var url = this.column.get('url') || this.defaults.url,
-          options_cached = this.column.get('options_cached');
-
+          is_options_cached = _.has(this.column.attributes, 'options_cached'),
+          options_cached = is_options_cached && this.column.get('options_cached');
       // Hmm - we found the url option.
       // That means - we needs to fetch the options from that node.
       if (url && !options_cached) {
@@ -362,7 +362,7 @@ function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Backgrid) {
             cache_level,
             cache_node = column.get('cache_node');
 
-        cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
+        cache_node = (cache_node && pgAdmin.Browser.Nodes[cache_node]) || node;
 
         if (column.has('cache_level')) {
           cache_level = column.get('cache_level');
@@ -414,7 +414,10 @@ function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Backgrid) {
         } else {
           column.set('options', data);
         }
-        column.set('options_cached', true);
+
+        if(is_options_cached) {
+          column.set('options_cached', true);
+        }
       }
     }
   });

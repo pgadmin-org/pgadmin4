@@ -50,7 +50,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
     schema: [{
       id: 'grantee', label: gettext('Grantee'), type:'text', group: null,
       editable: true, cellHeaderClasses: 'width_percent_40',
-      node: 'role',
+      node: 'role', options_cached: false,
       disabled : function(m) {
         if (!(m instanceof Backbone.Model)) {
           // This has been called during generating the header cell

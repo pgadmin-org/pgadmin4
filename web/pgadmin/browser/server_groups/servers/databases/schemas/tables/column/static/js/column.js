@@ -297,6 +297,7 @@ define('pgadmin.node.column', [
           control: 'node-ajax-options', url: 'get_types', node: 'table',
           cellHeaderClasses:'width_percent_30', first_empty: true,
           select2: { allowClear: false }, group: gettext('Definition'),
+          cache_node: 'table',
           transform: function(data, cell) {
             /* 'transform' function will be called by control, and cell both.
              * The way, we use the transform in cell, and control is different.

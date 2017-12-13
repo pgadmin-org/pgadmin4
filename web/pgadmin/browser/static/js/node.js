@@ -1598,6 +1598,13 @@ define(
        * fetches the new data.
        */
       this.cached = {};
+
+      // Trigger Notify event about node's cache
+      var self = this;
+      pgBrowser.Events.trigger(
+        'pgadmin:browser:node:' + self.type + ':cache_cleared',
+        item, self
+      );
     },
     cache_level: function(node_info, with_id) {
       if (node_info) {

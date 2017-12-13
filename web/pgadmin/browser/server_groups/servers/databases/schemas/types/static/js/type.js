@@ -86,8 +86,8 @@ define('pgadmin.node.type', [
     },{
       id: 'type', label: gettext('Type'), control: 'node-ajax-options',
       type: 'text', url: 'get_types', disabled: false, node: 'type',
+      cache_node: 'domain', editable: true,
       cell: 'node-ajax-options', select2: {allowClear: false},
-      editable: true,
       transform: function(d, control){
         control.model.type_options =  d;
         return d;
