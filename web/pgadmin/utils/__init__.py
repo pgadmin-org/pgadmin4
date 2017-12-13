@@ -10,7 +10,7 @@
 from collections import defaultdict
 from operator import attrgetter
 
-from flask import Blueprint
+from flask import Blueprint, current_app
 
 from .paths import get_storage_directory
 from .preferences import Preferences
@@ -184,7 +184,6 @@ def file_quote(_p):
             return _p.encode(fs_encoding)
     return _p
 
-
 if IS_WIN:
     import ctypes
     from ctypes import wintypes
@@ -252,3 +251,32 @@ else:
 
     def document_dir():
         return os.path.realpath(os.path.expanduser(u'~/'))
+
+
+def get_complete_file_path(file):
+    """
+    Args:
+        file: File returned by file manager
+
+    Returns:
+         Full path for the file
+    """
+    if not file:
+        return None
+
+    # If desktop mode
+    if current_app.PGADMIN_RUNTIME or not current_app.config['SERVER_MODE']:
+        return file if os.path.isfile(file) else None
+
+    storage_dir = get_storage_directory()
+    if storage_dir:
+        file = os.path.join(
+            storage_dir,
+            file.lstrip(u'/').lstrip(u'\\')
+        )
+        if IS_WIN:
+            file = file.replace('\\', '/')
+            file = fs_short_path(file)
+
+    return file if os.path.isfile(file) else None
+

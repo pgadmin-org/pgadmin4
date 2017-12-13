@@ -240,7 +240,8 @@ class ServerNode(PGChildNodeView):
         'change_password': [{'post': 'change_password'}],
         'wal_replay': [{
             'delete': 'pause_wal_replay', 'put': 'resume_wal_replay'
-        }]
+        }],
+        'check_pgpass': [{'get': 'check_pgpass'}]
     })
     EXP_IP4 = "^\s*((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."\
             "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."\
@@ -1118,12 +1119,43 @@ class ServerNode(PGChildNodeView):
         """
         try:
             data = json.loads(request.form['data'], encoding='utf-8')
-            if data and ('password' not in data or
-                                 data['password'] == '' or
-                                 'newPassword' not in data or
-                                 data['newPassword'] == '' or
-                                 'confirmPassword' not in data or
-                                 data['confirmPassword'] == ''):
+
+            # Fetch Server Details
+            server = Server.query.filter_by(id=sid).first()
+            if server is None:
+                return bad_request(gettext("Server not found."))
+
+            # Fetch User Details.
+            user = User.query.filter_by(id=current_user.id).first()
+            if user is None:
+                return unauthorized(gettext("Unauthorized request."))
+
+            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+            conn = manager.connection()
+            is_passfile = False
+
+            # If there is no password found for the server
+            # then check for pgpass file
+            if not server.password and not manager.password:
+                if server.passfile and manager.passfile and \
+                    server.passfile == manager.passfile:
+                    is_passfile = True
+
+            # Check for password only if there is no pgpass file used
+            if not is_passfile:
+                if data and ('password' not in data or data['password'] == ''):
+                    return make_json_response(
+                        status=400,
+                        success=0,
+                        errormsg=gettext(
+                            "Could not find the required parameter(s)."
+                        )
+                    )
+
+            if data and ('newPassword' not in data or
+                         data['newPassword'] == '' or
+                         'confirmPassword' not in data or
+                         data['confirmPassword'] == ''):
                 return make_json_response(
                     status=400,
                     success=0,
@@ -1141,29 +1173,18 @@ class ServerNode(PGChildNodeView):
                     )
                 )
 
-            # Fetch Server Details
-            server = Server.query.filter_by(id=sid).first()
-            if server is None:
-                return bad_request(gettext("Server not found."))
+            # Check against old password only if no pgpass file
+            if not is_passfile:
+                decrypted_password = decrypt(manager.password, user.password)
 
-            # Fetch User Details.
-            user = User.query.filter_by(id=current_user.id).first()
-            if user is None:
-                return unauthorized(gettext("Unauthorized request."))
+                if isinstance(decrypted_password, bytes):
+                    decrypted_password = decrypted_password.decode()
 
-            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-            conn = manager.connection()
+                password = data['password']
 
-            decrypted_password = decrypt(manager.password, user.password)
-
-            if isinstance(decrypted_password, bytes):
-                decrypted_password = decrypted_password.decode()
-
-            password = data['password']
-
-            # Validate old password before setting new.
-            if password != decrypted_password:
-                return unauthorized(gettext("Incorrect password."))
+                # Validate old password before setting new.
+                if password != decrypted_password:
+                    return unauthorized(gettext("Incorrect password."))
 
             # Hash new password before saving it.
             password = pqencryptpassword(data['newPassword'], manager.user)
@@ -1178,15 +1199,17 @@ class ServerNode(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            password = encrypt(data['newPassword'], user.password)
-            # Check if old password was stored in pgadmin4 sqlite database.
-            # If yes then update that password.
-            if server.password is not None and config.ALLOW_SAVE_PASSWORD:
-                setattr(server, 'password', password)
-                db.session.commit()
-            # Also update password in connection manager.
-            manager.password = password
-            manager.update_session()
+            # Store password in sqlite only if no pgpass file
+            if not is_passfile:
+                password = encrypt(data['newPassword'], user.password)
+                # Check if old password was stored in pgadmin4 sqlite database.
+                # If yes then update that password.
+                if server.password is not None and config.ALLOW_SAVE_PASSWORD:
+                    setattr(server, 'password', password)
+                    db.session.commit()
+                # Also update password in connection manager.
+                manager.password = password
+                manager.update_session()
 
             return make_json_response(
                 status=200,
@@ -1277,5 +1300,46 @@ class ServerNode(PGChildNodeView):
         """
         return self.wal_replay(sid, True)
 
+    def check_pgpass(self, gid, sid):
+        """
+        This function is used to check whether server is connected
+        using pgpass file or not
+
+        Args:
+            gid: Group id
+            sid: Server id
+        """
+        is_pgpass = False
+        server = Server.query.filter_by(
+            user_id=current_user.id, id=sid
+        ).first()
+
+        if server is None:
+            return make_json_response(
+                success=0,
+                errormsg=gettext("Could not find the required server.")
+            )
+
+        try:
+            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+            conn = manager.connection()
+            if not conn.connected():
+                return gone(
+                    errormsg=_('Please connect the server.')
+                )
+
+            if not server.password or not manager.password:
+                if server.passfile and manager.passfile and \
+                    server.passfile == manager.passfile:
+                        is_pgpass = True
+            return make_json_response(
+                success=1,
+                data=dict({'is_pgpass': is_pgpass}),
+            )
+        except Exception as e:
+            current_app.logger.error(
+                'Cannot able to fetch pgpass status'
+            )
+            return internal_server_error(errormsg=str(e))
 
 ServerNode.register_node_view(blueprint)
