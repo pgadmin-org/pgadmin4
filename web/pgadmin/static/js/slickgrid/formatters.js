@@ -15,9 +15,6 @@
         "Checkmark": CheckmarkFormatter,
         "Text": TextFormatter,
         "Binary": BinaryFormatter,
-        "JsonStringArray": JsonArrayFormatter,
-        "NumbersArray": NumbersArrayFormatter,
-        "TextArray": TextArrayFormatter,
       }
     }
   });
@@ -73,36 +70,6 @@
     }
   }
 
-  function JsonArrayFormatter(row, cell, value, columnDef, dataContext) {
-    // If column has default value, set placeholder
-    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
-    if (data) {
-      return data;
-    } else {
-      var data = [];
-      for (var k in value) {
-        // Stringify only if it's json object
-        var v = value[k];
-        if (typeof v === "object" && !Array.isArray(v)) {
-          return data.push(_.escape(JSON.stringify(v)));
-        } else if (Array.isArray(v)) {
-          var temp = [];
-          $.each(v, function(i, val) {
-            if (typeof val === "object") {
-              temp.push(JSON.stringify(val));
-            } else {
-              temp.push(val)
-            }
-          });
-          return data.push(_.escape("[" + temp.join() + "]"));
-        } else {
-          return data.push(_.escape(v));
-        }
-      }
-      return '{' + data.join() + '}';
-    }
-  }
-
   function NumbersFormatter(row, cell, value, columnDef, dataContext) {
     // If column has default value, set placeholder
     var data = NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext);
@@ -110,24 +77,6 @@
       return data;
     } else {
       return "<span style='float:right'>" + _.escape(value) + "</span>";
-    }
-  }
-
-  function NumbersArrayFormatter(row, cell, value, columnDef, dataContext) {
-    // If column has default value, set placeholder
-    var data = NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext);
-    if (data) {
-      return data;
-    } else {
-      data = [];
-      for(var k in value) {
-        if (value[k] == null) {
-          data.push("<span class='disabled_cell'>[null]</span>");
-        } else {
-          data.push(_.escape(value[k]));
-        }
-      }
-      return "<span style='float:right'>{" + data.join() + "}</span>";
     }
   }
 
@@ -152,24 +101,6 @@
       return data;
     } else {
       return _.escape(value);
-    }
-  }
-
-  function TextArrayFormatter(row, cell, value, columnDef, dataContext) {
-    // If column has default value, set placeholder
-    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
-    if (data) {
-      return data;
-    } else {
-      data = [];
-      for(var k in value) {
-        if (value[k] === null) {
-          data.push("<span class='disabled_cell'>[null]</span>");
-        } else {
-          data.push(_.escape(value[k]));
-        }
-      }
-      return "{" + data.join() + "}";
     }
   }
 

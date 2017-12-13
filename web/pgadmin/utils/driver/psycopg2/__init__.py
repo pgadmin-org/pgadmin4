@@ -21,7 +21,6 @@ import sys
 
 import simplejson as json
 import psycopg2
-import psycopg2.extras
 from flask import g, current_app, session
 from flask_babel import gettext
 from flask_security import current_user
@@ -34,14 +33,16 @@ from pgadmin.utils.exception import ConnectionLost
 from .keywords import ScanKeyword
 from ..abstract import BaseDriver, BaseConnection
 from .cursor import DictCursor
+from .typecast import register_global_typecasters, register_string_typecasters,\
+    register_binary_typecasters, register_array_to_string_typecasters,\
+    ALL_JSON_TYPES
+
 
 if sys.version_info < (3,):
     # Python2 in-built csv module do not handle unicode
     # backports.csv module ported from PY3 csv module for unicode handling
     from backports import csv
     from StringIO import StringIO
-    psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-    psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
     IS_PY2 = True
 else:
     from io import StringIO
@@ -50,134 +51,9 @@ else:
 
 _ = gettext
 
-unicode_type_for_record = psycopg2.extensions.new_type(
-    (2249,),
-    "RECORD",
-    psycopg2.extensions.UNICODE
-)
 
-unicode_array_type_for_record_array = psycopg2.extensions.new_array_type(
-    (2287,),
-    "ARRAY_RECORD",
-    unicode_type_for_record
-)
-
-# This registers a unicode type caster for datatype 'RECORD'.
-psycopg2.extensions.register_type(unicode_type_for_record)
-
-# This registers a array unicode type caster for datatype 'ARRAY_RECORD'.
-psycopg2.extensions.register_type(unicode_array_type_for_record_array)
-
-
-# define type caster to convert various pg types into string type
-pg_types_to_string_type = psycopg2.extensions.new_type(
-    (
-        # To cast bytea, interval type
-        17, 1186,
-
-        # to cast int4range, int8range, numrange tsrange, tstzrange, daterange
-        3904, 3926, 3906, 3908, 3910, 3912, 3913,
-
-        # date, timestamp, timestamptz, bigint, double precision
-        1700, 1082, 1114, 1184, 20, 701,
-
-        # real, time without time zone
-        700, 1083, 1183
-    ),
-    'TYPECAST_TO_STRING', psycopg2.STRING
-)
-
-# define type caster to convert pg array types of above types into
-# array of string type
-pg_array_types_to_array_of_string_type = psycopg2.extensions.new_array_type(
-    (
-        # To cast bytea[] type
-        1001,
-
-        # bigint[]
-        1016,
-
-        # double precision[], real[]
-        1022, 1021
-    ),
-    'TYPECAST_TO_ARRAY_OF_STRING', pg_types_to_string_type
-)
-
-# This registers a type caster to convert various pg types into string type
-psycopg2.extensions.register_type(pg_types_to_string_type)
-
-# This registers a type caster to convert various pg array types into
-# array of string type
-psycopg2.extensions.register_type(pg_array_types_to_array_of_string_type)
-
-
-def register_string_typecasters(connection):
-    if connection.encoding != 'UTF8':
-        # In python3 when database encoding is other than utf-8 and client
-        # encoding is set to UNICODE then we need to map data from database
-        # encoding to utf-8.
-        # This is required because when client encoding is set to UNICODE then
-        # psycopg assumes database encoding utf-8 and not the actual encoding.
-        # Not sure whether it's bug or feature in psycopg for python3.
-        if sys.version_info >= (3,):
-            def return_as_unicode(value, cursor):
-                if value is None:
-                    return None
-                # Treat value as byte sequence of database encoding and then
-                # decode it as utf-8 to get correct unicode value.
-                return bytes(
-                    value, encodings[cursor.connection.encoding]
-                ).decode('utf-8')
-
-            unicode_type = psycopg2.extensions.new_type(
-                # "char", name, text, character, character varying
-                (19, 18, 25, 1042, 1043, 0),
-                'UNICODE', return_as_unicode)
-        else:
-            def return_as_unicode(value, cursor):
-                if value is None:
-                    return None
-                # Decode it as utf-8 to get correct unicode value.
-                return value.decode('utf-8')
-
-            unicode_type = psycopg2.extensions.new_type(
-                # "char", name, text, character, character varying
-                (19, 18, 25, 1042, 1043, 0),
-                'UNICODE', return_as_unicode)
-
-        unicode_array_type = psycopg2.extensions.new_array_type(
-            # "char"[], name[], text[], character[], character varying[]
-            (1002, 1003, 1009, 1014, 1015, 0
-             ), 'UNICODEARRAY', unicode_type)
-
-        psycopg2.extensions.register_type(unicode_type)
-        psycopg2.extensions.register_type(unicode_array_type)
-
-
-def register_binary_typecasters(connection):
-    psycopg2.extensions.register_type(
-        psycopg2.extensions.new_type(
-            (
-                # To cast bytea type
-                17,
-             ),
-            'BYTEA_PLACEHOLDER',
-            # Only show placeholder if data actually exists.
-            lambda value, cursor: 'binary data' if value is not None else None),
-        connection
-    )
-
-    psycopg2.extensions.register_type(
-        psycopg2.extensions.new_type(
-            (
-                # To cast bytea[] type
-                1001,
-             ),
-            'BYTEA_ARRAY_PLACEHOLDER',
-            # Only show placeholder if data actually exists.
-            lambda value, cursor: 'binary data[]' if value is not None else None),
-        connection
-    )
+# Register global type caster which will be applicable to all connections.
+register_global_typecasters()
 
 
 class Connection(BaseConnection):
@@ -262,7 +138,7 @@ class Connection(BaseConnection):
     """
 
     def __init__(self, manager, conn_id, db, auto_reconnect=True, async=0,
-                 use_binary_placeholder=False):
+                 use_binary_placeholder=False, array_to_string=False):
         assert (manager is not None)
         assert (conn_id is not None)
 
@@ -284,6 +160,7 @@ class Connection(BaseConnection):
         # This flag indicates the connection reconnecting status.
         self.reconnecting = False
         self.use_binary_placeholder = use_binary_placeholder
+        self.array_to_string = array_to_string
 
         super(Connection, self).__init__()
 
@@ -302,6 +179,7 @@ class Connection(BaseConnection):
         res['async'] = self.async
         res['wasConnected'] = self.wasConnected
         res['use_binary_placeholder'] = self.use_binary_placeholder
+        res['array_to_string'] = self.array_to_string
 
         return res
 
@@ -469,6 +347,11 @@ Failed to connect to the database server(#{server_id}) for connection ({conn_id}
 
         register_string_typecasters(self.conn)
 
+        if self.array_to_string:
+            register_array_to_string_typecasters(self.conn)
+
+        # Register type casters for binary data only after registering array to
+        # string type casters.
         if self.use_binary_placeholder:
             register_binary_typecasters(self.conn)
 
@@ -799,15 +682,13 @@ WHERE
             json_columns = []
             conn_encoding = cur.connection.encoding
 
-            # json, jsonb, json[], jsonb[]
-            json_types = (114, 199, 3802, 3807)
             for c in cur.ordered_description():
                 # This is to handle the case in which column name is non-ascii
                 column_name = c.to_dict()['name']
                 if IS_PY2:
                     column_name = column_name.decode(conn_encoding)
                 header.append(column_name)
-                if c.to_dict()['type_code'] in json_types:
+                if c.to_dict()['type_code'] in ALL_JSON_TYPES:
                     json_columns.append(column_name)
 
             if IS_PY2:
@@ -1801,7 +1682,7 @@ class ServerManager(object):
 
     def connection(
             self, database=None, conn_id=None, auto_reconnect=True, did=None,
-            async=None, use_binary_placeholder=False
+            async=None, use_binary_placeholder=False, array_to_string=False
     ):
         if database is not None:
             if hasattr(str, 'decode') and \
@@ -1856,7 +1737,8 @@ WHERE db.oid = {0}""".format(did))
                 async = 1 if async is True else 0
             self.connections[my_id] = Connection(
                 self, my_id, database, auto_reconnect, async,
-                use_binary_placeholder=use_binary_placeholder
+                use_binary_placeholder=use_binary_placeholder,
+                array_to_string=array_to_string
             )
 
             return self.connections[my_id]
@@ -1886,7 +1768,8 @@ WHERE db.oid = {0}""".format(did))
             conn = self.connections[conn_info['conn_id']] = Connection(
                 self, conn_info['conn_id'], conn_info['database'],
                 True, conn_info['async'],
-                use_binary_placeholder=conn_info['use_binary_placeholder']
+                use_binary_placeholder=conn_info['use_binary_placeholder'],
+                array_to_string=conn_info['array_to_string']
             )
             # only try to reconnect if connection was connected previously.
             if conn_info['wasConnected']:

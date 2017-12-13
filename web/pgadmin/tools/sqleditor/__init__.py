@@ -371,7 +371,8 @@ def check_transaction_status(trans_id):
     try:
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
         conn = manager.connection(did=trans_obj.did, conn_id=trans_obj.conn_id,
-                                  use_binary_placeholder=True)
+                                  use_binary_placeholder=True,
+                                  array_to_string=True)
     except Exception as e:
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
@@ -518,7 +519,8 @@ def start_query_tool(trans_id):
         try:
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
             conn = manager.connection(did=trans_obj.did, conn_id=conn_id,
-                                      use_binary_placeholder=True)
+                                      use_binary_placeholder=True,
+                                      array_to_string=True)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -631,7 +633,6 @@ def preferences(trans_id):
                 blueprint.explain_timing.set(v)
 
         return success_return()
-
 
 
 @blueprint.route('/poll/<int:trans_id>', methods=["GET"], endpoint='poll')
