@@ -417,7 +417,7 @@ define('pgadmin.node.column', [
               _.each(m.datatypes, function(o) {
                 if ( of_type == o.value ) {
                   if(o.precision) {
-                    m.set('min_val', o.min_val, {silent: true});
+                    m.set('min_val', 0, {silent: true});
                     m.set('max_val', o.max_val, {silent: true});
                     flag = false;
                   }
@@ -447,7 +447,7 @@ define('pgadmin.node.column', [
               _.each(m.datatypes, function(o) {
                 if ( of_type == o.value ) {
                   if(o.precision) {
-                    m.set('min_val', o.min_val, {silent: true});
+                    m.set('min_val', 0, {silent: true});
                     m.set('max_val', o.max_val, {silent: true});
                     flag = true;
                   }
