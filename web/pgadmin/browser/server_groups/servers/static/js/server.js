@@ -822,12 +822,12 @@ define('pgadmin.node.server', [
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected', select2: {multiple: true, allowClear: false,
           tags: true, tokenSeparators: [','], first_empty: false, selectOnClose: true, emptyOptions: true}
         },{
-          id: 'passfile', label: gettext('Password File'), type: 'text',
+          id: 'passfile', label: gettext('Password file'), type: 'text',
           group: gettext('Advanced'), mode: ['edit', 'create'],
           disabled: 'isConnectedWithValidLib', control: Backform.FileControl,
           dialog_type: 'select_file', supp_types: ['*']
         },{
-          id: 'passfile', label: gettext('Password File'), type: 'text',
+          id: 'passfile', label: gettext('Password file'), type: 'text',
           group: gettext('Advanced'), mode: ['properties'],
           visible: function(m) {
             var passfile = m.get('passfile');
