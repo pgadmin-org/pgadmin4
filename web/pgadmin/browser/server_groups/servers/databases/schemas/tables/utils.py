@@ -1691,31 +1691,36 @@ class BaseTableView(PGChildNodeView):
 
                         length = False
                         precision = False
-                        if 'elemoid' in c:
+
+                        # If the column data type has not changed then fetch old length and precision
+                        if 'elemoid' in old_data and 'cltype' not in c:
                             length, precision, typeval = \
-                                self.get_length_precision(c['elemoid'])
+                                self.get_length_precision(old_data['elemoid'])
 
-
-                        # Set length and precision to None
-                        c['attlen'] = None
-                        c['attprecision'] = None
-
-                        # If we have length & precision both
-                        if length and precision:
-                            matchObj = re.search(r'(\d+),(\d+)', fulltype)
-                            if matchObj:
-                                c['attlen'] = matchObj.group(1)
-                                c['attprecision'] = matchObj.group(2)
-                        elif length:
-                            # If we have length only
-                            matchObj = re.search(r'(\d+)', fulltype)
-                            if matchObj:
-                                c['attlen'] = matchObj.group(1)
+                            # If we have length & precision both
+                            if length and precision:
+                                matchObj = re.search(r'(\d+),(\d+)', fulltype)
+                                if matchObj:
+                                    c['attlen'] = ('attlen' in c and c['attlen']) or matchObj.group(1)
+                                    c['attprecision'] = ('attprecision' in c and c['attprecision']) or matchObj.group(2)
+                            elif length:
+                                # If we have length only
+                                matchObj = re.search(r'(\d+)', fulltype)
+                                if matchObj:
+                                    c['attlen'] = ('attlen' in c and c['attlen']) or matchObj.group(1)
+                                    c['attprecision'] = None
+                            else:
+                                c['attlen'] = None
                                 c['attprecision'] = None
 
                         old_data['cltype'] = DataTypeReader.parse_type_name(
                             old_data['cltype']
                         )
+
+                        if int(old_data['attlen']) == -1:
+                            old_data['attlen'] = None
+                        if 'attprecision' not in old_data:
+                            old_data['attprecision'] = None
 
                         # Sql for alter column
                         if 'inheritedfrom' not in c:
