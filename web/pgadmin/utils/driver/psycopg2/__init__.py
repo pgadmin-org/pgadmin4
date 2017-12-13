@@ -30,6 +30,7 @@ from psycopg2.extensions import adapt, encodings
 import config
 from pgadmin.model import Server, User
 from pgadmin.utils.exception import ConnectionLost
+from pgadmin.utils import get_complete_file_path
 from .keywords import ScanKeyword
 from ..abstract import BaseDriver, BaseConnection
 from .cursor import DictCursor
@@ -244,6 +245,13 @@ class Connection(BaseConnection):
                            str(e)
                        )
 
+        # If no password credential is found then connect request might
+        # come from Query tool, ViewData grid, debugger etc tools.
+        # we will check for pgpass file availability from connection manager
+        # if it's present then we will use it
+        if not password and not encpass and not passfile:
+            passfile = mgr.passfile if mgr.passfile else None
+
         try:
             if hasattr(str, 'decode'):
                 database = self.db.encode('utf-8')
@@ -265,12 +273,12 @@ class Connection(BaseConnection):
                 user=user,
                 password=password,
                 async=self.async,
-                passfile=passfile,
+                passfile=get_complete_file_path(passfile),
                 sslmode=mgr.ssl_mode,
-                sslcert=mgr.sslcert,
-                sslkey=mgr.sslkey,
-                sslrootcert=mgr.sslrootcert,
-                sslcrl=mgr.sslcrl,
+                sslcert=get_complete_file_path(mgr.sslcert),
+                sslkey=get_complete_file_path(mgr.sslkey),
+                sslrootcert=get_complete_file_path(mgr.sslrootcert),
+                sslcrl=get_complete_file_path(mgr.sslcrl),
                 sslcompression=True if mgr.sslcompression else False
             )
 
@@ -1137,12 +1145,12 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
                 database=self.db,
                 user=mgr.user,
                 password=password,
-                passfile=mgr.passfile,
+                passfile=get_complete_file_path(mgr.passfile),
                 sslmode=mgr.ssl_mode,
-                sslcert=mgr.sslcert,
-                sslkey=mgr.sslkey,
-                sslrootcert=mgr.sslrootcert,
-                sslcrl=mgr.sslcrl,
+                sslcert=get_complete_file_path(mgr.sslcert),
+                sslkey=get_complete_file_path(mgr.sslkey),
+                sslrootcert=get_complete_file_path(mgr.sslrootcert),
+                sslcrl=get_complete_file_path(mgr.sslcrl),
                 sslcompression=True if mgr.sslcompression else False
             )
 
@@ -1413,12 +1421,14 @@ Failed to reset the connection to the server due to following error:
                     database=self.db,
                     user=self.manager.user,
                     password=password,
-                    passfile=self.manager.passfile,
+                    passfile=get_complete_file_path(self.manager.passfile),
                     sslmode=self.manager.ssl_mode,
-                    sslcert=self.manager.sslcert,
-                    sslkey=self.manager.sslkey,
-                    sslrootcert=self.manager.sslrootcert,
-                    sslcrl=self.manager.sslcrl,
+                    sslcert=get_complete_file_path(self.manager.sslcert),
+                    sslkey=get_complete_file_path(self.manager.sslkey),
+                    sslrootcert=get_complete_file_path(
+                        self.manager.sslrootcert
+                    ),
+                    sslcrl=get_complete_file_path(self.manager.sslcrl),
                     sslcompression=True if self.manager.sslcompression
                     else False
                 )
@@ -1758,7 +1768,8 @@ WHERE db.oid = {0}""".format(did))
         from pgadmin.browser.server_groups.servers.types import ServerType
         self.pinged = datetime.datetime.now()
         try:
-            data['password'] = data['password'].encode('utf-8')
+            if 'password' in data and data['password']:
+                data['password'] = data['password'].encode('utf-8')
         except:
             pass
 

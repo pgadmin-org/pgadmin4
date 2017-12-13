@@ -365,7 +365,9 @@ define('pgadmin.node.server', [
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined,
             node = d && pgBrowser.Nodes[d._type],
-            url = obj.generate_url(i, 'change_password', d, true);
+            url = obj.generate_url(i, 'change_password', d, true),
+            is_pgpass_file_used = false,
+            check_pgpass_url = obj.generate_url(i, 'check_pgpass', d, true);
 
           if (!d)
             return false;
@@ -387,8 +389,8 @@ define('pgadmin.node.server', [
                   type: 'text', disabled: true, control: 'input'
                 },{
                   name: 'password', label: gettext('Current Password'),
-                  type: 'password', disabled: false, control: 'input',
-                  required: true
+                  type: 'password', disabled: function() { return is_pgpass_file_used },
+                  control: 'input', required: true
                 },{
                   name: 'newPassword', label: gettext('New Password'),
                   type: 'password', disabled: false, control: 'input',
@@ -410,9 +412,11 @@ define('pgadmin.node.server', [
                  setup:function() {
                   return {
                     buttons: [{
-                      text: gettext('Ok'), key: 13, className: 'btn btn-primary', attrs:{name:'submit'}
-                      },{
-                      text: gettext('Cancel'), key: 27, className: 'btn btn-danger', attrs:{name:'cancel'}
+                      text: gettext('Ok'), key: 13, className: 'btn btn-primary',
+                      attrs:{name:'submit'}
+                    },{
+                      text: gettext('Cancel'), key: 27, className: 'btn btn-danger',
+                      attrs:{name:'cancel'}
                     }],
                     // Set options for dialog
                     options: {
@@ -436,15 +440,18 @@ define('pgadmin.node.server', [
                 },
                 prepare: function() {
                   var self = this;
-                  // Disable Backup button until user provides Filename
+                  // Disable Ok button until user provides input
                   this.__internal.buttons[0].element.disabled = true;
-                  var $container = $("<div class='change_password'></div>"),
-                    newpasswordmodel = new newPasswordModel({'user_name': self.user_name});
 
-                  var view = this.view = new Backform.Form({
-                    el: $container,
-                    model: newpasswordmodel,
-                    fields: passwordChangeFields});
+                  var $container = $("<div class='change_password'></div>"),
+                    newpasswordmodel = new newPasswordModel(
+                      {'user_name': self.user_name}
+                    ),
+                    view = this.view = new Backform.Form({
+                      el: $container,
+                      model: newpasswordmodel,
+                      fields: passwordChangeFields
+                    });
 
                   view.render();
 
@@ -457,7 +464,9 @@ define('pgadmin.node.server', [
                         newPassword = this.get('newPassword'),
                         confirmPassword = this.get('confirmPassword');
 
-                    if (_.isUndefined(password) || _.isNull(password) || password == '' ||
+                    // Only check password field if pgpass file is not available
+                    if ((!is_pgpass_file_used &&
+                         (_.isUndefined(password) || _.isNull(password) || password == '')) ||
                         _.isUndefined(newPassword) || _.isNull(newPassword) || newPassword == '' ||
                         _.isUndefined(confirmPassword) || _.isNull(confirmPassword) || confirmPassword == '') {
                       self.__internal.buttons[0].element.disabled = true;
@@ -488,6 +497,16 @@ define('pgadmin.node.server', [
                       data:{'data': JSON.stringify(args) },
                       success: function(res) {
                         if (res.success) {
+                          // Notify user to update pgpass file
+                          if(is_pgpass_file_used) {
+                            alertify.alert(
+                              gettext("Change Password"),
+                              gettext("Please make sure to disconnect the server"
+                              + " and update the new password in the pgpass file"
+                              + " before performing any other operation")
+                            );
+                          }
+
                           alertify.success(res.info);
                           self.close();
                         } else {
@@ -509,7 +528,26 @@ define('pgadmin.node.server', [
             });
           }
 
-          alertify.changeServerPassword(d).resizeTo('40%','52%');
+          // Call to check if server is using pgpass file or not
+          $.ajax({
+            url: check_pgpass_url,
+            method:'GET',
+            success: function(res) {
+              if (res.success && res.data.is_pgpass) {
+                is_pgpass_file_used = true;
+              }
+              alertify.changeServerPassword(d).resizeTo('40%','52%');
+            },
+            error: function(xhr, status, error) {
+              try {
+                var err = $.parseJSON(xhr.responseText);
+                if (err.success == 0) {
+                  alertify.error(err.errormsg);
+                }
+              } catch (e) {}
+            }
+          });
+
           return false;
         },
 
