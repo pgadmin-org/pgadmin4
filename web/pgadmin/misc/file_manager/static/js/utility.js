@@ -1026,8 +1026,8 @@ var getFolderInfo = function(path, file_type) {
           var path = $('td:first-child', this).attr('title');
 
           if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
-            $('.file_manager_ok').removeClass('disabled');
-            $('.file_manager_ok').attr('disabled', false);
+            $('.file_manager_ok').addClass('disabled');
+            $('.file_manager_ok').attr('disabled', true);
             $('.file_manager button.download').attr('disabled', 'disabled');
             $('.file_manager button.delete, .file_manager button.rename').attr('disabled', 'disabled');
             getFolderInfo(path);
@@ -1133,9 +1133,9 @@ pgAdmin.FileUtils = {
 
         var select_box = "<div class='change_file_types'>" +
           gettext("Show hidden files and folders") +
-          "? <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)'>" +
+          "? <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='11'>" +
           "<span></span>" +
-          "<select name='type'>";
+          "<select name='type' tabindex='12'>";
 
         while(i < types_len) {
           t = allowed_types[i];
@@ -1315,7 +1315,6 @@ pgAdmin.FileUtils = {
             check_obj = function(path, check) {
 
               var path = decodeURI(path);
-
               if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
                 if (
                   has_capability(self.data_cap, 'select_folder')
@@ -1417,12 +1416,12 @@ pgAdmin.FileUtils = {
   // we remove simple file upload element
   $('.file-input-container').remove();
   $('.upload').remove();
-  $( ".create" ).before( '<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn fa fa-upload upload"><span></span></button> ' );
+  $( ".create" ).before( '<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn fa fa-upload upload" tabindex="6"><span></span></button> ' );
 
   $('#uploader .upload').unbind().click(function() {
     // we create prompt
     var msg  = '<div id="dropzone-container">' +
-          '<button class="fa fa-times dz_cross_btn"></button>' +
+          '<button class="fa fa-times dz_cross_btn" tabindex="7"></button>' +
           '<div id="multiple-uploads" class="dropzone"></div>' +
           '<div class="prompt-info">' + lg.file_size_limit +
           config.upload.fileSizeLimit + ' ' + lg.mb + '.</div>',
