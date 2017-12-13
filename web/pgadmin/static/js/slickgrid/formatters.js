@@ -70,31 +70,13 @@
     }
   }
 
-  function JsonArrayFormatter(row, cell, value, columnDef, dataContext) {
+  function NumbersFormatter(row, cell, value, columnDef, dataContext) {
     // If column has default value, set placeholder
     var data = NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext);
     if (data) {
       return data;
     } else {
       return "<span style='float:right'>" + _.escape(value) + "</span>";
-    }
-  }
-
-  function NumbersArrayFormatter(row, cell, value, columnDef, dataContext) {
-    // If column has default value, set placeholder
-    var data = NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext);
-    if (data) {
-      return data;
-    } else {
-      data = [];
-      for(var k in value) {
-        if (value[k] == null) {
-          data.push("<span class='disabled_cell'>[null]</span>");
-        } else {
-          data.push(_.escape(value[k]));
-        }
-      }
-      return "<span style='float:right'>{" + data.join() + "}</span>";
     }
   }
 
