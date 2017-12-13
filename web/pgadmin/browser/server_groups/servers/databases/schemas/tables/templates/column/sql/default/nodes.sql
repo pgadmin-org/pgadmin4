@@ -16,8 +16,12 @@ WHERE
     AND att.attnum = {{ clid|qtLiteral }}
 {% endif %}
 {### To show system objects ###}
-{% if not show_sys_objects %}
+{% if not show_sys_objects and not has_oids %}
     AND att.attnum > 0
+{% endif %}
+{### To show oids in view data ###}
+{% if has_oids %}
+    AND (att.attnum > 0 OR (att.attname = 'oid' AND att.attnum < 0))
 {% endif %}
     AND att.attisdropped IS FALSE
 ORDER BY att.attnum

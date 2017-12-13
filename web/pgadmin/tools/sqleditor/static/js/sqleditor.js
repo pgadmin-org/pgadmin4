@@ -592,7 +592,10 @@ define('tools.querytool', [
           options['width'] = column_size[table_name][c.name];
         }
         // If grid is editable then add editor else make it readonly
-        if (c.cell == 'Json') {
+        if (c.cell == 'oid') {
+          options['editor'] = null;
+        }
+        else if (c.cell == 'Json') {
           options['editor'] = is_editable ? Slick.Editors.JsonText
             : Slick.Editors.ReadOnlyJsonText;
           options['formatter'] = c.is_array ? Slick.Formatters.JsonStringArray : Slick.Formatters.JsonString;
@@ -681,13 +684,14 @@ define('tools.querytool', [
       grid.registerPlugin(gridSelector);
 
       var editor_data = {
-        keys: self.handler.primary_keys,
+        keys: (_.isEmpty(self.handler.primary_keys) && self.handler.has_oids) ? self.handler.oids : self.handler.primary_keys,
         vals: collection,
         columns: columns,
         grid: grid,
         selection: grid.getSelectionModel(),
         editor: self,
-        client_primary_key: self.client_primary_key
+        client_primary_key: self.client_primary_key,
+        has_oids: self.handler.has_oids
       };
 
       self.handler.slickgrid = grid;
@@ -813,7 +817,8 @@ define('tools.querytool', [
         // self.handler.data_store.updated will holds all the updated data
         var changed_column = args.grid.getColumns()[args.cell].field,
           updated_data = args.item[changed_column],                   // New value for current field
-          _pk = args.item[self.client_primary_key] || null,                          // Unique key to identify row
+          _pk = args.item[self.client_primary_key] || null,           // Unique key to identify row
+          has_oids = self.handler.has_oids || null,           // Unique key to identify row
           column_data = {},
           _type;
 
@@ -845,6 +850,7 @@ define('tools.querytool', [
 
         column_data[changed_column] = updated_data;
 
+
         if (_pk) {
           // Check if it is in newly added row by user?
           if (_pk in self.handler.data_store.added) {
@@ -852,7 +858,7 @@ define('tools.querytool', [
               self.handler.data_store.added[_pk]['data'],
               column_data);
             //Find type for current column
-            self.handler.data_store.added[_pk]['err'] = false
+            self.handler.data_store.added[_pk]['err'] = false;
             // Check if it is updated data from existing rows?
           } else if (_pk in self.handler.data_store.updated) {
             _.extend(
@@ -1893,18 +1899,20 @@ define('tools.querytool', [
       _render: function (data) {
         var self = this;
         self.colinfo = data.col_info;
-        self.primary_keys = data.primary_keys;
+        self.primary_keys = (_.isEmpty(data.primary_keys) && data.has_oids)? data.oids : data.primary_keys;
         self.client_primary_key = data.client_primary_key;
         self.cell_selected = false;
         self.selected_model = null;
         self.changedModels = [];
+        self.has_oids = data.has_oids;
+        self.oids = data.oids;
         $('.sql-editor-explain').empty();
 
         /* If object don't have primary keys then set the
          * can_edit flag to false.
          */
-        if (self.primary_keys === null || self.primary_keys === undefined
-          || _.size(self.primary_keys) === 0)
+        if ((self.primary_keys === null || self.primary_keys === undefined
+          || _.size(self.primary_keys) === 0) && self.has_oids == false)
           self.can_edit = false;
         else
           self.can_edit = true;
@@ -2065,6 +2073,9 @@ define('tools.querytool', [
           }
           // Identify cell type of column.
           switch (type) {
+            case "oid":
+              col_cell = 'oid';
+              break;
             case "json":
             case "json[]":
             case "jsonb":
@@ -2121,7 +2132,7 @@ define('tools.querytool', [
               'pos': c.pos,
               'label': column_label,
               'cell': col_cell,
-              'can_edit': self.can_edit,
+              'can_edit': (c.name == 'oid') ? false : self.can_edit,
               'type': type,
               'not_null': c.not_null,
               'has_default_val': c.has_default_val,
@@ -2372,7 +2383,26 @@ define('tools.querytool', [
                 dataView = grid.getData(),
                 data_length = dataView.getLength(),
                 data = [];
+
               if (res.data.status) {
+                if(is_added) {
+                  // Update the rows in a grid after addition
+                  dataView.beginUpdate();
+                  _.each(res.data.query_result, function (r) {
+                    if(!_.isNull(r.row_added)) {
+                      // Fetch temp_id returned by server after addition
+                      var row_id = Object.keys(r.row_added)[0];
+                      _.each(req_data.added_index, function(v, k) {
+                        if (v == row_id) {
+                          // Fetch item data through row index
+                          var item = grid.getDataItem(k);
+                          _.extend(item, r.row_added[row_id]);
+                        }
+                      })
+                    }
+                  });
+                  dataView.endUpdate();
+                }
                 // Remove flag is_row_copied from copied rows
                 _.each(data, function (row, idx) {
                   if (row.is_row_copied) {
@@ -2403,15 +2433,6 @@ define('tools.querytool', [
                   }
                   self.rows_to_delete.apply(self, [data]);
                   grid.setSelectedRows([]);
-                }
-
-                // whether a cell is editable or not is decided in
-                // grid.onBeforeEditCell function (on cell click)
-                // but this function should do its job after save
-                // operation. So assign list of added rows to original
-                // rows_to_disable array.
-                if (is_added) {
-                  self.rows_to_disable = _.clone(self.temp_new_rows);
                 }
 
                 grid.setSelectedRows([]);

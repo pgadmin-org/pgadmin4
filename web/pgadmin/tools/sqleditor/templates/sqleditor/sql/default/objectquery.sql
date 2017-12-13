@@ -1,5 +1,5 @@
 {# SQL query for objects #}
-SELECT * FROM {{ conn|qtIdent(nsp_name, object_name) }}
+SELECT {% if has_oids %}oid, {% endif %}* FROM {{ conn|qtIdent(nsp_name, object_name) }}
 {% if sql_filter %}
 WHERE {{ sql_filter }}
 {% endif %}
