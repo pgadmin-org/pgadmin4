@@ -1102,7 +1102,9 @@ class Filemanager(object):
         # Remove root storage path from error message
         # when running in Server mode
         if not status and not current_app.PGADMIN_RUNTIME:
-            err_msg = err_msg.replace(get_storage_directory(), '')
+            storage_directory = get_storage_directory()
+            if storage_directory:
+                err_msg = err_msg.replace(storage_directory, '')
 
         return status, err_msg, is_binary, is_startswith_bom, enc
 
