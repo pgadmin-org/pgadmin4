@@ -433,6 +433,9 @@ def start_view_data(trans_id):
             sql = trans_obj.get_sql()
             pk_names, primary_keys = trans_obj.get_primary_keys(default_conn)
 
+            # Fetch OIDs status
+            has_oids = trans_obj.has_oids(default_conn)
+
             # Fetch the applied filter.
             filter_applied = trans_obj.is_filter_applied()
 
@@ -444,6 +447,10 @@ def start_view_data(trans_id):
 
             # Store the primary keys to the session object
             session_obj['primary_keys'] = primary_keys
+
+            # Store the OIDs status into session object
+            session_obj['has_oids'] = has_oids
+
             update_session_grid_transaction(trans_id, session_obj)
 
             # Execute sql asynchronously
@@ -655,6 +662,8 @@ def poll(trans_id):
     types = {}
     client_primary_key = None
     rset = None
+    has_oids = False
+    oids = None
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
@@ -680,6 +689,11 @@ def poll(trans_id):
                 if 'primary_keys' in session_obj:
                     primary_keys = session_obj['primary_keys']
 
+                if 'has_oids' in session_obj:
+                    has_oids = session_obj['has_oids']
+                    if has_oids:
+                        oids = {'oid': 'oid'}
+
                 # Fetch column information
                 columns_info = conn.get_column_info()
                 client_primary_key = generate_client_primary_key_name(
@@ -698,7 +712,8 @@ def poll(trans_id):
 
                         SQL = render_template("/".join([template_path,
                                                         'nodes.sql']),
-                                              tid=command_obj.obj_id)
+                                              tid=command_obj.obj_id,
+                                              has_oids=True)
                         # rows with attribute not_null
                         colst, rset = conn.execute_2darray(SQL)
                         if not colst:
@@ -811,7 +826,9 @@ def poll(trans_id):
             'colinfo': columns_info,
             'primary_keys': primary_keys,
             'types': types,
-            'client_primary_key': client_primary_key
+            'client_primary_key': client_primary_key,
+            'has_oids': has_oids,
+            'oids': oids
         }
     )
 
@@ -945,7 +962,7 @@ def save(trans_id):
             and trans_obj is not None and session_obj is not None:
 
         # If there is no primary key found then return from the function.
-        if len(session_obj['primary_keys']) <= 0 or len(changed_data) <= 0:
+        if (len(session_obj['primary_keys']) <= 0 or len(changed_data) <= 0) and 'has_oids' not in session_obj:
             return make_json_response(
                 data={
                     'status': False,

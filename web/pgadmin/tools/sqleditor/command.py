@@ -364,16 +364,20 @@ class TableCommand(GridCommand):
         # Fetch the primary keys for the table
         pk_names, primary_keys = self.get_primary_keys(default_conn)
 
+        # Fetch OIDs status
+        has_oids = self.has_oids(default_conn)
+
         sql_filter = self.get_filter()
 
         if sql_filter is None:
             sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
                                   nsp_name=self.nsp_name, pk_names=pk_names, cmd_type=self.cmd_type,
-                                  limit=self.limit, primary_keys=primary_keys)
+                                  limit=self.limit, primary_keys=primary_keys, has_oids=has_oids)
         else:
             sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
                                   nsp_name=self.nsp_name, pk_names=pk_names, cmd_type=self.cmd_type,
-                                  sql_filter=sql_filter, limit=self.limit, primary_keys=primary_keys)
+                                  sql_filter=sql_filter, limit=self.limit, primary_keys=primary_keys,
+                                  has_oids=has_oids)
 
         return sql
 
@@ -417,6 +421,31 @@ class TableCommand(GridCommand):
 
     def can_filter(self):
         return True
+
+    def has_oids(self, default_conn=None):
+        """
+        This function checks whether the table has oids or not.
+        """
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        if default_conn is None:
+            manager = driver.connection_manager(self.sid)
+            conn = manager.connection(did=self.did, conn_id=self.conn_id)
+        else:
+            conn = default_conn
+
+        if conn.connected():
+
+            # Fetch the table oids status
+            query = render_template("/".join([self.sql_path, 'has_oids.sql']), obj_id=self.obj_id)
+
+            status, has_oids = conn.execute_scalar(query)
+            if not status:
+                raise Exception(has_oids)
+
+        else:
+            raise Exception(gettext('Not connected to server or connection with the server has been closed.'))
+
+        return has_oids
 
     def save(self,
              changed_data,
@@ -464,6 +493,7 @@ class TableCommand(GridCommand):
                 if len(changed_data[of_type]) < 1:
                     continue
 
+
                 column_type = {}
                 column_data = {}
                 for each_col in columns_info:
@@ -481,6 +511,12 @@ class TableCommand(GridCommand):
 
                 # For newly added rows
                 if of_type == 'added':
+                    # Python dict does not honour the inserted item order
+                    # So to insert data in the order, we need to make ordered list of added index
+                    # We don't need this mechanism in updated/deleted rows as
+                    # it does not matter in those operations
+                    added_index = OrderedDict(sorted(changed_data['added_index'].items(),
+                                                     key=lambda x: int(x[0])))
                     list_of_sql[of_type] = []
 
                     # When new rows are added, only changed columns data is
@@ -489,9 +525,12 @@ class TableCommand(GridCommand):
                     # of not null which is set by default.
                     column_data = {}
                     pk_names, primary_keys = self.get_primary_keys()
+                    has_oids = 'oid' in column_type
 
-                    for each_row in changed_data[of_type]:
-                        data = changed_data[of_type][each_row]['data']
+                    for each_row in added_index:
+                        # Get the row index to match with the added rows dict key
+                        tmp_row_index = added_index[each_row]
+                        data = changed_data[of_type][tmp_row_index]['data']
                         # Remove our unique tracking key
                         data.pop(client_primary_key, None)
                         data.pop('is_row_copied', None)
@@ -507,8 +546,16 @@ class TableCommand(GridCommand):
                                               object_name=self.object_name,
                                               nsp_name=self.nsp_name,
                                               data_type=column_type,
-                                              pk_names=pk_names)
-                        list_of_sql[of_type].append({'sql': sql, 'data': data})
+                                              pk_names=pk_names,
+                                              has_oids=has_oids)
+                        select_sql = render_template("/".join([self.sql_path, 'select.sql']),
+                                              object_name=self.object_name,
+                                              nsp_name=self.nsp_name,
+                                              pk_names=pk_names.split(",") if pk_names else None,
+                                              has_oids=has_oids)
+                        list_of_sql[of_type].append({'sql': sql, 'data': data,
+                                                     'client_row': tmp_row_index,
+                                                     'select_sql': select_sql})
                         # Reset column data
                         column_data = {}
 
@@ -568,13 +615,15 @@ class TableCommand(GridCommand):
             for opr, sqls in list_of_sql.items():
                 for item in sqls:
                     if item['sql']:
-                        status, res = conn.execute_void(
-                            item['sql'], item['data'])
-                        rows_affected = conn.rows_affected()
+                        row_added = None
 
-                        # store the result of each query in dictionary
-                        query_res[count] = {'status': status, 'result': res,
-                                            'sql': sql, 'rows_affected': rows_affected}
+                        # Fetch oids/primary keys
+                        if 'select_sql' in item and item['select_sql']:
+                            status, res = conn.execute_dict(
+                                item['sql'], item['data'])
+                        else:
+                            status, res = conn.execute_void(
+                                item['sql'], item['data'])
 
                         if not status:
                             conn.execute_void('ROLLBACK;')
@@ -591,6 +640,38 @@ class TableCommand(GridCommand):
                                 _rowid = 0
 
                             return status, res, query_res, _rowid
+
+                        # Select added row from the table
+                        if 'select_sql' in item:
+                            status, sel_res = conn.execute_dict(
+                                item['select_sql'], res['rows'][0])
+
+                            if not status:
+                                conn.execute_void('ROLLBACK;')
+                                # If we roll backed every thing then update the message for
+                                # each sql query.
+                                for val in query_res:
+                                    if query_res[val]['status']:
+                                        query_res[val]['result'] = 'Transaction ROLLBACK'
+
+                                # If list is empty set rowid to 1
+                                try:
+                                    _rowid = list_of_rowid[count] if list_of_rowid else 1
+                                except Exception:
+                                    _rowid = 0
+
+                                return status, sel_res, query_res, _rowid
+
+                            if 'rows' in sel_res and len(sel_res['rows']) > 0:
+                                row_added = {item['client_row']: sel_res['rows'][0]}
+
+                        rows_affected = conn.rows_affected()
+
+                        # store the result of each query in dictionary
+                        query_res[count] = {'status': status, 'result': None if row_added else res,
+                                            'sql': sql, 'rows_affected': rows_affected,
+                                            'row_added': row_added}
+
                         count += 1
 
             # Commit the transaction if there is no error found
