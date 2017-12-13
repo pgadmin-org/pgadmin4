@@ -100,6 +100,14 @@ define('pgadmin.node.table', [
         pgBrowser.Events.on(
           'pgadmin:browser:node:table:updated', this.onTableUpdated, this
         );
+        pgBrowser.Events.on(
+          'pgadmin:browser:node:type:cache_cleared',
+          this.handle_cache, this
+        );
+        pgBrowser.Events.on(
+          'pgadmin:browser:node:domain:cache_cleared',
+          this.handle_cache, this
+        );
       },
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
@@ -1305,7 +1313,7 @@ define('pgadmin.node.table', [
               cache_level = this.field.get('cache_level') || node.type,
               cache_node = this.field.get('cache_node');
 
-          cache_node = (cache_node && pgBrowser.Nodes['cache_node']) || node;
+          cache_node = (cache_node && pgBrowser.Nodes[cache_node]) || node;
 
           m.trigger('pgadmin:view:fetching', m, self.field);
           // Fetching Columns data for the selected table.
@@ -1484,6 +1492,11 @@ define('pgadmin.node.table', [
           }
           insertChildrenNodes();
         }
+      },
+      handle_cache: function() {
+        // Clear Table's cache as column's type is dependent on two node
+        // 1) Type node 2) Domain node
+        this.clear_cache.apply(this, null);
       }
     });
   }

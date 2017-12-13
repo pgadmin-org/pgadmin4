@@ -94,7 +94,7 @@ define('pgadmin.node.fts_configuration', [
                     cache_node = this.field.get('cache_node');
 
                   cache_node = (cache_node &&
-                                    pgAdmin.Browser.Nodes['cache_node'])
+                                    pgAdmin.Browser.Nodes[cache_node])
                                || node;
 
                   /*
