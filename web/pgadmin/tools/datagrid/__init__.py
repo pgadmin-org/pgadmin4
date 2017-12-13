@@ -119,7 +119,8 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
     try:
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection(did=did, conn_id=conn_id,
-                                  use_binary_placeholder=True)
+                                  use_binary_placeholder=True,
+                                  array_to_string=True)
     except Exception as e:
         return internal_server_error(errormsg=str(e))
 

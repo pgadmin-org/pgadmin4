@@ -210,28 +210,13 @@
           $input.select();
         }
       } else {
-        var data = [];
-        for (var k in item[args.column.field]) {
-          if (_.isUndefined(item[args.column.field][k]) || _.isNull(item[args.column.field][k])) {
-            data.push('');
-          } else if (item[args.column.field][k] === "") {
-            data.push("''");
-          } else if (item[args.column.field][k] === "''") {
-            data.push("\\'\\'");
-          } else if (item[args.column.field][k] === '""') {
-            data.push('\\"\\"');
-          } else {
-            data.push(item[args.column.field][k]);
-            $input.select();
-          }
-        }
-        defaultValue = data;
-        $input.val('{' + data.join() +'}');
-
+        $input.val(defaultValue = item[args.column.field]);
+        $input.select();
       }
     };
 
     this.serializeValue = function () {
+
       var value = $input.val();
       // If empty return null
       if (value === "") {
@@ -249,31 +234,7 @@
           return value;
         }
       } else {
-
-        // Remove leading { and trailing }.
-        // Also remove leading and trailing whitespaces.
-        var value = $.trim(value.slice(1, -1));
-
-        if(value == '') {
-          return [];
-        }
-
-        var data = [];
-        value = value.split(',');
-        for (var k in value) {
-          if (value[k] == "") {
-            data.push(null);  //empty string from editor is null value.
-          } else if (value[k] === "''" || value[k] === '""') {
-            data.push('');    // double quote from editor is blank string;
-          } else if (value[k] === "\\'\\'") {
-            data.push("''");
-          } else if (value[k] === '\\"\\"') {
-            data.push('""');
-          } else {
-            data.push(value[k]);
-          }
-        }
-        return data;
+        return $.trim(value);
       }
     };
 
@@ -943,14 +904,16 @@
     };
 
     this.serializeValue = function () {
-      if ($input.val() === "") {
+      var value = $input.val();
+
+      if (value === "") {
         return null;
       }
 
       if(args.column.is_array) {
         // Remove leading { and trailing }.
         // Also remove leading and trailing whitespaces.
-        var val = $.trim($input.val().slice(1, -1));
+        var val = $.trim(value.slice(1, -1));
 
         if(val == '') {
           return [];
@@ -964,7 +927,7 @@
         return val;
       }
 
-      return $input.val();
+      return value;
     };
 
     this.applyValue = function (item, state) {

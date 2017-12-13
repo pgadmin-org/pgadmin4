@@ -72,7 +72,7 @@ class _WrapperColumn(object):
     def __getitem__(self, idx):
         """Overrides __getitem__ to fetch item from original object"""
         if idx == 0 and self.dummy_name is not None:
-            return self.name
+            return self.dummy_name
         return self.orig_col.__getitem__(idx)
 
     def __setitem__(self, *args, **kwargs):
@@ -200,7 +200,7 @@ class DictCursor(_cursor):
 
     def fetchall(self):
         """
-        Fetch all tuples as orderd dictionary list.
+        Fetch all tuples as ordered dictionary list.
         """
         tuples = _cursor.fetchall(self)
         if tuples is not None:

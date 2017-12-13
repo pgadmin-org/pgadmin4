@@ -605,24 +605,24 @@ define('tools.querytool', [
         else if (c.cell == 'Json') {
           options['editor'] = is_editable ? Slick.Editors.JsonText
             : Slick.Editors.ReadOnlyJsonText;
-          options['formatter'] = c.is_array ? Slick.Formatters.JsonStringArray : Slick.Formatters.JsonString;
+          options['formatter'] = Slick.Formatters.JsonString;
         } else if (c.cell == 'number' ||
           $.inArray(c.type, ['oid', 'xid', 'real']) !== -1
         ) {
           options['editor'] = is_editable ? Slick.Editors.CustomNumber
             : Slick.Editors.ReadOnlyText;
-          options['formatter'] = c.is_array ? Slick.Formatters.NumbersArray : Slick.Formatters.Numbers;
+          options['formatter'] = Slick.Formatters.Numbers;
         } else if (c.cell == 'boolean') {
           options['editor'] = is_editable ? Slick.Editors.Checkbox
             : Slick.Editors.ReadOnlyCheckbox;
-          options['formatter'] = c.is_array ? Slick.Formatters.CheckmarkArray : Slick.Formatters.Checkmark;
+          options['formatter'] = Slick.Formatters.Checkmark;
         } else if (c.cell == 'binary') {
           // We do not support editing binary data in SQL editor and data grid.
           options['formatter'] =  Slick.Formatters.Binary;
         }else {
           options['editor'] = is_editable ? Slick.Editors.pgText
             : Slick.Editors.ReadOnlypgText;
-          options['formatter'] = c.is_array ? Slick.Formatters.TextArray : Slick.Formatters.Text;
+          options['formatter'] = Slick.Formatters.Text;
         }
 
         grid_columns.push(options)
