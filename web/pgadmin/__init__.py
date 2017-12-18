@@ -540,11 +540,8 @@ def create_app(app_name=None):
             ):
                 abort(401)
 
-    if not config.SERVER_MODE:
-        @app.before_first_request
-        def before_first_request():
+        if not config.SERVER_MODE and not current_user.is_authenticated:
             user = user_datastore.get_user(config.DESKTOP_USER)
-
             # Throw an error if we failed to find the desktop user, to give
             # the sysadmin a hint. We'll continue to try to login anyway as
             # that'll through a nice 500 error for us.
@@ -554,7 +551,6 @@ def create_app(app_name=None):
                     % config.DESKTOP_USER
                 )
                 abort(401)
-
             login_user(user)
 
     @app.after_request
