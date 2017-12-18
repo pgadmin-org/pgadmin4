@@ -38,26 +38,32 @@ try {
 <nav class="navbar-inverse navbar-fixed-top">
     <div id="btn-toolbar" class="btn-toolbar pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
         <div class="btn-group" role="group" aria-label="">
-            <button type="button" class="btn btn-default btn-step-into" title="{{ _('Step into') }}">
+            <button type="button" class="btn btn-default btn-step-into" title="{{ _('Step into') }}"
+                    tabindex="1">
                 <i class="fa fa-indent"></i>
             </button>
-            <button type="button" class="btn btn-default btn-step-over" title="{{ _('Step over') }}">
+            <button type="button" class="btn btn-default btn-step-over" title="{{ _('Step over') }}"
+                    tabindex="2">
                 <i class="fa fa-outdent"></i>
             </button>
-            <button type="button" class="btn btn-default btn-continue" title="{{ _('Continue/Start') }}">
+            <button type="button" class="btn btn-default btn-continue" title="{{ _('Continue/Start') }}"
+                    tabindex="3">
                 <i class="fa fa-play-circle"></i>
             </button>
         </div>
         <div class="btn-group" role="group" aria-label="">
-            <button type="button" class="btn btn-default btn-toggle-breakpoint" title="{{ _('Toggle breakpoint') }}">
+            <button type="button" class="btn btn-default btn-toggle-breakpoint" title="{{ _('Toggle breakpoint') }}"
+                    tabindex="4">
                 <i class="fa fa-circle"></i>
             </button>
-            <button type="button" class="btn btn-default btn-clear-breakpoint" title="{{ _('Clear all breakpoints') }}">
+            <button type="button" class="btn btn-default btn-clear-breakpoint" title="{{ _('Clear all breakpoints') }}"
+                    tabindex="5">
                 <i class="fa fa-ban"></i>
             </button>
         </div>
         <div class="btn-group" role="group" aria-label="">
-            <button type="button" class="btn btn-default btn-stop" title="{{ _('Stop') }}">
+            <button type="button" class="btn btn-default btn-stop" title="{{ _('Stop') }}"
+                    tabindex="6">
                 <i class="fa fa-stop-circle"></i>
             </button>
         </div>
