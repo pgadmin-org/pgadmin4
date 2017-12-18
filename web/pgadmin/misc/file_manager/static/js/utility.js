@@ -923,7 +923,10 @@ var getFolderInfo = function(path, file_type) {
             getFolderInfo(path);
 
           } else {
-            getFileInfo(path);
+            var is_valid_file = getFileInfo(path);
+            if (is_valid_file && check_file_capability(e, data_cap, 'grid')) {
+              $('.file_manager_ok').click();
+            }
           }
         });
 
@@ -1032,7 +1035,10 @@ var getFolderInfo = function(path, file_type) {
             $('.file_manager button.delete, .file_manager button.rename').attr('disabled', 'disabled');
             getFolderInfo(path);
           } else {
-            getFileInfo(path);
+            var is_valid_file = getFileInfo(path), is_protected;
+            if (is_valid_file && check_file_capability(e, data_cap, 'table')) {
+              $('.file_manager_ok').click();
+            }
           }
         });
 
@@ -1064,6 +1070,30 @@ var enab_dis_level_up = function() {
     }
   }, 100);
 };
+
+// Check if user can Select file
+var check_file_capability = function(event, data_cap, view_type) {
+  var current_element = event.currentTarget,
+      path, file_name, is_protected;
+
+  if (view_type == 'grid') {
+    path = decodeURI($(current_element).find('.clip span').attr('data-alt')),
+    file_name = $(current_element).find('p span').attr('title'),
+    is_protected = $(current_element).find(
+      '.clip span.fm_lock_icon'
+    ).attr('data-protected');
+  } else {
+    path = decodeURI($(current_element).find('td:first-child').attr('title')),
+    file_name = decodeURI($(current_element).find('td:first-child p span').attr(
+      'title'
+    )),
+    is_protected = $(current_element).find('td:first-child').find(
+      'i.tbl_lock_icon'
+    ).attr('data-protected');
+  }
+
+  return has_capability(data_cap, 'select_file') && is_protected == undefined;
+}
 
 /*---------------------------------------------------------
   Initialization - Entry point
