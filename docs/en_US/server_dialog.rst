@@ -37,7 +37,7 @@ Click the *SSL* tab to continue.
 
 Use the fields in the *SSL* tab to configure SSL:
 
-* Use the drop-down list box in the *SSL* field to select the type of SSL connection the server should use. For more information about using SSL encryption, see Section 33.18 of the `Postgres documentation <https://www.postgresql.org/docs/current/static/libpq-ssl.html>`_.
+* Use the drop-down list box in the *SSL* field to select the type of SSL connection the server should use. For more information about using SSL encryption, see `Section 33.18 of the Postgres documentation <https://www.postgresql.org/docs/current/static/libpq-ssl.html>`_.
 
 If pgAdmin is installed in Server mode (the default mode), you can use the platform-specific File manager dialog to upload files that support SSL encryption to the server.  To access the File manager dialog, click the icon that is located to the right of each of the following fields.
 
@@ -57,7 +57,7 @@ Use the fields in the *Advanced* tab to configure a connection:
 
 * Specify the IP address of the server host in the *Host address* field. Using this field to specify the host IP address may save time by avoiding a DNS lookup on connection, but it may be useful to specify both a host name and address when using Kerberos, GSSAPI, or SSPI authentication methods, as well as for verify-full SSL certificate verification.
 * Use the *DB restriction* field to provide a SQL restriction that will be used against the pg_database table to limit the databases that you see. For example, you might enter: *live_db test_db* so that only live_db and test_db are shown in the pgAdmin browser. Separate entries with a comma or tab as you type.
-* Use the *Password File* field to specify the location of a password file (.pgpass). A .pgpass file allows a user to login without providing a password when they connect.  For more information, see Section 33.15 of the `Postgres documentation <http://www.postgresql.org/docs/current/static/libpq-pgpass.html>`_.
+* Use the *Password File* field to specify the location of a password file (.pgpass). A .pgpass file allows a user to login without providing a password when they connect.  For more information, see `Section 33.15 of the Postgres documentation <http://www.postgresql.org/docs/current/static/libpq-pgpass.html>`_.
 
 *NOTE:* The password file option is only supported when pgAdmin is using libpq v10.0 or later to connect to the server.
 
