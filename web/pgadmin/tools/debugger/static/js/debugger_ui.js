@@ -1,5 +1,5 @@
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'codemirror',
   'backform', 'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.panel'
@@ -445,12 +445,35 @@ define([
 
             grid.render();
             $(this.elements.content).html(grid.el);
+
+            // For keyboard navigation in the grid
+            // we'll set focus on checkbox from the first row if any
+            var grid_checkbox = $(grid.el).find('input:checkbox').first();
+            if (grid_checkbox.length){
+              setTimeout(function() {
+                grid_checkbox.click();
+              }, 250);
+            }
+
           },
           setup:function() {
             return {
-              buttons:[{ text: "Debug", key: 13, className: "btn btn-primary" },
-                       { text: "Cancel", key: 27, className: "btn btn-primary" }],
-              options: { modal: 0, resizable: true }
+              buttons:[
+                { text: "Debug", key: 13, className: "btn btn-primary" },
+                { text: "Cancel", key: 27, className: "btn btn-primary" }
+              ],
+              // Set options for dialog
+              options: {
+                //disable both padding and overflow control.
+                padding : !1,
+                overflow: !1,
+                model: 0,
+                resizable: true,
+                maximizable: true,
+                pinnable: false,
+                closableByDimmer: false,
+                modal: false
+              }
             };
           },
           // Callback functions when click on the buttons of the Alertify dialogs
@@ -727,8 +750,14 @@ define([
             }
           },
           build:function() {
+            Alertify.pgDialogBuild.apply(this);
           },
           prepare:function() {
+            // Add our class to alertify
+            $(this.elements.body.childNodes[0]).addClass(
+              'alertify_tools_dialog_properties obj_properties'
+            );
+
             /*
              If we already have data available in sqlite database then we should enable the debug button otherwise
              disable the debug button.
