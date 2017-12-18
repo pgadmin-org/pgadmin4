@@ -712,3 +712,21 @@ class Database:
     def __exit__(self, type, value, traceback):
         self.connection.close()
         drop_database(self.maintenance_connection, self.name)
+
+
+def get_timezone_without_dst(connection):
+    """
+    Returns timezone when daylight savings is not observed.
+    DST starts at mid of March and ends on first week of November.
+    So when getting timezone without dst use date (2017-01-01) which do not
+    fall in dst range.
+    """
+
+    timezone_no_dst_sql = """SELECT EXTRACT(
+        TIMEZONE FROM '2017-01-01 00:00:00'::timestamp with time zone);"""
+
+    pg_cursor = connection.cursor()
+
+    pg_cursor.execute(timezone_no_dst_sql)
+
+    return pg_cursor.fetchone()[0]

@@ -226,6 +226,19 @@ class PgadminPage:
 
         return self._wait_for("element to exist", element_if_it_exists)
 
+    def wait_for_element_to_disappear(self, find_method_with_args):
+        def element_if_it_disappears(driver):
+            try:
+                element = find_method_with_args(driver)
+                if element.is_displayed() and element.is_enabled():
+                    return False
+
+                return True
+            except NoSuchElementException:
+                return True
+
+        return self._wait_for("element to disappear", element_if_it_disappears)
+
     def wait_for_reloading_indicator_to_disappear(self):
         def reloading_indicator_has_disappeared(driver):
             try:
