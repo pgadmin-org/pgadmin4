@@ -23,7 +23,7 @@ Click the *Connection* tab to continue.
 
 Use the fields in the *Connection* tab to configure a connection:
 
-* Specify the IP address of the server host, or the fully qualified domain name in the *Host name/address* field. On Unix based systems, the address field may be left blank to use the default PostgreSQL Unix Domain Socket on the local machine, or may be set to an alternate path containing a PostgreSQL socket. If you enter a path, the path must begin with a "/".
+* Specify the IP address of the server host, or the fully qualified domain name in the *Host name/address* field. If you provide a unix domain socket, the directory name must begin with a "/".
 * Enter the listener port number of the server host in the *Port* field. The default is *5432*.
 * Use the *Maintenance database* field to specify the name of the initial database to which the client will connect. If you will be using pgAgent or adminpack objects, the pgAgent schema and adminpack objects should be installed on that database.
 * Use the *Username* field to specify the name of a role that will be used when authenticating with the server.
