@@ -662,7 +662,7 @@ void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
         }
 
         // Check if download is finished without readyRead signal then write the data.
-        if(m_reply->isFinished() && !is_readyReadSignaled)
+        if(m_reply && m_reply->isFinished() && !is_readyReadSignaled)
         {
             // Write data to file
             m_file->write(m_reply->read(readData));
@@ -691,7 +691,7 @@ void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
               m_reply = NULL;
         }
 
-        if(m_reply->isFinished() && readData == totalData)
+        if(m_reply && m_reply->isFinished() && readData == totalData)
             m_readBytes = 0;
      }
 }
