@@ -14,4 +14,6 @@ export PGADMIN_SETUP_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
 
 j2 /templates/pgadmin4.conf.j2 > /etc/httpd/conf.d/pgadmin4.conf
 
+rm /run/httpd/httpd.pid
+
 /usr/sbin/httpd -D FOREGROUND
