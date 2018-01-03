@@ -470,6 +470,18 @@ define('pgadmin.node.trigger', [
              return true;
             }
         },{
+            id: 'tgoldtable', label: gettext('Old table'),
+            type: 'text', group: gettext('Transition'),
+            cell: 'string', mode: ['create', 'edit', 'properties'],
+            deps: ['fires', 'is_constraint_trigger', 'evnt_insert', 'evnt_update', 'evnt_delete', 'columns'],
+            disabled: 'disableTransition'
+        },{
+            id: 'tgnewtable', label: gettext('New table'),
+            type: 'text', group: gettext('Transition'),
+            cell: 'string', mode: ['create', 'edit', 'properties'],
+            deps: ['fires', 'is_constraint_trigger', 'evnt_insert', 'evnt_update', 'evnt_delete', 'columns'],
+            disabled: 'disableTransition'
+        },{
             id: 'prosrc', label: gettext('Code'), group: gettext('Code'),
             type: 'text', mode: ['create', 'edit'], deps: ['tfunction'],
             control: 'sql-field', visible: true,
@@ -574,6 +586,47 @@ define('pgadmin.node.trigger', [
            }
           }
           return true;
+        },
+        // Disable/Enable Transition tables
+        disableTransition: function(m) {
+          var flag = true,
+              evnt = null,
+              name = this.name,
+              evnt_count = 0;
+
+          // Disable transition tables for view trigger and PG version < 100000
+          if(_.indexOf(Object.keys(m.node_info), 'table') == -1 ||
+           m.node_info.server.version < 100000) return true;
+
+          if (name == "tgoldtable") evnt = 'evnt_delete';
+          else if (name == "tgnewtable") evnt = 'evnt_insert';
+
+          if(m.get('evnt_insert')) evnt_count++;
+          if(m.get('evnt_update')) evnt_count++;
+          if(m.get('evnt_delete')) evnt_count++;
+
+
+          // Disable transition tables if
+          //  - It is a constraint trigger
+          //  - Fires other than AFTER
+          //  - More than one events enabled
+          //  - Update event with the column list
+
+          // Disable Old transition table if both UPDATE and DELETE events are disabled
+          // Disable New transition table if both UPDATE and INSERT events are disabled
+          if(!m.get('is_constraint_trigger') && m.get('fires') == 'AFTER' &&
+           (m.get('evnt_update') || m.get(evnt)) && evnt_count == 1) {
+             if (m.get('evnt_update') && (_.size(m.get('columns')) >= 1 && m.get('columns')[0] != "")) flag = true;
+             else flag = false;
+          }
+
+          flag && setTimeout(function() {
+            if(m.get(name)) {
+              m.set(name, null);
+            }
+          },10);
+
+          return flag;
         }
       }),
       // Below function will enable right click menu for creating column
