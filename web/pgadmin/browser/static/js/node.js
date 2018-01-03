@@ -957,7 +957,10 @@ define(
               // Return if event is fired from child element
               if (event.target !== context) return;
               if (view && view.model && view.model.sessChanged()) {
-                onSave.call(this, view);
+                var btn = $(event.target).closest('.obj_properties')
+                                         .find('.pg-prop-btn-group')
+                                         .find('button.btn-primary');
+                onSave.call(this, view, btn);
               }
               break;
             case keyCode.F1:
@@ -1181,20 +1184,25 @@ define(
           iframe.openURL(that.dialogHelp);
         }.bind(panel),
 
-        onSave = function(view) {
+        onSave = function(view, saveBtn) {
           var m = view.model,
             d = m.toJSON(true),
-
             // Generate a timer for the request
             timer = setTimeout(function(){
               $('.obj_properties').addClass('show_progress');
-            }, 1000);
+            }, 1000),
+            saveBtn = saveBtn;
+
+          // Prevent subsequent save operation by disabling Save button
+          if(saveBtn)
+            $(saveBtn).prop('disabled', true);
 
           if (d && !_.isEmpty(d)) {
             m.save({}, {
               attrs: d,
               validate: false,
               cache: false,
+              wait: true,
               success: function() {
                 onSaveFunc.call();
                 // Hide progress cursor
@@ -1229,6 +1237,8 @@ define(
                 // Hide progress cursor
                 $('.obj_properties').removeClass('show_progress');
                 clearTimeout(timer);
+                if(saveBtn)
+                  $(saveBtn).prop('disabled', false);
               }
             });
           }
@@ -1327,7 +1337,7 @@ define(
               register: function(btn) {
                 // Save the changes
                 btn.click(function() {
-                  onSave.call(this, view);
+                  onSave.call(this, view, btn);
                 });
               }
             },{
