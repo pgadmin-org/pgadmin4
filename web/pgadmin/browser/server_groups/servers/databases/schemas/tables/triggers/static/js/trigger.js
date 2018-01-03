@@ -249,8 +249,9 @@ define('pgadmin.node.trigger', [
           group: gettext('Definition'),
           disabled: function(m) {
             // Disabled if table is a partitioned table.
-            if (_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
-                _.has(m.node_info.table, 'is_partitioned') && m.node_info.table.is_partitioned)
+            if ((_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
+                _.has(m.node_info.table, 'is_partitioned') && m.node_info.table.is_partitioned) ||
+                 _.indexOf(Object.keys(m.node_info), 'view') != -1)
             {
               setTimeout(function(){
                   m.set('is_constraint_trigger', false);
@@ -258,6 +259,8 @@ define('pgadmin.node.trigger', [
 
               return true;
             }
+
+            return m.inSchemaWithModelCheck.apply(this, [m]);
           }
         },{
           id: 'tgdeferrable', label: gettext('Deferrable?'),
@@ -486,10 +489,6 @@ define('pgadmin.node.trigger', [
         },{
           id: 'is_sys_trigger', label: gettext('System trigger?'), cell: 'string',
           type: 'switch', disabled: 'inSchemaWithModelCheck', mode: ['properties']
-        },{
-          id: 'is_constarint', label: gettext('Constraint?'), cell: 'string',
-          type: 'switch', disabled: 'inSchemaWithModelCheck', mode: ['properties'],
-          group: gettext('Definition')
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
