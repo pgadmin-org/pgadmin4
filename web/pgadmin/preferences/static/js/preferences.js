@@ -91,16 +91,18 @@ define('pgadmin.preferences', [
              * Clear the existing html in the preferences content
              */
             var content = $container.find('.preferences_content');
-            content.empty();
-
             /*
              * We should clean up the existing controls.
              */
             if (controls) {
               _.each(controls, function(c) {
+                if ('$sel' in c) {
+                  if (c.$sel.data('select2').isOpen()) c.$sel.data('select2').close();
+                }
                 c.remove();
               });
             }
+            content.empty();
             controls = [];
 
             /*
