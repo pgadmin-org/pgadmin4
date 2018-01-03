@@ -1653,10 +1653,14 @@ class ServerManager(object):
 
         res = dict()
         res['sid'] = self.sid
-        if hasattr(self.password, 'decode'):
-            res['password'] = self.password.decode('utf-8')
+        if hasattr(self, 'password') and self.password:
+            # If running under PY2
+            if hasattr(self.password, 'decode'):
+                res['password'] = self.password.decode('utf-8')
+            else:
+                res['password'] = str(self.password)
         else:
-            res['password'] = str(self.password)
+            res['password'] = self.password
 
         connections = res['connections'] = dict()
 
