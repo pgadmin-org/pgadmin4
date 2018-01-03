@@ -36,6 +36,7 @@ let queryToolActions = {
     let buffers = this._buffers();
     let timing = this._timing();
     let explainAnalyzeQuery = `EXPLAIN (FORMAT JSON, ANALYZE ON, VERBOSE ${verbose}, COSTS ${costEnabled}, BUFFERS ${buffers}, TIMING ${timing}) `;
+    this._clearMessageTab();
     sqlEditorController.execute(explainAnalyzeQuery);
   },
 
@@ -44,6 +45,7 @@ let queryToolActions = {
     let verbose = this._verbose();
 
     let explainQuery = `EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE ${verbose}, COSTS ${costEnabled}, BUFFERS OFF, TIMING OFF) `;
+    this._clearMessageTab();
     sqlEditorController.execute(explainQuery);
   },
 
