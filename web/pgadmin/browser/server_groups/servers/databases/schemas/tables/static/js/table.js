@@ -593,15 +593,12 @@ define('pgadmin.node.table', [
                         m.destroy();
                       })
                       if (primary_key_column_coll.length == 0) {
-                        setTimeout(function () {
-                          // There will be only on primary key so remove the first one.
-                          primary_key_coll.remove(primary_key_coll.first());
                           /* Ideally above line of code should be "primary_key_coll.reset()".
                            * But our custom DataCollection (extended from Backbone collection in datamodel.js)
                            * does not respond to reset event, it only supports add, remove, change events.
                            * And hence no custom event listeners/validators get called for reset event.
                            */
-                        }, 10);
+                          primary_key_coll.remove(primary_key_coll.first());
                       }
                     }
                     primary_key_column_coll.trigger('pgadmin:multicolumn:updated', primary_key_column_coll);

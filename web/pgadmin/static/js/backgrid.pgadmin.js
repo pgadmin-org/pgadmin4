@@ -487,6 +487,7 @@
           column = this.column,
           val = this.formatter.toRaw(this.$input.prop('checked'), model);
 
+      this.enterEditMode();
       // on bootstrap change we also need to change model's value
       model.set(column.get("name"), val);
     },
