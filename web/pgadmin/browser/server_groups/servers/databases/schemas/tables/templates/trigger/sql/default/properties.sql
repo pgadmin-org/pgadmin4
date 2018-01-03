@@ -7,7 +7,7 @@ SELECT t.oid,t.tgname AS name, t.xmin, t.*, relname, CASE WHEN relkind = 'r' THE
 {% if datlastsysoid %}
     (CASE WHEN t.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_trigger,
 {% endif %}
-    (CASE WHEN tgconstraint != 0::OID THEN true ElSE false END) AS is_constarint,
+    (CASE WHEN tgconstraint != 0::OID THEN true ElSE false END) AS is_constraint_trigger,
     (CASE WHEN tgenabled = 'O' THEN true ElSE false END) AS is_enable_trigger
 FROM pg_trigger t
     JOIN pg_class cl ON cl.oid=tgrelid
