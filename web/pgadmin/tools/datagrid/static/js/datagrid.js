@@ -1,10 +1,11 @@
 define('pgadmin.datagrid', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertify',
-  'sources/pgadmin', 'pgadmin.browser.tool', 'sources/generated/codemirror',
-  'sources/sqleditor_utils', 'wcdocker'
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser.tool',
+  'sources/generated/codemirror', 'sources/sqleditor_utils', 'wcdocker',
 ], function(
   gettext, url_for, $, _, alertify, pgAdmin, pgTool, codemirror, sqlEditorUtils
 ) {
+
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,

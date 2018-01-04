@@ -45,7 +45,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     'switch' : 'switch',
     'select2': 'select2',
     'note': 'note',
-    'color': 'color'
+    'color': 'color',
   };
 
   Backform.getMappedControl = function(type, mode) {
@@ -166,8 +166,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       */
       this.$el.find(':input[name]').not('button').each(function(ix, el) {
         var error = self.keyPathAccessor(
-            errorModel.toJSON(), $(el).attr('name')
-          );
+          errorModel.toJSON(), $(el).attr('name')
+        );
 
         if (_.isEmpty(error)) return;
         self.$el.addClass(Backform.errorClassName);
@@ -666,7 +666,9 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
   Backform.generateGridColumnsFromModel =
     function(node_info, m, type, cols, node) {
-      var groups = Backform.generateViewSchema(node_info, m, type, node, true, true),
+      var groups = Backform.generateViewSchema(
+          node_info, m, type, node, true, true
+        ),
         schema = [],
         columns = [],
         func,
@@ -1113,13 +1115,17 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.clearInvalid();
 
       this.$el.find('.subnode-body').each(function() {
-        var error = self.keyPathAccessor(errorModel.toJSON(), self.field.get('name'));
+        var error = self.keyPathAccessor(
+          errorModel.toJSON(), self.field.get('name')
+        );
 
         if (_.isEmpty(error)) return;
 
         self.$el.addClass('subnode-error').append(
-          $('<div></div>').addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
-          );
+          $('<div></div>').addClass(
+            'pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block'
+          ).text(error)
+        );
       });
     },
   });
@@ -1569,15 +1575,18 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           // Generate the empty group list (if not exists)
           groups[group] = (groups[group] || []);
           ver_in_limit = (_.isUndefined(server_info) ? true :
-                ((_.isUndefined(s.server_type) ? true :
-                  (server_info.type in s.server_type)) &&
+            ((_.isUndefined(s.server_type) ? true :
+              (server_info.type in s.server_type)) &&
                 (_.isUndefined(s.min_version) ? true :
-                 (server_info.version >= s.min_version)) &&
+                  (server_info.version >= s.min_version)) &&
                 (_.isUndefined(s.max_version) ? true :
-                 (server_info.version <= s.max_version))));
-          var disabled = ((mode == 'properties') || !ver_in_limit || in_catalog),
+                  (server_info.version <= s.max_version))));
+
+          var disabled = (
+              (mode == 'properties') || !ver_in_limit || in_catalog
+            ),
             schema_node = (s.node && _.isString(s.node) &&
-                  s.node in pgBrowser.Nodes &&  pgBrowser.Nodes[s.node]) || node;
+              s.node in pgBrowser.Nodes &&  pgBrowser.Nodes[s.node]) || node;
 
           var o = _.extend(_.clone(s), {
             name: s.id,
@@ -2018,16 +2027,16 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         self = this;
 
       self.sqlCtrl = CodeMirror.fromTextArea(
-          (self.$el.find("textarea")[0]), {
+          (self.$el.find('textarea')[0]), {
             lineNumbers: true,
-            mode: "text/x-pgsql",
+            mode: 'text/x-pgsql',
             extraKeys: pgAdmin.Browser.editor_shortcut_keys,
             indentWithTabs: pgAdmin.Browser.editor_options.indent_with_tabs,
             indentUnit: pgAdmin.Browser.editor_options.tabSize,
             tabSize: pgAdmin.Browser.editor_options.tabSize,
             lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
             autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
-            matchBrackets: pgAdmin.Browser.editor_options.brace_matching
+            matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
           });
 
       // Disable editor
@@ -2170,10 +2179,6 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
     storage_dlg_hander: function(value) {
       var attrArr = this.field.get('name').split('.'),
         name = attrArr.shift();
-
-      this.remove_file_dlg_event_listeners();
-
-      this.remove_file_dlg_event_listeners();
 
       this.remove_file_dlg_event_listeners();
 
@@ -2329,36 +2334,36 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
           }
           this.updateInvalid();
 
-      return this;
-    },
-    clearInvalid: function() {
-      Backform.InputControl.prototype.clearInvalid.apply(this, arguments);
-      this.$el.removeClass("pgadmin-datepicker-has-error");
-      return this;
-    },
-    updateInvalid: function() {
-      Backform.InputControl.prototype.updateInvalid.apply(this, arguments);
+          return this;
+        },
+        clearInvalid: function() {
+          Backform.InputControl.prototype.clearInvalid.apply(this, arguments);
+          this.$el.removeClass('pgadmin-datepicker-has-error');
+          return this;
+        },
+        updateInvalid: function() {
+          Backform.InputControl.prototype.updateInvalid.apply(this, arguments);
       // Introduce a new class to fix the error icon placement on the control
-      this.$el.addClass("pgadmin-datepicker-has-error");
-    },
-    cleanup: function() {
-      if (this.has_datepicker)
-        this.$el.find("input").datetimepicker('destroy');
-      this.$el.empty();
-    }
-  });
+          this.$el.addClass('pgadmin-datepicker-has-error');
+        },
+        cleanup: function() {
+          if (this.has_datepicker)
+            this.$el.find('input').datetimepicker('destroy');
+          this.$el.empty();
+        },
+      });
 
   // Color Picker control
-  var ColorControl = Backform.ColorControl = Backform.InputControl.extend({
+  Backform.ColorControl = Backform.InputControl.extend({
     defaults: {
-      label: "",
+      label: '',
       extraClasses: [],
       helpMessage: null,
       showButtons: false,
       showPalette: true,
       allowEmpty: true,
-      colorFormat: "hex",
-      defaultColor: ""
+      colorFormat: 'hex',
+      defaultColor: '',
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -2367,8 +2372,8 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
-      '</div>'
-    ].join("\n")),
+      '</div>',
+    ].join('\n')),
     render: function() {
       // Clear first
       if(this.$picker && this.$picker.hasOwnProperty('destroy')) {
@@ -2376,26 +2381,26 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       }
 
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-          }),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
+        attributes = this.model.toJSON(),
+        attrArr = field.name.split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        rawValue = this.keyPathAccessor(attributes[name], path),
+        data = _.extend(field, {
+          rawValue: rawValue,
+          value: this.formatter.fromRaw(rawValue, this.model),
+          attributes: attributes,
+          formatter: this.formatter,
+        }),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
 
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
         visible:  evalF(data.visible, data, this.model),
-        required: evalF(data.required, data, this.model)
+        required: evalF(data.required, data, this.model),
       });
 
       // Clean up first
@@ -2407,7 +2412,7 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
       this.$el.html(this.template(data)).addClass(field.name);
 
       // Creating default Color picker
-      this.$picker = this.$el.find("input").spectrum({
+      this.$picker = this.$el.find('input').spectrum({
         allowEmpty: data.allowEmpty,
         preferredFormat: data.colorFormat,
         disabled: data.disabled,
@@ -2421,128 +2426,20 @@ function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
         color: data.value || data.defaultColor,
         // Predefined palette colors
         palette: [
-            ["#000","#444","#666","#999","#ccc","#eee","#f3f3f3","#fff"],
-            ["#f00","#f90","#ff0","#0f0","#0ff","#00f","#90f","#f0f"],
-            ["#f4cccc","#fce5cd","#fff2cc","#d9ead3","#d0e0e3","#cfe2f3","#d9d2e9","#ead1dc"],
-            ["#ea9999","#f9cb9c","#ffe599","#b6d7a8","#a2c4c9","#9fc5e8","#b4a7d6","#d5a6bd"],
-            ["#e06666","#f6b26b","#ffd966","#93c47d","#76a5af","#6fa8dc","#8e7cc3","#c27ba0"],
-            ["#c00","#e69138","#f1c232","#6aa84f","#45818e","#3d85c6","#674ea7","#a64d79"],
-            ["#900","#b45f06","#bf9000","#38761d","#134f5c","#0b5394","#351c75","#741b47"],
-            ["#600","#783f04","#7f6000","#274e13","#0c343d","#073763","#20124d","#4c1130"]
-        ]
+            ['#000','#444','#666','#999','#ccc','#eee','#f3f3f3','#fff'],
+            ['#f00','#f90','#ff0','#0f0','#0ff','#00f','#90f','#f0f'],
+            ['#f4cccc','#fce5cd','#fff2cc','#d9ead3','#d0e0e3','#cfe2f3','#d9d2e9','#ead1dc'],
+            ['#ea9999','#f9cb9c','#ffe599','#b6d7a8','#a2c4c9','#9fc5e8','#b4a7d6','#d5a6bd'],
+            ['#e06666','#f6b26b','#ffd966','#93c47d','#76a5af','#6fa8dc','#8e7cc3','#c27ba0'],
+            ['#c00','#e69138','#f1c232','#6aa84f','#45818e','#3d85c6','#674ea7','#a64d79'],
+            ['#900','#b45f06','#bf9000','#38761d','#134f5c','#0b5394','#351c75','#741b47'],
+            ['#600','#783f04','#7f6000','#274e13','#0c343d','#073763','#20124d','#4c1130'],
+        ],
 
       });
       this.updateInvalid();
       return this;
-    }
-  });
-
-      return this;
     },
-    clearInvalid: function() {
-      Backform.InputControl.prototype.clearInvalid.apply(this, arguments);
-      this.$el.removeClass("pgadmin-datepicker-has-error");
-      return this;
-    },
-    updateInvalid: function() {
-      Backform.InputControl.prototype.updateInvalid.apply(this, arguments);
-      // Introduce a new class to fix the error icon placement on the control
-      this.$el.addClass("pgadmin-datepicker-has-error");
-    },
-    cleanup: function() {
-      if (this.has_datepicker)
-        this.$el.find("input").datetimepicker('destroy');
-      this.$el.empty();
-    }
-  });
-
-  // Color Picker control
-  var ColorControl = Backform.ColorControl = Backform.InputControl.extend({
-    defaults: {
-      label: "",
-      extraClasses: [],
-      helpMessage: null,
-      showButtons: false,
-      showPalette: true,
-      allowEmpty: true,
-      colorFormat: "hex",
-      defaultColor: ""
-    },
-    template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%>">',
-      '  <input class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '  <% if (helpMessage && helpMessage.length) { %>',
-      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '  <% } %>',
-      '</div>'
-    ].join("\n")),
-    render: function() {
-      // Clear first
-      if(this.$picker && this.$picker.hasOwnProperty('destroy')) {
-        this.$picker('destroy');
-      }
-
-      var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-          }),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
-
-      // Evaluate the disabled, visible, and required option
-      _.extend(data, {
-        disabled: evalF(data.disabled, data, this.model),
-        visible:  evalF(data.visible, data, this.model),
-        required: evalF(data.required, data, this.model)
-      });
-
-      // Clean up first
-      this.$el.empty();
-
-      if (!data.visible)
-        this.$el.addClass(Backform.hiddenClassname);
-
-      this.$el.html(this.template(data)).addClass(field.name);
-
-      // Creating default Color picker
-      this.$picker = this.$el.find("input").spectrum({
-        allowEmpty: data.allowEmpty,
-        preferredFormat: data.colorFormat,
-        disabled: data.disabled,
-        hideAfterPaletteSelect:true,
-        clickoutFiresChange: true,
-        showButtons: data.showButtons,
-        showPaletteOnly: data.showPalette,
-        togglePaletteOnly: data.showPalette,
-        togglePaletteMoreText: gettext('More'),
-        togglePaletteLessText: gettext('Less'),
-        color: data.value || data.defaultColor,
-        // Predefined palette colors
-        palette: [
-            ["#000","#444","#666","#999","#ccc","#eee","#f3f3f3","#fff"],
-            ["#f00","#f90","#ff0","#0f0","#0ff","#00f","#90f","#f0f"],
-            ["#f4cccc","#fce5cd","#fff2cc","#d9ead3","#d0e0e3","#cfe2f3","#d9d2e9","#ead1dc"],
-            ["#ea9999","#f9cb9c","#ffe599","#b6d7a8","#a2c4c9","#9fc5e8","#b4a7d6","#d5a6bd"],
-            ["#e06666","#f6b26b","#ffd966","#93c47d","#76a5af","#6fa8dc","#8e7cc3","#c27ba0"],
-            ["#c00","#e69138","#f1c232","#6aa84f","#45818e","#3d85c6","#674ea7","#a64d79"],
-            ["#900","#b45f06","#bf9000","#38761d","#134f5c","#0b5394","#351c75","#741b47"],
-            ["#600","#783f04","#7f6000","#274e13","#0c343d","#073763","#20124d","#4c1130"]
-        ]
-
-      });
-      this.updateInvalid();
-      return this;
-    }
   });
 
   return Backform;
