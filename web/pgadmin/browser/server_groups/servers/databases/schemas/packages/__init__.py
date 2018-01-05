@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2017, The pgAdmin Development Team
+# Copyright (C) 2013 - 2018, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -263,7 +263,7 @@ class PackageView(PGChildNodeView):
 
         """
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']), 
+            "/".join([self.template_path, 'properties.sql']),
             scid=scid, pkgid=pkgid
         )
         status, rset = self.conn.execute_dict(SQL)

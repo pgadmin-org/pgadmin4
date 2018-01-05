@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2017, The pgAdmin Development Team
+// Copyright (C) 2013 - 2018, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 // BrowserWindow.h - Declaration of the main window class
