@@ -5,7 +5,8 @@
                 <legend class="badge">{{ _('Welcome') }}</legend>
             </div>
             <div class="well well-lg">
-                <img src="{{ url_for('dashboard.static', filename='img/welcome_logo.png') }}" alt="pgAdmin 4">
+                <img src="{{ url_for('dashboard.static', filename='img/welcome_logo.png') }}"
+                     alt="{{ config.APP_NAME }} {{ _('logo') }}">
                 <h4>{{ _('Feature rich') }} | {{ _('Maximises PostgreSQL') }} | {{ _('Open Source') }} </h4>
                 <p>
                     {{ _('pgAdmin is an Open Source administration and management tool for the PostgreSQL database. It includes a graphical administration interface, an SQL query tool, a procedural code debugger and much more. The tool is designed to answer the needs of developers, DBAs and system administrators alike.') }}

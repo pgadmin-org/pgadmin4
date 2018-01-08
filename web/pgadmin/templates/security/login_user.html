@@ -8,7 +8,8 @@
     <fieldset>
         {{ render_field_with_errors(login_user_form.email, "text") }}
         {{ render_field_with_errors(login_user_form.password, "password") }}
-        <input class="btn btn-lg btn-success btn-block" type="submit" value="{{ _('Login') }}">
+        <input class="btn btn-lg btn-success btn-block" type="submit" value="{{ _('Login') }}"
+               title="{{ _('Login') }}">
         <div class="pgadmin-control-group form-group pg-el-xs-12 user-language">
             <label class="help-block pg-el-sm-3">{{ _("Language") }}</label>
             <div class="pgadmin-controls pg-el-sm-9">

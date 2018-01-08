@@ -534,7 +534,7 @@ var getFolderInfo = function(path, file_type) {
 
   // Display an activity indicator.
   $('.fileinfo').find('span.activity').html(
-    '<img src="' + loading_icon_url + '"/>'
+    '<img src="' + loading_icon_url + '" alt="' + gettext("Loading...") + '"/>'
   );
 
   var post_data = {
