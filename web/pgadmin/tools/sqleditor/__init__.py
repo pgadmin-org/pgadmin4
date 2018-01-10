@@ -434,8 +434,10 @@ def start_view_data(trans_id):
             sql = trans_obj.get_sql()
             pk_names, primary_keys = trans_obj.get_primary_keys(default_conn)
 
-            # Fetch OIDs status
-            has_oids = trans_obj.has_oids(default_conn)
+            has_oids = False
+            if trans_obj.object_type == 'table':
+                # Fetch OIDs status
+                has_oids = trans_obj.has_oids(default_conn)
 
             # Fetch the applied filter.
             filter_applied = trans_obj.is_filter_applied()
