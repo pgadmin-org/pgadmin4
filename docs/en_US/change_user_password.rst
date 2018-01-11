@@ -15,6 +15,7 @@ Please consider the following guidelines when selecting a password:
 The above should be considered a starting point: It is not a comprehensive list and it **will not guarantee security**.
 
 .. image:: images/change_user_password.png
+    :alt: Change pgAdmin4 current user password dialog
 
 Use the *Change Password* dialog to change your password:
 

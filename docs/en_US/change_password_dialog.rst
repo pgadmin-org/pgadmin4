@@ -6,7 +6,7 @@ The Change Password Dialog
 
 It is a good policy to routinely change your password to protect data, even in what you may consider a 'safe' environment. In the workplace, failure to apply an appropriate password policy could leave you in breach of Data Protection laws.
 
-Please consider the following guidelines when selecting a password: 
+Please consider the following guidelines when selecting a password:
 
 * Ensure that your password is an adequate length; 6 characters should be the absolute minimum number of characters in the password.
 * Ensure that your password is not open to dictionary attacks. Use a mixture of upper and lower case letters and numerics, and avoid words or names. Consider using the first letter from each word in a phrase that you will remember easily but is an unfamiliar acronym.
@@ -15,6 +15,7 @@ Please consider the following guidelines when selecting a password:
 The above should be considered a starting point: It is not a comprehensive list and it **will not guarantee security**.
 
 .. image:: images/password.png
+    :alt: Change database password dialog
 
 Use the *Change Password* dialog to change your password:
 

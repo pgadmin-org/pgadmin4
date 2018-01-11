@@ -4,16 +4,17 @@
 The pgAdmin Tree Control
 ************************
 
-The left pane of the main window displays a tree control (the *pgAdmin* tree control) that provides access to the objects that reside on a server. 
+The left pane of the main window displays a tree control (the *pgAdmin* tree control) that provides access to the objects that reside on a server.
 
 .. image:: /images/main_left_pane.png
+    :alt: Browser tree panel
 
-You can expand nodes in the tree control to view the database objects that reside on a selected server. The tree control expands to display a hierarchical view: 
+You can expand nodes in the tree control to view the database objects that reside on a selected server. The tree control expands to display a hierarchical view:
 
-* Use the plus sign (+) to the left of a node to expand a segment of the tree control. 
-* Click the minus sign (-) to the left of a node to close that node. 
+* Use the plus sign (+) to the left of a node to expand a segment of the tree control.
+* Click the minus sign (-) to the left of a node to close that node.
 
-Access context-sensitive menus by right-clicking on a node of the tree control to perform common tasks. Menus display options that include one or more of the following selections (options appear in alphabetical order): 
+Access context-sensitive menus by right-clicking on a node of the tree control to perform common tasks. Menus display options that include one or more of the following selections (options appear in alphabetical order):
 
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | Option                    | Action                                                                                                                    |
@@ -49,15 +50,15 @@ Access context-sensitive menus by right-clicking on a node of the tree control t
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Maintenance...*          | Click to open the :ref:`Maintenance... <maintenance_dialog>` dialog to VACUUM, ANALYZE, REINDEX, or CLUSTER.              |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
-| *Properties...*           | Click to review or modify the currently selected object's properties.                                                     |                
+| *Properties...*           | Click to review or modify the currently selected object's properties.                                                     |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Refresh...*              | Click to refresh the currently selected object.                                                                           |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Reload Configuration...* | Click to update configuration files without restarting the server.                                                        |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Restore...*              | Click to access the :ref:`Restore <restore_dialog>` dialog to restore database files from a backup.                       |
-+---------------------------+---------------------------------------------------------------------------------------------------------------------------+ 
-| *View Data*               | Use the *View Data* option to access the data stored in a selected table with the *Data Output* tab of the *Query Tool*.  | 
++---------------------------+---------------------------------------------------------------------------------------------------------------------------+
+| *View Data*               | Use the *View Data* option to access the data stored in a selected table with the *Data Output* tab of the *Query Tool*.  |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 
 The context-sensitive menus associated with *Tables* and nested *Table* nodes provides additional display options (options appear in alphabetical order):

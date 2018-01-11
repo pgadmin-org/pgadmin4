@@ -1,12 +1,13 @@
 .. _pgadmin_tabbed_browser:
 
 **************************
-The pgAdmin Tabbed Browser 
+The pgAdmin Tabbed Browser
 **************************
 
-The right pane of the *pgAdmin* window features a collection of tabs that display information about the object currently selected in the *pgAdmin* tree control in the left window.  Select a tab to access information about the highlighted object in the tree control. 
+The right pane of the *pgAdmin* window features a collection of tabs that display information about the object currently selected in the *pgAdmin* tree control in the left window.  Select a tab to access information about the highlighted object in the tree control.
 
-.. image:: images/main_dashboard.png 
+.. image:: images/main_dashboard.png
+    :alt: Dashboard panel
 
 The graphs on the *Dashboard* tab provides an active analysis of the usage statistics for the selected server or database:
 
@@ -25,27 +26,32 @@ You can use icons in the *Sessions* table to review or control the state of a se
 
 * Use the *Terminate* icon (located in the first column) to stop a session and remove the session from the table.  Before the server terminates the session, you will be prompted to confirm your selection.
 * Use the *Cancel* icon (located in the second column) to terminate an active query without closing the session.  Before canceling the query, the server will prompt you to confirm your selection.  When you cancel a query, the value displayed in the *State* column of the table will be updated from *Active* to *Idle*.  The session will remain in the table until the session is terminated.
-* Use the *Details* icon (located in the third column) to open the *Details* tab; the tab displays information about the selected session. 
+* Use the *Details* icon (located in the third column) to open the *Details* tab; the tab displays information about the selected session.
 
 .. image:: images/main_properties_table.png
+    :alt: Properties panel
 
-The *Properties* tab displays information about the object selected. Click the *Edit* icon in the toolbar under the browser tabs to launch the *Properties* dialog for the selected object. 
+The *Properties* tab displays information about the object selected. Click the *Edit* icon in the toolbar under the browser tabs to launch the *Properties* dialog for the selected object.
 
 .. image:: images/main_properties_icons.png
+    :alt: Object editor icon
 
-To preserve any changes to the *Properties* dialog, click the *Save* icon; your modifications will be displayed in the updated *Properties* tab. 
+To preserve any changes to the *Properties* dialog, click the *Save* icon; your modifications will be displayed in the updated *Properties* tab.
 
-.. image:: images/main_properties_edit.png 
+.. image:: images/main_properties_edit.png
+    :alt: Object editor window
 
 Details about the object highlighted in the tree control are displayed in one or more collapsible panels. You can use the arrow to the left of each panel label to open or close a panel.
 
 .. image:: images/main_sql.png
+    :alt: SQL panel
 
 The *SQL* tab displays the SQL script that created the highlighted object, and when applicable, a (commented out) SQL statement that will *DROP* the selected object. You can copy the SQL statements to the editor of your choice using cut and paste shortcuts.
 
 .. image:: images/main_statistics.png
+    :alt: Statistics panel
 
-The *Statistics* tab displays the statistics gathered for each object on the tree control; the statistics displayed in the table vary by the type of object that is selected. Click a column heading to sort the table by the data displayed in the column; click again to reverse the sort order.  The following table lists some of the statistics that are available:  
+The *Statistics* tab displays the statistics gathered for each object on the tree control; the statistics displayed in the table vary by the type of object that is selected. Click a column heading to sort the table by the data displayed in the column; click again to reverse the sort order.  The following table lists some of the statistics that are available:
 
 +----------------------------+------------------------------------------------------------------------------------------------------------+
 | Panel                      | Description                                                                                                |
@@ -101,7 +107,8 @@ The *Statistics* tab displays the statistics gathered for each object on the tre
 | *Size*                     | displays the size (in megabytes) of the selected database.                                                 |
 +----------------------------+------------------------------------------------------------------------------------------------------------+
 
-.. image:: images/main_dependencies.png 
+.. image:: images/main_dependencies.png
+    :alt: Dependencies panel
 
 The *Dependencies* tab displays the objects on which the currently selected object depends. If a dependency is dropped, the object currently selected in the pgAdmin tree control will be affected. To ensure the integrity of the entire database structure, the database server makes sure that you do not accidentally drop objects that other objects depend on; you must use the DROP CASCADE command to remove an object with a dependency.
 
@@ -114,8 +121,9 @@ The *Dependencies* table displays the following information:
    * If the field is *internal*, the selected object was created during the creation of the parent object, and will be dropped if the parent object is dropped.
    * If the field is *normal*, the selected object can be dropped without dropping the parent object.
    * If the field is *blank*, the selected object is required by the system, and cannot be dropped.
-     
+
 .. image:: images/main_dependents.png
+    :alt: Dependents panel
 
 The *Dependents* tab displays a table of objects that depend on the object currently selected in the *pgAdmin* browser. A dependent object can be dropped without affecting the object currently selected in the *pgAdmin* tree control.
 
@@ -124,6 +132,7 @@ The *Dependents* tab displays a table of objects that depend on the object curre
 * The *Database* field specifies the database in which the object resides.
 
 .. image:: images/main_query_tool.png
+    :alt: Query tool panel
 
 Additional tabs open when you access the extended functionality offered by pgAdmin tools (such as the Query tool, Debugger, or SQL editor). Use the close icon (X) located in the upper-right corner of each tab to close the tab when you are finished using the tool. Like permanent tabs, these tabs may be repositioned in the pgAdmin client window.
 

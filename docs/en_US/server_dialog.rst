@@ -7,6 +7,7 @@ The Server Dialog
 Use the *Server* dialog to describe a connection to a server. Note: you must ensure that the pg_hba.conf file of the server from which you are connecting allows connections from the host of the client.
 
 .. image:: images/server_general.png
+    :alt: Server dialog general tab
 
 Use the fields in the *General* tab to identify the server:
 
@@ -20,6 +21,7 @@ Use the fields in the *General* tab to identify the server:
 Click the *Connection* tab to continue.
 
 .. image:: images/server_connection.png
+    :alt: Server dialog connection tab
 
 Use the fields in the *Connection* tab to configure a connection:
 
@@ -34,6 +36,7 @@ Use the fields in the *Connection* tab to configure a connection:
 Click the *SSL* tab to continue.
 
 .. image:: images/server_ssl.png
+    :alt: Server dialog ssl tab
 
 Use the fields in the *SSL* tab to configure SSL:
 
@@ -52,6 +55,7 @@ If pgAdmin is installed in Server mode (the default mode), you can use the platf
 Click the *Advanced* tab to continue.
 
 .. image:: images/server_advanced.png
+    :alt: Server dialog advanced tab
 
 Use the fields in the *Advanced* tab to configure a connection:
 
