@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////
 // This file contains common utilities functions used in sqleditor modules
 
-define(['jquery'],
-  function ($) {
+define(['jquery', 'sources/gettext'],
+  function ($, gettext) {
     var sqlEditorUtils = {
       /* Reference link http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
        * Modified as per requirement.
@@ -55,6 +55,143 @@ define(['jquery'],
       },
       capitalizeFirstLetter: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+      },
+
+      // Status flag
+      previousStatus: null,
+
+      // This function will fetch the connection status via ajax
+      fetchConnectionStatus: function(url, $el, $status_el) {
+        // If user has switch the browser Tab or Minimized window or
+        // if wcDocker panel is not in focus then don't fire AJAX
+        if (document.visibilityState !== 'visible' ||
+              $el.data('panel-visible') !== 'visible' ) {
+          return;
+        }
+        // Start polling..
+        $.ajax({
+          url: url,
+          method: 'GET',
+          success: function (res) {
+            if(res && res.data) {
+              var status = res.data.status,
+                msg = res.data.message,
+                is_status_changed = false;
+
+              // Inject CSS as required
+              switch(status) {
+                  // Busy
+                  case 1:
+                      // if received busy status more than once then only
+                      if(status == sqlEditorUtils.previousStatus &&
+                          !$status_el.hasClass('fa-hourglass-half')) {
+                        $status_el.removeClass()
+                                  .addClass('fa fa-hourglass-half');
+                        is_status_changed = true;
+                      }
+                      break;
+                  // Idle in transaction
+                  case 2:
+                      if(sqlEditorUtils.previousStatus != status &&
+                          !$status_el.hasClass('fa-clock-o')) {
+                        $status_el.removeClass()
+                                  .addClass('fa fa-clock-o');
+                        is_status_changed = true;
+                      }
+                      break;
+                  // Failed in transaction
+                  case 3:
+                      if(sqlEditorUtils.previousStatus != status &&
+                          !$status_el.hasClass('fa-exclamation-circle')) {
+                        $status_el.removeClass()
+                                  .addClass('fa fa-exclamation-circle');
+                        is_status_changed = true;
+                      }
+                      break;
+                  // Failed in transaction with unknown server side error
+                  case 4:
+                      if(sqlEditorUtils.previousStatus != status &&
+                          !$status_el.hasClass('fa-exclamation-triangle')) {
+                        $status_el.removeClass()
+                                  .addClass('fa fa-exclamation-triangle');
+                        is_status_changed = true;
+                      }
+                      break;
+                  default:
+                      if(sqlEditorUtils.previousStatus != status &&
+                          !$status_el.hasClass('fa-query_tool_connected')) {
+                        $status_el.removeClass()
+                                  .addClass('fa-custom fa-query-tool-connected');
+                        is_status_changed = true;
+                      }
+              }
+
+              sqlEditorUtils.previousStatus = status;
+              // Set bootstrap popover message
+              if(is_status_changed) {
+                $el.popover('hide');
+                $el.attr('data-content', msg);
+              }
+            } else {
+              // We come here means we did not receive expected response
+              // from server, we need to error out
+              sqlEditorUtils.previousStatus = -99;
+              msg = gettext("An unexpected error occurred - " +
+                            "ensure sure you are logged into the application.");
+              $el.attr('data-content', msg);
+              if(!$status_el.hasClass('fa-query-tool-disconnected')) {
+                $el.popover('hide');
+                $status_el.removeClass()
+                          .addClass('fa-custom fa-query-tool-disconnected');
+              }
+            }
+          },
+          error: function (e) {
+            sqlEditorUtils.previousStatus = -1;
+            var msg = gettext("Transaction status check failed.");
+            if (e.readyState == 0) {
+              msg = gettext("Not connected to the server or the connection to " +
+                            "the server has been closed.");
+            } else if (e.responseJSON && e.responseJSON.errormsg) {
+              msg = e.responseJSON.errormsg;
+            }
+
+            // Set bootstrap popover
+            $el.attr('data-content', msg);
+            // Add error class
+            if(!$status_el.hasClass('fa-query-tool-disconnected')) {
+              $el.popover('hide');
+              $status_el.removeClass()
+                        .addClass('fa-custom fa-query-tool-disconnected');
+            }
+          }
+        });
+      },
+
+      // This function will update the connection status
+      updateConnectionStatus: function(url, poll_time) {
+        var $el = $(".connection_status"),
+          $status_el = $($($el).find(".fa-custom"));
+
+        // Apply popover on element
+        $el.popover();
+
+        // To set initial connection status
+        sqlEditorUtils.fetchConnectionStatus(url, $el, $status_el);
+
+        // Calling it again in specified interval
+        setInterval(
+          sqlEditorUtils.fetchConnectionStatus.bind(null, url, $el, $status_el),
+          poll_time * 1000
+        );
+      },
+
+      // Updates the flag for connection status poll
+      updateConnectionStatusFlag: function(status) {
+        var $el = $(".connection_status");
+        if ($el.data('panel-visible') != status) {
+          $el.data('panel-visible', status);
+        }
       },
     };
     return sqlEditorUtils;

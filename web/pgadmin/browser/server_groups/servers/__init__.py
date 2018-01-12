@@ -886,9 +886,12 @@ class ServerNode(PGChildNodeView):
         if server is None:
             return bad_request(gettext("Server not found."))
 
-        # Fetch User Details.
-        user = User.query.filter_by(id=current_user.id).first()
-        if user is None:
+        if current_user and hasattr(current_user, 'id'):
+            # Fetch User Details.
+            user = User.query.filter_by(id=current_user.id).first()
+            if user is None:
+                return unauthorized(gettext("Unauthorized request."))
+        else:
             return unauthorized(gettext("Unauthorized request."))
 
         data = request.form if request.form else json.loads(

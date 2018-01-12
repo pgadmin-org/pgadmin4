@@ -14,7 +14,7 @@
 .sql-editor-busy-fetching {
   position:absolute;
   left: 0;
-  top: 41px;
+  top: 65px;
   bottom: 0;
   right: 0;
   margin:0;
@@ -31,11 +31,6 @@
   top : 65px;
   bottom: 0;
   z-index: 0;
-}
-
-.editor-title {
-  padding: 4px 5px;
-  font-size: 13px;
 }
 
 .sql-editor-grid-container {
@@ -523,4 +518,57 @@ input.editor-checkbox:focus {
 
 #datagrid .slick-row .slick-cell {
   white-space: pre;
+}
+
+/* CSS for connection status icon */
+#output-panel .CodeMirror {
+  border-top: 1px solid #ddd;
+}
+
+.connection_status_wrapper {
+  width: 100%;
+  background-color: #f7f7f7;
+}
+
+.editor-title {
+  padding: 4px 5px;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.connection_status {
+  width: 11px;
+  position: relative;
+  display: inline-block;
+  margin-top: 2px;
+  margin-left: 12px;
+  margin-right: 16px;
+}
+
+.connection_status .fa {
+  font-size: 16px;
+  margin-left: 2px;
+}
+
+.connection_status .fa-clock-o,
+.connection_status .fa-hourglass-half {
+  color: #e8a735;
+}
+
+.connection_status .fa-exclamation-circle,
+.connection_status .fa-exclamation-triangle {
+  color: #d0021b;
+}
+
+.connection_status .fa-custom {
+  height: 18px;
+  margin-bottom: -4px;
+}
+
+.connection_status .fa-query-tool-connected {
+  content: url('../img/connect.svg');
+}
+
+.connection_status .fa-query-tool-disconnected {
+  content: url('../img/disconnect.svg');
 }

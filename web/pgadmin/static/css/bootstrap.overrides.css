@@ -1438,3 +1438,9 @@ body {
 .multi-checkbox .check.partial:after {
   content: "\003F";
 }
+
+/* Override default bootstrap popover fonts & size */
+.popover-content {
+  font-family: 'Open Sans';
+  font-size: 13px;
+}

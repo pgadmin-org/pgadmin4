@@ -268,6 +268,12 @@ module.exports = {
     }, {
       test: /\.(eot|svg|ttf|woff|woff2)$/,
       loader: 'file-loader?name=fonts/[name].[ext]',
+      include: [
+        /node_modules/,
+        path.join(sourceDir, '/css/'),
+        path.join(sourceDir, '/scss/'),
+        path.join(sourceDir, '/fonts/'),
+      ],
       exclude: /vendor/,
     }, {
       test: /\.scss$/,

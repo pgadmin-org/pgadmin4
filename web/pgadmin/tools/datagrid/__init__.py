@@ -149,10 +149,11 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
     else:
         sql_grid_data = session['gridData']
 
-    # Use pickle to store the command object which will be used
-    # later by the sql grid module.
+    # Use pickle to store the command object which will be used later by the
+    # sql grid module.
     sql_grid_data[trans_id] = {
-        'command_obj': pickle.dumps(command_obj, -1)  # -1 specify the highest protocol version available
+        # -1 specify the highest protocol version available
+        'command_obj': pickle.dumps(command_obj, -1)
     }
 
     # Store the grid dictionary into the session variable
@@ -195,15 +196,20 @@ def panel(trans_id, is_query_tool, editor_title):
     user_agent = UserAgent(request.headers.get('User-Agent'))
 
     """
-    Animations and transitions are not automatically GPU accelerated and by default use browser's slow rendering engine.
-    We need to set 'translate3d' value of '-webkit-transform' property in order to use GPU.
-    After applying this property under linux, Webkit calculates wrong position of the elements so panel contents are not visible.
-    To make it work, we need to explicitly set '-webkit-transform' property to 'none' for .ajs-notifier, .ajs-message, .ajs-modal classes.
+    Animations and transitions are not automatically GPU accelerated and by
+    default use browser's slow rendering engine. We need to set 'translate3d'
+    value of '-webkit-transform' property in order to use GPU. After applying
+    this property under linux, Webkit calculates wrong position of the elements
+    so panel contents are not visible. To make it work, we need to explicitly
+    set '-webkit-transform' property to 'none' for .ajs-notifier,
+    .ajs-message, .ajs-modal classes.
 
-    This issue is only with linux runtime application and observed in Query tool and debugger.
-    When we open 'Open File' dialog then whole Query-tool panel content is not visible though it contains HTML element in back end.
+    This issue is only with linux runtime application and observed in Query
+    tool and debugger. When we open 'Open File' dialog then whole Query tool
+    panel content is not visible though it contains HTML element in back end.
 
-    The port number should have already been set by the runtime if we're running in desktop mode.
+    The port number should have already been set by the runtime if we're
+    running in desktop mode.
     """
     is_linux_platform = False
 
@@ -218,15 +224,18 @@ def panel(trans_id, is_query_tool, editor_title):
         new_browser_tab = 'false'
 
     if is_query_tool == 'true':
-        prompt_save_changes = pref.preference('prompt_save_query_changes').get()
+        prompt_save_changes = pref.preference(
+            'prompt_save_query_changes'
+        ).get()
     else:
         prompt_save_changes = pref.preference('prompt_save_data_changes').get()
 
+    display_connection_status = pref.preference('connection_status').get()
+
     # Fetch the server details
-    #
     bgcolor = None
     fgcolor = None
-    if str(trans_id) in session['gridData']:
+    if 'gridData' in session and str(trans_id) in session['gridData']:
         # Fetch the object for the specified transaction id.
         # Use pickle.loads function to get the command object
         session_obj = session['gridData'][str(trans_id)]
@@ -240,9 +249,12 @@ def panel(trans_id, is_query_tool, editor_title):
             fgcolor = s.fgcolor or 'black'
 
     return render_template(
-        "datagrid/index.html", _=gettext, uniqueId=trans_id,
+        "datagrid/index.html",
+        _=gettext,
+        uniqueId=trans_id,
         is_query_tool=is_query_tool,
-        editor_title=editor_title, script_type_url=sURL,
+        editor_title=editor_title,
+        script_type_url=sURL,
         is_desktop_mode=app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
         is_new_browser_tab=new_browser_tab,
@@ -252,7 +264,8 @@ def panel(trans_id, is_query_tool, editor_title):
         fgcolor=fgcolor,
         # convert python boolean value to equivalent js boolean literal before
         # passing it to html template.
-        prompt_save_changes='true' if prompt_save_changes else 'false'
+        prompt_save_changes='true' if prompt_save_changes else 'false',
+        display_connection_status=display_connection_status
     )
 
 

@@ -9,6 +9,6 @@
 
 .icon-database-not-connected {
   background-image: url('{{ url_for('NODE-database.static', filename='img/databasebad.svg') }}') !important;
-  border-radius: 10px
+  border-radius: 10px;
   background-size: 20px !important;
 }

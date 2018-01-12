@@ -21,7 +21,7 @@ from pgadmin.tools.sqleditor.command import QueryToolCommand
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    success_return, internal_server_error
+    success_return, internal_server_error, unauthorized
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.misc.file_manager import Filemanager
@@ -50,6 +50,14 @@ TX_STATUS__ACTIVE = 1
 TX_STATUS_INTRANS = 2
 TX_STATUS_INERROR = 3
 
+# Connection status codes mapping
+CONNECTION_STATUS_MESSAGE_MAPPING = dict({
+    0: 'The session is idle and there is no current transaction.',
+    1: 'A command is currently in progress.',
+    2: 'The session is idle in a valid transaction block.',
+    3: 'The session is idle in a failed transaction block.',
+    4: 'The connection with the server is bad.'
+})
 
 class SqlEditorModule(PgAdminModule):
     """
@@ -107,7 +115,8 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.autocomplete',
             'sqleditor.load_file',
             'sqleditor.save_file',
-            'sqleditor.query_tool_download'
+            'sqleditor.query_tool_download',
+            'sqleditor.connection_status'
         ]
 
     def register_preferences(self):
@@ -333,6 +342,24 @@ class SqlEditorModule(PgAdminModule):
             }
         )
 
+        self.display_connection_status = self.preference.register(
+            'display', 'connection_status',
+            gettext("Connection status"), 'boolean', True,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, the Query Tool '
+                             'will monitor and display the connection and '
+                             'transaction status.')
+        )
+
+        self.connection_status = self.preference.register(
+            'display', 'connection_status_fetch_time',
+            gettext("Connection status refresh rate"), 'integer', 2,
+            min_val=1, max_val=600,
+            category_label=gettext('Display'),
+            help_str=gettext('The number of seconds between connection/transaction '
+                             'status polls.')
+        )
+
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
 
 
@@ -345,10 +372,10 @@ def index():
 
 
 def update_session_grid_transaction(trans_id, data):
-    grid_data = session['gridData']
-    grid_data[str(trans_id)] = data
-
-    session['gridData'] = grid_data
+    if 'gridData' in session:
+        grid_data = session['gridData']
+        grid_data[str(trans_id)] = data
+        session['gridData'] = grid_data
 
 
 def check_transaction_status(trans_id):
@@ -363,6 +390,10 @@ def check_transaction_status(trans_id):
     Returns: status and connection object
 
     """
+    if 'gridData' not in session:
+        return False, unauthorized(gettext("Unauthorized request.")), \
+               None, None, None
+
     grid_data = session['gridData']
 
     # Return from the function if transaction id not found
@@ -497,13 +528,23 @@ def start_query_tool(trans_id):
     else:
         sql = request.args or request.form
 
+    if 'gridData' not in session:
+        return make_json_response(
+            data={
+                'status': False,
+                'result': gettext('Transaction ID not found in the session.'),
+                'can_edit': False, 'can_filter': False
+            }
+        )
+
     grid_data = session['gridData']
 
     # Return from the function if transaction id not found
     if str(trans_id) not in grid_data:
         return make_json_response(
             data={
-                'status': False, 'result': gettext('Transaction ID not found in the session.'),
+                'status': False,
+                'result': gettext('Transaction ID not found in the session.'),
                 'can_edit': False, 'can_filter': False
             }
         )
@@ -1805,6 +1846,53 @@ def start_query_download_tool(trans_id):
             r.headers["Content-Disposition"] = "attachment;filename=error.csv"
             r.call_on_close(cleanup)
             return r
+    else:
+        return internal_server_error(
+            errormsg=gettext("Transaction status check failed.")
+        )
+
+@blueprint.route(
+    '/status/<int:trans_id>',
+    methods=["GET"],
+    endpoint='connection_status'
+)
+@login_required
+def query_tool_status(trans_id):
+    """
+    The task of this function to return the status of the current connection
+    used in query tool instance with given transaction ID.
+    Args:
+        trans_id: Transaction ID
+
+    Returns:
+        Response with the connection status
+
+        Psycopg2 Status Code Mapping:
+        -----------------------------
+        TRANSACTION_STATUS_IDLE     = 0
+        TRANSACTION_STATUS_ACTIVE   = 1
+        TRANSACTION_STATUS_INTRANS  = 2
+        TRANSACTION_STATUS_INERROR  = 3
+        TRANSACTION_STATUS_UNKNOWN  = 4
+    """
+    status, error_msg, conn, trans_obj, \
+        session_obj = check_transaction_status(trans_id)
+
+    if not status and error_msg and type(error_msg) == str:
+        return internal_server_error(
+            errormsg=error_msg
+        )
+
+    if conn and trans_obj and session_obj:
+        status = conn.conn.get_transaction_status()
+        return make_json_response(
+            data={
+                'status': status,
+                'message': gettext(
+                    CONNECTION_STATUS_MESSAGE_MAPPING.get(status)
+                )
+            }
+        )
     else:
         return internal_server_error(
             errormsg=gettext("Transaction status check failed.")

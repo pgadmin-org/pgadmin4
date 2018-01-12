@@ -1,8 +1,5 @@
 {% extends "base.html" %}
 {% block title %}{{ config.APP_NAME }} - Datagrid{% endblock %}
-{% block css_link %}
-<link type="text/css" rel="stylesheet" href="{{ url_for('sqleditor.static', filename='css/sqleditor.css') }}">
-{% endblock %}
 {% block body %}
 <style>
     body {padding: 0px;}
@@ -13,6 +10,14 @@
     .alertify .ajs-dialog.ajs-shake{-webkit-animation-name: none;}
     .sql-editor-busy-icon.fa-pulse{-webkit-animation: none;}
     {% endif %}
+
+    {# Note: If we will display connection status then we have to provide some
+    space to display status icon else we can use all the space available #}
+    .editor-title {
+      width:{% if display_connection_status -%} calc(100% - 43px)
+    {% else %} 100% {%- endif %};
+    }
+
 </style>
 <div id="main-editor_panel">
     <div id="fetching_data" class="wcLoadingIconContainer sql-editor-busy-fetching hide">
@@ -284,7 +289,26 @@
                 </button>
             </div>
         </div>
-        <div class="editor-title" style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% else %}{{ bgcolor or '#2C76B4' }}{% endif %}; color: {{ fgcolor or 'white' }};"></div>
+
+        <div class="connection_status_wrapper">
+            {% if display_connection_status %}
+            <div style="display: inline-block;"
+                 title="{{ _('Connection status (click for details) (<accesskey>+T)') }}">
+                <div class="connection_status" data-container="body"
+                     data-toggle="popover" data-placement="bottom"
+                     data-content=""
+                     data-panel-visible="visible"
+                     accesskey="t">
+                    <i class="fa-custom fa-query-tool-disconnected" aria-hidden="true"
+                        title="{{ _('Connection status (click for details) (<accesskey>+T)') }}">
+                    </i>
+                </div>
+            </div>
+            {% endif %}
+            <div class="editor-title"
+                 style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% else %}{{ bgcolor or '#2C76B4' }}{% endif %}; color: {{ fgcolor or 'white' }};"></div>
+        </div>
+
         <div id="filter" class="filter-container hidden">
             <div class="filter-title">Filter</div>
             <div class="sql-textarea">
@@ -368,7 +392,13 @@
 {% endif %}
 
     // Start the query tool.
-    sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}",
-                    script_sql, {{ is_new_browser_tab }}, "{{ server_type }}", {{ prompt_save_changes }});
+    sqlEditorController.start(
+        {{ is_query_tool }},
+        "{{ editor_title }}",
+        script_sql,
+        {{ is_new_browser_tab }},
+        "{{ server_type }}",
+        {{ prompt_save_changes }}
+    );
 });
 {% endblock %}

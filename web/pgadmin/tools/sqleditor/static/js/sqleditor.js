@@ -107,6 +107,8 @@ define('tools.querytool', [
         filter = self.$el.find('#sql_filter');
 
       $('.editor-title').text(_.unescape(self.editor_title));
+      self.checkConnectionStatus();
+
       self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
         lineNumbers: true,
         mode: self.handler.server_type === 'gpdb' ? 'text/x-gpsql' : 'text/x-pgsql',
@@ -114,8 +116,12 @@ define('tools.querytool', [
           widget: '\u2026',
         },
         foldGutter: {
-          rangeFinder: CodeMirror.fold.combine(CodeMirror.pgadminBeginRangeFinder, CodeMirror.pgadminIfRangeFinder,
-            CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder),
+          rangeFinder: CodeMirror.fold.combine(
+            CodeMirror.pgadminBeginRangeFinder,
+            CodeMirror.pgadminIfRangeFinder,
+            CodeMirror.pgadminLoopRangeFinder,
+            CodeMirror.pgadminCaseRangeFinder
+          ),
         },
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
         extraKeys: pgBrowser.editor_shortcut_keys,
@@ -127,6 +133,20 @@ define('tools.querytool', [
         matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
       });
 
+      // Updates connection status flag
+      self.gain_focus = function() {
+        setTimeout(function() {
+          SqlEditorUtils.updateConnectionStatusFlag('visible');
+        }, 100);
+      };
+      // Updates connection status flag
+      self.lost_focus = function() {
+        setTimeout(function() {
+          SqlEditorUtils.updateConnectionStatusFlag('hidden');
+        }, 100);
+      };
+
+
       // Create main wcDocker instance
       var main_docker = new wcDocker(
         '#editor-panel', {
@@ -136,7 +156,7 @@ define('tools.querytool', [
             'filename': 'css',
           }),
           theme: 'webcabin.overrides.css',
-        });
+      });
 
       var sql_panel = new pgAdmin.Browser.Panel({
         name: 'sql_panel',
@@ -162,8 +182,12 @@ define('tools.querytool', [
           widget: '\u2026',
         },
         foldGutter: {
-          rangeFinder: CodeMirror.fold.combine(CodeMirror.pgadminBeginRangeFinder, CodeMirror.pgadminIfRangeFinder,
-            CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder),
+          rangeFinder: CodeMirror.fold.combine(
+            CodeMirror.pgadminBeginRangeFinder,
+            CodeMirror.pgadminIfRangeFinder,
+            CodeMirror.pgadminLoopRangeFinder,
+            CodeMirror.pgadminCaseRangeFinder
+          ),
         },
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
         extraKeys: pgBrowser.editor_shortcut_keys,
@@ -270,14 +294,47 @@ define('tools.querytool', [
 
             // Set focus on query tool of active panel
             p.on(wcDocker.EVENT.GAIN_FOCUS, function() {
-              if (!$(p.$container).hasClass('wcPanelTabContentHidden')) {
-                setTimeout(function() {
-                  self.handler.gridView.query_tool_obj.focus();
-                }, 200);
+              var $container = $(this.$container),
+                transId = self.handler.transId;
+              // If transaction id is already set
+              if($container.data('trans-id') != transId) {
+                $container.data('trans-id', transId)
+              }
+
+              if (!$container.hasClass('wcPanelTabContentHidden')) {
+                 setTimeout(function () {
+                   self.handler.gridView.query_tool_obj.focus();
+                 }, 200);
+                // Trigger an event to update connection status flag
+                pgBrowser.Events.trigger(
+                  'pgadmin:query_tool:panel:gain_focus:' + transId
+                );
               }
             });
-          }
-        });
+
+            // When any query tool panel lost it focus then
+            p.on(wcDocker.EVENT.LOST_FOCUS, function () {
+              var $container = $(this.$container),
+                transId = $container.data('trans-id');
+              // Trigger an event to update connection status flag
+              if ($container.hasClass('wcPanelTabContentHidden')) {
+                pgBrowser.Events.trigger(
+                  'pgadmin:query_tool:panel:lost_focus:' + transId
+                );
+               }
+             });
+           }
+         });
+
+        // Code to update connection status polling flag
+        pgBrowser.Events.on(
+          'pgadmin:query_tool:panel:gain_focus:' + self.handler.transId,
+          self.gain_focus, self
+        );
+        pgBrowser.Events.on(
+          'pgadmin:query_tool:panel:lost_focus:' + self.handler.transId,
+          self.lost_focus, self
+        );
       }
 
       // set focus on query tool once loaded
@@ -420,6 +477,34 @@ define('tools.querytool', [
           }.bind(ctx),
         };
       });
+    },
+
+    // This function will check the connection status at specific
+    // interval defined by the user in preference
+    checkConnectionStatus: function() {
+      var self = this,
+        preference = window.top.pgAdmin.Browser.get_preference(
+          'sqleditor', 'connection_status_fetch_time'
+        ),
+        display_status = window.top.pgAdmin.Browser.get_preference(
+          'sqleditor', 'connection_status'
+        );
+      if(!preference && self.handler.is_new_browser_tab) {
+        preference = window.opener.pgAdmin.Browser.get_preference(
+          'sqleditor', 'connection_status_fetch_time'
+        );
+        display_status = window.opener.pgAdmin.Browser.get_preference(
+          'sqleditor', 'connection_status'
+        );
+      }
+
+      // Only enable pooling if it is enabled
+      if (display_status && display_status.value) {
+        SqlEditorUtils.updateConnectionStatus(
+          url_for('sqleditor.connection_status', {'trans_id': self.transId}),
+          preference.value
+        );
+      }
     },
 
     /* To prompt user for unsaved changes */
