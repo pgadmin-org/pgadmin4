@@ -1,8 +1,8 @@
 .. _change_user_password:
 
-***********************************
-The Change User Password - pgAdmin4
-***********************************
+*******************************
+The Change User Password Dialog
+*******************************
 
 It is a good policy to routinely change your password to protect data, even in what you may consider a 'safe' environment. In the workplace, failure to apply an appropriate password policy could leave you in breach of Data Protection laws.
 
@@ -15,7 +15,7 @@ Please consider the following guidelines when selecting a password:
 The above should be considered a starting point: It is not a comprehensive list and it **will not guarantee security**.
 
 .. image:: images/change_user_password.png
-    :alt: Change pgAdmin4 current user password dialog
+    :alt: Change current user password dialog
 
 Use the *Change Password* dialog to change your password:
 
