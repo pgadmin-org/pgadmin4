@@ -38,7 +38,7 @@ This is the password used when setting up the initial administrator account to l
 PGADMIN_ENABLE_TLS
 ------------------
 
-Default: Conta1ner
+Default: False
 
 If set to the default, False, the container will listen on port 80 for connections in plain text. If set to True, the
 container will listen on port 443 for TLS connections.
