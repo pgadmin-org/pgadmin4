@@ -4,8 +4,6 @@ SELECT
     datname AS {{ conn|qtIdent(_('Database')) }},
     backend_start AS {{ conn|qtIdent(_('Backend start')) }},
     CASE
-    WHEN client_hostname IS NOT NULL AND client_hostname != '' THEN
-        client_hostname || ':' || client_port
     WHEN client_addr IS NOT NULL AND client_addr::text != '' THEN
         client_addr::text || ':' || client_port
     WHEN client_port = -1 THEN
@@ -26,11 +24,9 @@ UNION
 SELECT
     procpid AS "PID",
     usename AS {{ conn|qtIdent(_('User')) }},
-    datname AS {{ conn|qtIdent(_('Database')) }},
+    '' AS {{ conn|qtIdent(_('Database')) }},
     backend_start AS {{ conn|qtIdent(_('Backend start')) }},
     CASE
-    WHEN client_hostname IS NOT NULL AND client_hostname != '' THEN
-        client_hostname || ':' || client_port
     WHEN client_addr IS NOT NULL AND client_addr::text != '' THEN
         client_addr::text || ':' || client_port
     WHEN client_port = -1 THEN
@@ -38,7 +34,7 @@ SELECT
     ELSE
         'localhost:' || client_port
     END AS {{ conn|qtIdent(_('Client')) }},
-    {{ _('Streaming Replication') }}|qtLiteral AS {{ conn|qtIdent(_('Application')) }},
+    {{ _('Streaming Replication')|qtLiteral }} AS {{ conn|qtIdent(_('Application')) }},
     null AS {{ conn|qtIdent(_('Waiting?')) }},
     state || ' [sync (state: ' || COALESCE(sync_state, '') || ', priority: ' || sync_priority::text || ')] (' || sent_location || ' sent, ' || write_location || ' written, ' || flush_location || ' flushed, ' || replay_location || ' applied)' AS {{ conn|qtIdent(_('Query')) }},
     null AS {{ conn|qtIdent(_('Query start')) }},
