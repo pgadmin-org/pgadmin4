@@ -1,13 +1,13 @@
 define(
   ['jquery', 'alertify', 'sources/pgadmin', 'underscore.string', 'sources/gettext',
-   'sources/url_for'
+    'sources/url_for',
   ],
   function($, alertify, pgAdmin, S, gettext, url_for) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /* Return back, this has been called more than once */
     if (pgAdmin.About)
-        return;
+      return;
 
     pgAdmin.About = {
       about_show: function() {
@@ -20,14 +20,14 @@ define(
               },
               setup: function() {
                 return {
-                  buttons:[{ text: gettext("OK"), key: 27, className: "btn btn-primary" }],
+                  buttons:[{ text: gettext('OK'), key: 27, className: 'btn btn-primary' }],
                   options: {
                     modal: false,
                     resizable: true,
                     maximizable: true,
                     pinnable: false,
-                    closableByDimmer: false
-                  }
+                    closableByDimmer: false,
+                  },
                 };
               },
               build: function() {
@@ -35,19 +35,18 @@ define(
               },
               prepare:function() {
                 this.setContent(this.message);
-              }
+              },
             };
           });
         }
 
-        var content = '';
         $.get(url_for('about.index'),
             function(data) {
               alertify.aboutDialog(
-                  S(gettext("About %s")).sprintf(pgAdmin.Browser.utils.app_name).value(), data
+                  S(gettext('About %s')).sprintf(pgAdmin.Browser.utils.app_name).value(), data
               ).resizeTo(800, 450);
             });
-      }
+      },
     };
 
     return pgAdmin.About;

@@ -77,5 +77,5 @@ module.exports = {
   isKeyCtrlAlt: isKeyCtrlAlt,
   isKeyAltShift: isKeyAltShift,
   isKeyCtrlShift: isKeyCtrlShift,
-  isKeyCtrlAltShift: isKeyCtrlAltShift
+  isKeyCtrlAltShift: isKeyCtrlAltShift,
 };

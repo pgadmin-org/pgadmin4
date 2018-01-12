@@ -1,4 +1,4 @@
-define(["pgadmin.browser.endpoints"], function (endpoints) {
+define(['pgadmin.browser.endpoints'], function(endpoints) {
   /***
    * This method behaves as a drop-in replacement for flask url_for function.
    * It uses the exposed URLs file under the hood, and replace the substitions provided by the modules.
@@ -16,17 +16,15 @@ define(["pgadmin.browser.endpoints"], function (endpoints) {
     var rawURL = endpoints[endpoint];
 
     // captures things of the form <path:substitutionName>
-    var substitutionGroupsRegExp = /([<])([^:^>]*:)?([^>]+)([>])/g;
-    var matchFound;
-
-    var interpolated = rawURL;
+    var substitutionGroupsRegExp = /([<])([^:^>]*:)?([^>]+)([>])/g,
+      interpolated = rawURL;
 
     if (!rawURL)
       return rawURL;
 
     interpolated = interpolated.replace(
       substitutionGroupsRegExp,
-      function (_origin, _1, _2, substitutionName) {
+      function(_origin, _1, _2, substitutionName) {
         if (substitutionName in substitutions) {
           return substitutions[substitutionName];
         }

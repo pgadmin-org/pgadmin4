@@ -1,8 +1,9 @@
 define('misc.statistics', [
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery',
-  'pgadmin.browser', 'backgrid',
-  'alertify', 'sources/size_prettify'
-], function(gettext, _, S, $, pgBrowser, Backgrid, Alertify, sizePrettify) {
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'backbone',
+  'pgadmin.browser', 'pgadmin.backgrid', 'alertify', 'sources/size_prettify',
+], function(
+  gettext, _, S, $, Backbone, pgBrowser, Backgrid, Alertify, sizePrettify
+) {
 
   if (pgBrowser.NodeStatistics)
     return pgBrowser.NodeStatistics;
@@ -13,69 +14,78 @@ define('misc.statistics', [
     return pgBrowser.NodeStatistics;
   }
 
-  var SizeFormatter = Backgrid.SizeFormatter = function () {};
+  var SizeFormatter = Backgrid.SizeFormatter = function() {};
   _.extend(SizeFormatter.prototype, {
-      /**
-         Takes a raw value from a model and returns the human readable formatted
-         string for display.
+    /**
+       Takes a raw value from a model and returns the human readable formatted
+       string for display.
 
-         @member Backgrid.SizeFormatter
-         @param {*} rawData
-         @param {Backbone.Model} model Used for more complicated formatting
-         @return {*}
-      */
-      fromRaw: function (rawData, model) {
-        return sizePrettify(rawData);
-      },
-      toRaw: function (formattedData, model) {
-        return formattedData;
-      }
+       @member Backgrid.SizeFormatter
+       @param {*} rawData
+       @param {Backbone.Model} model Used for more complicated formatting
+       @return {*}
+    */
+    fromRaw: function(rawData) {
+      return sizePrettify(rawData);
+    },
+    toRaw: function(formattedData) {
+      return formattedData;
+    },
   });
 
   var PGBooleanCell = Backgrid.Extension.SwitchCell.extend({
-      defaults: _.extend({}, Backgrid.Extension.SwitchCell.prototype.defaults)
-  }),
-  typeCellMapper = {
-    // boolean
-    16: PGBooleanCell,
-    // int8
-    20: Backgrid.IntegerCell,
-    // int2
-    21: Backgrid.IntegerCell,
-    // int4
-    23: Backgrid.IntegerCell,
-    // float4
-    700: Backgrid.NumberCell,
-    // float8
-    701: Backgrid.NumberCell,
-    // numeric
-    1700: Backgrid.NumberCell,
-    // abstime
-    702: Backgrid.DatetimeCell,
-    // reltime
-    703: Backgrid.DatetimeCell,
-    // date
-    1082: Backgrid.DatetimeCell.extend({
-      includeDate: true, includeTime: false, includeMilli: false
+      defaults: _.extend({}, Backgrid.Extension.SwitchCell.prototype.defaults),
     }),
-    // time
-    1083: Backgrid.DatetimeCell.extend({
-      includeDate: false, includeTime: true, includeMilli: true
-    }),
-    // timestamp
-    1114: Backgrid.DatetimeCell.extend({
-      includeDate: true, includeTime: true, includeMilli: true
-    }),
-    // timestamptz
-    1184: 'string'/* Backgrid.DatetimeCell.extend({
-      includeDate: true, includeTime: true, includeMilli: true
-    }) */,
-    1266: 'string'/* Backgrid.DatetimeCell.extend({
-      includeDate: false, includeTime: true, includeMilli: true
-    }) */
-  },
-  GRID_CLASSES = "backgrid presentation table backgrid-striped table-bordered table-hover",
-  wcDocker = window.wcDocker;
+    typeCellMapper = {
+      // boolean
+      16: PGBooleanCell,
+      // int8
+      20: Backgrid.IntegerCell,
+      // int2
+      21: Backgrid.IntegerCell,
+      // int4
+      23: Backgrid.IntegerCell,
+      // float4
+      700: Backgrid.NumberCell,
+      // float8
+      701: Backgrid.NumberCell,
+      // numeric
+      1700: Backgrid.NumberCell,
+      // abstime
+      702: Backgrid.DatetimeCell,
+      // reltime
+      703: Backgrid.DatetimeCell,
+      // date
+      1082: Backgrid.DatetimeCell.extend({
+        includeDate: true,
+        includeTime: false,
+        includeMilli: false,
+      }),
+      // time
+      1083: Backgrid.DatetimeCell.extend({
+        includeDate: false,
+        includeTime: true,
+        includeMilli: true,
+      }),
+      // timestamp
+      1114: Backgrid.DatetimeCell.extend({
+        includeDate: true,
+        includeTime: true,
+        includeMilli: true,
+      }),
+      // timestamptz
+      1184: 'string'
+        /* Backgrid.DatetimeCell.extend({
+              includeDate: true, includeTime: true, includeMilli: true
+            }) */
+        ,
+      1266: 'string',
+      /* Backgrid.DatetimeCell.extend({
+            includeDate: false, includeTime: true, includeMilli: true
+          }) */
+    },
+    GRID_CLASSES = 'backgrid presentation table backgrid-striped table-bordered table-hover',
+    wcDocker = window.wcDocker;
 
   _.extend(
     PGBooleanCell.prototype.defaults.options, {
@@ -83,7 +93,7 @@ define('misc.statistics', [
       offText: gettext('False'),
       onColor: 'success',
       offColor: 'primary',
-      size: 'mini'
+      size: 'mini',
     }
   );
 
@@ -101,23 +111,23 @@ define('misc.statistics', [
       _.extend(
         this, {
           initialized: true,
-          collection: new (Backbone.Collection)(null),
+          collection: new(Backbone.Collection)(null),
           statistic_columns: [{
             editable: false,
             name: 'statistics',
-            label: gettext("Statistics"),
+            label: gettext('Statistics'),
             cell: 'string',
             headerCell: Backgrid.Extension.CustomHeaderCell,
-            cellHeaderClasses: 'width_percent_25'
-          },{
+            cellHeaderClasses: 'width_percent_25',
+          }, {
             editable: false,
             name: 'value',
-            label: gettext("Value"),
-            cell: 'string'
+            label: gettext('Value'),
+            cell: 'string',
           }],
           panel: pgBrowser.docker.findPanels('statistics'),
           columns: null,
-          grid: null
+          grid: null,
         });
 
       var self = this;
@@ -125,12 +135,13 @@ define('misc.statistics', [
       // We will listen to the visibility change of the statistics panel
       pgBrowser.Events.on(
         'pgadmin-browser:panel-statistics:' +
-          wcDocker.EVENT.VISIBILITY_CHANGED,
-          this.panelVisibilityChanged
+        wcDocker.EVENT.VISIBILITY_CHANGED,
+        this.panelVisibilityChanged
       );
 
       pgBrowser.Events.on(
-        'pgadmin:browser:node:updated', function() {
+        'pgadmin:browser:node:updated',
+        function() {
           if (this.panel && this.panel.length) {
             $(this.panel[0]).data('node-prop', '');
             this.panelVisibilityChanged(this.panel[0]);
@@ -147,16 +158,16 @@ define('misc.statistics', [
           function() {
             self.panel = pgBrowser.docker.findPanels('statistics');
             if (self.panel[0].isVisible() ||
-                self.panel.length != 1) {
+              self.panel.length != 1) {
               pgBrowser.Events.on(
                 'pgadmin-browser:tree:selected', this.showStatistics
               );
             }
           }.bind(this)
-          );
+        );
       } else {
         if (self.panel[0].isVisible() ||
-            self.panel.length != 1) {
+          self.panel.length != 1) {
           pgBrowser.Events.on(
             'pgadmin-browser:tree:selected', this.showStatistics
           );
@@ -164,7 +175,7 @@ define('misc.statistics', [
       }
       if (self.panel.length > 0 && self.panel[0].isVisible()) {
         pgBrowser.Events.on(
-            'pgadmin-browser:tree:selected', this.showStatistics
+          'pgadmin-browser:tree:selected', this.showStatistics
         );
       }
     },
@@ -172,31 +183,30 @@ define('misc.statistics', [
     // Fetch the actual data and update the collection
     __updateCollection: function(url, node, item, node_type) {
       var $container = this.panel[0].layout().scene().find('.pg-panel-content'),
-          $msgContainer = $container.find('.pg-panel-statistics-message'),
-          $gridContainer = $container.find('.pg-panel-statistics-container'),
-          collection = this.collection,
-          panel = this.panel,
-          self = this,
-          msg = '',
-          n_type = node_type;
+        $msgContainer = $container.find('.pg-panel-statistics-message'),
+        $gridContainer = $container.find('.pg-panel-statistics-container'),
+        panel = this.panel,
+        self = this,
+        msg = '',
+        n_type = node_type;
 
       if (node) {
-        msg = gettext("No statistics are available for the selected object.");
+        msg = gettext('No statistics are available for the selected object.');
         /* We fetch the statistics only for those node who set the parameter
          * showStatistics function.
          */
 
-          // Avoid unnecessary reloads
-          var treeHierarchy = node.getTreeNodeHierarchy(item);
-          var cache_flag = {
-            node_type: node_type,
-            url: url
-          };
-          if (_.isEqual($(panel[0]).data('node-prop'), cache_flag)) {
-            return;
-          }
-          // Cache the current IDs for next time
-          $(panel[0]).data('node-prop', cache_flag);
+        // Avoid unnecessary reloads
+        var treeHierarchy = node.getTreeNodeHierarchy(item);
+        var cache_flag = {
+          node_type: node_type,
+          url: url,
+        };
+        if (_.isEqual($(panel[0]).data('node-prop'), cache_flag)) {
+          return;
+        }
+        // Cache the current IDs for next time
+        $(panel[0]).data('node-prop', cache_flag);
 
         if (node.hasStatistics) {
           msg = '';
@@ -204,13 +214,13 @@ define('misc.statistics', [
           // Set the url, fetch the data and update the collection
           $.ajax({
             url: url,
-            type:'GET',
-            beforeSend: function(jqXHR, settings) {
+            type: 'GET',
+            beforeSend: function() {
               // Generate a timer for the request
-              timer = setTimeout(function(){
+              timer = setTimeout(function() {
                 // notify user if request is taking longer than 1 second
 
-                $msgContainer.text(gettext("Retrieving data from the server..."));
+                $msgContainer.text(gettext('Retrieving data from the server...'));
                 $msgContainer.removeClass('hidden');
                 if (self.grid) {
                   self.grid.remove();
@@ -237,20 +247,20 @@ define('misc.statistics', [
                 self.grid = new Backgrid.Grid({
                   columns: self.columns,
                   collection: self.collection,
-                  className: GRID_CLASSES
+                  className: GRID_CLASSES,
                 });
                 self.grid.render();
                 $gridContainer.empty();
                 $gridContainer.append(self.grid.$el);
 
                 if (!$msgContainer.hasClass('hidden')) {
-                  $msgContainer.addClass('hidden')
+                  $msgContainer.addClass('hidden');
                 }
                 $gridContainer.removeClass('hidden');
 
               } else if (res.info) {
                 if (!$gridContainer.hasClass('hidden')) {
-                  $gridContainer.addClass('hidden')
+                  $gridContainer.addClass('hidden');
                 }
                 $msgContainer.text(res.info);
                 $msgContainer.removeClass('hidden');
@@ -261,24 +271,21 @@ define('misc.statistics', [
               pgBrowser.Events.trigger(
                 'pgadmin:node:retrieval:error', 'statistics', xhr, error, message, item
               );
-              if (
-                !Alertify.pgHandleItemError(xhr, error, message, {
-                  item: item, info: treeHierarchy
-                })
-              ) {
+              if (!Alertify.pgHandleItemError(xhr, error, message, {
+                item: item,
+                info: treeHierarchy,
+              })) {
                 Alertify.pgNotifier(
                   error, xhr,
-                  S(gettext("Error retrieving the information - %s")).sprintf(
+                  S(gettext('Error retrieving the information - %s')).sprintf(
                     message || _label
                   ).value(),
-                  function() {
-                    console.log(arguments);
-                  }
+                  function() {}
                 );
               }
               // show failed message.
-              $msgContainer.text(gettext("Failed to retrieve data from the server."));
-            }
+              $msgContainer.text(gettext('Failed to retrieve data from the server.'));
+            },
           });
         }
       }
@@ -309,38 +316,38 @@ define('misc.statistics', [
         if (self.timeout) {
           clearTimeout(self.timeout);
         }
-        self.timeout =  setTimeout(
+        self.timeout = setTimeout(
           function() {
             self.__updateCollection.call(
               self, node.generate_url(item, 'stats', data, true), node, item, data._type
             );
           }, 400);
-        }
+      }
     },
 
     __createMultiLineStatistics: function(data, prettifyFields) {
       var rows = data['rows'],
-          columns = data['columns'];
+        columns = data['columns'];
 
       this.columns = [];
       for (var idx in columns) {
         var rawColumn = columns[idx],
-        cell_type = typeCellMapper[rawColumn['type_code']] || 'string';
+          cell_type = typeCellMapper[rawColumn['type_code']] || 'string';
 
         // Don't show PID comma separated
-        if(rawColumn['name'] == 'PID') {
+        if (rawColumn['name'] == 'PID') {
           cell_type = cell_type.extend({
-            orderSeparator: ''
+            orderSeparator: '',
           });
         }
 
         var col = {
-            editable: false,
-            name: rawColumn['name'],
-            cell: cell_type
+          editable: false,
+          name: rawColumn['name'],
+          cell: cell_type,
         };
         if (_.indexOf(prettifyFields, rawColumn['name']) != -1) {
-          col['formatter'] = SizeFormatter
+          col['formatter'] = SizeFormatter;
         }
         this.columns.push(col);
 
@@ -351,8 +358,9 @@ define('misc.statistics', [
 
     __createSingleLineStatistics: function(data, prettifyFields) {
       var row = data['rows'][0],
-          columns = data['columns'],
-          res = [];
+        columns = data['columns'],
+        res = [],
+        name;
 
       this.columns = this.statistic_columns;
       for (var idx in columns) {
@@ -360,7 +368,9 @@ define('misc.statistics', [
         res.push({
           'statistics': name,
           // Check if row is undefined?
-          'value': row && row[name] ? ((_.indexOf(prettifyFields, name) != -1) ? sizePrettify(row[name]) : row[name]) : null
+          'value': row && row[name] ?
+            ((_.indexOf(prettifyFields, name) != -1) ?
+              sizePrettify(row[name]) : row[name]) : null,
         });
       }
 
@@ -370,9 +380,9 @@ define('misc.statistics', [
     panelVisibilityChanged: function(panel) {
       if (panel.isVisible()) {
         var t = pgBrowser.tree,
-            i = t.selected(),
-            d = i && t.itemData(i),
-            n = i && d && pgBrowser.Nodes[d._type];
+          i = t.selected(),
+          d = i && t.itemData(i),
+          n = i && d && pgBrowser.Nodes[d._type];
 
         pgBrowser.NodeStatistics.showStatistics.apply(
           pgBrowser.NodeStatistics, [i, d, n]
@@ -390,7 +400,7 @@ define('misc.statistics', [
           pgBrowser.NodeStatistics.showStatistics
         );
       }
-    }
+    },
   });
 
   return pgBrowser.NodeStatistics;

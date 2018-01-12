@@ -1,19 +1,19 @@
 define('pgadmin.node.event_trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'pgadmin.backform', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for event trigger collection
   if (!pgBrowser.Nodes['coll-event_trigger']) {
-    var databases = pgAdmin.Browser.Nodes['coll-event_trigger'] =
+    pgAdmin.Browser.Nodes['coll-event_trigger'] =
       pgAdmin.Browser.Collection.extend({
         node: 'event_trigger',
         label: gettext('Event Trigger'),
         type: 'coll-event_trigger',
-        columns: ['name', 'eventowner', 'comment']
+        columns: ['name', 'eventowner', 'comment'],
       });
-  };
+  }
 
   // Extend the browser's node class for event triggers node
   if (!pgBrowser.Nodes['event_trigger']) {
@@ -30,7 +30,7 @@ define('pgadmin.node.event_trigger', [
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -38,19 +38,19 @@ define('pgadmin.node.event_trigger', [
           name: 'create_event_trigger_on_coll', node: 'coll-event_trigger', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Event Trigger...'),
-          icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'}
+          icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'},
         },{
           name: 'create_event_trigger', node: 'event_trigger', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Event Trigger...'),
-          icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'}
+          icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'},
         },{
           name: 'create_event_trigger', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Event Trigger...'),
           icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'},
-          enable: pgBrowser.Nodes['database'].is_conn_allow
-        }
+          enable: pgBrowser.Nodes['database'].is_conn_allow,
+        },
         ]);
       },
       // Define the model for event trigger node
@@ -60,14 +60,14 @@ define('pgadmin.node.event_trigger', [
           name: undefined,
           eventowner: undefined,
           comment: undefined,
-          enabled: "O",
+          enabled: 'O',
           eventfuncoid: undefined,
           eventfunname: undefined,
-          eventname: "DDL_COMMAND_START",
+          eventname: 'DDL_COMMAND_START',
           when: undefined,
           xmin: undefined,
           source: undefined,
-          language: undefined
+          language: undefined,
         },
 
         // Default values!
@@ -85,46 +85,46 @@ define('pgadmin.node.event_trigger', [
         // Define the schema for the event trigger node
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text'
+          type: 'text',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties']
+          type: 'text', mode: ['properties'],
         },{
           id: 'eventowner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'edit','create'], node: 'role',
-          control: Backform.NodeListByNameControl
+          control: Backform.NodeListByNameControl,
         },{
-          id: 'comment', label: gettext('Comment'), type: 'multiline'
+          id: 'comment', label: gettext('Comment'), type: 'multiline',
         },{
           id: 'enabled', label: gettext('Enabled status'),
-          type:"radio", group: gettext("Definition"), mode: ['properties', 'edit','create'],
+          type:'radio', group: gettext('Definition'), mode: ['properties', 'edit','create'],
           options: [
-            {label: "Enable", value: "O"},
-            {label: "Disable", value: "D"},
-            {label: "Replica", value: "R"},
-            {label: "Always", value: "A"}
-          ]
+            {label: 'Enable', value: 'O'},
+            {label: 'Disable', value: 'D'},
+            {label: 'Replica', value: 'R'},
+            {label: 'Always', value: 'A'},
+          ],
         },{
           id: 'eventfunname', label: gettext('Trigger function'),
-          type: 'text', control: 'node-ajax-options', group: gettext("Definition"),
-          url:'fopts', cache_node: 'trigger_function'
+          type: 'text', control: 'node-ajax-options', group: gettext('Definition'),
+          url:'fopts', cache_node: 'trigger_function',
         },{
           id: 'eventname', label: gettext('Events'),
-          type:"radio", group: gettext("Definition"), cell: 'string',
+          type:'radio', group: gettext('Definition'), cell: 'string',
           options: [
-            {label: "DDL COMMAND START", value: "DDL_COMMAND_START"},
-            {label: "DDL COMMAND END", value: "DDL_COMMAND_END"},
-            {label: "SQL DROP", value: "SQL_DROP"}
-          ]
+            {label: 'DDL COMMAND START', value: 'DDL_COMMAND_START'},
+            {label: 'DDL COMMAND END', value: 'DDL_COMMAND_END'},
+            {label: 'SQL DROP', value: 'SQL_DROP'},
+          ],
         },{
-          id: 'when', label: gettext('When'), type: 'multiline', group: gettext("Definition"),
+          id: 'when', label: gettext('When'), type: 'multiline', group: gettext('Definition'),
         },{
           id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection'
-         }
+          canEdit: false, canDelete: true, control: 'unique-col-collection',
+        },
         ],
         // event trigger model data validation.
         validate: function() {
@@ -166,9 +166,9 @@ define('pgadmin.node.event_trigger', [
           }
 
           return null;
-        }
-      })
-  });
+        },
+      }),
+    });
 
   }
 

@@ -1,20 +1,20 @@
 define('pgadmin.node.sequence', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for sequence collection
   if (!pgBrowser.Nodes['coll-sequence']) {
-    var databases = pgBrowser.Nodes['coll-sequence'] =
+    pgBrowser.Nodes['coll-sequence'] =
       pgBrowser.Collection.extend({
         node: 'sequence',
         label: gettext('Sequences'),
         type: 'coll-sequence',
         columns: ['name', 'seqowner', 'comment'],
-        hasStatistics: true
+        hasStatistics: true,
       });
-  };
+  }
 
   // Extend the browser's node class for sequence node
   if (!pgBrowser.Nodes['sequence']) {
@@ -32,7 +32,7 @@ define('pgadmin.node.sequence', [
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -41,20 +41,20 @@ define('pgadmin.node.sequence', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Sequence...'),
           icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_sequence', node: 'sequence', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Sequence...'),
           icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_sequence', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Sequence...'),
           icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: false},
-          enable: 'canCreate'
-        }
+          enable: 'canCreate',
+        },
         ]);
 
       },
@@ -62,31 +62,31 @@ define('pgadmin.node.sequence', [
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       canCreate: function(itemData, item, data) {
           //If check is false then , we will allow create menu
-          if (data && data.check == false)
+        if (data && data.check == false)
+          return true;
+
+        var t = pgBrowser.tree, i = item, d = itemData;
+          // To iterate over tree to check parent node
+        while (i) {
+            // If it is schema then allow user to create collation
+          if (_.indexOf(['schema'], d._type) > -1)
             return true;
 
-          var t = pgBrowser.tree, i = item, d = itemData;
-          // To iterate over tree to check parent node
-          while (i) {
-            // If it is schema then allow user to create collation
-            if (_.indexOf(['schema'], d._type) > -1)
-              return true;
-
-            if ('coll-sequence' == d._type) {
+          if ('coll-sequence' == d._type) {
               //Check if we are not child of catalog
-              var prev_i = t.hasParent(i) ? t.parent(i) : null,
-                prev_d = prev_i ? t.itemData(prev_i) : null;
-              if( prev_d._type == 'catalog') {
-                return false;
-              } else {
-                return true;
-              }
+            var prev_i = t.hasParent(i) ? t.parent(i) : null,
+              prev_d = prev_i ? t.itemData(prev_i) : null;
+            if( prev_d._type == 'catalog') {
+              return false;
+            } else {
+              return true;
             }
-            i = t.hasParent(i) ? t.parent(i) : null;
-            d = i ? t.itemData(i) : null;
           }
+          i = t.hasParent(i) ? t.parent(i) : null;
+          d = i ? t.itemData(i) : null;
+        }
           // by default we want to allow create menu
-          return true;
+        return true;
       },
       // Define the model for sequence node.
       model: pgBrowser.Node.Model.extend({
@@ -104,7 +104,7 @@ define('pgadmin.node.sequence', [
           cache: undefined,
           cycled: undefined,
           relacl: [],
-          securities: []
+          securities: [],
         },
 
         // Default values!
@@ -124,14 +124,14 @@ define('pgadmin.node.sequence', [
         // Define the schema for sequence node.
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit']
+          type: 'text', mode: ['properties', 'create', 'edit'],
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties']
+          type: 'text', mode: ['properties'],
         },{
           id: 'seqowner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], node: 'role',
-          control: Backform.NodeListByNameControl
+          control: Backform.NodeListByNameControl,
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string',
           control: 'node-list-by-name', node: 'schema',
@@ -142,48 +142,48 @@ define('pgadmin.node.sequence', [
               return false;
             }
             return true;
-          }, cache_node: 'database', cache_level: 'database'
+          }, cache_node: 'database', cache_level: 'database',
         },{
           id: 'comment', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit']
+          mode: ['properties', 'create', 'edit'],
         },{
           id: 'current_value', label: gettext('Current value'), type: 'int',
-          mode: ['properties', 'edit'], group: gettext('Definition')
+          mode: ['properties', 'edit'], group: gettext('Definition'),
         },{
           id: 'increment', label: gettext('Increment'), type: 'int',
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
-          min: 1
+          min: 1,
         },{
           id: 'start', label: gettext('Start'), type: 'int',
           mode: ['properties', 'create'], group: gettext('Definition'),
           disabled: function(m) {
             return !m.isNew();
-          }
+          },
         },{
           id: 'minimum', label: gettext('Minimum'), type: 'int',
-          mode: ['properties', 'create', 'edit'], group: gettext('Definition')
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         },{
           id: 'maximum', label: gettext('Maximum'), type: 'int',
-          mode: ['properties', 'create', 'edit'], group: gettext('Definition')
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         },{
           id: 'cache', label: gettext('Cache'), type: 'int',
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
-          min: 1
+          min: 1,
         },{
           id: 'cycled', label: gettext('Cycled'), type: 'switch',
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small'
-          }
+            'size': 'small',
+          },
         }, pgBrowser.SecurityGroupSchema,{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], disabled: true
+          group: gettext('Security'), mode: ['properties'], disabled: true,
         },{
           id: 'relacl', label: gettext('Privileges'), group: 'security',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['r', 'w', 'U']
+            privileges: ['r', 'w', 'U'],
           }), uniqueCol : ['grantee', 'grantor'], mode: ['edit', 'create'],
           editable: false, type: 'collection', canAdd: true, canDelete: true,
           control: 'unique-col-collection',
@@ -193,7 +193,7 @@ define('pgadmin.node.sequence', [
           type: 'collection', canEdit: false, group: 'security',
           mode: ['edit', 'create'], canDelete: true,
           control: 'unique-col-collection',
-          min_version: 90200, uniqueCol : ['provider']
+          min_version: 90200, uniqueCol : ['provider'],
         }],
         /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
@@ -201,9 +201,9 @@ define('pgadmin.node.sequence', [
          */
         validate: function() {
           var msg = undefined,
-              minimum = this.get('minimum'),
-              maximum = this.get('maximum'),
-              start = this.get('start');
+            minimum = this.get('minimum'),
+            maximum = this.get('maximum'),
+            start = this.get('start');
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
@@ -279,8 +279,8 @@ define('pgadmin.node.sequence', [
             }
           }
           var min_lt = gettext('Minimum value must be less than maximum value.'),
-              start_lt = gettext('Start value cannot be less than minimum value.'),
-              start_gt = gettext('Start value cannot be greater than maximum value.');
+            start_lt = gettext('Start value cannot be less than minimum value.'),
+            start_gt = gettext('Start value cannot be greater than maximum value.');
 
           if ((minimum == 0 && maximum == 0) ||
               (parseInt(minimum, 10) >= parseInt(maximum, 10))) {
@@ -304,8 +304,8 @@ define('pgadmin.node.sequence', [
             this.errorModel.unset('start');
           }
           return null;
-        }
-      })
+        },
+      }),
     });
   }
 

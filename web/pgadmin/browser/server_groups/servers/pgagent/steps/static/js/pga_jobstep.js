@@ -1,7 +1,7 @@
 define('pgadmin.node.pga_jobstep', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify', 'backform',
-  'backgrid', 'pgadmin.backform', 'pgadmin.backgrid'
+  'backgrid', 'pgadmin.backform', 'pgadmin.backgrid',
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform, Backgrid) {
 
   if (!pgBrowser.Nodes['coll-pga_jobstep']) {
@@ -12,9 +12,9 @@ define('pgadmin.node.pga_jobstep', [
         type: 'coll-pga_jobstep',
         columns: [
           'jstid', 'jstname', 'jstenabled', 'jstkind', 'jstconntype',
-          'jstonerror'
+          'jstonerror',
         ],
-        hasStatistics: false
+        hasStatistics: false,
       });
   }
 
@@ -26,18 +26,18 @@ define('pgadmin.node.pga_jobstep', [
     },
     dependentChanged: function dependentChanged() {
       var model = this.model,
-          column = this.column,
-          editable = this.column.get("editable"),
-          input = this.$el.find('input[type=checkbox]').first(),
-          self_name = column.get('name'),
-          is_editable;
+        column = this.column,
+        editable = this.column.get('editable'),
+        input = this.$el.find('input[type=checkbox]').first(),
+        self_name = column.get('name'),
+        is_editable;
 
       is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
       if (is_editable) {
-        this.$el.addClass("editable");
+        this.$el.addClass('editable');
         input.bootstrapSwitch('disabled', false);
       } else {
-        this.$el.removeClass("editable");
+        this.$el.removeClass('editable');
         input.bootstrapSwitch('disabled', true);
         // Set self value into model
         setTimeout(function () {
@@ -49,7 +49,7 @@ define('pgadmin.node.pga_jobstep', [
       this.delegateEvents();
       return this;
     },
-    remove: Backgrid.Extension.DependentCell.prototype.remove
+    remove: Backgrid.Extension.DependentCell.prototype.remove,
   });
 
   if (!pgBrowser.Nodes['pga_jobstep']) {
@@ -63,9 +63,7 @@ define('pgadmin.node.pga_jobstep', [
       hasCollectiveStatistics: true,
       width: '70%',
       height: '80%',
-      canDrop: function(node) {
-        return true;
-      },
+      canDrop: true,
       label: gettext('Step'),
       node_image: function() {
         return 'icon-pga_jobstep';
@@ -73,7 +71,7 @@ define('pgadmin.node.pga_jobstep', [
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -81,17 +79,17 @@ define('pgadmin.node.pga_jobstep', [
           name: 'create_pga_jobstep_on_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Job Step...'),
-          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep'
+          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep',
         },{
           name: 'create_pga_jobstep_on_coll', node: 'coll-pga_jobstep', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Job Step...'),
-          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep'
+          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep',
         },{
           name: 'create_pga_jobstep', node: 'pga_jobstep', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Job Step...'),
-          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep'
+          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep',
         }]);
       },
       model: pgBrowser.Node.Model.extend({
@@ -107,7 +105,7 @@ define('pgadmin.node.pga_jobstep', [
           jstconnstr: null,
           jstdbname: null,
           jstonerror: 'f',
-          jstnextrun: ''
+          jstnextrun: '',
         },
         initialize: function() {
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
@@ -125,29 +123,28 @@ define('pgadmin.node.pga_jobstep', [
         idAttribute: 'jstid',
         schema: [{
           id: 'jstid', label: gettext('ID'), type: 'int',
-          cellHeaderClasses: 'width_percent_5', mode: ['properties']
+          cellHeaderClasses: 'width_percent_5', mode: ['properties'],
         },{
           id: 'jstname', label: gettext('Name'), type: 'text',
-          disabled: function(m) { return false; },
-          cellHeaderClasses: 'width_percent_60'
+          disabled: false, cellHeaderClasses: 'width_percent_60',
         },{
           id: 'jstenabled', label: gettext('Enabled?'), type: 'switch',
-          disabled: function(m) { return false; }
+          disabled: function() { return false; },
         },{
           id: 'jstkind', label: gettext('Kind'), type: 'switch',
           options: {
             'onText': gettext('SQL'), 'offText': gettext('Batch'),
-            'onColor': 'primary', 'offColor': 'primary'
+            'onColor': 'primary', 'offColor': 'primary',
           }, control: Backform.SwitchControl,
-          disabled: function(m) { return false; }
+          disabled: function() { return false; },
         },{
           id: 'jstconntype', label: gettext('Connection type'),
           type: 'switch', deps: ['jstkind'], mode: ['properties'],
           disabled: function(m) { return !m.get('jstkind'); },
           options: {
             'onText': gettext('Local'), 'offText': gettext('Remote'),
-            'onColor': 'primary', 'offColor': 'primary'
-          }
+            'onColor': 'primary', 'offColor': 'primary',
+          },
         },{
           id: 'jstconntype', label: gettext('Connection type'),
           type: 'switch', deps: ['jstkind'], mode: ['create', 'edit'],
@@ -159,14 +156,14 @@ define('pgadmin.node.pga_jobstep', [
           },
           options: {
             'onText': gettext('Local'), 'offText': gettext('Remote'),
-            'onColor': 'primary', 'offColor': 'primary'
-          }, helpMessage: gettext('Select <b>Local</b> if the job step will execute on the local database server, or <b>Remote</b> to specify a remote database server.')
+            'onColor': 'primary', 'offColor': 'primary',
+          }, helpMessage: gettext('Select <b>Local</b> if the job step will execute on the local database server, or <b>Remote</b> to specify a remote database server.'),
         },{
           id: 'jstdbname', label: gettext('Database'), type: 'text',
-          mode: ['properties'], disabled: function(m) { return false; }
+          mode: ['properties'], disabled: function() { return false; },
         },{
           id: 'jstconnstr', type: 'text', mode: ['properties'],
-          label: gettext('Connection string')
+          label: gettext('Connection string'),
         },{
           id: 'jstdbname', label: gettext('Database'), type: 'text',
           control: 'node-list-by-name', node: 'database',
@@ -174,30 +171,30 @@ define('pgadmin.node.pga_jobstep', [
           disabled: function(m) {
             return !m.get('jstkind') || !m.get('jstconntype');
           }, deps: ['jstkind', 'jstconntype'], mode: ['create', 'edit'],
-          helpMessage: gettext('Please select the database on which the job step will run.')
+          helpMessage: gettext('Please select the database on which the job step will run.'),
         },{
           id: 'jstconnstr', label: gettext('Connection string'), type: 'text',
           deps: ['jstkind', 'jstconntype'], disabled: function(m) {
             return !m.get('jstkind') || m.get('jstconntype');
           }, helpMessage: S(
-            gettext("Please specify the connection string for the remote database server. Each parameter setting is in the form keyword = value. Spaces around the equal sign are optional. To write an empty value, or a value containing spaces, surround it with single quotes, e.g., keyword = 'a value'. Single quotes and backslashes within the value must be escaped with a backslash, i.e., \' and \\.<br>For more information, please see the documentation on %s")
+            gettext('Please specify the connection string for the remote database server. Each parameter setting is in the form keyword = value. Spaces around the equal sign are optional. To write an empty value, or a value containing spaces, surround it with single quotes, e.g., keyword = \'a value\'. Single quotes and backslashes within the value must be escaped with a backslash, i.e., \' and \\.<br>For more information, please see the documentation on %s')
           ).sprintf(
             '<a href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">libpq connection strings</a>'
-          ).value(), mode: ['create', 'edit']
+          ).value(), mode: ['create', 'edit'],
         },{
           id: 'jstonerror', label: gettext('On error'), cell: 'select2',
           control: 'select2', options: [
-            {'label': gettext('Fail'), 'value': "f"},
-            {'label': gettext('Success'), 'value': "s"},
-            {'label': gettext('Ignore'), 'value': "i"}
-          ], select2: {allowClear: false}, disabled: function(m) {
+            {'label': gettext('Fail'), 'value': 'f'},
+            {'label': gettext('Success'), 'value': 's'},
+            {'label': gettext('Ignore'), 'value': 'i'},
+          ], select2: {allowClear: false}, disabled: function() {
             return false;
-          }
+          },
         },{
-          id: 'jstdesc', label: gettext('Comment'), type: 'multiline'
+          id: 'jstdesc', label: gettext('Comment'), type: 'multiline',
         },{
           id: 'jstcode', label: '', cell: 'string', deps: ['jstkind'],
-          type: 'text', control: 'sql-field', group: gettext('Code'),
+          type: 'text', group: gettext('Code'),
           control: Backform.SqlFieldControl.extend({
             render: function() {
               if (this.model.get('jstkind')) {
@@ -208,16 +205,16 @@ define('pgadmin.node.pga_jobstep', [
               return Backform.SqlFieldControl.prototype.render.apply(
                 this, arguments
               );
-            }
-          })
+            },
+          }),
         }],
-        validate: function(keys) {
+        validate: function() {
           var val = this.get('jstname'),
-              errMsg = null;
+            errMsg = null, msg;
 
           if (
             _.isUndefined(val) || _.isNull(val) ||
-            String(val).replace(/^\s+|\s+$/g, '') == ''
+              String(val).replace(/^\s+|\s+$/g, '') == ''
           ) {
             errMsg = gettext('Name cannot be empty.');
             this.errorModel.set('jstname', errMsg);
@@ -232,7 +229,7 @@ define('pgadmin.node.pga_jobstep', [
                 _.isUndefined(val) || _.isNull(val) ||
                   String(val).replace(/^\s+|\s+$/g, '') == ''
               ) {
-                var msg = gettext('Please select a database.');
+                msg = gettext('Please select a database.');
                 errMsg = errMsg || msg;
                 this.errorModel.set('jstdbname', msg);
               } else {
@@ -240,8 +237,7 @@ define('pgadmin.node.pga_jobstep', [
               }
             } else {
               this.errorModel.unset('jstdbname');
-              var msg,
-                r = /\s*\b(\w+)\s*=\s*('([^'\\]*(?:\\.[^'\\]*)*)'|[\w|\.]*)/g;
+              var r = /\s*\b(\w+)\s*=\s*('([^'\\]*(?:\\.[^'\\]*)*)'|[\w|\.]*)/g;
               val = this.get('jstconnstr');
               if (
                 _.isUndefined(val) || _.isNull(val) ||
@@ -252,18 +248,18 @@ define('pgadmin.node.pga_jobstep', [
                 msg = gettext('Please enter a valid connection string.');
               } else {
                 var m,
-                    params = {
-                      'host': true, 'hostaddr': true, 'port': true,
-                      'dbname': true, 'user': true, 'password': true,
-                      'connect_timeout': true, 'client_encoding': true,
-                      'application_name': true, 'options': true,
-                      'fallback_application_name': true, 'sslmode': true,
-                      'sslcert': true, 'sslkey': true, 'sslrootcert': true,
-                      'sslcrl': true, 'keepalives': true, 'service': true,
-                      'keepalives_idle': true, 'keepalives_interval': true,
-                      'keepalives_count': true, 'sslcompression': true,
-                      'requirepeer': true, 'krbsrvname': true, 'gsslib': true,
-                    };
+                  params = {
+                    'host': true, 'hostaddr': true, 'port': true,
+                    'dbname': true, 'user': true, 'password': true,
+                    'connect_timeout': true, 'client_encoding': true,
+                    'application_name': true, 'options': true,
+                    'fallback_application_name': true, 'sslmode': true,
+                    'sslcert': true, 'sslkey': true, 'sslrootcert': true,
+                    'sslcrl': true, 'keepalives': true, 'service': true,
+                    'keepalives_idle': true, 'keepalives_interval': true,
+                    'keepalives_count': true, 'sslcompression': true,
+                    'requirepeer': true, 'krbsrvname': true, 'gsslib': true,
+                  };
 
                 while((m = r.exec(val))) {
                   if (params[m[1]]) {
@@ -295,9 +291,9 @@ define('pgadmin.node.pga_jobstep', [
           val = this.get('jstcode');
           if (
             _.isUndefined(val) || _.isNull(val) ||
-            String(val).replace(/^\s+|\s+$/g, '') == ''
+              String(val).replace(/^\s+|\s+$/g, '') == ''
           ) {
-            var msg = gettext('Please specify code to execute.');
+            msg = gettext('Please specify code to execute.');
             errMsg = errMsg || msg;
             this.errorModel.set('jstcode', msg);
           } else {
@@ -305,8 +301,8 @@ define('pgadmin.node.pga_jobstep', [
           }
 
           return errMsg;
-        }
-      })
+        },
+      }),
     });
   }
 

@@ -1,52 +1,52 @@
 define('pgadmin.node.foreign_server', [
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'pgadmin.browser', 'pgadmin.backform', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege',
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's node model class to create a Options model
   var OptionsModel = pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'fsrvoption',
-        defaults: {
-          fsrvoption: undefined,
-          fsrvvalue: undefined
-        },
+    idAttribute: 'fsrvoption',
+    defaults: {
+      fsrvoption: undefined,
+      fsrvvalue: undefined,
+    },
 
         // Defining schema for the Options model
-        schema: [
+    schema: [
           {id: 'fsrvoption', label: gettext('Options'), type:'text', cellHeaderClasses:'width_percent_50', group: null, editable: true},
           {id: 'fsrvvalue', label: gettext('Value'), type: 'text', cellHeaderClasses:'width_percent_50', group:null, editable: true},
-        ],
+    ],
 
         /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
          * the browser for the respective control.
          */
-        validate: function() {
+    validate: function() {
           // Validation for the option name
-          if (_.isUndefined(this.get('fsrvoption')) ||
+      if (_.isUndefined(this.get('fsrvoption')) ||
             _.isNull(this.get('fsrvoption')) ||
             String(this.get('fsrvoption')).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = 'Please enter an option name';
-            this.errorModel.set('fsrvoption', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('fsrvoption');
-          }
-          return null;
-        }
-    });
+        var msg = 'Please enter an option name';
+        this.errorModel.set('fsrvoption', msg);
+        return msg;
+      } else {
+        this.errorModel.unset('fsrvoption');
+      }
+      return null;
+    },
+  });
 
   // Extend the browser's collection class for foreign server collection
   if (!pgBrowser.Nodes['coll-foreign_server']) {
-    var foreign_data_wrappers = pgAdmin.Browser.Nodes['coll-foreign_server'] =
+    pgAdmin.Browser.Nodes['coll-foreign_server'] =
       pgAdmin.Browser.Collection.extend({
         node: 'foreign_server',
         label: gettext('Foreign Servers'),
         type: 'coll-foreign_server',
-        columns: ['name','fsrvowner','description']
+        columns: ['name','fsrvowner','description'],
       });
-  };
+  }
 
   // Extend the browser's node class for foreign server node
   if (!pgBrowser.Nodes['foreign_server']) {
@@ -64,7 +64,7 @@ define('pgadmin.node.foreign_server', [
 
         // Avoid multiple registration of menus
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -75,18 +75,18 @@ define('pgadmin.node.foreign_server', [
           name: 'create_foreign_server_on_coll', node: 'coll-foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'}
+          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
         },{
           name: 'create_foreign_server', node: 'foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'}
+          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
         },{
           name: 'create_foreign_server', node: 'foreign_data_wrapper', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'}
-        }
+          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
+        },
         ]);
       },
 
@@ -100,7 +100,7 @@ define('pgadmin.node.foreign_server', [
           fsrvoptions: [],
           fsrvowner: undefined,
           description: undefined,
-          fsrvacl: []
+          fsrvacl: [],
         },
 
         // Default values!
@@ -118,44 +118,42 @@ define('pgadmin.node.foreign_server', [
         // Defining schema for the foreign server node
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', disabled: function(m) {
-            if (this.mode == 'edit' && this.node_info.server.version < 90200) {
-              return true;
-            }
-            else
-              return false;
-          }
+          type: 'text', disabled: function() {
+            return (
+              this.mode == 'edit' && this.node_info.server.version < 90200
+            );
+          },
         },{
           id: 'fsrvid', label: gettext('OID'), cell: 'string',
-          type: 'text', disabled: true, mode: ['properties']
+          type: 'text', disabled: true, mode: ['properties'],
         },{
           id: 'fsrvowner', label: gettext('Owner'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
-          mode: ['edit', 'create', 'properties'], select2: { allowClear: false }
+          mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
         },{
           id: 'fsrvtype', label: gettext('Type'), cell: 'string',
           group: gettext('Definition'), type: 'text', mode: ['edit','create','properties'], disabled: function(m) {
             return !m.isNew();
-          }
+          },
         },{
           id: 'fsrvversion', label: gettext('Version'), cell: 'string',
-          group: gettext('Definition'), type: 'text'
+          group: gettext('Definition'), type: 'text',
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline'
+          type: 'multiline',
         },{
-          id: 'fsrvoptions', label: gettext('Options'), type: 'collection', group: gettext("Options"),
+          id: 'fsrvoptions', label: gettext('Options'), type: 'collection', group: gettext('Options'),
           model: OptionsModel, control: 'unique-col-collection', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, uniqueCol : ['fsrvoption'],
-          columns: ['fsrvoption','fsrvvalue']
-         }, pgBrowser.SecurityGroupSchema, {
-            id: 'fsrvacl', label: gettext('Privileges'), type: 'collection', group: 'security',
-            model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
-            mode: ['edit', 'create'], canAdd: true, canDelete: true, uniqueCol : ['grantee']
-         },{
+          columns: ['fsrvoption','fsrvvalue'],
+        }, pgBrowser.SecurityGroupSchema, {
+          id: 'fsrvacl', label: gettext('Privileges'), type: 'collection', group: 'security',
+          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
+          mode: ['edit', 'create'], canAdd: true, canDelete: true, uniqueCol : ['grantee'],
+        },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], disabled: true
-         }
+          group: gettext('Security'), mode: ['properties'], disabled: true,
+        },
         ],
 
         /* validate function is used to validate the input given by
@@ -174,9 +172,9 @@ define('pgadmin.node.foreign_server', [
             this.errorModel.unset('name');
           }
           return null;
-        }
-      })
-  });
+        },
+      }),
+    });
 
   }
 

@@ -1,20 +1,29 @@
-define(
-    ['underscore', 'backbone', 'sources/pgadmin', 'pgadmin.browser', 'sources/gettext'],
-function(_, Backbone, pgAdmin, pgBrowser, gettext) {
+define([
+  'underscore', 'jquery', 'backbone', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/gettext',
+], function(_, $, Backbone, pgAdmin, pgBrowser, gettext) {
 
-  pgBrowser = pgBrowser || pgAdmin.Browser || {};
+  var wcDocker = window.wcDocker;
 
   /* Wizard individual Page Model */
-  var WizardPage = pgBrowser.WizardPage = Backbone.Model.extend({
+  pgBrowser.WizardPage = Backbone.Model.extend({
     defaults: {
-      id: undefined, /* Id */
-      page_title: undefined, /* Page Title */
-      view: undefined, /* A Backbone View */
-      html: undefined, /* HTML tags to be rendered */
-      image: undefined, /* Left hand side image */
-      disable_prev: false, /*  Previous Button Flag */
-      disable_next: false, /*  Next Button Flag */
-      disable_cancel: false, /* Cancel Button Flag */
+      id: undefined,
+      /* Id */
+      page_title: undefined,
+      /* Page Title */
+      view: undefined,
+      /* A Backbone View */
+      html: undefined,
+      /* HTML tags to be rendered */
+      image: undefined,
+      /* Left hand side image */
+      disable_prev: false,
+      /*  Previous Button Flag */
+      disable_next: false,
+      /*  Next Button Flag */
+      disable_cancel: false,
+      /* Cancel Button Flag */
       show_progress_bar: '',
       /* Callback for OnLoad */
       onLoad: function() {
@@ -24,119 +33,124 @@ function(_, Backbone, pgAdmin, pgBrowser, gettext) {
       beforeNext: function() {
         return true;
       },
-      onNext: function(){},
+      onNext: function() {},
       onBefore: function() {},
       /* Callback for before Previous */
       beforePrev: function() {
         return true;
-      }
-    }
+      },
+    },
   });
 
-  var Wizard = pgBrowser.Wizard = Backbone.View.extend({
+  pgBrowser.Wizard = Backbone.View.extend({
     options: {
-      title: 'Wizard', /* Main Wizard Title */
-      image: 'left_panel.png', /* TODO:: We can use default image here */
-      curr_page: 0, /* Current Page to Load */
+      title: 'Wizard',
+      /* Main Wizard Title */
+      image: 'left_panel.png',
+      /* TODO:: We can use default image here */
+      curr_page: 0,
+      /* Current Page to Load */
       disable_next: false,
       disable_prev: false,
       disable_finish: false,
       disable_cancel: false,
-      show_header_cancel_btn: false, /* show cancel button at wizard header */
-      show_header_maximize_btn: false, /* show maximize button at wizard header */
+      show_header_cancel_btn: false,
+      /* show cancel button at wizard header */
+      show_header_maximize_btn: false,
+      /* show maximize button at wizard header */
       dialog_api: null,
       height: 400,
       width: 650,
       show_left_panel: true,
-      wizard_help: ''
+      wizard_help: '',
     },
     tmpl: _.template(
-       "    <div class='pgadmin-wizard' style='height: <%= this.options.height %>px;"
-       + "    width: <%= this.options.width %>px'>"
-       + "      <div class='wizard-header wizard-badge'>"
-       + "        <div class='row'>"
-       + "          <div class='col-sm-10'>"
-       + "              <h3><span id='main-title'><%= this.options.title %></span> -"
-       + "              <span id='step-title'><%= page_title %></span></h3>"
-       + "          </div>"
-       + "          <% if (this.options.show_header_cancel_btn) { %>"
-       + "            <div class='col-sm-2'>"
-       + "              <button class='ajs-close wizard-cancel-event pull-right'"
-       + "                title='" + gettext("Close") + "'></button>"
-       + "              <% if (this.options.show_header_maximize_btn) { %>"
-       + "                <button class='ajs-maximize wizard-maximize-event pull-right'"
-       + "                  title='" + gettext("Maximize") + "'></button>"
-       + "              <% } %>"
-       + "            </div>"
-       + "          <% } %>"
-       + "        </div>"
-       + "      </div>"
-       + "      <div class='wizard-content col-sm-12'>"
-       + "        <% if (this.options.show_left_panel) { %>"
-       + "          <div class='col-sm-3 wizard-left-panel'>"
-       + "              <img src='<%= this.options.image %>'"
-       + "                  alt='" + gettext("Left panel logo") + "'></div>"
-       + "        <% } %>"
-       + "        <div class='col-sm-<% if (this.options.show_left_panel) { %>9<% }"
-       + "          else { %>12<% } %> wizard-right-panel'>"
-       + "          <% if ( typeof show_description !=  'undefined'){ %>"
-       + "            <div class='wizard-description'>"
-       + "              <%= show_description %>"
-       + "            </div>"
-       + "          <% } %>"
-       + "          <div class='wizard-progress-bar'><% if (show_progress_bar) { %>"
-       + "            <p class='alert alert-info col-sm-12'><%= show_progress_bar %></p><% } %>"
-       + "          </div>"
-       + "          <div class='wizard-right-panel_content col-xs-12'>"
-       + "          </div>"
-       + "        </div>"
-       + "      </div>"
-       + "      <div class='col-sm-12 pg-prop-status-bar' style='visibility:hidden'>"
-       + "        <div class='media error-in-footer bg-red-1 border-red-2 font-red-3 text-14'>"
-       + "          <div class='media-body media-middle'>"
-       + "            <div class='alert-icon error-icon'>"
-       + "              <i class='fa fa-exclamation-triangle' aria-hidden='true'></i>"
-       + "            </div>"
-       + "            <div class='alert-text'>"
-       + "            </div>"
-       + "            <div class='close-error-bar'>"
-       + "              <a class='close-error'>x</a>"
-       + "            </div>"
-       + "          </div>"
-       + "        </div>"
-       + "      </div>"
-       + "      <div class='footer col-sm-12'>"
-       + "        <div class='row'>"
-       + "          <div class='col-sm-4 wizard-buttons pull-left'>"
-       + "            <button title = '" + gettext("Help for this dialog.") + "'"
-       + "              class='btn btn-default pull-left wizard-help' <%=this.options.wizard_help ? '' : 'disabled' %>>"
-       + "              <span class='fa fa-lg fa-question'></span></button>"
-       + "          </div>"
-       + "          <div class='col-sm-8'>"
-       + "            <div class='wizard-buttons'>"
-       + "              <button class='btn btn-primary wizard-back' <%=this.options.disable_prev ? 'disabled' : ''%>>"
-       + "                <i class='fa fa-backward'></i>" + gettext("Back") + "</button>"
-       + "              <button class='btn btn-primary wizard-next' <%=this.options.disable_next ? 'disabled' : ''%>>"
-       +                  gettext("Next")
-       + "                <i class='fa fa-forward'></i></button>"
-       + "              <button class='btn btn-danger wizard-cancel' <%=this.options.disable_cancel ? 'disabled' : ''%>>"
-       + "                <i class='fa fa-lg fa-close'></i>" + gettext("Cancel") + "</button>"
-       + "              <button class='btn btn-primary wizard-finish' <%=this.options.disable_finish ? 'disabled' : ''%>>"
-       +                  gettext("Finish") + "</button>"
-       + "            </div>"
-       + "          </div>"
-       + "        </div>"
-       + "      </div>"
-       + "    </div>"),
+      '    <div class="pgadmin-wizard" style="height: <%= this.options.height %>px;' +
+      '    width: <%= this.options.width %>px">' +
+      '      <div class="wizard-header wizard-badge">' +
+      '        <div class="row">' +
+      '          <div class="col-sm-10">' +
+      '              <h3><span id="main-title"><%= this.options.title %></span> -' +
+      '              <span id="step-title"><%= page_title %></span></h3>' +
+      '          </div>' +
+      '          <% if (this.options.show_header_cancel_btn) { %>' +
+      '            <div class="col-sm-2">' +
+      '              <button class="ajs-close wizard-cancel-event pull-right"' +
+      '                title="' + gettext('Close') + '></button>' +
+      '              <% if (this.options.show_header_maximize_btn) { %>' +
+      '                <button class="ajs-maximize wizard-maximize-event pull-right' +
+      '                  title="' + gettext('Maximize') + '"></button>' +
+      '              <% } %>' +
+      '            </div>' +
+      '          <% } %>' +
+      '        </div>' +
+      '      </div>' +
+      '      <div class="wizard-content col-sm-12">' +
+      '        <% if (this.options.show_left_panel) { %>' +
+      '          <div class="col-sm-3 wizard-left-panel">' +
+      '              <img src="<%= this.options.image %>"' +
+      '                alt="' + gettext('Left panel logo') + '"></div>' +
+      '        <% } %>' +
+      '        <div class="col-sm-<% if (this.options.show_left_panel) { %>9<% }' +
+      '          else { %>12<% } %> wizard-right-panel">' +
+      '          <% if ( typeof show_description !=  "undefined"){ %>' +
+      '            <div class="wizard-description">' +
+      '              <%= show_description %>' +
+      '            </div>' +
+      '          <% } %>' +
+      '          <div class="wizard-progress-bar"><% if (show_progress_bar) { %>' +
+      '            <p class="alert alert-info col-sm-12"><%= show_progress_bar %></p><% } %>' +
+      '          </div>' +
+      '          <div class="wizard-right-panel_content col-xs-12">' +
+      '          </div>' +
+      '        </div>' +
+      '      </div>' +
+      '      <div class="col-sm-12 pg-prop-status-bar" style="visibility:hidden">' +
+      '        <div class="media error-in-footer bg-red-1 border-red-2 font-red-3 text-14">' +
+      '          <div class="media-body media-middle">' +
+      '            <div class="alert-icon error-icon">' +
+      '              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>' +
+      '            </div>' +
+      '            <div class="alert-text">' +
+      '            </div>' +
+      '            <div class="close-error-bar">' +
+      '              <a class="close-error">x</a>' +
+      '            </div>' +
+      '          </div>' +
+      '        </div>' +
+      '      </div>' +
+      '      <div class="footer col-sm-12">' +
+      '        <div class="row">' +
+      '          <div class="col-sm-4 wizard-buttons pull-left">' +
+      '            <button title = "' + gettext('Help for this dialog.') + '"' +
+      '              class="btn btn-default pull-left wizard-help" <%=this.options.wizard_help ? "" : "disabled" %>>' +
+      '              <span class="fa fa-lg fa-question"></span></button>' +
+      '          </div>' +
+      '          <div class="col-sm-8">' +
+      '            <div class="wizard-buttons">' +
+      '              <button class="btn btn-primary wizard-back" <%=this.options.disable_prev ? "disabled" : ""%>>' +
+      '                <i class="fa fa-backward"></i>' + gettext('Back') + '</button>' +
+      '              <button class="btn btn-primary wizard-next" <%=this.options.disable_next ? "disabled" : ""%>>' +
+      '                ' + gettext('Next') +
+      '                <i class="fa fa-forward"></i></button>' +
+      '              <button class="btn btn-danger wizard-cancel" <%=this.options.disable_cancel ? "disabled" : ""%>>' +
+      '                <i class="fa fa-lg fa-close"></i>' + gettext('Cancel') + '</button>' +
+      '              <button class="btn btn-primary wizard-finish" <%=this.options.disable_finish ? "disabled" : ""%>>' +
+      '                ' + gettext('Finish') + '</button>' +
+      '            </div>' +
+      '          </div>' +
+      '        </div>' +
+      '      </div>' +
+      '    </div>'),
     events: {
-      "click button.wizard-next" : "nextPage",
-      "click button.wizard-back" : "prevPage",
-      "click button.wizard-cancel" : "onCancel",
-      "click button.wizard-cancel-event" : "onCancel",
-      "click button.wizard-maximize-event" : "onMaximize",
-      "click button.wizard-finish" : "finishWizard",
-      "click button.wizard-help" : "onDialogHelp",
-      "click a.close-error" : "closeErrorMsg",
+      'click button.wizard-next': 'nextPage',
+      'click button.wizard-back': 'prevPage',
+      'click button.wizard-cancel': 'onCancel',
+      'click button.wizard-cancel-event': 'onCancel',
+      'click button.wizard-maximize-event': 'onMaximize',
+      'click button.wizard-finish': 'finishWizard',
+      'click button.wizard-help': 'onDialogHelp',
+      'click a.close-error': 'closeErrorMsg',
     },
     initialize: function(options) {
       this.options = _.extend({}, this.options, options.options);
@@ -150,15 +164,17 @@ function(_, Backbone, pgAdmin, pgBrowser, gettext) {
       this.options.disable_prev = (this.options.disable_prev ? true : this.evalASFunc(this.currPage.disable_prev));
       this.options.disable_cancel = (this.currPage.canCancel ? true : this.evalASFunc(this.currPage.disable_cancel));
 
-      var that = this;
-
       /* HTML Content */
-      if (data.html) { data.content = data.html; }
+      if (data.html) {
+        data.content = data.html;
+      }
       /* Backbone View */
-      else if (data.view) { data.content = data.view.render().el;}
+      else if (data.view) {
+        data.content = data.view.render().el;
+      }
 
       $(this.el).html(this.tmpl(data));
-      $(this.el).find(".wizard-right-panel_content").html(data.content);
+      $(this.el).find('.wizard-right-panel_content').html(data.content);
 
       /* OnLoad Callback */
       this.onLoad();
@@ -166,15 +182,16 @@ function(_, Backbone, pgAdmin, pgBrowser, gettext) {
       return this;
     },
     nextPage: function() {
-      if (!this.beforeNext()) { return false; }
+      if (!this.beforeNext()) {
+        return false;
+      }
 
       var page_id = this.onNext();
 
-      if (page_id ) {
+      if (page_id) {
         this.currPage = this.collection.get(page_id).toJSON();
         this.options.curr_page = this.collection.indexOf(this.collection.get(page_id));
-      }
-      else if (this.options.curr_page < (this.collection.length-1)) {
+      } else if (this.options.curr_page < (this.collection.length - 1)) {
         this.options.curr_page = this.options.curr_page + 1;
         this.currPage = this.collection.at(this.options.curr_page).toJSON();
       }
@@ -185,15 +202,16 @@ function(_, Backbone, pgAdmin, pgBrowser, gettext) {
       return this.render();
     },
     prevPage: function() {
-      if (!this.beforePrev()) { return false; }
+      if (!this.beforePrev()) {
+        return false;
+      }
 
       var page_id = this.onPrev();
 
-      if (page_id){
+      if (page_id) {
         this.currPage = this.collection.get(page_id).toJSON();
         this.options.curr_page = this.collection.indexOf(this.collection.get(page_id));
-      }
-      else if (this.options.curr_page > 0) {
+      } else if (this.options.curr_page > 0) {
         this.options.curr_page = this.options.curr_page - 1;
         this.currPage = this.collection.at(this.options.curr_page).toJSON();
       }
@@ -212,41 +230,37 @@ function(_, Backbone, pgAdmin, pgBrowser, gettext) {
       return true;
     },
     enableDisableNext: function(disable) {
-        if (typeof(disable) != 'undefined') {
-          this.options.disable_next = disable;
-        }
-        else if (this.options.curr_page >= (this.collection.length-1)) {
-          this.options.disable_next = true;
-        }
-        else {
-          this.options.disable_next = false;
-        }
+      if (typeof(disable) != 'undefined') {
+        this.options.disable_next = disable;
+      } else if (this.options.curr_page >= (this.collection.length - 1)) {
+        this.options.disable_next = true;
+      } else {
+        this.options.disable_next = false;
+      }
     },
     enableDisablePrev: function(disable) {
-        if (typeof(disable) != 'undefined') {
-          this.options.disable_prev = disable;
-        }
-        else if (this.options.curr_page <= 0) {
-          this.options.disable_prev = true;
-        }
-        else {
-          this.options.disable_prev = false;
-        }
+      if (typeof(disable) != 'undefined') {
+        this.options.disable_prev = disable;
+      } else if (this.options.curr_page <= 0) {
+        this.options.disable_prev = true;
+      } else {
+        this.options.disable_prev = false;
+      }
     },
     closeErrorMsg: function() {
       $(this.el).find('.pg-prop-status-bar .alert-text').empty();
-      $(this.el).find('.pg-prop-status-bar').css("visibility", "hidden");
+      $(this.el).find('.pg-prop-status-bar').css('visibility', 'hidden');
     },
-    beforeNext: function(){
+    beforeNext: function() {
       return this.evalASFunc(this.currPage.beforeNext);
     },
-    beforePrev: function(){
+    beforePrev: function() {
       return this.evalASFunc(this.currPage.beforePrev);
     },
-    onPrev: function(){
+    onPrev: function() {
       return this.evalASFunc(this.currPage.onPrev);
     },
-    onNext: function(){
+    onNext: function() {
       return this.evalASFunc(this.currPage.onNext);
     },
     onLoad: function() {
@@ -261,12 +275,12 @@ function(_, Backbone, pgAdmin, pgBrowser, gettext) {
     },
     onMaximize: function() {
       var dialog_api = this.options.dialog_api,
-      old_classes, _el = this.$el.find('.wizard-maximize-event');
+        _el = this.$el.find('.wizard-maximize-event');
 
       // If no dialog api found then return
-      if(!dialog_api) return;
+      if (!dialog_api) return;
 
-      if(dialog_api.isMaximized()) {
+      if (dialog_api.isMaximized()) {
         // toggle the icon
         _el.removeClass('ajs-maximized');
         dialog_api.restore();
@@ -297,7 +311,7 @@ function(_, Backbone, pgAdmin, pgBrowser, gettext) {
 
       pnlDialogHelp.focus();
       iframe.openURL(this.options.wizard_help);
-    }
+    },
   });
 
   return pgBrowser;

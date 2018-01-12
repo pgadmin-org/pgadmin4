@@ -1,8 +1,8 @@
 define('pgadmin.node.unique_constraint', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, Backgrid) {
 
   // Extend the browser's node class for index constraint node
   if (!pgBrowser.Nodes['unique_constraint']) {
@@ -24,7 +24,7 @@ define('pgadmin.node.unique_constraint', [
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -33,9 +33,9 @@ define('pgadmin.node.unique_constraint', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Unique constraint'),
           icon: 'wcTabIcon icon-unique_constraint', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
 
-        }
+        },
         ]);
       },
       canCreate: function(itemData, item, data) {
@@ -44,8 +44,8 @@ define('pgadmin.node.unique_constraint', [
           return true;
 
         var t = pgBrowser.tree, i = item, d = itemData, parents = [],
-            immediate_parent_table_found = false,
-            is_immediate_parent_table_partitioned = false;
+          immediate_parent_table_found = false,
+          is_immediate_parent_table_partitioned = false;
 
         // To iterate over tree to check parent node
         while (i) {
@@ -86,7 +86,7 @@ define('pgadmin.node.unique_constraint', [
           fillfactor: undefined,
           condeferrable: undefined,
           condeferred: undefined,
-          columns: []
+          columns: [],
         },
 
         // Define the schema for the index constraint node
@@ -105,15 +105,15 @@ define('pgadmin.node.unique_constraint', [
             var name = m.get('name');
             if (!(name && name != '')) {
               setTimeout(function(){
-               if(m.get('comment') && m.get('comment') !== '') {
-                 m.set('comment', null);
-               }
+                if(m.get('comment') && m.get('comment') !== '') {
+                  m.set('comment', null);
+                }
               },10);
               return true;
             } else {
               return false;
             }
-          }
+          },
         },{
           id: 'columns', label: gettext('Columns'),
           type: 'collection', group: gettext('Definition'),
@@ -125,47 +125,47 @@ define('pgadmin.node.unique_constraint', [
               var self = this,
                 collection = this.model.get('columns');
 
-               // Do not listen for any event(s) for existing constraint.
+              // Do not listen for any event(s) for existing constraint.
               if (_.isUndefined(self.model.get('oid'))) {
                 var tableCols = self.model.top.get('columns');
-                  self.listenTo(tableCols, 'remove' , self.removeColumn);
-                  self.listenTo(tableCols, 'change:name', self.resetColOptions);
+                self.listenTo(tableCols, 'remove' , self.removeColumn);
+                self.listenTo(tableCols, 'change:name', self.resetColOptions);
               }
 
               collection.on('pgadmin:multicolumn:updated', function() {
                 self.render.apply(self);
               });
-              self.listenTo(collection, "add", self.render);
-              self.listenTo(collection, "remove", self.render);
+              self.listenTo(collection, 'add', self.render);
+              self.listenTo(collection, 'remove', self.render);
             },
             removeColumn: function(m) {
               var self = this,
-                  removedCols = self.model.get('columns').where(
-                    {column: m.get('name')}
-                    );
+                removedCols = self.model.get('columns').where(
+                  {column: m.get('name')}
+                );
 
               self.model.get('columns').remove(removedCols);
               setTimeout(function () {
                 self.render();
               }, 10);
 
-              var key = 'unique_constraint'
+              var key = 'unique_constraint';
               setTimeout(function () {
-                constraints = self.model.top.get(key);
-                var removed = [];
+                var constraints = self.model.top.get(key),
+                  removed = [];
+
                 constraints.each(function(constraint) {
-                  if (constraint.get("columns").length == 0) {
-                     removed.push(constraint);
+                  if (constraint.get('columns').length == 0) {
+                    removed.push(constraint);
                   }
                 });
                 constraints.remove(removed);
               },100);
-
             },
             resetColOptions : function(m) {
               var self = this,
                 updatedCols = self.model.get('columns').where(
-                {column: m.previous('name')}
+                  {column: m.previous('name')}
                 );
               if (updatedCols.length > 0) {
                 /*
@@ -173,8 +173,8 @@ define('pgadmin.node.unique_constraint', [
                  * column name in primary key as well.
                  */
                 updatedCols[0].set(
-                {"column": m.get('name')},
-                {silent: true});
+                  {'column': m.get('name')},
+                  {silent: true});
               }
 
               setTimeout(function () {
@@ -182,19 +182,17 @@ define('pgadmin.node.unique_constraint', [
               }, 10);
             },
             formatter: {
-              fromRaw: function (rawValue, model) {
-                return rawValue.pluck("column").toString();
+              fromRaw: function (rawValue) {
+                return rawValue.pluck('column').toString();
               },
-              toRaw: function (val, model) {
-                return val;
-              }
+              toRaw: function (val) { return val; },
             },
             render: function() {
               return Backgrid.StringCell.prototype.render.apply(this, arguments);
             },
             remove: function() {
               var tableCols = this.model.top.get('columns'),
-              primary_key_col = this.model.get('columns');
+                primary_key_col = this.model.get('columns');
 
               if (primary_key_col) {
                 primary_key_col.off('pgadmin:multicolumn:updated');
@@ -204,7 +202,7 @@ define('pgadmin.node.unique_constraint', [
               this.stopListening(tableCols, 'change:name' , self.resetColOptions);
 
               Backgrid.StringCell.prototype.remove.apply(this, arguments);
-            }
+            },
           }),
           canDelete: true, canAdd: true,
           control: Backform.MultiSelectAjaxControl.extend({
@@ -217,13 +215,13 @@ define('pgadmin.node.unique_constraint', [
                   allowClear: true,
                   width: 'style',
                   placeholder: gettext('Select the column(s)'),
-                }
+                },
               }
             ),
             keyPathAccessor: function(obj, path) {
               var res = obj;
               if(_.isArray(res)) {
-                return _.map(res, function(o) { return o['column']
+                return _.map(res, function(o) { return o['column'];
                 });
               }
               path = path.split('.');
@@ -235,8 +233,8 @@ define('pgadmin.node.unique_constraint', [
               return _.isObject(res) && !_.isArray(res) ? null : res;
             },
             initialize: function() {
-            // Here we will decide if we need to call URL
-            // Or fetch the data from parent columns collection
+              // Here we will decide if we need to call URL
+              // Or fetch the data from parent columns collection
               var self = this;
               if(this.model.handler) {
                 Backform.Select2Control.prototype.initialize.apply(this, arguments);
@@ -252,17 +250,16 @@ define('pgadmin.node.unique_constraint', [
                 Backform.MultiSelectAjaxControl.prototype.initialize.apply(this, arguments);
               }
               self.model.get('columns').on('pgadmin:multicolumn:updated', function() {
-                  self.render.apply(self);
-                });
+                self.render.apply(self);
+              });
             },
-            resetColOptions: function(m) {
+            resetColOptions: function() {
               var self = this;
 
               setTimeout(function () {
                 self.custom_options();
                 self.render.apply(self);
               }, 50);
-
             },
             custom_options: function() {
               // We will add all the columns entered by user in table model
@@ -271,73 +268,71 @@ define('pgadmin.node.unique_constraint', [
 
               if (columns.length > 0) {
                 _.each(columns.models, function(m) {
-                    var col = m.get('name');
-                    if(!_.isUndefined(col) && !_.isNull(col)) {
-                      added_columns_from_tables.push(
-                        {label: col, value: col, image:'icon-column'}
-                      );
-                    }
+                  var col = m.get('name');
+                  if(!_.isUndefined(col) && !_.isNull(col)) {
+                    added_columns_from_tables.push(
+                      {label: col, value: col, image:'icon-column'}
+                    );
+                  }
                 });
               }
               // Set the values in to options so that user can select
               this.field.set('options', added_columns_from_tables);
             },
-            onChange: function(e) {
+            onChange: function() {
               var self = this,
-                  model = this.model,
-                  $el = $(e.target),
-                  attrArr = this.field.get("name").split('.'),
-                  name = attrArr.shift(),
-                  path = attrArr.join('.'),
-                  vals = this.getValueFromDOM(),
-                  collection = model.get(name),
-                  removed = [];
+                model = this.model,
+                attrArr = this.field.get('name').split('.'),
+                name = attrArr.shift(),
+                vals = this.getValueFromDOM(),
+                collection = model.get(name),
+                removed = [];
 
-              this.stopListening(this.model, "change:" + name, this.render);
+              this.stopListening(this.model, 'change:' + name, this.render);
 
-              /*
-               * Iterate through all the values, and find out how many are already
-               * present in the collection.
-               */
+                /*
+                 * Iterate through all the values, and find out how many are already
+                 * present in the collection.
+                 */
               collection.each(function(m) {
-                  var column = m.get('column'),
-                      idx = _.indexOf(vals, column);
+                var column = m.get('column'),
+                  idx = _.indexOf(vals, column);
 
-                  if (idx > -1) {
-                    vals.splice(idx, 1);
-                  } else {
-                    removed.push(column);
-                  }
-               });
+                if (idx > -1) {
+                  vals.splice(idx, 1);
+                } else {
+                  removed.push(column);
+                }
+              });
 
-              /*
-               * Adding new values
-               */
+                /*
+                 * Adding new values
+                 */
 
               _.each(vals, function(v) {
                 var m = new (self.field.get('model'))(
-                      {column: v}, { silent: true,
-                      top: self.model.top,
-                      collection: collection,
-                      handler: collection
-                    });
+                  {column: v}, { silent: true,
+                    top: self.model.top,
+                    collection: collection,
+                    handler: collection,
+                  });
 
                 collection.add(m);
               });
 
-              /*
-               * Removing unwanted!
-               */
+                /*
+                 * Removing unwanted!
+                 */
               _.each(removed, function(v) {
                 collection.remove(collection.where({column: v}));
               });
 
-              this.listenTo(this.model, "change:" + name, this.render);
+              this.listenTo(this.model, 'change:' + name, this.render);
             },
             remove: function() {
               if(this.model.handler) {
                 var self = this,
-                tableCols = self.model.top.get('columns');
+                  tableCols = self.model.top.get('columns');
                 self.stopListening(tableCols, 'remove' , self.resetColOptions);
                 self.stopListening(tableCols, 'change:name' , self.resetColOptions);
                 self.model.get('columns').off('pgadmin:multicolumn:updated');
@@ -347,23 +342,23 @@ define('pgadmin.node.unique_constraint', [
               } else {
                 Backform.MultiSelectAjaxControl.prototype.remove.apply(this, arguments);
               }
-            }
+            },
           }),
           deps: ['index'], node: 'column',
           model: pgBrowser.Node.Model.extend({
             defaults: {
-              column: undefined
+              column: undefined,
             },
             validate: function() {
               return null;
-           }
+            },
           }),
           transform : function(data){
             var res = [];
             if (data && _.isArray(data)) {
               _.each(data, function(d) {
                 res.push({label: d.label, value: d.label, image:'icon-column'});
-              })
+              });
             }
             return res;
           },
@@ -371,27 +366,27 @@ define('pgadmin.node.unique_constraint', [
           disabled: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
-                                    && !m.top.isNew()) {
+              && !m.top.isNew()) {
                 // If OID is undefined then user is trying to add
                 // new constraint which should be allowed for Unique
-                return !_.isUndefined(m.get('oid'));
+              return !_.isUndefined(m.get('oid'));
             }
 
             // We can't update columns of existing index constraint.
             if (!m.isNew()) {
-                return true;
+              return true;
             }
             // Disable if index is selected.
             var index = m.get('index');
-              if(_.isUndefined(index) || index == '') {
-                return false;
-              } else {
-                var col = m.get('columns');
-                col.reset();
-                return true;
-              }
+            if(_.isUndefined(index) || index == '') {
+              return false;
+            } else {
+              var col = m.get('columns');
+              col.reset();
+              return true;
             }
-          },{
+          },
+        },{
           id: 'spcname', label: gettext('Tablespace'),
           type: 'text', group: gettext('Definition'),
           control: 'node-list-by-name', node: 'tablespace',
@@ -399,40 +394,40 @@ define('pgadmin.node.unique_constraint', [
           select2:{allowClear:false},
           filter: function(m) {
             // Don't show pg_global tablespace in selection.
-            if (m.label == "pg_global") return false;
+            if (m.label == 'pg_global') return false;
             else return true;
           },
           disabled: function(m) {
             // Disable if index is selected.
             m = m.top || m;
             var index = m.get('index');
-              if(_.isUndefined(index) || index == '') {
-                return false;
-              } else {
-                setTimeout(function(){
-                  m.set('spcname', '');
-                },10);
-                return true;
-              }
-          }
+            if(_.isUndefined(index) || index == '') {
+              return false;
+            } else {
+              setTimeout(function(){
+                m.set('spcname', '');
+              },10);
+              return true;
+            }
+          },
         },{
           id: 'index', label: gettext('Index'),
           type: 'text', group: gettext('Definition'),
           control: Backform.NodeListByNameControl.extend({
-          initialize:function() {
-            if (_.isUndefined(this.model.top)) {
-              Backform.NodeListByNameControl.prototype.initialize.apply(this,arguments);
-            } else {
-              Backform.Control.prototype.initialize.apply(this,arguments);
-            }
-          }
+            initialize:function() {
+              if (_.isUndefined(this.model.top)) {
+                Backform.NodeListByNameControl.prototype.initialize.apply(this,arguments);
+              } else {
+                Backform.Control.prototype.initialize.apply(this,arguments);
+              }
+            },
           }),
           select2:{allowClear:true}, node: 'index',
           disabled: function(m) {
             // If we are in table edit mode then disable it
             if (_.has(m, 'top') && !_.isUndefined(m.top)
-                                    && !m.top.isNew()) {
-                return true;
+              && !m.top.isNew()) {
+              return true;
             }
 
             // We can't update index of existing index constraint.
@@ -441,37 +436,37 @@ define('pgadmin.node.unique_constraint', [
           // We will not show this field in Create Table mode
           visible: function(m) {
             return !_.isUndefined(m.top.node_info['table']);
-          }
+          },
         },{
           id: 'fillfactor', label: gettext('Fill factor'), deps: ['index'],
           type: 'int', group: gettext('Definition'), allowNull: true,
           disabled: function(m) {
             // Disable if index is selected.
             var index = m.get('index');
-              if(_.isUndefined(index) || index == '') {
-                return false;
-              } else {
-                setTimeout(function(){
-                  m.set('fillfactor', null);
-                },10);
-                return true;
-              }
+            if(_.isUndefined(index) || index == '') {
+              return false;
+            } else {
+              setTimeout(function(){
+                m.set('fillfactor', null);
+              },10);
+              return true;
             }
+          },
         },{
           id: 'condeferrable', label: gettext('Deferrable?'),
           type: 'switch', group: gettext('Definition'), deps: ['index'],
           disabled: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
-                                    && !m.top.isNew()) {
+              && !m.top.isNew()) {
                 // If OID is undefined then user is trying to add
                 // new constraint which should allowed for Unique
-                return !_.isUndefined(m.get('oid'));
+              return !_.isUndefined(m.get('oid'));
             }
 
             // We can't update condeferrable of existing index constraint.
             if (!m.isNew()) {
-                return true;
+              return true;
             }
             // Disable if index is selected.
             var index = m.get('index');
@@ -484,7 +479,7 @@ define('pgadmin.node.unique_constraint', [
               },10);
               return true;
             }
-          }
+          },
         },{
           id: 'condeferred', label: gettext('Deferred?'),
           type: 'switch', group: gettext('Definition'),
@@ -492,10 +487,10 @@ define('pgadmin.node.unique_constraint', [
           disabled: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
-                                    && !m.top.isNew()) {
+              && !m.top.isNew()) {
                 // If OID is undefined then user is trying to add
                 // new constraint which should allowed for Unique
-                return !_.isUndefined(m.get('oid'));
+              return !_.isUndefined(m.get('oid'));
             }
 
             // We can't update condeferred of existing index constraint.
@@ -507,13 +502,13 @@ define('pgadmin.node.unique_constraint', [
               return false;
             } else {
               setTimeout(function(){
-               if(m.get('condeferred'))
+                if(m.get('condeferred'))
                   m.set('condeferred', false);
               },10);
               return true;
             }
-          }
-        }
+          },
+        },
         ],
         validate: function() {
           this.errorModel.clear();
@@ -525,17 +520,17 @@ define('pgadmin.node.unique_constraint', [
           var columns = this.get('columns'),
             index = this.get('index');
 
-            if ((_.isUndefined(index) || String(index).replace(/^\s+|\s+$/g, '') == '') &&
-                (_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
-              var msg = gettext('Please specify columns for %(node)s', {node: gettext('Unique constraint')});
-              this.errorModel.set('columns', msg);
-              return msg;
-            }
+          if ((_.isUndefined(index) || String(index).replace(/^\s+|\s+$/g, '') == '') &&
+            (_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
+            var msg = gettext('Please specify columns for %(node)s', {node: gettext('Unique constraint')});
+            this.errorModel.set('columns', msg);
+            return msg;
+          }
 
           return null;
-        }
-      })
-  });
+        },
+      }),
+    });
   }
 
   return pgBrowser.Nodes['unique_constraint'];

@@ -1,7 +1,7 @@
 define('misc.depends', [
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
-  'alertify', 'pgadmin.alertifyjs'
-], function(gettext, _, S, $, pgBrowser, Alertify) {
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'backbone',
+  'pgadmin.browser', 'pgadmin.alertifyjs', 'pgadmin.backgrid',
+], function(gettext, _, S, $, Backbone, pgBrowser, Alertify, Backgrid) {
 
   if (pgBrowser.ShowNodeDepends)
     return pgBrowser.ShowNodeDepends;
@@ -20,19 +20,15 @@ define('misc.depends', [
       /* Parameter is used to set the proper label of the
        * backgrid header cell.
        */
-      var dependent = true,
-          dependentGrid = null,  // Refer to the backgrid object render under Dependents tab
-          dependenciesGrid = null; // Refer to the backgrid object render under Dependencies tab
-
       _.bindAll(this, 'showDependents', 'dependentsPanelVisibilityChanged',
-         'showDependencies', 'dependenciesPanelVisibilityChanged', '__updateCollection'
+        'showDependencies', 'dependenciesPanelVisibilityChanged', '__updateCollection'
       );
 
       // We will listened to the visibility change of the Dependencies and Dependents panel
       pgBrowser.Events.on('pgadmin-browser:panel-dependencies:' + wcDocker.EVENT.VISIBILITY_CHANGED,
-                        this.dependenciesPanelVisibilityChanged);
+        this.dependenciesPanelVisibilityChanged);
       pgBrowser.Events.on('pgadmin-browser:panel-dependents:' + wcDocker.EVENT.VISIBILITY_CHANGED,
-                        this.dependentsPanelVisibilityChanged);
+        this.dependentsPanelVisibilityChanged);
 
       // Defining Backbone Model for Dependencies and Dependents.
       var Model = Backbone.Model.extend({
@@ -43,28 +39,28 @@ define('misc.depends', [
           /* field contains 'Database Name' for 'Tablespace and Role node',
            * for other node it contains 'Restriction'.
            */
-          field: undefined
+          field: undefined,
         },
         // This function is used to fetch/set the icon for the type(Function, Role, Database, ....)
         parse: function(res) {
           var node = pgBrowser.Nodes[res.type];
           res.icon = node ? (_.isFunction(node['node_image']) ?
-                  (node['node_image']).apply(node, [null, null]) :
-                  (node['node_image'] || ('icon-' + res.type))) :
-                  ('icon-' + res.type);
-          res.type = S.titleize(res.type.replace(/_/g, " "), true);
+              (node['node_image']).apply(node, [null, null]) :
+              (node['node_image'] || ('icon-' + res.type))) :
+            ('icon-' + res.type);
+          res.type = S.titleize(res.type.replace(/_/g, ' '), true);
           return res;
-        }
+        },
       });
 
       // Defining Backbone Collection for Dependents.
-      this.dependentCollection = new (Backbone.Collection.extend({
-        model: Model
+      this.dependentCollection = new(Backbone.Collection.extend({
+        model: Model,
       }))(null);
 
       // Defining Backbone Collection for Dependencies.
-      this.dependenciesCollection = new (Backbone.Collection.extend({
-        model: Model
+      this.dependenciesCollection = new(Backbone.Collection.extend({
+        model: Model,
       }))(null);
 
       var self = this;
@@ -75,39 +71,40 @@ define('misc.depends', [
        */
       var appendGridToPanel = function(collection, panel, is_dependent) {
         var $container = panel[0].layout().scene().find('.pg-panel-content'),
-            $gridContainer = $container.find('.pg-panel-depends-container'),
-            grid = new Backgrid.Grid({
-              columns: [
-                {
-                  name : 'type',
-                  label: gettext('Type'),
-                  // Extend it to render the icon as per the type.
-                  cell: Backgrid.Cell.extend({
-                    render: function() {
-                      Backgrid.Cell.prototype.render.apply(this, arguments);
-                      this.$el.prepend($('<i>', {class: "wcTabIcon " + this.model.get('icon')}));
-                      return this;
-                    }
-                  }),
-                  editable: false
+          $gridContainer = $container.find('.pg-panel-depends-container'),
+          grid = new Backgrid.Grid({
+            columns: [{
+              name: 'type',
+              label: gettext('Type'),
+                // Extend it to render the icon as per the type.
+              cell: Backgrid.Cell.extend({
+                render: function() {
+                  Backgrid.Cell.prototype.render.apply(this, arguments);
+                  this.$el.prepend($('<i>', {
+                    class: 'wcTabIcon ' + this.model.get('icon'),
+                  }));
+                  return this;
                 },
-                {
-                  name : 'name',
-                  label: gettext('Name'),
-                  cell: 'string',
-                  editable: false
-                },
-                {
-                  name : 'field',
-                  label: '',  // label kept blank, it will change dynamically
-                  cell: 'string',
-                  editable: false
-                }
-              ],
+              }),
+              editable: false,
+            },
+            {
+              name: 'name',
+              label: gettext('Name'),
+              cell: 'string',
+              editable: false,
+            },
+            {
+              name: 'field',
+              label: '', // label kept blank, it will change dynamically
+              cell: 'string',
+              editable: false,
+            },
+            ],
 
-              collection: collection,
-              className: "backgrid presentation table backgrid-striped table-bordered table-hover",
-            });
+            collection: collection,
+            className: 'backgrid presentation table backgrid-striped table-bordered table-hover',
+          });
 
         // Condition is used to save grid object to change the label of the header.
         if (is_dependent)
@@ -122,11 +119,12 @@ define('misc.depends', [
 
       // We will listened to the visibility change of the Dependencies and Dependents panel
       pgBrowser.Events.on('pgadmin-browser:panel-dependencies:' + wcDocker.EVENT.VISIBILITY_CHANGED,
-                        this.dependenciesPanelVisibilityChanged);
+        this.dependenciesPanelVisibilityChanged);
       pgBrowser.Events.on('pgadmin-browser:panel-dependents:' + wcDocker.EVENT.VISIBILITY_CHANGED,
-                        this.dependentsPanelVisibilityChanged);
+        this.dependentsPanelVisibilityChanged);
       pgBrowser.Events.on(
-        'pgadmin:browser:node:updated', function() {
+        'pgadmin:browser:node:updated',
+        function() {
           if (this.dependenciesPanels && this.dependenciesPanels.length) {
             $(this.dependenciesPanels[0]).data('node-prop', '');
             this.dependenciesPanelVisibilityChanged(this.dependenciesPanels[0]);
@@ -153,10 +151,10 @@ define('misc.depends', [
 
             // If Dependencies panel exists and is focused then we need to listen the browser tree selection events.
             if ((dependenciesPanels[0].isVisible()) || dependenciesPanels.length != 1) {
-            pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependencies);
+              pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependencies);
             }
           }.bind(this)
-          );
+        );
       } else {
         appendGridToPanel(this.dependenciesCollection, this.dependenciesPanels, false);
 
@@ -178,7 +176,7 @@ define('misc.depends', [
               pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependents);
             }
           }.bind(this)
-          );
+        );
       } else {
         appendGridToPanel(this.dependentCollection, this.dependentsPanels, true);
 
@@ -192,12 +190,11 @@ define('misc.depends', [
     // Fetch the actual data and update the collection
     __updateCollection: function(collection, panel, url, messages, node, item, type) {
       var msg = messages[0],
-          $container = panel[0].layout().scene().find('.pg-panel-content'),
-          $msgContainer = $container.find('.pg-panel-depends-message'),
-          $gridContainer = $container.find('.pg-panel-depends-container'),
-          treeHierarchy = node.getTreeNodeHierarchy(item),
-          n_value = -1,
-          n_type = type;
+        $container = panel[0].layout().scene().find('.pg-panel-content'),
+        $msgContainer = $container.find('.pg-panel-depends-message'),
+        $gridContainer = $container.find('.pg-panel-depends-container'),
+        treeHierarchy = node.getTreeNodeHierarchy(item),
+        n_type = type;
 
       // Avoid unnecessary reloads
       if (_.isEqual($(panel[0]).data('node-prop'), treeHierarchy)) {
@@ -230,20 +227,26 @@ define('misc.depends', [
            * it should be 'Restriction'.
            */
           if (this.dependent && (node.type == 'tablespace' || node.type == 'role'))
-            this.dependentGrid.columns.models[2].set({'label': gettext('Database')});
+            this.dependentGrid.columns.models[2].set({
+              'label': gettext('Database'),
+            });
           else {
-            this.dependenciesGrid.columns.models[2].set({'label': gettext('Restriction')});
-            this.dependentGrid.columns.models[2].set({'label': gettext('Restriction')});
+            this.dependenciesGrid.columns.models[2].set({
+              'label': gettext('Restriction'),
+            });
+            this.dependentGrid.columns.models[2].set({
+              'label': gettext('Restriction'),
+            });
           }
 
           // Hide message container and show grid container.
           $msgContainer.addClass('hidden');
           $gridContainer.removeClass('hidden');
 
-          var timer = setTimeout(function(){
+          var timer = setTimeout(function() {
             // notify user if request is taking longer than 1 second
 
-            $msgContainer.text(gettext("Retrieving data from the server..."));
+            $msgContainer.text(gettext('Retrieving data from the server...'));
             $msgContainer.removeClass('hidden');
             if ($gridContainer) {
               $gridContainer.addClass('hidden');
@@ -266,24 +269,23 @@ define('misc.depends', [
               pgBrowser.Events.trigger(
                 'pgadmin:node:retrieval:error', 'depends', xhr, error, message
               );
-              if (
-                !Alertify.pgHandleItemError(xhr, error, message, {
-                  item: item, info: treeHierarchy
-                })
-              ) {
+              if (!Alertify.pgHandleItemError(xhr, error, message, {
+                item: item,
+                info: treeHierarchy,
+              })) {
                 Alertify.pgNotifier(
                   error, xhr,
                   S(
-                    gettext("Error retrieving the information - %s")
+                    gettext('Error retrieving the information - %s')
                   ).sprintf(message || _label).value(),
                   function() {
-                    console.log(arguments);
+                    console.warn(arguments);
                   }
                 );
               }
               // show failed message.
-              $msgContainer.text(gettext("Failed to retrieve data from the server."));
-            }
+              $msgContainer.text(gettext('Failed to retrieve data from the server.'));
+            },
           });
         }
       }
@@ -305,25 +307,23 @@ define('misc.depends', [
       if (self.timeout) {
         clearTimeout(self.timeout);
       }
-      self.timeout =  setTimeout(
+      self.timeout = setTimeout(
         self.__updateCollection(
-          self.dependentCollection,
-          self.dependentsPanels,
-          node.generate_url(item, 'dependent', data, true),
-          [gettext('No object selected.'), gettext('No dependent information is available for the current object.'),
-            gettext('Fetching dependent information from the server...')],
-          node,
-          item,
-          data._type
+          self.dependentCollection, self.dependentsPanels,
+          node.generate_url(item, 'dependent', data, true), [
+            gettext('No object selected.'),
+            gettext('No dependent information is available for the current object.'),
+            gettext('Fetching dependent information from the server...'),
+          ], node, item, data._type
         ), 400
       );
     },
     dependentsPanelVisibilityChanged: function(panel) {
       if (panel.isVisible()) {
         var t = pgBrowser.tree,
-            i = t.selected(),
-            d = i && t.itemData(i),
-            n = i && d && pgBrowser.Nodes[d._type];
+          i = t.selected(),
+          d = i && t.itemData(i),
+          n = i && d && pgBrowser.Nodes[d._type];
 
         pgBrowser.ShowNodeDepends.showDependents.apply(pgBrowser.ShowNodeDepends, [i, d, n]);
 
@@ -349,13 +349,13 @@ define('misc.depends', [
       if (self.timeout) {
         clearTimeout(self.timeout);
       }
-      self.timeout =  setTimeout(
+      self.timeout = setTimeout(
         self.__updateCollection(
           self.dependenciesCollection,
           self.dependenciesPanels,
-          node.generate_url(item, 'dependency', data, true),
-          [gettext('Please select an object in the tree view.'), gettext('No dependency information is available for the current object.'),
-            gettext('Fetching dependency information from the server...')],
+          node.generate_url(item, 'dependency', data, true), [gettext('Please select an object in the tree view.'), gettext('No dependency information is available for the current object.'),
+            gettext('Fetching dependency information from the server...'),
+          ],
           node,
           item,
           data._type
@@ -365,9 +365,9 @@ define('misc.depends', [
     dependenciesPanelVisibilityChanged: function(panel) {
       if (panel.isVisible()) {
         var t = pgBrowser.tree,
-            i = t.selected(),
-            d = i && t.itemData(i),
-            n = i && d && pgBrowser.Nodes[d._type];
+          i = t.selected(),
+          d = i && t.itemData(i),
+          n = i && d && pgBrowser.Nodes[d._type];
 
         pgBrowser.ShowNodeDepends.showDependencies.apply(pgBrowser.ShowNodeDepends, [i, d, n]);
 
@@ -377,7 +377,7 @@ define('misc.depends', [
         // We don't need to listen the tree item selection event.
         pgBrowser.Events.off('pgadmin-browser:tree:selected', pgBrowser.ShowNodeDepends.showDependencies);
       }
-    }
+    },
   });
 
   return pgBrowser.ShowNodeDepends;

@@ -1,9 +1,8 @@
 define('misc.bgprocess', [
   'sources/pgadmin', 'sources/gettext', 'sources/url_for', 'underscore',
   'underscore.string', 'jquery', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.messages'
 ], function(
-  pgAdmin, gettext, url_for, _, S, $, pgBrowser, alertify, pgMessages
+  pgAdmin, gettext, url_for, _, S, $, pgBrowser, Alertify
 ) {
 
   pgBrowser.BackgroundProcessObsorver = pgBrowser.BackgroundProcessObsorver || {};
@@ -11,6 +10,8 @@ define('misc.bgprocess', [
   if (pgBrowser.BackgroundProcessObsorver.initialized) {
     return pgBrowser.BackgroundProcessObsorver;
   }
+
+  var wcDocker = window.wcDocker;
 
   var BGProcess = function(info, notify) {
     var self = this;
@@ -45,7 +46,9 @@ define('misc.bgprocess', [
           notifier: null,
           container: null,
           panel: null,
-          logs: $('<ol></ol>', {class: 'pg-bg-process-logs'})
+          logs: $('<ol></ol>', {
+            class: 'pg-bg-process-logs',
+          }),
         });
 
         if (this.notify) {
@@ -62,7 +65,7 @@ define('misc.bgprocess', [
               if (!process.notifier)
                 process.show.apply(process);
             }
-          )
+          );
         }
         var self = this;
 
@@ -75,29 +78,32 @@ define('misc.bgprocess', [
 
       bgprocess_url: function(type) {
         switch (type) {
-          case 'status':
-            if (this.details && this.out != -1 && this.err != -1) {
-              return url_for(
+        case 'status':
+          if (this.details && this.out != -1 && this.err != -1) {
+            return url_for(
                 'bgprocess.detailed_status', {
                   'pid': this.id,
                   'out': this.out,
-                  'err': this.err
+                  'err': this.err,
                 }
               );
-            }
-            return url_for('bgprocess.status', {'pid': this.id});
-          case 'acknowledge':
-            return url_for('bgprocess.acknowledge', {'pid': this.id});
-          default:
-            return url_for('bgprocess.list');
+          }
+          return url_for('bgprocess.status', {
+            'pid': this.id,
+          });
+        case 'acknowledge':
+          return url_for('bgprocess.acknowledge', {
+            'pid': this.id,
+          });
+        default:
+          return url_for('bgprocess.list');
         }
       },
 
       update: function(data) {
         var self = this,
-            out = [],
-            err = [],
-            idx = 0;
+          out = [],
+          err = [];
 
         if ('stime' in data)
           self.stime = new Date(data.stime);
@@ -131,9 +137,7 @@ define('misc.bgprocess', [
         }
         self.completed = self.completed || (
           'err' in data && 'out' in data && data.err.done && data.out.done
-        ) || (
-          !self.details && !_.isNull(self.exit_code)
-        );
+        ) || (!self.details && !_.isNull(self.exit_code));
 
         var io = 0,
           ie = 0,
@@ -145,7 +149,7 @@ define('misc.bgprocess', [
           };
 
         while (io < out.length && ie < err.length) {
-          if (pgAdmin.natural_sort(out[io][0], err[ie][0]) <= 0){
+          if (pgAdmin.natural_sort(out[io][0], err[ie][0]) <= 0) {
             res.push('<li class="pg-bg-res-out">' + escapeHTML(out[io++][1]) + '</li>');
           } else {
             res.push('<li class="pg-bg-res-err">' + escapeHTML(err[ie++][1]) + '</li>');
@@ -179,7 +183,7 @@ define('misc.bgprocess', [
               self.curr_status = gettext('Successfully completed.');
             } else {
               self.curr_status = S(
-                gettext("Failed (exit code: %s).")
+                gettext('Failed (exit code: %s).')
               ).sprintf(String(self.exit_code)).value();
             }
           }
@@ -198,7 +202,9 @@ define('misc.bgprocess', [
             );
           }
 
-          setTimeout(function() {self.show.apply(self)}, 10);
+          setTimeout(function() {
+            self.show.apply(self);
+          }, 10);
         }
 
         if (!self.completed) {
@@ -219,15 +225,19 @@ define('misc.bgprocess', [
           url: self.bgprocess_url('status'),
           cache: false,
           async: true,
-          contentType: "application/json",
+          contentType: 'application/json',
           success: function(res) {
-            setTimeout(function() { self.update(res); }, 10);
+            setTimeout(function() {
+              self.update(res);
+            }, 10);
           },
           error: function(res) {
             // Try after some time only if job id present
             if (res.status != 410)
-              setTimeout(function() { self.update(res); }, 10000);
-          }
+              setTimeout(function() {
+                self.update(res);
+              }, 10000);
+          },
         });
       },
 
@@ -237,35 +247,40 @@ define('misc.bgprocess', [
         if (self.notify && !self.details) {
           if (!self.notifier) {
             var header = $('<div></div>', {
-                  class: "h5 pg-bg-notify-header"
-                }).append($('<span></span>').text(self.desc)),
-                content = $('<div class="pg-bg-bgprocess row"></div>').append(
-                  header
-                ).append(
-                  $('<div></div>', {class: 'pg-bg-notify-body h6' }).append(
-                    $('<div></div>', {class: 'pg-bg-start col-xs-12' }).append(
-                      $('<div></div>').text(self.stime.toString())
-                    ).append(
-                      $('<div class="pg-bg-etime"></div>')
-                    )
-                  )
-                ),
-                for_details = $('<div></div>', {
-                  class: "col-xs-12 text-center pg-bg-click h6"
+                class: 'h5 pg-bg-notify-header',
+              }).append($('<span></span>').text(self.desc)),
+              content = $('<div class="pg-bg-bgprocess row"></div>').append(
+                header
+              ).append(
+                $('<div></div>', {
+                  class: 'pg-bg-notify-body h6',
                 }).append(
-                  $('<span></span>').text(gettext('Click here for details.'))
-                ).appendTo(content),
-                status = $('<div></div>', {
-                  class: "pg-bg-status col-xs-12 h5 " + ((self.exit_code === 0) ?
-                      'bg-success': (self.exit_code == 1) ?
-                      'bg-failed' : '')
-                }).appendTo(content),
-                close_me = $(
-                  '<div class="bg-close"><i class="fa fa-close"></i></div>'
-                ).appendTo(header);
+                  $('<div></div>', {
+                    class: 'pg-bg-start col-xs-12',
+                  }).append(
+                    $('<div></div>').text(self.stime.toString())
+                  ).append(
+                    $('<div class="pg-bg-etime"></div>')
+                  )
+                )
+              ),
+              for_details = $('<div></div>', {
+                class: 'col-xs-12 text-center pg-bg-click h6',
+              }).append(
+                $('<span></span>').text(gettext('Click here for details.'))
+              ).appendTo(content),
+              close_me = $(
+                '<div class="bg-close"><i class="fa fa-close"></i></div>'
+              ).appendTo(header);
+
+            $('<div></div>', {
+              class: 'pg-bg-status col-xs-12 h5 ' + ((self.exit_code === 0) ?
+                'bg-success' : (self.exit_code == 1) ?
+                'bg-failed' : ''),
+            }).appendTo(content);
 
             self.container = content;
-            self.notifier = alertify.notify(
+            self.notifier = Alertify.notify(
               content.get(0), 'bg-bgprocess', 0, null
             );
 
@@ -281,7 +296,7 @@ define('misc.bgprocess', [
               this.show_detailed_view.apply(this);
             }.bind(self));
 
-            close_me.on('click', function(ev) {
+            close_me.on('click', function() {
               this.notifier.dismiss();
               this.notifier = null;
               this.acknowledge_server.apply(this);
@@ -312,37 +327,37 @@ define('misc.bgprocess', [
 
           if (self.exit_code === 0) {
             $status_bar.addClass('bg-success');
-          } else if (self.exit_code == 1){
+          } else if (self.exit_code == 1) {
             $status_bar.addClass('bg-failed');
           }
         } else {
-          self.show_detailed_view.apply(self)
+          self.show_detailed_view.apply(self);
         }
       },
 
       show_detailed_view: function() {
         var self = this,
-            panel = this.panel,
-            is_new = false;
+          panel = this.panel,
+          is_new = false;
 
         if (!self.panel) {
           is_new = true;
           panel = this.panel =
-              pgBrowser.BackgroundProcessObsorver.create_panel();
+            pgBrowser.BackgroundProcessObsorver.create_panel();
 
           panel.title('Process Watcher - ' + _.escape(self.desc));
           panel.focus();
         }
 
         var container = panel.$container,
-            status_class = (
-              (self.exit_code === 0) ?
-                'bg-bgprocess-success': (self.exit_code == 1) ?
-                  'bg-bgprocess-failed' : ''
-            ),
-            $logs = container.find('.bg-process-watcher'),
-            $header = container.find('.bg-process-details'),
-            $footer = container.find('.bg-process-footer');
+          status_class = (
+            (self.exit_code === 0) ?
+            'bg-bgprocess-success' : (self.exit_code == 1) ?
+            'bg-bgprocess-failed' : ''
+          ),
+          $logs = container.find('.bg-process-watcher'),
+          $header = container.find('.bg-process-details'),
+          $footer = container.find('.bg-process-footer');
 
         if (is_new) {
           // set logs
@@ -413,14 +428,15 @@ define('misc.bgprocess', [
           url: self.bgprocess_url('acknowledge'),
           cache: false,
           async: true,
-          contentType: "application/json",
-          success: function(res) {
+          contentType: 'application/json',
+          success: function() {
             return;
           },
-          error: function(res) {
-          }
+          error: function() {
+            console.warn(arguments);
+          },
         });
-      }
+      },
     });
 
   _.extend(
@@ -449,7 +465,7 @@ define('misc.bgprocess', [
               }, 1000
             );
           }
-        )
+        );
       },
 
       update_process_list: function(recheck) {
@@ -461,9 +477,8 @@ define('misc.bgprocess', [
           url: url_for('bgprocess.list'),
           cache: false,
           async: true,
-          contentType: "application/json",
+          contentType: 'application/json',
           success: function(res) {
-            var cnt = 0;
             if (!res || !_.isArray(res)) {
               return;
             }
@@ -484,9 +499,10 @@ define('misc.bgprocess', [
               );
             }
           },
-          error: function(res) {
+          error: function() {
             // FIXME:: What to do now?
-          }
+            console.warn(arguments);
+          },
         });
       },
 
@@ -498,11 +514,11 @@ define('misc.bgprocess', [
           wcDocker.DOCK.FLOAT,
           null, {
             w: (screen.width < 700 ?
-                screen.width * 0.95 : screen.width * 0.5),
-                h: (screen.height < 500 ?
-                    screen.height * 0.95 : screen.height * 0.5),
-                    x: (screen.width < 700 ? '2%' : '25%'),
-                    y: (screen.height < 500 ? '2%' : '25%')
+              screen.width * 0.95 : screen.width * 0.5),
+            h: (screen.height < 500 ?
+              screen.height * 0.95 : screen.height * 0.5),
+            x: (screen.width < 700 ? '2%' : '25%'),
+            y: (screen.height < 500 ? '2%' : '25%'),
           });
       },
 
@@ -510,39 +526,39 @@ define('misc.bgprocess', [
         var w = pgBrowser.docker,
           panels = w.findPanels('bg_process_watcher');
 
-          if (panels && panels.length >= 1)
-            return;
+        if (panels && panels.length >= 1)
+          return;
 
-          var p = new pgBrowser.Panel({
-                name: 'bg_process_watcher',
-                showTitle: true,
-                isCloseable: true,
-                isPrivate: true,
-                content: '<div class="bg-process-details col-xs-12">'+
-                  '<p class="bg-detailed-desc"></p>'+
-                  '<div class="bg-process-stats">'+
-                  '<span><b>' + gettext('Start time') + ': </b>'+
-                  '<span class="bgprocess-start-time"></span>'+
-                  '</span></div>'+
-                  '</div>'+
-                  '<div class="bg-process-watcher col-xs-12">'+
-                  '</div>'+
-                  '<div class="bg-process-footer col-xs-12">'+
-                  '<div class="bg-process-status col-xs-6">'+
-                  '<span><b>' + gettext('Status') + ':</b></span><p></p>'+
-                  '</div>'+
-                  '<div class="bg-process-exec-time col-xs-6">'+
-                  '<div class="exec-div pull-right">'+
-                  '<span><b>' + gettext('Execution time') + ':</b></span><p></p>'+
-                  '</div>'+
-                  '</div>'+
-                  '</div>',
-                onCreate: function(myPanel, $container) {
-                  $container.addClass('pg-no-overflow');
-                }
-              });
-          p.load(pgBrowser.docker);
-      }
+        var p = new pgBrowser.Panel({
+          name: 'bg_process_watcher',
+          showTitle: true,
+          isCloseable: true,
+          isPrivate: true,
+          content: '<div class="bg-process-details col-xs-12">' +
+            '<p class="bg-detailed-desc"></p>' +
+            '<div class="bg-process-stats">' +
+            '<span><b>' + gettext('Start time') + ': </b>' +
+            '<span class="bgprocess-start-time"></span>' +
+            '</span></div>' +
+            '</div>' +
+            '<div class="bg-process-watcher col-xs-12">' +
+            '</div>' +
+            '<div class="bg-process-footer col-xs-12">' +
+            '<div class="bg-process-status col-xs-6">' +
+            '<span><b>' + gettext('Status') + ':</b></span><p></p>' +
+            '</div>' +
+            '<div class="bg-process-exec-time col-xs-6">' +
+            '<div class="exec-div pull-right">' +
+            '<span><b>' + gettext('Execution time') + ':</b></span><p></p>' +
+            '</div>' +
+            '</div>' +
+            '</div>',
+          onCreate: function(myPanel, $container) {
+            $container.addClass('pg-no-overflow');
+          },
+        });
+        p.load(pgBrowser.docker);
+      },
     });
 
   return pgBrowser.BackgroundProcessObsorver;

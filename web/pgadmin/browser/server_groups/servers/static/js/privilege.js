@@ -1,7 +1,6 @@
 define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
-  'backgrid', 'alertify', 'pgadmin.browser.node', 'pgadmin.browser.node.ui'
-  ],
- function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
+  'backgrid', 'alertify', 'pgadmin.browser.node', 'pgadmin.browser.node.ui',
+], function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
   /**
    * Each Privilege, supporeted by an database object, will be represented
    * using this Model.
@@ -17,11 +16,11 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
     defaults: {
       privilege_type: undefined,
       privilege: false,
-      with_grant: false
+      with_grant: false,
     },
     validate: function() {
       return null;
-    }
+    },
   });
 
   /**
@@ -39,7 +38,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
     defaults: {
       grantee: undefined,
       grantor: undefined,
-      privileges: undefined
+      privileges: undefined,
     },
     keys: ['grantee', 'grantor'],
     /*
@@ -58,28 +57,28 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         }
         return !(
           m.top && m.top.node_info &&
-          m.top.node_info.server.user.name == m.get('grantor')
+            m.top.node_info.server.user.name == m.get('grantor')
         );
       },
-      transform: function(data) {
+      transform: function() {
         var res =
           Backgrid.Extension.NodeListByNameCell.prototype.defaults.transform.apply(
             this, arguments
-            );
+          );
         res.unshift({label: 'PUBLIC', value: 'PUBLIC'});
         return res;
       },
       cell: Backgrid.Extension.NodeListByNameCell.extend({
         initialize: function(opts) {
           var self = this,
-              override_opts = true;
+            override_opts = true;
 
           // We would like to override the original options, because - we
           // should omit the existing role/user from the privilege cell.
           // Because - the column is shared among all the cell, we can only
           // override only once.
           if (opts && opts.column &&
-              opts.column instanceof Backbone.Model &&
+            opts.column instanceof Backbone.Model &&
               opts.column.get('options_cached')) {
             override_opts = false;
           }
@@ -89,8 +88,10 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
 
           // Let's override the options
           if (override_opts) {
-            var opts = self.column.get('options');
-            self.column.set('options', self.omit_selected_roles.bind(self, opts));
+            opts = self.column.get('options');
+            self.column.set(
+              'options', self.omit_selected_roles.bind(self, opts)
+            );
           }
 
           var rerender = function (m) {
@@ -108,32 +109,30 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
           // collection, because - we need to omit the newly selected roles
           // form the list. Also, the render will be automatically called for
           // the model represented by this cell, we will not do that again.
-          this.listenTo(self.model.collection, "change", rerender, this);
-          this.listenTo(self.model.collection, "remove", rerender, this);
+          this.listenTo(self.model.collection, 'change', rerender, this);
+          this.listenTo(self.model.collection, 'remove', rerender, this);
         },
         // Remove all the selected roles (though- not mine).
         omit_selected_roles: function(opts, cell) {
           var res = opts(cell),
-              selected = {},
-              model = cell.model,
-              cid = model.cid,
-              // We need to check node_info values in parent when object is nested.
-              // eg: column level privileges in table dialog
-              // In this case node_info will not be avilable to column node as
-              // it is not loaded yet
-              node_info = (_.has(model.top, 'node_info')
-                            && !_.isUndefined(model.top.node_info)) ?
-                              model.top.node_info :
-                              model.handler.top.node_info,
-              curr_user = node_info.server.user.name;
-
-          var idx = 0;
+            selected = {},
+            model = cell.model,
+            cid = model.cid,
+            // We need to check node_info values in parent when object is nested.
+            // eg: column level privileges in table dialog
+            // In this case node_info will not be avilable to column node as
+            // it is not loaded yet
+            node_info = (_.has(model.top, 'node_info')
+              && !_.isUndefined(model.top.node_info)) ?
+            model.top.node_info :
+            model.handler.top.node_info,
+            curr_user = node_info.server.user.name;
 
           model.collection.each(function(m) {
             var grantee = m.get('grantee');
 
             if (m.cid != cid && !_.isUndefined(grantee) &&
-                curr_user == m.get('grantor')) {
+              curr_user == m.get('grantor')) {
               selected[grantee] = m.cid;
             }
           });
@@ -143,23 +142,26 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
           });
 
           return res;
-        }
+        },
       }),
     },{
       id: 'privileges', label: gettext('Privileges'),
       type: 'collection', model: PrivilegeModel, group: null,
       cell: 'privilege', control: 'text', cellHeaderClasses: 'width_percent_40',
-      disabled : function(column, collection) {
+      disabled : function(column) {
         if (column instanceof Backbone.Collection) {
           // This has been called during generating the header cell
           return false;
         }
-        return !(this.node_info && this.node_info.server.user.name == column.get('grantor') ||
-                this.attributes.node_info.server.user.name == column.get('grantor'));
-      }
+        return !(
+          this.node_info &&
+            this.node_info.server.user.name == column.get('grantor') ||
+            this.attributes.node_info.server.user.name == column.get('grantor')
+        );
+      },
     },{
       id: 'grantor', label: gettext('Grantor'), type: 'text', disabled: true,
-      cell: 'node-list-by-name', node: 'role'
+      cell: 'node-list-by-name', node: 'role',
     }],
 
     /*
@@ -172,36 +174,36 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
 
       if (_.isNull(attrs)) {
         this.set(
-            'grantor',
-            opts && opts.top && opts.top.node_info && opts.top.node_info.server.user.name,
-            {silent: true}
-            );
+          'grantor',
+          opts && opts.top && opts.top.node_info && opts.top.node_info.server.user.name,
+          {silent: true}
+        );
       }
 
       /*
        * Define the collection of the privilege supported by this model
        */
       var self = this,
-          models = self.get('privileges'),
-          privileges = this.get('privileges') || {};
+        models = self.get('privileges'),
+        privileges = this.get('privileges') || {};
 
       if (_.isArray(privileges)) {
         privileges = new (pgNode.Collection)(
-            models, {
-              model: PrivilegeModel,
-              top: this.top || this,
-              handler: this,
-              silent: true,
-              parse: false
-            });
+          models, {
+            model: PrivilegeModel,
+            top: this.top || this,
+            handler: this,
+            silent: true,
+            parse: false,
+          });
         this.set('privileges', privileges, {silent: true});
       }
 
       var privs = {};
       _.each(self.privileges, function(p) {
         privs[p] = {
-          'privilege_type': p, 'privilege': false, 'with_grant': false
-        }
+          'privilege_type': p, 'privilege': false, 'with_grant': false,
+        };
       });
 
       privileges.each(function(m) {
@@ -212,7 +214,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         privileges.add(p, {silent: true});
       });
 
-      self.on("change:grantee", self.granteeChanged);
+      self.on('change:grantee', self.granteeChanged);
       privileges.on('change', function() {
         self.trigger('change:privileges', self);
       });
@@ -222,22 +224,22 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
 
     granteeChanged: function() {
       var privileges = this.get('privileges'),
-          grantee = this.get('grantee');
+        grantee = this.get('grantee');
 
       // Reset all with grant options if grantee is public.
       if (grantee == 'PUBLIC') {
         privileges.each(function(m) {
-          m.set("with_grant", false, {silent: true});
+          m.set('with_grant', false, {silent: true});
         });
       }
     },
 
-    toJSON: function(session) {
+    toJSON: function() {
 
       var privileges = [];
 
       if (this.attributes &&
-            !this.attributes['privileges']) {
+        !this.attributes['privileges']) {
         return null;
       }
 
@@ -251,71 +253,68 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
       return {
         'grantee': this.get('grantee'),
         'grantor': this.get('grantor'),
-        'privileges': privileges
-        };
+        'privileges': privileges,
+      };
     },
 
     validate: function() {
-      var err = {},
-        errmsg = null,
-        changedAttrs = this.sessAttrs,
-        msg = undefined;
+      var  errmsg = null,
+        msg;
 
       if (_.isUndefined(this.get('grantee'))) {
         msg = gettext('A grantee must be selected.');
         this.errorModel.set('grantee', msg);
         errmsg = msg;
       } else {
-         this.errorModel.unset('grantee');
+        this.errorModel.unset('grantee');
       }
 
-
       if (this.attributes &&
-            this.attributes['privileges']) {
-          var anyPrivSelected = false;
-          this.attributes['privileges'].each(
+        this.attributes['privileges']) {
+        var anyPrivSelected = false;
+        this.attributes['privileges'].each(
             function(p) {
               if (p.get('privilege')) {
                 anyPrivSelected = true;
               }
             });
 
-          if (!anyPrivSelected) {
-            msg = gettext('At least one privilege should be selected.');
-            this.errorModel.set('privileges', msg);
-            errmsg = errmsg || msg;
-          } else {
-            this.errorModel.unset('privileges');
-          }
+        if (!anyPrivSelected) {
+          msg = gettext('At least one privilege should be selected.');
+          this.errorModel.set('privileges', msg);
+          errmsg = errmsg || msg;
+        } else {
+          this.errorModel.unset('privileges');
+        }
       }
 
       return errmsg;
-    }
+    },
   });
 
   /**
-     Custom cell editor for editing privileges.
+   Custom cell editor for editing privileges.
    */
   var PrivilegeCellEditor = Backgrid.Extension.PrivilegeCellEditor =
     Backgrid.CellEditor.extend({
-      tagName: "div",
+      tagName: 'div',
 
       // All available privileges in the PostgreSQL database server for
       // generating the label for the specific Control
       Labels: {
-        "C": "CREATE",
-        "T": "TEMPORARY",
-        "c": "CONNECT",
-        "a": "INSERT",
-        "r": "SELECT",
-        "w": "UPDATE",
-        "d": "DELETE",
-        "D": "TRUNCATE",
-        "x": "REFERENCES",
-        "t": "TRIGGER",
-        "U": "USAGE",
-        "X": "EXECUTE"
-        },
+        'C': 'CREATE',
+        'T': 'TEMPORARY',
+        'c': 'CONNECT',
+        'a': 'INSERT',
+        'r': 'SELECT',
+        'w': 'UPDATE',
+        'd': 'DELETE',
+        'D': 'TRUNCATE',
+        'x': 'REFERENCES',
+        't': 'TRIGGER',
+        'U': 'USAGE',
+        'X': 'EXECUTE',
+      },
 
       template: _.template([
         '<tr class="<%= header ? "header" : "" %>">',
@@ -331,11 +330,11 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         '   WITH GRANT OPTION',
         '  </label>',
         ' </td>',
-        '</tr>'].join(" "), null, {variable: null}),
+        '</tr>'].join(' '), null, {variable: null}),
 
       events: {
         'change': 'privilegeChanged',
-        'blur': 'lostFocus'
+        'blur': 'lostFocus',
       },
 
       render: function () {
@@ -343,10 +342,10 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         this.$el.attr('tabindex', '1');
         this.$el.attr('target', this.elId);
 
-        var collection = this.model.get(this.column.get("name")),
-            tbl = $("<table></table>").appendTo(this.$el),
-            self = this,
-            privilege = true, with_grant = true;
+        var collection = this.model.get(this.column.get('name')),
+          tbl = $('<table></table>').appendTo(this.$el),
+          self = this,
+          privilege = true, with_grant = true;
 
         // For each privilege generate html template.
         // List down all the Privilege model.
@@ -362,8 +361,8 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
               'header': false,
               'privilege_label': self.Labels[d.privilege_type],
               'with_grant': (self.model.get('grantee') != 'PUBLIC' && d.with_grant),
-              'enable_with_grant': (self.model.get('grantee') != 'PUBLIC' && d.privilege)
-              });
+              'enable_with_grant': (self.model.get('grantee') != 'PUBLIC' && d.privilege),
+            });
           privilege = (privilege && d.privilege);
           with_grant = (with_grant && privilege && d.with_grant);
           tbl.append(self.template(d));
@@ -372,15 +371,15 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         if (collection.length > 1) {
           // Preprend the ALL controls on that table
           tbl.prepend(
-              self.template({
-                'target': self.cid,
-                'privilege_label': 'ALL',
-                'privilege_type': 'ALL',
-                'privilege': privilege,
-                'with_grant': (self.model.get('grantee') != 'PUBLIC' && with_grant),
-                'enable_with_grant': (self.model.get('grantee') != 'PUBLIC' && privilege),
-                'header': true
-              }));
+            self.template({
+              'target': self.cid,
+              'privilege_label': 'ALL',
+              'privilege_type': 'ALL',
+              'privilege': privilege,
+              'with_grant': (self.model.get('grantee') != 'PUBLIC' && with_grant),
+              'enable_with_grant': (self.model.get('grantee') != 'PUBLIC' && privilege),
+              'header': true,
+            }));
         }
         self.$el.find('input[type=checkbox]').first().focus();
         // Since blur event does not bubble we need to explicitly call parent's blur event.
@@ -406,13 +405,14 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
            * We're looking for checkboxes only.
            */
           var $el = $(ev.target),
-              privilege_type = $el.attr('privilege'),
-              type = $el.attr('name'),
-              checked = $el.prop('checked'),
-              $tr = $el.closest('tr'),
-              $tbl = $tr.closest('table'),
-              collection = this.model.get('privileges'),
-              grantee = this.model.get('grantee');
+            privilege_type = $el.attr('privilege'),
+            type = $el.attr('name'),
+            checked = $el.prop('checked'),
+            $tr = $el.closest('tr'),
+            $tbl = $tr.closest('table'),
+            collection = this.model.get('privileges'),
+            grantee = this.model.get('grantee'), $allGrants,
+            $allPrivileges, $elGrant;
 
           this.undelegateEvents();
           /*
@@ -420,14 +420,15 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
            * the checkbox for each privilege.
            */
           if (privilege_type == 'ALL') {
-            var $elGrant = $tr.find('input[name=with_grant]'),
-                $allPrivileges = $tbl.find(
-                    'input[name=privilege][privilege!=\'ALL\']'
-                    ),
-                $allGrants = $tbl.find(
-                    'input[name=with_grant][privilege!=\'ALL\']'
-                    ),
-                allPrivilege, allWithGrant;
+            var allPrivilege, allWithGrant;
+
+            $elGrant = $tr.find('input[name=with_grant]');
+            $allPrivileges = $tbl.find(
+              'input[name=privilege][privilege!=\'ALL\']'
+            );
+            $allGrants = $tbl.find(
+              'input[name=with_grant][privilege!=\'ALL\']'
+            );
 
             if (type == 'privilege') {
               /*
@@ -439,6 +440,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
 
               if (checked) {
                 $allPrivileges.prop('checked', true);
+
                 /*
                  * We have clicked the ALL checkbox, we should be able to select
                  * the grant options too.
@@ -461,7 +463,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
                  */
                 $allPrivileges.prop('checked', false);
                 $elGrant.prop('checked', false),
-                $allGrants.prop('checked', false);
+                  $allGrants.prop('checked', false);
                 $elGrant.prop('disabled', true);
                 $allGrants.prop('disabled', true);
               }
@@ -479,146 +481,149 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
               $allGrants.prop('checked', checked);
             }
 
-          /*
-           * Set the values for each Privilege Model.
-           */
-          collection.each(function(m) {
-            m.set(
-              {'privilege': allPrivilege, 'with_grant': allWithGrant},
-              {silent: true}
+            /*
+             * Set the values for each Privilege Model.
+             */
+            collection.each(function(m) {
+              m.set(
+                {'privilege': allPrivilege, 'with_grant': allWithGrant},
+                {silent: true}
+              );
+            });
+          } else {
+            /*
+             * Particular privilege has been selected/deselected, which can be
+             * identified using the privilege="X" attribute.
+             */
+            var attrs = {};
+
+            $tbl = $tr.closest('table');
+            $allPrivileges = $tbl.find(
+              'input[name=privilege][privilege=\'ALL\']'
             );
-          });
-        } else {
-          /*
-           * Particular privilege has been selected/deselected, which can be
-           * identified using the privilege="X" attribute.
-           */
-          var attrs = {},
-              $tbl = $tr.closest('table'),
-              $allPrivilege = $tbl.find(
-                  'input[name=privilege][privilege=\'ALL\']'
-                  ),
-              $allGrant = $tbl.find(
-                  'input[name=with_grant][privilege=\'ALL\']'
-                  );
+            $allGrants = $tbl.find(
+              'input[name=with_grant][privilege=\'ALL\']'
+            );
 
-          attrs[type] = checked;
+            attrs[type] = checked;
 
-          if (type == 'privilege') {
-            var $elGrant = ($el.closest('tr')).find('input[name=with_grant]');
-            if (!checked) {
-              attrs['with_grant'] = false;
+            if (type == 'privilege') {
+              $elGrant = ($el.closest('tr')).find('input[name=with_grant]');
+              if (!checked) {
+                attrs['with_grant'] = false;
 
-              $elGrant.prop('checked', false).prop('disabled', true);
-              $allPrivilege.prop('checked', false);
-              $allGrant.prop('disabled', true);
-              $allGrant.prop('checked', false);
-            } else if (grantee != "PUBLIC") {
-              $elGrant.prop('disabled', false);
+                $elGrant.prop('checked', false).prop('disabled', true);
+                $allPrivileges.prop('checked', false);
+                $allGrants.prop('disabled', true);
+                $allGrants.prop('checked', false);
+              } else if (grantee != 'PUBLIC') {
+                $elGrant.prop('disabled', false);
+              }
+            } else if (!checked) {
+              $allGrants.prop('checked', false);
             }
-          } else if (!checked) {
-            $allGrant.prop('checked', false);
-          }
-          collection.get(privilege_type).set(attrs, {silent: true});
+            collection.get(privilege_type).set(attrs, {silent: true});
 
-          if (checked) {
-            var $allPrivileges = $tbl.find(
-                  'input[name=privilege][privilege!=\'ALL\']:checked'
-                  );
+            if (checked) {
+              $allPrivileges = $tbl.find(
+                'input[name=privilege][privilege!=\'ALL\']:checked'
+              );
 
-            if ($allPrivileges.length > 1 &&
-                  $allPrivileges.length == collection.models.length) {
+              if ($allPrivileges.length > 1 &&
+                $allPrivileges.length == collection.models.length) {
 
-              $allPrivilege.prop('checked', true);
+                $allPrivileges.prop('checked', true);
 
-              if (type == 'with_grant') {
-                var $allGrants = $tbl.find(
-                    'input[name=with_grant][privilege!=\'ALL\']:checked'
+                if (type == 'with_grant') {
+                  $allGrants = $tbl.find(
+                      'input[name=with_grant][privilege!=\'ALL\']:checked'
                     );
-                if ($allGrants.length == collection.models.length) {
-                  $allGrant.prop('disabled', false);
-                  $allGrant.prop('checked', true);
+                  if ($allGrants.length == collection.models.length) {
+                    $allGrants.prop('disabled', false);
+                    $allGrants.prop('checked', true);
+                  }
+                } else if (grantee != 'PUBLIC') {
+                  $allGrants.prop('disabled', false);
                 }
-              } else if (grantee != "PUBLIC") {
-                $allGrant.prop('disabled', false);
               }
             }
           }
-        }
-        this.model.trigger('change', this.model);
+          this.model.trigger('change', this.model);
 
-        var anySelected = false,
+          var anySelected = false,
             msg = null;
 
-        collection.each(function(m) {
-          anySelected = anySelected || m.get('privilege');
-        });
+          collection.each(function(m) {
+            anySelected = anySelected || m.get('privilege');
+          });
 
-        if (anySelected) {
-          this.model.errorModel.unset('privileges');
-          if (this.model.errorModel.has('grantee')) {
-            msg = this.model.errorModel.get('grantee');
+          if (anySelected) {
+            this.model.errorModel.unset('privileges');
+            if (this.model.errorModel.has('grantee')) {
+              msg = this.model.errorModel.get('grantee');
+            }
+          } else {
+            this.model.errorModel.set(
+              'privileges', gettext('At least one privilege should be selected.')
+            );
+            msg = gettext('At least one privilege should be selected.');
           }
-        } else {
-          this.model.errorModel.set(
-            'privileges', gettext('At least one privilege should be selected.')
+          if (msg) {
+            this.model.collection.trigger(
+              'pgadmin-session:model:invalid', msg, this.model
             );
-          msg = gettext('At least one privilege should be selected.');
+          } else {
+            this.model.collection.trigger(
+              'pgadmin-session:model:valid', this.model
+            );
+          }
         }
-        if (msg) {
-          this.model.collection.trigger(
-            'pgadmin-session:model:invalid', msg, this.model
-            );
-        } else {
-          this.model.collection.trigger(
-            'pgadmin-session:model:valid', this.model
-            );
-        }
-      }
-      this.delegateEvents();
-    },
+        this.delegateEvents();
+      },
 
-    lostFocus: function(ev) {
-      /*
-       * We lost the focus, it's time for us to exit the editor.
-       */
-      var self = this,
-      /*
-       * Function to determine whether one dom element is descendant of another
-       * dom element.
-       */
-      isDescendant = function (parent, child) {
-         var node = child.parentNode;
-         while (node != null) {
-             if (node == parent) {
-                 return true;
-             }
-             node = node.parentNode;
-         }
-         return false;
-      }
-      /*
-       * Between leaving the old element focus and entering the new element focus the
-       * active element is the document/body itself so add timeout to get the proper
-       * focused active element.
-       */
-      setTimeout(function() {
+      lostFocus: function(ev) {
         /*
-         Do not close the control if user clicks outside dialog window,
-         only close the row if user clicks on add button or on another row, if user
-         clicks somewhere else then we will get tagName as 'BODY' or 'WINDOW'
-        */
-        var is_active_element = document.activeElement.tagName == 'DIV' ||
-                                document.activeElement.tagName == 'BUTTON';
+         * We lost the focus, it's time for us to exit the editor.
+         */
+        var self = this,
+          /*
+           * Function to determine whether one dom element is descendant of another
+           * dom element.
+           */
+          isDescendant = function (parent, child) {
+            var node = child.parentNode;
+            while (node != null) {
+              if (node == parent) {
+                return true;
+              }
+              node = node.parentNode;
+            }
+            return false;
+          };
 
-        if (is_active_element && self.$el[0] != document.activeElement &&
-                !isDescendant(self.$el[0], document.activeElement)) {
-          var m = self.model;
-          m.trigger('backgrid:edited', m, self.column, new Backgrid.Command(ev));
-        }},10);
-      return;
-    }
-  });
+        /*
+         * Between leaving the old element focus and entering the new element focus the
+         * active element is the document/body itself so add timeout to get the proper
+         * focused active element.
+         */
+        setTimeout(function() {
+          /*
+           * Do not close the control if user clicks outside dialog window,
+           * only close the row if user clicks on add button or on another row,
+           * if user clicks somewhere else then we will get tagName as 'BODY'
+           * or 'WINDOW'
+           */
+          var is_active_element = document.activeElement.tagName == 'DIV' ||
+            document.activeElement.tagName == 'BUTTON';
+
+          if (is_active_element && self.$el[0] != document.activeElement &&
+            !isDescendant(self.$el[0], document.activeElement)) {
+            var m = self.model;
+            m.trigger('backgrid:edited', m, self.column, new Backgrid.Command(ev));
+          }},10);
+        return;
+      },
+    });
 
   /*
    * This will help us transform the privileges value in proper format to be
@@ -628,26 +633,25 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
     function () {};
   _.extend(PrivilegeCellFormatter.prototype, {
     notation: {
-      "CREATE" : "C",
-      "TEMPORARY" : "T",
-      "CONNECT" : "c",
-      "INSERT" : "a",
-      "SELECT" : "r",
-      "UPDATE" : "w",
-      "DELETE" : "d",
-      "TRUNCATE" : "D",
-      "REFERENCES" : "x",
-      "TRIGGER" : "t",
-      "USAGE" : "U",
-      "EXECUTE" : "X"
+      'CREATE' : 'C',
+      'TEMPORARY' : 'T',
+      'CONNECT' : 'c',
+      'INSERT' : 'a',
+      'SELECT' : 'r',
+      'UPDATE' : 'w',
+      'DELETE' : 'd',
+      'TRUNCATE' : 'D',
+      'REFERENCES' : 'x',
+      'TRIGGER' : 't',
+      'USAGE' : 'U',
+      'EXECUTE' : 'X',
     },
     /**
      * Takes a raw value from a model and returns an optionally formatted
      * string for display.
      */
-    fromRaw: function (rawData, model) {
-      var res = '',
-          self = this;
+    fromRaw: function (rawData) {
+      var res = '';
 
       if (rawData instanceof Backbone.Collection) {
         rawData.each(function(m) {
@@ -660,23 +664,23 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         });
       }
       return res;
-    }
+    },
   });
 
   /*
    *  PrivilegeCell for rendering and taking input for the privileges.
    */
-  var PrivilegeCell = Backgrid.Extension.PrivilegeCell = Backgrid.Cell.extend({
-    className: "edit-cell",
+  Backgrid.Extension.PrivilegeCell = Backgrid.Cell.extend({
+    className: 'edit-cell',
     formatter: PrivilegeCellFormatter,
     editor: PrivilegeCellEditor,
 
-    initialize: function (options) {
+    initialize: function () {
       var self = this;
       Backgrid.Cell.prototype.initialize.apply(this, arguments);
 
-      self.model.on("change:grantee", function() {
-        if (!self.$el.hasClass("editor")) {
+      self.model.on('change:grantee', function() {
+        if (!self.$el.hasClass('editor')) {
           /*
            * Add time out before render; As we might want to wait till model
            * is updated by PrivilegeRoleModel:granteeChanged.
@@ -686,7 +690,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
           },10);
         }
       });
-    }
+    },
   });
 
   return PrivilegeRoleModel;

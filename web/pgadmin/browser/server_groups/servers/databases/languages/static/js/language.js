@@ -1,19 +1,19 @@
 define('pgadmin.node.language', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for languages collection
   if (!pgBrowser.Nodes['coll-language']) {
-    var languages = pgBrowser.Nodes['coll-language'] =
+    pgBrowser.Nodes['coll-language'] =
       pgBrowser.Collection.extend({
         node: 'language',
         label: gettext('Languages'),
         type: 'coll-language',
-        columns: ['name', 'lanowner', 'description']
+        columns: ['name', 'lanowner', 'description'],
       });
-  };
+  }
 
   // Extend the browser's node class for language node
   if (!pgBrowser.Nodes['language']) {
@@ -32,7 +32,7 @@ define('pgadmin.node.language', [
 
         // Avoid multiple registration of menus
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -43,17 +43,17 @@ define('pgadmin.node.language', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Language...'),
           icon: 'wcTabIcon icon-language', data: {action: 'create'},
-          enable: pgBrowser.Nodes['database'].is_conn_allow
+          enable: pgBrowser.Nodes['database'].is_conn_allow,
         },{
           name: 'create_language_on_coll', node: 'coll-language', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Language...'),
-          icon: 'wcTabIcon icon-language', data: {action: 'create'}
+          icon: 'wcTabIcon icon-language', data: {action: 'create'},
         },{
           name: 'create_language', node: 'language', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Language...'),
-          icon: 'wcTabIcon icon-language', data: {action: 'create'}
+          icon: 'wcTabIcon icon-language', data: {action: 'create'},
         }]);
       },
 
@@ -70,7 +70,7 @@ define('pgadmin.node.language', [
           laninl: undefined,
           lanval: undefined,
           is_template: false,
-          template_list: []
+          template_list: [],
         },
 
         // Default values!
@@ -91,8 +91,8 @@ define('pgadmin.node.language', [
           url:'get_templates', select2: { allowClear: false, tags: true, multiple: false },
           transform: function(data, cell) {
             var res = [],
-                control = cell || this,
-                label = control.model.get('name');
+              control = cell || this,
+              label = control.model.get('name');
 
             if (!control.model.isNew()) {
               res.push({label: label, value: label});
@@ -103,32 +103,32 @@ define('pgadmin.node.language', [
                 _.each(data, function(d) {
                   res.push({label: d.tmplname, value: d.tmplname});
                   tmp_list.push(d.tmplname);
-                })
+                });
               }
               this.model.set({'template_list': tmp_list});
             }
 
             return res;
-          }
+          },
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
-          type: 'text', disabled: true
+          type: 'text', disabled: true,
         },{
           id: 'lanowner', label: gettext('Owner'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
-          mode: ['edit', 'properties', 'create'], select2: { allowClear: false }
+          mode: ['edit', 'properties', 'create'], select2: { allowClear: false },
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], disabled: true
+          group: gettext('Security'), mode: ['properties'], disabled: true,
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline'
+          type: 'multiline',
         },{
           id: 'trusted', label: gettext('Trusted?'), type: 'switch',
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small'
+            'size': 'small',
           },
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], deps: ['name'],
           disabled: function(m) {
@@ -141,7 +141,7 @@ define('pgadmin.node.language', [
                 m.set({'is_template': true});
             }
             return true;
-          }
+          },
         },{
           id: 'lanproc', label: gettext('Handler Function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
@@ -157,7 +157,7 @@ define('pgadmin.node.language', [
                 if (d.prop_type == 'handler') {
                   res.push({label: d.label, value: d.label});
                 }
-              })
+              });
             }
             return res;
           }, disabled: function(m) {
@@ -166,7 +166,7 @@ define('pgadmin.node.language', [
                 return false;
             }
             return true;
-          }
+          },
         },{
           id: 'laninl', label: gettext('Inline Function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
@@ -182,7 +182,7 @@ define('pgadmin.node.language', [
                 if (d.prop_type == 'inline') {
                   res.push({label: d.label, value: d.label});
                 }
-              })
+              });
             }
             return res;
           }, disabled: function(m) {
@@ -191,7 +191,7 @@ define('pgadmin.node.language', [
                 return false;
             }
             return true;
-          }
+          },
         },{
           id: 'lanval', label: gettext('Validator Function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
@@ -203,11 +203,11 @@ define('pgadmin.node.language', [
           transform: function(data) {
             var res = [];
             if (data && _.isArray(data)) {
-                _.each(data, function(d) {
-                  if (d.prop_type == 'validator') {
-                    res.push({label: d.label, value: d.label});
-                  }
-                })
+              _.each(data, function(d) {
+                if (d.prop_type == 'validator') {
+                  res.push({label: d.label, value: d.label});
+                }
+              });
             }
             return res;
           }, disabled: function(m) {
@@ -216,31 +216,32 @@ define('pgadmin.node.language', [
                 return false;
             }
             return true;
-          }
+          },
         }, {
           id: 'lanacl', label: gettext('Privileges'), type: 'collection',
           group: 'security', control: 'unique-col-collection', mode: ['edit', 'create'],
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['U']
-          }), canAdd: true, canDelete: true, uniqueCol : ['grantee']
-         },{
+            privileges: ['U'],
+          }), canAdd: true, canDelete: true, uniqueCol : ['grantee'],
+        },{
           id: 'seclabels', label: gettext('Security Labels'), mode: ['edit', 'create'],
           model: pgBrowser.SecLabelModel, editable: false,
           type: 'collection', group: 'security', min_version: 90200,
           canAdd: true, canEdit: false, canDelete: true,
-          control: 'unique-col-collection'
-        }
+          control: 'unique-col-collection',
+        },
         ],
         /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
          * the GUI for the respective control.
          */
         validate: function() {
-          var name = this.get('name');
+          var name = this.get('name'),
+            msg;
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Name cannot be empty.');
+            msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           } else {
@@ -252,7 +253,7 @@ define('pgadmin.node.language', [
             var handler_func = this.get('lanproc');
             if (_.isUndefined(handler_func) || _.isNull(handler_func) ||
               String(handler_func).replace(/^\s+|\s+$/g, '') == '') {
-              var msg = gettext('Handler Function cannot be empty.');
+              msg = gettext('Handler Function cannot be empty.');
               this.errorModel.set('lanproc', msg);
               return msg;
             } else {
@@ -261,9 +262,9 @@ define('pgadmin.node.language', [
           }
 
           return null;
-        }
-      })
-    })
+        },
+      }),
+    });
   }
   return pgBrowser.Nodes['coll-language'];
 });

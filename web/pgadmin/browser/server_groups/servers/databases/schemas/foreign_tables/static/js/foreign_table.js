@@ -1,55 +1,34 @@
 /* Create and Register Foreign Table Collection and Node. */
 define('pgadmin.node.foreign_table', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.browser.collection',
+], function(
+  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid
+) {
 
   if (!pgBrowser.Nodes['coll-foreign_table']) {
-    var foreigntable = pgBrowser.Nodes['coll-foreign_table'] =
+    pgBrowser.Nodes['coll-foreign_table'] =
       pgBrowser.Collection.extend({
         node: 'foreign_table',
         label: gettext('Foreign Tables'),
         type: 'coll-foreign_table',
-        columns: ['name', 'owner', 'description']
+        columns: ['name', 'owner', 'description'],
       });
-  };
-
-  // Integer Cell for Columns Length and Precision
-  var IntegerDepCell = Backgrid.IntegerCell.extend({
-      initialize: function() {
-        Backgrid.NumberCell.prototype.initialize.apply(this, arguments);
-        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
-      },
-      dependentChanged: function () {
-        this.$el.empty();
-        var model = this.model;
-        var column = this.column;
-        var editable = this.column.get("editable");
-        var is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
-
-        if (is_editable){ this.$el.addClass("editable"); }
-        else { this.$el.removeClass("editable"); }
-
-        this.delegateEvents();
-        return this;
-      },
-      remove: Backgrid.Extension.DependentCell.prototype.remove
-    });
-
+  }
 
   // Options Model
   var ColumnOptionsModel = pgBrowser.Node.Model.extend({
     idAttribute: 'option',
     defaults: {
       option: undefined,
-      value: undefined
+      value: undefined,
     },
     schema: [
       {id: 'option', label: gettext('Option'), type:'text', editable: true, cellHeaderClasses: 'width_percent_30'},
       {
-        id: 'value', label: gettext('Value'), type: 'text', editable: true, cellHeaderClasses: 'width_percent_50'
-      }
+        id: 'value', label: gettext('Value'), type: 'text', editable: true, cellHeaderClasses: 'width_percent_50',
+      },
     ],
     validate: function() {
       if (_.isUndefined(this.get('value')) ||
@@ -65,7 +44,7 @@ define('pgadmin.node.foreign_table', [
       }
 
       return null;
-    }
+    },
   });
 
   // Columns Model
@@ -83,183 +62,183 @@ define('pgadmin.node.foreign_table', [
       inheritedfrom: undefined,
       inheritedid: undefined,
       attstattarget: undefined,
-      coloptions: []
+      coloptions: [],
     },
     type_options: undefined,
     schema: [{
-        id: 'attname', label: gettext('Name'), cell: 'string', type: 'text',
-        editable: 'is_editable_column', cellHeaderClasses: 'width_percent_40'
-      },{
-        id: 'datatype', label: gettext('Data Type'), cell: 'node-ajax-options',
-        control: 'node-ajax-options', type: 'text', url: 'get_types',
-        editable: 'is_editable_column', cellHeaderClasses: 'width_percent_0',
-        group: gettext('Definition'),
-        transform: function(d, self){
-            self.model.type_options = d;
-            return d;
-          }
-      },{
-        id: 'typlen', label: gettext('Length'),
-        cell: 'string', group: gettext('Definition'),
-        type: 'int', deps: ['datatype'],
-        disabled: function(m) {
-          var val = m.get('typlen');
+      id: 'attname', label: gettext('Name'), cell: 'string', type: 'text',
+      editable: 'is_editable_column', cellHeaderClasses: 'width_percent_40',
+    },{
+      id: 'datatype', label: gettext('Data Type'), cell: 'node-ajax-options',
+      control: 'node-ajax-options', type: 'text', url: 'get_types',
+      editable: 'is_editable_column', cellHeaderClasses: 'width_percent_0',
+      group: gettext('Definition'),
+      transform: function(d, self){
+        self.model.type_options = d;
+        return d;
+      },
+    },{
+      id: 'typlen', label: gettext('Length'),
+      cell: 'string', group: gettext('Definition'),
+      type: 'int', deps: ['datatype'],
+      disabled: function(m) {
+        var val = m.get('typlen');
           // We will store type from selected from combobox
-          if(!(_.isUndefined(m.get('inheritedid'))
+        if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
             || _.isUndefined(m.get('inheritedfrom'))
             || _.isNull(m.get('inheritedfrom')))) {
 
-            if (!_.isUndefined(val)) {
-              setTimeout(function() {
-                m.set('typlen', undefined);
-              }, 10);
-            }
-            return true;
+          if (!_.isUndefined(val)) {
+            setTimeout(function() {
+              m.set('typlen', undefined);
+            }, 10);
           }
-
-          var of_type = m.get('datatype'),
-              has_length = false;
-          if(m.type_options) {
-            m.set('is_tlength', false, {silent: true});
-
-            // iterating over all the types
-            _.each(m.type_options, function(o) {
-              // if type from selected from combobox matches in options
-              if ( of_type == o.value ) {
-                // if length is allowed for selected type
-                if(o.length)
-                {
-                  // set the values in model
-                  has_length = true;
-                  m.set('is_tlength', true, {silent: true});
-                  m.set('min_val', o.min_val, {silent: true});
-                  m.set('max_val', o.max_val, {silent: true});
-                }
-              }
-            });
-
-            if (!has_length && !_.isUndefined(val)) {
-              setTimeout(function() {
-                m.set('typlen', undefined);
-              }, 10);
-            }
-
-            return !(m.get('is_tlength'));
-          }
-          if (!has_length && !_.isUndefined(val)) {
-              setTimeout(function() {
-                m.set('typlen', undefined);
-              }, 10);
-            }
           return true;
-        },
-        cellHeaderClasses: 'width_percent_10'
-      },{
-        id: 'precision', label: gettext('Precision'),
-        type: 'int', deps: ['datatype'],
-        cell: 'string', group: gettext('Definition'),
-        disabled: function(m) {
-          var val = m.get('precision');
-          if(!(_.isUndefined(m.get('inheritedid'))
+        }
+
+        var of_type = m.get('datatype'),
+          has_length = false;
+        if(m.type_options) {
+          m.set('is_tlength', false, {silent: true});
+
+            // iterating over all the types
+          _.each(m.type_options, function(o) {
+              // if type from selected from combobox matches in options
+            if ( of_type == o.value ) {
+                // if length is allowed for selected type
+              if(o.length)
+                {
+                  // set the values in model
+                has_length = true;
+                m.set('is_tlength', true, {silent: true});
+                m.set('min_val', o.min_val, {silent: true});
+                m.set('max_val', o.max_val, {silent: true});
+              }
+            }
+          });
+
+          if (!has_length && !_.isUndefined(val)) {
+            setTimeout(function() {
+              m.set('typlen', undefined);
+            }, 10);
+          }
+
+          return !(m.get('is_tlength'));
+        }
+        if (!has_length && !_.isUndefined(val)) {
+          setTimeout(function() {
+            m.set('typlen', undefined);
+          }, 10);
+        }
+        return true;
+      },
+      cellHeaderClasses: 'width_percent_10',
+    },{
+      id: 'precision', label: gettext('Precision'),
+      type: 'int', deps: ['datatype'],
+      cell: 'string', group: gettext('Definition'),
+      disabled: function(m) {
+        var val = m.get('precision');
+        if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
             || _.isUndefined(m.get('inheritedfrom'))
             || _.isNull(m.get('inheritedfrom')))) {
 
-            if (!_.isUndefined(val)) {
-              setTimeout(function() {
-                m.set('precision', undefined);
-              }, 10);
-            }
-            return true;
-          }
-
-          var of_type = m.get('datatype'),
-              has_precision = false;
-
-          if(m.type_options) {
-             m.set('is_precision', false, {silent: true});
-            // iterating over all the types
-            _.each(m.type_options, function(o) {
-              // if type from selected from combobox matches in options
-              if ( of_type == o.value ) {
-                // if precession is allowed for selected type
-                if(o.precision)
-                {
-                  has_precision = true;
-                  // set the values in model
-                  m.set('is_precision', true, {silent: true});
-                  m.set('min_val', o.min_val, {silent: true});
-                  m.set('max_val', o.max_val, {silent: true});
-                }
-              }
-            });
-            if (!has_precision && !_.isUndefined(val)) {
-              setTimeout(function() {
-                m.set('precision', undefined);
-              }, 10);
-            }
-            return !(m.get('is_precision'));
-          }
-          if (!has_precision && !_.isUndefined(val)) {
+          if (!_.isUndefined(val)) {
             setTimeout(function() {
               m.set('precision', undefined);
             }, 10);
           }
           return true;
-      }, cellHeaderClasses: 'width_percent_10'
-      },{
-        id: 'typdefault', label: gettext('Default'), type: 'text',
-        cell: 'string', min_version: 90300, group: gettext('Definition'),
-        placeholder: "Enter an expression or a value.",
-        cellHeaderClasses: 'width_percent_10',
-        editable: function(m) {
-          if(!(_.isUndefined(m.get('inheritedid'))
+        }
+
+        var of_type = m.get('datatype'),
+          has_precision = false;
+
+        if(m.type_options) {
+          m.set('is_precision', false, {silent: true});
+            // iterating over all the types
+          _.each(m.type_options, function(o) {
+              // if type from selected from combobox matches in options
+            if ( of_type == o.value ) {
+                // if precession is allowed for selected type
+              if(o.precision)
+                {
+                has_precision = true;
+                  // set the values in model
+                m.set('is_precision', true, {silent: true});
+                m.set('min_val', o.min_val, {silent: true});
+                m.set('max_val', o.max_val, {silent: true});
+              }
+            }
+          });
+          if (!has_precision && !_.isUndefined(val)) {
+            setTimeout(function() {
+              m.set('precision', undefined);
+            }, 10);
+          }
+          return !(m.get('is_precision'));
+        }
+        if (!has_precision && !_.isUndefined(val)) {
+          setTimeout(function() {
+            m.set('precision', undefined);
+          }, 10);
+        }
+        return true;
+      }, cellHeaderClasses: 'width_percent_10',
+    },{
+      id: 'typdefault', label: gettext('Default'), type: 'text',
+      cell: 'string', min_version: 90300, group: gettext('Definition'),
+      placeholder: 'Enter an expression or a value.',
+      cellHeaderClasses: 'width_percent_10',
+      editable: function(m) {
+        if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
             || _.isUndefined(m.get('inheritedfrom'))
             || _.isNull(m.get('inheritedfrom')))) { return false; }
-          if (this.get('node_info').server.version < 90300){
-            return false;
-          }
-          return true;
+        if (this.get('node_info').server.version < 90300){
+          return false;
         }
-      },{
-        id: 'attnotnull', label: gettext('Not Null'),
-        cell: 'boolean',type: 'switch', editable: 'is_editable_column',
-        cellHeaderClasses: 'width_percent_10', group: gettext('Definition')
-      },{
-        id: 'attstattarget', label: gettext('Statistics'), min_version: 90200,
-        cell: 'integer', type: 'int', group: gettext('Definition'),
-        editable: function(m) {
-         if (_.isUndefined(m.isNew) || m.isNew()) { return false; }
-         if (this.get('node_info').server.version < 90200){
-            return false;
-         }
-         return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
-          || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
-        }, cellHeaderClasses: 'width_percent_10'
-      },{
-        id: 'collname', label: gettext('Collation'), cell: 'node-ajax-options',
-        control: 'node-ajax-options', type: 'text', url: 'get_collations',
-        min_version: 90300, editable: function(m) {
-          if (!(_.isUndefined(m.isNew)) && !m.isNew()) { return false; }
-          return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
-           || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
-        },
-        cellHeaderClasses: 'width_percent_20', group: gettext('Definition')
-      },{
-        id: 'attnum', cell: 'string',type: 'text', visible: false
-      },{
-        id: 'inheritedfrom', label: gettext('Inherited From'), cell: 'string',
-        type: 'text', visible: false, mode: ['properties', 'edit'],
-        cellHeaderClasses: 'width_percent_10'
-      },{
-          id: 'coloptions', label: gettext('Options'), cell: 'string',
-          type: 'collection', group: gettext('Options'), mode: ['edit', 'create'],
-          model: ColumnOptionsModel, canAdd: true, canDelete: true, canEdit: false,
-          control: Backform.UniqueColCollectionControl, uniqueCol : ['option'],
-          min_version: 90200
-      }],
+        return true;
+      },
+    },{
+      id: 'attnotnull', label: gettext('Not Null'),
+      cell: 'boolean',type: 'switch', editable: 'is_editable_column',
+      cellHeaderClasses: 'width_percent_10', group: gettext('Definition'),
+    },{
+      id: 'attstattarget', label: gettext('Statistics'), min_version: 90200,
+      cell: 'integer', type: 'int', group: gettext('Definition'),
+      editable: function(m) {
+        if (_.isUndefined(m.isNew) || m.isNew()) { return false; }
+        if (this.get('node_info').server.version < 90200){
+          return false;
+        }
+        return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
+          || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false;
+      }, cellHeaderClasses: 'width_percent_10',
+    },{
+      id: 'collname', label: gettext('Collation'), cell: 'node-ajax-options',
+      control: 'node-ajax-options', type: 'text', url: 'get_collations',
+      min_version: 90300, editable: function(m) {
+        if (!(_.isUndefined(m.isNew)) && !m.isNew()) { return false; }
+        return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
+           || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false;
+      },
+      cellHeaderClasses: 'width_percent_20', group: gettext('Definition'),
+    },{
+      id: 'attnum', cell: 'string',type: 'text', visible: false,
+    },{
+      id: 'inheritedfrom', label: gettext('Inherited From'), cell: 'string',
+      type: 'text', visible: false, mode: ['properties', 'edit'],
+      cellHeaderClasses: 'width_percent_10',
+    },{
+      id: 'coloptions', label: gettext('Options'), cell: 'string',
+      type: 'collection', group: gettext('Options'), mode: ['edit', 'create'],
+      model: ColumnOptionsModel, canAdd: true, canDelete: true, canEdit: false,
+      control: Backform.UniqueColCollectionControl, uniqueCol : ['option'],
+      min_version: 90200,
+    }],
     validate: function() {
       var errmsg = null;
 
@@ -282,9 +261,9 @@ define('pgadmin.node.foreign_table', [
     },
     is_editable_column: function(m) {
       return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
-       || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
+       || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false;
     },
-    toJSON: Backbone.Model.prototype.toJSON
+    toJSON: Backbone.Model.prototype.toJSON,
   });
 
 
@@ -295,16 +274,15 @@ define('pgadmin.node.foreign_table', [
   *  for the selected table.
   */
   var NodeAjaxOptionsMultipleControl = Backform.NodeAjaxOptionsControl.extend({
-    onChange: function(e) {
+    onChange: function() {
       var model = this.model,
-          $el = $(e.target),
-          attrArr = this.field.get("name").split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          value = this.getValueFromDOM(),
-          changes = {},
-          columns = model.get('columns'),
-          inherits = model.get(name);
+        attrArr = this.field.get('name').split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        value = this.getValueFromDOM(),
+        changes = {},
+        columns = model.get('columns'),
+        inherits = model.get(name);
 
       if (this.model.errorModel instanceof Backbone.Model) {
         if (_.isEmpty(path)) {
@@ -320,7 +298,7 @@ define('pgadmin.node.foreign_table', [
 
       var self = this;
 
-      if (typeof(inherits)  == "string"){ inherits = JSON.parse(inherits); }
+      if (typeof(inherits)  == 'string'){ inherits = JSON.parse(inherits); }
 
       // Remove Columns if inherit option is deselected from the combobox
       if(_.size(value) < _.size(inherits)) {
@@ -341,30 +319,30 @@ define('pgadmin.node.foreign_table', [
       }
 
       changes[name] = _.isEmpty(path) ? value : _.clone(model.get(name)) || {};
-      this.stopListening(this.model, "change:" + name, this.render);
+      this.stopListening(this.model, 'change:' + name, this.render);
       model.set(changes);
-      this.listenTo(this.model, "change:" + name, this.render);
+      this.listenTo(this.model, 'change:' + name, this.render);
     },
     fetchColumns: function(table_id){
       var self = this,
-          url = 'get_columns',
-          m = self.model.top || self.model;
+        url = 'get_columns',
+        m = self.model.top || self.model;
 
       if (url) {
         var node = this.field.get('schema_node'),
-            node_info = this.field.get('node_info'),
-            full_url = node.generate_url.apply(
+          node_info = this.field.get('node_info'),
+          full_url = node.generate_url.apply(
               node, [
                 null, url, this.field.get('node_data'),
-                this.field.get('url_with_id') || false, node_info
+                this.field.get('url_with_id') || false, node_info,
               ]),
-            cache_level = this.field.get('cache_level') || node.type,
-            cache_node = this.field.get('cache_node');
+          cache_level = this.field.get('cache_level') || node.type,
+          cache_node = this.field.get('cache_node');
 
         cache_node = (cache_node && pgBrowser.Nodes['cache_node']) || node;
 
         m.trigger('pgadmin:view:fetching', m, self.field);
-        var data = {attrelid: table_id}
+        var data = {attrelid: table_id};
 
         // Fetching Columns data for the selected table.
         $.ajax({
@@ -381,7 +359,7 @@ define('pgadmin.node.foreign_table', [
           },
           error: function() {
             m.trigger('pgadmin:view:fetch:error', m, self.field);
-          }
+          },
         });
         m.trigger('pgadmin:view:fetched', m, self.field);
 
@@ -399,10 +377,10 @@ define('pgadmin.node.foreign_table', [
   // Constraints Model
   var ConstraintModel = pgBrowser.Node.Model.extend({
     idAttribute: 'conoid',
-    initialize: function(attrs, args) {
+    initialize: function(attrs) {
       var isNew = (_.size(attrs) === 0);
       if (!isNew) {
-        this.convalidated_default = this.get('convalidated')
+        this.convalidated_default = this.get('convalidated');
       }
       pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
     },
@@ -412,27 +390,26 @@ define('pgadmin.node.foreign_table', [
       consrc: undefined,
       connoinherit: undefined,
       convalidated: true,
-      conislocal: undefined
+      conislocal: undefined,
     },
     convalidated_default: true,
     schema: [{
-      id: 'conoid', type: 'text', cell: 'string', visible: false
+      id: 'conoid', type: 'text', cell: 'string', visible: false,
     },{
       id: 'conname', label: gettext('Name'), type: 'text', cell: 'string',
-      editable: 'is_editable', cellHeaderClasses: 'width_percent_30'
+      editable: 'is_editable', cellHeaderClasses: 'width_percent_30',
     },{
       id: 'consrc', label: gettext('Check'), type: 'multiline',
       editable: 'is_editable', cell: Backgrid.Extension.TextareaCell,
-      cellHeaderClasses: 'width_percent_30'
+      cellHeaderClasses: 'width_percent_30',
     },{
       id: 'connoinherit', label: gettext('No Inherit'), type: 'switch',
       cell: 'boolean', editable: 'is_editable',
-      cellHeaderClasses: 'width_percent_20'
+      cellHeaderClasses: 'width_percent_20',
     },{
       id: 'convalidated', label: gettext('Validate?'), type: 'switch',
       cell: 'boolean', cellHeaderClasses: 'width_percent_20',
       editable: function(m) {
-        var server = this.get('node_info').server;
         if (_.isUndefined(m.isNew)) { return true; }
         if (!m.isNew()) {
           if(m.get('convalidated') && m.convalidated_default) {
@@ -441,12 +418,12 @@ define('pgadmin.node.foreign_table', [
           return true;
         }
         return true;
-      }
-     }
+      },
+    },
     ],
     validate: function() {
       var err = {},
-      errmsg;
+        errmsg;
 
       if (_.isUndefined(this.get('conname')) || String(this.get('conname')).replace(/^\s+|\s+$/g, '') == '') {
         err['conname'] = gettext('Constraint Name cannot be empty.');
@@ -464,9 +441,9 @@ define('pgadmin.node.foreign_table', [
       return errmsg;
     },
     is_editable: function(m) {
-        return _.isUndefined(m.isNew) ? true : m.isNew();
+      return _.isUndefined(m.isNew) ? true : m.isNew();
     },
-    toJSON: Backbone.Model.prototype.toJSON
+    toJSON: Backbone.Model.prototype.toJSON,
   });
 
 
@@ -474,20 +451,20 @@ define('pgadmin.node.foreign_table', [
   var OptionsModel = pgBrowser.Node.Model.extend({
     defaults: {
       option: undefined,
-      value: undefined
+      value: undefined,
     },
     schema: [{
       id: 'option', label: gettext('Option'), cell: 'string', type: 'text',
-      editable: true, cellHeaderClasses:'width_percent_50'
+      editable: true, cellHeaderClasses:'width_percent_50',
     },{
       id: 'value', label: gettext('Value'), cell: 'string',type: 'text',
-      editable: true, cellHeaderClasses:'width_percent_50'
-    }
+      editable: true, cellHeaderClasses:'width_percent_50',
+    },
     ],
     validate: function() {
       // TODO: Add validation here
     },
-    toJSON: Backbone.Model.prototype.toJSON
+    toJSON: Backbone.Model.prototype.toJSON,
   });
 
 
@@ -506,7 +483,7 @@ define('pgadmin.node.foreign_table', [
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -515,20 +492,20 @@ define('pgadmin.node.foreign_table', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
           icon: 'wcTabIcon icon-foreign_table', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_foreign_table', node: 'foreign_table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
           icon: 'wcTabIcon icon-foreign_table', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_foreign_table', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
           icon: 'wcTabIcon icon-foreign_table', data: {action: 'create', check: false},
-          enable: 'canCreate'
-        }
+          enable: 'canCreate',
+        },
         ]);
 
       },
@@ -539,11 +516,11 @@ define('pgadmin.node.foreign_table', [
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
             var schema = args.node_info.schema._label,
-                userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+              userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
 
             // Set Selected Schema and Current User
             this.set({
-              'basensp': schema, 'owner': userInfo.name
+              'basensp': schema, 'owner': userInfo.name,
             }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
@@ -562,34 +539,34 @@ define('pgadmin.node.foreign_table', [
           ftoptions: [],
           relacl: [],
           stracl: [],
-          seclabels: []
+          seclabels: [],
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit']
+          type: 'text', mode: ['properties', 'create', 'edit'],
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties']
+          type: 'text' , mode: ['properties'],
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string',
           control: Backform.NodeListByNameControl,
-          node: 'role',  type: 'text', select2: { allowClear: false }
+          node: 'role',  type: 'text', select2: { allowClear: false },
         },{
           id: 'basensp', label: gettext('Schema'), cell: 'node-list-by-name',
-           control: 'node-list-by-name', cache_level: 'database', type: 'text',
-           node: 'schema', mode:['create', 'edit']
+          control: 'node-list-by-name', cache_level: 'database', type: 'text',
+          node: 'schema', mode:['create', 'edit'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline'
+          type: 'multiline',
         },{
           id: 'ftsrvname', label: gettext('Foreign server'), cell: 'string', control: 'node-ajax-options',
-          type: 'text', group: gettext('Definition'), url: 'get_foreign_servers', disabled: function(m) { return !m.isNew(); }
+          type: 'text', group: gettext('Definition'), url: 'get_foreign_servers', disabled: function(m) { return !m.isNew(); },
         },{
           id: 'inherits', label: gettext('Inherits'), group: gettext('Definition'),
           type: 'array', min_version: 90500, control: NodeAjaxOptionsMultipleControl,
           url: 'get_tables', select2: {multiple: true},
           'cache_level': 'database',
-          transform: function(d, self){
+          transform: function(d) {
             if (this.field.get('mode') == 'edit') {
               var oid = this.model.get('oid');
               var s = _.findWhere(d, {'id': oid});
@@ -598,7 +575,7 @@ define('pgadmin.node.foreign_table', [
               }
             }
             return d;
-          }
+          },
         },{
           id: 'columns', label: gettext('Columns'), cell: 'string',
           type: 'collection', group: gettext('Columns'), mode: ['edit', 'create'],
@@ -606,12 +583,12 @@ define('pgadmin.node.foreign_table', [
           columns: ['attname', 'datatype', 'inheritedfrom'],
           canDeleteRow: function(m) {
             return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
-              || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
+              || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false;
           },
           canEditRow: function(m) {
             return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
-              || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
-          }
+              || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false;
+          },
         },
         {
           id: 'constraints', label: gettext('Constraints'), cell: 'string',
@@ -625,20 +602,20 @@ define('pgadmin.node.foreign_table', [
             }
             return true;
           }, min_version: 90500, canDeleteRow: function(m) {
-            return (m.get('conislocal') == true || _.isUndefined(m.get('conislocal'))) ? true : false
-          }
+            return (m.get('conislocal') == true || _.isUndefined(m.get('conislocal'))) ? true : false;
+          },
         },{
           id: 'strftoptions', label: gettext('Options'), cell: 'string',
-          type: 'text', group: gettext('Definition'), mode: ['properties']
+          type: 'text', group: gettext('Definition'), mode: ['properties'],
         },{
           id: 'ftoptions', label: gettext('Options'), cell: 'string',
           type: 'collection', group: gettext('Options'), mode: ['edit', 'create'],
           model: OptionsModel, canAdd: true, canDelete: true, canEdit: false,
-          control: 'unique-col-collection', uniqueCol : ['option']
+          control: 'unique-col-collection', uniqueCol : ['option'],
         },{
           id: 'relacl', label: gettext('Privileges'), cell: 'string',
           type: 'text', group: gettext('Security'),
-          mode: ['properties'], min_version: 90200
+          mode: ['properties'], min_version: 90200,
         }, pgBrowser.SecurityGroupSchema, {
           id: 'acl', label: gettext('Privileges'), model: pgAdmin
           .Browser.Node.PrivilegeRoleModel.extend(
@@ -646,21 +623,20 @@ define('pgadmin.node.foreign_table', [
           editable: false, type: 'collection', group: 'security',
           mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
-          min_version: 90200
+          min_version: 90200,
         },{
           id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,
           canEdit: false, canDelete: true,
-          control: 'unique-col-collection', uniqueCol : ['provider']
-        }
+          control: 'unique-col-collection', uniqueCol : ['provider'],
+        },
         ],
         validate: function()
         {
           var err = {},
-              errmsg,
-              seclabels = this.get('seclabels');
+            errmsg = null;
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
@@ -680,8 +656,8 @@ define('pgadmin.node.foreign_table', [
 
           this.errorModel.clear().set(err);
 
-          return null;
-        }
+          return errmsg;
+        },
       }),
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
@@ -710,8 +686,8 @@ define('pgadmin.node.foreign_table', [
         }
         // by default we do not want to allow create menu
         return true;
-      }
-  });
+      },
+    });
 
   }
 

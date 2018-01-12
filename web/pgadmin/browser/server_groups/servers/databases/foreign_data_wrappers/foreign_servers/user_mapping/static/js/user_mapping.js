@@ -1,54 +1,55 @@
 define('pgadmin.node.user_mapping', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'pgadmin.backform', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
 
     // Extend the browser's node model class to create a Options model
-    var OptionsModel = pgAdmin.Browser.Node.Model.extend({
-       idAttribute: 'umoption',
-        defaults: {
-          umoption: undefined,
-          umvalue: undefined
-        },
+  var OptionsModel = pgAdmin.Browser.Node.Model.extend({
+    idAttribute: 'umoption',
+    defaults: {
+      umoption: undefined,
+      umvalue: undefined,
+    },
 
         // Defining schema for the Options model
-        schema: [{
-          id: 'umoption', label: gettext('Options'), type:'text',
-          cellHeaderClasses:'width_percent_50', group: null, editable: true
-        }, {
-          id: 'umvalue', label: gettext('Value'), type: 'text',
-          cellHeaderClasses:'width_percent_50', group:null, editable: true
-        }],
+    schema: [{
+      id: 'umoption', label: gettext('Options'), type:'text',
+      cellHeaderClasses:'width_percent_50', group: null, editable: true,
+    }, {
+      id: 'umvalue', label: gettext('Value'), type: 'text',
+      cellHeaderClasses:'width_percent_50', group:null, editable: true,
+    }],
 
         /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
          * the browser for the respective control.
          */
-        validate: function() {
+    validate: function() {
           // Validation for the option value
-          if (_.isUndefined(this.get('umoption')) ||
+      if (_.isUndefined(this.get('umoption')) ||
             _.isNull(this.get('umoption')) ||
             String(this.get('umoption')).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = 'Please enter an option name';
-            this.errorModel.set('umoption', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('umoption');
-          }
-          return null;
-        }
-    });
+        var msg = 'Please enter an option name';
+        this.errorModel.set('umoption', msg);
+        return msg;
+      } else {
+        this.errorModel.unset('umoption');
+      }
+      return null;
+    },
+  });
 
   // Extend the browser's collection class for user mapping collection
   if (!pgBrowser.Nodes['coll-user_mapping']) {
-    var foreign_data_wrappers = pgAdmin.Browser.Nodes['coll-user_mapping'] =
+    pgAdmin.Browser.Nodes['coll-user_mapping'] =
       pgAdmin.Browser.Collection.extend({
         node: 'user_mapping',
         label: gettext('User Mappings'),
         type: 'coll-user_mapping',
-        columns: ['name']
+        columns: ['name'],
       });
-  };
+  }
 
   // Extend the browser's node class for user mapping node
   if (!pgBrowser.Nodes['user_mapping']) {
@@ -67,7 +68,7 @@ define('pgadmin.node.user_mapping', [
 
         // Avoid multiple registration of menus
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -78,18 +79,18 @@ define('pgadmin.node.user_mapping', [
           name: 'create_user_mapping_on_coll', node: 'coll-user_mapping', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('User Mapping...'),
-          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'}
+          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'},
         },{
           name: 'create_user_mapping', node: 'user_mapping', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('User Mapping...'),
-          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'}
+          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'},
         },{
           name: 'create_user_mapping', node: 'foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('User Mapping...'),
-          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'}
-        }
+          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'},
+        },
         ]);
       },
 
@@ -97,7 +98,7 @@ define('pgadmin.node.user_mapping', [
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
           name: undefined,
-          um_options: []
+          um_options: [],
         },
 
         // Default values!
@@ -118,25 +119,29 @@ define('pgadmin.node.user_mapping', [
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
           disabled: function(m) { return !m.isNew(); },
-          transform: function(data) {
+          transform: function() {
             var self = this,
               node = self.field.get('schema_node');
             var res =
             Backform.NodeListByNameControl.prototype.defaults.transform.apply(
               this, arguments
             );
-            res.unshift({label: 'CURRENT_USER', value: 'CURRENT_USER', image: 'icon-' + node.type},
-                        {label: 'PUBLIC', value: 'PUBLIC', image: 'icon-' + node.type});
+            res.unshift({
+              label: 'CURRENT_USER', value: 'CURRENT_USER',
+              image: 'icon-' + node.type,
+            },{
+              label: 'PUBLIC', value: 'PUBLIC', image: 'icon-' + node.type,
+            });
             return res;
-         }
+          },
         },{
           id: 'um_oid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties'],
         },{
-          id: 'umoptions', label: gettext('Options'), type: 'collection', group: gettext("Options"),
+          id: 'umoptions', label: gettext('Options'), type: 'collection', group: gettext('Options'),
           model: OptionsModel, control: 'unique-col-collection', mode: ['create', 'edit'],
-          canAdd: true, canDelete: true, uniqueCol : ['umoption']
-        }
+          canAdd: true, canDelete: true, uniqueCol : ['umoption'],
+        },
         ],
 
         /* validate function is used to validate the input given by
@@ -155,9 +160,9 @@ define('pgadmin.node.user_mapping', [
             this.errorModel.unset('name');
           }
           return null;
-        }
-      })
-  });
+        },
+      }),
+    });
 
   }
 

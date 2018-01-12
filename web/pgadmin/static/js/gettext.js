@@ -1,4 +1,4 @@
-define(["translations"], function (translations) {
+define(['translations'], function (translations) {
 
   /***
    * This method behaves as a drop-in replacement for flask translation rendering.

@@ -2,70 +2,66 @@ define('pgadmin.node.role', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.backform', 'select2', 'pgadmin.browser.collection',
-  'pgadmin.browser.node.ui', 'pgadmin.browser.server.variable'
+  'pgadmin.browser.node.ui', 'pgadmin.browser.server.variable',
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Backform) {
 
   if (!pgBrowser.Nodes['coll-role']) {
-    var role = pgAdmin.Browser.Nodes['coll-role'] =
+    pgAdmin.Browser.Nodes['coll-role'] =
       pgAdmin.Browser.Collection.extend({
         node: 'role',
         type: 'coll-role',
         columns: [
           'rolname', 'rolvaliduntil', 'rolconnlimit', 'rolcanlogin',
           'rolsuper', 'rolcreaterole', 'rolcreatedb', 'rolcatupdate',
-          'rolinherit', 'rolreplication'
-        ]
+          'rolinherit', 'rolreplication',
+        ],
       });
-  };
+  }
 
   var SecurityModel = pgAdmin.Browser.SecurityModel =
-        pgAdmin.Browser.SecurityModel || pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: null,
-      label: null
-    },
-    schema: [{
-      id: 'provider', label: gettext('Provider'),
-      type: 'text', disabled: false,
-      cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'label', label: gettext('Security Label'),
-      type: 'text', disabled: false,
-    }],
-    validate: function() {
-      var err = {},
-          errmsg = null,
-          data = this.toJSON();
+    pgAdmin.Browser.SecurityModel || pgAdmin.Browser.Node.Model.extend({
+      defaults: {
+        provider: null,
+        label: null,
+      },
+      schema: [{
+        id: 'provider', label: gettext('Provider'),
+        type: 'text', disabled: false,
+        cellHeaderClasses:'width_percent_50',
+      },{
+        id: 'label', label: gettext('Security Label'),
+        type: 'text', disabled: false,
+      }],
+      validate: function() {
+        var data = this.toJSON(), msg;
 
-      if (_.isUndefined(data.provider) ||
-        _.isNull(data.provider) ||
-        String(data.provider).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = gettext('Please specify the value for all the security providers.');
+        if (_.isUndefined(data.provider) ||
+          _.isNull(data.provider) ||
+            String(data.provider).replace(/^\s+|\s+$/g, '') == '') {
+          msg = gettext('Please specify the value for all the security providers.');
+          this.errorModel.set('provider', msg);
+          return msg;
+        } else {
+          this.errorModel.unset('provider');
+        }
 
-        this.errorModel.set('provider', msg);
-        return msg;
-      } else {
-        this.errorModel.unset('provider');
-      }
+        if (_.isUndefined(data.label) ||
+          _.isNull(data.label) ||
+            String(data.label).replace(/^\s+|\s+$/g, '') == '') {
+          msg = gettext('Please specify the value for all the security providers.') ;
+          this.errorModel.set('label', msg);
+          return msg;
+        } else {
+          this.errorModel.unset('label');
+        }
 
-      if (_.isUndefined(data.label) ||
-        _.isNull(data.label) ||
-        String(data.label).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = gettext('Please specify the value for all the security providers.') ;
-
-        this.errorModel.set('label', msg);
-        return msg;
-      } else {
-        this.errorModel.unset('label');
-      }
-
-      return null;
-    }
-  });
+        return null;
+      },
+    });
 
   var switchOptions = {
     'onText': gettext('Yes'), 'offText': gettext('No'),
-    'size': 'mini'
+    'size': 'mini',
   };
 
   var RoleCustomSwitchControl = Backform.SwitchControl.extend({
@@ -81,26 +77,24 @@ define('pgadmin.node.role', [
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
       '</div>',
-    ].join("\n"))
+    ].join('\n')),
   });
 
   var RoleMembersControl = Backform.Control.extend({
     defaults: _.defaults(
-                {extraClasses: ['col-xs-12 col-sm-12 col-md-12']},
-                Backform.NodeListByNameControl.prototype.defaults
-                ),
+      {extraClasses: ['col-xs-12 col-sm-12 col-md-12']},
+      Backform.NodeListByNameControl.prototype.defaults
+    ),
     initialize: function() {
       Backform.NodeListByNameControl.prototype.initialize.apply(this, arguments);
     },
     formatter: {
-      fromRaw: function (rawData, model) {
+      fromRaw: function (rawData) {
         var res = _.isObject(rawData) ? rawData : JSON.parse(rawData);
 
         return _.pluck(res, 'role');
       },
-      toRaw: function (formattedData, model) {
-        return formattedData;
-      }
+      toRaw: function (formattedData) { return formattedData; },
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -115,7 +109,7 @@ define('pgadmin.node.role', [
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
       '</div>',
-      ].join("\n")),
+    ].join('\n')),
     selectionTemplate: _.template([
       '<span>',
       '  <span class="wcTabIcon <%= optimage %>"></span>',
@@ -123,13 +117,13 @@ define('pgadmin.node.role', [
       '  <% if (checkbox) { %>',
       '  <input type="checkbox" <%=disabled ? "disabled=\'disabled\'" : ""%>/>',
       '  <% } %>',
-      '</span>'
-    ].join("\n")),
-    events: {"change select": "onChange"},
+      '</span>',
+    ].join('\n')),
+    events: {'change select': 'onChange'},
     getValueFromDOM: function() {
       var res = [];
 
-      this.$el.find("select").find(':selected').each(function() {
+      this.$el.find('select').find(':selected').each(function() {
         res.push($(this).attr('value'));
       });
 
@@ -137,39 +131,41 @@ define('pgadmin.node.role', [
     },
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
-          attributes = this.model.toJSON(),
-          attrArr = field.name.split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path),
-          data = _.extend(field, {
-            rawValue: rawValue,
-            value: this.formatter.fromRaw(rawValue, this.model),
-            attributes: attributes,
-            formatter: this.formatter
-          }),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          },
-          evalASFunc = function(f, d, m) {
-             return (_.isFunction(f) ? f.apply(d, [m]) : f);
-          };
+        attributes = this.model.toJSON(),
+        attrArr = field.name.split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        rawValue = this.keyPathAccessor(attributes[name], path),
+        data = _.extend(field, {
+          rawValue: rawValue,
+          value: this.formatter.fromRaw(rawValue, this.model),
+          attributes: attributes,
+          formatter: this.formatter,
+        }),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        },
+        evalASFunc = function(f, d, m) {
+          return (_.isFunction(f) ? f.apply(d, [m]) : f);
+        };
 
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
         visible:  evalF(data.visible, data, this.model),
         required: evalF(data.required, data, this.model),
-        helpMessage: evalASFunc(data.helpMessage, data, this.model)
+        helpMessage: evalASFunc(data.helpMessage, data, this.model),
       });
       // Evaluation the options
       if (_.isFunction(data.options)) {
         try {
-          data.options = data.options.apply(this)
+          data.options = data.options.apply(this);
         } catch(e) {
           // Do nothing
-          data.options = []
-          this.model.trigger('pgadmin-view:transform:error', m, self.field, e);
+          data.options = [];
+          this.model.trigger(
+            'pgadmin-view:transform:error', this.model, this.field, e
+          );
         }
       }
 
@@ -183,66 +179,66 @@ define('pgadmin.node.role', [
       this.updateInvalid();
 
       var self = this,
-          collection = this.model.get(this.field.get('name')),
-          formatState = function(opt) {
-            if (!opt.id) {
-              return opt.text;
-            }
+        collection = this.model.get(this.field.get('name')),
+        formatState = function(opt) {
+          if (!opt.id) {
+            return opt.text;
+          }
 
-            var optimage = $(opt.element).data('icon');
+          var optimage = $(opt.element).data('icon');
 
-            if(!optimage){
-              return opt.text;
-            } else {
-              var d = _.extend(
-                 {}, data, {
-                   'opttext': _.escape(opt.text),
-                   'optimage': optimage,
-                   'checkbox': false
-                 });
-              return $(self.selectionTemplate(d));
-            }
-          },
-          formatSelection = function (opt) {
+          if(!optimage){
+            return opt.text;
+          } else {
+            var d = _.extend(
+              {}, data, {
+                'opttext': _.escape(opt.text),
+                'optimage': optimage,
+                'checkbox': false,
+              });
+            return $(self.selectionTemplate(d));
+          }
+        },
+        formatSelection = function (opt) {
 
-            if (!opt.id) {
-              return opt.text;
-            }
+          if (!opt.id) {
+            return opt.text;
+          }
 
-            var optimage = $(opt.element).data('icon'),
-                grantUpdate = function(ev) {
+          var optimage = $(opt.element).data('icon'),
+            grantUpdate = function(ev) {
 
-                  _.each(collection.where({role: opt.id}), function(m) {
-                    m.set('admin', $(ev.target).is(":checked"));
-                  });
+              _.each(collection.where({role: opt.id}), function(m) {
+                m.set('admin', $(ev.target).is(':checked'));
+              });
 
-                  return false;
-                };
+              return false;
+            };
 
-            if(!optimage){
-              return opt.text;
-            } else {
-              var d = _.extend(
-                 {}, data, {
-                   'opttext': _.escape(opt.text),
-                   'optimage': optimage,
-                   'checkbox': true
-                 }),
-                 j = $(self.selectionTemplate(d));
+          if(!optimage){
+            return opt.text;
+          } else {
+            var d = _.extend(
+              {}, data, {
+                'opttext': _.escape(opt.text),
+                'optimage': optimage,
+                'checkbox': true,
+              }),
+              j = $(self.selectionTemplate(d));
 
-              // Update the checkbox lazy
-              setTimeout(
-                function() {
-                  _.each(collection.where({role: opt.id}), function(m) {
-                    j.find('input').prop('checked', m.get('admin'));
-                  });
-                }, 200);
+            // Update the checkbox lazy
+            setTimeout(
+              function() {
+                _.each(collection.where({role: opt.id}), function(m) {
+                  j.find('input').prop('checked', m.get('admin'));
+                });
+              }, 200);
 
-              (j.find('input')).on('change', grantUpdate);
+            (j.find('input')).on('change', grantUpdate);
 
-              return j;
-            }
-          };
+            return j;
+          }
+        };
 
       this.$el.find('select').select2({
         templateResult: formatState,
@@ -250,34 +246,32 @@ define('pgadmin.node.role', [
         multiple: true,
         tags: true,
         allowClear: data.disabled ? false : true,
-        placeholder: data.disabled ? "" : gettext("Select members"),
-        width: 'style'
-      }).on("change", function(e) {
+        placeholder: data.disabled ? '' : gettext('Select members'),
+        width: 'style',
+      }).on('change', function(e) {
         $(e.target).find(':selected').each(function() {
         });
       });
 
       return this;
     },
-    onChange: function(e) {
+    onChange: function() {
       var model = this.model,
-          $el = $(e.target),
-          attrArr = this.field.get("name").split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          vals = this.getValueFromDOM(),
-          collection = model.get(name),
-          removed = [];
+        attrArr = this.field.get('name').split('.'),
+        name = attrArr.shift(),
+        vals = this.getValueFromDOM(),
+        collection = model.get(name),
+        removed = [];
 
-      this.stopListening(this.model, "change:" + name, this.render);
+      this.stopListening(this.model, 'change:' + name, this.render);
 
-      /*
-       * Iterate through all the values, and find out how many are already
-       * present in the collection.
-       */
+        /*
+         * Iterate through all the values, and find out how many are already
+         * present in the collection.
+         */
       collection.each(function(m) {
         var role = m.get('role'),
-            idx = _.indexOf(vals, role);
+          idx = _.indexOf(vals, role);
 
         if (idx > -1) {
           vals.splice(idx, 1);
@@ -286,26 +280,26 @@ define('pgadmin.node.role', [
         }
       });
 
-      /*
-       * Adding new values
-       */
+        /*
+         * Adding new values
+         */
       _.each(vals, function(v) {
         collection.add({role: v});
       });
 
-      /*
-       * Removing unwanted!
-       */
+        /*
+         * Removing unwanted!
+         */
       _.each(removed, function(v) {
         collection.remove(collection.where({role: v}));
       });
 
-      this.listenTo(this.model, "change:" + name, this.render);
-    }
+      this.listenTo(this.model, 'change:' + name, this.render);
+    },
   });
 
   if (!pgBrowser.Nodes['role']) {
-    var role = pgAdmin.Browser.Nodes['role'] = pgAdmin.Browser.Node.extend({
+    pgAdmin.Browser.Nodes['role'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server',
       type: 'role',
       sqlAlterHelp: 'sql-alterrole.html',
@@ -316,16 +310,16 @@ define('pgadmin.node.role', [
       width: '550px',
       canDrop: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
-            server = treeData['server'];
-        /*
+          server = treeData['server'];
+          /*
         To Drop a role:
           1) If Role we are deleting is superuser then User must be superuser
           2) And for non-superuser roles User must have Create Role permission
-        */
+          */
 
         // Role you are trying to drop is Superuser ?
         if(node.is_superuser) {
-            return server.connected && server.user.is_superuser;
+          return server.connected && server.user.is_superuser;
         }
         // For non super users
         return server.connected && server.user.can_create_role;
@@ -336,7 +330,7 @@ define('pgadmin.node.role', [
       },
       node_image: function(r) {
         if (r == null || r == undefined)
-            return 'icon-role';
+          return 'icon-role';
         return (r.can_login ? 'icon-role' : 'icon-group');
       },
       title: function(d) {
@@ -351,7 +345,7 @@ define('pgadmin.node.role', [
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -360,24 +354,24 @@ define('pgadmin.node.role', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Login/Group Role...'),
           icon: 'wcTabIcon icon-role', data: {action: 'create'},
-          enable: 'can_create_role'
+          enable: 'can_create_role',
         },{
           name: 'create_role_on_roles', node: 'coll-role', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Login/Group Role...'),
           icon: 'wcTabIcon icon-role', data: {action: 'create'},
-          enable: 'can_create_role'
+          enable: 'can_create_role',
         },{
           name: 'create_role', node: 'role', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Login/Group Role...'),
           icon: 'wcTabIcon icon-role', data: {action: 'create'},
-          enable: 'can_create_role'
+          enable: 'can_create_role',
         }]);
       },
       can_create_role: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
-            server = treeData['server'];
+          server = treeData['server'];
 
         return server.connected && server.user.can_create_role;
       },
@@ -398,14 +392,14 @@ define('pgadmin.node.role', [
           rolmembership: [],
           rolvaliduntil: null,
           seclabels: [],
-          variables: []
+          variables: [],
         },
         schema: [{
           id: 'rolname', label: gettext('Name'), type: 'text',
-          disabled: 'readonly'
+          disabled: 'readonly',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
-          editable: false, type: 'text', visible: true, disabled: true
+          editable: false, type: 'text', visible: true, disabled: true,
         },{
           id: 'rolpassword', label: gettext('Password'), type: 'password',
           group: gettext('Definition'), mode: ['edit', 'create'],
@@ -415,23 +409,23 @@ define('pgadmin.node.role', [
               var user = this.node_info.server.user;
 
               return (!(user.is_superuser || user.can_create_role) &&
-                  user.id != m.get('oid'));
+                user.id != m.get('oid'));
             }
             return false;
-          }
+          },
         },{
           id: 'rolvaliduntil', disabled: 'readonly', type: 'text',
           group: gettext('Definition'), label: gettext('Account expires'),
           mode: ['properties', 'edit', 'create'], control: 'datetimepicker',
-          deps: ['rolcanlogin'], options: {format: 'YYYY-MM-DD HH:mm:ss Z'}
+          deps: ['rolcanlogin'], options: {format: 'YYYY-MM-DD HH:mm:ss Z'},
         },{
           id: 'rolconnlimit',  type: 'int', group: gettext('Definition'),
           label: gettext('Connection limit'), cell: 'integer', min : -1,
-          mode: ['properties', 'edit', 'create'], disabled: 'readonly'
+          mode: ['properties', 'edit', 'create'], disabled: 'readonly',
         },{
           id: 'rolcanlogin', label: gettext('Can login?'), type: 'switch',
           group: gettext('Privileges'), options: switchOptions,
-          disabled: 'readonly', control: RoleCustomSwitchControl
+          disabled: 'readonly', control: RoleCustomSwitchControl,
         },{
           id: 'rolsuper', label: gettext('Superuser'), type: 'switch',
           group: gettext('Privileges'), options: switchOptions,
@@ -442,40 +436,40 @@ define('pgadmin.node.role', [
               this.model.set('rolcatupdate', this.model.get('rolsuper'));
               this.model.set('rolcreaterole', this.model.get('rolsuper'));
               this.model.set('rolcreatedb', this.model.get('rolsuper'));
-            }
+            },
           }),
-          disabled: 'readonly'
+          disabled: 'readonly',
         },{
           id: 'rolcreaterole', label: gettext('Create roles?'),
           group: gettext('Privileges'), type: 'switch',
           options: switchOptions, disabled: 'readonly',
-          control: RoleCustomSwitchControl
+          control: RoleCustomSwitchControl,
         },{
           id: 'description', label: gettext('Comments'), type: 'multiline',
           group: null, mode: ['properties', 'edit', 'create'],
-          options: switchOptions, disabled: 'readonly'
+          options: switchOptions, disabled: 'readonly',
         },{
           id: 'rolcreatedb', label: gettext('Create databases?'),
           group: gettext('Privileges'), type: 'switch',
           options: switchOptions, disabled: 'readonly',
-          control: RoleCustomSwitchControl
+          control: RoleCustomSwitchControl,
         },{
           id: 'rolcatupdate', label: gettext('Update catalog?'),
           type: 'switch', max_version: 90400, options: switchOptions,
           control: RoleCustomSwitchControl,
           group: gettext('Privileges'), disabled: function(m) {
             return (m.get('read_only') || (!m.get('rolsuper')));
-          }
+          },
         },{
           id: 'rolinherit', group: gettext('Privileges'),
           label: gettext('Inherit rights from the parent roles?'),
           type: 'switch', options: switchOptions, disabled: 'readonly',
-          control: RoleCustomSwitchControl
+          control: RoleCustomSwitchControl,
         },{
           id: 'rolreplication', group: gettext('Privileges'),
           label: gettext('Can initiate streaming replication and backups?'),
           type: 'switch', min_version: 90100, options: switchOptions,
-          disabled: 'readonly', control: RoleCustomSwitchControl
+          disabled: 'readonly', control: RoleCustomSwitchControl,
         },{
           id: 'rolmembership', label: gettext('Roles'),
           group: gettext('Membership'), type: 'collection',
@@ -486,11 +480,11 @@ define('pgadmin.node.role', [
             idAttribute: 'role',
             defaults: {
               role: undefined,
-              admin: false
+              admin: false,
             },
             validate: function() {
               return null;
-            }
+            },
           }),
           filter: function(d) {
             return this.model.isNew() || (this.model.get('rolname') != d.label);
@@ -501,20 +495,20 @@ define('pgadmin.node.role', [
             } else {
               return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
             }
-          }
+          },
         },{
           id: 'variables', label: gettext('Parameters'), type: 'collection',
           group: gettext('Parameters'), hasDatabase: true, url: 'variables',
           model: pgBrowser.Node.VariableModel.extend({keys:['name', 'database']}),
           control: 'variable-collection',
           mode: [ 'edit', 'create'], canAdd: true, canDelete: true,
-          url: "variables", disabled: 'readonly'
+          disabled: 'readonly',
         },{
           id: 'seclabels', label: gettext('Security Labels'),
           model: SecurityModel, editable: false, type: 'collection',
           group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, disabled: 'readonly', canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection'
+          canEdit: false, canDelete: true, control: 'unique-col-collection',
         }],
         readonly: function(m) {
           if (!m.has('read_only')) {
@@ -528,8 +522,8 @@ define('pgadmin.node.role', [
         validate: function()
         {
           var err = {},
-              errmsg,
-              seclabels = this.get('seclabels');
+            errmsg,
+            seclabels = this.get('seclabels');
 
           if (_.isUndefined(this.get('rolname')) || String(this.get('rolname')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
@@ -555,9 +549,9 @@ define('pgadmin.node.role', [
           }
 
           return null;
-        }
-      })
-    })
+        },
+      }),
+    });
   }
 
   return pgBrowser.Nodes['role'];

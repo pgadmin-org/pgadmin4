@@ -1,7 +1,7 @@
 define('pgadmin.node.rule', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'codemirror'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
 
   /**
     Create and add a rule collection into nodes
@@ -11,13 +11,13 @@ define('pgadmin.node.rule', [
       display under under properties.
    */
   if (!pgBrowser.Nodes['coll-rule']) {
-    var rules = pgAdmin.Browser.Nodes['coll-rule'] =
+    pgAdmin.Browser.Nodes['coll-rule'] =
       pgAdmin.Browser.Collection.extend({
         node: 'rule',
         label: gettext('Rules'),
         type: 'coll-rule',
         getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
-        columns: ["name", "owner", "comment"]
+        columns: ['name', 'owner', 'comment'],
       });
   }
 
@@ -65,7 +65,7 @@ define('pgadmin.node.rule', [
 
         /* Avoid mulitple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -81,32 +81,32 @@ define('pgadmin.node.rule', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_rule_onView', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_rule', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_rule', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate'
-        }
+          enable: 'canCreate',
+        },
         ]);
       },
 
@@ -119,7 +119,7 @@ define('pgadmin.node.rule', [
           id: 'name', label: gettext('Name'),
           type: 'text', disabled: function(m) {
             // disable name field it it is system rule
-            if (m && m.get('name') == "_RETURN") {
+            if (m && m.get('name') == '_RETURN') {
               return true;
             }
             if (m.isNew()) {
@@ -128,18 +128,18 @@ define('pgadmin.node.rule', [
               return false;
             }
             return true;
-          }
+          },
         },
         {
           id: 'oid', label: gettext('OID'),
-          type: 'text', disabled: true, mode: ['properties']
+          type: 'text', disabled: true, mode: ['properties'],
         },
         {
           id: 'schema', label:'',
           type: 'text', visible: false, disabled: function(m) {
             // It is used while generating sql
             m.set('schema', m.node_info.schema.label);
-          }
+          },
         },
         {
           id: 'view', label:'',
@@ -147,47 +147,47 @@ define('pgadmin.node.rule', [
 
             // It is used while generating sql
             m.set('view', this.node_data.label);
-          }
+          },
         },
         {
           id: 'event', label: gettext('Event'), control: 'select2',
           group: gettext('Definition'), type: 'text',
           select2: {
             width: '100%',
-            allowClear: false
+            allowClear: false,
           },
           options:[
             {label: 'Select', value: 'Select'},
             {label: 'Insert', value: 'Insert'},
             {label: 'Update', value: 'Update'},
-            {label: 'Delete', value: 'Delete'}
-          ]
+            {label: 'Delete', value: 'Delete'},
+          ],
         },
         {
           id: 'do_instead', label: gettext('Do Instead'), group: gettext('Definition'),
-          type: 'switch'
+          type: 'switch',
         },
         {
           id: 'condition', label: gettext('Condition'),
           type: 'text', group: gettext('Definition'),
-          control: Backform.SqlFieldControl
+          control: Backform.SqlFieldControl,
         },
         {
           id: 'statements', label: gettext('Commands'),
           type: 'text', group: gettext('Definition'),
-          control: Backform.SqlFieldControl
+          control: Backform.SqlFieldControl,
         },
         {
           id: 'system_rule', label: gettext('System rule?'),
-          type: 'switch', mode: ['properties']
+          type: 'switch', mode: ['properties'],
         },
         {
           id: 'enabled', label: gettext('Enabled?'),
-          type: 'switch', mode: ['properties']
+          type: 'switch', mode: ['properties'],
         },
         {
-          id: 'comment', label: gettext('Comment'), cell: 'string', type: 'multiline'
-        }
+          id: 'comment', label: gettext('Comment'), cell: 'string', type: 'multiline',
+        },
         ],
         validate: function() {
 
@@ -208,7 +208,7 @@ define('pgadmin.node.rule', [
             this.errorModel.unset('name');
           }
           return null;
-        }
+        },
       }),
 
       // Show or hide create rule menu option on parent node
@@ -231,7 +231,6 @@ define('pgadmin.node.rule', [
 
             //Check if we are not child of rule
             var prev_i = t.hasParent(i) ? t.parent(i) : null,
-              prev_d = prev_i ? t.itemData(prev_i) : null,
               prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null,
               prev_e = prev_j ? t.itemData(prev_j) : null,
               prev_k = t.hasParent(prev_j) ? t.parent(prev_j) : null,
@@ -249,7 +248,6 @@ define('pgadmin.node.rule', [
            */
           else if('view' == d._type || 'table' == d._type){
             prev_i = t.hasParent(i) ? t.parent(i) : null;
-            prev_d = prev_i ? t.itemData(prev_i) : null;
             prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null;
             prev_e = prev_j ? t.itemData(prev_j) : null;
             if(prev_e._type == 'schema') {
@@ -265,9 +263,9 @@ define('pgadmin.node.rule', [
         // By default we do not want to allow create menu
         return true;
 
-      }
+      },
 
-  });
+    });
   }
 
   return pgBrowser.Nodes['coll-rule'];

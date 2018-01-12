@@ -1,19 +1,19 @@
 define('pgadmin.node.package', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for package collection
   if (!pgBrowser.Nodes['coll-package']) {
-    var databases = pgBrowser.Nodes['coll-package'] =
+    pgBrowser.Nodes['coll-package'] =
       pgBrowser.Collection.extend({
         node: 'package',
         label: gettext('Packages'),
         type: 'coll-package',
-        columns: ['name' ,'owner', 'description']
+        columns: ['name' ,'owner', 'description'],
       });
-  };
+  }
 
   // Extend the browser's node class for package node
   if (!pgBrowser.Nodes['package']) {
@@ -28,7 +28,7 @@ define('pgadmin.node.package', [
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -37,20 +37,20 @@ define('pgadmin.node.package', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Package...'),
           icon: 'wcTabIcon icon-package', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_package', node: 'package', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Package...'),
           icon: 'wcTabIcon icon-package', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_package', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Package...'),
           icon: 'wcTabIcon icon-package', data: {action: 'create', check: true},
-          enable: 'canCreate'
-        }
+          enable: 'canCreate',
+        },
         ]);
 
       },
@@ -58,21 +58,21 @@ define('pgadmin.node.package', [
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       canCreate: function(itemData, item, data) {
           //If check is false then , we will allow create menu
-          if (data && data.check == false)
-            return true;
+        if (data && data.check == false)
+          return true;
 
-          var treeData = this.getTreeNodeHierarchy(item),
-                server = treeData['server'];
+        var treeData = this.getTreeNodeHierarchy(item),
+          server = treeData['server'];
 
-          if (server && server.server_type === 'pg')
-            return false;
+        if (server && server.server_type === 'pg')
+          return false;
 
           // If it is catalog then don't allow user to create package
-          if (treeData['catalog'] != undefined)
-            return false;
+        if (treeData['catalog'] != undefined)
+          return false;
 
           // by default we want to allow create menu
-          return true;
+        return true;
       },
       // Define the model for package node.
       model: pgBrowser.Node.Model.extend({
@@ -85,7 +85,7 @@ define('pgadmin.node.package', [
           pkgheadsrc: undefined,
           pkgbodysrc: undefined,
           acl: undefined,
-          pkgacl: []
+          pkgacl: [],
         },
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
@@ -93,7 +93,7 @@ define('pgadmin.node.package', [
             var schemaInfo = args.node_info.schema;
 
             this.set({
-              'owner': userInfo.name, 'schema': schemaInfo._label
+              'owner': userInfo.name, 'schema': schemaInfo._label,
             }, {silent: true});
           }
           pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
@@ -104,16 +104,16 @@ define('pgadmin.node.package', [
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: function(m) {
             return !m.isNew();
-          }
+          },
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties']
+          type: 'text', mode: ['properties'],
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: true, editable: false, visible: function(m) {
             return !m.isNew();
-          }
+          },
         },{
           id: 'schema', label: gettext('Schema'), type: 'text', node: 'schema',
           control: 'node-list-by-name',
@@ -124,28 +124,28 @@ define('pgadmin.node.package', [
               return false;
             }
             return true;
-          }, cache_node: 'database', cache_level: 'database'
+          }, cache_node: 'database', cache_level: 'database',
         },{
           id: 'is_sys_object', label: gettext('System package?'),
-           cell:'boolean', type: 'switch',mode: ['properties']
+          cell:'boolean', type: 'switch',mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit']
+          mode: ['properties', 'create', 'edit'],
         },{
           id: 'pkgheadsrc', label: gettext('Header'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Code'),
-          control: Backform.SqlFieldControl
+          control: Backform.SqlFieldControl,
         },{
           id: 'pkgbodysrc', label: gettext('Body'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Code'),
-          control: Backform.SqlFieldControl
+          control: Backform.SqlFieldControl,
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties',]
+          group: gettext('Security'), mode: ['properties'],
         },{
           id: 'pkgacl', label: gettext('Privileges'), type: 'collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['X']
+            privileges: ['X'],
           }), uniqueCol : ['grantee', 'grantor'], editable: false,
           group: gettext('Security'), mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
@@ -174,8 +174,8 @@ define('pgadmin.node.package', [
           }
 
           return null;
-        }
-      })
+        },
+      }),
     });
   }
 

@@ -5,42 +5,40 @@
  * @namespace Slick
  */
 
-(function ($) {
+(function($) {
   // register namespace
   $.extend(true, window, {
-    "Slick": {
-      "Formatters": {
-        "JsonString": JsonFormatter,
-        "Numbers": NumbersFormatter,
-        "Checkmark": CheckmarkFormatter,
-        "Text": TextFormatter,
-        "Binary": BinaryFormatter,
-      }
-    }
+    'Slick': {
+      'Formatters': {
+        'JsonString': JsonFormatter,
+        'Numbers': NumbersFormatter,
+        'Checkmark': CheckmarkFormatter,
+        'Text': TextFormatter,
+        'Binary': BinaryFormatter,
+      },
+    },
   });
 
-  function NullAndDefaultFormatter(row, cell, value, columnDef, dataContext) {
+  function NullAndDefaultFormatter(row, cell, value, columnDef) {
     if (_.isUndefined(value) && columnDef.has_default_val) {
-        return "<span class='pull-left disabled_cell'>[default]</span>";
-    }
-    else if (
+      return '<span class=\'pull-left disabled_cell\'>[default]</span>';
+    } else if (
       (_.isUndefined(value) && columnDef.not_null) ||
       (_.isUndefined(value) || value === null)
     ) {
-      return "<span class='pull-left disabled_cell'>[null]</span>";
+      return '<span class=\'pull-left disabled_cell\'>[null]</span>';
     }
     return null;
   }
 
-  function NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext) {
+  function NullAndDefaultNumberFormatter(row, cell, value, columnDef) {
     if (_.isUndefined(value) && columnDef.has_default_val) {
-        return "<span class='pull-right disabled_cell'>[default]</span>";
-    }
-    else if (
+      return '<span class=\'pull-right disabled_cell\'>[default]</span>';
+    } else if (
       (_.isUndefined(value) && columnDef.not_null) ||
       (_.isUndefined(value) || value === null)
     ) {
-      return "<span class='pull-right disabled_cell'>[null]</span>";
+      return '<span class=\'pull-right disabled_cell\'>[null]</span>';
     }
     return null;
   }
@@ -52,18 +50,18 @@
       return data;
     } else {
       // Stringify only if it's json object
-      if (typeof value === "object" && !Array.isArray(value)) {
+      if (typeof value === 'object' && !Array.isArray(value)) {
         return _.escape(JSON.stringify(value));
       } else if (Array.isArray(value)) {
         var temp = [];
         $.each(value, function(i, val) {
-          if (typeof val === "object") {
+          if (typeof val === 'object') {
             temp.push(JSON.stringify(val));
           } else {
-            temp.push(val)
+            temp.push(val);
           }
         });
-        return _.escape("[" + temp.join() + "]")
+        return _.escape('[' + temp.join() + ']');
       } else {
         return _.escape(value);
       }
@@ -76,7 +74,7 @@
     if (data) {
       return data;
     } else {
-      return "<span style='float:right'>" + _.escape(value) + "</span>";
+      return '<span style=\'float:right\'>' + _.escape(value) + '</span>';
     }
   }
 
@@ -90,7 +88,7 @@
     if (data) {
       return data;
     } else {
-      return value ? "true" : "false";
+      return value ? 'true' : 'false';
     }
   }
 
@@ -110,7 +108,7 @@
     if (data) {
       return data;
     } else {
-      return "<span class='pull-left disabled_cell'>[" + _.escape(value) + "]</span>";
+      return '<span class=\'pull-left disabled_cell\'>[' + _.escape(value) + ']</span>';
     }
   }
-})(jQuery);
+})(window.jQuery);

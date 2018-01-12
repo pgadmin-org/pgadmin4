@@ -1,7 +1,7 @@
 define([
   'sources/selection/copy_data',
-  'sources/selection/range_selection_helper'
-  ],
+  'sources/selection/range_selection_helper',
+],
 function (copyData, RangeSelectionHelper) {
   return function handleQueryOutputKeyboardEvent(event, args) {
     var KEY_C = 67;
@@ -10,7 +10,7 @@ function (copyData, RangeSelectionHelper) {
     var isModifierDown = event.ctrlKey || event.metaKey;
     var self = this || window;
     self.slickgrid = args.grid;
-    self.csvOptions
+    self.csvOptions;
 
     if (isModifierDown && modifiedKey == KEY_C) {
       copyData.apply(self);
@@ -19,5 +19,5 @@ function (copyData, RangeSelectionHelper) {
     if (isModifierDown && modifiedKey == KEY_A) {
       RangeSelectionHelper.selectAll(self.slickgrid);
     }
-  }
+  };
 });

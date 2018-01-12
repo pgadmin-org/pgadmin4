@@ -1,11 +1,11 @@
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.edbproc', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.edbfunc', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege'
+  'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, EdbFunction
+  gettext, url_for, $, _, pgAdmin, pgBrowser, EdbFunction
 ) {
 
   if (!pgBrowser.Nodes['coll-edbproc']) {
@@ -15,9 +15,9 @@ define('pgadmin.node.edbproc', [
         label: gettext('Procedures'),
         type: 'coll-edbproc',
         columns: ['name', 'funcowner', 'description'],
-        hasStatistics: true
+        hasStatistics: true,
       });
-  };
+  }
 
   // Inherit Functions Node
   if (!pgBrowser.Nodes['edbproc']) {
@@ -34,7 +34,7 @@ define('pgadmin.node.edbproc', [
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.proc_initialized)
-            return;
+          return;
 
         this.proc_initialized = true;
 
@@ -45,10 +45,10 @@ define('pgadmin.node.edbproc', [
         defaults: _.extend({},
           EdbFunction.model.prototype.defaults,
           {
-            lanname: 'edbspl'
+            lanname: 'edbspl',
           }
         ),
-        isVisible: function(m){
+        isVisible: function() {
           if (this.name == 'sysfunc') { return false; }
           else if (this.name == 'sysproc') { return true; }
           return false;
@@ -56,10 +56,10 @@ define('pgadmin.node.edbproc', [
         validate: function()
         {
           return null;
-        }
+        },
       }
-      )
-  });
+      ),
+    });
 
   }
 

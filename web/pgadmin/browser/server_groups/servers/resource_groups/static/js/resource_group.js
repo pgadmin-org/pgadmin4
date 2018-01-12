@@ -1,6 +1,6 @@
 define('pgadmin.node.resource_group', [
   'sources/gettext', 'sources/url_for', 'underscore', 'pgadmin.browser',
-  'pgadmin.browser.collection'
+  'pgadmin.browser.collection',
 ], function(gettext, url_for, _, pgBrowser) {
 
   // Extend the browser's collection class for resource group collection
@@ -10,8 +10,8 @@ define('pgadmin.node.resource_group', [
         node: 'resource_group',
         label: gettext('Resource Groups'),
         type: 'coll-resource_group',
-        columns: ['name', 'cpu_rate_limit', 'dirty_rate_limit']
-    });
+        columns: ['name', 'cpu_rate_limit', 'dirty_rate_limit'],
+      });
   }
 
   // Extend the browser's node class for resource group node
@@ -43,21 +43,21 @@ define('pgadmin.node.resource_group', [
            */
           enable: function(node, item) {
             var treeData = this.getTreeNodeHierarchy(item),
-                server = treeData['server'];
+              server = treeData['server'];
             return server.connected && node.server_type === 'ppas' &&
-                   node.version >= 90400;
-          }
+              node.version >= 90400;
+          },
         },{
           name: 'create_resource_group_on_coll', node: 'coll-resource_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'}
+          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
         },{
           name: 'create_resource_group', node: 'resource_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'}
-        }
+          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
+        },
         ]);
       },
 
@@ -66,7 +66,7 @@ define('pgadmin.node.resource_group', [
         defaults: {
           name: undefined,
           cpu_rate_limit: 0.0,
-          dirty_rate_limit: 0.0
+          dirty_rate_limit: 0.0,
         },
 
         // Defining schema for the resource group node
@@ -75,22 +75,23 @@ define('pgadmin.node.resource_group', [
           type: 'text',
         },{
           id: 'cpu_rate_limit', label: gettext('CPU rate limit (%%)'), cell: 'string',
-          type: 'numeric', min:0, max:16777216
+          type: 'numeric', min:0, max:16777216,
         },{
           id: 'dirty_rate_limit', label: gettext('Dirty rate limit (KB)'), cell: 'string',
-          type: 'numeric', min:0, max:16777216
+          type: 'numeric', min:0, max:16777216,
         }],
 
         /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
          * the GUI for the respective control.
          */
-        validate: function(keys) {
-          var msg, cpu_rate_limit, dirty_rate_limit, name,
-              name = this.get('name');
+        validate: function() {
+          var msg,
+            name = this.get('name');
+
           if (_.isUndefined(name) || _.isNull(name) ||
-              String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Name cannot be empty.');
+            String(name).replace(/^\s+|\s+$/g, '') == '') {
+            msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           } else {
@@ -99,8 +100,8 @@ define('pgadmin.node.resource_group', [
 
           var cpu_rate_limit = this.get('cpu_rate_limit');
           if (_.isUndefined(cpu_rate_limit) || _.isNull(cpu_rate_limit) ||
-              String(cpu_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('CPU rate limit cannot be empty.');
+            String(cpu_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
+            msg = gettext('CPU rate limit cannot be empty.');
             this.errorModel.set('cpu_rate_limit', msg);
             return msg;
           } else {
@@ -110,15 +111,15 @@ define('pgadmin.node.resource_group', [
           var dirty_rate_limit = this.get('dirty_rate_limit');
           if (_.isUndefined(dirty_rate_limit) || _.isNull(dirty_rate_limit) ||
             String(dirty_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Dirty rate limit cannot be empty.');
+            msg = gettext('Dirty rate limit cannot be empty.');
             this.errorModel.set('dirty_rate_limit', msg);
             return msg;
           } else {
             this.errorModel.unset('dirty_rate_limit');
           }
           return null;
-        }
-      })
+        },
+      }),
     });
   }
 

@@ -1,26 +1,29 @@
 // Domain Module: Collection and Node.
 define('pgadmin.node.domain', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.browser.collection',
+], function(
+  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid
+) {
 
   // Define Domain Collection Node
   if (!pgBrowser.Nodes['coll-domain']) {
-    var domains = pgBrowser.Nodes['coll-domain'] =
+    pgBrowser.Nodes['coll-domain'] =
       pgBrowser.Collection.extend({
         node: 'domain',
         label: gettext('Domains'),
         type: 'coll-domain',
-        columns: ['name', 'owner', 'description']
+        columns: ['name', 'owner', 'description'],
       });
-  };
+  }
 
   // Constraint Model
   var ConstraintModel = pgBrowser.Node.Model.extend({
     idAttribute: 'conoid',
-    initialize: function(attrs, args) {
+    initialize: function(attrs) {
       if (!_.size(attrs) === 0) {
-        this.convalidated_default = this.get('convalidated')
+        this.convalidated_default = this.get('convalidated');
       }
       pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
     },
@@ -28,11 +31,11 @@ define('pgadmin.node.domain', [
       conoid: undefined,
       conname: undefined,
       consrc: undefined,
-      convalidated: true
+      convalidated: true,
     },
     convalidated_default: true,
     schema: [{
-      id: 'conoid', type: 'text', cell: 'string', visible: false
+      id: 'conoid', type: 'text', cell: 'string', visible: false,
     },{
       id: 'conname', label: gettext('Name'), type: 'text', cell: 'string',
       cellHeaderClasses: 'width_percent_40',
@@ -44,13 +47,13 @@ define('pgadmin.node.domain', [
           }
         }
         return true;
-      }
+      },
     },{
       id: 'consrc', label: gettext('Check'), type: 'multiline',
       cell: Backgrid.Extension.TextareaCell, group: gettext('Definition'),
       cellHeaderClasses: 'width_percent_60', editable: function(m) {
         return _.isUndefined(m.isNew) ? true : m.isNew();
-      }
+      },
     },{
       id: 'convalidated', label: gettext('Validate?'), type: 'switch', cell:
       'boolean', group: gettext('Definition'),
@@ -66,12 +69,12 @@ define('pgadmin.node.domain', [
           return true;
         }
         return true;
-      }
+      },
     }],
     toJSON: Backbone.Model.prototype.toJSON,
     validate: function() {
       return null;
-    }
+    },
   });
 
   // Domain Node
@@ -89,7 +92,7 @@ define('pgadmin.node.domain', [
       Init: function() {
         // Avoid mulitple registration of menus
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -98,20 +101,20 @@ define('pgadmin.node.domain', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Domain...'),
           icon: 'wcTabIcon icon-domain', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_domain', node: 'domain', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Domain...'),
           icon: 'wcTabIcon icon-domain', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_domain', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Domain...'),
           icon: 'wcTabIcon icon-domain', data: {action: 'create', check: false},
-          enable: 'canCreate'
-        }
+          enable: 'canCreate',
+        },
         ]);
 
       },
@@ -123,7 +126,7 @@ define('pgadmin.node.domain', [
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
             // Set Selected Schema
-            var schema = args.node_info.schema.label
+            var schema = args.node_info.schema.label;
             this.set({'basensp': schema}, {silent: true});
 
             // Set Current User
@@ -146,34 +149,34 @@ define('pgadmin.node.domain', [
           sysdomain: undefined,
           collname: undefined,
           constraints: [],
-          seclabels: []
+          seclabels: [],
         },
         type_options: undefined,
         // Domain Schema
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit']
+          type: 'text', mode: ['properties', 'create', 'edit'],
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties']
+          type: 'text' , mode: ['properties'],
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string', control: Backform.NodeListByNameControl,
-          node: 'role',  type: 'text', mode: ['edit', 'create', 'properties']
+          node: 'role',  type: 'text', mode: ['edit', 'create', 'properties'],
         },{
           id: 'basensp', label: gettext('Schema'), cell: 'node-list-by-name',
-           control: 'node-list-by-name', cache_level: 'database', type: 'text',
-           node: 'schema', mode: ['create', 'edit']
+          control: 'node-list-by-name', cache_level: 'database', type: 'text',
+          node: 'schema', mode: ['create', 'edit'],
         },{
           id: 'sysdomain', label: gettext('System domain?'), cell: 'boolean',
           type: 'switch', mode: ['properties'],
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small'
-          }
+            'size': 'small',
+          },
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline'
+          type: 'multiline',
         },{
           id: 'basetype', label: gettext('Base type'), cell: 'string',
           control: 'node-ajax-options', type: 'text', url: 'get_types',
@@ -185,7 +188,7 @@ define('pgadmin.node.domain', [
           transform: function(d) {
             this.model.type_options =  d;
             return d;
-          }
+          },
         },{
           id: 'typlen', label: gettext('Length'), cell: 'string',
           type: 'text', group: gettext('Definition'), deps: ['basetype'],
@@ -201,18 +204,18 @@ define('pgadmin.node.domain', [
                 // if type from selected from combobox matches in options
                 if ( of_type == o.value ) {
                     // if length is allowed for selected type
-                    if(o.length)
+                  if(o.length)
                     {
                       // set the values in model
-                      m.set('is_tlength', true, {silent: true});
-                      m.set('min_val', o.min_val, {silent: true});
-                      m.set('max_val', o.max_val, {silent: true});
-                    }
+                    m.set('is_tlength', true, {silent: true});
+                    m.set('min_val', o.min_val, {silent: true});
+                    m.set('max_val', o.max_val, {silent: true});
+                  }
                 }
               });
             }
             return !m.get('is_tlength');
-          }
+          },
         },{
           id: 'precision', label: gettext('Precision'), cell: 'string',
           type: 'text', group: gettext('Definition'), deps: ['basetype'],
@@ -228,56 +231,55 @@ define('pgadmin.node.domain', [
                 // if type from selected from combobox matches in options
                 if ( of_type == o.value ) {
                     // if precession is allowed for selected type
-                    if(o.precision)
+                  if(o.precision)
                     {
                       // set the values in model
-                      m.set('is_precision', true, {silent: true});
-                      m.set('min_val', o.min_val, {silent: true});
-                      m.set('max_val', o.max_val, {silent: true});
-                    }
+                    m.set('is_precision', true, {silent: true});
+                    m.set('min_val', o.min_val, {silent: true});
+                    m.set('max_val', o.max_val, {silent: true});
+                  }
                 }
               });
             }
             return !m.get('is_precision');
-          }
+          },
         },{
           id: 'typdefault', label: gettext('Default'), cell: 'string',
           type: 'text', group: gettext('Definition'),
-          placeholder: "Enter an expression or a value."
+          placeholder: 'Enter an expression or a value.',
         },{
           id: 'typnotnull', label: gettext('Not Null?'), cell: 'boolean',
           type: 'switch', group: gettext('Definition'),
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small'
-          }
+            'size': 'small',
+          },
         },{
           id: 'collname', label: gettext('Collation'), cell: 'string',
           control: 'node-ajax-options', type: 'text', url: 'get_collations',
           group: gettext('Definition'), cache_level: 'database',
           cache_node: 'schema', disabled: function(m) {
             return !m.isNew();
-          }
+          },
         },{
           id: 'constraints', label: gettext('Constraints'), cell: 'string',
           type: 'collection', group: gettext('Constraints'), mode: ['edit', 'create'],
           model: ConstraintModel, canAdd: true, canDelete: true,
-          canEdit: false, columns: ['conname','consrc', 'convalidated']
+          canEdit: false, columns: ['conname','consrc', 'convalidated'],
         },
-        pgBrowser.SecurityGroupSchema,
+          pgBrowser.SecurityGroupSchema,
         {
           id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,
           canEdit: false, canDelete: true,
-          control: 'unique-col-collection', uniqueCol : ['provider']
+          control: 'unique-col-collection', uniqueCol : ['provider'],
         }],
         validate: function() { // Client Side Validation
           var err = {},
-              errmsg,
-              seclabels = this.get('seclabels');
+            errmsg;
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
@@ -291,8 +293,8 @@ define('pgadmin.node.domain', [
 
           this.errorModel.clear().set(err);
 
-          return null;
-        }
+          return errmsg;
+        },
       }),
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
@@ -323,16 +325,16 @@ define('pgadmin.node.domain', [
         return true;
       },
       isDisabled: function(m){
-          if (!m.isNew()) {
-            var server = this.node_info.server;
-            if (server.version < 90200)
+        if (!m.isNew()) {
+          var server = this.node_info.server;
+          if (server.version < 90200)
             {
-              return false;
-            }
+            return false;
           }
-          return true;
         }
-  });
+        return true;
+      },
+    });
 
   }
 

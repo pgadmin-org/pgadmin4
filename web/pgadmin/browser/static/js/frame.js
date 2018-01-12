@@ -1,18 +1,21 @@
-define(
-    ['underscore', 'sources/pgadmin', 'wcdocker'],
-function(_, pgAdmin) {
+define([
+  'underscore', 'sources/pgadmin', 'jquery', 'wcdocker',
+], function(_, pgAdmin, $) {
 
-  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
+    wcDocker = window.wcDocker,
+    wcIFrame = window.wcIFrame;
 
   pgAdmin.Browser.Frame = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-      'isPrivate', 'url', 'icon', 'onCreate'];
+      'isPrivate', 'url', 'icon', 'onCreate',
+    ];
     _.extend(this, _.pick(options, defaults));
-  }
+  };
 
   _.extend(pgAdmin.Browser.Frame.prototype, {
-    name:'',
+    name: '',
     title: '',
     width: 300,
     height: 600,
@@ -37,7 +40,7 @@ function(_, pgAdmin) {
             if (myPanel.showTitle == false)
               myPanel.title(false);
 
-            myPanel.icon(that.icon)
+            myPanel.icon(that.icon);
 
             myPanel.closeable(!!that.isCloseable);
 
@@ -75,22 +78,23 @@ function(_, pgAdmin) {
             }
 
             _.each([
-                wcDocker.EVENT.UPDATED, wcDocker.EVENT.VISIBILITY_CHANGED,
-                wcDocker.EVENT.BEGIN_DOCK, wcDocker.EVENT.END_DOCK,
-                wcDocker.EVENT.GAIN_FOCUS, wcDocker.EVENT.LOST_FOCUS,
-                wcDocker.EVENT.CLOSED, wcDocker.EVENT.BUTTON,
-                wcDocker.EVENT.ATTACHED, wcDocker.EVENT.DETACHED,
-                wcDocker.EVENT.MOVE_STARTED, wcDocker.EVENT.MOVE_ENDED,
-                wcDocker.EVENT.MOVED, wcDocker.EVENT.RESIZE_STARTED,
-                wcDocker.EVENT.RESIZE_ENDED, wcDocker.EVENT.RESIZED,
-                wcDocker.EVENT.SCROLLED], function(ev) {
-                  myPanel.on(ev, that.eventFunc.bind(myPanel, ev));
-                });
+              wcDocker.EVENT.UPDATED, wcDocker.EVENT.VISIBILITY_CHANGED,
+              wcDocker.EVENT.BEGIN_DOCK, wcDocker.EVENT.END_DOCK,
+              wcDocker.EVENT.GAIN_FOCUS, wcDocker.EVENT.LOST_FOCUS,
+              wcDocker.EVENT.CLOSED, wcDocker.EVENT.BUTTON,
+              wcDocker.EVENT.ATTACHED, wcDocker.EVENT.DETACHED,
+              wcDocker.EVENT.MOVE_STARTED, wcDocker.EVENT.MOVE_ENDED,
+              wcDocker.EVENT.MOVED, wcDocker.EVENT.RESIZE_STARTED,
+              wcDocker.EVENT.RESIZE_ENDED, wcDocker.EVENT.RESIZED,
+              wcDocker.EVENT.SCROLLED,
+            ], function(ev) {
+              myPanel.on(ev, that.eventFunc.bind(myPanel, ev));
+            });
 
             if (that.onCreate && _.isFunction(that.onCreate)) {
-              that.onCreate.apply(that, [myPanel, frame, $container]);
+              that.onCreate.apply(that, [myPanel, frame]);
             }
-          }
+          },
         });
       }
     },
@@ -106,9 +110,9 @@ function(_, pgAdmin) {
           pgBrowser.Events.trigger('pgadmin-browser:frame-' + name + ':' + eventName, this, arguments);
         }
       } catch (e) {
-        console.log(e);
+        console.warn(e.stack || e);
       }
-    }
+    },
   });
 
   return pgAdmin.Browser.Frame;

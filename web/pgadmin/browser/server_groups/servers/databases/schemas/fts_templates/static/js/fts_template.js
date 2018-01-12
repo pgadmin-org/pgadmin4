@@ -1,19 +1,18 @@
 define('pgadmin.node.fts_template', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
 
   // Extend the collection class for fts template
   if (!pgBrowser.Nodes['coll-fts_template']) {
-    var fts_templates = pgAdmin.Browser.Nodes['coll-fts_template'] =
+    pgAdmin.Browser.Nodes['coll-fts_template'] =
       pgAdmin.Browser.Collection.extend({
         node: 'fts_template',
         label: gettext('FTS Templates'),
         type: 'coll-fts_template',
-        columns: ['name', 'description']
+        columns: ['name', 'description'],
       });
-  };
+  }
 
   // Extend the node class for fts template
   if (!pgBrowser.Nodes['fts_template']) {
@@ -42,20 +41,20 @@ define('pgadmin.node.fts_template', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Template...'),
           icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
-          enable: 'canCreate'
-          },{
+          enable: 'canCreate',
+        },{
           name: 'create_fts_template_on_coll', node: 'coll-fts_template', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Template...'),
           icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
-          enable: 'canCreate'
-          },{
+          enable: 'canCreate',
+        },{
           name: 'create_fts_template', node: 'fts_template', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Template...'),
           icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
-          enable: 'canCreate'
-          }]);
+          enable: 'canCreate',
+        }]);
 
       },
 
@@ -66,7 +65,7 @@ define('pgadmin.node.fts_template', [
           description: undefined,   // Comment on template
           schema: undefined,        // Schema name to which template belongs
           tmplinit: undefined,      // Init function for fts template
-          tmpllexize: undefined     // Lexize function for fts template
+          tmpllexize: undefined,     // Lexize function for fts template
         },
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
@@ -78,29 +77,29 @@ define('pgadmin.node.fts_template', [
         // Defining schema for fts template
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', cellHeaderClasses: 'width_percent_50'
+          type: 'text', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', disabled: true, mode:['properties']
+          editable: false, type: 'text', disabled: true, mode:['properties'],
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
           control: 'node-list-by-id', cache_node: 'database',
-          cache_level: 'database'
+          cache_level: 'database',
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', cellHeaderClasses: 'width_percent_50'
+          type: 'multiline', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'tmplinit', label: gettext('Init function'),
           group: gettext('Definition'), type: 'text', disabled: function(m) {
             return !m.isNew();
           }, control: 'node-ajax-options', url: 'get_init',
-          cache_level: 'database', cache_node: 'schema'
+          cache_level: 'database', cache_node: 'schema',
         },{
           id: 'tmpllexize', label: gettext('Lexize function'), group: gettext('Definition'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'get_lexize', cache_level: 'database',
-          cache_node: 'schema'
+          cache_node: 'schema',
         }],
 
         /*
@@ -108,28 +107,29 @@ define('pgadmin.node.fts_template', [
          * lexize function and schema, if any one of them is not specified
          * while creating new fts template
          */
-        validate: function(keys){
-          var name = this.get('name');
-          var lexize = this.get('tmpllexize');
-          var schema = this.get('schema');
+        validate: function() {
+          var name = this.get('name'),
+            lexize = this.get('tmpllexize'),
+            schema = this.get('schema'),
+            msg;
 
           // Validate fts template name
           if (_.isUndefined(name) || _.isNull(name) || String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Name must be specified.');
+            msg = gettext('Name must be specified.');
             this.errorModel.set('name', msg);
             return msg;
           }
 
           // Validate lexize function control
           else if (_.isUndefined(lexize) || _.isNull(lexize) || String(lexize).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Lexize function must be selected.');
+            msg = gettext('Lexize function must be selected.');
             this.errorModel.set('tmpllexize', msg);
             return msg;
           }
 
           // Validate schema for fts template
           else if (_.isUndefined(schema) || _.isNull(schema) || String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Schema must be selected.');
+            msg = gettext('Schema must be selected.');
             this.errorModel.set('schema', msg);
             return msg;
           }
@@ -137,7 +137,7 @@ define('pgadmin.node.fts_template', [
 
           this.trigger('on-status-clear');
           return null;
-        }
+        },
       }),
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
@@ -166,9 +166,9 @@ define('pgadmin.node.fts_template', [
         }
         // by default we do not want to allow create menu
         return true;
-      }
+      },
     });
   }
 
-return pgBrowser.Nodes['fts_template'];
+  return pgBrowser.Nodes['fts_template'];
 });

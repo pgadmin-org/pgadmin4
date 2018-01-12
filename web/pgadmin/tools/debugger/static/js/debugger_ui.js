@@ -1,72 +1,72 @@
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
-  'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'codemirror',
-  'backform', 'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.browser.panel'
-], function(gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform ) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
+  'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser',
+  'pgadmin.backgrid', 'wcdocker',
+], function(
+  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid
+) {
+
+  var wcDocker = window.wcDocker;
 
   /*
    * Function used to return the respective Backgrid control based on the data type
    * of function input argument.
    */
   var cellFunction = function(model) {
-    var self = this,
-    variable_type = model.get("type");
+    var variable_type = model.get('type');
 
     // if variable type is an array then we need to render the custom control to take the input from user.
-    if (variable_type.indexOf("[]") !=-1) {
-      if (variable_type.indexOf("integer") != -1) {
+    if (variable_type.indexOf('[]') != -1) {
+      if (variable_type.indexOf('integer') != -1) {
         return Backgrid.Extension.InputIntegerArrayCell;
       }
       return Backgrid.Extension.InputStringArrayCell;
     }
 
-    switch(variable_type) {
-      case "bool":
-        return Backgrid.BooleanCell;
-        break;
-
-      case "integer":
+    switch (variable_type) {
+    case 'bool':
+      return Backgrid.BooleanCell;
+    case 'integer':
         // As we are getting this value as text from sqlite database so we need to type cast it.
-        if (model.get('value') != undefined) {
-          model.set({'value': parseInt(model.get('value'))},{silent:true});
-        }
+      if (model.get('value') != undefined) {
+        model.set({
+          'value': parseInt(model.get('value')),
+        }, {
+          silent: true,
+        });
+      }
 
-        return Backgrid.IntegerCell;
-        break;
-
-      case "real":
+      return Backgrid.IntegerCell;
+    case 'real':
         // As we are getting this value as text from sqlite database so we need to type cast it.
-        if (model.get('value') != undefined) {
-          model.set({'value': parseFloat(model.get('value'))} ,{silent:true});
-        }
-        return Backgrid.NumberCell;
-        break;
-
-      case "string":
-        return Backgrid.StringCell;
-        break;
-      case "date":
-        return Backgrid.DateCell;
-        break;
-      default:
-        return Backgrid.Cell;
-        break;
+      if (model.get('value') != undefined) {
+        model.set({
+          'value': parseFloat(model.get('value')),
+        }, {
+          silent: true,
+        });
+      }
+      return Backgrid.NumberCell;
+    case 'string':
+      return Backgrid.StringCell;
+    case 'date':
+      return Backgrid.DateCell;
+    default:
+      return Backgrid.Cell;
     }
-  }
+  };
 
   /*
    * Function used to return the respective Backgrid string or boolean control based on the data type
    * of function input argument.
    */
   var cellExprControlFunction = function(model) {
-    var self = this,
-    variable_type = model.get("type");
-    if (variable_type.indexOf("[]") !=-1) {
+    var variable_type = model.get('type');
+    if (variable_type.indexOf('[]') != -1) {
       return Backgrid.StringCell;
     }
     return Backgrid.BooleanCell;
-  }
+  };
 
   /**
    *  DebuggerInputArgsModel used to represent input parameters for the function to debug
@@ -84,8 +84,8 @@ define([
     },
     validate: function() {
       if (_.isUndefined(this.get('value')) ||
-          _.isNull(this.get('value')) ||
-          String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
+        _.isNull(this.get('value')) ||
+        String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
         var msg = gettext('Please enter a value for the parameter.');
         this.errorModel.set('value', msg);
         return msg;
@@ -93,39 +93,38 @@ define([
         this.errorModel.unset('value');
       }
       return null;
-    }
+    },
   });
 
   // Collection which contains the model for function informations.
   var DebuggerInputArgCollections = Backbone.Collection.extend({
-    model: DebuggerInputArgsModel
+    model: DebuggerInputArgsModel,
   });
 
   // function will enable/disable the use_default column based on the value received.
   var disableDefaultCell = function(d) {
     if (d instanceof Backbone.Model) {
-        return d.get('use_default');
+      return d.get('use_default');
     }
     return false;
   };
 
   // Enable/Disable the control based on the array data type of the function input arguments
   var disableExpressionControl = function(d) {
-    var argType = d.get('type');
     if (d instanceof Backbone.Model) {
       var argType = d.get('type');
-      if (argType.indexOf("[]") !=-1) {
+      if (argType.indexOf('[]') != -1) {
         return false;
       }
       return true;
     }
   };
 
-  var res =  function(args, restart_debug) {
+  var res = function(args, restart_debug) {
     if (!Alertify.debuggerInputArgsDialog) {
       Alertify.dialog('debuggerInputArgsDialog', function factory() {
         return {
-          main:function(title, data, restart_debug) {
+          main: function(title, data, restart_debug) {
             this.set('title', title);
             this.data = data;
             this.restart_debug = restart_debug;
@@ -143,53 +142,50 @@ define([
               if (!d)
                 return;
 
-              var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+              var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]),
+                _Url;
 
-              if (d._type == "function") {
+              if (d._type == 'function') {
                 // Get the existing function parameters available from sqlite database
-                var _Url = url_for('debugger.get_arguments', {
-                            'sid': treeInfo.server._id,
-                            'did': treeInfo.database._id,
-                            'scid': treeInfo.schema._id,
-                            'func_id': treeInfo.function._id
-                           });
-              }
-              else if (d._type == "procedure") {
+                _Url = url_for('debugger.get_arguments', {
+                  'sid': treeInfo.server._id,
+                  'did': treeInfo.database._id,
+                  'scid': treeInfo.schema._id,
+                  'func_id': treeInfo.function._id,
+                });
+              } else if (d._type == 'procedure') {
                 // Get the existing function parameters available from sqlite database
-                var _Url = url_for('debugger.get_arguments', {
-                            'sid': treeInfo.server._id,
-                            'did': treeInfo.database._id,
-                            'scid': treeInfo.schema._id,
-                            'func_id': treeInfo.procedure._id
-                           });
-              }
-              else if (d._type == "edbfunc") {
+                _Url = url_for('debugger.get_arguments', {
+                  'sid': treeInfo.server._id,
+                  'did': treeInfo.database._id,
+                  'scid': treeInfo.schema._id,
+                  'func_id': treeInfo.procedure._id,
+                });
+              } else if (d._type == 'edbfunc') {
                 // Get the existing function parameters available from sqlite database
-                var _Url = url_for('debugger.get_arguments', {
-                            'sid': treeInfo.server._id,
-                            'did': treeInfo.database._id,
-                            'scid': treeInfo.schema._id,
-                            'func_id': treeInfo.edbfunc._id
-                           });
-              }
-              else if (d._type == "edbproc") {
+                _Url = url_for('debugger.get_arguments', {
+                  'sid': treeInfo.server._id,
+                  'did': treeInfo.database._id,
+                  'scid': treeInfo.schema._id,
+                  'func_id': treeInfo.edbfunc._id,
+                });
+              } else if (d._type == 'edbproc') {
                 // Get the existing function parameters available from sqlite database
-                var _Url = url_for('debugger.get_arguments', {
-                            'sid': treeInfo.server._id,
-                            'did': treeInfo.database._id,
-                            'scid': treeInfo.schema._id,
-                            'func_id': treeInfo.edbproc._id
-                           });
+                _Url = url_for('debugger.get_arguments', {
+                  'sid': treeInfo.server._id,
+                  'did': treeInfo.database._id,
+                  'scid': treeInfo.schema._id,
+                  'func_id': treeInfo.edbproc._id,
+                });
               }
-            }
-            else {
+            } else {
               // Get the existing function parameters available from sqlite database
-              var _Url = url_for('debugger.get_arguments', {
-                          'sid': this.data.server_id,
-                          'did': this.data.database_id,
-                          'scid': this.data.schema_id,
-                          'func_id': this.data.function_id
-                         });
+              _Url = url_for('debugger.get_arguments', {
+                'sid': this.data.server_id,
+                'did': this.data.database_id,
+                'scid': this.data.schema_id,
+                'func_id': this.data.function_id,
+              });
             }
             $.ajax({
               url: _Url,
@@ -204,112 +200,160 @@ define([
                       'is_null': res.data.result[i]['is_null'],
                       'is_expression': res.data.result[i]['is_expression'],
                       'use_default': res.data.result[i]['use_default'],
-                      'value': res.data.result[i]['value']
+                      'value': res.data.result[i]['value'],
                     });
                   }
                 }
               },
-              error: function(e) {
+              error: function() {
                 Alertify.alert(
                   gettext('Debugger Error'),
                   gettext('Unable to fetch the arguments from server')
                 );
-              }
+              },
             });
 
             var argname, argtype, argmode, default_args_count, default_args, arg_cnt;
 
             var value_header = Backgrid.HeaderCell.extend({
-                // Add fixed width to the "value" column
-                className: 'width_percent_25'
+              // Add fixed width to the "value" column
+              className: 'width_percent_25',
             });
 
             var def_val_list = [],
-            gridCols = [
-              {name: 'name', label: gettext('Name'), type:'text', editable: false, cell:'string' },
-              {name: 'type', label: gettext('Type'), type: 'text', editable: false, cell:'string' },
-              {name: 'is_null', label: gettext('Null?'), type: 'boolean', cell: 'boolean' },
-              {name: 'expr', label: gettext('Expression?'), type: 'boolean', cellFunction: cellExprControlFunction, editable: disableExpressionControl },
-              {name: 'value', label: gettext('Value'), type: 'text', editable: true, cellFunction: cellFunction, headerCell: value_header },
-              {name: 'use_default', label: gettext('Use Default?'), type: 'boolean', cell:"boolean", editable: disableDefaultCell },
-              {name: 'default_value', label: gettext('Default value'), type: 'text', editable: false, cell:'string' }
-            ];
+              gridCols = [{
+                name: 'name',
+                label: gettext('Name'),
+                type: 'text',
+                editable: false,
+                cell: 'string',
+              },
+              {
+                name: 'type',
+                label: gettext('Type'),
+                type: 'text',
+                editable: false,
+                cell: 'string',
+              },
+              {
+                name: 'is_null',
+                label: gettext('Null?'),
+                type: 'boolean',
+                cell: 'boolean',
+              },
+              {
+                name: 'expr',
+                label: gettext('Expression?'),
+                type: 'boolean',
+                cellFunction: cellExprControlFunction,
+                editable: disableExpressionControl,
+              },
+              {
+                name: 'value',
+                label: gettext('Value'),
+                type: 'text',
+                editable: true,
+                cellFunction: cellFunction,
+                headerCell: value_header,
+              },
+              {
+                name: 'use_default',
+                label: gettext('Use Default?'),
+                type: 'boolean',
+                cell: 'boolean',
+                editable: disableDefaultCell,
+              },
+              {
+                name: 'default_value',
+                label: gettext('Default value'),
+                type: 'text',
+                editable: false,
+                cell: 'string',
+              },
+              ];
 
             var my_obj = [];
             var func_obj = [];
 
             // Below will calculate the input argument id required to store in sqlite database
-            var input_arg_id = this.input_arg_id = [];
+            var input_arg_id = this.input_arg_id = [],
+              k;
             if (this.data['proargmodes'] != null) {
-              var argmode_1 = this.data['proargmodes'].split(",");
-              for (var k = 0; k < argmode_1.length; k++) {
+              var argmode_1 = this.data['proargmodes'].split(',');
+              for (k = 0; k < argmode_1.length; k++) {
                 if (argmode_1[k] == 'i' || argmode_1[k] == 'b') {
-                  input_arg_id.push(k)
+                  input_arg_id.push(k);
                 }
               }
-            }
-            else {
-              var argtype_1 = this.data['proargtypenames'].split(",");
-              for (var k = 0; k < argtype_1.length; k++) {
-                  input_arg_id.push(k)
+            } else {
+              var argtype_1 = this.data['proargtypenames'].split(',');
+              for (k = 0; k < argtype_1.length; k++) {
+                input_arg_id.push(k);
               }
             }
 
-            argtype = this.data['proargtypenames'].split(",");
+            argtype = this.data['proargtypenames'].split(',');
 
             if (this.data['proargmodes'] != null) {
-                argmode = this.data['proargmodes'].split(",");
+              argmode = this.data['proargmodes'].split(',');
             }
 
             if (this.data['pronargdefaults']) {
               default_args_count = this.data['pronargdefaults'];
-              default_args = this.data['proargdefaults'].split(",");
+              default_args = this.data['proargdefaults'].split(',');
               arg_cnt = default_args_count;
             }
 
+            var vals, values, index, use_def_value, j;
+
             if (this.data['proargnames'] != null) {
-              argname = this.data['proargnames'].split(",");
+              argname = this.data['proargnames'].split(',');
 
               // It will assign default values to "Default value" column
-              for (var j = (argname.length - 1); j >= 0; j--) {
+              for (j = (argname.length - 1); j >= 0; j--) {
                 if (this.data['proargmodes'] != null) {
                   if (arg_cnt && (argmode[j] == 'i' || argmode[j] == 'b')) {
                     arg_cnt = arg_cnt - 1;
-                    def_val_list[j] = default_args[arg_cnt]
+                    def_val_list[j] = default_args[arg_cnt];
+                  } else {
+                    def_val_list[j] = '<No default value>';
                   }
-                  else {
-                    def_val_list[j] = "<No default value>";
-                  }
-                }
-                else {
+                } else {
                   if (arg_cnt) {
                     arg_cnt = arg_cnt - 1;
-                    def_val_list[j] = default_args[arg_cnt]
-                  }
-                  else {
-                    def_val_list[j] = "<No default value>";
+                    def_val_list[j] = default_args[arg_cnt];
+                  } else {
+                    def_val_list[j] = '<No default value>';
                   }
                 }
               }
 
-              if (argtype.length != 0)
-              {
+              if (argtype.length != 0) {
                 for (i = 0; i < argtype.length; i++) {
                   if (this.data['proargmodes'] != null) {
                     if (argmode[i] == 'i' || argmode[i] == 'b') {
-                      var use_def_value = false
-                      if (def_val_list[i] != "<No default value>") {
+                      use_def_value = false;
+                      if (def_val_list[i] != '<No default value>') {
                         use_def_value = true;
                       }
-                      my_obj.push({ "name": argname[i], "type": argtype[i], "use_default": use_def_value, "default_value": def_val_list[i]});
+                      my_obj.push({
+                        'name': argname[i],
+                        'type': argtype[i],
+                        'use_default': use_def_value,
+                        'default_value': def_val_list[i],
+                      });
                     }
-                  }
-                  else {
-                    var use_def_value = false
-                    if (def_val_list[i] != "<No default value>") {
+                  } else {
+                    use_def_value = false;
+                    if (def_val_list[i] != '<No default value>') {
                       use_def_value = true;
                     }
-                    my_obj.push({ "name": argname[i], "type": argtype[i], "use_default": use_def_value, "default_value": def_val_list[i]});
+                    my_obj.push({
+                      'name': argname[i],
+                      'type': argtype[i],
+                      'use_default': use_def_value,
+                      'default_value': def_val_list[i],
+                    });
                   }
 
 
@@ -319,27 +363,38 @@ define([
               // Need to update the func_obj variable from sqlite database if available
               if (func_args_data.length != 0) {
                 for (i = 0; i < func_args_data.length; i++) {
-                  var index = func_args_data[i]['arg_id'];
-                  var values = [];
-                  if (argtype[index].indexOf("[]") !=-1) {
-                      var vals = func_args_data[i]['value'].split(",");
-                      if (argtype[index].indexOf("integer") != -1) {
-                        _.each(vals, function(val){
-                            values.push({'value': parseInt(val)});
+                  index = func_args_data[i]['arg_id'];
+                  values = [];
+                  if (argtype[index].indexOf('[]') != -1) {
+                    vals = func_args_data[i]['value'].split(',');
+                    if (argtype[index].indexOf('integer') != -1) {
+                      _.each(vals, function(val) {
+                        values.push({
+                          'value': parseInt(val),
                         });
-                      }
-                      _.each(vals, function(val){
-                            values.push({'value': val});
-                        });
+                      });
+                    }
+                    _.each(vals, function(val) {
+                      values.push({
+                        'value': val,
+                      });
+                    });
                   } else {
                     values = func_args_data[i]['value'];
                   }
 
-                  func_obj.push({ "name": argname[index], "type": argtype[index], "is_null": func_args_data[i]['is_null'] ? true: false, "expr": func_args_data[i]['is_expression']? true: false, "value": values, "use_default": func_args_data[i]['use_default']? true: false, "default_value": def_val_list[index]});
+                  func_obj.push({
+                    'name': argname[index],
+                    'type': argtype[index],
+                    'is_null': func_args_data[i]['is_null'] ? true : false,
+                    'expr': func_args_data[i]['is_expression'] ? true : false,
+                    'value': values,
+                    'use_default': func_args_data[i]['use_default'] ? true : false,
+                    'default_value': def_val_list[index],
+                  });
                 }
               }
-            }
-            else {
+            } else {
               /*
                Generate the name parameter if function do not have arguments name
                like dbgparam1, dbgparam2 etc.
@@ -347,55 +402,65 @@ define([
               var myargname = [];
 
               for (i = 0; i < argtype.length; i++) {
-                myargname[i] = "dbgparam" + (i+1);
+                myargname[i] = 'dbgparam' + (i + 1);
               }
 
               // If there is no default arguments
               if (!this.data['pronargdefaults']) {
                 for (i = 0; i < argtype.length; i++) {
-                  my_obj.push({ "name": myargname[i], "type": argtype[i], "use_default": false, "default_value": "<No default value>"});
-                  def_val_list[i] = "<No default value>";
+                  my_obj.push({
+                    'name': myargname[i],
+                    'type': argtype[i],
+                    'use_default': false,
+                    'default_value': '<No default value>',
+                  });
+                  def_val_list[i] = '<No default value>';
                 }
-              }
-              else {
+              } else {
                 // If there is default arguments
                 //Below logic will assign default values to "Default value" column
-                for (var j = (myargname.length - 1);j >= 0; j--) {
+                for (j = (myargname.length - 1); j >= 0; j--) {
                   if (this.data['proargmodes'] == null) {
                     if (arg_cnt) {
                       arg_cnt = arg_cnt - 1;
-                      def_val_list[j] = default_args[arg_cnt]
+                      def_val_list[j] = default_args[arg_cnt];
+                    } else {
+                      def_val_list[j] = '<No default value>';
                     }
-                    else {
-                      def_val_list[j] = "<No default value>";
-                    }
-                  }
-                  else {
+                  } else {
                     if (arg_cnt && (argmode[j] == 'i' || argmode[j] == 'b')) {
                       arg_cnt = arg_cnt - 1;
-                      def_val_list[j] = default_args[arg_cnt]
-                    }
-                    else {
-                      def_val_list[j] = "<No default value>";
+                      def_val_list[j] = default_args[arg_cnt];
+                    } else {
+                      def_val_list[j] = '<No default value>';
                     }
                   }
                 }
 
                 for (i = 0; i < argtype.length; i++) {
                   if (this.data['proargmodes'] == null) {
-                    var use_def_value = false
-                    if (def_val_list[i] != "<No default value>") {
+                    use_def_value = false;
+                    if (def_val_list[i] != '<No default value>') {
                       use_def_value = true;
                     }
-                    my_obj.push({ "name": myargname[i], "type": argtype[i], "use_default": use_def_value, "default_value": def_val_list[i]});
-                  }
-                  else {
+                    my_obj.push({
+                      'name': myargname[i],
+                      'type': argtype[i],
+                      'use_default': use_def_value,
+                      'default_value': def_val_list[i],
+                    });
+                  } else {
                     if (argmode[i] == 'i' || argmode[i] == 'b') {
-                      var use_def_value = false
-                      if (def_val_list[i] != "<No default value>") {
+                      use_def_value = false;
+                      if (def_val_list[i] != '<No default value>') {
                         use_def_value = true;
                       }
-                      my_obj.push({ "name": myargname[i], "type": argtype[i], "use_default": use_def_value, "default_value": def_val_list[i]});
+                      my_obj.push({
+                        'name': myargname[i],
+                        'type': argtype[i],
+                        'use_default': use_def_value,
+                        'default_value': def_val_list[i],
+                      });
                     }
                   }
                 }
@@ -404,43 +469,56 @@ define([
               // Need to update the func_obj variable from sqlite database if available
               if (func_args_data.length != 0) {
                 for (i = 0; i < func_args_data.length; i++) {
-                  var index = func_args_data[i]['arg_id'];
-                  var values = [];
-                  if (argtype[index].indexOf("[]") !=-1) {
-                      var vals = func_args_data[i]['value'].split(",");
-                      if (argtype[index].indexOf("integer") != -1) {
-                        _.each(vals, function(val){
-                            values.push({'value': parseInt(val)});
+                  index = func_args_data[i]['arg_id'];
+                  values = [];
+                  if (argtype[index].indexOf('[]') != -1) {
+                    vals = func_args_data[i]['value'].split(',');
+                    if (argtype[index].indexOf('integer') != -1) {
+                      _.each(vals, function(val) {
+                        values.push({
+                          'value': parseInt(val),
                         });
-                      }
-                      _.each(vals, function(val){
-                            values.push({'value': val});
-                        });
+                      });
+                    }
+                    _.each(vals, function(val) {
+                      values.push({
+                        'value': val,
+                      });
+                    });
                   } else {
                     values = func_args_data[i]['value'];
                   }
-                  func_obj.push({ "name": myargname[index], "type": argtype[index], "is_null": func_args_data[i]['is_null'] ? true: false, "expr": func_args_data[i]['is_expression']? true: false, "value": values, "use_default": func_args_data[i]['use_default']? true: false, "default_value": def_val_list[index]});
+                  func_obj.push({
+                    'name': myargname[index],
+                    'type': argtype[index],
+                    'is_null': func_args_data[i]['is_null'] ? true : false,
+                    'expr': func_args_data[i]['is_expression'] ? true : false,
+                    'value': values,
+                    'use_default': func_args_data[i]['use_default'] ? true : false,
+                    'default_value': def_val_list[index],
+                  });
                 }
               }
             }
 
             // Check if the arguments already available in the sqlite database then we should use the existing arguments
             if (func_args_data.length == 0) {
-              var debuggerInputArgsColl = this.debuggerInputArgsColl = new DebuggerInputArgCollections(my_obj);
-            }
-            else {
-              var debuggerInputArgsColl = this.debuggerInputArgsColl = new DebuggerInputArgCollections(func_obj);
+              this.debuggerInputArgsColl =
+                new DebuggerInputArgCollections(my_obj);
+            } else {
+              this.debuggerInputArgsColl =
+                new DebuggerInputArgCollections(func_obj);
             }
 
             // Initialize a new Grid instance
             if (this.grid) {
-                this.grid.remove();
-                this.grid = null;
+              this.grid.remove();
+              this.grid = null;
             }
             var grid = this.grid = new Backgrid.Grid({
               columns: gridCols,
-              collection: debuggerInputArgsColl,
-              className: "backgrid table-bordered"
+              collection: this.debuggerInputArgsColl,
+              className: 'backgrid table-bordered',
             });
 
             grid.render();
@@ -449,36 +527,43 @@ define([
             // For keyboard navigation in the grid
             // we'll set focus on checkbox from the first row if any
             var grid_checkbox = $(grid.el).find('input:checkbox').first();
-            if (grid_checkbox.length){
+            if (grid_checkbox.length) {
               setTimeout(function() {
                 grid_checkbox.click();
               }, 250);
             }
 
           },
-          setup:function() {
+          setup: function() {
             return {
-              buttons:[
-                { text: "Debug", key: 13, className: "btn btn-primary" },
-                { text: "Cancel", key: 27, className: "btn btn-primary" }
+              buttons: [{
+                text: 'Debug',
+                key: 13,
+                className: 'btn btn-primary',
+              },
+              {
+                text: 'Cancel',
+                key: 27,
+                className: 'btn btn-primary',
+              },
               ],
               // Set options for dialog
               options: {
                 //disable both padding and overflow control.
-                padding : !1,
+                padding: !1,
                 overflow: !1,
                 model: 0,
                 resizable: true,
                 maximizable: true,
                 pinnable: false,
                 closableByDimmer: false,
-                modal: false
-              }
+                modal: false,
+              },
             };
           },
           // Callback functions when click on the buttons of the Alertify dialogs
           callback: function(e) {
-            if (e.button.text === "Debug") {
+            if (e.button.text === 'Debug') {
 
               // Initialize the target once the debug button is clicked and
               // create asynchronous connection and unique transaction ID
@@ -503,193 +588,199 @@ define([
 
               this.grid.collection.each(function(m) {
 
-                  // Check if value is set to NULL then we should ignore the value field
-                  if (m.get('is_null')) {
-                    args_value_list.push({ 'name': m.get('name'),
-                                       'type': m.get('type'),
-                                       'value': 'NULL'});
-                  }
-                  else {
-                    // Check if default value to be used or not
-                    if (m.get('use_default')) {
-                      args_value_list.push({ 'name': m.get('name'),
-                                       'type': m.get('type'),
-                                       'value': m.get('default_value')});
-                    }
-                    else {
-                      args_value_list.push({ 'name': m.get('name'),
-                                       'type': m.get('type'),
-                                       'value': m.get('value')});
-                    }
-                  }
-
-                  if (self.restart_debug == 0) {
-                    var f_id;
-                    if (d._type == "function") {
-                      f_id = treeInfo.function._id;
-                    }
-                    else if (d._type == "procedure") {
-                      f_id = treeInfo.procedure._id;
-                    }
-                    else if (d._type == "edbfunc") {
-                      f_id = treeInfo.edbfunc._id;
-                    }
-                    else if (d._type == "edbproc") {
-                      f_id = treeInfo.edbproc._id;
-                    }
-
-                    // Below will format the data to be stored in sqlite database
-                    sqlite_func_args_list.push({
-                      'server_id': treeInfo.server._id,
-                      'database_id': treeInfo.database._id,
-                      'schema_id': treeInfo.schema._id ,
-                      'function_id': f_id,
-                      'arg_id': self.input_arg_id[int_count],
-                      'is_null': m.get('is_null')  ? 1 : 0,
-                      'is_expression': m.get('expr') ? 1 : 0,
-                      'use_default': m.get('use_default') ? 1 : 0,
-                      'value': m.get('value')
+                // Check if value is set to NULL then we should ignore the value field
+                if (m.get('is_null')) {
+                  args_value_list.push({
+                    'name': m.get('name'),
+                    'type': m.get('type'),
+                    'value': 'NULL',
+                  });
+                } else {
+                  // Check if default value to be used or not
+                  if (m.get('use_default')) {
+                    args_value_list.push({
+                      'name': m.get('name'),
+                      'type': m.get('type'),
+                      'value': m.get('default_value'),
+                    });
+                  } else {
+                    args_value_list.push({
+                      'name': m.get('name'),
+                      'type': m.get('type'),
+                      'value': m.get('value'),
                     });
                   }
-                  else {
-                    // Below will format the data to be stored in sqlite database
-                    sqlite_func_args_list.push({
-                      'server_id': self.data.server_id,
-                      'database_id': self.data.database_id,
-                      'schema_id': self.data.schema_id ,
-                      'function_id': self.data.function_id,
-                      'arg_id': self.input_arg_id[int_count],
-                      'is_null': m.get('is_null')  ? 1 : 0,
-                      'is_expression': m.get('expr') ? 1 : 0,
-                      'use_default': m.get('use_default') ? 1 : 0,
-                      'value': m.get('value')
-                    });
+                }
+
+                if (self.restart_debug == 0) {
+                  var f_id;
+                  if (d._type == 'function') {
+                    f_id = treeInfo.function._id;
+                  } else if (d._type == 'procedure') {
+                    f_id = treeInfo.procedure._id;
+                  } else if (d._type == 'edbfunc') {
+                    f_id = treeInfo.edbfunc._id;
+                  } else if (d._type == 'edbproc') {
+                    f_id = treeInfo.edbproc._id;
                   }
 
-                  int_count = int_count + 1;
+                  // Below will format the data to be stored in sqlite database
+                  sqlite_func_args_list.push({
+                    'server_id': treeInfo.server._id,
+                    'database_id': treeInfo.database._id,
+                    'schema_id': treeInfo.schema._id,
+                    'function_id': f_id,
+                    'arg_id': self.input_arg_id[int_count],
+                    'is_null': m.get('is_null') ? 1 : 0,
+                    'is_expression': m.get('expr') ? 1 : 0,
+                    'use_default': m.get('use_default') ? 1 : 0,
+                    'value': m.get('value'),
+                  });
+                } else {
+                  // Below will format the data to be stored in sqlite database
+                  sqlite_func_args_list.push({
+                    'server_id': self.data.server_id,
+                    'database_id': self.data.database_id,
+                    'schema_id': self.data.schema_id,
+                    'function_id': self.data.function_id,
+                    'arg_id': self.input_arg_id[int_count],
+                    'is_null': m.get('is_null') ? 1 : 0,
+                    'is_expression': m.get('expr') ? 1 : 0,
+                    'use_default': m.get('use_default') ? 1 : 0,
+                    'value': m.get('value'),
+                  });
+                }
+
+                int_count = int_count + 1;
               });
+
+              var baseUrl;
 
               // If debugging is not started again then we should initialize the target otherwise not
               if (self.restart_debug == 0) {
-                var baseUrl;
-                if (d._type == "function") {
+                if (d._type == 'function') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
-                                  'debug_type': 'direct',
-                                  'sid': treeInfo.server._id,
-                                  'did': treeInfo.database._id,
-                                  'scid': treeInfo.schema._id,
-                                  'func_id': treeInfo.function._id
-                                });
-                }
-                else if (d._type == "procedure") {
+                    'debug_type': 'direct',
+                    'sid': treeInfo.server._id,
+                    'did': treeInfo.database._id,
+                    'scid': treeInfo.schema._id,
+                    'func_id': treeInfo.function._id,
+                  });
+                } else if (d._type == 'procedure') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
-                                  'debug_type': 'direct',
-                                  'sid': treeInfo.server._id,
-                                  'did': treeInfo.database._id,
-                                  'scid': treeInfo.schema._id,
-                                  'func_id': treeInfo.procedure._id
-                                });
-                }
-                else if (d._type == "edbfunc") {
+                    'debug_type': 'direct',
+                    'sid': treeInfo.server._id,
+                    'did': treeInfo.database._id,
+                    'scid': treeInfo.schema._id,
+                    'func_id': treeInfo.procedure._id,
+                  });
+                } else if (d._type == 'edbfunc') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
-                                  'debug_type': 'direct',
-                                  'sid': treeInfo.server._id,
-                                  'did': treeInfo.database._id,
-                                  'scid': treeInfo.schema._id,
-                                  'func_id': treeInfo.edbfunc._id
-                                });
-                }
-                else if (d._type == "edbproc") {
+                    'debug_type': 'direct',
+                    'sid': treeInfo.server._id,
+                    'did': treeInfo.database._id,
+                    'scid': treeInfo.schema._id,
+                    'func_id': treeInfo.edbfunc._id,
+                  });
+                } else if (d._type == 'edbproc') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
-                                  'debug_type': 'direct',
-                                  'sid': treeInfo.server._id,
-                                  'did': treeInfo.database._id,
-                                  'scid': treeInfo.schema._id,
-                                  'func_id': treeInfo.edbproc._id
-                                });
+                    'debug_type': 'direct',
+                    'sid': treeInfo.server._id,
+                    'did': treeInfo.database._id,
+                    'scid': treeInfo.schema._id,
+                    'func_id': treeInfo.edbproc._id,
+                  });
                 }
 
                 $.ajax({
                   url: baseUrl,
                   method: 'POST',
-                  data:{'data':JSON.stringify(args_value_list)},
+                  data: {
+                    'data': JSON.stringify(args_value_list),
+                  },
                   success: function(res) {
 
-                    var url = url_for('debugger.direct', {'trans_id': res.data.debuggerTransId});
+                    var url = url_for(
+                      'debugger.direct', {
+                        'trans_id': res.data.debuggerTransId,
+                      }
+                    );
 
                     if (res.data.newBrowserTab) {
                       window.open(url, '_blank');
                     } else {
                       pgBrowser.Events.once(
-                        'pgadmin-browser:frame:urlloaded:frm_debugger', function(frame) {
-                        frame.openURL(url);
-                      });
+                        'pgadmin-browser:frame:urlloaded:frm_debugger',
+                        function(frame) {
+                          frame.openURL(url);
+                        });
 
                       // Create the debugger panel as per the data received from user input dialog.
                       var dashboardPanel = pgBrowser.docker.findPanels('properties'),
-                          panel = pgBrowser.docker.addPanel(
-                            'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
-                          );
+                        panel = pgBrowser.docker.addPanel(
+                          'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
+                        );
 
                       panel.focus();
 
                       // Panel Closed event
                       panel.on(wcDocker.EVENT.CLOSED, function() {
-                        var closeUrl = url_for('debugger.close', {'trans_id': res.data.debuggerTransId});
+                        var closeUrl = url_for('debugger.close', {
+                          'trans_id': res.data.debuggerTransId,
+                        });
                         $.ajax({
                           url: closeUrl,
-                          method: 'DELETE'
+                          method: 'DELETE',
                         });
                       });
                     }
+                    var _Url;
 
-                    if (d._type == "function") {
-                      var _Url = url_for('debugger.set_arguments', {
-                                  'sid': treeInfo.server._id,
-                                  'did': treeInfo.database._id,
-                                  'scid': treeInfo.schema._id,
-                                  'func_id': treeInfo.function._id,
-                                 });
-                    }
-                    else if (d._type == "procedure") {
-                      var _Url = url_for('debugger.set_arguments', {
-                                  'sid': treeInfo.server._id,
-                                  'did': treeInfo.database._id,
-                                  'scid': treeInfo.schema._id,
-                                  'func_id': treeInfo.procedure._id,
-                                 });
-                    }
-                    else if (d._type == "edbfunc") {
+                    if (d._type == 'function') {
+                      _Url = url_for('debugger.set_arguments', {
+                        'sid': treeInfo.server._id,
+                        'did': treeInfo.database._id,
+                        'scid': treeInfo.schema._id,
+                        'func_id': treeInfo.function._id,
+                      });
+                    } else if (d._type == 'procedure') {
+                      _Url = url_for('debugger.set_arguments', {
+                        'sid': treeInfo.server._id,
+                        'did': treeInfo.database._id,
+                        'scid': treeInfo.schema._id,
+                        'func_id': treeInfo.procedure._id,
+                      });
+                    } else if (d._type == 'edbfunc') {
                       // Get the existing function parameters available from sqlite database
-                      var _Url = url_for('debugger.set_arguments', {
-                                  'sid': treeInfo.server._id,
-                                  'did': treeInfo.database._id,
-                                  'scid': treeInfo.schema._id,
-                                  'func_id': treeInfo.edbfunc._id,
-                                 });
-                    }
-                    else if (d._type == "edbproc") {
+                      _Url = url_for('debugger.set_arguments', {
+                        'sid': treeInfo.server._id,
+                        'did': treeInfo.database._id,
+                        'scid': treeInfo.schema._id,
+                        'func_id': treeInfo.edbfunc._id,
+                      });
+                    } else if (d._type == 'edbproc') {
                       // Get the existing function parameters available from sqlite database
-                      var _Url = url_for('debugger.set_arguments', {
-                                  'sid': treeInfo.server._id,
-                                  'did': treeInfo.database._id,
-                                  'scid': treeInfo.schema._id,
-                                  'func_id': treeInfo.edbproc._id,
-                                 });
+                      _Url = url_for('debugger.set_arguments', {
+                        'sid': treeInfo.server._id,
+                        'did': treeInfo.database._id,
+                        'scid': treeInfo.schema._id,
+                        'func_id': treeInfo.edbproc._id,
+                      });
                     }
 
                     $.ajax({
                       url: _Url,
                       method: 'POST',
-                      data:{'data':JSON.stringify(sqlite_func_args_list)},
-                      success: function(res) {
+                      data: {
+                        'data': JSON.stringify(sqlite_func_args_list),
                       },
-                      error: function(e) {
+                      success: function() {},
+                      error: function() {
                         Alertify.alert(
                           gettext('Debugger Error'),
                           gettext('Unable to set the arguments on the server')
                         );
-                      }
+                      },
                     });
                   },
                   error: function(e) {
@@ -697,46 +788,49 @@ define([
                       gettext('Debugger Target Initialization Error'),
                       e.responseJSON.errormsg
                     );
-                  }
+                  },
                 });
-              }
-              else {
+              } else {
                 // If the debugging is started again then we should only set the arguments and start the listener again
-                var baseUrl = url_for('debugger.start_listener', {'trans_id': self.data.trans_id});
+                baseUrl = url_for('debugger.start_listener', {
+                  'trans_id': self.data.trans_id,
+                });
 
                 $.ajax({
                   url: baseUrl,
                   method: 'POST',
-                  data:{'data':JSON.stringify(args_value_list)},
-                  success: function(res) {
+                  data: {
+                    'data': JSON.stringify(args_value_list),
                   },
+                  success: function() {},
                   error: function(e) {
                     Alertify.alert(
                       gettext('Debugger Listener Startup Error'),
                       e.responseJSON.errormsg
                     );
-                  }
+                  },
                 });
 
                 // Set the new input arguments given by the user during debugging
                 var _Url = url_for('debugger.set_arguments', {
-                            'sid': self.data.server_id,
-                            'did': self.data.database_id,
-                            'scid': self.data.schema_id,
-                            'func_id': self.data.function_id
-                           });
+                  'sid': self.data.server_id,
+                  'did': self.data.database_id,
+                  'scid': self.data.schema_id,
+                  'func_id': self.data.function_id,
+                });
                 $.ajax({
                   url: _Url,
                   method: 'POST',
-                  data:{'data':JSON.stringify(sqlite_func_args_list)},
-                  success: function(res) {
+                  data: {
+                    'data': JSON.stringify(sqlite_func_args_list),
                   },
-                  error: function(e) {
+                  success: function() {},
+                  error: function() {
                     Alertify.alert(
                       gettext('Debugger Error'),
                       gettext('Unable to set the arguments on the server')
                     );
-                  }
+                  },
                 });
 
               }
@@ -744,15 +838,15 @@ define([
               return true;
             }
 
-            if (e.button.text === "Cancel") {
+            if (e.button.text === 'Cancel') {
               //close the dialog...
               return false;
             }
           },
-          build:function() {
+          build: function() {
             Alertify.pgDialogBuild.apply(this);
           },
-          prepare:function() {
+          prepare: function() {
             // Add our class to alertify
             $(this.elements.body.childNodes[0]).addClass(
               'alertify_tools_dialog_properties obj_properties'
@@ -764,8 +858,7 @@ define([
             */
             if (this.func_args_data.length == 0) {
               this.__internal.buttons[0].element.disabled = true;
-            }
-            else {
+            } else {
               this.__internal.buttons[0].element.disabled = false;
             }
 
@@ -773,43 +866,40 @@ define([
              Listen to the grid change event so that if any value changed by user then we can enable/disable the
              debug button.
             */
-            this.grid.listenTo(this.debuggerInputArgsColl,"backgrid:edited",
+            this.grid.listenTo(this.debuggerInputArgsColl, 'backgrid:edited',
               (function(obj) {
 
                 return function() {
 
-                  var self = this;
                   var enable_btn = false;
 
-                  for (var    i = 0; i < this.collection.length; i++ ) {
+                  for (var i = 0; i < this.collection.length; i++) {
 
                     // TODO: Need to check the "NULL" and "Expression" column value to enable/disable the "Debug" button
-                    if (this.collection.models[i].get('value') == "" ||
-                        this.collection.models[i].get('value') == null ||
-                        this.collection.models[i].get('value') == undefined) {
-                          enable_btn = true;
+                    if (this.collection.models[i].get('value') == '' ||
+                      this.collection.models[i].get('value') == null ||
+                      this.collection.models[i].get('value') == undefined) {
+                      enable_btn = true;
 
-                          if (this.collection.models[i].get('use_default')) {
-                            obj.__internal.buttons[0].element.disabled = false;
-                          }
-                          else{
-                            obj.__internal.buttons[0].element.disabled = true;
-                            break;
-                          }
+                      if (this.collection.models[i].get('use_default')) {
+                        obj.__internal.buttons[0].element.disabled = false;
+                      } else {
+                        obj.__internal.buttons[0].element.disabled = true;
+                        break;
+                      }
                     }
                   }
                   if (!enable_btn)
                     obj.__internal.buttons[0].element.disabled = false;
-                }
-              }
-              )(this)
+                };
+              })(this)
             );
-          }
+          },
         };
       });
     }
 
-    Alertify.debuggerInputArgsDialog('Debugger',args, restart_debug).resizeTo('60%', '60%');
+    Alertify.debuggerInputArgsDialog('Debugger', args, restart_debug).resizeTo('60%', '60%');
 
   };
 

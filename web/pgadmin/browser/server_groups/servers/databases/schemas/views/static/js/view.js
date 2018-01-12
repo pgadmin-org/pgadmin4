@@ -1,9 +1,9 @@
 define('pgadmin.node.view', [
   'sources/gettext',
-  'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
-  'pgadmin.browser', 'codemirror', 'pgadmin.browser.server.privilege',
-  'pgadmin.node.rule'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
+  'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
+  'pgadmin.browser', 'pgadmin.backform', 'pgadmin.browser.server.privilege',
+  'pgadmin.node.rule',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
 
   /**
     Create and add a view collection into nodes
@@ -13,12 +13,12 @@ define('pgadmin.node.view', [
       display under under properties.
    */
   if (!pgBrowser.Nodes['coll-view']) {
-    var views= pgBrowser.Nodes['coll-view'] =
+    pgBrowser.Nodes['coll-view'] =
       pgBrowser.Collection.extend({
         node: 'view',
         label: gettext('Views'),
         type: 'coll-view',
-        columns: ["name", "owner"]
+        columns: ['name', 'owner'],
       });
   }
 
@@ -55,78 +55,78 @@ define('pgadmin.node.view', [
 
         this.initialized = true;
 
-        /**
+          /**
           Add "create view" menu option into context and object menu
           for the following nodes:
           coll-view, view and schema.
           @property {data} - Allow create view option on schema node or
           system view nodes.
-         */
+          */
         pgBrowser.add_menus([{
           name: 'create_view_on_coll', node: 'coll-view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('View...'),
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_view', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('View...'),
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_view', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 17, label: gettext('View...'),
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: false},
-          enable: 'canCreate'
-        }
+          enable: 'canCreate',
+        },
         ]);
       },
 
       /**
         Define model for the view node and specify the
         properties of the model in schema.
-       */
+        */
       model: pgBrowser.Node.Model.extend({
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
             // Set Selected Schema and, Current User
             var schemaLabel = args.node_info.schema._label || 'public',
-                userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+              userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({
-              'schema': schemaLabel, 'owner': userInfo.name
+              'schema': schemaLabel, 'owner': userInfo.name,
             }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', disabled: 'notInSchema'
+          type: 'text', disabled: 'notInSchema',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', disabled: true, mode: ['properties']
+          type: 'text', disabled: true, mode: ['properties'],
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string', control: 'node-list-by-name',
-          node: 'role', disabled: 'notInSchema', select2: { allowClear: false }
+          node: 'role', disabled: 'notInSchema', select2: { allowClear: false },
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
           node: 'schema', disabled: 'notInSchema', mode: ['create', 'edit'],
-          select2: { allowClear: false }, cache_node: 'database'
+          select2: { allowClear: false }, cache_node: 'database',
         },{
           id: 'system_view', label: gettext('System view?'), cell: 'string',
-          type: 'switch', disabled: true, mode: ['properties']
+          type: 'switch', disabled: true, mode: ['properties'],
         },{
           id: 'acl', label: gettext('Privileges'),
-          mode: ['properties'], type: 'text', group: gettext('Security')
+          mode: ['properties'], type: 'text', group: gettext('Security'),
         },{
           id: 'comment', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', disabled: 'notInSchema'
+          type: 'multiline', disabled: 'notInSchema',
         },{
           id: 'security_barrier', label: gettext('Security barrier'),
           type: 'switch', min_version: '90200', group: gettext('Definition'),
-          disabled: 'notInSchema'
+          disabled: 'notInSchema',
         },{
           id: 'check_option', label: gettext('Check options'),
           control: 'select2', group: gettext('Definition'), type: 'text',
@@ -136,32 +136,32 @@ define('pgadmin.node.view', [
             allowClear: false,
           }, disabled: 'notInSchema',
           options:[{
-            label: gettext("No"), value: "no"
+            label: gettext('No'), value: 'no',
           },{
-            label: gettext("Local"), value: "local"
+            label: gettext('Local'), value: 'local',
           },{
-            label: gettext("Cascaded"), value: "cascaded"
-          }]
+            label: gettext('Cascaded'), value: 'cascaded',
+          }],
         },{
           id: 'definition', label: gettext('Definition'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           control: Backform.SqlFieldControl,
-          disabled: 'notInSchema'
+          disabled: 'notInSchema',
         }, pgBrowser.SecurityGroupSchema, {
           // Add Privilege Control
           id: 'datacl', label: gettext('Privileges'), type: 'collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']
+            privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't'],
           }), uniqueCol : ['grantee'], editable: false, group: 'security',
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
-          control: 'unique-col-collection', disabled: 'notInSchema'
+          control: 'unique-col-collection', disabled: 'notInSchema',
         },{
           // Add Security Labels Control
           id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           canEdit: false, group: 'security', canDelete: true,
           mode: ['edit', 'create'], canAdd: true, disabled: 'notInSchema',
-          control: 'unique-col-collection', uniqueCol : ['provider']
+          control: 'unique-col-collection', uniqueCol : ['provider'],
         }],
         validate: function() {
           // Triggers specific error messages for fields
@@ -195,13 +195,13 @@ define('pgadmin.node.view', [
             return true;
           }
           return false;
-        }
+        },
       }),
 
       /**
         Show or hide create view menu option on parent node
         and hide for system view in catalogs.
-       */
+        */
       canCreate: function(itemData, item, data) {
 
         // If check is false then, we will allow create menu
@@ -235,8 +235,8 @@ define('pgadmin.node.view', [
         // by default we do not want to allow create menu
         return true;
 
-      }
-  });
+      },
+    });
   }
 
   return pgBrowser.Nodes['view'];

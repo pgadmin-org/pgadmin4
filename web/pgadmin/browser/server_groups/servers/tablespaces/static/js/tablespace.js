@@ -1,21 +1,23 @@
 define('pgadmin.node.tablespace', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
-  'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
-  'pgadmin.browser.server.privilege'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'pgadmin.backform', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
+  'pgadmin.browser.server.privilege',
+], function(
+  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Alertify, Backform
+) {
 
   if (!pgBrowser.Nodes['coll-tablespace']) {
-    var databases = pgBrowser.Nodes['coll-tablespace'] =
+    pgBrowser.Nodes['coll-tablespace'] =
       pgBrowser.Collection.extend({
         node: 'tablespace',
         label: gettext('Tablespaces'),
         type: 'coll-tablespace',
         columns: ['name', 'spcuser', 'description'],
         hasStatistics: true,
-        statsPrettifyFields: ['Size']
+        statsPrettifyFields: ['Size'],
       });
-  };
+  }
 
   if (!pgBrowser.Nodes['tablespace']) {
     pgBrowser.Nodes['tablespace'] = pgBrowser.Node.extend({
@@ -33,7 +35,7 @@ define('pgadmin.node.tablespace', [
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -42,42 +44,42 @@ define('pgadmin.node.tablespace', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Tablespace...'),
           icon: 'wcTabIcon icon-tablespace', data: {action: 'create'},
-          enable: 'can_create_tablespace'
+          enable: 'can_create_tablespace',
         },{
           name: 'create_tablespace_on_coll', node: 'coll-tablespace', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Tablespace...'),
           icon: 'wcTabIcon icon-tablespace', data: {action: 'create'},
-          enable: 'can_create_tablespace'
+          enable: 'can_create_tablespace',
         },{
           name: 'create_tablespace', node: 'tablespace', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Tablespace...'),
           icon: 'wcTabIcon icon-tablespace', data: {action: 'create'},
-          enable: 'can_create_tablespace'
+          enable: 'can_create_tablespace',
         },{
           name: 'move_tablespace', node: 'tablespace', module: this,
           applies: ['object', 'context'], callback: 'move_objects',
           category: 'move_tablespace', priority: 5,
           label: gettext('Move objects to...'),
           icon: 'fa fa-exchange', data: {action: 'create'},
-          enable: 'can_move_objects'
-        }
+          enable: 'can_move_objects',
+        },
         ]);
       },
       can_create_tablespace: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
-            server = treeData['server'];
+          server = treeData['server'];
 
         return server.connected && server.user.is_superuser;
       },
       can_move_objects: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
-            server = treeData['server'];
+          server = treeData['server'];
         // Only supported PG9.4 and above version
         return server.connected &&
-                server.user.is_superuser &&
-                server.version >= 90400;
+          server.user.is_superuser &&
+          server.version >= 90400;
       },
       callbacks: {
         /* Move objects from one tablespace to another */
@@ -87,7 +89,6 @@ define('pgadmin.node.tablespace', [
             t = pgBrowser.tree,
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined,
-            node = d && pgBrowser.Nodes[d._type],
             url = obj.generate_url(i, 'move_objects', d, true),
             msql_url = obj.generate_url(i, 'move_objects_sql', d, true);
 
@@ -96,107 +97,107 @@ define('pgadmin.node.tablespace', [
 
           // Object model
           var objModel = Backbone.Model.extend({
-              idAttribute: 'id',
-              defaults: {
-                new_tblspc: undefined,
-                obj_type: 'all',
-                user: undefined
+            idAttribute: 'id',
+            defaults: {
+              new_tblspc: undefined,
+              obj_type: 'all',
+              user: undefined,
+            },
+            schema: [{
+              id: 'tblspc', label: gettext('New tablespace'),
+              type: 'text', disabled: false, control: 'node-list-by-name',
+              node: 'tablespace', select2: {allowClear: false},
+              filter: function(o) {
+                return o && (o.label != d.label);
               },
-              schema: [{
-                  id: 'tblspc', label: gettext('New tablespace'),
-                  type: 'text', disabled: false, control: 'node-list-by-name',
-                  node: 'tablespace', select2: {allowClear: false},
-                  filter: function(o) {
-                    return o && (o.label != d.label);
-                  }
-              },{
-                  id: 'obj_type', label: gettext('Object type'),
-                  type: 'text', disabled: false, control: 'select2',
-                  select2: { allowClear: false, width: "100%" },
-                  options: [
-                    {label: gettext("All"), value: 'all'},
-                    {label: gettext("Tables"), value: 'tables'},
-                    {label: gettext("Indexes"), value: 'indexes'},
-                    {label: gettext("Materialized views"), value: 'materialized_views'},
-                  ]
-              },{
-                  id: 'user', label: gettext('Object owner'),
-                  type: 'text', disabled: false, control: 'node-list-by-name',
-                  node: 'role', select2: {allowClear: false}
-              },{
-                  id: 'sqltab', label: gettext('SQL'), group: gettext('SQL'),
-                  type: 'text', disabled: false, control: Backform.SqlTabControl.extend({
-                    initialize: function() {
-                      // Initialize parent class
-                      Backform.SqlTabControl.prototype.initialize.apply(this, arguments);
-                    },
-                    onTabChange: function(obj) {
-                      // Fetch the information only if the SQL tab is visible at the moment.
-                      if (this.dialog && obj.shown == this.tabIndex) {
-                            var self = this,
-                            args = self.model.toJSON();
-                            // Add existing tablespace
-                            args.old_tblspc = d.label;
+            },{
+              id: 'obj_type', label: gettext('Object type'),
+              type: 'text', disabled: false, control: 'select2',
+              select2: { allowClear: false, width: '100%' },
+              options: [
+                {label: gettext('All'), value: 'all'},
+                {label: gettext('Tables'), value: 'tables'},
+                {label: gettext('Indexes'), value: 'indexes'},
+                {label: gettext('Materialized views'), value: 'materialized_views'},
+              ],
+            },{
+              id: 'user', label: gettext('Object owner'),
+              type: 'text', disabled: false, control: 'node-list-by-name',
+              node: 'role', select2: {allowClear: false},
+            },{
+              id: 'sqltab', label: gettext('SQL'), group: gettext('SQL'),
+              type: 'text', disabled: false, control: Backform.SqlTabControl.extend({
+                initialize: function() {
+                  // Initialize parent class
+                  Backform.SqlTabControl.prototype.initialize.apply(this, arguments);
+                },
+                onTabChange: function(obj) {
+                  // Fetch the information only if the SQL tab is visible at the moment.
+                  if (this.dialog && obj.shown == this.tabIndex) {
+                    var self = this,
+                      args = self.model.toJSON();
+                    // Add existing tablespace
+                    args.old_tblspc = d.label;
 
-                            // Fetches modified SQL
-                            $.ajax({
-                              url: msql_url,
-                              type: 'GET',
-                              cache: false,
-                              data: args,
-                              dataType: "json",
-                              contentType: "application/json"
-                            }).done(function(res) {
-                              self.sqlCtrl.clearHistory();
-                              self.sqlCtrl.setValue(res.data);
-                              self.sqlCtrl.refresh();
-                            }).fail(function() {
-                              self.model.trigger('pgadmin-view:msql:error');
-                            }).always(function() {
-                              self.model.trigger('pgadmin-view:msql:fetched');
-                            });
-                      }
-                    }
-                  })
-              }],
-              validate: function() {
-                  return null;
-              }
+                    // Fetches modified SQL
+                    $.ajax({
+                      url: msql_url,
+                      type: 'GET',
+                      cache: false,
+                      data: args,
+                      dataType: 'json',
+                      contentType: 'application/json',
+                    }).done(function(res) {
+                      self.sqlCtrl.clearHistory();
+                      self.sqlCtrl.setValue(res.data);
+                      self.sqlCtrl.refresh();
+                    }).fail(function() {
+                      self.model.trigger('pgadmin-view:msql:error');
+                    }).always(function() {
+                      self.model.trigger('pgadmin-view:msql:fetched');
+                    });
+                  }
+                },
+              }),
+            }],
+            validate: function() {
+              return null;
+            },
           });
 
-          if(!alertify.move_objects_dlg) {
-            alertify.dialog('move_objects_dlg' ,function factory() {
+          if(!Alertify.move_objects_dlg) {
+            Alertify.dialog('move_objects_dlg' ,function factory() {
               return {
                 main: function() {
-                 var title = gettext('Move objects to another tablespace');
-                 this.set('title', title);
+                  var title = gettext('Move objects to another tablespace');
+                  this.set('title', title);
                 },
                 build: function() {
-                  alertify.pgDialogBuild.apply(this);
+                  Alertify.pgDialogBuild.apply(this);
                 },
                 setup:function() {
                   return {
-                     buttons: [{
-                       text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                       attrs:{name:'dialog_help', type:'button', label: gettext('Users'),
-                       url: url_for('help.static', {'filename': 'move_objects.html'})}
-                       },{
-                       text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
-                       },{
-                       text: gettext('Cancel'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
-                     }],
-                     // Set options for dialog
-                     options: {
-                       //disable both padding and overflow control.
-                       padding : !1,
-                       overflow: !1,
-                       modal: false,
-                       resizable: true,
-                       maximizable: true,
-                       pinnable: false,
-                       closableByDimmer: false
-                     }
-                   };
+                    buttons: [{
+                      text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                      attrs:{name:'dialog_help', type:'button', label: gettext('Users'),
+                        url: url_for('help.static', {'filename': 'move_objects.html'})},
+                    },{
+                      text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                    },{
+                      text: gettext('Cancel'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                    }],
+                    // Set options for dialog
+                    options: {
+                      //disable both padding and overflow control.
+                      padding : !1,
+                      overflow: !1,
+                      modal: false,
+                      resizable: true,
+                      maximizable: true,
+                      pinnable: false,
+                      closableByDimmer: false,
+                    },
+                  };
                 },
                 hooks: {
                   // Triggered when the dialog is closed
@@ -205,11 +206,11 @@ define('pgadmin.node.tablespace', [
                       // clear our backform model/view
                       this.view.remove({data: true, internal: true, silent: true});
                     }
-                  }
+                  },
                 },
                 prepare: function() {
                   var self = this,
-                    $container = $("<div class='move_objects'></div>");
+                    $container = $('<div class=\'move_objects\'></div>');
                   //Disbale Okay button
                   this.__internal.buttons[1].element.disabled = true;
                   // Find current/selected node
@@ -224,13 +225,13 @@ define('pgadmin.node.tablespace', [
                   var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
                   // Instance of backbone model
                   var newModel = new objModel({}, {node_info: treeInfo}),
-                      fields = Backform.generateViewSchema(
-                        treeInfo, newModel, 'create', node,
-                        treeInfo.server, true
-                      );
+                    fields = Backform.generateViewSchema(
+                      treeInfo, newModel, 'create', node,
+                      treeInfo.server, true
+                    );
 
                   var view = this.view = new Backform.Dialog({
-                    el: $container, model: newModel, schema: fields
+                    el: $container, model: newModel, schema: fields,
                   });
                   // Add our class to alertify
                   $(this.elements.body.childNodes[0]).addClass(
@@ -248,13 +249,13 @@ define('pgadmin.node.tablespace', [
                       self.__internal.buttons[1].element.disabled = false;
                     } else {
                       self.__internal.buttons[1].element.disabled = true;
-                      this.errorModel.set('tblspc', gettext('Please select tablespace'))
+                      this.errorModel.set('tblspc', gettext('Please select tablespace'));
                     }
                   });
                 },
                 // Callback functions when click on the buttons of the Alertify dialogs
                 callback: function(e) {
-                  if (e.button.element.name == "dialog_help") {
+                  if (e.button.element.name == 'dialog_help') {
                     e.cancel = true;
                     pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
                       null, null, e.button.element.getAttribute('label'));
@@ -262,10 +263,10 @@ define('pgadmin.node.tablespace', [
                   }
                   if (e.button.text === gettext('OK')) {
                     var self = this,
-                        args =  this.view.model.toJSON();
-                        args.old_tblspc = d.label;
+                      args =  this.view.model.toJSON();
+                    args.old_tblspc = d.label;
                     e.cancel = true;
-                    alertify.confirm(
+                    Alertify.confirm(
                       gettext('Move objects...'),
                       gettext(
                         'Are you sure you wish to move the objects from %(old_tablespace)s to %(new_tablespace)s?',
@@ -278,20 +279,22 @@ define('pgadmin.node.tablespace', [
                           data:{'data': JSON.stringify(args) },
                           success: function(res) {
                             if (res.success) {
-                              alertify.success(res.info);
+                              Alertify.success(res.info);
                               self.close();
                             } else {
-                              alertify.error(res.errormsg);
+                              Alertify.error(res.errormsg);
                             }
                           },
-                          error: function(xhr, status, error) {
+                          error: function(xhr) {
                             try {
                               var err = $.parseJSON(xhr.responseText);
                               if (err.success == 0) {
-                                alertify.error(err.errormsg);
+                                Alertify.error(err.errormsg);
                               }
-                            } catch (e) {}
-                          }
+                            } catch (e) {
+                              console.warn(e.stack || e);
+                            }
+                          },
                         });
                       },
                       function() {
@@ -299,12 +302,12 @@ define('pgadmin.node.tablespace', [
                       }
                     );
                   }
-                }
-              }
+                },
+              };
             });
           }
-          alertify.move_objects_dlg(true).resizeTo('40%','50%');;
-        }
+          Alertify.move_objects_dlg(true).resizeTo('40%','50%');
+        },
       },
       model: pgBrowser.Node.Model.extend({
         defaults: {
@@ -314,7 +317,7 @@ define('pgadmin.node.tablespace', [
           spclocation: undefined,
           spcoptions: [],
           spcacl: [],
-          seclabels:[]
+          seclabels:[],
         },
 
         // Default values!
@@ -330,10 +333,10 @@ define('pgadmin.node.tablespace', [
 
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text'
+          type: 'text',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', disabled: true, mode: ['properties']
+          type: 'text', disabled: true, mode: ['properties'],
         },{
           id: 'spclocation', label: gettext('Location'), cell: 'string',
           group: gettext('Definition'), type: 'text', mode: ['properties', 'edit','create'],
@@ -341,59 +344,58 @@ define('pgadmin.node.tablespace', [
             // To disabled it in edit mode,
             // We'll check if model is new if yes then disabled it
             return !m.isNew();
-          }
+          },
         },{
           id: 'spcuser', label: gettext('Owner'), cell: 'string',
           type: 'text', control: 'node-list-by-name', node: 'role',
-          select2: {allowClear: false}
+          select2: {allowClear: false},
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], disabled: true
+          group: gettext('Security'), mode: ['properties'], disabled: true,
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline'
+          type: 'multiline',
         },{
           id: 'spcoptions', label: gettext('Parameters'), type: 'collection',
-          group: gettext("Parameters"), control: 'variable-collection',
+          group: gettext('Parameters'), control: 'variable-collection',
           model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
-          canDelete: true
-         },{
+          canDelete: true,
+        },{
           id: 'spcacl', label: gettext('Privileges'), type: 'collection',
           group: gettext('Security'), control: 'unique-col-collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({privileges: ['C']}),
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee'],
-          columns: ['grantee', 'grantor', 'privileges']
-         },{
+          columns: ['grantee', 'grantor', 'privileges'],
+        },{
           id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection'
-        }
+          canEdit: false, canDelete: true, control: 'unique-col-collection',
+        },
         ],
         validate: function() {
-          var err = {},
-            errmsg = null,
-            changedAttrs = this.sessAttrs,
-            msg = undefined;
+          var msg;
+
           if (_.isUndefined(this.get('name'))
-              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
+            || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
           } else if (_.isUndefined(this.get('spclocation'))
               || String(this.get('spclocation')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Location cannot be empty.');
             this.errorModel.set('spclocation', msg);
+            this.errorModel.unset('name');
           } else {
             this.errorModel.unset('name');
             this.errorModel.unset('spclocation');
           }
           return null;
-        }
-      })
-  });
+        },
+      }),
+    });
 
   }
 

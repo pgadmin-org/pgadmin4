@@ -1,19 +1,18 @@
 define('pgadmin.node.fts_parser', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
 
   // Extend the collection class for fts parser
   if (!pgBrowser.Nodes['coll-fts_parser']) {
-    var fts_parsers = pgAdmin.Browser.Nodes['coll-fts_parser'] =
+    pgAdmin.Browser.Nodes['coll-fts_parser'] =
       pgAdmin.Browser.Collection.extend({
         node: 'fts_parser',
         label: gettext('FTS Parsers'),
         type: 'coll-fts_parser',
-        columns: ['name', 'description']
+        columns: ['name', 'description'],
       });
-  };
+  }
 
   // Extend the node class for fts parser
   if (!pgBrowser.Nodes['fts_parser']) {
@@ -42,20 +41,20 @@ define('pgadmin.node.fts_parser', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Parser...'),
           icon: 'wcTabIcon icon-fts_parser', data: {action: 'create'},
-          enable: 'canCreate'
-          },{
+          enable: 'canCreate',
+        },{
           name: 'create_fts_parser_on_coll', node: 'coll-fts_parser',
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Parser...'),
           icon: 'wcTabIcon icon-fts_parser', data: {action: 'create'},
-          module: this, enable: 'canCreate'
-          },{
+          module: this, enable: 'canCreate',
+        },{
           name: 'create_fts_parser', node: 'fts_parser', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Parser...'),
           icon: 'wcTabIcon icon-fts_parser', data: {action: 'create'},
-          enable: 'canCreate'
-          }]);
+          enable: 'canCreate',
+        }]);
 
       },
 
@@ -69,7 +68,7 @@ define('pgadmin.node.fts_parser', [
           prstoken: undefined,       // Token function for fts parser
           prsend: undefined,        // End function for fts parser
           prslextype: undefined,    // Lextype function for fts parser
-          prsheadline: undefined    // Headline function for fts parse
+          prsheadline: undefined,    // Headline function for fts parse
         },
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
@@ -83,48 +82,48 @@ define('pgadmin.node.fts_parser', [
         // Defining schema for fts parser
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', cellHeaderClasses: 'width_percent_50'
+          type: 'text', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', disabled: true, mode:['properties']
+          editable: false, type: 'text', disabled: true, mode:['properties'],
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
           control: 'node-list-by-id', cache_node: 'database',
-          cache_level: 'database'
+          cache_level: 'database',
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', cellHeaderClasses: 'width_percent_50'
+          type: 'multiline', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'prsstart', label: gettext('Start function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'start_functions',
           group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema'
+          cache_node: 'schema',
         },{
           id: 'prstoken', label: gettext('Get next token function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'token_functions',
           group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema'
+          cache_node: 'schema',
         },{
           id: 'prsend', label: gettext('End function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'end_functions',
           group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema'
+          cache_node: 'schema',
         },{
           id: 'prslextype', label: gettext('Lextypes function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'lextype_functions',
           group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema'
+          cache_node: 'schema',
         },{
           id: 'prsheadline', label: gettext('Headline function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'headline_functions',
           group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema'
+          cache_node: 'schema',
         }],
 
         /*
@@ -132,19 +131,20 @@ define('pgadmin.node.fts_parser', [
          * start, token, end, lextype functions and schema, if any one of them is not specified
          * while creating new fts parser
          */
-        validate: function(keys){
-          var name = this.get('name');
-          var start = this.get('prsstart');
-          var token = this.get('prstoken');
-          var end = this.get('prsend');
-          var lextype = this.get('prslextype');
-          var schema = this.get('schema');
+        validate: function() {
+          var name = this.get('name'),
+            start = this.get('prsstart'),
+            token = this.get('prstoken'),
+            end = this.get('prsend'),
+            lextype = this.get('prslextype'),
+            schema = this.get('schema'),
+            msg;
 
           // Validate fts parser name
           if (_.isUndefined(name) ||
                 _.isNull(name) ||
                 String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Name must be specified.');
+            msg = gettext('Name must be specified.');
             this.errorModel.set('name', msg);
             return msg;
           }
@@ -153,7 +153,7 @@ define('pgadmin.node.fts_parser', [
           else if (_.isUndefined(start) ||
                     _.isNull(start) ||
                     String(start).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Start function must be selected.');
+            msg = gettext('Start function must be selected.');
             this.errorModel.set('prsstart', msg);
             return msg;
           }
@@ -162,7 +162,7 @@ define('pgadmin.node.fts_parser', [
           else if (_.isUndefined(token) ||
                     _.isNull(token) ||
                     String(token).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Get next token function must be selected.');
+            msg = gettext('Get next token function must be selected.');
             this.errorModel.set('prstoken', msg);
             return msg;
           }
@@ -171,7 +171,7 @@ define('pgadmin.node.fts_parser', [
           else if (_.isUndefined(end) ||
                     _.isNull(end) ||
                     String(end).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('End function must be selected.');
+            msg = gettext('End function must be selected.');
             this.errorModel.set('prsend', msg);
             return msg;
           }
@@ -180,7 +180,7 @@ define('pgadmin.node.fts_parser', [
           else if (_.isUndefined(lextype) ||
                     _.isNull(lextype) ||
                     String(lextype).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Lextype function must be selected.');
+            msg = gettext('Lextype function must be selected.');
             this.errorModel.set('prslextype', msg);
             return msg;
           }
@@ -189,7 +189,7 @@ define('pgadmin.node.fts_parser', [
           else if (_.isUndefined(schema) ||
                     _.isNull(schema) ||
                     String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Schema must be selected.');
+            msg = gettext('Schema must be selected.');
             this.errorModel.set('schema', msg);
             return msg;
           }
@@ -197,7 +197,7 @@ define('pgadmin.node.fts_parser', [
 
           this.trigger('on-status-clear');
           return null;
-        }
+        },
       }),
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
@@ -226,9 +226,9 @@ define('pgadmin.node.fts_parser', [
         }
         // by default we do not want to allow create menu
         return true;
-      }
+      },
     });
   }
 
-return pgBrowser.Nodes['coll-fts_parser'];
+  return pgBrowser.Nodes['coll-fts_parser'];
 });

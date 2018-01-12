@@ -1,8 +1,8 @@
 define('pgadmin.node.extension', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser) {
+  'pgadmin.backform', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
 
   /*
    * Create and Add an Extension Collection into nodes
@@ -12,14 +12,14 @@ define('pgadmin.node.extension', [
    *   columns - List of columns to show under under properties.
    */
   if (!pgBrowser.Nodes['coll-extension']) {
-    var extensions = pgAdmin.Browser.Nodes['coll-extension'] =
+    pgAdmin.Browser.Nodes['coll-extension'] =
       pgAdmin.Browser.Collection.extend({
         node: 'extension',
         label: gettext('Extension'),
         type: 'coll-extension',
-        columns: ['name', 'owner', 'comment']
+        columns: ['name', 'owner', 'comment'],
       });
-  };
+  }
 
   /*
    * Create and Add an Extension Node into nodes
@@ -63,19 +63,19 @@ define('pgadmin.node.extension', [
           name: 'create_extension_on_coll', node: 'coll-extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'}
+          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
         },{
           name: 'create_extension', node: 'extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'}
+          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
         },{
           name: 'create_extension', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
           icon: 'wcTabIcon icon-extension', data: {action: 'create'},
-          enable: pgBrowser.Nodes['database'].is_conn_allow
-        }
+          enable: pgBrowser.Nodes['database'].is_conn_allow,
+        },
         ]);
       },
 
@@ -93,8 +93,8 @@ define('pgadmin.node.extension', [
             },
             transform: function(data, cell) {
               var res = [],
-                  control = cell || this,
-                  label = control.model.get('name');
+                control = cell || this,
+                label = control.model.get('name');
 
               if (!control.model.isNew()) {
                 res.push({label: label, value: label});
@@ -112,7 +112,7 @@ define('pgadmin.node.extension', [
                        * convert Array Object as [Object] string
                        */
                       res.push({label: d.name, value: JSON.stringify(d)});
-                  })
+                  });
                 }
               }
               return res;
@@ -128,7 +128,7 @@ define('pgadmin.node.extension', [
             control: Backform.NodeAjaxOptionsControl.extend({
               getValueFromDOM: function() {
                 var data = this.formatter.toRaw(
-                  _.unescape(this.$el.find("select").val()), this.model);
+                  _.unescape(this.$el.find('select').val()), this.model);
                 /*
                  * return null if data is empty to prevent it from
                  * throwing parsing error. Adds check as name can be empty
@@ -147,35 +147,37 @@ define('pgadmin.node.extension', [
                * set attributes values into the model
                */
               onChange: function() {
-                Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
-                var selectedValue = this.$el.find("select").val();
-                if (selectedValue.trim() != "") {
+                Backform.NodeAjaxOptionsControl.prototype.onChange.apply(
+                  this, arguments
+                );
+                var selectedValue = this.$el.find('select').val();
+                if (selectedValue.trim() != '') {
                   var d = this.formatter.toRaw(selectedValue, this.model);
                   if(typeof(d) === 'string')
                     d=JSON.parse(d);
-                  var changes = {
+                  this.model.set({
                     'version' : '',
                     'relocatable': (
-                        (!_.isNull(d.relocatable[0]) && !_.isUndefined(d.relocatable[0])) ?
-                        d.relocatable[0]: '')
-                    };
-                  this.model.set(changes);
-                }
-                else {
-                  var changes = {'version': '', 'relocatable': true, 'schema': ''};
-                  this.model.set(changes);
+                      (!_.isNull(d.relocatable[0]) &&
+                        !_.isUndefined(d.relocatable[0])) ? d.relocatable[0]: ''
+                    ),
+                  });
+                } else {
+                  this.model.set({
+                    'version': '', 'relocatable': true, 'schema': '',
+                  });
                 }
               },
-            })
+            }),
           },
           {
             id: 'eid', label: gettext('OID'), cell: 'string',
-            type: 'text', disabled: true, mode: ['properties']
+            type: 'text', disabled: true, mode: ['properties'],
           },
           {
             id: 'owner', label: gettext('Owner'), control: 'node-list-by-name',
             mode: ['properties'], node: 'role', cell: 'string',
-            cache_level: 'server'
+            cache_level: 'server',
           },
           {
             id: 'schema', label: gettext('Schema'), type: 'text',
@@ -188,7 +190,7 @@ define('pgadmin.node.extension', [
                * attribute is True or False
                */
               return (m.has('relocatable') ? !m.get('relocatable') : false);
-            }
+            },
           },
           {
             id: 'relocatable', label: gettext('Relocatable?'), cell: 'switch',
@@ -196,8 +198,8 @@ define('pgadmin.node.extension', [
             options: {
               'onText': gettext('Yes'), 'offText': gettext('No'),
               'onColor': 'success', 'offColor': 'primary',
-              'size': 'small'
-            }
+              'size': 'small',
+            },
           },
           {
             id: 'version', label: gettext('Version'), cell: 'string',
@@ -207,8 +209,8 @@ define('pgadmin.node.extension', [
             // Transform the data into version for the selected extension.
             transform: function(data, cell) {
               var res = [],
-                  control = cell || this,
-                  extension = control.model.get('name');
+                control = cell || this,
+                extension = control.model.get('name');
 
               _.each(data, function(dt) {
                 if(dt.name == extension) {
@@ -220,12 +222,12 @@ define('pgadmin.node.extension', [
                 }
               });
               return res;
-            }
+            },
           },
           {
             id: 'comment', label: gettext('Comment'), cell: 'string',
-            type: 'multiline', disabled: true
-          }
+            type: 'multiline', disabled: true,
+          },
         ],
         validate: function() {
 
@@ -247,10 +249,10 @@ define('pgadmin.node.extension', [
             this.errorModel.unset('name');
           }
           return null;
-        }
-      })
-    })
-  };
+        },
+      }),
+    });
+  }
 
   return pgBrowser.Nodes['coll-extension'];
 });

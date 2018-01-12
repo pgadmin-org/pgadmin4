@@ -1,11 +1,14 @@
 define('pgadmin.node.index', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'backform', 'alertify',
-  'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
+  'backbone', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.collection',
+], function(
+  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Alertify, Backform,
+  Backgrid
+) {
 
   if (!pgBrowser.Nodes['coll-index']) {
-    var databases = pgAdmin.Browser.Nodes['coll-index'] =
+    pgAdmin.Browser.Nodes['coll-index'] =
       pgAdmin.Browser.Collection.extend({
         node: 'index',
         label: gettext('Indexes'),
@@ -16,199 +19,199 @@ define('pgadmin.node.index', [
         dialogHelp: url_for('help.static', {'filename': 'index_dialog.html'}),
         columns: ['name', 'description'],
         hasStatistics: true,
-        statsPrettifyFields: ['Size', 'Index size']
+        statsPrettifyFields: ['Size', 'Index size'],
       });
-  };
+  }
 
   // Node-Ajax-Cell with Deps
   var NodeAjaxOptionsDepsCell = Backgrid.Extension.NodeAjaxOptionsCell.extend({
-      initialize: function() {
-        Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
-        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
-      },
-      dependentChanged: function () {
-        var model = this.model,
-          column = this.column,
-          editable = this.column.get("editable"),
-          input = this.$el.find('select').first();
+    initialize: function() {
+      Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
+      Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+    },
+    dependentChanged: function () {
+      var model = this.model,
+        column = this.column,
+        editable = this.column.get('editable'),
+        input = this.$el.find('select').first();
 
-        var is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
-        if (is_editable) {
-           this.$el.addClass("editable");
-           input.prop('disabled', false);
-         } else {
-           this.$el.removeClass("editable");
-           input.prop('disabled', true);
-         }
+      var is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+      if (is_editable) {
+        this.$el.addClass('editable');
+        input.prop('disabled', false);
+      } else {
+        this.$el.removeClass('editable');
+        input.prop('disabled', true);
+      }
 
-        this.delegateEvents();
-        return this;
-      },
-      remove: Backgrid.Extension.DependentCell.prototype.remove
-    });
+      this.delegateEvents();
+      return this;
+    },
+    remove: Backgrid.Extension.DependentCell.prototype.remove,
+  });
 
 
-    // Model to create column collection control
-    var ColumnModel = pgAdmin.Browser.Node.Model.extend({
-        defaults: {
-          colname: undefined,
-          collspcname: undefined,
-          op_class: undefined,
-          sort_order: false,
-          nulls: false,
-          is_sort_nulls_applicable: true
-        },
-        schema: [
-          {
-            id: 'colname', label: gettext('Column'), cell: 'node-list-by-name',
-            type: 'text', disabled: 'inSchemaWithModelCheck', editable: function(m) {
-                // Header cell then skip
-                if (m instanceof Backbone.Collection) {
-                    return false;
-                }
-                return !(m.inSchemaWithModelCheck.apply(this, arguments));
-            },
-            control: 'node-list-by-name', node: 'column'
-          },{
-            id: 'collspcname', label: gettext('Collation'),
-            cell: NodeAjaxOptionsDepsCell,
-            type: 'text', disabled: 'inSchemaWithModelCheck', editable: function(m) {
-                // Header cell then skip
-                if (m instanceof Backbone.Collection) {
-                    return false;
-                }
-                return !(m.inSchemaWithModelCheck.apply(this, arguments));
-            },
-            control: 'node-ajax-options', url: 'get_collations', node: 'index'
-          },{
-            id: 'op_class', label: gettext('Operator class'),
-            cell: NodeAjaxOptionsDepsCell, tags: true,
-            type: 'text', disabled: 'checkAccessMethod',
-            editable: function(m) {
-                // Header cell then skip
-                if (m instanceof Backbone.Collection) {
-                  return false;
-                } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
-                  return false;
-                }
-                return !(m.checkAccessMethod.apply(this, arguments));
-            },
-            control: 'node-ajax-options', url: 'get_op_class', node: 'index',
-            deps: ['amname'], transform: function(data, control) {
-             /* We need to extract data from collection according
-              * to access method selected by user if not selected
-              * send btree related op_class options
-              */
-             var amname = control.model.top.get('amname'),
-                 options = data['btree'];
-
-             if(_.isUndefined(amname))
-               return options;
-
-             _.each(data, function(v, k) {
-                if(amname === k) {
-                  options = v;
-                }
-              });
-             return options;
-            }
-          },{
-            id: 'sort_order', label: gettext('Sort order'),
-            cell: Backgrid.Extension.TableChildSwitchCell, type: 'switch',
-            editable: function(m) {
-              // Header cell then skip
-              if (m instanceof Backbone.Collection) {
-                  return false;
-              } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
-                  return false;
-              } else if (m.top.get('amname') === 'btree') {
-                m.set('is_sort_nulls_applicable', true);
-                return true;
-              } else {
-                m.set('is_sort_nulls_applicable', false);
-                return false;
-              }
-            },
-            deps: ['amname'],
-            options: {
-             'onText': 'DESC', 'offText': 'ASC',
-             'onColor': 'success', 'offColor': 'primary',
-             'size': 'small'
-            }
-          },{
-            id: 'nulls', label: gettext('NULLs'),
-            cell: Backgrid.Extension.TableChildSwitchCell, type: 'switch',
-            editable: function(m) {
-              // Header cell then skip
-              if (m instanceof Backbone.Collection) {
-                  return false;
-              } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
-                  return false;
-              } else if (m.top.get('amname') === 'btree') {
-                m.set('is_sort_nulls_applicable', true);
-                return true;
-              } else {
-                m.set('is_sort_nulls_applicable', false);
-                return false;
-              }
-            },
-            deps: ['amname', 'sort_order'],
-            options: {
-             'onText': 'FIRST', 'offText': 'LAST',
-             'onColor': 'success', 'offColor': 'primary',
-             'size': 'small'
-            }
+  // Model to create column collection control
+  var ColumnModel = pgAdmin.Browser.Node.Model.extend({
+    defaults: {
+      colname: undefined,
+      collspcname: undefined,
+      op_class: undefined,
+      sort_order: false,
+      nulls: false,
+      is_sort_nulls_applicable: true,
+    },
+    schema: [
+      {
+        id: 'colname', label: gettext('Column'), cell: 'node-list-by-name',
+        type: 'text', disabled: 'inSchemaWithModelCheck', editable: function(m) {
+          // Header cell then skip
+          if (m instanceof Backbone.Collection) {
+            return false;
           }
-        ],
-        validate: function() {
-          this.errorModel.clear();
-
-          if (_.isUndefined(this.get('colname'))
-              || String(this.get('colname')).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Column Name cannot be empty.');
-            this.errorModel.set('colname', msg);
-            return msg;
-          }
+          return !(m.inSchemaWithModelCheck.apply(this, arguments));
         },
-        // We will check if we are under schema node
-        inSchema: function() {
-          if(this.node_info &&  'catalog' in this.node_info) {
+        control: 'node-list-by-name', node: 'column',
+      },{
+        id: 'collspcname', label: gettext('Collation'),
+        cell: NodeAjaxOptionsDepsCell,
+        type: 'text', disabled: 'inSchemaWithModelCheck', editable: function(m) {
+          // Header cell then skip
+          if (m instanceof Backbone.Collection) {
+            return false;
+          }
+          return !(m.inSchemaWithModelCheck.apply(this, arguments));
+        },
+        control: 'node-ajax-options', url: 'get_collations', node: 'index',
+      },{
+        id: 'op_class', label: gettext('Operator class'),
+        cell: NodeAjaxOptionsDepsCell, tags: true,
+        type: 'text', disabled: 'checkAccessMethod',
+        editable: function(m) {
+          // Header cell then skip
+          if (m instanceof Backbone.Collection) {
+            return false;
+          } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
+            return false;
+          }
+          return !(m.checkAccessMethod.apply(this, arguments));
+        },
+        control: 'node-ajax-options', url: 'get_op_class', node: 'index',
+        deps: ['amname'], transform: function(data, control) {
+          /* We need to extract data from collection according
+           * to access method selected by user if not selected
+           * send btree related op_class options
+           */
+          var amname = control.model.top.get('amname'),
+            options = data['btree'];
+
+          if(_.isUndefined(amname))
+            return options;
+
+          _.each(data, function(v, k) {
+            if(amname === k) {
+              options = v;
+            }
+          });
+          return options;
+        },
+      },{
+        id: 'sort_order', label: gettext('Sort order'),
+        cell: Backgrid.Extension.TableChildSwitchCell, type: 'switch',
+        editable: function(m) {
+          // Header cell then skip
+          if (m instanceof Backbone.Collection) {
+            return false;
+          } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
+            return false;
+          } else if (m.top.get('amname') === 'btree') {
+            m.set('is_sort_nulls_applicable', true);
             return true;
+          } else {
+            m.set('is_sort_nulls_applicable', false);
+            return false;
           }
+        },
+        deps: ['amname'],
+        options: {
+          'onText': 'DESC', 'offText': 'ASC',
+          'onColor': 'success', 'offColor': 'primary',
+          'size': 'small',
+        },
+      },{
+        id: 'nulls', label: gettext('NULLs'),
+        cell: Backgrid.Extension.TableChildSwitchCell, type: 'switch',
+        editable: function(m) {
+          // Header cell then skip
+          if (m instanceof Backbone.Collection) {
+            return false;
+          } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
+            return false;
+          } else if (m.top.get('amname') === 'btree') {
+            m.set('is_sort_nulls_applicable', true);
+            return true;
+          } else {
+            m.set('is_sort_nulls_applicable', false);
+            return false;
+          }
+        },
+        deps: ['amname', 'sort_order'],
+        options: {
+          'onText': 'FIRST', 'offText': 'LAST',
+          'onColor': 'success', 'offColor': 'primary',
+          'size': 'small',
+        },
+      },
+    ],
+    validate: function() {
+      this.errorModel.clear();
+
+      if (_.isUndefined(this.get('colname'))
+        || String(this.get('colname')).replace(/^\s+|\s+$/g, '') == '') {
+        var msg = gettext('Column Name cannot be empty.');
+        this.errorModel.set('colname', msg);
+        return msg;
+      }
+    },
+    // We will check if we are under schema node
+    inSchema: function() {
+      if(this.node_info &&  'catalog' in this.node_info) {
+        return true;
+      }
+      return false;
+    },
+    // We will check if we are under schema node & in 'create' mode
+    inSchemaWithModelCheck: function(m) {
+      if(m.top.node_info &&  'schema' in m.top.node_info) {
+        // We will disable control if it's in 'edit' mode
+        if (m.top.isNew()) {
           return false;
-        },
-        // We will check if we are under schema node & in 'create' mode
-        inSchemaWithModelCheck: function(m) {
-          if(m.top.node_info &&  'schema' in m.top.node_info) {
-            // We will disable control if it's in 'edit' mode
-            if (m.top.isNew()) {
-              return false;
-            } else {
-              return true;
-            }
-          }
+        } else {
           return true;
-        },
-        // We will check if we are under schema node and added condition
-        checkAccessMethod: function(m) {
-        //Access method is empty or btree then do not disable field
-          var parent_model = m.top;
-          if(_.isUndefined(parent_model.get('amname')) ||
-               _.isNull(parent_model.get('amname')) ||
-               String(parent_model.get('amname')).replace(/^\s+|\s+$/g, '') == '' ||
-               parent_model.get('amname') === 'btree') {
+        }
+      }
+      return true;
+    },
+    // We will check if we are under schema node and added condition
+    checkAccessMethod: function(m) {
+      //Access method is empty or btree then do not disable field
+      var parent_model = m.top;
+      if(_.isUndefined(parent_model.get('amname')) ||
+        _.isNull(parent_model.get('amname')) ||
+          String(parent_model.get('amname')).replace(/^\s+|\s+$/g, '') == '' ||
+          parent_model.get('amname') === 'btree') {
             // We need to set nulls to true if sort_order is set to desc
             // nulls first is default for desc
-            if(m.get('sort_order') == true && m.previous('sort_order') ==  false) {
-               setTimeout(function() { m.set('nulls', true) }, 10);
-            }
-          }
-          else {
-            m.set('is_sort_nulls_applicable', false);
-          }
-          return false;
+        if(m.get('sort_order') == true && m.previous('sort_order') ==  false) {
+          setTimeout(function() { m.set('nulls', true); }, 10);
         }
-    });
+      }
+      else {
+        m.set('is_sort_nulls_applicable', false);
+      }
+      return false;
+    },
+  });
 
   if (!pgBrowser.Nodes['index']) {
     pgAdmin.Browser.Nodes['index'] = pgBrowser.Node.extend({
@@ -226,7 +229,7 @@ define('pgadmin.node.index', [
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
-            return;
+          return;
 
         this.initialized = true;
 
@@ -235,32 +238,32 @@ define('pgadmin.node.index', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
           icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_index', node: 'index', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
           icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_index_onTable', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
           icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_index_onPartition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
           icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          enable: 'canCreate',
         },{
           name: 'create_index_onMatView', node: 'mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Index...'),
           icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate'
-        }
+          enable: 'canCreate',
+        },
         ]);
       },
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
@@ -274,14 +277,14 @@ define('pgadmin.node.index', [
           nspname: undefined,
           tabname: undefined,
           spcname: undefined,
-          amname: 'btree'
+          amname: 'btree',
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', disabled: 'inSchema'
+          type: 'text', disabled: 'inSchema',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'int', disabled: true, mode: ['edit', 'properties']
+          type: 'int', disabled: true, mode: ['edit', 'properties'],
         },{
           id: 'spcname', label: gettext('Tablespace'), cell: 'string',
           control: 'node-list-by-name', node: 'tablespace',
@@ -294,7 +297,7 @@ define('pgadmin.node.index', [
               return false;
             }
             return true;
-          }
+          },
         },{
           id: 'amname', label: gettext('Access Method'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
@@ -305,63 +308,63 @@ define('pgadmin.node.index', [
             onChange: function() {
               Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
               var self = this,
-              // current access method
-              current_am = self.model.get('amname'),
-              // previous access method
-              previous_am = self.model.previous('amname');
+                // current access method
+                current_am = self.model.get('amname'),
+                // previous access method
+                previous_am = self.model.previous('amname');
               if (current_am != previous_am && self.model.get('columns').length !== 0) {
                 var msg = gettext('Changing access method will clear columns collection');
-                alertify.confirm(msg, function (e) {
-                    // User clicks Ok, lets clear collection
-                    var column_collection = self.model.get('columns'),
-                      col_length = column_collection.length;
-                    for (var i=(col_length-1);i>=0;i--) {
-                       column_collection.remove(column_collection.models[i]);
-                    }
-                  }, function() {
-                    // User clicks Cancel set previous value again in combo box
-                    setTimeout(function(){
-                      self.model.set('amname', previous_am);
-                    }, 10);
+                Alertify.confirm(msg, function () {
+                  // User clicks Ok, lets clear collection
+                  var column_collection = self.model.get('columns'),
+                    col_length = column_collection.length;
+                  for (var i=(col_length-1);i>=0;i--) {
+                    column_collection.remove(column_collection.models[i]);
+                  }
+                }, function() {
+                  // User clicks Cancel set previous value again in combo box
+                  setTimeout(function(){
+                    self.model.set('amname', previous_am);
+                  }, 10);
                 });
               }
-            }
-          })
+            },
+          }),
         },{
           id: 'cols', label: gettext('Columns'), cell: 'string',
           type: 'text', disabled: 'inSchema', mode: ['properties'],
-          group: gettext('Definition')
+          group: gettext('Definition'),
         },{
           id: 'fillfactor', label: gettext('Fill factor'), cell: 'string',
           type: 'int', disabled: 'inSchema', mode: ['create', 'edit', 'properties'],
-          min: 10, max:100, group: gettext('Definition')
+          min: 10, max:100, group: gettext('Definition'),
         },{
           id: 'indisunique', label: gettext('Unique?'), cell: 'string',
           type: 'switch', disabled: 'inSchemaWithModelCheck',
-          group: gettext('Definition')
+          group: gettext('Definition'),
         },{
           id: 'indisclustered', label: gettext('Clustered?'), cell: 'string',
           type: 'switch', disabled: 'inSchema',
-          group: gettext('Definition')
+          group: gettext('Definition'),
         },{
           id: 'indisvalid', label: gettext('Valid?'), cell: 'string',
           type: 'switch', disabled: true, mode: ['properties'],
-          group: gettext('Definition')
+          group: gettext('Definition'),
         },{
           id: 'indisprimary', label: gettext('Primary?'), cell: 'string',
           type: 'switch', disabled: true, mode: ['properties'],
-          group: gettext('Definition')
+          group: gettext('Definition'),
         },{
           id: 'is_sys_idx', label: gettext('System index?'), cell: 'string',
-          type: 'switch', disabled: true, mode: ['properties']
+          type: 'switch', disabled: true, mode: ['properties'],
         },{
           id: 'isconcurrent', label: gettext('Concurrent build?'), cell: 'string',
           type: 'switch', disabled: 'inSchemaWithModelCheck',
-          mode: ['create', 'edit'], group: gettext('Definition')
+          mode: ['create', 'edit'], group: gettext('Definition'),
         },{
           id: 'indconstraint', label: gettext('Constraint'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithModelCheck', mode: ['create', 'edit'],
-          control: 'sql-field', visible: true, group: gettext('Definition')
+          control: 'sql-field', visible: true, group: gettext('Definition'),
         },{
           id: 'columns', label: gettext('Columns'), type: 'collection', deps: ['amname'],
           group: gettext('Definition'), model: ColumnModel, mode: ['edit', 'create'],
@@ -383,17 +386,15 @@ define('pgadmin.node.index', [
             }
           },
           control: 'unique-col-collection', uniqueCol : ['colname'],
-          columns: ['colname', 'op_class', 'sort_order', 'nulls', 'collspcname']
+          columns: ['colname', 'op_class', 'sort_order', 'nulls', 'collspcname'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema'
-        }
+          disabled: 'inSchema',
+        },
         ],
         validate: function(keys) {
-          var err = {},
-              changedAttrs = this.changed,
-              msg = undefined;
+          var msg;
 
           // Nothing to validate
           if (keys && keys.length == 0) {
@@ -404,19 +405,19 @@ define('pgadmin.node.index', [
           }
 
           if (_.isUndefined(this.get('name'))
-              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
+            || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           }
           if (_.isUndefined(this.get('spcname'))
-              || String(this.get('spcname')).replace(/^\s+|\s+$/g, '') == '') {
+            || String(this.get('spcname')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Tablespace cannot be empty.');
             this.errorModel.set('spcname', msg);
             return msg;
           }
           if (_.isUndefined(this.get('amname'))
-              || String(this.get('amname')).replace(/^\s+|\s+$/g, '') == '') {
+            || String(this.get('amname')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Access method cannot be empty.');
             this.errorModel.set('amname', msg);
             return msg;
@@ -424,15 +425,15 @@ define('pgadmin.node.index', [
           // Checks if all columns has names
           var cols = this.get('columns');
           if(cols && cols.length > 0) {
-             if(!_.every(cols.pluck('colname'))) {
-               msg = gettext('You must specify column name.');
-               this.errorModel.set('columns', msg);
-               return msg;
-             }
+            if(!_.every(cols.pluck('colname'))) {
+              msg = gettext('You must specify column name.');
+              this.errorModel.set('columns', msg);
+              return msg;
+            }
           } else if(cols){
-               msg = gettext('You must specify at least one column.');
-               this.errorModel.set('columns', msg);
-               return msg;
+            msg = gettext('You must specify at least one column.');
+            this.errorModel.set('columns', msg);
+            return msg;
           }
           return null;
         },
@@ -469,47 +470,47 @@ define('pgadmin.node.index', [
               } else {
                 return true;
               }
-           }
+            }
           }
           return true;
-        }
+        },
       }),
       // Below function will enable right click menu for creating column
       canCreate: function(itemData, item, data) {
-          // If check is false then , we will allow create menu
-          if (data && data.check == false)
-            return true;
+        // If check is false then , we will allow create menu
+        if (data && data.check == false)
+          return true;
 
-          var t = pgBrowser.tree, i = item, d = itemData, parents = [],
-            immediate_parent_table_found = false,
-            is_immediate_parent_table_partitioned = false;
-          // To iterate over tree to check parent node
-          while (i) {
-            // Do not allow creating index on partitioned tables.
-            if (!immediate_parent_table_found &&
-                _.indexOf(['table', 'partition'], d._type) > -1) {
-              immediate_parent_table_found = true;
-              if ('is_partitioned' in d && d.is_partitioned) {
-                is_immediate_parent_table_partitioned = true;
-              }
+        var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+          immediate_parent_table_found = false,
+          is_immediate_parent_table_partitioned = false;
+        // To iterate over tree to check parent node
+        while (i) {
+          // Do not allow creating index on partitioned tables.
+          if (!immediate_parent_table_found &&
+            _.indexOf(['table', 'partition'], d._type) > -1) {
+            immediate_parent_table_found = true;
+            if ('is_partitioned' in d && d.is_partitioned) {
+              is_immediate_parent_table_partitioned = true;
             }
+          }
 
-            // If it is schema then allow user to create index
-            if (_.indexOf(['schema'], d._type) > -1)
-              return !is_immediate_parent_table_partitioned;
-            parents.push(d._type);
-            i = t.hasParent(i) ? t.parent(i) : null;
-            d = i ? t.itemData(i) : null;
-          }
-          // If node is under catalog then do not allow 'create' menu
-          if (_.indexOf(parents, 'catalog') > -1) {
-            return false;
-          } else {
+          // If it is schema then allow user to create index
+          if (_.indexOf(['schema'], d._type) > -1)
             return !is_immediate_parent_table_partitioned;
-          }
-      }
-  });
- }
+          parents.push(d._type);
+          i = t.hasParent(i) ? t.parent(i) : null;
+          d = i ? t.itemData(i) : null;
+        }
+        // If node is under catalog then do not allow 'create' menu
+        if (_.indexOf(parents, 'catalog') > -1) {
+          return false;
+        } else {
+          return !is_immediate_parent_table_partitioned;
+        }
+      },
+    });
+  }
 
   return pgBrowser.Nodes['index'];
 });

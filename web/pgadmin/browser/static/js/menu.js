@@ -1,6 +1,6 @@
-define(
-   ['underscore', 'underscore.string', 'sources/pgadmin', 'jquery'],
-function(_, S, pgAdmin, $) {
+define([
+  'underscore', 'underscore.string', 'sources/pgadmin', 'jquery',
+], function(_, S, pgAdmin, $) {
   'use strict';
 
   pgAdmin.Browser = pgAdmin.Browser || {};
@@ -8,14 +8,14 @@ function(_, S, pgAdmin, $) {
   // Individual menu-item class
   var MenuItem = pgAdmin.Browser.MenuItem = function(opts) {
     var menu_opts = [
-      'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
-      'category', 'target', 'url'/* Do not show icon in the menus, 'icon' */, 'node'
-    ],
-    defaults = {
-      url: '#',
-      target: '_self',
-      enable: true
-    };
+        'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
+        'category', 'target', 'url' /* Do not show icon in the menus, 'icon' */ , 'node',
+      ],
+      defaults = {
+        url: '#',
+        target: '_self',
+        enable: true,
+      };
     _.extend(this, defaults, _.pick(opts, menu_opts));
   };
 
@@ -36,7 +36,7 @@ function(_, S, pgAdmin, $) {
         name: this.label,
         /* icon: this.icon || this.module && (this.module.type), */
         disabled: this.is_disabled,
-        callback: this.context_menu_callback.bind(this, item)
+        callback: this.context_menu_callback.bind(this, item),
       };
 
       return this.$el;
@@ -47,19 +47,21 @@ function(_, S, pgAdmin, $) {
      */
     create_el: function(node, item) {
       var url = $('<a></a>', {
-          'id': this.name,
-          'href': this.url,
-          'target': this.target,
-          'data-toggle': 'pg-menu'
-        }).data('pgMenu', {
-          module: this.module || pgAdmin.Browser,
-          cb: this.callback,
-          data: this.data
-        }).addClass('menu-link');
+        'id': this.name,
+        'href': this.url,
+        'target': this.target,
+        'data-toggle': 'pg-menu',
+      }).data('pgMenu', {
+        module: this.module || pgAdmin.Browser,
+        cb: this.callback,
+        data: this.data,
+      }).addClass('menu-link');
 
       this.is_disabled = this.disabled(node, item);
       if (this.icon) {
-        url.append($('<i></i>', {'class': this.icon}));
+        url.append($('<i></i>', {
+          'class': this.icon,
+        }));
       }
 
       var textSpan = $('<span data-test="menu-item-text"></span>').text('  ' + this.label);
@@ -73,7 +75,7 @@ function(_, S, pgAdmin, $) {
       this.applyStyle();
     },
 
-    applyDisabledStyle: function () {
+    applyDisabledStyle: function() {
       var span = this.$el.find('span');
       var icon = this.$el.find('i');
 
@@ -84,7 +86,7 @@ function(_, S, pgAdmin, $) {
       icon.removeClass('font-white');
     },
 
-    applyEnabledStyle: function () {
+    applyEnabledStyle: function() {
       var element = this.$el;
       var span = this.$el.find('span');
 
@@ -93,11 +95,15 @@ function(_, S, pgAdmin, $) {
       element.find('i').addClass('font-white');
       element.find('i').removeClass('font-gray-4');
 
-      span.mouseover(function () { element.addClass('bg-gray-5'); });
-      span.mouseout(function () { element.removeClass('bg-gray-5'); });
+      span.mouseover(function() {
+        element.addClass('bg-gray-5');
+      });
+      span.mouseout(function() {
+        element.removeClass('bg-gray-5');
+      });
     },
 
-    applyStyle: function () {
+    applyStyle: function() {
       if (this.is_disabled) {
         this.applyDisabledStyle();
       } else {
@@ -121,7 +127,7 @@ function(_, S, pgAdmin, $) {
         this.$el.removeClass('disabled');
       }
 
-      if(this.$el) {
+      if (this.$el) {
         this.applyStyle();
       }
 
@@ -129,7 +135,7 @@ function(_, S, pgAdmin, $) {
         name: this.label,
         /* icon: this.icon || (this.module && this.module.type), */
         disabled: this.is_disabled,
-        callback: this.context_menu_callback.bind(this, item)
+        callback: this.context_menu_callback.bind(this, item),
       };
     },
 
@@ -137,11 +143,12 @@ function(_, S, pgAdmin, $) {
      * This will be called when context-menu is clicked.
      */
     context_menu_callback: function(item) {
-      var o = this, cb;
+      var o = this,
+        cb;
 
       if (o.module['callbacks'] && (
-        o.callback in o.module['callbacks']
-      )) {
+          o.callback in o.module['callbacks']
+        )) {
         cb = o.module['callbacks'][o.callback];
       } else if (o.callback in o.module) {
         cb = o.module[o.callback];
@@ -150,8 +157,7 @@ function(_, S, pgAdmin, $) {
         cb.apply(o.module, [o.data, item]);
       } else {
         pgAdmin.Browser.report_error(
-          S('Developer Warning: Callback - "%s" not found!').
-            sprintf(o.cb).value()
+          S('Developer Warning: Callback - "%s" not found!').sprintf(o.cb).value()
         );
       }
     },
@@ -169,8 +175,8 @@ function(_, S, pgAdmin, $) {
           return true;
         }
         if (_.isArray(this.node) ? (
-          _.indexOf(this.node, node) == -1
-        ) : (this.node != node._type)) {
+            _.indexOf(this.node, node) == -1
+          ) : (this.node != node._type)) {
           return true;
         }
       }
@@ -181,7 +187,7 @@ function(_, S, pgAdmin, $) {
       if (this.module && _.isFunction(this.module[this.enable])) return !(this.module[this.enable]).apply(this.module, [node, item, this.data]);
 
       return false;
-    }
+    },
   });
 
   /*
@@ -202,59 +208,65 @@ function(_, S, pgAdmin, $) {
 
   pgAdmin.Browser.MenuGroup = function(opts, items, prev, ctx) {
     var template = _.template([
-          '<% if (above) { %><hr><% } %>',
-          '<li class="menu-item dropdown dropdown-submenu">',
-          ' <a href="#" class="dropdown-toggle" data-toggle="dropdown">',
-          '  <% if (icon) { %><i class="<%= icon %>"></i><% } %>',
-          '  <span><%= label %></span>',
-          ' </a>',
-          ' <ul class="dropdown-menu navbar-inverse">',
-          ' </ul>',
-          '</li>',
-          '<% if (below) { %><hr><% } %>',].join('\n')),
-          data = {
-            'label': opts.label,
-            'icon': opts.icon,
-            'above': opts.above && !prev,
-            'below': opts.below,
-          }, m,
-          $el = $(template(data)),
-          $menu = $el.find('.dropdown-menu'),
-          submenus = {},
-          ctxId = 1;
+        '<% if (above) { %><hr><% } %>',
+        '<li class="menu-item dropdown dropdown-submenu">',
+        ' <a href="#" class="dropdown-toggle" data-toggle="dropdown">',
+        '  <% if (icon) { %><i class="<%= icon %>"></i><% } %>',
+        '  <span><%= label %></span>',
+        ' </a>',
+        ' <ul class="dropdown-menu navbar-inverse">',
+        ' </ul>',
+        '</li>',
+        '<% if (below) { %><hr><% } %>',
+      ].join('\n')),
+      data = {
+        'label': opts.label,
+        'icon': opts.icon,
+        'above': opts.above && !prev,
+        'below': opts.below,
+      },
+      m,
+      $el = $(template(data)),
+      $menu = $el.find('.dropdown-menu'),
+      submenus = {},
+      ctxId = 1;
 
-      ctx = _.uniqueId(ctx + '_sub_');
+    ctx = _.uniqueId(ctx + '_sub_');
 
-      // Sort by alphanumeric ordered first
-      items.sort(function(a, b) {return a.label.localeCompare(b.label);});
-      // Sort by priority
-      items.sort(function(a, b) {return a.priority - b.priority;});
+    // Sort by alphanumeric ordered first
+    items.sort(function(a, b) {
+      return a.label.localeCompare(b.label);
+    });
+    // Sort by priority
+    items.sort(function(a, b) {
+      return a.priority - b.priority;
+    });
 
-      for (var idx in items) {
-        m = items[idx];
-        $menu.append(m.$el);
-        if (!m.is_disabled) {
-          submenus[ctx + ctxId] = m.context;
-        }
-        ctxId++;
+    for (var idx in items) {
+      m = items[idx];
+      $menu.append(m.$el);
+      if (!m.is_disabled) {
+        submenus[ctx + ctxId] = m.context;
       }
+      ctxId++;
+    }
 
-      var is_disabled = (_.size(submenus) == 0);
+    var is_disabled = (_.size(submenus) == 0);
 
-      return {
-        $el: $el,
-        priority: opts.priority || 10,
-        label: opts.label,
-        above: data['above'],
-        below: opts.below,
-        is_disabled: is_disabled,
-        context: {
-          name: opts.label,
-          icon: opts.icon,
-          items: submenus,
-          disabled: is_disabled
-        }
-      };
+    return {
+      $el: $el,
+      priority: opts.priority || 10,
+      label: opts.label,
+      above: data['above'],
+      below: opts.below,
+      is_disabled: is_disabled,
+      context: {
+        name: opts.label,
+        icon: opts.icon,
+        items: submenus,
+        disabled: is_disabled,
+      },
+    };
   };
 
   /*
@@ -274,26 +286,31 @@ function(_, S, pgAdmin, $) {
    *
    * Returns if any menu generated for the given input.
    */
-  pgAdmin.Browser.MenuCreator = function($mnu, menus, categories, d, item, menu_items) {
-    var groups = {'common': []},
-        common, idx = 0, j, item,
-        ctxId = _.uniqueId('ctx_'),
-        update_menuitem = function(m) {
-          if (m instanceof MenuItem) {
-            if (m.$el) {
-              m.$el.remove();
-              delete m.$el;
-            }
-            m.generate(d, item);
-            var group = groups[m.category || 'common'] =
-              groups[m.category || 'common'] || [];
-            group.push(m);
-          } else {
-            for (var key in m) {
-              update_menuitem(m[key]);
-            }
+  pgAdmin.Browser.MenuCreator = function(
+    $mnu, menus, categories, d, item, menu_items
+  ) {
+    var groups = {
+        'common': [],
+      },
+      common, idx = 0,
+      ctxId = _.uniqueId('ctx_'),
+      update_menuitem = function(m) {
+        if (m instanceof MenuItem) {
+          if (m.$el) {
+            m.$el.remove();
+            delete m.$el;
           }
-        }, ctxIdx = 1;
+          m.generate(d, item);
+          var group = groups[m.category || 'common'] =
+            groups[m.category || 'common'] || [];
+          group.push(m);
+        } else {
+          for (var key in m) {
+            update_menuitem(m[key]);
+          }
+        }
+      },
+      ctxIdx = 1;
 
     for (idx in menus) {
       update_menuitem(menus[idx]);
@@ -307,10 +324,13 @@ function(_, S, pgAdmin, $) {
 
     var prev = true;
 
-    for (name in groups) {
+    for (var name in groups) {
       var g = groups[name],
-          c = categories[name] || {'label': name, single: false},
-          menu_group = pgAdmin.Browser.MenuGroup(c, g, prev, ctxId);
+        c = categories[name] || {
+          'label': name,
+          single: false,
+        },
+        menu_group = pgAdmin.Browser.MenuGroup(c, g, prev, ctxId);
 
       if (g.length <= 1 && !c.single) {
         prev = false;
@@ -327,9 +347,13 @@ function(_, S, pgAdmin, $) {
     // Menu with lowest value has the highest priority. If the priority is
     // same, then - it will be ordered by label.
     // Sort by alphanumeric ordered first
-    common.sort(function(a, b) {return a.label.localeCompare(b.label);});
+    common.sort(function(a, b) {
+      return a.label.localeCompare(b.label);
+    });
     // Sort by priority
-    common.sort(function(a, b) {return a.priority - b.priority;});
+    common.sort(function(a, b) {
+      return a.priority - b.priority;
+    });
     var len = _.size(common);
 
     for (idx in common) {
@@ -360,15 +384,15 @@ function(_, S, pgAdmin, $) {
 
   // MENU PUBLIC CLASS DEFINITION
   // ==============================
-  var Menu = function (element, options) {
-    this.$element  = $(element);
-    this.options   = $.extend({}, Menu.DEFAULTS, options);
+  var Menu = function(element, options) {
+    this.$element = $(element);
+    this.options = $.extend({}, Menu.DEFAULTS, options);
     this.isLoading = false;
-  }
+  };
 
-  Menu.DEFAULTS = {}
+  Menu.DEFAULTS = {};
 
-  Menu.prototype.toggle = function (ev) {
+  Menu.prototype.toggle = function(ev) {
     var $parent = this.$element.closest('.menu-item');
     if ($parent.hasClass('disabled')) {
       ev.preventDefault();
@@ -384,43 +408,43 @@ function(_, S, pgAdmin, $) {
         pgAdmin.Browser.report_error('Developer Warning: Callback - "' + d.cb + '" not found!');
       }
     }
-  }
+  };
 
 
   // BUTTON PLUGIN DEFINITION
   // ========================
 
   function Plugin(option, ev) {
-    return this.each(function () {
-      var $this   = $(this);
-      var data  = $this.data('pg.menu');
+    return this.each(function() {
+      var $this = $(this);
+      var data = $this.data('pg.menu');
       var options = typeof option == 'object' && option;
 
       if (!data) $this.data('pg.menu', (data = new Menu(this, options)));
 
       data.toggle(ev);
-    })
+    });
   }
 
   var old = $.fn.button;
 
-  $.fn.pgmenu       = Plugin;
+  $.fn.pgmenu = Plugin;
   $.fn.pgmenu.Constructor = Menu;
 
 
   // BUTTON NO CONFLICT
   // ==================
 
-  $.fn.pgmenu.noConflict = function () {
+  $.fn.pgmenu.noConflict = function() {
     $.fn.pgmenu = old;
     return this;
-  }
+  };
 
   // MENU DATA-API
   // =============
 
   $(document)
-    .on('click.pg.menu.data-api', '[data-toggle^="pg-menu"]', function (ev) {
+    .on('click.pg.menu.data-api', '[data-toggle^="pg-menu"]', function(ev) {
       var $menu = $(ev.target);
       if (!$menu.hasClass('menu-link'))
         $menu = $menu.closest('.menu-link');
@@ -429,7 +453,7 @@ function(_, S, pgAdmin, $) {
     .on(
       'focus.pg.menu.data-api blur.pg.menu.data-api',
       '[data-toggle^="pg-menu"]',
-      function (e) {
+      function(e) {
         $(e.target).closest('.menu').toggleClass(
           'focus', /^focus(in)?$/.test(e.type)
         );

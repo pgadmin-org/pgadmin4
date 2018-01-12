@@ -1,4 +1,4 @@
-define(["slickgrid"], function () {
+define(['slickgrid'], function () {
   var Slick = window.Slick;
 
   return function () {
@@ -10,9 +10,9 @@ define(["slickgrid"], function () {
             slickEvent.cell,
             slickEvent.row,
             slickEvent.cell
-          )
+          ),
         ]);
       });
-    }
-  }
+    };
+  };
 });
