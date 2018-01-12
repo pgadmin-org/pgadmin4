@@ -8,10 +8,17 @@ pgAdmin may be deployed as a desktop application by configuring the application
 to run in desktop mode and then utilising the desktop runtime to host and
 display the program on a supported Windows, Mac OS X or Linux installation.
 
-**Note: Pre-compiled and configured installation packages are available for
-a number of platforms. These packages should be used by end-users whereever
-possible - the following information is useful for the maintainers of those
-packages and users interested in understanding how pgAdmin works.**
+.. note:: Pre-compiled and configured installation packages are available for
+     a number of platforms. These packages should be used by end-users whereever
+     possible - the following information is useful for the maintainers of those
+     packages and users interested in understanding how pgAdmin works.
+
+.. seealso:: For detailed instructions on building and configuring pgAdmin from
+    scratch, please see the README file in the top level directory of the source code.
+    For convenience, you can find the latest version of the file
+    `here <https://git.postgresql.org/gitweb/?p=pgadmin4.git;a=blob_plain;f=README>`_,
+    but be aware that this may differ from the version included with the source code
+    for a specific version of pgAdmin.
 
 Configuration
 *************
@@ -36,10 +43,10 @@ are as follows:
   for end users to change any default or packaging specific settings that they may
   wish to adjust to meet local preferences or standards.
 
-NOTE: If the SERVER_MODE setting is changed in ``config_distro.py`` or ``config_local.py``,
-you will most likely need to re-set the LOG_FILE, SQLITE_PATH, SESSION_DB_PATH
-and STORAGE_DIR values as well as they will have been set based on the default
-configuration or overridden by the runtime.
+.. note:: If the SERVER_MODE setting is changed in ``config_distro.py`` or ``config_local.py``,
+     you will most likely need to re-set the LOG_FILE, SQLITE_PATH, SESSION_DB_PATH
+     and STORAGE_DIR values as well as they will have been set based on the default
+     configuration or overridden by the runtime.
 
 Runtime
 -------
