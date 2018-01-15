@@ -171,4 +171,8 @@
   font-size: 14px;
 }
 
+.dashboard-tab-container .pg-el-container[el=sm] .pg-el-sm-12 {
+    margin-bottom: 0%;
+}
+
 /* CSS to make subnode control look preety in backgrid - END */
