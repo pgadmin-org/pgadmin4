@@ -1,5 +1,3 @@
-SELECT DISTINCT(datctype) AS cname
-FROM pg_database
+SELECT current_setting('lc_ctype') as cname
 UNION
-SELECT DISTINCT(datcollate) AS cname
-FROM pg_database
+SELECT current_setting('lc_collate') as cname

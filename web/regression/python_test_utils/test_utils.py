@@ -302,15 +302,19 @@ def create_role(server, db_name, role_name="test_role"):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''
+        sql_query = '''
             CREATE USER "%s" WITH
               LOGIN
               NOSUPERUSER
               INHERIT
               CREATEDB
               NOCREATEROLE
-              NOREPLICATION
             ''' % (role_name)
+        if connection.server_version > 90100:
+            sql_query += '\nNOREPLICATION'
+
+        pg_cursor.execute(
+            sql_query
         )
         connection.set_isolation_level(old_isolation_level)
         connection.commit()

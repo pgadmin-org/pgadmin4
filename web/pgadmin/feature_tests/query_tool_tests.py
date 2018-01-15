@@ -53,16 +53,22 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # explain query with verbose and cost
         print("Explain query with verbose and cost... ",
               file=sys.stderr, end="")
-        self._query_tool_explain_with_verbose_and_cost()
-        print("OK.", file=sys.stderr)
-        self._clear_query_tool()
+        if self._test_explain_plan_feature():
+            self._query_tool_explain_with_verbose_and_cost()
+            print("OK.", file=sys.stderr)
+            self._clear_query_tool()
+        else:
+            print("Skipped.", file=sys.stderr)
 
         # explain analyze query with buffers and timing
         print("Explain analyze query with buffers and timing... ",
               file=sys.stderr, end="")
-        self._query_tool_explain_analyze_with_buffers_and_timing()
-        print("OK.", file=sys.stderr)
-        self._clear_query_tool()
+        if self._test_explain_plan_feature():
+            self._query_tool_explain_analyze_with_buffers_and_timing()
+            print("OK.", file=sys.stderr)
+            self._clear_query_tool()
+        else:
+            print("Skipped.", file=sys.stderr)
 
         # auto commit disabled.
         print("Auto commit disabled... ", file=sys.stderr, end="")
@@ -567,3 +573,12 @@ SELECT 1, pg_sleep(300)"""
         self.page.find_by_xpath(
             '//div[contains(@class, "sql-editor-message") and contains(string(), "canceling statement due to user request")]'
         )
+
+    def _test_explain_plan_feature(self):
+        connection = test_utils.get_db_connection(self.server['db'],
+                                                  self.server['username'],
+                                                  self.server['db_password'],
+                                                  self.server['host'],
+                                                  self.server['port'],
+                                                  self.server['sslmode'])
+        return connection.server_version > 90100

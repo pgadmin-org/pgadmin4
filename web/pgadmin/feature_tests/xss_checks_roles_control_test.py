@@ -21,6 +21,10 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     ]
 
     def before(self):
+        with test_utils.Database(self.server) as (connection, _):
+            if connection.server_version < 90100:
+                self.skipTest("Membership is not present in Postgres below PG v9.1")
+
         # Some test function is needed for debugger
         test_utils.create_role(self.server, "postgres",
                                "test_role")
