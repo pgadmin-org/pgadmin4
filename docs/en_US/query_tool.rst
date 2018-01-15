@@ -8,6 +8,7 @@ The Query tool is a powerful, feature-rich environment that allows you to execut
 
 * Issue ad-hoc SQL queries.
 * Execute arbitrary SQL commands.
+* Displays current connection and transaction status as configured by the user.
 * Save the data displayed in the output panel to a CSV file.
 * Review the execution plan of a SQL statement in either a text or a graphical format.
 * View analytical information about a SQL statement.
@@ -206,3 +207,8 @@ The Query History tab displays information about recent commands:
 * Messages returned by the server (not noted on the *Messages* tab).
 
 To erase the content of the *Query History* tab, select *Clear history* from the *Clear* drop-down menu.
+
+Use the *Connection status* feature to view the current connection and transaction status by clicking on the status icon in query tool:
+
+.. image:: images/query_tool_connection_status.png
+    :alt: Query tool connection and transaction statuses

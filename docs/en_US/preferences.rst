@@ -115,6 +115,10 @@ Use the fields on the *CSV Output* panel to control the CSV output.
 
 Use the fields on the *Display* panel to specify your preferences for the SQL Editor display.
 
+* When the *Connection status* switch is set to *True*, each new instance of the SQL Editor will display connection and transaction status.
+
+* Use the *Connection status refresh rate* field to specify the number of seconds between connection/transaction status updates.
+
 * When the *Open in new browser tab* switch is set to *True*, each new instance of the SQL Editor will open in a new browser tab.
 
 * Use the *Query info notifier timeout* field to control the behaviour of the notifier that is displayed when query execution completes. A value of *-1* will disable the notifier, and a value of 0 will display it until clicked. If a positive value above zero is specified, the notifier will be displayed for the specified number of seconds. The default is *5*.
