@@ -86,8 +86,9 @@ setup(
 
     extras_require={
         # ...
-        ":python_version<'2.7'": ["ordereddict"],
+        ":python_version<'2.7'": ["ordereddict", "Flask-Script"],
         ":python_version<='2.7'": ["backports.csv", "importlib"],
+        ":python_version>='2.7'": ["Flask-HTMLmin"]
     },
 
     # Specify data files to be included. For Python 2.6 include them in MANIFEST.in
