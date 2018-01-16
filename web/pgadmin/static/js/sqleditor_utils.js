@@ -137,7 +137,7 @@ define(['jquery', 'sources/gettext'],
               // from server, we need to error out
               sqlEditorUtils.previousStatus = -99;
               msg = gettext("An unexpected error occurred - " +
-                            "ensure sure you are logged into the application.");
+                            "ensure you are logged into the application.");
               $el.attr('data-content', msg);
               if(!$status_el.hasClass('fa-query-tool-disconnected')) {
                 $el.popover('hide');
