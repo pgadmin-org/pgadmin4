@@ -86,7 +86,7 @@
     "webcabin-docker": "^2.2.2"
   },
   "scripts": {
-    "linter": "yarn run eslint pgadmin/static/jsx/**/*.jsx pgadmin/static/js/selection/*.js regression/javascript/**/*.jsx regression/javascript/**/*.js *.js",
+    "linter": "node pga_eslint.js",
     "webpacker": "yarn run webpack --config webpack.config.js --progress",
     "webpacker:watch": "yarn run webpack --config webpack.config.js --progress --watch",
     "bundle:watch": "yarn run linter && yarn run webpacker:watch",
