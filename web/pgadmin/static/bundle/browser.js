@@ -1,5 +1,5 @@
 define('bundled_browser',[
- 'pgadmin.browser'
+  'pgadmin.browser',
 ], function(pgBrowser) {
   pgBrowser.init();
 });

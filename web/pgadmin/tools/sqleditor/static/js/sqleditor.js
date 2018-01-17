@@ -156,7 +156,7 @@ define('tools.querytool', [
             'filename': 'css',
           }),
           theme: 'webcabin.overrides.css',
-      });
+        });
 
       var sql_panel = new pgAdmin.Browser.Panel({
         name: 'sql_panel',
@@ -298,13 +298,13 @@ define('tools.querytool', [
                 transId = self.handler.transId;
               // If transaction id is already set
               if($container.data('trans-id') != transId) {
-                $container.data('trans-id', transId)
+                $container.data('trans-id', transId);
               }
 
               if (!$container.hasClass('wcPanelTabContentHidden')) {
-                 setTimeout(function () {
-                   self.handler.gridView.query_tool_obj.focus();
-                 }, 200);
+                setTimeout(function () {
+                  self.handler.gridView.query_tool_obj.focus();
+                }, 200);
                 // Trigger an event to update connection status flag
                 pgBrowser.Events.trigger(
                   'pgadmin:query_tool:panel:gain_focus:' + transId
@@ -321,10 +321,10 @@ define('tools.querytool', [
                 pgBrowser.Events.trigger(
                   'pgadmin:query_tool:panel:lost_focus:' + transId
                 );
-               }
-             });
-           }
-         });
+              }
+            });
+          }
+        });
 
         // Code to update connection status polling flag
         pgBrowser.Events.on(
