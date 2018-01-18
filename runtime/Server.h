@@ -27,22 +27,24 @@ public:
     ~Server();
 
     bool Init();
-    QString getError() { return m_error; };
+    QString getError() { return m_error; }
 
 protected:
     void run();
 
 private:
-    void setError(QString error) { m_error = error; };
+    void setError(QString error) { m_error = error; }
 
     QString m_appfile;
     QString m_error;
 
     quint16  m_port;
     QString m_key;
+
     // Application name in UTF-8 for Python
     wchar_t *m_wcAppName;
     QByteArray PGA_APP_NAME_UTF8;
+
     // PythonHome for Python
     wchar_t *m_wcPythonHome;
     QByteArray pythonHome_utf8;

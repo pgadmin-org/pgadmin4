@@ -1,4 +1,4 @@
-VERSION = 2.1.0.0
+VERSION = 3.0.0.0
 QMAKE_TARGET_COMPANY = "The pgAdmin Development Team"
 QMAKE_TARGET_PRODUCT = "pgAdmin 4"
 QMAKE_TARGET_DESCRIPTION = "pgAdmin 4 Desktop Runtime"
@@ -7,42 +7,12 @@ QMAKE_TARGET_COPYRIGHT = "Copyright 2013 - 2018, The pgAdmin Development Team"
 # Configure QT modules for the appropriate version of QT
 greaterThan(QT_MAJOR_VERSION, 4) {
     message(Building for QT5+...)
-
-    # Users can force the use of WebKit in Qt5, e.g. qmake "DEFINES += PGADMIN4_USE_WEBKIT"
-    contains(DEFINES, PGADMIN4_USE_WEBKIT) {
-        message(Forcing use of QWebKit...)
-        message()
-        message(************************************** WARNING **************************************)
-        message(* It is strongly advised that Qt 5.5.0 or later is used to build the pgAdmin runtime.)
-        message(*************************************************************************************)
-        message()
-        QT += webkitwidgets network widgets
-    } else {
-        greaterThan(QT_MINOR_VERSION, 4) {
-            message(Using QWebEngine...)
-            DEFINES += PGADMIN4_USE_WEBENGINE
-            QT += webenginewidgets network widgets
-        } else {
-            message(Using QWebKit...)
-            message()
-            message(************************************** WARNING **************************************)
-            message(* It is strongly advised that Qt 5.5.0 or later is used to build the pgAdmin runtime.)
-            message(*************************************************************************************)
-            message()
-            DEFINES *= PGADMIN4_USE_WEBKIT
-            QT += webkitwidgets network widgets
-        }
-    }
+    message()
+    QT += network widgets
 } else { 
     message(Building for QT4...)
-    message(Using QWebKit...)
     message()
-    message(************************************** WARNING **************************************)
-    message(* It is strongly advised that Qt 5.5.0 or later is used to build the pgAdmin runtime.)
-    message(*************************************************************************************)
-    message()
-    DEFINES += PGADMIN4_USE_WEBKIT
-    QT += webkit network
+    QT += network
 }
 win32 {
   RC_ICONS += pgAdmin4.ico
@@ -122,23 +92,18 @@ else {
 }
 
 # Source code
-HEADERS     =   BrowserWindow.h \
+HEADERS     =   \
                 Server.h \
                 pgAdmin4.h \
-                TabWindow.h \
-                WebViewWindow.h \
-                ConfigWindow.h
+                ConfigWindow.h \
+                TrayIcon.h
 SOURCES     =   pgAdmin4.cpp \
-                BrowserWindow.cpp \
                 Server.cpp \
-                TabWindow.cpp \
-                WebViewWindow.cpp \
-                ConfigWindow.cpp
-FORMS       =   BrowserWindow.ui \
-                ConfigWindow.ui
+                ConfigWindow.cpp \
+                TrayIcon.cpp
+FORMS       =   ConfigWindow.ui
 ICON        =   pgAdmin4.icns
 QMAKE_INFO_PLIST = Info.plist
 
-RESOURCES += \
-    pgadmin4.qrc
+RESOURCES +=    pgadmin4.qrc
 

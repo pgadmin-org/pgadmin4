@@ -32,9 +32,9 @@
 #endif
 
 // App headers
-#include "BrowserWindow.h"
 #include "ConfigWindow.h"
 #include "Server.h"
+#include "TrayIcon.h"
 
 #include <QTime>
 
@@ -186,6 +186,7 @@ int main(int argc, char * argv[])
 
     // Create the QT application
     QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
 
     // Setup the settings management
     QCoreApplication::setOrganizationName("pgadmin");
@@ -197,36 +198,29 @@ int main(int argc, char * argv[])
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
-#ifdef _WIN32
-    // Set registry "HKEY_CLASSES_ROOT\.css\Content Type" to value "text/css" to avoid rendering issue in windows OS.
-    QString infoMsgStr("");
-    QSettings css_keys("HKEY_CLASSES_ROOT", QSettings::NativeFormat);
+    // Check for an existing instance
+    QString homeDir = QDir::homePath();
+    QLockFile lockFile(homeDir + QString("/.%1.lock").arg(PGA_APP_NAME));
+    QFile addrFile(homeDir + QString("/.%1.addr").arg(PGA_APP_NAME));
 
-    // If key already exists then check for existing value and it differs then only change it.
-    if (css_keys.childGroups().contains(".css", Qt::CaseInsensitive))
-    {
-        QSettings set("HKEY_CLASSES_ROOT\\.css", QSettings::NativeFormat);
-        if (set.value("Content Type").toString() != "text/css")
-        {
-            set.setValue("Content Type", "text/css");
-            // If error while setting registry then it should be issue with permissions.
-            if (set.status() == QSettings::NoError)
-                infoMsgStr = "pgAdmin 4 application has reset the registry key 'HKEY_CLASSES_ROOT\\css\\Content Type' to 'text/css' to fix a system  misconfiguration that can lead to rendering problems.";
-            else
-                infoMsgStr = "Failed to reset the registry key 'HKEY_CLASSES_ROOT\\css\\Content Type' to 'text/css'. Try to run with Administrator privileges.";
-        }
+    if(!lockFile.tryLock(100)){
+        addrFile.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream in(&addrFile);
+        QString addr = in.readLine();
+        QDesktopServices::openUrl(addr);
+        return 0;
     }
-#endif
 
-    /* In windows and linux, it is required to set application level proxy
-     * becuase socket bind logic to find free port gives socket creation error
-     * when system proxy is configured. We are also setting
-     * "setUseSystemConfiguration"=true to use the system proxy which will
-     * override this application level proxy. As this bug is fixed in Qt 5.9 so
-     * need to set application proxy for Qt version < 5.9.
-     */
-#ifndef PGADMIN4_USE_WEBENGINE
-  #if defined (Q_OS_WIN) && QT_VERSION <= 0x050800
+    atexit(cleanup);
+
+    // In windows and linux, it is required to set application level proxy
+    // becuase socket bind logic to find free port gives socket creation error
+    // when system proxy is configured. We are also setting
+    // "setUseSystemConfiguration"=true to use the system proxy which will
+    // override this application level proxy. As this bug is fixed in Qt 5.9 so
+    // need to set application proxy for Qt version < 5.9.
+    //
+#if defined (Q_OS_WIN) && QT_VERSION <= 0x050800
     // Give dummy URL required to find proxy server configured in windows.
     QNetworkProxyQuery proxyQuery(QUrl("https://www.pgadmin.org"));
     QNetworkProxy l_proxy;
@@ -241,18 +235,15 @@ int main(int argc, char * argv[])
             QNetworkProxy::setApplicationProxy(QNetworkProxy());
         }
     }
-  #endif
 #endif
 
-#ifndef PGADMIN4_USE_WEBENGINE
-  #if defined (Q_OS_LINUX) && QT_VERSION <= 0x050800
+#if defined (Q_OS_LINUX) && QT_VERSION <= 0x050800
     QByteArray proxy_env;
     proxy_env = qgetenv("http_proxy");
     // If http_proxy environment is defined in linux then proxy server is configured.
     if (!proxy_env.isEmpty()) {
         QNetworkProxy::setApplicationProxy(QNetworkProxy());
     }
-  #endif
 #endif
 
     // Display the spash screen
@@ -301,6 +292,17 @@ int main(int argc, char * argv[])
 #else
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 #endif
+
+    // Start the tray service
+    TrayIcon *trayicon = new TrayIcon();
+
+    if (!trayicon->Init())
+    {
+        QString error = QString(QWidget::tr("An error occurred initialising the tray icon"));
+        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+        exit(1);
+    }
 
     // Fire up the webserver
     Server *server;
@@ -393,7 +395,7 @@ int main(int argc, char * argv[])
     }
 
     // Attempt to connect one more time in case of a long network timeout while looping
-    if(!alive && !PingServer(QUrl(appServerUrl)))
+    if (!alive && !PingServer(QUrl(appServerUrl)))
     {
         splash->finish(NULL);
         QString error(QWidget::tr("The application server could not be contacted."));
@@ -402,26 +404,17 @@ int main(int argc, char * argv[])
         exit(1);
     }
 
-    // Create & show the main window
-    BrowserWindow browserWindow(appServerUrl);
-    browserWindow.setWindowTitle(PGA_APP_NAME);
-    browserWindow.setWindowIcon(QIcon(":/pgAdmin4.ico"));
-#ifdef _WIN32
-    browserWindow.setRegistryMessage(infoMsgStr);
-#endif
-    browserWindow.show();
+    // Stash the URL for any duplicate processes to open
+    if (addrFile.open(QIODevice::WriteOnly))
+    {
+        QTextStream out(&addrFile);
+        out << appServerUrl << endl;
+    }
 
     // Go!
+    trayicon->setAppServerUrl(appServerUrl);
+    QDesktopServices::openUrl(appServerUrl);
     splash->finish(NULL);
-
-    // Set global application stylesheet.
-    QFile file(":/qss/pgadmin4.qss");
-    if(file.open(QFile::ReadOnly))
-    {
-       QString StyleSheet = QLatin1String(file.readAll());
-       qApp->setStyleSheet(StyleSheet);
-       file.close();
-    }
 
     return app.exec();
 }
@@ -466,5 +459,14 @@ bool PingServer(QUrl url)
     }
 
     return true;
+}
+
+void cleanup()
+{
+    // Check for an existing instance
+    QString homeDir = QDir::homePath();
+    QFile addrFile(homeDir + QString("/.%1.addr").arg(PGA_APP_NAME));
+
+    addrFile.remove();
 }
 
