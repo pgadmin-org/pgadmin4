@@ -28,7 +28,7 @@ runtime/.qmake.stash
 runtime/Makefile
 runtime/Makefile.Debug
 runtime/Makefile.Release
-runtime/moc_BrowserWindow.cpp
+runtime/moc_TrayIcon.cpp
 runtime/moc_Server.cpp
 runtime/pgAdmin4.app/
 runtime/pgAdmin4.pro.user*
