@@ -146,7 +146,13 @@ void TrayIcon::createActions()
 // Create a new application browser window onuser request
 void TrayIcon::onNew()
 {
-    QDesktopServices::openUrl(m_appServerUrl);
+    if (!QDesktopServices::openUrl(m_appServerUrl))
+    {
+        QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
+        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+        exit(1);
+    }
 }
 
 // Show the config dialogue

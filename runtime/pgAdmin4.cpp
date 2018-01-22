@@ -413,7 +413,13 @@ int main(int argc, char * argv[])
 
     // Go!
     trayicon->setAppServerUrl(appServerUrl);
-    QDesktopServices::openUrl(appServerUrl);
+    if (!QDesktopServices::openUrl(appServerUrl))
+    {
+        QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
+        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+        exit(1);
+    }
     splash->finish(NULL);
 
     return app.exec();
