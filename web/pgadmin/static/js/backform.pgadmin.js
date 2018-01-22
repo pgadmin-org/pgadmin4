@@ -1024,7 +1024,7 @@ define([
       // Insert Edit Cell into Grid
       if (data.disabled == false && data.canEdit) {
         var editCell = Backgrid.Extension.ObjectCell.extend({
-          schema: gridSchema.schema
+          schema: gridSchema.schema,
         });
 
         gridSchema.columns.unshift({
