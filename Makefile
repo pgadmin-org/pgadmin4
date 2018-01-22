@@ -35,7 +35,7 @@ linter:
 	cd web && yarn run linter
 
 check: install-node bundle linter
-	cd web && yarn run karma start -- --single-run && python regression/runtests.py
+	cd web && yarn run karma start --single-run && python regression/runtests.py
 
 check-python:
 	cd web && python regression/runtests.py --exclude feature_tests
@@ -44,7 +44,7 @@ check-feature: install-node bundle
 	cd web && python regression/runtests.py --pkg feature_tests
 
 check-js: install-node linter
-	cd web && yarn run karma start -- --single-run
+	cd web && yarn run karma start --single-run
 
 # Include all clean sub-targets in clean
 clean: clean-appbundle clean-docker clean-dist clean-docs clean-pip clean-src
