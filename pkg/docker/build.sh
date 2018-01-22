@@ -60,7 +60,9 @@ pushd web
     yarn install
     yarn run bundle
 
-    for FILE in `ls -d pgAdmin/static/js/generated/*`
+    rm -rf pgadmin/static/js/generated/.cache
+
+    for FILE in `ls -d pgadmin/static/js/generated/*`
     do
         echo Adding $FILE
         tar cf - $FILE | (cd ../docker-build/web; tar xf -)
