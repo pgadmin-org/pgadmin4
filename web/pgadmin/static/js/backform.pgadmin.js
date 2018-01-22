@@ -983,7 +983,7 @@ define([
         gridHeader = _.template([
           '<div class="subnode-header">',
           '  <label class="control-label pg-el-sm-10"><%-label%></label>',
-          '  <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></button>',
+          '  <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"><%-add_label%></button>',
           '</div>',
         ].join('\n')),
         gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode"></div>').append(
@@ -1024,7 +1024,7 @@ define([
       // Insert Edit Cell into Grid
       if (data.disabled == false && data.canEdit) {
         var editCell = Backgrid.Extension.ObjectCell.extend({
-          schema: gridSchema.schema,
+          schema: gridSchema.schema
         });
 
         gridSchema.columns.unshift({
@@ -1246,7 +1246,7 @@ define([
       var self = this,
         gridHeader = ['<div class=\'subnode-header\'>',
           '  <label class=\'control-label pg-el-sm-10\'>' + data.label + '</label>',
-          '  <button class=\'btn-sm btn-default add fa fa-plus\'></button>',
+          '  <button class=\'btn-sm btn-default add fa fa-plus\' title=\'' + _('Add new row') + '\'></button>',
           '</div>',
         ].join('\n'),
         gridBody = $('<div class=\'pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode\'></div>').append(gridHeader);

@@ -330,7 +330,7 @@ define([
 
         if (editable) {
           this.$el.html(
-            '<i class=\'fa fa-pencil-square subnode-edit-in-process\'></i>'
+            '<i class=\'fa fa-pencil-square subnode-edit-in-process\' title=\'' + _('Edit row') + '\'></i>'
           );
           this.model.trigger(
             'pg-sub-node:opened', this.model, this
@@ -345,7 +345,7 @@ define([
     },
     render: function() {
       this.$el.empty();
-      this.$el.html('<i class=\'fa fa-pencil-square-o\'></i>');
+      this.$el.html('<i class=\'fa fa-pencil-square-o\' title=\'' + _('Edit row') + '\'></i>');
       this.delegateEvents();
       if (this.grabFocus)
         this.$el.focus();
@@ -422,7 +422,7 @@ define([
     },
     render: function() {
       this.$el.empty();
-      this.$el.html('<i class=\'fa fa-trash\'></i>');
+      this.$el.html('<i class=\'fa fa-trash\' title=\'' + _('Delete row') + '\'></i>');
       this.delegateEvents();
       return this;
     },

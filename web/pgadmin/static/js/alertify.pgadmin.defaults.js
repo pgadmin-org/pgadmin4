@@ -190,6 +190,8 @@ define([
   alertify.pgDialogBuild = function() {
     this.set('onshow', function() {
       this.elements.dialog.classList.add('pg-el-container');
+      $(this.elements.commands.close).attr('title', gettext('Close'));
+      $(this.elements.commands.maximize).attr('title', gettext('Maximize'));
       alertifyDialogResized.apply(this, arguments);
     });
     this.set('onresize', alertifyDialogStartResizing.bind(this, true));
@@ -368,6 +370,12 @@ define([
       return alert;
     },
   });
+
+  // Confirm dialogue: Set title attribute
+  alertify.confirm().set({onshow:function() {
+    $(this.elements.commands.close).attr('title', gettext('Close'));
+    $(this.elements.commands.maximize).attr('title', gettext('Maximize'));
+  }});
 
   return alertify;
 });
