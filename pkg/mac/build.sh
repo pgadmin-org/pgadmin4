@@ -137,11 +137,7 @@ _build_runtime() {
     _create_python_virtualenv || exit 1
     cd $SOURCEDIR/runtime
     make clean
-    if [ "$PGADMIN4_USE_WEBKIT" == "1" ]; then
-        $QMAKE DEFINES+=PGADMIN4_USE_WEBKIT || { echo qmake failed; exit 1; }
-    else
-        $QMAKE || { echo qmake failed; exit 1; }
-    fi
+    $QMAKE || { echo qmake failed; exit 1; }
     make || { echo make failed; exit 1; }
     cp -r pgAdmin4.app "$BUILDROOT/$APP_BUNDLE_NAME"
 }
@@ -187,7 +183,7 @@ _complete_bundle() {
     cp -r $SOURCEDIR/web "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/" || exit 1
     cd "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/web"
     rm -f pgadmin4.db config_local.*
-    rm -rf karma.conf.js package.json node_modules/ regression/ tools/
+    rm -rf karma.conf.js package.json node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
     find . -name "tests" -type d -exec rm -rf "{}" \;
     find . -name "feature_tests" -type d -exec rm -rf "{}" \;
     find . -name ".DS_Store" -exec rm -f "{}" \;

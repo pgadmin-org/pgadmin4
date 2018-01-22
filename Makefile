@@ -19,9 +19,6 @@ all: docs pip src
 appbundle: docs
 	./pkg/mac/build.sh
 
-appbundle-webkit: docs
-	PGADMIN4_USE_WEBKIT=1 ./pkg/mac/build.sh
-
 install-node:
 	cd web && yarn install
 

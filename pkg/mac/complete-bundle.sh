@@ -86,13 +86,6 @@ function CompleteSingleApp() {
 						test -d $lib_loc || mkdir -p $lib_loc
 						echo Copying -R $QTDIR/lib/$qtfw_path/$lib_bn to $lib_loc/
 						cp $QTDIR/lib/$qtfw_path/$lib_bn $lib_loc/
-
-						if [ "$lib_bn" = "QtWebEngineCore" ]; then
-						    # QtWebEngineCore has some required resources
-						    cp -R $QTDIR/lib/$qtfw_path/Resources $lib_loc/
-						    cp -R $QTDIR/lib/$qtfw_path/Helpers $lib_loc/
-						    ln -s Versions/Current/Helpers "$bundle/Contents/Frameworks/QtWebEngineCore.Framework/Helpers"
-						fi
 					elif echo $lib | grep Python > /dev/null ; then
 						test -d $lib_loc || mkdir -p $lib_loc
 						cp -R "$lib" "$lib_loc/$lib_bn"
