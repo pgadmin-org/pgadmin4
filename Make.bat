@@ -83,8 +83,8 @@ REM Main function Ends
     IF %OSVALUE%=="x86" (
         IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\System32\python27.dll"
-        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
-        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\9.6"
+        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.9\msvc2013"
+        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\10"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
         SET "VCREDISTNAME=vcredist_x86.exe"
@@ -94,8 +94,8 @@ REM Main function Ends
     IF "%ARCHITECTURE%"=="x86" (
         IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\SysWOW64\python27.dll"
-        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
-        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\9.6"
+        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.9\msvc2013"
+        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\10"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files (x86)\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC"
         IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x86.exe"
@@ -105,8 +105,8 @@ REM Main function Ends
     IF "%ARCHITECTURE%"=="amd64" (
         IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27-x64"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\System32\python27.dll"
-        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
-        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\9.6"
+        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.9\msvc2013"
+        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\10"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
         IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x64.exe"
@@ -150,11 +150,6 @@ REM Main function Ends
     ECHO QTDIR       = %QTDIR%
     ECHO QMAKE       = %QMAKE%
     ECHO QT_VERSION  = %QT_VERSION%
-    IF %QT_VERSION% GEQ 5.5 (
-        ECHO BROWSER     = QtWebEngine
-    ) ELSE (
-        ECHO BROWSER     = QtWebKit
-    )
     ECHO PYTHON_HOME = %PYTHON_HOME%
     ECHO PYTHON_DLL  = %PYTHON_DLL%
     ECHO PGDIR       = %PGDIR%
@@ -244,6 +239,9 @@ REM Main function Ends
     ECHO Bundle all Javascript
     call yarn run bundle
 
+    REM Remove any cache
+    RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache"
+
     XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
@@ -332,65 +330,6 @@ REM Main function Ends
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5MultimediaWidgets.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-
-    REM Install the appropriate browser components. We use QtWebEngine with Qt 5.5+
-    IF %QT_VERSION% GEQ 5.7 (
-        copy "%QTDIR%\bin\Qt5QuickWidgets.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    )
-
-    IF %QT_VERSION% GEQ 5.7 (
-        copy "%QTDIR%\resources\icudtl.dat" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\resources\qtwebengine_resources.pak" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\resources\qtwebengine_devtools_resources.pak" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\resources\qtwebengine_resources_100p.pak" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\resources\qtwebengine_resources_200p.pak" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\Qt5WebEngine.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\Qt5WebEngineCore.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\Qt5WebEngineWidgets.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\QtWebEngineProcess.exe" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\opengl32sw.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    ) ELSE (
-        IF %QT_VERSION% GEQ 5.5 (
-            copy "%QTDIR%\bin\icudt54.dll"   "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\bin\icuin54.dll"   "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\bin\icuuc54.dll"   "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\icudtl.dat" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\qtwebengine_resources.pak" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\qtwebengine_resources_100p.pak" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\qtwebengine_resources_200p.pak" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\bin\Qt5WebEngine.dll" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\bin\Qt5WebEngineCore.dll" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\bin\Qt5WebEngineWidgets.dll" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\bin\QtWebEngineProcess.exe" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        ) ELSE (
-            copy "%QTDIR%\bin\Qt5WebKit.dll" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-            copy "%QTDIR%\bin\Qt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
-            IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        )
-    )
 
     MKDIR "%PGBUILDPATH%\runtime\platforms"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%

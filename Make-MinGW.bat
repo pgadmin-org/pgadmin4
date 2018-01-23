@@ -61,7 +61,7 @@ REM Main function Ends
     IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27"
     IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\SysWOW64\python27.dll"
     IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.9.1\mingw53_32"
-    IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\9.6"
+    IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\10"
     IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files (x86)\Inno Setup 5"
     IF "%YARNDIR%" == ""       SET "YARNDIR=C:\Program Files\Yarn"
     IF "%NODEJSDIR%" == ""     SET "NODEJSDIR=C:\Program Files\nodejs"
@@ -73,7 +73,7 @@ REM Main function Ends
     GOTO:eof
 
 :VALIDATE_ENVIRONMENT
-    REM SET the variables IF not availalbe in windows environment
+    REM SET the variables IF not available in windows environment
     SET "QMAKE=%QTDIR%\bin\qmake.exe"
     SET "VIRTUALENV=venv"
     SET "TARGETINSTALLER=%WD%\dist"
@@ -108,7 +108,6 @@ REM Main function Ends
     ECHO QT_VERSION  = %QT_VERSION%
     ECHO YARNDIR     = %YARNDIR%
     ECHO NODEJSDIR   = %NODEJSDIR%
-    ECHO BROWSER     = QtWebKit
     ECHO PYTHON_HOME = %PYTHON_HOME%
     ECHO PYTHON_DLL  = %PYTHON_DLL%
     ECHO PGDIR       = %PGDIR%
@@ -174,6 +173,9 @@ REM Main function Ends
     call yarn install
     ECHO Bundle all Javascript
     call yarn run bundle
+
+    REM Remove any cache
+    RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache"
 
     XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
@@ -261,18 +263,6 @@ REM Main function Ends
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5MultimediaWidgets.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-
-    IF %QT_VERSION% GEQ 5.9 (
-        copy "%QTDIR%\bin\Qt5WebKit.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\Qt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    ) ELSE (
-        copy "%QTDIR%\bin\libQt5WebKit.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\libQt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
-        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    )
 
     copy "%QTDIR%\bin\icudt57.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
