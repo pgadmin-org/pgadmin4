@@ -63,8 +63,9 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         try:
             wait = WebDriverWait(self.page.driver, 2)
             is_error = wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//div[contains(@class,'ajs-header')]"))
+                (By.XPATH, "//div[contains(@class, 'alertify') and not(contains(@class, 'ajs-hidden'))]//div[contains(@class,'ajs-header')]"))
             )
+
         except TimeoutException as e:
             is_error = None
 

@@ -80,7 +80,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
             '&lt;h1&gt;test&lt;/h1&gt;',
             'Role Membership Control'
         )
-        self.page.find_by_xpath("//button[contains(.,'Cancel')]").click()
+        self.page.find_by_xpath("//button[contains(@type, 'cancel') and contains(.,'Cancel')]").click()
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code

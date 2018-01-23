@@ -78,7 +78,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             (By.XPATH, "//*[contains(string(), 'Show system objects?')]"))
         )
 
-        self.page.find_by_css_selector(".ajs-maximize").click()
+        self.page.find_by_css_selector(".ajs-dialog.pg-el-container .ajs-maximize").click()
 
         sql_editor = self.page.find_by_xpath(
             "//*[contains(@class,'aciTreeLi') and contains(.,'SQL Editor')]")
@@ -99,11 +99,12 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
         # save and close the preference dialog.
         self.page.find_by_xpath(
-            "//*[contains(@class,'btn-primary') and contains(.,'OK')]").click()
+            "//*[contains(@class,'pg-alertify-button') and contains(.,'OK')]").click()
 
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element_by_css_selector(".ajs-modal")
         )
+        time.sleep(0.5)
 
     def _create_enum_type(self):
         query = """CREATE TYPE public.rainbow AS ENUM ('red', 'orange',
