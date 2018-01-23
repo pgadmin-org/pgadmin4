@@ -1,6 +1,6 @@
 SELECT ct.oid,
     conname as name,
-    true as convalidated
+    NOT convalidated as convalidated
 FROM pg_constraint ct
 WHERE contype='f' AND
     conrelid = {{tid}}::oid

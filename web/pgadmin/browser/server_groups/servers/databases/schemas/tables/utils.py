@@ -116,7 +116,7 @@ class BaseTableView(PGChildNodeView):
                 if server_type == 'gpdb' else
                 '#{0}#'.format(ver)
             )
-            self.partition_template_path = 'partition/sql/#{0}#'.format(ver)
+            self.partition_template_path = 'partition/sql/{0}/#{0}#{1}#'.format(server_type, ver)
 
             # Template for Column ,check constraint and exclusion
             # constraint node
@@ -600,7 +600,8 @@ class BaseTableView(PGChildNodeView):
             # system columns
             SQL = render_template("/".join([self.table_template_path,
                                             'get_inherits.sql']),
-                                  show_system_objects=False
+                                  show_system_objects=False,
+                                  scid=scid
                                   )
             status, rset = self.conn.execute_2darray(SQL)
             if not status:

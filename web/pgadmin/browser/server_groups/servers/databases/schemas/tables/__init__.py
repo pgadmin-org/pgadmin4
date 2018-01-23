@@ -733,6 +733,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
                 "/".join([self.table_template_path, 'get_inherits.sql']),
                 show_system_objects=self.blueprint.show_system_objects,
                 tid=tid,
+                scid=scid,
                 server_type=self.manager.server_type
             )
             status, rset = self.conn.execute_2darray(SQL)

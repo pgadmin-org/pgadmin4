@@ -16,6 +16,7 @@ import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.partitions import backend_supported
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
@@ -74,17 +75,7 @@ class IndexesModule(CollectionNodeModule):
 
             # In case of partitioned table return false.
             if 'tid' in kwargs and manager.version >= 100000:
-                partition_path = 'partition/sql/#{0}#'.format(manager.version)
-                SQL = render_template(
-                    "/".join([partition_path, 'backend_support.sql']),
-                    tid=kwargs['tid']
-                )
-                status, res = conn.execute_scalar(SQL)
-
-                # check if any errors
-                if not status:
-                    return internal_server_error(errormsg=res)
-                return not res
+                return backend_supported(self, manager, **kwargs)
 
             if 'vid' not in kwargs:
                 return True

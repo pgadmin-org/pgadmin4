@@ -14,5 +14,4 @@ WHERE relkind='r'
 {% if tid %}
 AND c.oid != tid
 {% endif %}
-AND c.relnamespace = {{ scid }}
 ORDER BY relnamespace, c.relname

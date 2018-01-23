@@ -29,6 +29,7 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
 
         gpdb_versions = (
             {'name': "gpdb_5.0_plus", 'number': 80323},
+            {'name': "5_plus", 'number': 80323},
             {'name': "default", 'number': 0}
         )
 

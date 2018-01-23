@@ -26,6 +26,21 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.utils import PGChildModule
 
 
+def backend_supported(module, manager, **kwargs):
+    if 'tid' in kwargs and CollectionNodeModule.BackendSupported(module, manager, **kwargs):
+        conn = manager.connection(did=kwargs['did'])
+
+        template_path = 'partition/sql/{0}/#{0}#{1}#'.format(manager.server_type, manager.version)
+        SQL = render_template("/".join(
+            [template_path, 'backend_support.sql']), tid=kwargs['tid'])
+        status, res = conn.execute_scalar(SQL)
+
+        # check if any errors
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return res
+
 class PartitionsModule(CollectionNodeModule):
     """
      class PartitionsModule(CollectionNodeModule)
@@ -88,21 +103,7 @@ class PartitionsModule(CollectionNodeModule):
         """
         Load this module if it is a partition table
         """
-        if manager.server_type == 'gpdb':
-            return False
-        if 'tid' in kwargs and CollectionNodeModule.BackendSupported(self, manager, **kwargs):
-            conn = manager.connection(did=kwargs['did'])
-
-            template_path = 'partition/sql/#{0}#'.format(manager.version)
-            SQL = render_template("/".join(
-                [template_path, 'backend_support.sql']), tid=kwargs['tid'])
-            status, res = conn.execute_scalar(SQL)
-
-            # check if any errors
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            return res
+        return backend_supported(self, manager, **kwargs)
 
     def register(self, app, options, first_registration=False):
         """
