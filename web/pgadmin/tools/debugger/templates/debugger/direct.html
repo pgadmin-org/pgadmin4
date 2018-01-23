@@ -35,43 +35,56 @@ try {
     .debugger-container .wcLoadingIcon.fa-pulse{-webkit-animation: none;}
 </style>
 {% endif %}
-<nav class="navbar-inverse navbar-fixed-top">
-    <div id="btn-toolbar" class="btn-toolbar pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
-        <div class="btn-group" role="group" aria-label="">
-            <button type="button" class="btn btn-default btn-step-into" title="{{ _('Step into') }}"
-                    tabindex="1">
-                <i class="fa fa-indent"></i>
-            </button>
-            <button type="button" class="btn btn-default btn-step-over" title="{{ _('Step over') }}"
-                    tabindex="2">
-                <i class="fa fa-outdent"></i>
-            </button>
-            <button type="button" class="btn btn-default btn-continue" title="{{ _('Continue/Start') }}"
-                    tabindex="3">
-                <i class="fa fa-play-circle"></i>
-            </button>
+<div class="dubugger_main_container" tabindex="0">
+    <nav class="navbar-inverse navbar-fixed-top">
+        <div id="btn-toolbar" class="btn-toolbar pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
+            <div class="btn-group" role="group" aria-label="">
+                <button type="button" class="btn btn-default btn-step-into"
+                        title="{{ _('Step into') }}"
+                        accesskey="i"
+                        tabindex="0" autofocus="autofocus">
+                    <i class="fa fa-indent"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-step-over"
+                        title="{{ _('Step over') }}"
+                        accesskey="o"
+                        tabindex="0">
+                    <i class="fa fa-outdent"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-continue"
+                        title="{{ _('Continue/Start') }}"
+                        accesskey="c"
+                        tabindex="0">
+                    <i class="fa fa-play-circle"></i>
+                </button>
+            </div>
+            <div class="btn-group" role="group" aria-label="">
+                <button type="button" class="btn btn-default btn-toggle-breakpoint"
+                        title="{{ _('Toggle breakpoint') }}"
+                        accesskey="t"
+                        tabindex="0">
+                    <i class="fa fa-circle"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-clear-breakpoint"
+                        title="{{ _('Clear all breakpoints') }}"
+                        accesskey="x"
+                        tabindex="0">
+                    <i class="fa fa-ban"></i>
+                </button>
+            </div>
+            <div class="btn-group" role="group" aria-label="">
+                <button type="button" class="btn btn-default btn-stop"
+                        accesskey="s"
+                        title="{{ _('Stop') }}"
+                        tabindex="0">
+                    <i class="fa fa-stop-circle"></i>
+                </button>
+            </div>
         </div>
-        <div class="btn-group" role="group" aria-label="">
-            <button type="button" class="btn btn-default btn-toggle-breakpoint" title="{{ _('Toggle breakpoint') }}"
-                    tabindex="4">
-                <i class="fa fa-circle"></i>
-            </button>
-            <button type="button" class="btn btn-default btn-clear-breakpoint" title="{{ _('Clear all breakpoints') }}"
-                    tabindex="5">
-                <i class="fa fa-ban"></i>
-            </button>
-        </div>
-        <div class="btn-group" role="group" aria-label="">
-            <button type="button" class="btn btn-default btn-stop" title="{{ _('Stop') }}"
-                    tabindex="6">
-                <i class="fa fa-stop-circle"></i>
-            </button>
-        </div>
-    </div>
-</nav>
-<div id="container" class="debugger-container"></div>
+    </nav>
+    <div id="container" class="debugger-container" tabindex="0"></div>
+</div>
 {% endblock %}
-
 
 {% block css_link %}
 {% for stylesheet in stylesheets %}

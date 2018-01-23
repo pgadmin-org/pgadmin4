@@ -89,3 +89,43 @@ When using the Query Tool, the following shortcuts are available:
 +--------------------------+--------------------+-----------------------------------+
 | Ctrl+Shift+F             | Cmd+Shift+F        | Replace                           |
 +--------------------------+--------------------+-----------------------------------+
+
+**Debugger**
+
+When using the Debugger, the following shortcuts are available:
+
++--------------------------+---------------------------+------------------------------+
+| Shortcut (Windows/Linux) | Shortcut (Mac)            | Function                     |
++==========================+===========================+==============================+
+| <accesskey> + i          | <accesskey> + i           | Step in                      |
++--------------------------+---------------------------+------------------------------+
+| <accesskey> + o          | <accesskey> + o           | Step over                    |
++--------------------------+---------------------------+------------------------------+
+| <accesskey> + c          | <accesskey> + c           | Continue/Restart             |
++--------------------------+---------------------------+------------------------------+
+| <accesskey> + t          | <accesskey> + t           | Toggle breakpoint            |
++--------------------------+---------------------------+------------------------------+
+| <accesskey> + x          | <accesskey> + x           | Clear all breakpoints        |
++--------------------------+---------------------------+------------------------------+
+| <accesskey> + s          | <accesskey> + s           | Stop                         |
++--------------------------+---------------------------+------------------------------+
+| Alt + Shift + Right Arrow| Alt + Shift + Right Arrow | Move to next inner panel     |
++--------------------------+---------------------------+------------------------------+
+| Alt + Shift + Left Arrow | Alt + Shift + Left Arrow  | Move to previous inner panel |
++--------------------------+---------------------------+------------------------------+
+| Alt + Shift + g          | Alt + Shift + g           | Enter or Edit values in Grid |
++--------------------------+---------------------------+------------------------------+
+
+.. note:: <accesskey> is browser and platform dependant. The following table lists the default access keys for supported browsers.
+
++-------------------+------------+------------+------------+
+|                   | Windows    | Linux      | Mac        |
++===================+============+============+============+
+| Internet Explorer | Alt        | Alt        |            |
++-------------------+------------+------------+------------+
+| Chrome            | Alt        | Alt        | Ctrl+Alt   |
++-------------------+------------+------------+------------+
+| Firefox           | Alt+Shift  | Alt+Shift  | Ctrl+Alt   |
++-------------------+------------+------------+------------+
+| Safari            | Alt        |            | Ctrl+Alt   |
++-------------------+------------+------------+------------+

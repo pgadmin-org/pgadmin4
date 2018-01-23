@@ -17,6 +17,8 @@ import random
 from flask import url_for, Response, render_template, request, session, current_app
 from flask_babel import gettext
 from flask_security import login_required
+from werkzeug.useragents import UserAgent
+
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.ajax import make_json_response, \
@@ -346,6 +348,9 @@ def direct_new(trans_id):
     if "linux" in _platform:
         is_linux_platform = True
 
+    # We need client OS information to render correct Keyboard shortcuts
+    user_agent = UserAgent(request.headers.get('User-Agent'))
+
     return render_template(
         "debugger/direct.html",
         _=gettext,
@@ -354,6 +359,7 @@ def direct_new(trans_id):
         debug_type=debug_type,
         is_desktop_mode=current_app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
+        client_platform=user_agent.platform,
         stylesheets=[url_for('debugger.static', filename='css/debugger.css')]
     )
 

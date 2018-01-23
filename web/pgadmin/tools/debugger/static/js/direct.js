@@ -2,10 +2,10 @@ define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
   'pgadmin.backgrid', 'pgadmin.backform', 'sources/../bundle/codemirror',
-  'pgadmin.tools.debugger.ui', 'wcdocker',
+  'pgadmin.tools.debugger.ui', 'sources/keyboard_shortcuts', 'wcdocker',
 ], function(
   gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  Backform, codemirror, debug_function_again
+  Backform, codemirror, debug_function_again, keyboardShortcuts
 ) {
 
   var CodeMirror = codemirror.default,
@@ -31,7 +31,8 @@ define([
 
       /*
         Function to set the breakpoint and send the line no. which is set to server
-        trans_id :- Unique Transaction ID, line_no - line no. to set the breakpoint, set_type = 0 - clear , 1 - set
+        trans_id :- Unique Transaction ID, line_no - line no. to set the breakpoint,
+        set_type = 0 - clear , 1 - set
       */
       set_breakpoint: function(trans_id, line_no, set_type) {
         // Make ajax call to set/clear the break point by user
@@ -57,7 +58,8 @@ define([
         });
       },
 
-      // Function to get the latest breakpoint information and update the gutters of codemirror
+      // Function to get the latest breakpoint information and update the
+      // gutters of codemirror
       UpdateBreakpoint: function(trans_id) {
         var self = this;
 
@@ -223,7 +225,8 @@ define([
               // Call function to create and update local variables
               self.AddLocalVariables(res.data.result);
               self.AddParameters(res.data.result);
-              // If debug function is restarted then again start listener to read the updated messages.
+              // If debug function is restarted then again start listener to
+              // read the updated messages.
               if (pgTools.DirectDebug.debug_restarted) {
                 if (pgTools.DirectDebug.debug_type) {
                   self.poll_end_execution_result(trans_id);
@@ -281,8 +284,8 @@ define([
       },
 
       /*
-        poll the actual result after user has executed the "continue", "step-into", "step-over" actions and get the
-        other updated information from the server.
+        poll the actual result after user has executed the "continue", "step-into",
+        "step-over" actions and get the other updated information from the server.
       */
       poll_result: function(trans_id) {
         var self = this;
@@ -299,8 +302,9 @@ define([
           poll_timeout;
 
         /*
-          During the execution we should poll the result in minimum seconds but once the execution is completed
-          and wait for the another debugging session then we should decrease the polling frequency.
+          During the execution we should poll the result in minimum seconds but
+          once the execution is completed and wait for the another debugging
+          session then we should decrease the polling frequency.
         */
         if (pgTools.DirectDebug.polling_timeout_idle) {
           // Poll the result after 1 second
@@ -333,8 +337,13 @@ define([
                       pgTools.DirectDebug.docker.finishLoading(50);
                       pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
                       self.UpdateBreakpoint(trans_id);
-                      pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
-                      pgTools.DirectDebug.editor.addLineClass((res.data.result[0].linenumber - 2), 'wrap', 'CodeMirror-activeline-background');
+                      pgTools.DirectDebug.editor.removeLineClass(
+                        self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+                      );
+                      pgTools.DirectDebug.editor.addLineClass(
+                        (res.data.result[0].linenumber - 2),
+                        'wrap', 'CodeMirror-activeline-background'
+                      );
                       self.active_line_no = (res.data.result[0].linenumber - 2);
 
                       // Update the stack, local variables and parameters information
@@ -343,7 +352,9 @@ define([
                     } else if (!pgTools.DirectDebug.debug_type && !pgTools.DirectDebug.first_time_indirect_debug) {
                       pgTools.DirectDebug.docker.finishLoading(50);
                       if (self.active_line_no != undefined) {
-                        pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
+                        pgTools.DirectDebug.editor.removeLineClass(
+                          self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+                        );
                       }
                       self.clear_all_breakpoint(trans_id);
                       self.execute_query(trans_id);
@@ -358,8 +369,13 @@ define([
                         self.UpdateBreakpoint(trans_id);
                       }
 
-                      pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
-                      pgTools.DirectDebug.editor.addLineClass((res.data.result[0].linenumber - 2), 'wrap', 'CodeMirror-activeline-background');
+                      pgTools.DirectDebug.editor.removeLineClass(
+                        self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+                      );
+                      pgTools.DirectDebug.editor.addLineClass(
+                        (res.data.result[0].linenumber - 2),
+                        'wrap', 'CodeMirror-activeline-background'
+                      );
                       self.active_line_no = (res.data.result[0].linenumber - 2);
 
                       // Update the stack, local variables and parameters information
@@ -378,7 +394,9 @@ define([
                   pgTools.DirectDebug.polling_timeout_idle = true;
                   // If status is Busy then poll the result by recursive call to the poll function
                   if (!pgTools.DirectDebug.debug_type) {
-                    pgTools.DirectDebug.docker.startLoading(gettext('Waiting for another session to invoke the target...'));
+                    pgTools.DirectDebug.docker.startLoading(
+                      gettext('Waiting for another session to invoke the target...')
+                    );
 
                     // As we are waiting for another session to invoke the target,disable all the buttons
                     self.enable('stop', false);
@@ -429,8 +447,9 @@ define([
       },
 
       /*
-        For the direct debugging, we need to check weather the functions execution is completed or not. After completion
-        of the debugging, we will stop polling the result  until new execution starts.
+        For the direct debugging, we need to check weather the functions execution
+        is completed or not. After completion of the debugging, we will stop polling
+        the result  until new execution starts.
       */
       poll_end_execution_result: function(trans_id) {
         var self = this;
@@ -470,10 +489,13 @@ define([
                 if (res.data.status === 'Success') {
                   if (res.data.result == undefined) {
                     /*
-                     "result" is undefined only in case of EDB procedure. As Once the EDB procedure execution is completed
-                     then we are not getting any result so we need ignore the result.
+                     "result" is undefined only in case of EDB procedure.
+                     As Once the EDB procedure execution is completed then we are
+                     not getting any result so we need ignore the result.
                     */
-                    pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
+                    pgTools.DirectDebug.editor.removeLineClass(
+                      self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+                    );
                     pgTools.DirectDebug.direct_execution_completed = true;
                     pgTools.DirectDebug.polling_timeout_idle = true;
 
@@ -488,7 +510,8 @@ define([
                     // remove progress cursor
                     $('.debugger-container').removeClass('show_progress');
 
-                    // Execution completed so disable the buttons other than "Continue/Start" button because user can still
+                    // Execution completed so disable the buttons other than
+                    // "Continue/Start" button because user can still
                     // start the same execution again.
                     self.enable('stop', false);
                     self.enable('step_over', false);
@@ -501,7 +524,9 @@ define([
                   } else {
                     // Call function to create and update local variables ....
                     if (res.data.result != null) {
-                      pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
+                      pgTools.DirectDebug.editor.removeLineClass(
+                        self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+                      );
                       self.AddResults(res.data.col_info, res.data.result);
                       pgTools.DirectDebug.results_panel.focus();
                       pgTools.DirectDebug.direct_execution_completed = true;
@@ -518,7 +543,8 @@ define([
                       // remove progress cursor
                       $('.debugger-container').removeClass('show_progress');
 
-                      // Execution completed so disable the buttons other than "Continue/Start" button because user can still
+                      // Execution completed so disable the buttons other than
+                      // "Continue/Start" button because user can still
                       // start the same execution again.
                       self.enable('stop', false);
                       self.enable('step_over', false);
@@ -532,7 +558,8 @@ define([
                     }
                   }
                 } else if (res.data.status === 'Busy') {
-                  // If status is Busy then poll the result by recursive call to the poll function
+                  // If status is Busy then poll the result by recursive call to
+                  // the poll function
                   self.poll_end_execution_result(trans_id);
                   // Update the message tab of the debugger
                   if (res.data.status_message) {
@@ -545,9 +572,12 @@ define([
                   );
                 } else if (res.data.status === 'ERROR') {
                   pgTools.DirectDebug.direct_execution_completed = true;
-                  pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
+                  pgTools.DirectDebug.editor.removeLineClass(
+                    self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+                  );
 
-                  //Set the Alertify message to inform the user that execution is completed with error.
+                  //Set the Alertify message to inform the user that execution is
+                  // completed with error.
                   if (!pgTools.DirectDebug.is_user_aborted_debugging) {
                     Alertify.error(res.info, 3);
                   }
@@ -625,14 +655,16 @@ define([
             }
 
             /*
-             Need to check if restart debugging really require to open the input dialog ?
-             If yes then we will get the previous arguments from database and populate the input dialog
-             If no then we should directly start the listener.
+             Need to check if restart debugging really require to open the input
+             dialog? If yes then we will get the previous arguments from database
+             and populate the input dialog, If no then we should directly start the
+             listener.
             */
             if (res.data.result.require_input) {
               debug_function_again(res.data.result, restart_dbg);
             } else {
-              // Debugging of void function is started again so we need to start the listener again
+              // Debugging of void function is started again so we need to start
+              // the listener again
               var baseUrl = url_for('debugger.start_listener', {
                 'trans_id': trans_id,
               });
@@ -803,7 +835,9 @@ define([
           success: function(res) {
             if (res.data.status) {
               // Call function to create and update local variables ....
-              pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
+              pgTools.DirectDebug.editor.removeLineClass(
+                self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+              );
               pgTools.DirectDebug.direct_execution_completed = true;
               pgTools.DirectDebug.is_user_aborted_debugging = true;
 
@@ -1099,8 +1133,10 @@ define([
         result_grid.render();
 
         // Render the result grid into result panel
-        pgTools.DirectDebug.results_panel.$container.find('.debug_results').append(result_grid.el);
-
+        pgTools.DirectDebug.results_panel
+          .$container
+          .find('.debug_results')
+          .append(result_grid.el);
       },
 
       AddLocalVariables: function(result) {
@@ -1120,10 +1156,12 @@ define([
           },
         });
 
-        // Collection which contains the model for function informations.
+        // Collection which contains the model for function information.
         var VariablesCollection = Backbone.Collection.extend({
           model: DebuggerVariablesModel,
         });
+
+        VariablesCollection.prototype.on('change', self.deposit_parameter_value, self);
 
         var gridCols = [{
           name: 'name',
@@ -1170,7 +1208,10 @@ define([
         variable_grid.render();
 
         // Render the variables grid into local variables panel
-        pgTools.DirectDebug.local_variables_panel.$container.find('.local_variables').append(variable_grid.el);
+        pgTools.DirectDebug.local_variables_panel
+          .$container
+          .find('.local_variables')
+          .append(variable_grid.el);
 
       },
 
@@ -1331,7 +1372,7 @@ define([
     controller about the click and controller will take the action for the specified button click.
   */
   var DebuggerToolbarView = Backbone.View.extend({
-    el: '#btn-toolbar',
+    el: '.dubugger_main_container',
     initialize: function() {
       controller.on('pgDebugger:button:state:stop', this.enable_stop, this);
       controller.on('pgDebugger:button:state:step_over', this.enable_step_over, this);
@@ -1347,6 +1388,7 @@ define([
       'click .btn-continue': 'on_continue',
       'click .btn-step-over': 'on_step_over',
       'click .btn-step-into': 'on_step_into',
+      'keydown': 'keyAction',
     },
     enable_stop: function(enable) {
       var $btn = this.$el.find('.btn-stop');
@@ -1414,7 +1456,6 @@ define([
         $btn.attr('disabled', 'disabled');
       }
     },
-
     on_stop: function() {
       controller.Stop(pgTools.DirectDebug.trans_id);
     },
@@ -1433,19 +1474,28 @@ define([
     on_step_into: function() {
       controller.Step_into(pgTools.DirectDebug.trans_id);
     },
+    keyAction: function (event) {
+      var $el = this.$el, panel_id, actual_panel;
+      panel_id = keyboardShortcuts.processEventDebugger($el, event);
+      // Panel navigation
+      if(!_.isUndefined(panel_id) && !_.isNull(panel_id)) {
+        actual_panel = panel_id + 1;
+        pgTools.DirectDebug.docker.findPanels()[actual_panel].focus();
+      }
+    },
   });
 
 
   /*
-    Function is responsible to create the new wcDocker instance for debugger and initialize the debugger panel inside
-    the docker instance.
+    Function is responsible to create the new wcDocker instance for debugger and
+    initialize the debugger panel inside the docker instance.
   */
   var DirectDebug = function() {};
 
   _.extend(DirectDebug.prototype, {
-    init: function(trans_id, debug_type) { /* We should get the transaction id from the server during initialization here */
+    /* We should get the transaction id from the server during initialization here */
+    init: function(trans_id, debug_type) {
       // We do not want to initialize the module multiple times.
-
       var self = this;
       _.bindAll(pgTools.DirectDebug, 'messages');
 
@@ -1524,7 +1574,8 @@ define([
         this.intializePanels();
     },
 
-    // Read the messages of the database server and get the port ID and attach the executer to that port.
+    // Read the messages of the database server and get the port ID and attach
+    // the executer to that port.
     messages: function(trans_id) {
       var self = this;
       // Make ajax call to listen the database message
@@ -1615,7 +1666,7 @@ define([
             height: '100%',
             isCloseable: false,
             isPrivate: true,
-            content: '<div id ="parameters" class="parameters"></div>',
+            content: '<div id ="parameters" class="parameters" tabindex="0"></div>',
           });
 
           // Create the Local variables panel to display the local variables of the function.
@@ -1626,7 +1677,7 @@ define([
             height: '100%',
             isCloseable: false,
             isPrivate: true,
-            content: '<div id ="local_variables" class="local_variables"></div>',
+            content: '<div id ="local_variables" class="local_variables" tabindex="0"></div>',
           });
 
           // Create the messages panel to display the message returned from the database server
@@ -1637,7 +1688,7 @@ define([
             height: '100%',
             isCloseable: false,
             isPrivate: true,
-            content: '<div id="messages" class="messages"></div>',
+            content: '<div id="messages" class="messages" tabindex="0"></div>',
           });
 
           // Create the result panel to display the result after debugging the function
@@ -1648,7 +1699,7 @@ define([
             height: '100%',
             isCloseable: false,
             isPrivate: true,
-            content: '<div id="debug_results" class="debug_results"></div>',
+            content: '<div id="debug_results" class="debug_results" tabindex="0"></div>',
           });
 
           // Create the stack pane panel to display the debugging stack information.
@@ -1659,7 +1710,7 @@ define([
             height: '100%',
             isCloseable: false,
             isPrivate: true,
-            content: '<div id="stack_pane" class="stack_pane"></div>',
+            content: '<div id="stack_pane" class="stack_pane" tabindex="0"></div>',
           });
 
           // Load all the created panels
@@ -1671,34 +1722,48 @@ define([
         });
 
       self.code_editor_panel = self.docker.addPanel('code', wcDocker.DOCK.TOP);
-
       self.parameters_panel = self.docker.addPanel(
-        'parameters', wcDocker.DOCK.BOTTOM, self.code_editor_panel);
-      self.local_variables_panel = self.docker.addPanel('local_variables', wcDocker.DOCK.STACKED, self.parameters_panel, {
-        tabOrientation: wcDocker.TAB.TOP,
-      });
-      self.messages_panel = self.docker.addPanel('messages', wcDocker.DOCK.STACKED, self.parameters_panel);
+        'parameters', wcDocker.DOCK.BOTTOM, self.code_editor_panel
+      );
+      self.local_variables_panel = self.docker.addPanel(
+        'local_variables',
+        wcDocker.DOCK.STACKED,
+        self.parameters_panel, {
+          tabOrientation: wcDocker.TAB.TOP,
+        }
+      );
+      self.messages_panel = self.docker.addPanel(
+          'messages', wcDocker.DOCK.STACKED, self.parameters_panel);
       self.results_panel = self.docker.addPanel(
-        'results', wcDocker.DOCK.STACKED, self.parameters_panel);
+          'results', wcDocker.DOCK.STACKED, self.parameters_panel);
       self.stack_pane_panel = self.docker.addPanel(
-        'stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
+          'stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
 
-      var editor_pane = $('<div id="stack_editor_pane" class="full-container-pane info"></div>');
-      var code_editor_area = $('<textarea id="debugger-editor-textarea"></textarea>').append(editor_pane);
+      var editor_pane = $('<div id="stack_editor_pane" ' +
+        'class="full-container-pane info"></div>');
+      var code_editor_area = $('<textarea id="debugger-editor-textarea">' +
+        '</textarea>').append(editor_pane);
       self.code_editor_panel.layout().addItem(code_editor_area);
 
       // To show the line-number and set breakpoint marker details by user.
       self.editor = CodeMirror.fromTextArea(
         code_editor_area.get(0), {
+          tabindex: 0,
           lineNumbers: true,
           foldOptions: {
             widget: '\u2026',
           },
           foldGutter: {
-            rangeFinder: CodeMirror.fold.combine(CodeMirror.pgadminBeginRangeFinder, CodeMirror.pgadminIfRangeFinder,
-              CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder),
+            rangeFinder: CodeMirror.fold.combine(
+              CodeMirror.pgadminBeginRangeFinder,
+              CodeMirror.pgadminIfRangeFinder,
+              CodeMirror.pgadminLoopRangeFinder,
+              CodeMirror.pgadminCaseRangeFinder
+            ),
           },
-          gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'breakpoints'],
+          gutters: [
+            'CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'breakpoints',
+          ],
           mode: 'text/x-pgsql',
           readOnly: true,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
@@ -1741,7 +1806,7 @@ define([
             panel.title(title);
           panel.closeable(false);
           panel.layout().addItem(
-            $('<div>', {
+            $('<div tabindex="0">', {
               'class': 'pg-debugger-panel',
             })
           );

@@ -132,7 +132,8 @@ define([
             // Variables to store the data sent from sqlite database
             var func_args_data = this.func_args_data = [];
 
-            // As we are not getting pgBrowser.tree when we debug again so tree info will be updated from the server data
+            // As we are not getting pgBrowser.tree when we debug again
+            // so tree info will be updated from the server data
             if (restart_debug == 0) {
               var t = pgBrowser.tree,
                 i = t.selected(),
@@ -501,7 +502,8 @@ define([
               }
             }
 
-            // Check if the arguments already available in the sqlite database then we should use the existing arguments
+            // Check if the arguments already available in the sqlite database
+            // then we should use the existing arguments
             if (func_args_data.length == 0) {
               this.debuggerInputArgsColl =
                 new DebuggerInputArgCollections(my_obj);
@@ -537,12 +539,12 @@ define([
           setup: function() {
             return {
               buttons: [{
-                text: 'Debug',
+                text: gettext('Debug'),
                 key: 13,
                 className: 'btn btn-primary',
               },
               {
-                text: 'Cancel',
+                text: gettext('Cancel'),
                 key: 27,
                 className: 'btn btn-primary',
               },
@@ -563,13 +565,14 @@ define([
           },
           // Callback functions when click on the buttons of the Alertify dialogs
           callback: function(e) {
-            if (e.button.text === 'Debug') {
+            if (e.button.text === gettext('Debug')) {
 
               // Initialize the target once the debug button is clicked and
               // create asynchronous connection and unique transaction ID
               var self = this;
 
-              // If the debugging is started again then treeInfo is already stored in this.data so we can use the same.
+              // If the debugging is started again then treeInfo is already
+              // stored in this.data so we can use the same.
               if (self.restart_debug == 0) {
                 var t = pgBrowser.tree,
                   i = t.selected(),
@@ -791,7 +794,8 @@ define([
                   },
                 });
               } else {
-                // If the debugging is started again then we should only set the arguments and start the listener again
+                // If the debugging is started again then we should only set the
+                // arguments and start the listener again
                 baseUrl = url_for('debugger.start_listener', {
                   'trans_id': self.data.trans_id,
                 });
@@ -838,7 +842,7 @@ define([
               return true;
             }
 
-            if (e.button.text === 'Cancel') {
+            if (e.button.text === gettext('Cancel')) {
               //close the dialog...
               return false;
             }
@@ -853,8 +857,8 @@ define([
             );
 
             /*
-             If we already have data available in sqlite database then we should enable the debug button otherwise
-             disable the debug button.
+             If we already have data available in sqlite database then we should
+             enable the debug button otherwise disable the debug button.
             */
             if (this.func_args_data.length == 0) {
               this.__internal.buttons[0].element.disabled = true;
@@ -875,7 +879,8 @@ define([
 
                   for (var i = 0; i < this.collection.length; i++) {
 
-                    // TODO: Need to check the "NULL" and "Expression" column value to enable/disable the "Debug" button
+                    // TODO: Need to check the "NULL" and "Expression" column value to
+                    // enable/disable the "Debug" button
                     if (this.collection.models[i].get('value') == '' ||
                       this.collection.models[i].get('value') == null ||
                       this.collection.models[i].get('value') == undefined) {
@@ -899,7 +904,9 @@ define([
       });
     }
 
-    Alertify.debuggerInputArgsDialog('Debugger', args, restart_debug).resizeTo('60%', '60%');
+    Alertify.debuggerInputArgsDialog(
+      gettext('Debugger'), args, restart_debug
+    ).resizeTo('60%', '60%');
 
   };
 
