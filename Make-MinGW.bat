@@ -237,48 +237,18 @@ REM Main function Ends
     REM Copy QT dependences
     copy "%QTDIR%\bin\Qt5Core.dll"   "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5Sql.dll"    "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5Gui.dll"    "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5Qml.dll"    "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5OpenGL.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5Quick.dll"  "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5Sensors.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5Widgets.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5Network.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5Multimedia.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5WebChannel.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5Positioning.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5PrintSupport.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5MultimediaWidgets.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    copy "%QTDIR%\bin\icudt57.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\icuin57.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\icuuc57.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\libgcc_s_dw2-1.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\libstdc++-6.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\libxml2-2.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\libxslt-1.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     MKDIR "%PGBUILDPATH%\runtime\platforms"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
