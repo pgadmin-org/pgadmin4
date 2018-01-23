@@ -21,5 +21,8 @@ FROM
     UNION SELECT 'bigserial', 0, 8, 'b', 0, 'pg_catalog', false, false
     UNION SELECT 'serial', 0, 4, 'b', 0, 'pg_catalog', false, false
 {% endif %}
-    ) AS dummy
+    AND (
+      typnamespace = {{schema_oid}}::oid
+      OR nsp.nspname = 'pg_catalog'
+    )) AS dummy
 ORDER BY nspname <> 'pg_catalog', nspname <> 'public', nspname, 1

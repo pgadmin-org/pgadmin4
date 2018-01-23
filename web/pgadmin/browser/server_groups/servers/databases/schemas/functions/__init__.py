@@ -71,10 +71,10 @@ class FunctionModule(SchemaChildModule):
         """
         super(FunctionModule, self).__init__(*args, **kwargs)
 
-        self.min_ver = 90100
+        self.min_ver = None
         self.max_ver = None
         self.server_type = None
-        self.min_gpdbver = 1000000000
+        self.min_gpdbver = None
 
     def get_nodes(self, gid, sid, did, scid):
         """
@@ -659,7 +659,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             condition += " AND nspname NOT LIKE E'pg\\\\_toast%' AND nspname NOT LIKE E'pg\\\\_temp%'"
 
         # Get Types
-        status, types = self.get_types(self.conn, condition)
+        status, types = self.get_types(self.conn, condition, False, scid)
 
         if not status:
             return internal_server_error(errormsg=types)

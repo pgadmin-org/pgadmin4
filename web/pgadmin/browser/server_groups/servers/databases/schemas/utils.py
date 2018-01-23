@@ -82,7 +82,7 @@ class DataTypeReader:
       - Returns data-types on the basis of the condition provided.
     """
 
-    def get_types(self, conn, condition, add_serials=False):
+    def get_types(self, conn, condition, add_serials=False, schema_oid = ''):
         """
         Returns data-types including calculation for Length and Precision.
 
@@ -90,6 +90,7 @@ class DataTypeReader:
             conn: Connection Object
             condition: condition to restrict SQL statement
             add_serials: If you want to serials type
+            schema_oid: If needed pass the schema OID to restrict the search
         """
         res = []
         try:
@@ -103,11 +104,12 @@ class DataTypeReader:
                     ) if self.manager.server_type == 'gpdb' else
                     '#{0}#'.format(self.manager.version)
                 )
-
             SQL = render_template(
                 "/".join([self.data_type_template_path,'get_types.sql']),
                 condition=condition,
-                add_serials=add_serials)
+                add_serials=add_serials,
+                schema_oid=schema_oid
+            )
             status, rset = conn.execute_2darray(SQL)
             if not status:
                 return status, rset
