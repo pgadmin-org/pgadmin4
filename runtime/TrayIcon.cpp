@@ -146,12 +146,23 @@ void TrayIcon::createActions()
 // Create a new application browser window onuser request
 void TrayIcon::onNew()
 {
-    if (!QDesktopServices::openUrl(m_appServerUrl))
-    {
-        QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
-        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+    QSettings settings;
+    QString cmd = settings.value("BrowserCommand").toString();
 
-        exit(1);
+    if (!cmd.isEmpty())
+    {
+        cmd.replace("%URL%", m_appServerUrl);
+        QProcess::startDetached(cmd);
+    }
+    else
+    {
+        if (!QDesktopServices::openUrl(m_appServerUrl))
+        {
+            QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
+            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+            exit(1);
+        }
     }
 }
 
@@ -163,22 +174,31 @@ void TrayIcon::onConfig()
 
     ConfigWindow *dlg = new ConfigWindow();
     dlg->setWindowTitle(QWidget::tr("Configuration"));
+    dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
     dlg->setPythonPath(settings.value("PythonPath").toString());
     dlg->setApplicationPath(settings.value("ApplicationPath").toString());
     dlg->setModal(true);
     ok = dlg->exec();
 
+    QString browsercommand = dlg->getBrowserCommand();
     QString pythonpath = dlg->getPythonPath();
     QString applicationpath = dlg->getApplicationPath();
 
     if (ok)
     {
+        bool needRestart = (settings.value("PythonPath").toString() != pythonpath ||
+                            settings.value("ApplicationPath").toString() != applicationpath);
+
+        settings.setValue("BrowserCommand", browsercommand);
         settings.setValue("PythonPath", pythonpath);
         settings.setValue("ApplicationPath", applicationpath);
 
-        if (QMessageBox::Yes == QMessageBox::question(this, tr("Shutdown server?"), QString(tr("The %1 server must be restarted for changes to take effect. Do you want to shutdown the server now?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
+        if (needRestart)
         {
-            exit(0);
+            if (QMessageBox::Yes == QMessageBox::question(this, tr("Shutdown server?"), QString(tr("The %1 server must be restarted for changes to take effect. Do you want to shutdown the server now?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
+            {
+                exit(0);
+            }
         }
     }
 }

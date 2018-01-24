@@ -343,16 +343,19 @@ int main(int argc, char * argv[])
 
             ConfigWindow *dlg = new ConfigWindow();
             dlg->setWindowTitle(QWidget::tr("Configuration"));
+            dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
             dlg->setPythonPath(settings.value("PythonPath").toString());
             dlg->setApplicationPath(settings.value("ApplicationPath").toString());
             dlg->setModal(true);
             ok = dlg->exec();
 
+            QString browsercommand = dlg->getBrowserCommand();
             QString pythonpath = dlg->getPythonPath();
             QString applicationpath = dlg->getApplicationPath();
 
             if (ok)
             {
+                settings.setValue("BrowserCommand", browsercommand);
                 settings.setValue("PythonPath", pythonpath);
                 settings.setValue("ApplicationPath", applicationpath);
                 settings.sync();
@@ -413,13 +416,25 @@ int main(int argc, char * argv[])
 
     // Go!
     trayicon->setAppServerUrl(appServerUrl);
-    if (!QDesktopServices::openUrl(appServerUrl))
-    {
-        QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
-        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
 
-        exit(1);
+    QString cmd = settings.value("BrowserCommand").toString();
+
+    if (!cmd.isEmpty())
+    {
+        cmd.replace("%URL%", appServerUrl);
+        QProcess::startDetached(cmd);
     }
+    else
+    {
+        if (!QDesktopServices::openUrl(appServerUrl))
+        {
+            QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
+            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+            exit(1);
+        }
+    }
+
     splash->finish(NULL);
 
     return app.exec();
