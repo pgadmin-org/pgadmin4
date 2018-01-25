@@ -186,6 +186,13 @@ int main(int argc, char * argv[])
 
         server->start();
 
+        // This is a hack to give the server a chance to start and potentially fail. As
+        // the Python interpreter is a synchronous call, we can't check for proper startup
+        // easily in a more robust way - we have to rely on a clean startup not returning.
+        // It should always fail pretty quickly, and take longer to start if it succeeds, so
+        // we don't really get a visible delay here.
+        delay(1000);
+
         // Any errors?
         if (server->isFinished() || server->getError().length() > 0)
         {
