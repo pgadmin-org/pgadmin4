@@ -561,16 +561,20 @@ input.editor-checkbox:focus {
 }
 
 .connection_status .fa-custom {
-  height: 18px;
   margin-bottom: -4px;
+  height: 18px;
+  width: 18px;
+  display: block;
+  background-repeat: no-repeat;
+  content: '';
 }
 
 .connection_status .fa-query-tool-connected {
-  content: url('../img/connect.svg');
+  background-image: url('../img/connect.svg');
 }
 
 .connection_status .fa-query-tool-disconnected {
-  content: url('../img/disconnect.svg');
+  background-image: url('../img/disconnect.svg');
 }
 
 .sql-editor .dropdown-toggle:focus,
