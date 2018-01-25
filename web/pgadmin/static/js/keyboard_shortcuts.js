@@ -1,8 +1,14 @@
 import $ from 'jquery';
 
+// Debugger
 const EDIT_KEY = 71,  // Key: G -> Grid values
   LEFT_ARROW_KEY = 37,
-  RIGHT_ARROW_KEY = 39;
+  RIGHT_ARROW_KEY = 39,
+  F5_KEY = 116,
+  F7_KEY = 118,
+  F8_KEY = 119,
+  PERIOD_KEY = 190,
+  FWD_SLASH_KEY = 191;
 
 function isMac() {
   return window.navigator.platform.search('Mac') != -1;
@@ -103,8 +109,62 @@ function getInnerPanel($el, direction) {
   return id;
 }
 
+/* Query tool: Keyboard Shortcuts handling */
+function keyboardShortcutsQueryTool(sqlEditorController, queryToolActions, event) {
+  if (sqlEditorController.isQueryRunning()) {
+    return;
+  }
+  let keyCode = event.which || event.keyCode, panel_id;
+
+  if (keyCode === F5_KEY) {
+    event.preventDefault();
+    queryToolActions.executeQuery(sqlEditorController);
+  } else if (event.shiftKey && keyCode === F7_KEY) {
+    this._stopEventPropagation(event);
+    queryToolActions.explainAnalyze(sqlEditorController);
+  } else if (keyCode === F7_KEY) {
+    this._stopEventPropagation(event);
+    queryToolActions.explain(sqlEditorController);
+  } else if (keyCode === F8_KEY) {
+    event.preventDefault();
+    queryToolActions.download(sqlEditorController);
+  } else if ((
+     (this.isMac() && event.metaKey) ||
+     (!this.isMac() && event.ctrlKey)
+    ) && !event.altKey && event.shiftKey && keyCode === FWD_SLASH_KEY) {
+    this._stopEventPropagation(event);
+    queryToolActions.commentBlockCode(sqlEditorController);
+  } else if ((
+     (this.isMac() && !this.isKeyCtrlAltShift(event) && event.metaKey) ||
+     (!this.isMac() && !this.isKeyAltShift(event) && event.ctrlKey)
+    ) && keyCode === FWD_SLASH_KEY) {
+    this._stopEventPropagation(event);
+    queryToolActions.commentLineCode(sqlEditorController);
+  } else if ((
+     (this.isMac() && !this.isKeyCtrlAltShift(event) && event.metaKey) ||
+     (!this.isMac() && !this.isKeyAltShift(event) && event.ctrlKey)
+    ) && keyCode === PERIOD_KEY) {
+    this._stopEventPropagation(event);
+    queryToolActions.uncommentLineCode(sqlEditorController);
+  } else if (this.isAltShiftBoth(event) && keyCode === LEFT_ARROW_KEY) {
+    // Goto previous side panel
+    this._stopEventPropagation(event);
+    panel_id = this.getInnerPanel(
+      sqlEditorController.container, 'left'
+    );
+  } else if (this.isAltShiftBoth(event) && keyCode === RIGHT_ARROW_KEY) {
+    // Goto next side panel
+    this._stopEventPropagation(event);
+    panel_id = this.getInnerPanel(
+      sqlEditorController.container, 'right'
+    );
+  }
+  return panel_id;
+}
+
 module.exports = {
   processEventDebugger: keyboardShortcutsDebugger,
+  processEventQueryTool: keyboardShortcutsQueryTool,
   getInnerPanel: getInnerPanel,
   // misc functions
   _stopEventPropagation: _stopEventPropagation,

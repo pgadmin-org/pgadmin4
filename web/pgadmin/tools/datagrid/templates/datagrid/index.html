@@ -17,7 +17,6 @@
       width:{% if display_connection_status -%} calc(100% - 43px)
     {% else %} 100% {%- endif %};
     }
-
 </style>
 <div id="main-editor_panel">
     <div id="fetching_data" class="wcLoadingIconContainer sql-editor-busy-fetching hide">
@@ -29,24 +28,25 @@
         <div id="btn-toolbar" class="pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-load-file" type="button" class="btn btn-default btn-load-file"
-                        title="{{ _('Open File') }}" accesskey="o">
+                        title="{{ _('Open File') }}" accesskey="o" tabindex="0">
                     <i class="fa fa-folder-open-o" aria-hidden="true"></i>
                 </button>
                 <button id="btn-save" type="button" class="btn btn-default" title="{{ _('Save') }}" disabled>
-                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                    <i class="fa fa-floppy-o" aria-hidden="true" tabindex="0"></i>
                 </button>
                 <button id="btn-file-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled  accesskey="s">
-                    <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled  accesskey="s"
+                        tabindex="0">
+                    <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a id="btn-file-menu-save" href="#">
+                        <a id="btn-file-menu-save" href="#" tabindex="0">
                             <span>{{ _('Save') }}</span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-file-menu-save-as" href="#">
+                        <a id="btn-file-menu-save-as" href="#" tabindex="0">
                             <span>{{ _('Save As') }}</span>
                         </a>
                     </li>
@@ -54,15 +54,15 @@
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-find" type="button" class="btn btn-default" title="{{ _('Find (Ctrl/Cmd+F)') }}">
-                    <i class="fa fa-search" aria-hidden="true"></i>
+                    <i class="fa fa-search" aria-hidden="true" tabindex="0"></i>
                 </button>
                 <button id="btn-find-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" accesskey="f">
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" accesskey="f" tabindex="0">
                     <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a id="btn-find-menu-find" href="#">
+                        <a id="btn-find-menu-find" href="#" tabindex="0">
                             <span> {{ _('Find') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+F)') }}
                             {% else %}
@@ -70,7 +70,7 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-find-menu-find-next" href="#">
+                        <a id="btn-find-menu-find-next" href="#" tabindex="0">
                             <span> {{ _('Find next') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+G)') }}
                             {% else %}
@@ -78,7 +78,7 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-find-menu-find-previous" href="#">
+                        <a id="btn-find-menu-find-previous" href="#" tabindex="0">
                             <span> {{ _('Find previous') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+Shift+G)') }}
                             {% else %}
@@ -86,13 +86,13 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-find-menu-find-persistent" href="#">
+                        <a id="btn-find-menu-find-persistent" href="#" tabindex="0">
                             <span>{{ _('Persistent find') }}</span>
                         </a>
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a id="btn-find-menu-replace" href="#">
+                        <a id="btn-find-menu-replace" href="#" tabindex="0">
                             <span> {{ _('Replace') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+Shift+F)') }}
                             {% else %}
@@ -100,13 +100,13 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-find-menu-replace-all" href="#">
+                        <a id="btn-find-menu-replace-all" href="#" tabindex="0">
                             <span>{{ _('Replace all') }}</span>
                         </a>
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a id="btn-find-menu-jump" href="#">
+                        <a id="btn-find-menu-jump" href="#" tabindex="0">
                             <span>{{ _('Jump (Alt+G)') }}</span>
                         </a>
                     </li>
@@ -114,48 +114,48 @@
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-copy-row" type="button" class="btn btn-default"
-                        title="{{ _('Copy') }}" disabled accesskey="c">
+                        title="{{ _('Copy') }}" disabled accesskey="c" tabindex="0">
                     <i class="fa fa-files-o" aria-hidden="true"></i>
                 </button>
                 <button id="btn-paste-row" type="button" class="btn btn-default"
-                        title="{{ _('Paste Row') }}" disabled accesskey="p">
+                        title="{{ _('Paste Row') }}" disabled accesskey="p" tabindex="0">
                     <i class="fa fa-clipboard" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-delete-row" type="button" class="btn btn-default"
-                        title="{{ _('Delete Row(s)') }}" disabled accesskey="d">
+                        title="{{ _('Delete Row(s)') }}" disabled accesskey="d" tabindex="0">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-edit-dropdown" type="button" class="btn btn-default dropdown-toggle"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        title="{{ _('Edit') }}" accesskey="e">
+                        title="{{ _('Edit') }}" accesskey="e" tabindex="0">
                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+                    <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu">
+                <ul class="dropdown-menu">
                     <li>
-                        <a id="btn-indent-code" href="#">
+                        <a id="btn-indent-code" href="#" tabindex="0">
                             <span> {{ _('Indent Selection (Tab)') }} </span>
                         </a>
-                        <a id="btn-unindent-code" href="#">
+                        <a id="btn-unindent-code" href="#" tabindex="0">
                             <span> {{ _('Unindent Selection (Shift+Tab)') }} </span>
                         </a>
-                        <a id="btn-comment-line" href="#">
+                        <a id="btn-comment-line" href="#" tabindex="0">
                             <span> {{ _('Inline Comment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+/)') }}
                             {% else %}
                                  {{ _(' (Ctrl+/)') }}{%- endif %}</span>
                         </a>
-                        <a id="btn-uncomment-line" href="#">
+                        <a id="btn-uncomment-line" href="#" tabindex="0">
                             <span> {{ _('Inline Uncomment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+.)') }}
                             {% else %}
                                  {{ _(' (Ctrl+.)') }}{%- endif %}</span>
                         </a>
-                        <a id="btn-toggle-comment-block" href="#">
+                        <a id="btn-toggle-comment-block" href="#" tabindex="0">
                             <span> {{ _('Block Comment/Uncomment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Shift+Cmd+/)') }}
                             {% else %}
@@ -166,79 +166,79 @@
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-filter" type="button" class="btn btn-default"
-                        title="{{ _('Filter') }}" disabled accesskey="i">
+                        title="{{ _('Filter') }}" disabled accesskey="i" tabindex="0">
                     <i class="fa fa-filter" aria-hidden="true"></i>
                 </button>
                 <button id="btn-filter-dropdown" type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
-                    <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled tabindex="0">
+                    <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li>
-                        <a id="btn-filter-menu" href="#">{{ _('Filter') }}</a>
-                        <a id="btn-remove-filter" href="#">{{ _('Remove Filter') }}</a>
-                        <a id="btn-include-filter" href="#">{{ _('By Selection') }}</a>
-                        <a id="btn-exclude-filter" href="#">{{ _('Exclude Selection') }}</a>
+                        <a id="btn-filter-menu" href="#" tabindex="0">{{ _('Filter') }}</a>
+                        <a id="btn-remove-filter" href="#" tabindex="0">{{ _('Remove Filter') }}</a>
+                        <a id="btn-include-filter" href="#" tabindex="0">{{ _('By Selection') }}</a>
+                        <a id="btn-exclude-filter" href="#" tabindex="0">{{ _('Exclude Selection') }}</a>
                     </li>
                 </ul>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <select class="limit" style="height: 30px; width: 90px;" disabled accesskey="r">
-                    <option value="-1">No limit</option>
-                    <option value="1000">1000 rows</option>
-                    <option value="500">500 rows</option>
-                    <option value="100">100 rows</option>
+                <select class="limit" style="height: 30px; width: 90px;" disabled accesskey="r" tabindex="0">
+                    <option value="-1">{{ _('No limit') }}</option>
+                    <option value="1000">{{ _('1000 rows') }}</option>
+                    <option value="500">{{ _('500 rows') }}</option>
+                    <option value="100">{{ _('100 rows') }}</option>
                 </select>
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-flash" type="button" class="btn btn-default" style="width: 40px;"
-                        title="{{ _('Execute/Refresh (F5)') }}">
+                        title="{{ _('Execute/Refresh (F5)') }}" tabindex="0">
                     <i class="fa fa-bolt" aria-hidden="true"></i>
                 </button>
                 <button id="btn-query-dropdown" type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" accesskey="x">
-                    <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" accesskey="x" tabindex="0">
+                    <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu">
+                <ul class="dropdown-menu" role="menu">
                     <li>
-                        <a id="btn-flash-menu" href="#">
+                        <a id="btn-flash-menu" href="#" tabindex="0">
                             <span>{{ _('Execute/Refresh (F5)') }}</span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-explain" href="#">
+                        <a id="btn-explain" href="#" tabindex="0">
                             <span>{{ _('Explain (F7)') }}</span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-explain-analyze" href="#">
+                        <a id="btn-explain-analyze" href="#" tabindex="0">
                             <span>{{ _('Explain Analyze (Shift+F7)') }}</span>
                         </a>
                     </li>
                     <li class="divider"></li>
-                    <li class="dropdown-submenu dropdown-submenu">
-                        <a href="#">{{ _('Explain Options') }}</a>
+                    <li class="dropdown-submenu">
+                        <a href="#" tabindex="0">{{ _('Explain Options') }}</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a id="btn-explain-verbose" href="#" class="noclose">
+                                <a id="btn-explain-verbose" href="#" class="noclose" tabindex="0">
                                     <i class="explain-verbose fa fa-check visibility-hidden" aria-hidden="true"></i>
                                     <span> {{ _('Verbose') }} </span>
                                 </a>
                             </li>
                             <li>
-                                <a id="btn-explain-costs" href="#" class="noclose">
+                                <a id="btn-explain-costs" href="#" class="noclose" tabindex="0">
                                     <i class="explain-costs fa fa-check visibility-hidden" aria-hidden="true"></i>
                                     <span> {{ _('Costs') }} </span>
                                 </a>
                             </li>
                             <li>
-                                <a id="btn-explain-buffers" href="#" class="noclose">
+                                <a id="btn-explain-buffers" href="#" class="noclose" tabindex="0">
                                     <i class="explain-buffers fa fa-check visibility-hidden" aria-hidden="true"></i>
                                     <span> {{ _('Buffers') }} </span>
                                 </a>
                             </li>
                             <li>
-                                <a id="btn-explain-timing" href="#" class="noclose">
+                                <a id="btn-explain-timing" href="#" class="noclose" tabindex="0">
                                     <i class="explain-timing fa fa-check visibility-hidden" aria-hidden="true"></i>
                                     <span> {{ _('Timing') }} </span>
                                 </a>
@@ -247,36 +247,36 @@
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a id="btn-auto-commit" href="#">
+                        <a id="btn-auto-commit" href="#" tabindex="0">
                             <i class="auto-commit fa fa-check visibility-hidden" aria-hidden="true"></i>
                             <span> {{ _('Auto commit?') }} </span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-auto-rollback" href="#">
+                        <a id="btn-auto-rollback" href="#" tabindex="0">
                             <i class="auto-rollback fa fa-check visibility-hidden" aria-hidden="true"></i>
                             <span> {{ _('Auto rollback?') }} </span>
                         </a>
                     </li>
                 </ul>
                 <button id="btn-cancel-query" type="button" class="btn btn-default" title="{{ _('Cancel query') }}"
-                        disabled accesskey="q">
+                        disabled accesskey="q" tabindex="0">
                     <i class="fa fa-stop" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-clear-dropdown" type="button" class="btn btn-default dropdown-toggle"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        title="{{ _('Clear') }}" accesskey="l">
+                        title="{{ _('Clear') }}" accesskey="l" tabindex="0">
                     <i class="fa fa-eraser" aria-hidden="true"></i>
-                    <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+                    <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu">
+                <ul class="dropdown-menu">
                     <li>
-                        <a id="btn-clear" href="#">
+                        <a id="btn-clear" href="#" tabindex="0">
                             <span> {{ _('Clear Query Window') }} </span>
                         </a>
-                        <a id="btn-clear-history" href="#">
+                        <a id="btn-clear-history" href="#" tabindex="0">
                             <span> {{ _('Clear History') }} </span>
                         </a>
                     </li>
@@ -284,7 +284,7 @@
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-download" type="button" class="btn btn-default"
-                        title="{{ _('Download as CSV (F8)') }}" accesskey="v">
+                        title="{{ _('Download as CSV (F8)') }}" accesskey="v" tabindex="0">
                     <i class="fa fa-download" aria-hidden="true"></i>
                 </button>
             </div>
@@ -298,7 +298,7 @@
                      data-toggle="popover" data-placement="bottom"
                      data-content=""
                      data-panel-visible="visible"
-                     accesskey="t">
+                     accesskey="t" tabindex="0">
                     <i class="fa-custom fa-query-tool-disconnected" aria-hidden="true"
                         title="{{ _('Connection status (click for details) (<accesskey>+T)') }}">
                     </i>
@@ -315,17 +315,17 @@
                 <textarea id="sql_filter" rows="5"></textarea>
             </div>
             <div class="btn-group">
-                <button id="btn-cancel" type="button" class="btn btn-danger" title="{{ _('Cancel') }}">
+                <button id="btn-cancel" type="button" class="btn btn-danger" title="{{ _('Cancel') }}" tabindex="0">
                     <i class="fa fa-times" aria-hidden="true"></i> {{ _('Cancel') }}
                 </button>
             </div>
             <div class="btn-group">
-                <button id="btn-apply" type="button" class="btn btn-primary" title="{{ _('Apply') }}">
+                <button id="btn-apply" type="button" class="btn btn-primary" title="{{ _('Apply') }}" tabindex="0">
                     <i class="fa fa-check" aria-hidden="true"></i> {{ _('Apply') }}
                 </button>
             </div>
         </div>
-        <div id="editor-panel"></div>
+        <div id="editor-panel" tabindex="0"></div>
         <iframe id="download-csv" style="display:none"></iframe>
     </div>
 </div>

@@ -307,6 +307,7 @@ define('pgadmin.datagrid', [
 
               // Apply CodeMirror to filter text area.
               this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
+                tabindex: 0,
                 lineNumbers: true,
                 mode: 'text/x-pgsql',
                 extraKeys: pgBrowser.editor_shortcut_keys,

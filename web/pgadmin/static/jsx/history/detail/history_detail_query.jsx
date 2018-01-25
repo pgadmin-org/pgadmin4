@@ -54,10 +54,13 @@ export default class HistoryDetailQuery extends React.Component {
     return (
       <div id="history-detail-query">
         <button className={this.copyButtonClass()}
+                tabIndex={0}
+                accessKey={'y'}
                 onClick={this.copyAllHandler}>{this.copyButtonText()}</button>
         <CodeMirror
           value={this.props.historyEntry.query}
           options={{
+            tabindex: -1,
             mode: 'text/x-pgsql',
             readOnly: true,
           }}

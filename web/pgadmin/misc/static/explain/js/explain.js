@@ -762,6 +762,7 @@ define('pgadmin.misc.explain', [
         zoomInBtn = $('<button></button>', {
           class: 'btn pg-explain-zoom-btn badge',
           title: 'Zoom in',
+          tabindex: 0,
         }).appendTo(zoomArea).append(
           $('<i></i>', {
             class: 'fa fa-search-plus',
@@ -769,6 +770,7 @@ define('pgadmin.misc.explain', [
         zoomToNormal = $('<button></button>', {
           class: 'btn pg-explain-zoom-btn badge',
           title: 'Zoom to original',
+          tabindex: 0,
         }).appendTo(zoomArea).append(
           $('<i></i>', {
             class: 'fa fa-arrows-alt',
@@ -776,6 +778,7 @@ define('pgadmin.misc.explain', [
         zoomOutBtn = $('<button></button>', {
           class: 'btn pg-explain-zoom-btn badge',
           title: 'Zoom out',
+          tabindex: 0,
         }).appendTo(zoomArea).append(
           $('<i></i>', {
             class: 'fa fa-search-minus',

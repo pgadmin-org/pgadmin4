@@ -15,7 +15,7 @@ define('tools.querytool', [
   'sources/history/index.js',
   'sources/../jsx/history/query_history',
   'react', 'react-dom',
-  'sources/sqleditor/keyboard_shortcuts',
+  'sources/keyboard_shortcuts',
   'sources/sqleditor/query_tool_actions',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
@@ -110,6 +110,7 @@ define('tools.querytool', [
       self.checkConnectionStatus();
 
       self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
+        tabindex: '0',
         lineNumbers: true,
         mode: self.handler.server_type === 'gpdb' ? 'text/x-gpsql' : 'text/x-pgsql',
         foldOptions: {
@@ -158,6 +159,8 @@ define('tools.querytool', [
           theme: 'webcabin.overrides.css',
         });
 
+      self.docker = main_docker;
+
       var sql_panel = new pgAdmin.Browser.Panel({
         name: 'sql_panel',
         title: false,
@@ -170,11 +173,12 @@ define('tools.querytool', [
       sql_panel.load(main_docker);
       var sql_panel_obj = main_docker.addPanel('sql_panel', wcDocker.DOCK.TOP);
 
-      var text_container = $('<textarea id="sql_query_tool"></textarea>');
-      var output_container = $('<div id="output-panel"></div>').append(text_container);
+      var text_container = $('<textarea id="sql_query_tool" tabindex: "-1"></textarea>');
+      var output_container = $('<div id="output-panel" tabindex: "0"></div>').append(text_container);
       sql_panel_obj.$container.find('.pg-panel-content').append(output_container);
 
       self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
+        tabindex: '0',
         lineNumbers: true,
         styleSelectedText: true,
         mode: self.handler.server_type === 'gpdb' ? 'text/x-gpsql' : 'text/x-pgsql',
@@ -218,7 +222,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div id ="datagrid" class="sql-editor-grid-container text-12"></div>',
+        content: '<div id ="datagrid" class="sql-editor-grid-container text-12" tabindex: "0"></div>',
       });
 
       var explain = new pgAdmin.Browser.Panel({
@@ -228,7 +232,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="sql-editor-explain"></div>',
+        content: '<div class="sql-editor-explain" tabindex: "0"></div>',
       });
 
       var messages = new pgAdmin.Browser.Panel({
@@ -238,7 +242,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="sql-editor-message"></div>',
+        content: '<div class="sql-editor-message" tabindex: "0"></div>',
       });
 
       var history = new pgAdmin.Browser.Panel({
@@ -248,7 +252,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div id ="history_grid" class="sql-editor-history-container"></div>',
+        content: '<div id ="history_grid" class="sql-editor-history-container" tabindex: "0"></div>',
       });
 
       // Load all the created panels
@@ -1540,8 +1544,8 @@ define('tools.querytool', [
             return true;
           }
         ).set('labels', {
-          ok: 'Yes',
-          cancel: 'No',
+          ok: gettext('Yes'),
+          cancel: gettext('No'),
         });
       } else {
         self.query_tool_obj.setValue('');
@@ -1569,8 +1573,8 @@ define('tools.querytool', [
           return true;
         }
       ).set('labels', {
-        ok: 'Yes',
-        cancel: 'No',
+        ok: gettext('Yes'),
+        cancel: gettext('No'),
       });
     },
 
@@ -1698,7 +1702,22 @@ define('tools.querytool', [
     },
 
     keyAction: function(event) {
-      keyboardShortcuts.processEvent(this.handler, queryToolActions, event);
+      var panel_id, self = this;
+      panel_id = keyboardShortcuts.processEventQueryTool(
+        this.handler, queryToolActions, event
+      );
+
+      // If it return panel id then focus it
+      if(!_.isNull(panel_id) && !_.isUndefined(panel_id)) {
+        // Returned panel index, by incrementing it by 1 we will get actual panel
+        panel_id++;
+        this.docker.findPanels()[panel_id].focus();
+        // We set focus on history tab so we need to set the focus on
+        // editor explicitly
+        if(panel_id == 3) {
+          setTimeout(function() { self.query_tool_obj.focus(); }, 100);
+        }
+      }
     },
   });
 
@@ -1827,8 +1846,8 @@ define('tools.querytool', [
               return true;
             }
           ).set('labels', {
-            ok: 'Yes',
-            cancel: 'No',
+            ok: gettext('Yes'),
+            cancel: gettext('No'),
           });
         } else {
           self._run_query();

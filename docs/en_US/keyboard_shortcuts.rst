@@ -4,6 +4,7 @@ Keyboard Shortcuts
 
 Keyboard shortcuts are provided in pgAdmin to allow easy access to specific functions.
 
+
 **Desktop Runtime**
 
 When running in the Desktop Runtime, the following keyboard shortcuts are available:
@@ -25,6 +26,7 @@ When running in the Desktop Runtime, the following keyboard shortcuts are availa
 +--------------------------+----------------+---------------------------------------+
 | Ctrl+0                   | Cmd+0          | Reset the zoom level                  |
 +--------------------------+----------------+---------------------------------------+
+
 
 **SQL Editors**
 
@@ -61,6 +63,9 @@ When using the syntax-highlighting SQL editors, the following shortcuts are avai
 +--------------------------+------------------+-------------------------------------+
 | Shift+Tab                | Shift+Tab        | Un-indent selected text             |
 +--------------------------+------------------+-------------------------------------+
+| <accesskey> + y          | <accesskey> + y  | Copy SQL on history panel           |
++--------------------------+------------------+-------------------------------------+
+
 
 **Query Tool**
 
@@ -89,34 +94,48 @@ When using the Query Tool, the following shortcuts are available:
 +--------------------------+--------------------+-----------------------------------+
 | Ctrl+Shift+F             | Cmd+Shift+F        | Replace                           |
 +--------------------------+--------------------+-----------------------------------+
+| <accesskey> + y          | <accesskey> + y    | Copy SQL on history panel         |
++--------------------------+--------------------+-----------------------------------+
+
 
 **Debugger**
 
 When using the Debugger, the following shortcuts are available:
 
++--------------------------+--------------------+-----------------------------------+
+| Shortcut (Windows/Linux) | Shortcut (Mac)     | Function                          |
++==========================+====================+===================================+
+| <accesskey> + i          | <accesskey> + i    | Step in                           |
++--------------------------+--------------------+-----------------------------------+
+| <accesskey> + o          | <accesskey> + o    | Step over                         |
++--------------------------+--------------------+-----------------------------------+
+| <accesskey> + c          | <accesskey> + c    | Continue/Restart                  |
++--------------------------+--------------------+-----------------------------------+
+| <accesskey> + t          | <accesskey> + t    | Toggle breakpoint                 |
++--------------------------+--------------------+-----------------------------------+
+| <accesskey> + x          | <accesskey> + x    | Clear all breakpoints             |
++--------------------------+--------------------+-----------------------------------+
+| <accesskey> + s          | <accesskey> + s    | Stop                              |
++--------------------------+--------------------+-----------------------------------+
+| Alt + Shift + g          | Alt + Shift + g    | Enter or Edit values in Grid      |
++--------------------------+--------------------+-----------------------------------+
+
+
+**Inner panel navigation**
+
+When using the Query Tool and Debugger, the following shortcuts are available for inner panel navigation:
+
 +--------------------------+---------------------------+------------------------------+
 | Shortcut (Windows/Linux) | Shortcut (Mac)            | Function                     |
 +==========================+===========================+==============================+
-| <accesskey> + i          | <accesskey> + i           | Step in                      |
-+--------------------------+---------------------------+------------------------------+
-| <accesskey> + o          | <accesskey> + o           | Step over                    |
-+--------------------------+---------------------------+------------------------------+
-| <accesskey> + c          | <accesskey> + c           | Continue/Restart             |
-+--------------------------+---------------------------+------------------------------+
-| <accesskey> + t          | <accesskey> + t           | Toggle breakpoint            |
-+--------------------------+---------------------------+------------------------------+
-| <accesskey> + x          | <accesskey> + x           | Clear all breakpoints        |
-+--------------------------+---------------------------+------------------------------+
-| <accesskey> + s          | <accesskey> + s           | Stop                         |
-+--------------------------+---------------------------+------------------------------+
 | Alt + Shift + Right Arrow| Alt + Shift + Right Arrow | Move to next inner panel     |
 +--------------------------+---------------------------+------------------------------+
 | Alt + Shift + Left Arrow | Alt + Shift + Left Arrow  | Move to previous inner panel |
 +--------------------------+---------------------------+------------------------------+
-| Alt + Shift + g          | Alt + Shift + g           | Enter or Edit values in Grid |
-+--------------------------+---------------------------+------------------------------+
+
 
 .. note:: <accesskey> is browser and platform dependant. The following table lists the default access keys for supported browsers.
+
 
 +-------------------+------------+------------+------------+
 |                   | Windows    | Linux      | Mac        |
