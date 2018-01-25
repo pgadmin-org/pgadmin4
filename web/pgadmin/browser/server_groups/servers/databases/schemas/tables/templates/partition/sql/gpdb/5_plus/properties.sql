@@ -62,7 +62,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 	NULL AS seclabels,
 	(CASE WHEN rel.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_table,
 	-- Added for partition table
-	(CASE WHEN rel.relkind = 'p' THEN true ELSE false END) AS is_partitioned,
+	(CASE WHEN partitions.number_of_partitions > 0 THEN true ELSE false END) AS is_partitioned,
 	'' AS partition_scheme,
 	{% if ptid %}
 	  (CASE WHEN partitions.number_of_partitions > 0 THEN partitions.expression ELSE '' END) AS partition_value,

@@ -57,7 +57,7 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data
 {{CONSTRAINTS.EXCLUDE(conn, data.exclude_constraint)}}{% endif %}
 {% if data.like_relation or data.coll_inherits or data.columns|length > 0 or data.primary_key|length > 0 or data.unique_constraint|length > 0 or data.foreign_key|length > 0 or data.check_constraint|length > 0 or data.exclude_constraint|length > 0 %}
 
-){% endif %}{% if data.relkind is defined and data.relkind == 'p' %} PARTITION BY {{ data.partition_scheme }} {% endif %}
+){% endif %}
 
 {### If we are inheriting it from another table(s) ###}
 {% if data.coll_inherits %}
@@ -91,10 +91,11 @@ TABLESPACE {{ conn|qtIdent(data.spcname) }}
 {% endif %}
 {### SQL for Distribution ###}
 {% if data.distribution %}
-DISTRIBUTED BY ({% for attrnum in data.distribution %}{% if loop.index != 1 %}, {% endif %}{{ data.columns[attrnum-1].name }}{% endfor %});
+DISTRIBUTED BY ({% for attrnum in data.distribution %}{% if loop.index != 1 %}, {% endif %}{{ data.columns[attrnum-1].name }}{% endfor %})
 {% else %}
-DISTRIBUTED RANDOMLY;
+DISTRIBUTED RANDOMLY
 {% endif %}
+{% if data.is_partitioned %} PARTITION BY {{ data.partition_scheme }}; {% endif %}
 
 {### Alter SQL for Owner ###}
 {% if data.relowner %}

@@ -30,7 +30,7 @@ FROM
         WHERE aclcontains(nc.nspacl, makeaclitem(grantee.oid, u_grantor.oid, pr.type, false))
         AND (pg_has_role(u_grantor.oid, 'USAGE'::text) OR pg_has_role(grantee.oid, 'USAGE'::text)
         OR grantee.rolname = 'PUBLIC'::name)
-        AND nsp.oid = {{ scid|qtLiteral }}::OID
+        AND nc.oid = {{ scid|qtLiteral }}::OID
         ) a
     ) b
     LEFT JOIN pg_catalog.pg_roles g ON (b.grantor = g.oid)

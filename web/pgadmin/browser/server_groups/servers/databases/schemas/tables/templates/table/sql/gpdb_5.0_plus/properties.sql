@@ -1,5 +1,6 @@
 SELECT *,
 	(CASE when pre_coll_inherits is NULL then ARRAY[]::varchar[] else pre_coll_inherits END) as coll_inherits
+  {% if tid %}, (CASE WHEN is_partitioned THEN (SELECT substring(pg_get_partition_def({{ tid }}::oid, true) from 14)) ELSE '' END) AS partition_scheme {% endif %}
 FROM (
 	SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS relacl_str,
 		(CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE
@@ -67,7 +68,9 @@ FROM (
 		ARRAY[]::varchar[] AS seclabels,
 		(CASE WHEN rel.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_table,
 
-		gdp.attrnums AS distribution
+		gdp.attrnums AS distribution,
+    (CASE WHEN (SELECT count(*) from pg_partition where parrelid = rel.oid) > 0 THEN true ELSE false END) AS is_partitioned
+
 
 	FROM pg_class rel
 		LEFT OUTER JOIN pg_tablespace spc on spc.oid=rel.reltablespace
