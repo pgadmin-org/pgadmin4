@@ -2504,5 +2504,206 @@ define([
     },
   });
 
+  var KeyCodeControlFormatter = Backform.KeyCodeControlFormatter = function() {};
+
+  _.extend(KeyCodeControlFormatter.prototype, {
+    fromRaw: function (rawData) {
+      return rawData['char'];
+    },
+    // we don't need toRaw
+    toRaw: undefined,
+  });
+
+  Backform.KeyCodeControl = Backform.InputControl.extend({
+    defaults: _.defaults({
+      escapeKeyCodes: [16, 17, 18, 27], // Shift, Ctrl, Alt/Option, Escape
+    }, Backform.InputControl.prototype.defaults),
+
+    events: {
+      'keydown input': 'onkeyDown',
+      'keyup input': 'preventEvent',
+      'focus select': 'clearInvalid',
+    },
+
+    formatter: KeyCodeControlFormatter,
+
+    preventEvent: function(e) {
+      var key_code = e.which || e.keyCode,
+        field = _.defaults(this.field.toJSON(), this.defaults);
+
+      if (field.escapeKeyCodes.indexOf(key_code) != -1) {
+        return;
+      }
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+    },
+
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%> keyboard-shortcut-label"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
+      '  <input type="<%=type%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" oncopy="return false; oncut="return false; onpaste="return false;" maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
+      '</div>',
+    ].join('\n')),
+    onkeyDown: function(e) {
+      var self = this,
+        model = this.model,
+        attrArr = this.field.get('name').split('.'),
+        name = attrArr.shift(),
+        changes = {},
+        key_code = e.which || e.keyCode,
+        key,
+        field = _.defaults(this.field.toJSON(), this.defaults);
+
+      if (field.escapeKeyCodes.indexOf(key_code) != -1) {
+        return;
+      }
+
+      if (this.model.errorModel instanceof Backbone.Model) {
+        this.model.errorModel.unset(name);
+      }
+      key = gettext(e.key);
+      if (key_code == 32) {
+        key = gettext('Space');
+      }
+      changes = {
+        'key_code': e.which || e.keyCode,
+        'char': key,
+      };
+
+      this.stopListening(this.model, 'change:' + name, this.render);
+      model.set(name, changes);
+      this.listenTo(this.model, 'change:' + name, this.render);
+      setTimeout(function() {
+        self.$el.find('input').val(key);
+      });
+      e.preventDefault();
+    },
+    keyPathAccessor: function(obj, path) {
+      var res = obj;
+      path = path.split('.');
+      for (var i = 0; i < path.length; i++) {
+        if (_.isNull(res)) return null;
+        if (_.isEmpty(path[i])) continue;
+        if (!_.isUndefined(res[path[i]])) res = res[path[i]];
+      }
+      return res;
+    },
+  });
+
+  Backform.KeyboardShortcutControl = Backform.Control.extend({
+
+    initialize: function() {
+
+      Backform.Control.prototype.initialize.apply(this, arguments);
+
+      var fields = this.field.get('fields');
+
+      if (fields == null || fields == undefined) {
+        throw new ReferenceError('"fields" not found in keyboard shortcut');
+      }
+
+      this.innerModel = new Backbone.Model();
+
+      this.controls = [];
+    },
+    cleanup: function() {
+
+      this.stopListening(this.innerModel, 'change', this.onInnerModelChange);
+
+      _.each(this.controls, function(c) {
+        c.remove();
+      });
+
+      this.controls.length = 0;
+    },
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
+      '</div>',
+    ].join('\n')),
+
+    onInnerModelChange: function() {
+
+      var name = this.field.get('name'),
+        val = $.extend(true, {}, this.model.get(name));
+
+      this.stopListening(this.model, 'change:' + name, this.render);
+
+      this.model.set(name,
+        $.extend(true, val, this.innerModel.toJSON())
+      );
+
+      this.listenTo(this.model, 'change:' + name, this.render);
+    },
+
+    render: function() {
+      this.cleanup();
+      this.$el.empty();
+
+      var self = this,
+        initial_value = {},
+        field = _.defaults(this.field.toJSON(), this.defaults),
+        value = self.model.get(field['name']),
+        innerFields = field['fields'];
+
+      this.$el.html(self.template(field)).addClass(field.name);
+
+      var $container = $(self.$el.find('.pgadmin-controls'));
+
+      _.each(innerFields, function(field) {
+        initial_value[field['name']] = value[field['name']];
+      });
+
+      self.innerModel.set(initial_value);
+
+      self.listenTo(self.innerModel, 'change', self.onInnerModelChange);
+
+      _.each(innerFields, function(fld) {
+
+        var f = new Backform.Field(
+          _.extend({}, {
+            id: fld['name'],
+            name: fld['name'],
+            control: fld['type'],
+            label: fld['label'],
+          })
+          ),
+          cntr = new (f.get('control')) ({
+            field: f,
+            model: self.innerModel,
+          });
+
+        cntr.render();
+
+        if(fld['type'] == 'checkbox') {
+          if (fld['name'] == 'alt_option') {
+            $container.append($('<div class="pg-el-sm-3 pg-el-xs-12"></div>').append(cntr.$el));
+          } else {
+            $container.append($('<div class="pg-el-sm-2 pg-el-xs-12"></div>').append(cntr.$el));
+          }
+        } else {
+          $container.append($('<div class="pg-el-sm-5 pg-el-xs-12"></div>').append(cntr.$el));
+        }
+
+        // We will keep track of all the controls rendered at the
+        // moment.
+        self.controls.push(cntr);
+
+      });
+
+      return self;
+    },
+    remove: function() {
+      /* First do the clean up */
+      this.cleanup();
+      Backform.Control.prototype.remove.apply(this, arguments);
+    },
+  });
+
   return Backform;
 });

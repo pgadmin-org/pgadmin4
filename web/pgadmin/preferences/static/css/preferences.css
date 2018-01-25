@@ -25,10 +25,6 @@ div.pgadmin-preference-body div.ajs-content {
   bottom: 0px !important;
 }
 
-.preferences_content .control-label, .preferences_content .pgadmin-controls {
-  min-width: 100px !important;
-}
-
 .pgadmin-preference-body {
     min-width: 300px !important;
     min-height: 400px !important;
@@ -39,4 +35,16 @@ div.pgadmin-preference-body div.ajs-content {
     min-width: 600px !important;
     min-height: 480px !important;
   }
+}
+
+.keyboard-shortcut-label {
+  font-weight: normal !important;
+}
+
+.preferences_content input[type="checkbox"]:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+}
+
+.preferences_content .pgadmin-controls input[type="checkbox"] {
+  margin-left: -20px !important;
 }

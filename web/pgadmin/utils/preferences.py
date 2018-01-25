@@ -13,6 +13,7 @@ module within the system.
 """
 
 import decimal
+import simplejson as json
 
 import dateutil.parser as dateutil_parser
 from flask import current_app
@@ -31,7 +32,7 @@ class _Preference(object):
 
     def __init__(
             self, cid, name, label, _type, default, help_str=None, min_val=None,
-            max_val=None, options=None, select2=None
+            max_val=None, options=None, select2=None, fields=None
     ):
         """
         __init__
@@ -54,6 +55,8 @@ class _Preference(object):
         :param max_val: maximum value
         :param options: options (Array of list objects)
         :param select2: select2 options (object)
+        :param fields: field schema (if preference has more than one field to
+                        take input from user e.g. keyboardshortcut preference)
 
         :returns: nothing
         """
@@ -67,6 +70,7 @@ class _Preference(object):
         self.max_val = max_val
         self.options = options
         self.select2 = select2
+        self.fields = fields
 
         # Look into the configuration table to find out the id of the specific
         # preference.
@@ -137,6 +141,12 @@ class _Preference(object):
         if self._type == 'text':
             if res.value == '':
                 return self.default
+        if self._type == 'keyboardshortcut':
+            try:
+                return json.loads(res.value)
+            except Exception as e:
+                current_app.logger.exeception(e)
+                return self.default
 
         return res.value
 
@@ -196,6 +206,14 @@ class _Preference(object):
 
             if not has_value and self.select2 and not self.select2['tags']:
                 return False, gettext("Invalid value for an options option.")
+        elif self._type == 'keyboardshortcut':
+            try:
+                value = json.dumps(value)
+            except Exception as e:
+                current_app.logger.exeception(e)
+                return False, gettext(
+                    "Invalid value for a keyboard shortcut option."
+                )
 
         pref = UserPrefTable.query.filter_by(
             pid=self.pid
@@ -231,7 +249,8 @@ class _Preference(object):
             'max_val': self.max_val,
             'options': self.options,
             'select2': self.select2,
-            'value': self.get()
+            'value': self.get(),
+            'fields': self.fields,
         }
         return res
 
@@ -371,7 +390,7 @@ class Preferences(object):
     def register(
             self, category, name, label, _type, default, min_val=None,
             max_val=None, options=None, help_str=None, category_label=None,
-            select2=None
+            select2=None, fields=None
     ):
         """
         register
@@ -393,6 +412,8 @@ class Preferences(object):
         :param help_str:
         :param category_label:
         :param select2: select2 control extra options
+        :param fields: field schema (if preference has more than one field to
+                        take input from user e.g. keyboardshortcut preference)
         """
         cat = self.__category(category, category_label)
         if name in cat['preferences']:
@@ -402,12 +423,13 @@ class Preferences(object):
         assert _type is not None, "Type for a preference cannot be none!"
         assert _type in (
             'boolean', 'integer', 'numeric', 'date', 'datetime',
-            'options', 'multiline', 'switch', 'node', 'text'
+            'options', 'multiline', 'switch', 'node', 'text',
+            'keyboardshortcut'
         ), "Type cannot be found in the defined list!"
 
         (cat['preferences'])[name] = res = _Preference(
             cat['id'], name, label, _type, default, help_str, min_val,
-            max_val, options, select2
+            max_val, options, select2, fields
         )
 
         return res

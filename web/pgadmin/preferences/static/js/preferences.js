@@ -256,6 +256,8 @@ define('pgadmin.preferences', [
               return 'textarea';
             case 'switch':
               return 'switch';
+            case 'keyboardshortcut':
+              return 'keyboardShortcut';
             default:
               if (console && console.warn) {
                   // Warning for developer only.
