@@ -28,6 +28,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.preferences import Preferences
 from pgadmin.model import Server
 
+
 class DataGridModule(PgAdminModule):
     """
     class DataGridModule(PgAdminModule)
@@ -72,7 +73,9 @@ blueprint = DataGridModule(MODULE_NAME, __name__, static_url_path='/static')
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=gettext('This URL cannot be requested directly.'))
+    return bad_request(
+        errormsg=gettext('This URL cannot be requested directly.')
+    )
 
 
 @blueprint.route("/css/datagrid.css")
@@ -90,8 +93,10 @@ def show_filter():
 
 
 @blueprint.route(
-    '/initialize/datagrid/<int:cmd_type>/<obj_type>/<int:sid>/<int:did>/<int:obj_id>',
-    methods=["PUT", "POST"], endpoint="initialize_datagrid"
+    '/initialize/datagrid/<int:cmd_type>/<obj_type>/<int:sid>/<int:did>/'
+    '<int:obj_id>',
+    methods=["PUT", "POST"],
+    endpoint="initialize_datagrid"
 )
 @login_required
 def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
@@ -103,7 +108,9 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
 
     Args:
         cmd_type: Contains value for which menu item is clicked.
-        obj_type: Contains type of selected object for which data grid to be render
+        obj_type: Contains type of selected object for which data grid to
+        be render
+
         sid: Server Id
         did: Database Id
         obj_id: Id of currently selected object
@@ -135,9 +142,11 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
             obj_type = 'table'
 
         # Get the object as per the object type
-        command_obj = ObjectRegistry.get_object(obj_type, conn_id=conn_id, sid=sid,
-                                                did=did, obj_id=obj_id, cmd_type=cmd_type,
-                                                sql_filter=filter_sql)
+        command_obj = ObjectRegistry.get_object(
+            obj_type, conn_id=conn_id, sid=sid,
+            did=did, obj_id=obj_id, cmd_type=cmd_type,
+            sql_filter=filter_sql
+        )
     except Exception as e:
         return internal_server_error(errormsg=str(e))
 
@@ -162,8 +171,12 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
     pref = Preferences.module('sqleditor')
     new_browser_tab = pref.preference('new_browser_tab').get()
 
-    return make_json_response(data={'gridTransId': trans_id,
-                                    'newBrowserTab': new_browser_tab})
+    return make_json_response(
+        data={
+            'gridTransId': trans_id,
+            'newBrowserTab': new_browser_tab
+        }
+    )
 
 
 @blueprint.route(
@@ -199,9 +212,9 @@ def panel(trans_id, is_query_tool, editor_title):
     Animations and transitions are not automatically GPU accelerated and by
     default use browser's slow rendering engine. We need to set 'translate3d'
     value of '-webkit-transform' property in order to use GPU. After applying
-    this property under linux, Webkit calculates wrong position of the elements
-    so panel contents are not visible. To make it work, we need to explicitly
-    set '-webkit-transform' property to 'none' for .ajs-notifier,
+    this property under linux, Webkit calculates wrong position of the
+    elements so panel contents are not visible. To make it work, we need to
+    explicitly set '-webkit-transform' property to 'none' for .ajs-notifier,
     .ajs-message, .ajs-modal classes.
 
     This issue is only with linux runtime application and observed in Query
@@ -228,7 +241,9 @@ def panel(trans_id, is_query_tool, editor_title):
             'prompt_save_query_changes'
         ).get()
     else:
-        prompt_save_changes = pref.preference('prompt_save_data_changes').get()
+        prompt_save_changes = pref.preference(
+            'prompt_save_data_changes'
+        ).get()
 
     display_connection_status = pref.preference('connection_status').get()
 
@@ -242,8 +257,9 @@ def panel(trans_id, is_query_tool, editor_title):
         trans_obj = pickle.loads(session_obj['command_obj'])
         s = Server.query.filter_by(id=trans_obj.sid).first()
         if s and s.bgcolor:
-            # If background is set to white means we do not have to change the
-            # title background else change it as per user specified background
+            # If background is set to white means we do not have to change
+            # the title background else change it as per user specified
+            # background
             if s.bgcolor != '#ffffff':
                 bgcolor = s.bgcolor
             fgcolor = s.fgcolor or 'black'
@@ -262,8 +278,8 @@ def panel(trans_id, is_query_tool, editor_title):
         client_platform=user_agent.platform,
         bgcolor=bgcolor,
         fgcolor=fgcolor,
-        # convert python boolean value to equivalent js boolean literal before
-        # passing it to html template.
+        # convert python boolean value to equivalent js boolean literal
+        # before passing it to html template.
         prompt_save_changes='true' if prompt_save_changes else 'false',
         display_connection_status=display_connection_status
     )
@@ -305,7 +321,9 @@ def initialize_query_tool(sid, did=None):
             )
 
     try:
-        command_obj = ObjectRegistry.get_object('query_tool', sid=sid, did=did)
+        command_obj = ObjectRegistry.get_object(
+            'query_tool', sid=sid, did=did
+        )
     except Exception as e:
         return internal_server_error(errormsg=str(e))
 
@@ -320,7 +338,8 @@ def initialize_query_tool(sid, did=None):
     # Use pickle to store the command object which will be used
     # later by the sql grid module.
     sql_grid_data[trans_id] = {
-        'command_obj': pickle.dumps(command_obj, -1)  # -1 specify the highest protocol version available
+        # -1 specify the highest protocol version available
+        'command_obj': pickle.dumps(command_obj, -1)
     }
 
     # Store the grid dictionary into the session variable
@@ -329,8 +348,12 @@ def initialize_query_tool(sid, did=None):
     pref = Preferences.module('sqleditor')
     new_browser_tab = pref.preference('new_browser_tab').get()
 
-    return make_json_response(data={'gridTransId': trans_id,
-                                    'newBrowserTab': new_browser_tab})
+    return make_json_response(
+        data={
+            'gridTransId': trans_id,
+            'newBrowserTab': new_browser_tab
+        }
+    )
 
 
 @blueprint.route('/close/<int:trans_id>', methods=["GET"], endpoint='close')
@@ -356,8 +379,10 @@ def close(trans_id):
     # if connection id is None then no need to release the connection
     if cmd_obj.conn_id is not None:
         try:
-            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
-            conn = manager.connection(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
+            manager = get_driver(
+                PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
+            conn = manager.connection(
+                did=cmd_obj.did, conn_id=cmd_obj.conn_id)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -365,16 +390,18 @@ def close(trans_id):
         if conn.connected():
             manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
 
-        # Remove the information of unique transaction id from the session variable.
+        # Remove the information of unique transaction id from the
+        # session variable.
         grid_data.pop(str(trans_id), None)
         session['gridData'] = grid_data
 
     return make_json_response(data={'status': True})
 
 
-@blueprint.route('/filter/validate/<int:sid>/<int:did>/<int:obj_id>',
-                 methods=["PUT", "POST"], endpoint='filter_validate'
-                 )
+@blueprint.route(
+    '/filter/validate/<int:sid>/<int:did>/<int:obj_id>',
+    methods=["PUT", "POST"], endpoint='filter_validate'
+)
 @login_required
 def validate_filter(sid, did, obj_id):
     """
@@ -408,6 +435,6 @@ def script():
     """render the required javascript"""
     return Response(
         response=render_template("datagrid/js/datagrid.js", _=gettext),
-        status=200, mimetype="application/javascript"
+        status=200,
+        mimetype="application/javascript"
     )
-

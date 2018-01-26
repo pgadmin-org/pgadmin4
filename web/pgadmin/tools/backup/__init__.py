@@ -194,6 +194,7 @@ class BackupMessage(IProcessDesc):
 
         return res
 
+
 @blueprint.route("/")
 @login_required
 def index():
@@ -348,7 +349,8 @@ def create_backup_objects_job(sid):
     Args:
         sid: Server ID
 
-        Creates a new job for backup task (Backup Database(s)/Schema(s)/Table(s))
+        Creates a new job for backup task
+        (Backup Database(s)/Schema(s)/Table(s))
 
     Returns:
         None

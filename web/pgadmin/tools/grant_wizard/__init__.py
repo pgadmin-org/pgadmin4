@@ -24,7 +24,7 @@ from config import PG_DEFAULT_DRIVER
 
 try:
     from urllib import unquote
-except:
+except ImportError:
     from urllib.parse import unquote
 from pgadmin.utils.ajax import precondition_required
 from functools import wraps
@@ -136,9 +136,11 @@ def check_precondition(f):
         server_info['server_type'] = server_info['manager'].server_type
         server_info['version'] = server_info['manager'].version
         if server_info['server_type'] == 'pg':
-            server_info['template_path'] = 'grant_wizard/pg/#{0}#'.format(server_info['version'])
+            server_info['template_path'] = 'grant_wizard/pg/#{0}#'.format(
+                server_info['version'])
         elif server_info['server_type'] == 'ppas':
-            server_info['template_path'] = 'grant_wizard/ppas/#{0}#'.format(server_info['version'])
+            server_info['template_path'] = 'grant_wizard/ppas/#{0}#'.format(
+                server_info['version'])
 
         return f(*args, **kwargs)
 
@@ -240,8 +242,8 @@ def properties(sid, did, node_id, node_type):
 
         # Fetch procedures only if server type is ppas
         if (len(server_prop) > 0 and
-                    server_prop['server_type'] == 'ppas' and
-                    ntype in ['schema', 'procedure']):
+            server_prop['server_type'] == 'ppas' and
+                ntype in ['schema', 'procedure']):
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/function.sql']),
                 node_id=node_id, type='procedure')

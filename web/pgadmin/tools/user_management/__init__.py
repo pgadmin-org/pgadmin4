@@ -51,7 +51,7 @@ class UserManagementModule(PgAdminModule):
             'name': 'pgadmin.tools.user_management',
             'path': url_for('user_management.index') + 'user_management',
             'when': None
-        },{
+        }, {
             'name': 'pgadmin.user_management.current_user',
             'path': url_for('user_management.index') + 'current_user',
             'when': None,
@@ -85,12 +85,14 @@ blueprint = UserManagementModule(
 
 def validate_user(data):
     new_data = dict()
-    email_filter = re.compile("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9]"
-                              "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
-                              "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+    email_filter = re.compile(
+        "^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9]"
+        "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
+        "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+    )
 
     if ('newPassword' in data and data['newPassword'] != "" and
-                'confirmPassword' in data and data['confirmPassword'] != ""):
+            'confirmPassword' in data and data['confirmPassword'] != ""):
 
         if data['newPassword'] == data['confirmPassword']:
             new_data['password'] = encrypt_password(data['newPassword'])
@@ -132,20 +134,23 @@ def script():
         mimetype="application/javascript"
     )
 
+
 @blueprint.route("/current_user.js")
 @login_required
 def current_user_info():
     return Response(
         response=render_template(
             "user_management/js/current_user.js",
-            is_admin='true' if current_user.has_role("Administrator") else 'false',
+            is_admin='true' if current_user.has_role(
+                "Administrator") else 'false',
             user_id=current_user.id,
             email=current_user.email,
             name=(
                 current_user.email.split('@')[0] if config.SERVER_MODE is True
                 else 'postgres'
             ),
-            allow_save_password='true' if config.ALLOW_SAVE_PASSWORD else 'false'
+            allow_save_password='true' if config.ALLOW_SAVE_PASSWORD
+            else 'false'
         ),
         status=200,
         mimetype="application/javascript"
@@ -247,7 +252,9 @@ def create():
     )
 
 
-@blueprint.route('/user/<int:uid>', methods=['DELETE'], endpoint='delete_user')
+@blueprint.route(
+    '/user/<int:uid>', methods=['DELETE'], endpoint='delete_user'
+)
 @roles_required('Administrator')
 def delete(uid):
     """

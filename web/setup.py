@@ -41,8 +41,9 @@ if __name__ == '__main__':
 
     config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
     if "PGADMIN_TESTING_MODE" in os. environ and \
-                    os.environ["PGADMIN_TESTING_MODE"] == "1":
+            os.environ["PGADMIN_TESTING_MODE"] == "1":
         config.SQLITE_PATH = config.TEST_SQLITE_PATH
+
     create_app_data_directory(config)
 
     app = create_app()

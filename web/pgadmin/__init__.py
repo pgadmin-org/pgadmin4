@@ -10,7 +10,8 @@
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
 import logging
-import os, sys
+import os
+import sys
 from collections import defaultdict
 from importlib import import_module
 
@@ -217,7 +218,7 @@ def create_app(app_name=None):
 
     # Set SQLITE_PATH to TEST_SQLITE_PATH while running test cases
     if "PGADMIN_TESTING_MODE" in os. environ and \
-                    os.environ["PGADMIN_TESTING_MODE"] == "1":
+            os.environ["PGADMIN_TESTING_MODE"] == "1":
         config.SQLITE_PATH = config.TEST_SQLITE_PATH
 
     # Ensure the various working directories exist
@@ -280,7 +281,9 @@ def create_app(app_name=None):
             elif hasattr(session, 'PGADMIN_LANGUAGE'):
                 language = getattr(session, 'PGADMIN_LANGUAGE', language)
             elif hasattr(request.cookies, 'PGADMIN_LANGUAGE'):
-                language = getattr(request.cookies, 'PGADMIN_LANGUAGE', language)
+                language = getattr(
+                    request.cookies, 'PGADMIN_LANGUAGE', language
+                )
 
         return language
 
@@ -332,15 +335,20 @@ def create_app(app_name=None):
     # Setup security
     ##########################################################################
     with app.app_context():
-        config.CSRF_SESSION_KEY = Keys.query.filter_by(name = 'CSRF_SESSION_KEY').first().value
-        config.SECRET_KEY = Keys.query.filter_by(name = 'SECRET_KEY').first().value
-        config.SECURITY_PASSWORD_SALT = Keys.query.filter_by(name = 'SECURITY_PASSWORD_SALT').first().value
+        config.CSRF_SESSION_KEY = Keys.query.filter_by(
+            name='CSRF_SESSION_KEY').first().value
+        config.SECRET_KEY = Keys.query.filter_by(
+            name='SECRET_KEY').first().value
+        config.SECURITY_PASSWORD_SALT = Keys.query.filter_by(
+            name='SECURITY_PASSWORD_SALT').first().value
 
     # Update the app.config with proper security keyes for signing CSRF data,
     # signing cookies, and the SALT for hashing the passwords.
-    app.config.update(dict(CSRF_SESSION_KEY=config.CSRF_SESSION_KEY))
-    app.config.update(dict(SECRET_KEY=config.SECRET_KEY))
-    app.config.update(dict(SECURITY_PASSWORD_SALT=config.SECURITY_PASSWORD_SALT))
+    app.config.update(dict({
+        'CSRF_SESSION_KEY': config.CSRF_SESSION_KEY,
+        'SECRET_KEY': config.SECRET_KEY,
+        'SECURITY_PASSWORD_SALT': config.SECURITY_PASSWORD_SALT
+    }))
 
     security.init_app(app, user_datastore)
 
@@ -376,7 +384,6 @@ def create_app(app_name=None):
             if user_languages and language:
                 language = user_languages.set(language)
 
-
     ##########################################################################
     # Register any local servers we can discover
     ##########################################################################
@@ -397,25 +404,25 @@ def create_app(app_name=None):
 
         '''Add a server to the config database'''
         def add_server(user_id, servergroup_id, name, superuser, port, discovery_id, comment):
-        # Create a server object if needed, and store it.
+            # Create a server object if needed, and store it.
             servers = Server.query.filter_by(
                 user_id=user_id,
                 discovery_id=svr_discovery_id
             ).order_by("id")
 
             if servers.count() > 0:
-                return;
+                return
 
             svr = Server(user_id=user_id,
-                            servergroup_id=servergroup_id,
-                            name=name,
-                            host='localhost',
-                            port=port,
-                            maintenance_db='postgres',
-                            username=superuser,
-                            ssl_mode='prefer',
-                            comment=svr_comment,
-                            discovery_id=discovery_id)
+                         servergroup_id=servergroup_id,
+                         name=name,
+                         host='localhost',
+                         port=port,
+                         maintenance_db='postgres',
+                         username=superuser,
+                         ssl_mode='prefer',
+                         comment=svr_comment,
+                         discovery_id=discovery_id)
 
             db.session.add(svr)
             db.session.commit()
@@ -505,7 +512,8 @@ def create_app(app_name=None):
                         description,
                         data_directory
                     ))
-                    add_server(user_id, servergroup_id, svr_name, svr_superuser, svr_port, svr_discovery_id, svr_comment)
+                    add_server(user_id, servergroup_id, svr_name,
+                               svr_superuser, svr_port, svr_discovery_id, svr_comment)
 
         except:
             pass
@@ -564,7 +572,7 @@ def create_app(app_name=None):
     # Minify output
     ##########################################################################
     # HTMLMIN doesn't work with Python 2.6.
-    if not config.DEBUG and sys.version_info >= (2,7):
+    if not config.DEBUG and sys.version_info >= (2, 7):
         from flask_htmlmin import HTMLMIN
         HTMLMIN(app)
 

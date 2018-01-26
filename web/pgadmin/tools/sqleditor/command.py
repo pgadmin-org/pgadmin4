@@ -67,7 +67,8 @@ class ObjectRegistry(ABCMeta):
             return (ObjectRegistry.registry[name])(**kwargs)
 
         raise NotImplementedError(
-            gettext("This feature has not been implemented for object type '{0}'.").format(name)
+            gettext("This feature has not been implemented for object "
+                    "type '{0}'.").format(name)
         )
 
 
@@ -157,7 +158,8 @@ class SQLFilter(object):
         self.sid = kwargs['sid']
         self.did = kwargs['did']
         self.obj_id = kwargs['obj_id']
-        self.__row_filter = kwargs['sql_filter'] if 'sql_filter' in kwargs else None
+        self.__row_filter = kwargs['sql_filter'] if 'sql_filter' in kwargs \
+            else None
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
         conn = manager.connection(did=self.did)
@@ -167,7 +169,10 @@ class SQLFilter(object):
 
         if conn.connected():
             # Fetch the Namespace Name and object Name
-            query = render_template("/".join([self.sql_path, 'objectname.sql']), obj_id=self.obj_id)
+            query = render_template(
+                "/".join([self.sql_path, 'objectname.sql']),
+                obj_id=self.obj_id
+            )
 
             status, result = conn.execute_dict(query)
             if not status:
@@ -176,7 +181,10 @@ class SQLFilter(object):
             self.nsp_name = result['rows'][0]['nspname']
             self.object_name = result['rows'][0]['relname']
         else:
-            raise Exception(gettext('Not connected to server or connection with the server has been closed.'))
+            raise Exception(gettext(
+                'Not connected to server or connection with the server '
+                'has been closed.')
+            )
 
     def get_filter(self):
         """
@@ -248,8 +256,10 @@ class SQLFilter(object):
         conn = manager.connection(did=self.did)
 
         if conn.connected():
-            sql = render_template("/".join([self.sql_path, 'validate.sql']),
-                                  nsp_name=self.nsp_name, object_name=self.object_name, row_filter=row_filter)
+            sql = render_template(
+                "/".join([self.sql_path, 'validate.sql']),
+                nsp_name=self.nsp_name, object_name=self.object_name,
+                row_filter=row_filter)
 
             status, result = conn.execute_scalar(sql)
             if not status:
@@ -262,6 +272,7 @@ class FetchedRowTracker(object):
     """
     Keeps track of fetched row count.
     """
+
     def __init__(self, **kwargs):
         self.fetched_rows = 0
 
@@ -285,7 +296,8 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
       - Derived class can implement there own logic to get the primary keys.
 
     * save()
-      - Derived class can implement there own logic to save the data into the database.
+      - Derived class can implement there own logic to save the data into the
+      database.
 
     * set_limit(limit)
       - This method sets the limit for SQL query
@@ -311,14 +323,17 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
         self.cmd_type = kwargs['cmd_type'] if 'cmd_type' in kwargs else None
         self.limit = -1
 
-        if self.cmd_type == VIEW_FIRST_100_ROWS or self.cmd_type == VIEW_LAST_100_ROWS:
+        if self.cmd_type == VIEW_FIRST_100_ROWS or \
+                self.cmd_type == VIEW_LAST_100_ROWS:
             self.limit = 100
 
     def get_primary_keys(self, *args, **kwargs):
         return None, None
 
     def save(self, changed_data, default_conn=None):
-        return forbidden(errmsg=gettext("Data cannot be saved for the current object."))
+        return forbidden(
+            errmsg=gettext("Data cannot be saved for the current object.")
+        )
 
     def get_limit(self):
         """
@@ -370,14 +385,22 @@ class TableCommand(GridCommand):
         sql_filter = self.get_filter()
 
         if sql_filter is None:
-            sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
-                                  nsp_name=self.nsp_name, pk_names=pk_names, cmd_type=self.cmd_type,
-                                  limit=self.limit, primary_keys=primary_keys, has_oids=has_oids)
+            sql = render_template(
+                "/".join([self.sql_path, 'objectquery.sql']),
+                object_name=self.object_name,
+                nsp_name=self.nsp_name, pk_names=pk_names,
+                cmd_type=self.cmd_type, limit=self.limit,
+                primary_keys=primary_keys, has_oids=has_oids
+            )
         else:
-            sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
-                                  nsp_name=self.nsp_name, pk_names=pk_names, cmd_type=self.cmd_type,
-                                  sql_filter=sql_filter, limit=self.limit, primary_keys=primary_keys,
-                                  has_oids=has_oids)
+            sql = render_template(
+                "/".join([self.sql_path, 'objectquery.sql']),
+                object_name=self.object_name,
+                nsp_name=self.nsp_name, pk_names=pk_names,
+                cmd_type=self.cmd_type, sql_filter=sql_filter,
+                limit=self.limit, primary_keys=primary_keys,
+                has_oids=has_oids
+            )
 
         return sql
 
@@ -398,7 +421,10 @@ class TableCommand(GridCommand):
         if conn.connected():
 
             # Fetch the primary key column names
-            query = render_template("/".join([self.sql_path, 'primary_keys.sql']), obj_id=self.obj_id)
+            query = render_template(
+                "/".join([self.sql_path, 'primary_keys.sql']),
+                obj_id=self.obj_id
+            )
 
             status, result = conn.execute_dict(query)
             if not status:
@@ -412,7 +438,10 @@ class TableCommand(GridCommand):
                 # Remove last character from the string
                 pk_names = pk_names[:-1]
         else:
-            raise Exception(gettext('Not connected to server or connection with the server has been closed.'))
+            raise Exception(
+                gettext('Not connected to server or connection with the '
+                        'server has been closed.')
+            )
 
         return pk_names, primary_keys
 
@@ -436,14 +465,18 @@ class TableCommand(GridCommand):
         if conn.connected():
 
             # Fetch the table oids status
-            query = render_template("/".join([self.sql_path, 'has_oids.sql']), obj_id=self.obj_id)
+            query = render_template(
+                "/".join([self.sql_path, 'has_oids.sql']), obj_id=self.obj_id)
 
             status, has_oids = conn.execute_scalar(query)
             if not status:
                 raise Exception(has_oids)
 
         else:
-            raise Exception(gettext('Not connected to server or connection with the server has been closed.'))
+            raise Exception(
+                gettext('Not connected to server or connection with the '
+                        'server has been closed.')
+            )
 
         return has_oids
 
@@ -493,7 +526,6 @@ class TableCommand(GridCommand):
                 if len(changed_data[of_type]) < 1:
                     continue
 
-
                 column_type = {}
                 column_data = {}
                 for each_col in columns_info:
@@ -512,11 +544,16 @@ class TableCommand(GridCommand):
                 # For newly added rows
                 if of_type == 'added':
                     # Python dict does not honour the inserted item order
-                    # So to insert data in the order, we need to make ordered list of added index
-                    # We don't need this mechanism in updated/deleted rows as
-                    # it does not matter in those operations
-                    added_index = OrderedDict(sorted(changed_data['added_index'].items(),
-                                                     key=lambda x: int(x[0])))
+                    # So to insert data in the order, we need to make ordered
+                    # list of added index We don't need this mechanism in
+                    # updated/deleted rows as it does not matter in
+                    # those operations
+                    added_index = OrderedDict(
+                        sorted(
+                            changed_data['added_index'].items(),
+                            key=lambda x: int(x[0])
+                        )
+                    )
                     list_of_sql[of_type] = []
 
                     # When new rows are added, only changed columns data is
@@ -528,7 +565,8 @@ class TableCommand(GridCommand):
                     has_oids = 'oid' in column_type
 
                     for each_row in added_index:
-                        # Get the row index to match with the added rows dict key
+                        # Get the row index to match with the added rows
+                        # dict key
                         tmp_row_index = added_index[each_row]
                         data = changed_data[of_type][tmp_row_index]['data']
                         # Remove our unique tracking key
@@ -540,22 +578,31 @@ class TableCommand(GridCommand):
                         # not_null=False and has no default value
                         column_data.update(data)
 
-                        sql = render_template("/".join([self.sql_path, 'insert.sql']),
-                                              data_to_be_saved=column_data,
-                                              primary_keys=None,
-                                              object_name=self.object_name,
-                                              nsp_name=self.nsp_name,
-                                              data_type=column_type,
-                                              pk_names=pk_names,
-                                              has_oids=has_oids)
-                        select_sql = render_template("/".join([self.sql_path, 'select.sql']),
-                                              object_name=self.object_name,
-                                              nsp_name=self.nsp_name,
-                                              pk_names=pk_names.split(",") if pk_names else None,
-                                              has_oids=has_oids)
-                        list_of_sql[of_type].append({'sql': sql, 'data': data,
-                                                     'client_row': tmp_row_index,
-                                                     'select_sql': select_sql})
+                        sql = render_template(
+                            "/".join([self.sql_path, 'insert.sql']),
+                            data_to_be_saved=column_data,
+                            primary_keys=None,
+                            object_name=self.object_name,
+                            nsp_name=self.nsp_name,
+                            data_type=column_type,
+                            pk_names=pk_names,
+                            has_oids=has_oids
+                        )
+
+                        select_sql = render_template(
+                            "/".join([self.sql_path, 'select.sql']),
+                            object_name=self.object_name,
+                            nsp_name=self.nsp_name,
+                            pk_names=pk_names.split(",") if pk_names
+                            else None,
+                            has_oids=has_oids
+                        )
+
+                        list_of_sql[of_type].append({
+                            'sql': sql, 'data': data,
+                            'client_row': tmp_row_index,
+                            'select_sql': select_sql
+                        })
                         # Reset column data
                         column_data = {}
 
@@ -565,12 +612,14 @@ class TableCommand(GridCommand):
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
                         pk = changed_data[of_type][each_row]['primary_keys']
-                        sql = render_template("/".join([self.sql_path, 'update.sql']),
-                                              data_to_be_saved=data,
-                                              primary_keys=pk,
-                                              object_name=self.object_name,
-                                              nsp_name=self.nsp_name,
-                                              data_type=column_type)
+                        sql = render_template(
+                            "/".join([self.sql_path, 'update.sql']),
+                            data_to_be_saved=data,
+                            primary_keys=pk,
+                            object_name=self.object_name,
+                            nsp_name=self.nsp_name,
+                            data_type=column_type
+                        )
                         list_of_sql[of_type].append({'sql': sql, 'data': data})
                         list_of_rowid.append(data.get(client_primary_key))
 
@@ -589,8 +638,9 @@ class TableCommand(GridCommand):
                             # Python3
                             # In Python2, it's already a list & We will also
                             # fetch column names using index
-                            keys = list(changed_data[of_type][each_row].keys())
-
+                            keys = list(
+                                changed_data[of_type][each_row].keys()
+                            )
                             no_of_keys = len(keys)
                             is_first = False
                     # Map index with column name for each row
@@ -599,17 +649,20 @@ class TableCommand(GridCommand):
                             # Set primary key with label & delete index based
                             # mapped key
                             try:
-                                row[changed_data['columns'][int(k)]['name']] = v
+                                row[changed_data['columns']
+                                    [int(k)]['name']] = v
                             except ValueError:
                                 continue
                             del row[k]
 
-                    sql = render_template("/".join([self.sql_path, 'delete.sql']),
-                                          data=rows_to_delete,
-                                          primary_key_labels=keys,
-                                          no_of_keys=no_of_keys,
-                                          object_name=self.object_name,
-                                          nsp_name=self.nsp_name)
+                    sql = render_template(
+                        "/".join([self.sql_path, 'delete.sql']),
+                        data=rows_to_delete,
+                        primary_key_labels=keys,
+                        no_of_keys=no_of_keys,
+                        object_name=self.object_name,
+                        nsp_name=self.nsp_name
+                    )
                     list_of_sql[of_type].append({'sql': sql, 'data': {}})
 
             for opr, sqls in list_of_sql.items():
@@ -627,15 +680,19 @@ class TableCommand(GridCommand):
 
                         if not status:
                             conn.execute_void('ROLLBACK;')
-                            # If we roll backed every thing then update the message for
-                            # each sql query.
+                            # If we roll backed every thing then update the
+                            # message for each sql query.
                             for val in query_res:
                                 if query_res[val]['status']:
-                                    query_res[val]['result'] = 'Transaction ROLLBACK'
+                                    query_res[val]['result'] = \
+                                        'Transaction ROLLBACK'
 
                             # If list is empty set rowid to 1
                             try:
-                                _rowid = list_of_rowid[count] if list_of_rowid else 1
+                                if list_of_rowid:
+                                    _rowid = list_of_rowid[count]
+                                else:
+                                    _rowid = 1
                             except Exception:
                                 _rowid = 0
 
@@ -648,29 +705,37 @@ class TableCommand(GridCommand):
 
                             if not status:
                                 conn.execute_void('ROLLBACK;')
-                                # If we roll backed every thing then update the message for
-                                # each sql query.
+                                # If we roll backed every thing then update
+                                # the message for each sql query.
                                 for val in query_res:
                                     if query_res[val]['status']:
-                                        query_res[val]['result'] = 'Transaction ROLLBACK'
+                                        query_res[val]['result'] = \
+                                            'Transaction ROLLBACK'
 
                                 # If list is empty set rowid to 1
                                 try:
-                                    _rowid = list_of_rowid[count] if list_of_rowid else 1
+                                    if list_of_rowid:
+                                        _rowid = list_of_rowid[count]
+                                    else:
+                                        _rowid = 1
                                 except Exception:
                                     _rowid = 0
 
                                 return status, sel_res, query_res, _rowid
 
                             if 'rows' in sel_res and len(sel_res['rows']) > 0:
-                                row_added = {item['client_row']: sel_res['rows'][0]}
+                                row_added = {
+                                    item['client_row']: sel_res['rows'][0]}
 
                         rows_affected = conn.rows_affected()
 
                         # store the result of each query in dictionary
-                        query_res[count] = {'status': status, 'result': None if row_added else res,
-                                            'sql': sql, 'rows_affected': rows_affected,
-                                            'row_added': row_added}
+                        query_res[count] = {
+                            'status': status,
+                            'result': None if row_added else res,
+                            'sql': sql, 'rows_affected': rows_affected,
+                            'row_added': row_added
+                        }
 
                         count += 1
 
@@ -708,13 +773,19 @@ class ViewCommand(GridCommand):
         sql_filter = self.get_filter()
 
         if sql_filter is None:
-            sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
-                                  nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                                  limit=self.limit)
+            sql = render_template(
+                "/".join([self.sql_path, 'objectquery.sql']),
+                object_name=self.object_name,
+                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                limit=self.limit
+            )
         else:
-            sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
-                                  nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                                  sql_filter=sql_filter, limit=self.limit)
+            sql = render_template(
+                "/".join([self.sql_path, 'objectquery.sql']),
+                object_name=self.object_name,
+                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                sql_filter=sql_filter, limit=self.limit
+            )
 
         return sql
 
@@ -763,13 +834,19 @@ class ForeignTableCommand(GridCommand):
         sql_filter = self.get_filter()
 
         if sql_filter is None:
-            sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
-                                  nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                                  limit=self.limit)
+            sql = render_template(
+                "/".join([self.sql_path, 'objectquery.sql']),
+                object_name=self.object_name,
+                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                limit=self.limit
+            )
         else:
-            sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
-                                  nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                                  sql_filter=sql_filter, limit=self.limit)
+            sql = render_template(
+                "/".join([self.sql_path, 'objectquery.sql']),
+                object_name=self.object_name,
+                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                sql_filter=sql_filter, limit=self.limit
+            )
 
         return sql
 
@@ -808,13 +885,19 @@ class CatalogCommand(GridCommand):
         sql_filter = self.get_filter()
 
         if sql_filter is None:
-            sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
-                                  nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                                  limit=self.limit)
+            sql = render_template(
+                "/".join([self.sql_path, 'objectquery.sql']),
+                object_name=self.object_name,
+                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                limit=self.limit
+            )
         else:
-            sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
-                                  nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                                  sql_filter=sql_filter, limit=self.limit)
+            sql = render_template(
+                "/".join([self.sql_path, 'objectquery.sql']),
+                object_name=self.object_name,
+                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                sql_filter=sql_filter, limit=self.limit
+            )
 
         return sql
 

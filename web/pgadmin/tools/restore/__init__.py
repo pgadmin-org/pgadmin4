@@ -58,6 +58,7 @@ class RestoreModule(PgAdminModule):
         """
         return ['restore.create_job']
 
+
 # Create blueprint for RestoreModule class
 blueprint = RestoreModule(
     MODULE_NAME, __name__, static_url_path=''
@@ -76,7 +77,7 @@ class RestoreMessage(IProcessDesc):
                 x = x.replace('\\', '\\\\')
                 x = x.replace('"', '\\"')
                 x = x.replace('""', '\\"')
-                return ' "' + x  + '"'
+                return ' "' + x + '"'
             return ''
 
         for arg in _args:
@@ -84,7 +85,6 @@ class RestoreMessage(IProcessDesc):
                 self.cmd += ' ' + arg
             else:
                 self.cmd += cmdArg(arg)
-
 
     @property
     def message(self):
@@ -324,7 +324,7 @@ def create_restore_job(sid):
                 data['file'].encode('utf-8') if hasattr(
                     data['file'], 'encode'
                 ) else data['file'],
-		*args
+                *args
             ),
             cmd=utility, args=args
         )

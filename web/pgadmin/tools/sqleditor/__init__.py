@@ -59,6 +59,7 @@ CONNECTION_STATUS_MESSAGE_MAPPING = dict({
     4: 'The connection with the server is bad.'
 })
 
+
 class SqlEditorModule(PgAdminModule):
     """
     class SqlEditorModule(PgAdminModule)
@@ -84,7 +85,6 @@ class SqlEditorModule(PgAdminModule):
             'path': url_for('sqleditor.index') + "sqleditor",
             'when': None
         }]
-
 
     def get_panels(self):
         return []
@@ -128,10 +128,10 @@ class SqlEditorModule(PgAdminModule):
             max_val=999999,
             help_str=gettext(
                 'The length of time to display the query info notifier after '
-                'execution has completed. A value of -1 disables the notifier '
-                'and a value of 0 displays it until clicked. Values greater '
-                'than 0 display the notifier for the number of seconds '
-                'specified.'
+                'execution has completed. A value of -1 disables the notifier'
+                ' and a value of 0 displays it until clicked. Values greater'
+                ' than 0 display the notifier for the number of seconds'
+                ' specified.'
             )
         )
 
@@ -356,9 +356,12 @@ class SqlEditorModule(PgAdminModule):
             gettext("Connection status refresh rate"), 'integer', 2,
             min_val=1, max_val=600,
             category_label=gettext('Display'),
-            help_str=gettext('The number of seconds between connection/transaction '
-                             'status polls.')
+            help_str=gettext(
+                'The number of seconds between connection/transaction '
+                'status polls.'
+            )
         )
+
 
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
 
@@ -392,7 +395,7 @@ def check_transaction_status(trans_id):
     """
     if 'gridData' not in session:
         return False, unauthorized(gettext("Unauthorized request.")), \
-               None, None, None
+            None, None, None
 
     grid_data = session['gridData']
 
@@ -408,23 +411,28 @@ def check_transaction_status(trans_id):
     trans_obj = pickle.loads(session_obj['command_obj'])
 
     try:
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
-        conn = manager.connection(did=trans_obj.did, conn_id=trans_obj.conn_id,
-                                  use_binary_placeholder=True,
-                                  array_to_string=True)
+        manager = get_driver(
+            PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
+        conn = manager.connection(
+            did=trans_obj.did,
+            conn_id=trans_obj.conn_id,
+            use_binary_placeholder=True,
+            array_to_string=True
+        )
     except Exception as e:
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if conn.connected():
         return True, None, conn, trans_obj, session_obj
     else:
-        return False, gettext('Not connected to server or connection with the server has been closed.'), \
-               None, trans_obj, session_obj
+        return False, gettext('Not connected to server or connection with '
+                              'the server has been closed.'), \
+            None, trans_obj, session_obj
 
 
 @blueprint.route(
     '/view_data/start/<int:trans_id>',
-     methods=["GET"], endpoint='view_data_start'
+    methods=["GET"], endpoint='view_data_start'
 )
 @login_required
 def start_view_data(trans_id):
@@ -437,7 +445,8 @@ def start_view_data(trans_id):
     limit = -1
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
 
     # get the default connection as current connection which is attached to
     # trans id holds the cursor which has query result so we cannot use that
@@ -568,7 +577,8 @@ def start_query_tool(trans_id):
             conn_id = str(random.randint(1, 9999999))
 
         try:
-            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
+            manager = get_driver(
+                PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
             conn = manager.connection(did=trans_obj.did, conn_id=conn_id,
                                       use_binary_placeholder=True,
                                       array_to_string=True)
@@ -611,14 +621,17 @@ def start_query_tool(trans_id):
                 conn.execute_void("ROLLBACK;")
         else:
             status = False
-            result = gettext('Not connected to server or connection with the server has been closed.')
+            result = gettext(
+                'Not connected to server or connection with the server has '
+                'been closed.')
 
         can_edit = trans_obj.can_edit()
         can_filter = trans_obj.can_filter()
 
     else:
         status = False
-        result = gettext('Either transaction object or session object not found.')
+        result = gettext(
+            'Either transaction object or session object not found.')
 
     return make_json_response(
         data={
@@ -644,10 +657,12 @@ def preferences(trans_id):
     if request.method == 'GET':
 
         # Check the transaction and connection status
-        status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+        status, error_msg, conn, trans_obj, session_obj = \
+            check_transaction_status(trans_id)
         if status and conn is not None \
                 and trans_obj is not None and session_obj is not None:
-            # Call the set_auto_commit and set_auto_rollback method of transaction object
+            # Call the set_auto_commit and set_auto_rollback method of
+            # transaction object
             trans_obj.set_auto_commit(blueprint.auto_commit.get())
             trans_obj.set_auto_rollback(blueprint.auto_rollback.get())
 
@@ -690,7 +705,8 @@ def preferences(trans_id):
 @login_required
 def poll(trans_id):
     """
-    This method polls the result of the asynchronous query and returns the result.
+    This method polls the result of the asynchronous query and returns
+    the result.
 
     Args:
         trans_id: unique transaction id
@@ -710,9 +726,11 @@ def poll(trans_id):
     oids = None
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None and session_obj is not None:
-        status, result = conn.poll(formatted_exception_msg=True, no_result=True)
+        status, result = conn.poll(
+            formatted_exception_msg=True, no_result=True)
         if not status:
             return internal_server_error(result)
         elif status == ASYNC_OK:
@@ -821,10 +839,12 @@ def poll(trans_id):
 
                     if res_len > 0:
                         rows_fetched_from = trans_obj.get_fetched_row_cnt()
-                        trans_obj.update_fetched_row_cnt(rows_fetched_from + res_len)
+                        trans_obj.update_fetched_row_cnt(
+                            rows_fetched_from + res_len)
                         rows_fetched_from += 1
                         rows_fetched_to = trans_obj.get_fetched_row_cnt()
-                        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
+                        session_obj['command_obj'] = pickle.dumps(
+                            trans_obj, -1)
 
                 # As we changed the transaction object we need to
                 # restore it and update the session variable.
@@ -856,7 +876,7 @@ def poll(trans_id):
     if status == 'Success' and result is None:
         result = conn.status_message()
         if (result != 'SELECT 1' or result != 'SELECT 0') \
-            and result is not None and additional_messages:
+                and result is not None and additional_messages:
             result = additional_messages + result
 
     return make_json_response(
@@ -877,8 +897,13 @@ def poll(trans_id):
     )
 
 
-@blueprint.route('/fetch/<int:trans_id>', methods=["GET"], endpoint='fetch')
-@blueprint.route('/fetch/<int:trans_id>/<int:fetch_all>', methods=["GET"], endpoint='fetch_all')
+@blueprint.route(
+    '/fetch/<int:trans_id>', methods=["GET"], endpoint='fetch'
+)
+@blueprint.route(
+    '/fetch/<int:trans_id>/<int:fetch_all>', methods=["GET"],
+    endpoint='fetch_all'
+)
 @login_required
 def fetch(trans_id, fetch_all=None):
     result = None
@@ -888,7 +913,8 @@ def fetch(trans_id, fetch_all=None):
     fetch_row_cnt = -1 if fetch_all == 1 else ON_DEMAND_RECORD_COUNT
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None and session_obj is not None:
         status, result = conn.async_fetchmany_2darray(fetch_row_cnt)
         if not status:
@@ -947,8 +973,9 @@ def fetch_pg_types(columns_info, trans_obj):
 
     if oids:
         status, res = default_conn.execute_dict(
-            u"""SELECT oid, format_type(oid,null) as typname FROM pg_type WHERE oid IN %s ORDER BY oid;
-""", [tuple(oids)])
+            u"SELECT oid, format_type(oid,null) as typname FROM pg_type "
+            u"WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
+        )
 
         if not status:
             return False, res
@@ -1001,20 +1028,24 @@ def save(trans_id):
         changed_data = request.args or request.form
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
         # If there is no primary key found then return from the function.
-        if (len(session_obj['primary_keys']) <= 0 or len(changed_data) <= 0) and 'has_oids' not in session_obj:
+        if (len(session_obj['primary_keys']) <= 0 or len(changed_data) <= 0) \
+                and 'has_oids' not in session_obj:
             return make_json_response(
                 data={
                     'status': False,
-                    'result': gettext('No primary key found for this object, so unable to save records.')
+                    'result': gettext('No primary key found for this object, '
+                                      'so unable to save records.')
                 }
             )
 
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
+        manager = get_driver(
+            PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
         default_conn = manager.connection(did=trans_obj.did)
 
         # Connect to the Server if not connected.
@@ -1059,7 +1090,8 @@ def get_filter(trans_id):
     """
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
@@ -1089,7 +1121,8 @@ def apply_filter(trans_id):
         filter_sql = request.args or request.form
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
@@ -1124,7 +1157,8 @@ def append_filter_inclusive(trans_id):
         filter_data = request.args or request.form
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
@@ -1137,7 +1171,9 @@ def append_filter_inclusive(trans_id):
             if column_value is None:
                 filter_sql = driver.qtIdent(conn, column_name) + ' IS NULL '
             else:
-                filter_sql = driver.qtIdent(conn, column_name) + ' = ' + driver.qtLiteral(column_value)
+                filter_sql = driver.qtIdent(
+                    conn, column_name
+                ) + ' = ' + driver.qtLiteral(column_value)
 
         trans_obj.append_filter(filter_sql)
 
@@ -1170,7 +1206,8 @@ def append_filter_exclusive(trans_id):
         filter_data = request.args or request.form
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
@@ -1181,9 +1218,12 @@ def append_filter_exclusive(trans_id):
         for column_name in filter_data:
             column_value = filter_data[column_name]
             if column_value is None:
-                filter_sql = driver.qtIdent(conn, column_name) + ' IS NOT NULL '
+                filter_sql = driver.qtIdent(
+                    conn, column_name) + ' IS NOT NULL '
             else:
-                filter_sql = driver.qtIdent(conn, column_name) + ' IS DISTINCT FROM ' + driver.qtLiteral(column_value)
+                filter_sql = driver.qtIdent(
+                    conn, column_name
+                ) + ' IS DISTINCT FROM ' + driver.qtLiteral(column_value)
 
         # Call the append_filter method of transaction object
         trans_obj.append_filter(filter_sql)
@@ -1213,7 +1253,8 @@ def remove_filter(trans_id):
     """
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
@@ -1250,7 +1291,8 @@ def set_limit(trans_id):
         limit = request.args or request.form
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
@@ -1289,7 +1331,8 @@ def cancel_transaction(trans_id):
     if str(trans_id) not in grid_data:
         return make_json_response(
             data={
-                'status': False, 'result': gettext('Transaction ID not found in the session.')
+                'status': False,
+                'result': gettext('Transaction ID not found in the session.')
             }
         )
 
@@ -1302,7 +1345,8 @@ def cancel_transaction(trans_id):
 
         # Fetch the main connection object for the database.
         try:
-            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
+            manager = get_driver(
+                PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
             conn = manager.connection(did=trans_obj.did)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1318,7 +1362,8 @@ def cancel_transaction(trans_id):
 
         if conn.connected():
             # on successful connection cancel the running transaction
-            status, result = conn.cancel_transaction(trans_obj.conn_id, trans_obj.did)
+            status, result = conn.cancel_transaction(
+                trans_obj.conn_id, trans_obj.did)
 
             # Delete connection if we have created it to
             # cancel the transaction
@@ -1326,10 +1371,14 @@ def cancel_transaction(trans_id):
                 manager.release(did=trans_obj.did)
         else:
             status = False
-            result = gettext('Not connected to server or connection with the server has been closed.')
+            result = gettext(
+                'Not connected to server or connection with the server has '
+                'been closed.'
+            )
     else:
         status = False
-        result = gettext('Either transaction object or session object not found.')
+        result = gettext(
+            'Either transaction object or session object not found.')
 
     return make_json_response(
         data={
@@ -1352,10 +1401,10 @@ def get_object_name(trans_id):
     """
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
-
         res = trans_obj.object_name
     else:
         status = False
@@ -1382,7 +1431,8 @@ def set_auto_commit(trans_id):
         auto_commit = request.args or request.form
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
@@ -1423,7 +1473,8 @@ def set_auto_rollback(trans_id):
         auto_rollback = request.args or request.form
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
@@ -1471,12 +1522,14 @@ def auto_complete(trans_id):
         text_before_cursor = data[1]
 
     # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
 
         # Create object of SQLAutoComplete class and pass connection object
-        auto_complete_obj = SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did, conn=conn)
+        auto_complete_obj = SQLAutoComplete(
+            sid=trans_obj.sid, did=trans_obj.did, conn=conn)
 
         # Get the auto completion suggestions.
         res = auto_complete_obj.get_completions(full_sql, text_before_cursor)
@@ -1491,13 +1544,16 @@ def auto_complete(trans_id):
 @login_required
 def script():
     """render the required javascript"""
-    return Response(response=render_template("sqleditor/js/sqleditor.js",
-                    tab_size=blueprint.tab_size.get(),
-                    use_spaces=blueprint.use_spaces.get(),
-                    _=gettext),
-                    status=200,
-                    mimetype="application/javascript"
-           )
+    return Response(
+        response=render_template(
+            "sqleditor/js/sqleditor.js",
+            tab_size=blueprint.tab_size.get(),
+            use_spaces=blueprint.use_spaces.get(),
+            _=gettext
+        ),
+        status=200,
+        mimetype="application/javascript"
+    )
 
 
 def is_begin_required(query):
@@ -1702,7 +1758,8 @@ def load_file():
     def gen():
         with codecs.open(file_path, 'r', encoding=enc) as fileObj:
             while True:
-                data = fileObj.read(4194304)  # 4MB chunk (4 * 1024 * 1024 Bytes)
+                # 4MB chunk (4 * 1024 * 1024 Bytes)
+                data = fileObj.read(4194304)
                 if not data:
                     break
                 yield data
@@ -1815,9 +1872,14 @@ def start_query_download_tool(trans_id):
                     r.call_on_close(cleanup)
                     return r
 
-                r = Response(gen(quote=blueprint.csv_quoting.get(),
-                    quote_char=blueprint.csv_quote_char.get(),
-                    field_separator=blueprint.csv_field_separator.get()), mimetype='text/csv')
+                r = Response(
+                    gen(
+                        quote=blueprint.csv_quoting.get(),
+                        quote_char=blueprint.csv_quote_char.get(),
+                        field_separator=blueprint.csv_field_separator.get()
+                    ),
+                    mimetype='text/csv'
+                )
 
                 if 'filename' in data and data['filename'] != "":
                     filename = data['filename']
@@ -1850,6 +1912,7 @@ def start_query_download_tool(trans_id):
         return internal_server_error(
             errormsg=gettext("Transaction status check failed.")
         )
+
 
 @blueprint.route(
     '/status/<int:trans_id>',

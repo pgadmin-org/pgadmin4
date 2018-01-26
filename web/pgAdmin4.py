@@ -36,7 +36,8 @@ from pgadmin import create_app
 from pgadmin.utils import u, fs_encoding, file_quote
 
 if config.DEBUG:
-    from pgadmin.utils.javascript.javascript_bundler import JavascriptBundler, JsState
+    from pgadmin.utils.javascript.javascript_bundler import \
+        JavascriptBundler, JsState
 
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
@@ -50,7 +51,8 @@ config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 # Check if the database exists. If it does not, create it.
 if not os.path.isfile(config.SQLITE_PATH):
     setupfile = os.path.join(
-        os.path.dirname(os.path.realpath(u(__file__, fs_encoding))), u'setup.py'
+        os.path.dirname(os.path.realpath(u(__file__, fs_encoding))),
+        u'setup.py'
     )
     exec(open(file_quote(setupfile), 'r').read())
 
@@ -75,7 +77,9 @@ else:
 if config.DEBUG:
     if javascriptBundler.report() == JsState.NONE:
         app.logger.error("Unable to generate javascript")
-        app.logger.error("To run the app ensure that yarn install command runs successfully")
+        app.logger.error(
+            "To run the app ensure that yarn install command runs successfully"
+        )
         raise Exception("No generated javascript, aborting")
 
 # Start the web server. The port number should have already been set by the
@@ -83,20 +87,24 @@ if config.DEBUG:
 # Flask default.
 PGADMIN_RUNTIME = False
 if 'PGADMIN_PORT' in globals():
-    app.logger.debug('Running under the desktop runtime, port: %s',
-                     globals()['PGADMIN_PORT'])
+    app.logger.debug(
+        'Running under the desktop runtime, port: %s',
+        globals()['PGADMIN_PORT']
+    )
     server_port = int(globals()['PGADMIN_PORT'])
     PGADMIN_RUNTIME = True
 elif 'PGADMIN_PORT' in os.environ:
     port = os.environ['PGADMIN_PORT']
     app.logger.debug(
         'Not running under the desktop runtime, port: %s',
-        port)
+        port
+    )
     server_port = int(port)
 else:
     app.logger.debug(
         'Not running under the desktop runtime, port: %s',
-        config.DEFAULT_SERVER_PORT)
+        config.DEFAULT_SERVER_PORT
+    )
     server_port = config.DEFAULT_SERVER_PORT
 
 # Let the application save the status about the runtime for using it later.
@@ -113,8 +121,10 @@ else:
 # If we're under WSGI, we don't need to worry about this
 if __name__ == '__main__':
     if not PGADMIN_RUNTIME:
-        print("Starting %s. Please navigate to http://%s:%d in your browser." %
-              (config.APP_NAME, config.DEFAULT_SERVER, server_port))
+        print(
+            "Starting %s. Please navigate to http://%s:%d in your browser." %
+            (config.APP_NAME, config.DEFAULT_SERVER, server_port)
+        )
         sys.stdout.flush()
     else:
         # For unknown reason the Qt runtime does not pass the environment

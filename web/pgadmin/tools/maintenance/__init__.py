@@ -120,8 +120,8 @@ class Message(IProcessDesc):
         if self.data['op'] == "REINDEX":
             if 'schema' in self.data and self.data['schema']:
                 if 'primary_key' in self.data or\
-                                'unique_constraint' in self.data or\
-                                'index' in self.data:
+                    'unique_constraint' in self.data or\
+                        'index' in self.data:
                     return _('REINDEX INDEX')
                 else:
                     return _('REINDEX TABLE')
@@ -248,5 +248,6 @@ def create_maintenance_job(sid, did):
 
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'status': True, 'info': 'Maintenance job created.'}
+        data={'job_id': jid, 'status': True,
+              'info': 'Maintenance job created.'}
     )

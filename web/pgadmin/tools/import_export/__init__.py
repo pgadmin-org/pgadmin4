@@ -88,7 +88,7 @@ class IEMessage(IProcessDesc):
                 x = x.replace('"', '\\"')
                 x = x.replace('""', '\\"')
 
-                return ' "' + x  + '"'
+                return ' "' + x + '"'
             return ''
 
         replace_next = False
@@ -219,7 +219,6 @@ def create_import_export_job(sid):
     if server is None:
         return bad_request(errormsg=_("Could not find the given server"))
 
-
     # To fetch MetaData for the server
     from pgadmin.utils.driver import get_driver
     driver = get_driver(PG_DEFAULT_DRIVER)
@@ -238,7 +237,8 @@ def create_import_export_job(sid):
 
     if 'filename' in data:
         try:
-            _file = filename_with_file_manager_path(data['filename'], data['is_import'])
+            _file = filename_with_file_manager_path(
+                data['filename'], data['is_import'])
         except Exception as e:
             return bad_request(errormsg=str(e))
 
@@ -306,6 +306,7 @@ def create_import_export_job(sid):
             cmd=utility, args=args
         )
         manager.export_password_env(p.id)
+
         def export_pg_env(env):
             env['PGHOST'] = server.host
             env['PGPORT'] = str(server.port)

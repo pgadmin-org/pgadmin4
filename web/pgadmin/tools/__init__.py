@@ -18,27 +18,28 @@ from pgadmin.utils.ajax import bad_request
 
 MODULE_NAME = 'tools'
 
+
 class ToolsModule(PgAdminModule):
     def get_own_javascripts(self):
         return [{
             'name': 'translations',
             'path': url_for('tools.index') + "translations",
             'when': None
-        },{
+        }, {
             'name': 'pgadmin-sqlfoldcode',
             'path': url_for(
                 'static',
                 filename='js/codemirror/addon/fold/pgadmin-sqlfoldcode'
             ),
             'when': 'debugger'
-        },{
+        }, {
             'name': 'slick.pgadmin.editors',
             'path': url_for(
                 'static',
                 filename='js/slickgrid/slick.pgadmin.editors'
             ),
             'when': 'debugger'
-        },{
+        }, {
             'name': 'slick.pgadmin.formatters',
             'path': url_for(
                 'static',
@@ -46,6 +47,7 @@ class ToolsModule(PgAdminModule):
             ),
             'when': 'debugger'
         }]
+
 
 # Initialise the module
 blueprint = ToolsModule(MODULE_NAME, __name__)
@@ -56,10 +58,16 @@ def index():
     """Calling tools index URL directly is not allowed."""
     return bad_request(gettext('This URL cannot be requested directly.'))
 
+
 @blueprint.route("/translations.js")
 def translations():
-    """Return a js file that will handle translations so Flask interpolation can be isolated"""
-    template = render_template("js/translations.js", translations=get_translations()._catalog)
+    """Return a js file that will handle translations so Flask interpolation
+    can be isolated
+    """
+    template = render_template(
+        "js/translations.js",
+        translations=get_translations()._catalog
+    )
     return Response(
         response=template,
         status=200,
