@@ -36,6 +36,8 @@ const QString PGA_APP_NAME = QString("pgAdmin 4");
 // Global function prototypes
 int main(int argc, char * argv[]);
 bool PingServer(QUrl url);
+void delay(int milliseconds);
 void cleanup();
+static unsigned long sdbm(unsigned char *str);
 
 #endif // PGADMIN4_H

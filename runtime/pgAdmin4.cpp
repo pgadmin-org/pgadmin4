@@ -37,17 +37,13 @@
 
 #include <QTime>
 
-void delay( int milliseconds )
-{
-    QTime endTime = QTime::currentTime().addMSecs( milliseconds );
-    while( QTime::currentTime() < endTime )
-    {
-        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
-    }
-}
+QString lockFileName;
+QString addrFileName;
 
 int main(int argc, char * argv[])
 {
+    QSettings settings;
+
     /*
      * Before starting main application, need to set 'QT_X11_NO_MITSHM=1'
      * to make the runtime work with IBM PPC machine.
@@ -73,18 +69,45 @@ int main(int argc, char * argv[])
 
     // Check for an existing instance
     QString homeDir = QDir::homePath();
-    QLockFile lockFile(homeDir + QString("/.%1.lock").arg(PGA_APP_NAME));
-    QFile addrFile(homeDir + QString("/.%1.addr").arg(PGA_APP_NAME));
+    unsigned long exeHash = sdbm((unsigned char *)argv[0]);
+    lockFileName = homeDir + QString("/.%1.%2.lock").arg(PGA_APP_NAME).arg(exeHash);
+    lockFileName.remove(" ");
+    QLockFile lockFile(lockFileName);
+
+    addrFileName = homeDir + QString("/.%1.%2.addr").arg(PGA_APP_NAME).arg(exeHash);
+    addrFileName.remove(" ");
+    QFile addrFile(addrFileName);
 
     if(!lockFile.tryLock(100)){
         addrFile.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&addrFile);
         QString addr = in.readLine();
-        QDesktopServices::openUrl(addr);
+
+        QString cmd = settings.value("BrowserCommand").toString();
+
+        if (!cmd.isEmpty())
+        {
+            cmd.replace("%URL%", addr);
+            QProcess::startDetached(cmd);
+        }
+        else
+        {
+            if (!QDesktopServices::openUrl(addr))
+            {
+                QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
+                QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+                exit(1);
+            }
+        }
+
         return 0;
     }
 
     atexit(cleanup);
+
+    // Redirect stdout/stderr to a log file
+    freopen("/Users/dpage/output.txt", "w", stderr);
 
     // In windows and linux, it is required to set application level proxy
     // becuase socket bind logic to find free port gives socket creation error
@@ -242,7 +265,6 @@ int main(int argc, char * argv[])
     QString appServerUrl = QString("http://127.0.0.1:%1/?key=%2").arg(port).arg(key);
 
     // Read the server connection timeout from the registry or set the default timeout.
-    QSettings settings;
     int timeout = settings.value("ConnectionTimeout", 30).toInt();
 
     // Now the server should be up, we'll attempt to connect and get a response.
@@ -348,12 +370,35 @@ bool PingServer(QUrl url)
     return true;
 }
 
-void cleanup()
-{
-    // Check for an existing instance
-    QString homeDir = QDir::homePath();
-    QFile addrFile(homeDir + QString("/.%1.addr").arg(PGA_APP_NAME));
 
-    addrFile.remove();
+void delay(int milliseconds)
+{
+    QTime endTime = QTime::currentTime().addMSecs( milliseconds );
+    while( QTime::currentTime() < endTime )
+    {
+        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    }
 }
 
+
+void cleanup()
+{
+    // Remove the lock file and address file
+    QFile addrFile(addrFileName);
+    addrFile.remove();
+
+    QFile lockFile(lockFileName);
+    lockFile.remove();
+}
+
+
+static unsigned long sdbm(unsigned char *str)
+{
+    unsigned long hash = 0;
+    int c;
+
+    while ((c = *str++))
+        hash = c + (hash << 6) + (hash << 16) - hash;
+
+    return hash;
+}
