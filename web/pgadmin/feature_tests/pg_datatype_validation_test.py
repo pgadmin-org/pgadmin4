@@ -23,7 +23,9 @@ CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 try:
     with open(CURRENT_PATH + '/datatype_test.json') as data_file:
-        config_data = json.load(data_file)
+        test_data_configuration = json.load(data_file)
+        config_data = test_data_configuration['tests']
+        type_minimum_version = test_data_configuration['datatype_minimum_version']
 except Exception as e:
     print(str(e))
 
@@ -63,6 +65,8 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
         test_utils.drop_database(connection, "acceptance_test_db")
         test_utils.create_database(self.server, "acceptance_test_db")
+
+        self.database_version = connection.server_version
 
         # For this test case we need to set "Insert bracket pairs?"
         # SQL Editor preference to 'false' to avoid codemirror
@@ -167,6 +171,10 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             for val, cell, datatype in zip(batch['output'], cells, batch['datatype']):
                 expected_output = batch['output'][cnt - 2]
 
+                if not self._is_datatype_available_in_current_database(datatype):
+                    cnt += 1
+                    continue
+
                 if datatype in ('tstzrange', 'tstzrange[]'):
                     expected_output = expected_output.format(
                         **dict([('tz', self.timezone_hh_mm)]))
@@ -190,6 +198,9 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         query = 'SELECT '
         first = True
         for datatype, inputdata in zip(batch['datatype'], batch['input']):
+            if not self._is_datatype_available_in_current_database(datatype):
+                continue
+
             if datatype != '':
                 dataformatter = '{}::{}'
             else:
@@ -223,3 +234,6 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             self.page.find_by_xpath("//*[@id='btn-clear']")
         )
         self.page.click_modal('Yes')
+
+    def _is_datatype_available_in_current_database(self, datatype):
+        return datatype == '' or self.database_version >= type_minimum_version[datatype]

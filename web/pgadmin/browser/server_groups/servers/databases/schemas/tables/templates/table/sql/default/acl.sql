@@ -1,4 +1,4 @@
-SELECT 'relacl' as deftype, privileges_information.grantee, privileges_information.grantor,
+SELECT 'relacl' as deftype, COALESCE(privileges_information.grantee, 'PUBLIC') grantee, privileges_information.grantor,
     array_agg(privilege_type) as privileges, array_agg(is_grantable) as grantable
 from (
   SELECT

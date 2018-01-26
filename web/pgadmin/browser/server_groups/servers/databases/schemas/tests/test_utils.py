@@ -83,6 +83,7 @@ class DataTypeReaderTest(BaseTestGenerator):
 
     @patch('pgadmin.browser.server_groups.servers.databases.schemas.utils.render_template')
     def runTest(self, template_mock):
+        template_mock.return_value = 'Some SQL'
         connection = Mock()
         connection.execute_2darray.return_value = [
             True,
@@ -104,7 +105,7 @@ class DataTypeReaderTest(BaseTestGenerator):
         self.assertEqual(result[1], self.expected_function_output)
         self.assertTrue(result[0])
 
-        connection.execute_2darray.assert_called()
+        connection.execute_2darray.assert_called_with('Some SQL')
         template_mock.assert_called_with(
             self.expected_sql_template_path + '/get_types.sql',
             condition=self.sql_condition,
