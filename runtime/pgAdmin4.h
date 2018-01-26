@@ -38,6 +38,6 @@ int main(int argc, char * argv[]);
 bool PingServer(QUrl url);
 void delay(int milliseconds);
 void cleanup();
-static unsigned long sdbm(unsigned char *str);
+unsigned long sdbm(unsigned char *str);
 
 #endif // PGADMIN4_H

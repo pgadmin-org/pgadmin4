@@ -18,12 +18,15 @@
 #include <QWidget>
 #include <QMessageBox>
 
+// App headers
+#include "LogWindow.h"
+
 class TrayIcon : public QWidget
 {
     Q_OBJECT
 
 public:
-    TrayIcon();
+    TrayIcon(QString logFile);
     ~TrayIcon();
 
     bool Init();
@@ -38,16 +41,20 @@ private:
 
     QAction *m_newAction;
     QAction *m_configAction;
+    QAction *m_logAction;
     QAction *m_quitAction;
 
     QSystemTrayIcon *m_trayIcon;
     QMenu *m_trayIconMenu;
 
-    QString m_appServerUrl;
+    QString m_appServerUrl, m_logFile;
+
+    LogWindow *m_logWindow;
 
 private slots:
     void onNew();
     void onConfig();
+    void onLog();
     void onQuit();
 };
 

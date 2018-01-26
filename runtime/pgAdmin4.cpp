@@ -37,6 +37,7 @@
 
 #include <QTime>
 
+QString logFileName;
 QString lockFileName;
 QString addrFileName;
 
@@ -107,7 +108,9 @@ int main(int argc, char * argv[])
     atexit(cleanup);
 
     // Redirect stdout/stderr to a log file
-    freopen("/Users/dpage/output.txt", "w", stderr);
+    logFileName = homeDir + QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash);
+    logFileName.remove(" ");
+    freopen(logFileName.toUtf8().data(), "w", stderr);
 
     // In windows and linux, it is required to set application level proxy
     // becuase socket bind logic to find free port gives socket creation error
@@ -176,7 +179,7 @@ int main(int argc, char * argv[])
     key = key.mid(1, key.length() - 2);
 
     // Start the tray service
-    TrayIcon *trayicon = new TrayIcon();
+    TrayIcon *trayicon = new TrayIcon(logFileName);
 
     if (!trayicon->Init())
     {
@@ -373,26 +376,31 @@ bool PingServer(QUrl url)
 
 void delay(int milliseconds)
 {
-    QTime endTime = QTime::currentTime().addMSecs( milliseconds );
-    while( QTime::currentTime() < endTime )
+    QTime endTime = QTime::currentTime().addMSecs(milliseconds);
+    while(QTime::currentTime() < endTime)
     {
-        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     }
 }
 
 
 void cleanup()
 {
-    // Remove the lock file and address file
+    // Remove the address file
     QFile addrFile(addrFileName);
     addrFile.remove();
 
+    // Remove the lock file
     QFile lockFile(lockFileName);
     lockFile.remove();
+
+    // Remove the log file
+    QFile logFile(logFileName);
+    logFile.remove();
 }
 
 
-static unsigned long sdbm(unsigned char *str)
+unsigned long sdbm(unsigned char *str)
 {
     unsigned long hash = 0;
     int c;

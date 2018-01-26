@@ -18,11 +18,6 @@ win32 {
   RC_ICONS += pgAdmin4.ico
 }
 
-CONFIG(debug, debug|release) {
-  DEFINES += PGADMIN4_DEBUG
-  message(Configure pgAdmin4 to run in debug mode...)
-}
-
 # Environment settings for the build
 QMAKE_CFLAGS += $$(PGADMIN_CFLAGS)
 QMAKE_CXXFLAGS += $$(PGADMIN_CXXFLAGS)
@@ -96,12 +91,15 @@ HEADERS     =   \
                 Server.h \
                 pgAdmin4.h \
                 ConfigWindow.h \
-                TrayIcon.h
+                TrayIcon.h \
+                LogWindow.h
 SOURCES     =   pgAdmin4.cpp \
                 Server.cpp \
                 ConfigWindow.cpp \
-                TrayIcon.cpp
-FORMS       =   ConfigWindow.ui
+                TrayIcon.cpp \
+                LogWindow.cpp
+FORMS       =   ConfigWindow.ui \
+                LogWindow.ui
 ICON        =   pgAdmin4.icns
 QMAKE_INFO_PLIST = Info.plist
 

@@ -16,17 +16,21 @@
 
 // App headers
 #include "ConfigWindow.h"
+#include "LogWindow.h"
 #include "TrayIcon.h"
 
 
-TrayIcon::TrayIcon()
+TrayIcon::TrayIcon(QString logFile) :
+    m_logFile(logFile)
 {   
-    // Create the tray icon
+    m_logWindow = NULL;
+
     m_trayIcon = NULL;
     m_trayIconMenu = NULL;
 
     m_newAction = NULL;
     m_configAction = NULL;
+    m_logAction = NULL;
     m_quitAction = NULL;
 }
 
@@ -111,6 +115,8 @@ void TrayIcon::createTrayIcon()
     m_trayIconMenu->addAction(m_newAction);
     m_trayIconMenu->addSeparator();
     m_trayIconMenu->addAction(m_configAction);
+    m_trayIconMenu->addAction(m_logAction);
+    m_trayIconMenu->addSeparator();
     m_trayIconMenu->addAction(m_quitAction);
 
     if (!m_trayIcon)
@@ -138,12 +144,15 @@ void TrayIcon::createActions()
     m_configAction = new QAction(tr("&Configure..."), this);
     connect(m_configAction, SIGNAL(triggered()), this, SLOT(onConfig()));
 
+    m_logAction = new QAction(tr("&View log..."), this);
+    connect(m_logAction, SIGNAL(triggered()), this, SLOT(onLog()));
+
     m_quitAction = new QAction(tr("&Shutdown server"), this);
     connect(m_quitAction, SIGNAL(triggered()), this, SLOT(onQuit()));
 }
 
 
-// Create a new application browser window onuser request
+// Create a new application browser window on user request
 void TrayIcon::onNew()
 {
     QSettings settings;
@@ -173,7 +182,7 @@ void TrayIcon::onConfig()
     bool ok;
 
     ConfigWindow *dlg = new ConfigWindow();
-    dlg->setWindowTitle(QWidget::tr("Configuration"));
+    dlg->setWindowTitle(QString(tr("%1 Configuration")).arg(PGA_APP_NAME));
     dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
     dlg->setPythonPath(settings.value("PythonPath").toString());
     dlg->setApplicationPath(settings.value("ApplicationPath").toString());
@@ -203,7 +212,29 @@ void TrayIcon::onConfig()
     }
 }
 
-// Show the config dialogue
+
+// Show the log window
+void TrayIcon::onLog()
+{
+    QSettings settings;
+
+    if (!m_logWindow)
+    {
+        m_logWindow = new LogWindow(NULL, m_logFile);
+        m_logWindow->setWindowTitle(QString(tr("%1 Log")).arg(PGA_APP_NAME));
+    }
+
+    m_logWindow->show();
+    m_logWindow->raise();
+    m_logWindow->activateWindow();
+
+    QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+
+    m_logWindow->ReadLog();
+}
+
+
+// Exit
 void TrayIcon::onQuit()
 {
     if (QMessageBox::Yes == QMessageBox::question(this, tr("Shutdown server?"), QString(tr("Are you sure you want to shutdown the %1 server?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
