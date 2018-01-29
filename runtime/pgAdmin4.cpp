@@ -38,7 +38,6 @@
 #include <QTime>
 
 QString logFileName;
-QString lockFileName;
 QString addrFileName;
 
 int main(int argc, char * argv[])
@@ -68,18 +67,49 @@ int main(int argc, char * argv[])
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
-    // Check for an existing instance
+    // Create a hash of the executable path so we can run copies side-by-side
     QString homeDir = QDir::homePath();
     unsigned long exeHash = sdbm((unsigned char *)argv[0]);
-    lockFileName = homeDir + QString("/.%1.%2.lock").arg(PGA_APP_NAME).arg(exeHash);
-    lockFileName.remove(" ");
-    QLockFile lockFile(lockFileName);
 
+    // Create the address file, that will be used to store the appserver URL for this instance
     addrFileName = homeDir + QString("/.%1.%2.addr").arg(PGA_APP_NAME).arg(exeHash);
     addrFileName.remove(" ");
     QFile addrFile(addrFileName);
 
-    if(!lockFile.tryLock(100)){
+    // Create a system-wide semaphore keyed by app name, exe hash and the username
+    // to ensure instances are unique to the user and path
+    QString userName = qgetenv("USER"); // *nix
+    if (userName.isEmpty())
+        userName = qgetenv("USERNAME"); // Windows
+
+    QString semaName = QString("%1-%2-%3-sema").arg(PGA_APP_NAME).arg(userName).arg(exeHash);
+    QString shmemName = QString("%1-%2-%3-shmem").arg(PGA_APP_NAME).arg(userName).arg(exeHash);
+
+    QSystemSemaphore sema(semaName, 1);
+    sema.acquire();
+
+#ifndef Q_OS_WIN32
+    // We may need to clean up stale shmem segments on *nix. Attaching and detaching
+    // should remove the segment if it is orphaned.
+    QSharedMemory stale_shmem(shmemName);
+    if (stale_shmem.attach())
+        stale_shmem.detach();
+#endif
+
+    QSharedMemory shmem(shmemName);
+    bool is_running;
+    if (shmem.attach())
+    {
+        is_running = true;
+    }
+    else
+    {
+        shmem.create(1);
+        is_running = false;
+    }
+    sema.release();
+
+    if (is_running){
         addrFile.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&addrFile);
         QString addr = in.readLine();
@@ -110,7 +140,8 @@ int main(int argc, char * argv[])
     // Redirect stdout/stderr to a log file
     logFileName = homeDir + QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash);
     logFileName.remove(" ");
-    freopen(logFileName.toUtf8().data(), "w", stderr);
+    if (freopen(logFileName.toUtf8().data(), "w", stderr) == NULL)
+        qDebug() << "Failed to redirect stderr to the log file: " << logFileName;
 
     // In windows and linux, it is required to set application level proxy
     // becuase socket bind logic to find free port gives socket creation error
@@ -389,10 +420,6 @@ void cleanup()
     // Remove the address file
     QFile addrFile(addrFileName);
     addrFile.remove();
-
-    // Remove the lock file
-    QFile lockFile(lockFileName);
-    lockFile.remove();
 
     // Remove the log file
     QFile logFile(logFileName);
