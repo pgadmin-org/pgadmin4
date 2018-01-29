@@ -1539,6 +1539,7 @@ define('tools.querytool', [
           function() {
             // Do nothing as user do not want to save, just continue
             self.query_tool_obj.setValue('');
+            setTimeout(() => { self.query_tool_obj.focus(); }, 200);
           },
           function() {
             return true;
@@ -1568,6 +1569,7 @@ define('tools.querytool', [
           if (self.history_collection) {
             self.history_collection.reset();
           }
+          setTimeout(() => { self.query_tool_obj.focus(); }, 200);
         },
         function() {
           return true;
@@ -2805,6 +2807,7 @@ define('tools.querytool', [
 
             // Update the flag as new content is just loaded.
             self.is_query_changed = false;
+            setTimeout(() => { self.gridView.query_tool_obj.focus(); }, 200);
           },
           error: function(e) {
             var errmsg = $.parseJSON(e.responseText).errormsg;
@@ -2845,6 +2848,7 @@ define('tools.querytool', [
 
               // Update the flag as query is already saved.
               self.is_query_changed = false;
+              setTimeout(() => { self.gridView.query_tool_obj.focus(); }, 200);
             }
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             if (self.close_on_save) {
@@ -3556,6 +3560,8 @@ define('tools.querytool', [
               self.disable_tool_buttons(false);
               alertify.alert(gettext('Cancel Query Error'), res.data.result);
             }
+            is_query_running = false;
+            setTimeout(() => { self.gridView.query_tool_obj.focus(); }, 200);
           },
           error: function(e) {
             self.disable_tool_buttons(false);
