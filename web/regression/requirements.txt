@@ -1,3 +1,12 @@
+#####################################
+# Include all the common dependencies
+#####################################
+-r ../../requirements.txt
+
+###########################################
+# Add all the development dependencies here
+###########################################
+pycodestyle==2.3.1
 pyperclip~=1.5.27
 selenium==3.3.3; python_version < '2.7'
 selenium==3.7.0; python_version >= '2.7'
@@ -7,5 +16,6 @@ traceback2==1.4.0
 unittest2==1.1.0
 mock===2.0.0; python_version < '3.3'
 
-# Leave this at the end because there is a bug where the '--install-option' is applied to all subsequent requirements
+# Leave this at the end because there is a bug where the '--install-option'
+# is applied to all subsequent requirements
 chromedriver_installer==0.0.6 --install-option='--chromedriver-version=2.33'

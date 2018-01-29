@@ -1,0 +1,9 @@
+[pycodestyle]
+ignore = E402
+max-line-length = 79
+statistics = True
+show-source = False
+show-pep8 = False
+count = True
+format = pylint
+exclude = migrations,node_modules

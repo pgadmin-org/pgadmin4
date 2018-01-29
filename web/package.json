@@ -95,6 +95,7 @@
     "test:karma-once": "yarn run linter && yarn run karma start --single-run",
     "test:karma": "yarn run linter && yarn run karma start",
     "test:feature": "yarn run bundle && python regression/runtests.py --pkg feature_tests",
-    "test": "yarn run test:karma-once && yarn run bundle && python regression/runtests.py"
+    "test": "yarn run test:karma-once && yarn run bundle && python regression/runtests.py",
+    "pep8": "pycodestyle --config=.pycodestyle ."
   }
 }
