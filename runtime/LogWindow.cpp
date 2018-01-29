@@ -69,10 +69,11 @@ void LogWindow::ReadLog()
     buffer = (char *)malloc((len + 1) * sizeof(char));
 
     for (i = 0; i < len; i++) {
-        fread(buffer + i, 1, 1, log);
-
-        if (buffer[i] == '\n')
-            lines++;
+        if (fread(buffer + i, 1, 1, log) > 0)
+        {
+            if (buffer[i] == '\n')
+                lines++;
+        }
     }
 
     buffer[i] = 0;
