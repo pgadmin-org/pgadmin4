@@ -137,14 +137,8 @@ int main(int argc, char * argv[])
 
     atexit(cleanup);
 
-    // Redirect stdout/stderr to a log file
-    logFileName = homeDir + QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash);
-    logFileName.remove(" ");
-    if (freopen(logFileName.toUtf8().data(), "w", stderr) == NULL)
-        qDebug() << "Failed to redirect stderr to the log file: " << logFileName;
-
     // In windows and linux, it is required to set application level proxy
-    // becuase socket bind logic to find free port gives socket creation error
+    // because socket bind logic to find free port gives socket creation error
     // when system proxy is configured. We are also setting
     // "setUseSystemConfiguration"=true to use the system proxy which will
     // override this application level proxy. As this bug is fixed in Qt 5.9 so
@@ -209,6 +203,10 @@ int main(int argc, char * argv[])
     QString key = QUuid::createUuid().toString();
     key = key.mid(1, key.length() - 2);
 
+    // Generate the filename for the log
+    logFileName = homeDir + QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash);
+    logFileName.remove(" ");
+
     // Start the tray service
     TrayIcon *trayicon = new TrayIcon(logFileName);
 
@@ -227,7 +225,7 @@ int main(int argc, char * argv[])
 
     while (done != true)
     {
-        server = new Server(port, key);
+        server = new Server(port, key, logFileName);
 
         if (!server->Init())
         {

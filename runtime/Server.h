@@ -23,7 +23,7 @@ class Server : public QThread
     Q_OBJECT
 
 public:
-    Server(quint16 port, QString key);
+    Server(quint16 port, QString key, QString logFileName);
     ~Server();
 
     bool Init();
@@ -40,6 +40,7 @@ private:
 
     quint16  m_port;
     QString m_key;
+    QString m_logFileName;
 
     // Application name in UTF-8 for Python
     wchar_t *m_wcAppName;
