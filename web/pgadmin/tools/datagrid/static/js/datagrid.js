@@ -275,11 +275,11 @@ define('pgadmin.datagrid', [
             setup: function() {
               return {
                 buttons: [{
-                  text: 'OK',
+                  text: gettext('OK'),
                   className: 'btn btn-primary',
                 },
                 {
-                  text: 'Cancel',
+                  text: gettext('Cancel'),
                   className: 'btn btn-danger',
                 },
                 ],
@@ -288,6 +288,7 @@ define('pgadmin.datagrid', [
                   resizable: true,
                   maximizable: false,
                   pinnable: false,
+                  autoReset: false,
                 },
               };
             },
