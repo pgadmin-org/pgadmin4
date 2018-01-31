@@ -184,6 +184,7 @@ def file_quote(_p):
             return _p.encode(fs_encoding)
     return _p
 
+
 if IS_WIN:
     import ctypes
     from ctypes import wintypes
@@ -198,7 +199,7 @@ if IS_WIN:
             if n == 0:
                 return None
 
-            buf= ctypes.create_unicode_buffer(u'\0'*n)
+            buf = ctypes.create_unicode_buffer(u'\0' * n)
             ctypes.windll.kernel32.GetEnvironmentVariableW(name, buf, n)
 
             return buf.value
@@ -279,4 +280,3 @@ def get_complete_file_path(file):
             file = fs_short_path(file)
 
     return file if os.path.isfile(file) else None
-

@@ -59,4 +59,5 @@ if __name__ == '__main__':
                 )
                 idx += 1
     keywords_file.write('\n        }\n')
-    keywords_file.write('    return (key in keywordDict and keywordDict[key]) or None')
+    keywords_file.write(
+        '    return (key in keywordDict and keywordDict[key]) or None')

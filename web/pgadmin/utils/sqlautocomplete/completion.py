@@ -1,6 +1,7 @@
 """
 Using Completion class from
-    https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/prompt_toolkit/completion.py
+    https://github.com/jonathanslenders/python-prompt-toolkit/
+            blob/master/prompt_toolkit/completion.py
 """
 
 from __future__ import unicode_literals
@@ -50,7 +51,9 @@ class Completion(object):
             self.display_meta == other.display_meta)
 
     def __hash__(self):
-        return hash((self.text, self.start_position, self.display, self.display_meta))
+        return hash(
+            (self.text, self.start_position, self.display, self.display_meta)
+        )
 
     @property
     def display_meta(self):

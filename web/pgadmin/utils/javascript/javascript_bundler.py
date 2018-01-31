@@ -32,8 +32,10 @@ class JavascriptBundler:
             self.jsState = JsState.NEW
         except OSError:
             webdir_path()
-            generatedJavascriptDir = os.path.join(webdir_path(), 'pgadmin', 'static', 'js', 'generated')
-            if os.path.exists(generatedJavascriptDir) and os.listdir(generatedJavascriptDir):
+            generatedJavascriptDir = os.path.join(
+                webdir_path(), 'pgadmin', 'static', 'js', 'generated')
+            if os.path.exists(generatedJavascriptDir) and \
+                    os.listdir(generatedJavascriptDir):
                 self.jsState = JsState.OLD
             else:
                 self.jsState = JsState.NONE

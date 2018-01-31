@@ -27,12 +27,12 @@ from uuid import uuid4
 
 try:
     from cPickle import dump, load
-except:
+except ImportError:
     from pickle import dump, load
 
 try:
     from collections import OrderedDict
-except:
+except ImportError:
     from ordereddict import OrderedDict
 
 from flask.sessions import SessionInterface, SessionMixin
@@ -48,7 +48,8 @@ def _calc_hmac(body, secret):
 
 
 class ManagedSession(CallbackDict, SessionMixin):
-    def __init__(self, initial=None, sid=None, new=False, randval=None, hmac_digest=None):
+    def __init__(self, initial=None, sid=None, new=False, randval=None,
+                 hmac_digest=None):
         def on_update(self):
             self.modified = True
 
@@ -71,7 +72,8 @@ class ManagedSession(CallbackDict, SessionMixin):
             population += string.digits
 
             self.randval = ''.join(random.sample(population, 20))
-            self.hmac_digest = _calc_hmac('%s:%s' % (self.sid, self.randval), secret)
+            self.hmac_digest = _calc_hmac(
+                '%s:%s' % (self.sid, self.randval), secret)
 
 
 class SessionManager(object):
@@ -148,7 +150,7 @@ class CachingSessionManager(SessionManager):
         if session.sid in self._cache:
             try:
                 del self._cache[session.sid]
-            except:
+            except Exception:
                 pass
         self._cache[session.sid] = session
         self._normalize()
@@ -198,7 +200,7 @@ class FileBackedSessionManager(SessionManager):
             try:
                 with open(fname, 'rb') as f:
                     randval, hmac_digest, data = load(f)
-            except:
+            except Exception:
                 pass
 
         if not data:
@@ -221,8 +223,9 @@ class FileBackedSessionManager(SessionManager):
         if not session.hmac_digest:
             session.sign(self.secret)
         elif not session.force_write:
-            if session.last_write is not None \
-                    and (current_time - float(session.last_write)) < self.disk_write_delay:
+            if session.last_write is not None and \
+                (current_time - float(session.last_write)) < \
+                    self.disk_write_delay:
                 return
 
         session.last_write = current_time
@@ -249,7 +252,7 @@ class ManagedSessionInterface(SessionInterface):
     def open_session(self, app, request):
         cookie_val = request.cookies.get(app.session_cookie_name)
 
-        if not cookie_val or not '!' in cookie_val:
+        if not cookie_val or '!' not in cookie_val:
             # Don't bother creating a cookie for static resources
             for sp in self.skip_paths:
                 if request.path.startswith(sp):
@@ -282,9 +285,11 @@ class ManagedSessionInterface(SessionInterface):
         session.modified = False
 
         cookie_exp = self.get_expiration_time(app, session)
-        response.set_cookie(app.session_cookie_name,
-                            '%s!%s' % (session.sid, session.hmac_digest),
-                            expires=cookie_exp, httponly=True, domain=domain)
+        response.set_cookie(
+            app.session_cookie_name,
+            '%s!%s' % (session.sid, session.hmac_digest),
+            expires=cookie_exp, httponly=True, domain=domain
+        )
 
 
 def create_session_interface(app, skip_paths=[]):

@@ -27,10 +27,10 @@ class Counter(dict):
         from an input iterable.  Or, initialize the count from another mapping
         of elements to their counts.
 
-        >>> c = Counter()                           # a new, empty counter
-        >>> c = Counter('gallahad')                 # a new counter from an iterable
-        >>> c = Counter({'a': 4, 'b': 2})           # a new counter from a mapping
-        >>> c = Counter(a=4, b=2)                   # a new counter from keyword args
+        >>> c = Counter()                   # a new, empty counter
+        >>> c = Counter('gallahad')         # a new counter from an iterable
+        >>> c = Counter({'a': 4, 'b': 2})   # a new counter from a mapping
+        >>> c = Counter(a=4, b=2)           # a new counter from keyword args
 
         '''
         self.update(iterable, **kwds)
@@ -70,7 +70,8 @@ class Counter(dict):
     @classmethod
     def fromkeys(cls, iterable, v=None):
         raise NotImplementedError(
-            'Counter.fromkeys() is undefined.  Use Counter(iterable) instead.')
+            'Counter.fromkeys() is undefined.  Use Counter(iterable) instead.'
+        )
 
     def update(self, iterable=None, **kwds):
         '''Like dict.update() but add counts instead of replacing them.
@@ -92,7 +93,8 @@ class Counter(dict):
                     for elem, count in iterable.iteritems():
                         self[elem] = self_get(elem, 0) + count
                 else:
-                    dict.update(self, iterable)  # fast path when counter is empty
+                    # fast path when counter is empty
+                    dict.update(self, iterable)
             else:
                 self_get = self.get
                 for elem in iterable:
@@ -105,7 +107,8 @@ class Counter(dict):
         return Counter(self)
 
     def __delitem__(self, elem):
-        'Like dict.__delitem__() but does not raise KeyError for missing values.'
+        """Like dict.__delitem__() but does not raise KeyError for missing
+        values."""
         if elem in self:
             dict.__delitem__(self, elem)
 

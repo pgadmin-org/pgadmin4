@@ -19,9 +19,10 @@ from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.utils.javascript.javascript_bundler import JavascriptBundler
 from pgadmin.utils.javascript.javascript_bundler import JsState
 
+
 class JavascriptBundlerTestCase(BaseTestGenerator):
-    """This tests that the javascript bundler tool causes the application to bundle,
-    and can be invoked before and after app start correctly"""
+    """This tests that the javascript bundler tool causes the application to
+    bundle,and can be invoked before and after app start correctly"""
 
     scenarios = [('scenario name: JavascriptBundlerTestCase', dict())]
 
@@ -59,10 +60,12 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
         self.assertEqual(len(self.mockSubprocessCall.method_calls), 0)
         self.mockSubprocessCall.return_value = 0
 
-        self.mockOs.listdir.return_value = [u'history.js', u'reactComponents.js']
+        self.mockOs.listdir.return_value = [
+            u'history.js', u'reactComponents.js']
 
         javascript_bundler.bundle()
-        self.mockSubprocessCall.assert_called_once_with(['yarn', 'run', 'bundle:dev'])
+        self.mockSubprocessCall.assert_called_once_with(
+            ['yarn', 'run', 'bundle:dev'])
 
         self.__assertState(javascript_bundler, JsState.NEW)
 
@@ -78,7 +81,8 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
 
     def _bundling_fails_and_there_is_no_existing_bundle(self):
         javascript_bundler = JavascriptBundler()
-        self.mockSubprocessCall.side_effect = OSError("mock exception behavior")
+        self.mockSubprocessCall.side_effect = OSError(
+            "mock exception behavior")
         self.mockOs.path.exists.return_value = True
         self.mockOs.listdir.return_value = []
 
@@ -88,7 +92,8 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
 
     def _bundling_fails_and_there_is_no_existing_bundle_directory(self):
         javascript_bundler = JavascriptBundler()
-        self.mockSubprocessCall.side_effect = OSError("mock exception behavior")
+        self.mockSubprocessCall.side_effect = OSError(
+            "mock exception behavior")
         self.mockOs.path.exists.return_value = False
         self.mockOs.listdir.side_effect = OSError("mock exception behavior")
 
@@ -98,12 +103,15 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
 
     def _bundling_fails_but_there_was_existing_bundle(self):
         javascript_bundler = JavascriptBundler()
-        self.mockSubprocessCall.side_effect = OSError("mock exception behavior")
+        self.mockSubprocessCall.side_effect = OSError(
+            "mock exception behavior")
         self.mockOs.path.exists.return_value = True
-        self.mockOs.listdir.return_value = [u'history.js', u'reactComponents.js']
+        self.mockOs.listdir.return_value = [
+            u'history.js', u'reactComponents.js']
 
         javascript_bundler.bundle()
-        self.mockSubprocessCall.assert_called_once_with(['yarn', 'run', 'bundle:dev'])
+        self.mockSubprocessCall.assert_called_once_with(
+            ['yarn', 'run', 'bundle:dev'])
 
         self.__assertState(javascript_bundler, JsState.OLD)
 

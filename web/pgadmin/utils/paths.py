@@ -14,7 +14,6 @@ import os
 from flask_security import current_user, login_required
 
 
-
 @login_required
 def get_storage_directory():
     import config
@@ -38,8 +37,8 @@ def get_storage_directory():
         username = 'pga_user_' + username
 
     storage_dir = os.path.join(
-        storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode') \
-            else storage_dir,
+        storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode')
+        else storage_dir,
         username
     )
 
@@ -66,11 +65,13 @@ def init_app(app):
     if storage_dir and not os.path.isdir(storage_dir):
         if os.path.exists(storage_dir):
             raise Exception(
-                'The path specified for the storage directory is not a directory.'
+                'The path specified for the storage directory is not a '
+                'directory.'
             )
         os.makedirs(storage_dir, int('700', 8))
 
     if storage_dir and not os.access(storage_dir, os.W_OK | os.R_OK):
         raise Exception(
-            'The user does not have permission to read and write to the specified storage directory.'
+            'The user does not have permission to read and write to the '
+            'specified storage directory.'
         )

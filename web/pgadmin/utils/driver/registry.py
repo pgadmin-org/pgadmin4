@@ -13,10 +13,10 @@ from flask_babel import gettext
 
 
 def _decorate_cls_name(module_name):
-    l = len(__package__) + 1
+    length = len(__package__) + 1
 
-    if len(module_name) > l and module_name.startswith(__package__):
-        return module_name[l:]
+    if len(module_name) > length and module_name.startswith(__package__):
+        return module_name[length:]
 
     return module_name
 

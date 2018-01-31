@@ -30,6 +30,6 @@ def safe_str(x):
 
         if not IS_PY2:
             x = x.decode('utf-8')
-    except:
+    except Exception:
         pass
     return cgi.escape(x)

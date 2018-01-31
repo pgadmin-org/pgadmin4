@@ -94,7 +94,8 @@ class SQLAutoComplete(object):
         self.search_path = []
         # Fetch the search path
         if self.conn.connected():
-            query = render_template("/".join([self.sql_path, 'schema.sql']), search_path=True)
+            query = render_template(
+                "/".join([self.sql_path, 'schema.sql']), search_path=True)
             status, res = self.conn.execute_dict(query)
             if status:
                 for record in res['rows']:
@@ -117,7 +118,7 @@ class SQLAutoComplete(object):
 
     def escape_name(self, name):
         if name and ((not self.name_pattern.match(name)) or
-                         (name.upper() in self.reserved_words)):
+                     (name.upper() in self.reserved_words)):
             name = '"%s"' % name
 
         return name
@@ -219,7 +220,8 @@ class SQLAutoComplete(object):
                 # with 1 to prioritize shorter strings (ie "user" > "users").
                 # We also use the unescape_name to make sure quoted names have
                 # the same priority as unquoted names.
-                lexical_priority = tuple(-ord(c) for c in self.unescape_name(item)) + (1,)
+                lexical_priority = tuple(
+                    -ord(c) for c in self.unescape_name(item)) + (1,)
 
                 priority = sort_key, priority_func(item), lexical_priority
 
@@ -252,7 +254,7 @@ class SQLAutoComplete(object):
         for m in matches:
             # Escape name only if meta type is not a keyword and datatype.
             if m.completion.display_meta != 'keyword' and \
-                            m.completion.display_meta != 'datatype':
+                    m.completion.display_meta != 'datatype':
                 name = self.escape_name(m.completion.display)
             else:
                 name = m.completion.display
@@ -272,20 +274,24 @@ class SQLAutoComplete(object):
                            in Counter(scoped_cols).items()
                            if count > 1 and col != '*']
 
-        return self.find_matches(word_before_cursor, scoped_cols, mode='strict', meta='column')
+        return self.find_matches(
+            word_before_cursor, scoped_cols, mode='strict', meta='column'
+        )
 
     def get_function_matches(self, suggestion, word_before_cursor):
         if suggestion.filter == 'is_set_returning':
             # Only suggest set-returning functions
             funcs = self.populate_functions(suggestion.schema)
         else:
-            funcs = self.populate_schema_objects(suggestion.schema, 'functions')
+            funcs = self.populate_schema_objects(
+                suggestion.schema, 'functions')
 
         # Function overloading means we way have multiple functions of the same
         # name at this point, so keep unique names only
         funcs = set(funcs)
 
-        funcs = self.find_matches(word_before_cursor, funcs, mode='strict', meta='function')
+        funcs = self.find_matches(
+            word_before_cursor, funcs, mode='strict', meta='function')
 
         return funcs
 
@@ -303,7 +309,9 @@ class SQLAutoComplete(object):
         if not word_before_cursor.startswith('pg_'):
             schema_names = [s for s in schema_names if not s.startswith('pg_')]
 
-        return self.find_matches(word_before_cursor, schema_names, mode='strict', meta='schema')
+        return self.find_matches(
+            word_before_cursor, schema_names, mode='strict', meta='schema'
+        )
 
     def get_table_matches(self, suggestion, word_before_cursor):
         tables = self.populate_schema_objects(suggestion.schema, 'tables')
@@ -314,7 +322,9 @@ class SQLAutoComplete(object):
                 not word_before_cursor.startswith('pg_')):
             tables = [t for t in tables if not t.startswith('pg_')]
 
-        return self.find_matches(word_before_cursor, tables, mode='strict', meta='table')
+        return self.find_matches(
+            word_before_cursor, tables, mode='strict', meta='table'
+        )
 
     def get_view_matches(self, suggestion, word_before_cursor):
         views = self.populate_schema_objects(suggestion.schema, 'views')
@@ -323,7 +333,9 @@ class SQLAutoComplete(object):
                 not word_before_cursor.startswith('pg_')):
             views = [v for v in views if not v.startswith('pg_')]
 
-        return self.find_matches(word_before_cursor, views, mode='strict', meta='view')
+        return self.find_matches(
+            word_before_cursor, views, mode='strict', meta='view'
+        )
 
     def get_alias_matches(self, suggestion, word_before_cursor):
         aliases = suggestion.aliases
@@ -350,7 +362,8 @@ class SQLAutoComplete(object):
     def get_datatype_matches(self, suggestion, word_before_cursor):
         # suggest custom datatypes
         types = self.populate_schema_objects(suggestion.schema, 'datatypes')
-        matches = self.find_matches(word_before_cursor, types, mode='strict', meta='datatype')
+        matches = self.find_matches(
+            word_before_cursor, types, mode='strict', meta='datatype')
 
         return matches
 
@@ -366,7 +379,9 @@ class SQLAutoComplete(object):
         if self.text_before_cursor[-1:].isspace():
             return ''
         else:
-            return self.text_before_cursor[self.find_start_of_previous_word(word=word):]
+            return self.text_before_cursor[self.find_start_of_previous_word(
+                word=word
+            ):]
 
     def find_start_of_previous_word(self, count=1, word=False):
         """
@@ -418,19 +433,23 @@ class SQLAutoComplete(object):
                 relname = self.escape_name(tbl.name)
 
                 if tbl.is_function:
-                    query = render_template("/".join([self.sql_path, 'functions.sql']),
-                                            schema_name=schema,
-                                            func_name=relname)
+                    query = render_template(
+                        "/".join([self.sql_path, 'functions.sql']),
+                        schema_name=schema,
+                        func_name=relname
+                    )
 
                     if self.conn.connected():
                         status, res = self.conn.execute_dict(query)
                         func = None
                         if status:
                             for row in res['rows']:
-                                func = FunctionMetadata(row['schema_name'], row['func_name'],
-                                                        row['arg_list'], row['return_type'],
-                                                        row['is_aggregate'], row['is_window'],
-                                                        row['is_set_returning'])
+                                func = FunctionMetadata(
+                                    row['schema_name'], row['func_name'],
+                                    row['arg_list'], row['return_type'],
+                                    row['is_aggregate'], row['is_window'],
+                                    row['is_set_returning']
+                                )
                         if func:
                             columns.extend(func.fieldnames())
                 else:
@@ -438,77 +457,98 @@ class SQLAutoComplete(object):
                     # tables and views cannot share the same name, we can check
                     # one at a time
 
-                    query = render_template("/".join([self.sql_path, 'columns.sql']),
-                                            object_name='table',
-                                            schema_name=schema,
-                                            rel_name=relname)
+                    query = render_template(
+                        "/".join([self.sql_path, 'columns.sql']),
+                        object_name='table',
+                        schema_name=schema,
+                        rel_name=relname
+                    )
 
                     if self.conn.connected():
                         status, res = self.conn.execute_dict(query)
                         if status:
                             if len(res['rows']) > 0:
-                                # Table exists, so don't bother checking for a view
+                                # Table exists, so don't bother checking for a
+                                # view
                                 for record in res['rows']:
                                     columns.append(record['column_name'])
                             else:
-                                query = render_template("/".join([self.sql_path, 'columns.sql']),
-                                                        object_name='view',
-                                                        schema_name=schema,
-                                                        rel_name=relname)
+                                query = render_template(
+                                    "/".join([self.sql_path, 'columns.sql']),
+                                    object_name='view',
+                                    schema_name=schema,
+                                    rel_name=relname
+                                )
 
                                 if self.conn.connected():
                                     status, res = self.conn.execute_dict(query)
                                     if status:
                                         for record in res['rows']:
-                                            columns.append(record['column_name'])
+                                            columns.append(
+                                                record['column_name'])
             else:
                 # Schema not specified, so traverse the search path looking for
-                # a table or view that matches. Note that in order to get proper
-                # shadowing behavior, we need to check both views and tables for
-                # each schema before checking the next schema
+                # a table or view that matches. Note that in order to get
+                # proper shadowing behavior, we need to check both views and
+                # tables for each schema before checking the next schema
                 for schema in self.search_path:
                     relname = self.escape_name(tbl.name)
 
                     if tbl.is_function:
-                        query = render_template("/".join([self.sql_path, 'functions.sql']),
-                                                schema_name=schema,
-                                                func_name=relname)
+                        query = render_template(
+                            "/".join([self.sql_path, 'functions.sql']),
+                            schema_name=schema,
+                            func_name=relname
+                        )
 
                         if self.conn.connected():
                             status, res = self.conn.execute_dict(query)
                             func = None
                             if status:
                                 for row in res['rows']:
-                                    func = FunctionMetadata(row['schema_name'], row['func_name'],
-                                                            row['arg_list'], row['return_type'],
-                                                            row['is_aggregate'], row['is_window'],
-                                                            row['is_set_returning'])
+                                    func = FunctionMetadata(
+                                        row['schema_name'], row['func_name'],
+                                        row['arg_list'], row['return_type'],
+                                        row['is_aggregate'], row['is_window'],
+                                        row['is_set_returning']
+                                    )
                             if func:
                                 columns.extend(func.fieldnames())
                     else:
-                        query = render_template("/".join([self.sql_path, 'columns.sql']),
-                                                object_name='table',
-                                                schema_name=schema,
-                                                rel_name=relname)
+                        query = render_template(
+                            "/".join([self.sql_path, 'columns.sql']),
+                            object_name='table',
+                            schema_name=schema,
+                            rel_name=relname
+                        )
 
                         if self.conn.connected():
                             status, res = self.conn.execute_dict(query)
                             if status:
                                 if len(res['rows']) > 0:
-                                    # Table exists, so don't bother checking for a view
+                                    # Table exists, so don't bother checking
+                                    # for a view
                                     for record in res['rows']:
                                         columns.append(record['column_name'])
                                 else:
-                                    query = render_template("/".join([self.sql_path, 'columns.sql']),
-                                                            object_name='view',
-                                                            schema_name=schema,
-                                                            rel_name=relname)
+                                    query = render_template(
+                                        "/".join(
+                                            [self.sql_path, 'columns.sql']
+                                        ),
+                                        object_name='view',
+                                        schema_name=schema,
+                                        rel_name=relname
+                                    )
 
                                     if self.conn.connected():
-                                        status, res = self.conn.execute_dict(query)
+                                        status, res = self.conn.execute_dict(
+                                            query
+                                        )
                                         if status:
                                             for record in res['rows']:
-                                                columns.append(record['column_name'])
+                                                columns.append(
+                                                    record['column_name']
+                                                )
 
         return columns
 
@@ -600,21 +640,23 @@ class SQLAutoComplete(object):
         Takes the full_text that is typed so far and also the text before the
         cursor to suggest completion type and scope.
 
-        Returns a tuple with a type of entity ('table', 'column' etc) and a scope.
-        A scope for a column category will be a list of tables.
+        Returns a tuple with a type of entity ('table', 'column' etc) and a
+        scope. A scope for a column category will be a list of tables.
 
         Args:
             full_text: Contains complete query
             text_before_cursor: Contains text before the cursor
         """
 
-        word_before_cursor = last_word(text_before_cursor, include='many_punctuations')
+        word_before_cursor = last_word(
+            text_before_cursor, include='many_punctuations')
 
         identifier = None
 
         def strip_named_query(txt):
             """
-            This will strip "save named query" command in the beginning of the line:
+            This will strip "save named query" command in the beginning of
+            the line:
             '\ns zzz SELECT * FROM abc'   -> 'SELECT * FROM abc'
             '  \ns zzz SELECT * FROM abc' -> 'SELECT * FROM abc'
 
@@ -630,11 +672,12 @@ class SQLAutoComplete(object):
         full_text = strip_named_query(full_text)
         text_before_cursor = strip_named_query(text_before_cursor)
 
-        # If we've partially typed a word then word_before_cursor won't be an empty
-        # string. In that case we want to remove the partially typed string before
-        # sending it to the sqlparser. Otherwise the last token will always be the
-        # partially typed string which renders the smart completion useless because
-        # it will always return the list of keywords as completion.
+        # If we've partially typed a word then word_before_cursor won't be an
+        # empty string. In that case we want to remove the partially typed
+        # string before sending it to the sqlparser. Otherwise the last token
+        # will always be the partially typed string which renders the smart
+        # completion useless because it will always return the list of
+        # keywords as completion.
         if word_before_cursor:
             if word_before_cursor[-1] == '(' or word_before_cursor[0] == '\\':
                 parsed = sqlparse.parse(text_before_cursor)
@@ -649,8 +692,8 @@ class SQLAutoComplete(object):
         statement = None
         if len(parsed) > 1:
             # Multiple statements being edited -- isolate the current one by
-            # cumulatively summing statement lengths to find the one that bounds the
-            # current position
+            # cumulatively summing statement lengths to find the one that
+            # bounds the current position
             current_pos = len(text_before_cursor)
             stmt_start, stmt_end = 0, 0
 
@@ -670,12 +713,16 @@ class SQLAutoComplete(object):
             # The empty string
             statement = None
 
-        last_token = statement and statement.token_prev(len(statement.tokens)) or ''
+        last_token = statement and statement.token_prev(
+            len(statement.tokens)
+        ) or ''
 
-        return self.suggest_based_on_last_token(last_token, text_before_cursor,
-                                                full_text, identifier)
+        return self.suggest_based_on_last_token(
+            last_token, text_before_cursor, full_text, identifier
+        )
 
-    def suggest_based_on_last_token(self, token, text_before_cursor, full_text, identifier):
+    def suggest_based_on_last_token(self, token, text_before_cursor, full_text,
+                                    identifier):
         # New version of sqlparse sends tuple, we need to make it
         # compatible with our logic
         if isinstance(token, tuple) and len(token) > 1:
@@ -686,33 +733,37 @@ class SQLAutoComplete(object):
         elif isinstance(token, Comparison):
             # If 'token' is a Comparison type such as
             # 'select * FROM abc a JOIN def d ON a.id = d.'. Then calling
-            # token.value on the comparison type will only return the lhs of the
-            # comparison. In this case a.id. So we need to do token.tokens to get
-            # both sides of the comparison and pick the last token out of that
-            # list.
+            # token.value on the comparison type will only return the lhs of
+            # the comparison. In this case a.id. So we need to do token.tokens
+            # to get both sides of the comparison and pick the last token out
+            # of that list.
             token_v = token.tokens[-1].value.lower()
         elif isinstance(token, Where):
-            # sqlparse groups all tokens from the where clause into a single token
-            # list. This means that token.value may be something like
-            # 'where foo > 5 and '. We need to look "inside" token.tokens to handle
-            # suggestions in complicated where clauses correctly
-            prev_keyword, text_before_cursor = find_prev_keyword(text_before_cursor)
+            # sqlparse groups all tokens from the where clause into a single
+            # token list. This means that token.value may be something like
+            # 'where foo > 5 and '. We need to look "inside" token.tokens to
+            # handle suggestions in complicated where clauses correctly
+            prev_keyword, text_before_cursor = find_prev_keyword(
+                text_before_cursor
+            )
             return self.suggest_based_on_last_token(
-                prev_keyword, text_before_cursor, full_text, identifier)
+                prev_keyword, text_before_cursor, full_text, identifier
+            )
         elif isinstance(token, Identifier):
-            # If the previous token is an identifier, we can suggest datatypes if
-            # we're in a parenthesized column/field list, e.g.:
+            # If the previous token is an identifier, we can suggest datatypes
+            # if we're in a parenthesized column/field list, e.g.:
             #       CREATE TABLE foo (Identifier <CURSOR>
             #       CREATE FUNCTION foo (Identifier <CURSOR>
-            # If we're not in a parenthesized list, the most likely scenario is the
-            # user is about to specify an alias, e.g.:
+            # If we're not in a parenthesized list, the most likely scenario
+            # is the user is about to specify an alias, e.g.:
             #       SELECT Identifier <CURSOR>
             #       SELECT foo FROM Identifier <CURSOR>
             prev_keyword, _ = find_prev_keyword(text_before_cursor)
             if prev_keyword and prev_keyword.value == '(':
                 # Suggest datatypes
                 return self.suggest_based_on_last_token(
-                    'type', text_before_cursor, full_text, identifier)
+                    'type', text_before_cursor, full_text, identifier
+                )
             else:
                 return Keyword(),
         else:
@@ -732,11 +783,13 @@ class SQLAutoComplete(object):
                 #  3 - Subquery expression like "WHERE EXISTS ("
                 #        Suggest keywords, in order to do a subquery
                 #  4 - Subquery OR array comparison like "WHERE foo = ANY("
-                #        Suggest columns/functions AND keywords. (If we wanted to be
-                #        really fancy, we could suggest only array-typed columns)
+                #        Suggest columns/functions AND keywords. (If we wanted
+                # to be really fancy, we could suggest only array-typed
+                # columns)
 
                 column_suggestions = self.suggest_based_on_last_token(
-                    'where', text_before_cursor, full_text, identifier)
+                    'where', text_before_cursor, full_text, identifier
+                )
 
                 # Check for a subquery expression (cases 3 & 4)
                 where = p.tokens[-1]
@@ -754,7 +807,8 @@ class SQLAutoComplete(object):
 
             # Get the token before the parens
             prev_tok = p.token_prev(len(p.tokens) - 1)
-            if prev_tok and prev_tok.value and prev_tok.value.lower() == 'using':
+            if prev_tok and prev_tok.value and \
+                    prev_tok.value.lower() == 'using':
                 # tbl1 INNER JOIN tbl2 USING (col1, col2)
                 tables = extract_tables(full_text)
 
@@ -762,8 +816,8 @@ class SQLAutoComplete(object):
                 return Column(tables=tables, drop_unique=True),
 
             elif p.token_first().value.lower() == 'select':
-                # If the lparen is preceeded by a space chances are we're about to
-                # do a sub-select.
+                # If the lparen is preceeded by a space chances are we're
+                # about to do a sub-select.
                 if last_word(text_before_cursor,
                              'all_punctuations').startswith('('):
                     return Keyword(),
@@ -788,7 +842,8 @@ class SQLAutoComplete(object):
                         Keyword(),)
 
         elif (token_v.endswith('join') and token.is_keyword) or \
-                (token_v in ('copy', 'from', 'update', 'into', 'describe', 'truncate')):
+                (token_v in ('copy', 'from', 'update', 'into',
+                             'describe', 'truncate')):
 
             schema = (identifier and identifier.get_parent_name()) or None
 
@@ -805,14 +860,18 @@ class SQLAutoComplete(object):
                 suggest.append(View(schema=schema))
 
             # Suggest set-returning functions in the FROM clause
-            if token_v == 'from' or (token_v.endswith('join') and token.is_keyword):
-                suggest.append(Function(schema=schema, filter='is_set_returning'))
+            if token_v == 'from' or \
+                    (token_v.endswith('join') and token.is_keyword):
+                suggest.append(
+                    Function(schema=schema, filter='is_set_returning')
+                )
 
             return tuple(suggest)
 
         elif token_v in ('table', 'view', 'function'):
             # E.g. 'DROP FUNCTION <funcname>', 'ALTER TABLE <tablname>'
-            rel_type = {'table': Table, 'view': View, 'function': Function}[token_v]
+            rel_type = {'table': Table, 'view': View,
+                        'function': Function}[token_v]
             schema = (identifier and identifier.get_parent_name()) or None
             if schema:
                 return rel_type(schema=schema),
@@ -843,7 +902,8 @@ class SQLAutoComplete(object):
             # DROP SCHEMA schema_name
             return Schema(),
         elif token_v.endswith(',') or token_v in ('=', 'and', 'or'):
-            prev_keyword, text_before_cursor = find_prev_keyword(text_before_cursor)
+            prev_keyword, text_before_cursor = find_prev_keyword(
+                text_before_cursor)
             if prev_keyword:
                 return self.suggest_based_on_last_token(
                     prev_keyword, text_before_cursor, full_text, identifier)

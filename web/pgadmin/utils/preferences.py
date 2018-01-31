@@ -31,8 +31,8 @@ class _Preference(object):
     """
 
     def __init__(
-            self, cid, name, label, _type, default, help_str=None, min_val=None,
-            max_val=None, options=None, select2=None, fields=None
+        self, cid, name, label, _type, default, help_str=None,
+        min_val=None, max_val=None, options=None, select2=None, fields=None
     ):
         """
         __init__
@@ -111,7 +111,7 @@ class _Preference(object):
         # The data stored in the configuration will be in string format, we
         # need to convert them in proper format.
         if self._type == 'boolean' or self._type == 'switch' or \
-                        self._type == 'node':
+                self._type == 'node':
             return res.value == 'True'
         if self._type == 'integer':
             try:
@@ -162,7 +162,7 @@ class _Preference(object):
         # We can't store the values in the given format, we need to convert
         # them in string first. We also need to validate the value type.
         if self._type == 'boolean' or self._type == 'switch' or \
-                        self._type == 'node':
+                self._type == 'node':
             if type(value) != bool:
                 return False, gettext("Invalid value for a boolean option.")
         elif self._type == 'integer':
@@ -518,17 +518,19 @@ class Preferences(object):
             if _user_id is None:
                 return None
 
-        cat = PrefCategoryTbl.query.filter_by(mid=module.id).filter_by(name=_category).first()
+        cat = PrefCategoryTbl.query.filter_by(
+            mid=module.id).filter_by(name=_category).first()
 
         if cat is None:
             return None
 
-        pref = PrefTable.query.filter_by(name=_preference).filter_by(cid=cat.id).first()
+        pref = PrefTable.query.filter_by(
+            name=_preference).filter_by(cid=cat.id).first()
 
         if pref is None:
             return None
 
-        user_pref  = UserPrefTable.query.filter_by(
+        user_pref = UserPrefTable.query.filter_by(
             pid=pref.id
         ).filter_by(uid=_user_id).first()
 

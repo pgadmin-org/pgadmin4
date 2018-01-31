@@ -95,7 +95,8 @@ class BaseConnection(object):
         datum result.
 
     * execute_async(query, params, formatted_exception_msg)
-      - Implement this method to execute the given query asynchronously and returns result.
+      - Implement this method to execute the given query asynchronously and
+      returns result.
 
     * execute_void(query, params, formatted_exception_msg)
       - Implement this method to execute the given query with no result.
@@ -173,27 +174,33 @@ class BaseConnection(object):
         pass
 
     @abstractmethod
-    def execute_scalar(self, query, params=None, formatted_exception_msg=False):
+    def execute_scalar(self, query, params=None,
+                       formatted_exception_msg=False):
         pass
 
     @abstractmethod
-    def execute_async(self, query, params=None, formatted_exception_msg=True):
+    def execute_async(self, query, params=None,
+                      formatted_exception_msg=True):
         pass
 
     @abstractmethod
-    def execute_void(self, query, params=None, formatted_exception_msg=False):
+    def execute_void(self, query, params=None,
+                     formatted_exception_msg=False):
         pass
 
     @abstractmethod
-    def execute_2darray(self, query, params=None, formatted_exception_msg=False):
+    def execute_2darray(self, query, params=None,
+                        formatted_exception_msg=False):
         pass
 
     @abstractmethod
-    def execute_dict(self, query, params=None, formatted_exception_msg=False):
+    def execute_dict(self, query, params=None,
+                     formatted_exception_msg=False):
         pass
 
     @abstractmethod
-    def async_fetchmany_2darray(self, records=-1, formatted_exception_msg=False):
+    def async_fetchmany_2darray(self, records=-1,
+                                formatted_exception_msg=False):
         pass
 
     @abstractmethod

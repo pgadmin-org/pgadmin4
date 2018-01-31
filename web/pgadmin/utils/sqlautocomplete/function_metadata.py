@@ -7,8 +7,8 @@ table_def_regex = re.compile(r'^TABLE\s*\((.+)\)$', re.IGNORECASE)
 
 
 class FunctionMetadata(object):
-    def __init__(self, schema_name, func_name, arg_list, return_type, is_aggregate,
-                 is_window, is_set_returning):
+    def __init__(self, schema_name, func_name, arg_list, return_type,
+                 is_aggregate, is_window, is_set_returning):
         """Class for describing a postgresql function"""
 
         self.schema_name = schema_name
@@ -20,8 +20,8 @@ class FunctionMetadata(object):
         self.is_set_returning = is_set_returning
 
     def __eq__(self, other):
-        return (isinstance(other, self.__class__)
-                and self.__dict__ == other.__dict__)
+        return (isinstance(other, self.__class__) and
+                self.__dict__ == other.__dict__)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -32,11 +32,13 @@ class FunctionMetadata(object):
                      self.is_set_returning))
 
     def __repr__(self):
-        return (('%s(schema_name=%r, func_name=%r, arg_list=%r, return_type=%r,'
-                 ' is_aggregate=%r, is_window=%r, is_set_returning=%r)')
-                % (self.__class__.__name__, self.schema_name, self.func_name,
-                   self.arg_list, self.return_type, self.is_aggregate,
-                   self.is_window, self.is_set_returning))
+        return (
+            ('%s(schema_name=%r, func_name=%r, arg_list=%r, return_type=%r,'
+             ' is_aggregate=%r, is_window=%r, is_set_returning=%r)')
+            % (self.__class__.__name__, self.schema_name, self.func_name,
+               self.arg_list, self.return_type, self.is_aggregate,
+               self.is_window, self.is_set_returning)
+        )
 
     def fieldnames(self):
         """Returns a list of output field names"""
@@ -130,7 +132,8 @@ def parse_typed_field_list(tokens):
         else:
             field[parse_state].append(tok)
 
-    # Final argument won't be followed by a comma, so make sure it gets yielded
+    # Final argument won't be followed by a comma, so make sure it gets
+    # yielded
     if field.type:
         yield field
 

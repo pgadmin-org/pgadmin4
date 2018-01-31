@@ -33,8 +33,9 @@ class TestsGeneratorRegistry(ABCMeta):
       call this function explicitly. This will be automatically executed,
       whenever we create a class and inherit from BaseTestGenerator -
       it will register it as an available module in TestsGeneratorRegistry.
-      By setting the __metaclass__ for BaseTestGenerator to TestsGeneratorRegistry
-      it will create new instance of this TestsGeneratorRegistry per class.
+      By setting the __metaclass__ for BaseTestGenerator to
+      TestsGeneratorRegistry it will create new instance of this
+      TestsGeneratorRegistry per class.
 
     * load_generators():
       - This function will load all the modules from __init__()
@@ -66,7 +67,9 @@ class TestsGeneratorRegistry(ABCMeta):
         for module_name in all_modules:
             try:
                 if "tests." in str(module_name) and not any(
-                        str(module_name).startswith('pgadmin.' + str(exclude_pkg)) for exclude_pkg in exclude_pkgs
+                        str(module_name).startswith(
+                            'pgadmin.' + str(exclude_pkg)
+                        ) for exclude_pkg in exclude_pkgs
                 ):
                     import_module(module_name)
             except ImportError:

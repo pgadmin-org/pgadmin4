@@ -29,6 +29,7 @@ class DataTypeJSONEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, obj)
 
+
 def get_no_cache_header():
     """
     Prevent browser from caching data every time an
@@ -36,7 +37,8 @@ def get_no_cache_header():
     Returns: headers
     """
     headers = {}
-    headers["Cache-Control"] = "no-cache, no-store, must-revalidate"  # HTTP 1.1.
+    # HTTP 1.1.
+    headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     headers["Pragma"] = "no-cache"  # HTTP 1.0.
     headers["Expires"] = "0"  # Proxies.
     return headers
@@ -55,7 +57,8 @@ def make_json_response(
     doc['data'] = data
 
     return Response(
-        response=json.dumps(doc, cls=DataTypeJSONEncoder, separators=(',',':')),
+        response=json.dumps(doc, cls=DataTypeJSONEncoder,
+                            separators=(',', ':')),
         status=status,
         mimetype="application/json",
         headers=get_no_cache_header()
@@ -65,7 +68,8 @@ def make_json_response(
 def make_response(response=None, status=200):
     """Create a JSON response handled by the backbone models."""
     return Response(
-        response=json.dumps(response, cls=DataTypeJSONEncoder, separators=(',',':')),
+        response=json.dumps(
+            response, cls=DataTypeJSONEncoder, separators=(',', ':')),
         status=status,
         mimetype="application/json",
         headers=get_no_cache_header()
@@ -135,7 +139,8 @@ def gone(errormsg=''):
     )
 
 
-def not_implemented(errormsg=_('Not implemented.'), info='', result=None, data=None):
+def not_implemented(errormsg=_('Not implemented.'), info='',
+                    result=None, data=None):
     """Create a response with HTTP status code 501 - Not Implemented."""
     return make_json_response(
         status=501,
@@ -147,7 +152,8 @@ def not_implemented(errormsg=_('Not implemented.'), info='', result=None, data=N
     )
 
 
-def service_unavailable(errormsg=_("Service Unavailable"), info='', result=None, data=None):
+def service_unavailable(errormsg=_("Service Unavailable"), info='',
+                        result=None, data=None):
     """Create a response with HTTP status code 503 - Server Unavailable."""
     return make_json_response(
         status=503,

@@ -65,8 +65,9 @@ def last_word(text, include='alphanum_underscore'):
             return ''
 
 
-TableReference = namedtuple('TableReference', ['schema', 'name', 'alias',
-                                               'is_function'])
+TableReference = namedtuple(
+    'TableReference', ['schema', 'name', 'alias', 'is_function']
+)
 
 
 # This code is borrowed from sqlparse example script.
@@ -74,9 +75,9 @@ TableReference = namedtuple('TableReference', ['schema', 'name', 'alias',
 def is_subselect(parsed):
     if not parsed.is_group():
         return False
+    sql_type = ('SELECT', 'INSERT', 'UPDATE', 'CREATE', 'DELETE')
     for item in parsed.tokens:
-        if item.ttype is DML and item.value.upper() in ('SELECT', 'INSERT',
-                                                        'UPDATE', 'CREATE', 'DELETE'):
+        if item.ttype is DML and item.value.upper() in sql_type:
             return True
     return False
 
@@ -95,13 +96,13 @@ def extract_from_part(parsed, stop_at_punctuation=True):
             elif stop_at_punctuation and item.ttype is Punctuation:
                 raise StopIteration
             # An incomplete nested select won't be recognized correctly as a
-            # sub-select. eg: 'SELECT * FROM (SELECT id FROM user'. This causes
-            # the second FROM to trigger this elif condition resulting in a
-            # StopIteration. So we need to ignore the keyword if the keyword
-            # FROM.
+            # sub-select. eg: 'SELECT * FROM (SELECT id FROM user'. This
+            # causes the second FROM to trigger this elif condition resulting
+            # in a StopIteration. So we need to ignore the keyword if the
+            # keyword FROM.
             # Also 'SELECT * FROM abc JOIN def' will trigger this elif
-            # condition. So we need to ignore the keyword JOIN and its variants
-            # INNER JOIN, FULL OUTER JOIN, etc.
+            # condition. So we need to ignore the keyword JOIN and its
+            # variants INNER JOIN, FULL OUTER JOIN, etc.
             elif item.ttype is Keyword and (
                     not item.value.upper() == 'FROM') and (
                     not item.value.upper().endswith('JOIN')):
@@ -118,7 +119,7 @@ def extract_from_part(parsed, stop_at_punctuation=True):
         elif isinstance(item, IdentifierList):
             for identifier in item.get_identifiers():
                 if (identifier.ttype is Keyword and
-                            identifier.value.upper() == 'FROM'):
+                        identifier.value.upper() == 'FROM'):
                     tbl_prefix_seen = True
                     break
 
@@ -139,23 +140,28 @@ def extract_table_identifiers(token_stream, allow_functions=True):
                 except AttributeError:
                     continue
                 if real_name:
-                    yield TableReference(schema_name, real_name,
-                                         identifier.get_alias(), is_function)
+                    yield TableReference(
+                        schema_name, real_name, identifier.get_alias(),
+                        is_function
+                    )
         elif isinstance(item, Identifier):
             real_name = item.get_real_name()
             schema_name = item.get_parent_name()
             is_function = allow_functions and _identifier_is_function(item)
 
             if real_name:
-                yield TableReference(schema_name, real_name, item.get_alias(),
-                                     is_function)
+                yield TableReference(
+                    schema_name, real_name, item.get_alias(), is_function
+                )
             else:
                 name = item.get_name()
-                yield TableReference(None, name, item.get_alias() or name,
-                                     is_function)
+                yield TableReference(
+                    None, name, item.get_alias() or name, is_function
+                )
         elif isinstance(item, Function):
-            yield TableReference(None, item.get_real_name(), item.get_alias(),
-                                 allow_functions)
+            yield TableReference(
+                None, item.get_real_name(), item.get_alias(), allow_functions
+            )
 
 
 # extract_tables is inspired from examples in the sqlparse lib.
@@ -181,8 +187,9 @@ def extract_tables(sql):
     # "insert into foo (bar, baz)" as a function call to foo with arguments
     # (bar, baz). So don't allow any identifiers in insert statements
     # to have is_function=True
-    identifiers = extract_table_identifiers(stream,
-                                            allow_functions=not insert_stmt)
+    identifiers = extract_table_identifiers(
+        stream, allow_functions=not insert_stmt
+    )
     return tuple(identifiers)
 
 
@@ -202,11 +209,11 @@ def find_prev_keyword(sql):
 
     for t in reversed(flattened):
         if t.value == '(' or (t.is_keyword and (
-                    t.value.upper() not in logical_operators)):
+                t.value.upper() not in logical_operators)):
             # Find the location of token t in the original parsed statement
-            # We can't use parsed.token_index(t) because t may be a child token
-            # inside a TokenList, in which case token_index thows an error
-            # Minimal example:
+            # We can't use parsed.token_index(t) because t may be a child
+            # token inside a TokenList, in which case token_index thows an
+            # error Minimal example:
             #   p = sqlparse.parse('select * from foo where bar')
             #   t = list(p.flatten())[-3]  # The "Where" token
             #   p.token_index(t)  # Throws ValueError: not in list
@@ -242,13 +249,13 @@ def _parsed_is_open_quote(parsed):
         if tok.match(Token.Error, "'"):
             # An unmatched single quote
             return True
-        elif (tok.ttype in Token.Name.Builtin
-              and dollar_quote_regex.match(tok.value)):
+        elif (tok.ttype in Token.Name.Builtin and
+              dollar_quote_regex.match(tok.value)):
             # Find the matching closing dollar quote sign
             for (j, tok2) in enumerate(tokens[i + 1:], i + 1):
                 if tok2.match(Token.Name.Builtin, tok.value):
-                    # Found the matching closing quote - continue our scan for
-                    # open quotes thereafter
+                    # Found the matching closing quote - continue our scan
+                    # for open quotes thereafter
                     i = j
                     break
             else:
@@ -285,4 +292,4 @@ def parse_partial_identifier(word):
 
 if __name__ == '__main__':
     sql = 'select * from (select t. from tabl t'
-    print (extract_tables(sql))
+    print(extract_tables(sql))

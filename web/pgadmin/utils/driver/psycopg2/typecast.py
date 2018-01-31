@@ -27,14 +27,14 @@ from psycopg2.extensions import encodings
 # string.
 
 TO_STRING_DATATYPES = (
-        # To cast bytea, interval type
-        17, 1186,
+    # To cast bytea, interval type
+    17, 1186,
 
-        # date, timestamp, timestamptz, bigint, double precision
-        1700, 1082, 1114, 1184, 20, 701,
+    # date, timestamp, timestamptz, bigint, double precision
+    1700, 1082, 1114, 1184, 20, 701,
 
-        # real, time without time zone
-        700, 1083
+    # real, time without time zone
+    700, 1083
 )
 
 # OIDs of array data types which need to typecast to array of string.
@@ -45,17 +45,17 @@ TO_STRING_DATATYPES = (
 # data type. e.g: uuid, bit, varbit, etc.
 
 TO_ARRAY_OF_STRING_DATATYPES = (
-        # To cast bytea[] type
-        1001,
+    # To cast bytea[] type
+    1001,
 
-        # bigint[]
-        1016,
+    # bigint[]
+    1016,
 
-        # double precision[], real[]
-        1022, 1021,
+    # double precision[], real[]
+    1022, 1021,
 
-        # bit[], varbit[]
-        1561, 1563,
+    # bit[], varbit[]
+    1561, 1563,
 )
 
 # OID of record array data type
@@ -96,7 +96,7 @@ PSYCOPG_SUPPORTED_JSON_TYPES = (114, 3802)
 PSYCOPG_SUPPORTED_JSON_ARRAY_TYPES = (199, 3807)
 
 ALL_JSON_TYPES = PSYCOPG_SUPPORTED_JSON_TYPES +\
-                 PSYCOPG_SUPPORTED_JSON_ARRAY_TYPES
+    PSYCOPG_SUPPORTED_JSON_ARRAY_TYPES
 
 
 # INET[], CIDR[]
@@ -150,10 +150,11 @@ def register_global_typecasters():
 
     # define type caster to convert pg array types of above types into
     # array of string type
-    pg_array_types_to_array_of_string_type = psycopg2.extensions.new_array_type(
-        TO_ARRAY_OF_STRING_DATATYPES,
-        'TYPECAST_TO_ARRAY_OF_STRING', pg_types_to_string_type
-    )
+    pg_array_types_to_array_of_string_type = \
+        psycopg2.extensions.new_array_type(
+            TO_ARRAY_OF_STRING_DATATYPES,
+            'TYPECAST_TO_ARRAY_OF_STRING', pg_types_to_string_type
+        )
 
     # This registers a type caster to convert various pg types into string type
     psycopg2.extensions.register_type(pg_types_to_string_type)
@@ -212,10 +213,11 @@ def register_binary_typecasters(connection):
             (
                 # To cast bytea type
                 17,
-             ),
+            ),
             'BYTEA_PLACEHOLDER',
             # Only show placeholder if data actually exists.
-            lambda value, cursor: 'binary data' if value is not None else None),
+            lambda value, cursor: 'binary data'
+            if value is not None else None),
         connection
     )
 
@@ -224,10 +226,11 @@ def register_binary_typecasters(connection):
             (
                 # To cast bytea[] type
                 1001,
-             ),
+            ),
             'BYTEA_ARRAY_PLACEHOLDER',
             # Only show placeholder if data actually exists.
-            lambda value, cursor: 'binary data[]' if value is not None else None),
+            lambda value, cursor: 'binary data[]'
+            if value is not None else None),
         connection
     )
 
@@ -244,7 +247,3 @@ def register_array_to_string_typecasters(connection):
             _STRING),
         connection
     )
-
-
-
-
