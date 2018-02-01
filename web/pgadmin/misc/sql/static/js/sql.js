@@ -69,24 +69,28 @@ define('misc.sql', [
       var that = this;
       this.timeout = setTimeout(
         function() {
-          var sql = '';
+          var sql = '-- ' + gettext('Please select an object in the tree view.');
           if (node) {
             sql = '-- ' + gettext('No SQL could be generated for the selected object.');
             var n_type = data._type,
-              treeHierarchy = node.getTreeNodeHierarchy(item);
+              url = node.generate_url(item, 'sql', data, true),
+              treeHierarchy = node.getTreeNodeHierarchy(item),
+              cache_flag = {
+                node_type: n_type,
+                url: url,
+              };
 
             // Avoid unnecessary reloads
-            if (_.isEqual($(that.sqlPanels[0]).data('node-prop'), treeHierarchy)) {
+            if (_.isEqual($(that.sqlPanels[0]).data('node-prop'), cache_flag)) {
               return;
             }
             // Cache the current IDs for next time
-            $(that.sqlPanels[0]).data('node-prop', treeHierarchy);
+            $(that.sqlPanels[0]).data('node-prop', cache_flag);
 
             if (node.hasSQL) {
 
               sql = '';
-              var url = node.generate_url(item, 'sql', data, true),
-                timer;
+              var timer;
 
               $.ajax({
                 url: url,

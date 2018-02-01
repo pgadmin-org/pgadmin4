@@ -194,15 +194,19 @@ define('misc.depends', [
         $msgContainer = $container.find('.pg-panel-depends-message'),
         $gridContainer = $container.find('.pg-panel-depends-container'),
         treeHierarchy = node.getTreeNodeHierarchy(item),
-        n_type = type;
+        n_type = type,
+        cache_flag = {
+          node_type: n_type,
+          url: url,
+        };
 
       // Avoid unnecessary reloads
-      if (_.isEqual($(panel[0]).data('node-prop'), treeHierarchy)) {
+      if (_.isEqual($(panel[0]).data('node-prop'), cache_flag)) {
         return;
       }
 
       // Cache the current IDs for next time
-      $(panel[0]).data('node-prop', treeHierarchy);
+      $(panel[0]).data('node-prop', cache_flag);
 
       // Hide the grid container and show the default message container
       if (!$gridContainer.hasClass('hidden'))

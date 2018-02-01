@@ -400,6 +400,7 @@ define('pgadmin.browser', [
         });
 
       setTimeout(function() {
+        obj.editor.setValue('-- ' + select_object_msg);
         obj.editor.refresh();
       }, 10);
 
