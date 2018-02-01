@@ -15,7 +15,6 @@ from flask import render_template
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import internal_server_error
 
-
 class SchemaChildModule(CollectionNodeModule):
     """
     Base class for the schema child node.
@@ -148,35 +147,20 @@ class DataTypeReader:
         return True, res
 
     @staticmethod
-    def get_length_precision(elemoid_or_name):
+    def get_length_precision(elemoid):
         precision = False
         length = False
         typeval = ''
 
-        # Check against PGOID/typename for specific type
-        if elemoid_or_name:
-            if elemoid_or_name in (1560, 'bit',
-                                   1561, 'bit[]',
-                                   1562, 'varbit', 'bit varying',
-                                   1563, 'varbit[]', 'bit varying[]',
-                                   1042, 'bpchar', 'character',
-                                   1043, 'varchar', 'character varying',
-                                   1014, 'bpchar[]', 'character[]',
-                                   1015, 'varchar[]', 'character varying[]'):
+        # Check against PGOID for specific type
+        if elemoid:
+            if elemoid in (1560, 1561, 1562, 1563, 1042, 1043,
+                                  1014, 1015):
                 typeval = 'L'
-            elif elemoid_or_name in (1083, 'time', 'time without time zone',
-                                     1114, 'timestamp', 'timestamp without time zone',
-                                     1115, 'timestamp[]', 'timestamp without time zone[]',
-                                     1183, 'time[]', 'time without time zone[]',
-                                     1184, 'timestamptz', 'timestamp with time zone',
-                                     1185, 'timestamptz[]', 'timestamp with time zone[]',
-                                     1186, 'interval',
-                                     1187, 'interval[]', 'interval[]',
-                                     1266, 'timetz', 'time with time zone',
-                                     1270, 'timetz', 'time with time zone[]'):
+            elif elemoid in (1083, 1114, 1115, 1183, 1184, 1185,
+                                    1186, 1187, 1266, 1270):
                 typeval = 'D'
-            elif elemoid_or_name in (1231, 'numeric[]',
-                                     1700, 'numeric'):
+            elif elemoid in (1231, 1700):
                 typeval = 'P'
             else:
                 typeval = ' '

@@ -1689,8 +1689,10 @@ class BaseTableView(PGChildNodeView):
                             old_data['isdup'], old_data['attndims'], old_data['atttypmod']
                         )
 
-                        # If the column data type has not changed then fetch
-                        # old length and precision
+                        length = False
+                        precision = False
+
+                        # If the column data type has not changed then fetch old length and precision
                         if 'elemoid' in old_data and 'cltype' not in c:
                             length, precision, typeval = \
                                 self.get_length_precision(old_data['elemoid'])
@@ -1710,23 +1712,6 @@ class BaseTableView(PGChildNodeView):
                             else:
                                 c['attlen'] = None
                                 c['attprecision'] = None
-
-                        if 'cltype' in c:
-                            typename = c['cltype']
-                            if 'hasSqrBracket' in c and c['hasSqrBracket']:
-                                typename += '[]'
-                            length, precision, typeval = \
-                                self.get_length_precision(typename)
-
-                            # if new datatype does not have length or precision
-                            # then we cannot apply length or precision of old
-                            # datatype to new one.
-
-                            if not length:
-                                old_data['attlen'] = -1
-
-                            if not precision:
-                                old_data['attprecision'] = None
 
                         old_data['cltype'] = DataTypeReader.parse_type_name(
                             old_data['cltype']
