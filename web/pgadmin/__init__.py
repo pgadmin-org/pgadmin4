@@ -26,7 +26,7 @@ from flask_paranoid import Paranoid
 
 from pgadmin.utils import PgAdminModule, driver
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
-from pgadmin.utils.session import create_session_interface
+from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
 
@@ -351,6 +351,9 @@ def create_app(app_name=None):
     }))
 
     security.init_app(app, user_datastore)
+
+    # register custom unauthorised handler.
+    app.login_manager.unauthorized_handler(pga_unauthorised)
 
     app.session_interface = create_session_interface(app)
 

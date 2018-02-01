@@ -182,6 +182,7 @@ class Connection(BaseConnection):
         res['database'] = self.db
         res['async'] = self.async
         res['wasConnected'] = self.wasConnected
+        res['auto_reconnect'] = self.auto_reconnect
         res['use_binary_placeholder'] = self.use_binary_placeholder
         res['array_to_string'] = self.array_to_string
 
@@ -880,6 +881,13 @@ WHERE
                     query_id=query_id
                 )
             )
+
+            if self.is_disconnected(pe):
+                raise ConnectionLost(
+                    self.manager.sid,
+                    self.db,
+                    None if self.conn_id[0:3] == u'DB:' else self.conn_id[5:]
+                )
             return False, errmsg
 
         self.__async_cursor = cur
@@ -1630,6 +1638,52 @@ Failed to reset the connection to the server due to following error:
 
         return errmsg
 
+    #####
+    # As per issue reported on pgsycopg2 github repository link is shared below
+    # conn.closed is not reliable enough to identify the disconnection from the
+    # database server for some unknown reasons.
+    #
+    # (https://github.com/psycopg/psycopg2/issues/263)
+    #
+    # In order to resolve the issue, sqlalchamey follows the below logic to
+    # identify the disconnection. It relies on exception message to identify
+    # the error.
+    #
+    # Reference (MIT license):
+    # https://github.com/zzzeek/sqlalchemy/blob/master/lib/sqlalchemy/dialects/postgresql/psycopg2.py
+    #
+    def is_disconnected(self, err):
+        if not self.conn.closed:
+            # checks based on strings.  in the case that .closed
+            # didn't cut it, fall back onto these.
+            str_e = str(err).partition("\n")[0]
+            for msg in [
+                # these error messages from libpq: interfaces/libpq/fe-misc.c
+                # and interfaces/libpq/fe-secure.c.
+                'terminating connection',
+                'closed the connection',
+                'connection not open',
+                'could not receive data from server',
+                'could not send data to server',
+                # psycopg2 client errors, psycopg2/conenction.h,
+                # psycopg2/cursor.h
+                'connection already closed',
+                'cursor already closed',
+                # not sure where this path is originally from, it may
+                # be obsolete.   It really says "losed", not "closed".
+                'losed the connection unexpectedly',
+                # these can occur in newer SSL
+                'connection has been closed unexpectedly',
+                'SSL SYSCALL error: Bad file descriptor',
+                'SSL SYSCALL error: EOF detected',
+            ]:
+                idx = str_e.find(msg)
+                if idx >= 0 and '"' not in str_e[:idx]:
+                    return True
+
+            return False
+        return True
+
 
 class ServerManager(object):
     """
@@ -1820,12 +1874,14 @@ WHERE db.oid = {0}""".format(did))
             conn_info = connections[conn_id]
             conn = self.connections[conn_info['conn_id']] = Connection(
                 self, conn_info['conn_id'], conn_info['database'],
-                True, conn_info['async'],
+                conn_info['auto_reconnect'], conn_info['async'],
                 use_binary_placeholder=conn_info['use_binary_placeholder'],
                 array_to_string=conn_info['array_to_string']
             )
-            # only try to reconnect if connection was connected previously.
-            if conn_info['wasConnected']:
+
+            # only try to reconnect if connection was connected previously and
+            # auto_reconnect is true.
+            if conn_info['wasConnected'] and conn_info['auto_reconnect']:
                 try:
                     conn.connect(
                         password=data['password'],

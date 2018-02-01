@@ -28,7 +28,7 @@ class ConnectionLost(HTTPException):
 
     @property
     def name(self):
-        return HTTP_STATUS_CODES.get(505, 'Service Unavailable')
+        return HTTP_STATUS_CODES.get(503, 'Service Unavailable')
 
     def get_response(self, environ=None):
         return service_unavailable(

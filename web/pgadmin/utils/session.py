@@ -24,6 +24,9 @@ import random
 import string
 import time
 from uuid import uuid4
+from flask import current_app, request, flash, redirect
+from flask_login import login_url
+from pgadmin.utils.ajax import make_json_response
 
 try:
     from cPickle import dump, load
@@ -303,3 +306,32 @@ def create_session_interface(app, skip_paths=[]):
             1000
         ), skip_paths,
         datetime.timedelta(days=1))
+
+
+def pga_unauthorised():
+
+    lm = current_app.login_manager
+    login_message = None
+
+    if lm.login_message:
+        if lm.localize_callback is not None:
+            login_message = lm.localize_callback(lm.login_message)
+        else:
+            login_message = lm.login_message
+
+    if not lm.login_view or request.is_xhr:
+        # Only 401 is not enough to distinguish pgAdmin login is required.
+        # There are other cases when we return 401. For eg. wrong password
+        # supplied while connecting to server.
+        # So send additional 'info' message.
+        return make_json_response(
+            status=401,
+            success=0,
+            errormsg=login_message,
+            info='PGADMIN_LOGIN_REQUIRED'
+        )
+
+    if login_message:
+        flash(login_message, category=lm.login_message_category)
+
+    return redirect(login_url(lm.login_view, request.url))

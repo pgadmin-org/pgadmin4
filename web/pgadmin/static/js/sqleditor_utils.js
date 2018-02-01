@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////
 // This file contains common utilities functions used in sqleditor modules
 
-define(['jquery', 'sources/gettext'],
-  function ($, gettext) {
+define(['jquery', 'sources/gettext', 'sources/url_for'],
+  function ($, gettext, url_for) {
     var sqlEditorUtils = {
       /* Reference link http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
        * Modified as per requirement.
@@ -61,9 +61,13 @@ define(['jquery', 'sources/gettext'],
       previousStatus: null,
 
       // This function will fetch the connection status via ajax
-      fetchConnectionStatus: function(url, $el, $status_el) {
+      fetchConnectionStatus: function(target, $el, $status_el) {
         // If user has switch the browser Tab or Minimized window or
         // if wcDocker panel is not in focus then don't fire AJAX
+        var url = url_for('sqleditor.connection_status', {
+          'trans_id': target.transId,
+        });
+
         if (document.visibilityState !== 'visible' ||
               $el.data('panel-visible') !== 'visible' ) {
           return;
@@ -169,19 +173,19 @@ define(['jquery', 'sources/gettext'],
       },
 
       // This function will update the connection status
-      updateConnectionStatus: function(url, poll_time) {
-        var $el = $('.connection_status'),
-          $status_el = $($($el).find('.fa-custom'));
+      updateConnectionStatus: function(target, poll_time) {
+        var $el = $(target.gridView.$el.find('.connection_status')),
+          $status_el = $($el.find('.fa-custom'));
 
         // Apply popover on element
         $el.popover();
 
-        // To set initial connection status
-        sqlEditorUtils.fetchConnectionStatus(url, $el, $status_el);
+        // To set initial connection statussource$el.popover()
+        sqlEditorUtils.fetchConnectionStatus(target, $el, $status_el);
 
         // Calling it again in specified interval
         setInterval(
-          sqlEditorUtils.fetchConnectionStatus.bind(null, url, $el, $status_el),
+          sqlEditorUtils.fetchConnectionStatus.bind(null, target, $el, $status_el),
           poll_time * 1000
         );
       },

@@ -17,17 +17,19 @@ define('tools.querytool', [
   'react', 'react-dom',
   'sources/keyboard_shortcuts',
   'sources/sqleditor/query_tool_actions',
+  'pgadmin.datagrid',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
   'backgrid.sizeable.columns',
   'slick.pgadmin.formatters',
   'slick.pgadmin.editors',
   'pgadmin.browser',
+  'pgadmin.tools.user_management',
 ], function(
   babelPollyfill, gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, HistoryBundle, queryHistory, React, ReactDOM,
-  keyboardShortcuts, queryToolActions) {
+  keyboardShortcuts, queryToolActions, Datagrid) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -40,6 +42,12 @@ define('tools.querytool', [
     Slick = window.Slick;
 
   var is_query_running = false;
+
+  var is_new_transaction_required = function(xhr) {
+    return xhr.status == 404 && xhr.responseJSON &&
+                xhr.responseJSON.info &&
+                xhr.responseJSON.info == 'DATAGRID_TRANSACTION_REQUIRED';
+  };
 
   // Defining Backbone view for the sql grid.
   var SQLEditorView = Backbone.View.extend({
@@ -300,10 +308,6 @@ define('tools.querytool', [
             p.on(wcDocker.EVENT.GAIN_FOCUS, function() {
               var $container = $(this.$container),
                 transId = self.handler.transId;
-              // If transaction id is already set
-              if($container.data('trans-id') != transId) {
-                $container.data('trans-id', transId);
-              }
 
               if (!$container.hasClass('wcPanelTabContentHidden')) {
                 setTimeout(function () {
@@ -319,7 +323,7 @@ define('tools.querytool', [
             // When any query tool panel lost it focus then
             p.on(wcDocker.EVENT.LOST_FOCUS, function () {
               var $container = $(this.$container),
-                transId = $container.data('trans-id');
+                transId = self.handler.transId;
               // Trigger an event to update connection status flag
               if ($container.hasClass('wcPanelTabContentHidden')) {
                 pgBrowser.Events.trigger(
@@ -477,6 +481,14 @@ define('tools.querytool', [
                   },
                 });
               },
+              error:function(e) {
+                if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+                  return pgAdmin.Browser.UserManagement.pga_login();
+                }
+                if(is_new_transaction_required(e)) {
+                  return self.init_transaction();
+                }
+              },
             });
           }.bind(ctx),
         };
@@ -505,7 +517,7 @@ define('tools.querytool', [
       // Only enable pooling if it is enabled
       if (display_status && display_status.value) {
         SqlEditorUtils.updateConnectionStatus(
-          url_for('sqleditor.connection_status', {'trans_id': self.transId}),
+          self.handler,
           preference.value
         );
       }
@@ -1100,7 +1112,7 @@ define('tools.querytool', [
           'fetch_all': 1,
         });
       } else {
-        url = url = url_for('sqleditor.fetch', {
+        url = url_for('sqleditor.fetch', {
           'trans_id': self.transId,
         });
       }
@@ -1131,6 +1143,10 @@ define('tools.querytool', [
               gettext('Not connected to the server or the connection to the server has been closed.')
             );
             return;
+          }
+
+          if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+            pgAdmin.Browser.UserManagement.pga_login();
           }
         },
       });
@@ -1284,6 +1300,7 @@ define('tools.querytool', [
     // Callback function for the find next button click.
     on_find_next: function(ev) {
       var self = this;
+
       this._stopEventPropogation(ev);
       this._closeDropDown(ev);
 
@@ -1733,16 +1750,200 @@ define('tools.querytool', [
 
   _.extend(
     SqlEditorController.prototype,
-    Backbone.Events, {
+    Backbone.Events,
+    {
       initialize: function(container) {
+        var self = this;
         this.container = container;
+        this.state = {};
+        if (!alertify.dlgGetServerPass) {
+          alertify.dialog('dlgGetServerPass', function factory() {
+            return {
+              main: function(
+                title, message
+              ) {
+                this.set('title', title);
+                this.setting('message',message);
+              },
+              setup:function() {
+                return {
+                  buttons:[
+                    {
+                      text: gettext('OK'),
+                      key: 13,
+                      className: 'btn btn-primary',
+                    },
+                    {
+                      text: gettext('Cancel'),
+                      className: 'btn btn-danger',
+                    },
+                  ],
+                  focus: {
+                    element: '#password',
+                    select: true,
+                  },
+                  options: {
+                    modal: 0,
+                    resizable: false,
+                    maximizable: false,
+                    pinnable: false,
+                  },
+                };
+              },
+              build:function() {},
+              settings:{
+                message: null,
+              },
+              prepare:function() {
+                this.setContent(this.setting('message'));
+              },
+              callback: function(closeEvent) {
+                if (closeEvent.button.text == gettext('OK')) {
+                  var passdata = $(this.elements.content).find('#frmPassword').serialize();
+                  self.init_connection(false, passdata);
+                }
+              },
+            };
+          });
+        }
+        this.on('pgadmin-datagrid:transaction:created', function(trans_obj) {
+          self.transId = trans_obj.gridTransId;
+          self.warn_before_continue();
+        });
+        pgBrowser.Events.on('pgadmin:user:logged-in', function() {
+          self.init_transaction();
+        });
+      },
+      save_state: function(fn, args) {
+        if (fn) {
+          this.state = {
+            'fn': fn,
+            'args': args,
+          };
+        } else {
+          this.state = {};
+        }
       },
 
+      init_transaction: function() {
+        var url_endpoint;
+        if (this.is_query_tool) {
+          url_endpoint = 'datagrid.initialize_query_tool';
+
+          // If database not present then use Maintenance database
+          // We will handle this at server side
+          if (this.url_params.did) {
+            url_endpoint = 'datagrid.initialize_query_tool_with_did';
+          }
+
+        } else {
+          url_endpoint = 'datagrid.initialize_datagrid';
+        }
+
+        var baseUrl = url_for(url_endpoint, this.url_params);
+
+        Datagrid.create_transaction(baseUrl, this, this.is_query_tool,
+            this.server_type, '', '', '', true);
+      },
+
+      handle_connection_lost: function(create_transaction, xhr) {
+        var self= this;
+        if (xhr.responseJSON.data && !xhr.responseJSON.data.conn_id) {
+          // if conn_id is null then this is maintenance db.
+          // so attempt connection connect without prompt.
+          self.init_connection(create_transaction);
+        } else {
+          self.warn_before_continue();
+        }
+      },
+      warn_before_continue: function() {
+        var self = this;
+
+        alertify.confirm(
+          gettext('Connection Warning'),
+          '<p style="float:left">'+
+            '<span class="fa fa-exclamation-triangle warn-icon" aria-hidden="true">'+
+            '</span>'+
+          '</p>'+
+          '<p style="display: inline-block;">'+
+            '<span class="warn-header">'+
+              gettext('The application has lost the database connection:')+
+            '</span>'+
+            '<br>'+
+            '<span class="warn-body">'+
+              gettext('⁃ If the connection was idle it may have been forcibly disconnected.')+
+            '<br>'+
+              gettext('⁃ The application server or database server may have been restarted.')+
+            '<br>'+
+              gettext('⁃ The user session may have timed out.')+
+            '</span>'+
+            '<br>'+
+            '<span class="warn-footer">'+
+            gettext('Do you want to continue and establish a new session?')+
+            '</span>'+
+          '</p>',
+          function() {
+            if ('fn' in self.state) {
+              var fn = self.state['fn'],
+                args = self.state['args'];
+              self.save_state();
+              if (args.indexOf('connect') == -1) {
+                args.push('connect');
+              }
+
+              self[fn].apply(self, args);
+            }
+          }, function() {
+            self.save_state();
+          })
+          .set({
+            labels: {
+              ok: gettext('Continue'),
+              cancel: gettext('Cancel'),
+            },
+          });
+      },
+      init_connection: function(create_transaction, passdata) {
+        var self = this;
+        $.post(url_for('NODE-server.connect_id', {
+          'gid': this.url_params.sgid,
+          'sid': this.url_params.sid,
+        }),passdata)
+        .done(function(res) {
+          if (res.success == 1) {
+            alertify.success(res.info);
+            if (create_transaction) {
+              self.init_transaction();
+            } else if ('fn' in self.state) {
+              var fn = self.state['fn'],
+                args = self.state['args'];
+              self.save_state();
+              self[fn].apply(self, args);
+            }
+          }
+        })
+        .fail(function(xhr) {
+          if (pgAdmin.Browser.UserManagement.is_pga_login_required(xhr)) {
+            pgAdmin.Browser.UserManagement.pga_login();
+          } else {
+            if(xhr.responseJSON &&
+                xhr.responseJSON.result) {
+              alertify.dlgGetServerPass(gettext('Connect to Server'),
+                xhr.responseJSON.result);
+            } else {
+              alertify.dlgGetServerPass(gettext('Connect to Server'),
+                xhr.responseText);
+            }
+          }
+        });
+      },
       /* This function is used to create instance of SQLEditorView,
        * call the render method of the grid view to render the backgrid
        * header and loading icon and start execution of the sql query.
        */
-      start: function(is_query_tool, editor_title, script_sql, is_new_browser_tab, server_type, prompt_save_changes) {
+      start: function(transId, is_query_tool, editor_title, script_type_url,
+          is_new_browser_tab, server_type, prompt_save_changes, url_params
+      ) {
         var self = this;
 
         self.is_query_tool = is_query_tool;
@@ -1758,6 +1959,8 @@ define('tools.querytool', [
         self.close_on_save = false;
         self.server_type = server_type;
         self.prompt_save_changes = prompt_save_changes;
+        self.url_params = url_params;
+        self.script_type_url = script_type_url;
 
         // We do not allow to call the start multiple times.
         if (self.gridView)
@@ -1767,7 +1970,7 @@ define('tools.querytool', [
           el: self.container,
           handler: self,
         });
-        self.transId = self.gridView.transId = self.container.data('transId');
+        self.transId = self.gridView.transId = transId;
 
         self.gridView.editor_title = _.unescape(editor_title);
         self.gridView.current_file = undefined;
@@ -1775,6 +1978,61 @@ define('tools.querytool', [
         // Render the header
         self.gridView.render();
 
+        if (self.is_query_tool) {
+          // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
+          // Call AJAX only if script type url is present
+          if (script_type_url) {
+            $.ajax({
+              url: script_type_url,
+              type:'GET',
+              success: function(res) {
+                self.gridView.query_tool_obj.refresh();
+                if (res && res !== '') {
+                  self.gridView.query_tool_obj.setValue(res);
+                }
+                self.init_events();
+              },
+              error: function(jqx) {
+                var msg = '';
+                self.init_events();
+
+                if (pgAdmin.Browser.UserManagement.is_pga_login_required(jqx)) {
+                  return pgAdmin.Browser.UserManagement.pga_login();
+                }
+
+                /* Error from the server */
+                if (jqx.status == 410 || jqx.status == 500) {
+                  try {
+                    var data = $.parseJSON(jqx.responseText);
+                    msg = data.errormsg;
+                  } catch (e) {
+                    msg = jqx.responseText;
+                  }
+                }
+                pgBrowser.report_error(
+                  S(gettext('Error fetching SQL for script: %s.')).sprintf(msg).value()
+                );
+              },
+            });
+          } else {
+            self.init_events();
+          }
+        }
+        else {
+          // Disable codemirror by setting cursor to nocursor and background to dark.
+          self.init_events();
+          self.gridView.query_tool_obj.setOption('readOnly', 'nocursor');
+          var cm = self.gridView.query_tool_obj.getWrapperElement();
+          if (cm) {
+            cm.className += ' bg-gray-1 opacity-5';
+          }
+          self.disable_tool_buttons(true);
+          self.execute_data_query();
+        }
+      },
+
+      init_events: function() {
+        var self = this;
         // Listen to the file manager button events
         pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', self._select_file_handler, self);
         pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:create_file', self._save_file_handler, self);
@@ -1808,22 +2066,6 @@ define('tools.querytool', [
         // Indentation related
         self.on('pgadmin-sqleditor:indent_selected_code', self._indent_selected_code, self);
         self.on('pgadmin-sqleditor:unindent_selected_code', self._unindent_selected_code, self);
-
-        if (self.is_query_tool) {
-          self.gridView.query_tool_obj.refresh();
-          if (script_sql && script_sql !== '') {
-            self.gridView.query_tool_obj.setValue(script_sql);
-          }
-        } else {
-          // Disable codemirror by setting cursor to nocursor and background to dark.
-          self.gridView.query_tool_obj.setOption('readOnly', 'nocursor');
-          var cm = self.gridView.query_tool_obj.getWrapperElement();
-          if (cm) {
-            cm.className += ' bg-gray-1 opacity-5';
-          }
-          self.disable_tool_buttons(true);
-          self.execute_data_query();
-        }
       },
 
       // This function checks if there is any dirty data in the grid before
@@ -1858,7 +2100,11 @@ define('tools.querytool', [
 
       // This function makes the ajax call to execute the sql query.
       _run_query: function() {
-        var self = this;
+        var self = this,
+          url = url_for('sqleditor.view_data_start', {
+            'trans_id': self.transId,
+          });
+
         self.query_start_time = new Date();
         self.rows_affected = 0;
         self._init_polling_flags();
@@ -1881,14 +2127,16 @@ define('tools.querytool', [
           gettext('Waiting for the query execution to complete...')
         );
 
+        if (arguments.length > 0 &&
+          arguments[arguments.length - 1] == 'connect') {
+          url += '?connect=1';
+        }
+
         $.ajax({
-          url: url_for('sqleditor.view_data_start', {
-            'trans_id': self.transId,
-          }),
+          url: url,
           method: 'GET',
           success: function(res) {
             if (res.data.status) {
-
               self.can_edit = res.data.can_edit;
               self.can_filter = res.data.can_filter;
               self.info_notifier_timeout = res.data.info_notifier_timeout;
@@ -1935,11 +2183,30 @@ define('tools.querytool', [
               );
               return;
             }
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_run_query', []);
+              pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_run_query', []);
+              self.init_transaction();
+            }
 
             var msg = e.responseText;
-            if (e.responseJSON != undefined &&
-              e.responseJSON.errormsg != undefined)
-              msg = e.responseJSON.errormsg;
+            if (e.responseJSON != undefined) {
+              if(e.responseJSON.errormsg != undefined) {
+                msg = e.responseJSON.errormsg;
+              }
+
+              if(e.status == 503 && e.responseJSON.info != undefined &&
+                  e.responseJSON.info == 'CONNECTION_LOST') {
+                setTimeout(function() {
+                  self.save_state('_run_query', []);
+                  self.handle_connection_lost(false, e);
+                });
+              }
+            }
 
             self.update_msg_history(false, msg);
           },
@@ -1952,8 +2219,8 @@ define('tools.querytool', [
       call_render_after_poll: function(res) {
         var self = this;
         self.query_end_time = new Date();
-        self.rows_affected = res.rows_affected,
-          self.has_more_rows = res.has_more_rows;
+        self.rows_affected = res.rows_affected;
+        self.has_more_rows = res.has_more_rows;
 
         /* If no column information is available it means query
            runs successfully with no result to display. In this
@@ -2040,6 +2307,10 @@ define('tools.querytool', [
                     gettext('Not connected to the server or the connection to the server has been closed.')
                   );
                   return;
+                }
+
+                if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+                  return pgAdmin.Browser.UserManagement.pga_login();
                 }
 
                 var msg = e.responseText;
@@ -2545,7 +2816,7 @@ define('tools.querytool', [
                 data = [];
 
               if (res.data.status) {
-                if (is_added) {
+                if(is_added) {
                   // Update the rows in a grid after addition
                   dataView.beginUpdate();
                   _.each(res.data.query_result, function(r) {
@@ -2665,10 +2936,30 @@ define('tools.querytool', [
                 return;
               }
 
+              if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+                self.save_state('_save', [view, controller, save_as]);
+                pgAdmin.Browser.UserManagement.pga_login();
+              }
+
+              if(is_new_transaction_required(e)) {
+                self.save_state('_save', [view, controller, save_as]);
+                self.init_transaction();
+              }
+
               var msg = e.responseText;
-              if (e.responseJSON != undefined &&
-                e.responseJSON.errormsg != undefined)
-                msg = e.responseJSON.errormsg;
+              if (e.responseJSON != undefined) {
+                if(e.responseJSON.errormsg != undefined) {
+                  msg = e.responseJSON.errormsg;
+                }
+
+                if(e.status == 503 && e.responseJSON.info != undefined &&
+                    e.responseJSON.info == 'CONNECTION_LOST') {
+                  setTimeout(function() {
+                    self.save_state('_save', [view, controller, save_as]);
+                    self.handle_connection_lost(false, e);
+                  });
+                }
+              }
 
               self.update_msg_history(false, msg);
             },
@@ -2775,6 +3066,7 @@ define('tools.querytool', [
       // read file data and return as response
       _select_file_handler: function(e) {
         var self = this,
+          _e = e,
           data = {
             'file_name': decodeURI(e),
           };
@@ -2810,9 +3102,14 @@ define('tools.querytool', [
             setTimeout(() => { self.gridView.query_tool_obj.focus(); }, 200);
           },
           error: function(e) {
+            self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_select_file_handler', [_e]);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
             var errmsg = $.parseJSON(e.responseText).errormsg;
             alertify.error(errmsg);
-            self.trigger('pgadmin-sqleditor:loading-icon:hide');
             // hide cursor
             $busy_icon_div.removeClass('show_progress');
           },
@@ -2822,6 +3119,7 @@ define('tools.querytool', [
       // read data from codemirror and write to file
       _save_file_handler: function(e) {
         var self = this,
+          _e = e,
           data = {
             'file_name': decodeURI(e),
             'file_content': self.gridView.query_tool_obj.getValue(),
@@ -2857,6 +3155,10 @@ define('tools.querytool', [
           },
           error: function(e) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_save_file_handler', [_e]);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
 
             var errmsg = $.parseJSON(e.responseText).errormsg;
             setTimeout(
@@ -2960,15 +3262,34 @@ define('tools.querytool', [
           error: function(e) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_show_filter', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_show_filter', []);
+              return self.init_transaction();
+            }
+
             var msg;
             if (e.readyState == 0) {
               msg =
                 gettext('Not connected to the server or the connection to the server has been closed.');
             } else {
               msg = e.responseText;
-              if (e.responseJSON != undefined &&
-                e.responseJSON.errormsg != undefined)
-                msg = e.responseJSON.errormsg;
+              if (e.responseJSON != undefined) {
+                if(e.responseJSON.errormsg != undefined) {
+                  msg = e.responseJSON.errormsg;
+                }
+                if(e.status == 503 && e.responseJSON.info != undefined &&
+                    e.responseJSON.info == 'CONNECTION_LOST') {
+                  setTimeout(function() {
+                    self.save_state('_show_filter', []);
+                    self.handle_connection_lost(false, e);
+                  });
+                }
+              }
             }
             setTimeout(
               function() {
@@ -3030,6 +3351,16 @@ define('tools.querytool', [
           },
           error: function(e) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_include_filter', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_include_filter', []);
+              return self.init_transaction();
+            }
+
             setTimeout(
               function() {
                 if (e.readyState == 0) {
@@ -3040,9 +3371,18 @@ define('tools.querytool', [
                 }
 
                 var msg = e.responseText;
-                if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                  msg = e.responseJSON.errormsg;
+                if (e.responseJSON != undefined) {
+                  if(e.responseJSON.errormsg != undefined) {
+                    msg = e.responseJSON.errormsg;
+                  }
+                  if(e.status == 503 && e.responseJSON.info != undefined &&
+                      e.responseJSON.info == 'CONNECTION_LOST') {
+                    setTimeout(function() {
+                      self.save_state('_include_filter', []);
+                      self.handle_connection_lost(false, e);
+                    });
+                  }
+                }
 
                 alertify.alert(gettext('Filter By Selection Error'), msg);
               }, 10
@@ -3102,6 +3442,15 @@ define('tools.querytool', [
           },
           error: function(e) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_exclude_filter', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_exclude_filter', []);
+              return self.init_transaction();
+            }
 
             setTimeout(
               function() {
@@ -3113,9 +3462,18 @@ define('tools.querytool', [
                 }
 
                 var msg = e.responseText;
-                if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                  msg = e.responseJSON.errormsg;
+                if (e.responseJSON != undefined) {
+                  if(e.responseJSON.errormsg != undefined) {
+                    msg = e.responseJSON.errormsg;
+                  }
+                  if(e.status == 503 && e.responseJSON.info != undefined &&
+                      e.responseJSON.info == 'CONNECTION_LOST') {
+                    setTimeout(function() {
+                      self.save_state('_exclude_filter', []);
+                      self.handle_connection_lost(false, e);
+                    });
+                  }
+                }
 
                 alertify.alert(gettext('Filter Exclude Selection Error'), msg);
               }, 10
@@ -3154,6 +3512,16 @@ define('tools.querytool', [
           },
           error: function(e) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_remove_filter', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_remove_filter', []);
+              return self.init_transaction();
+            }
+
             setTimeout(
               function() {
                 if (e.readyState == 0) {
@@ -3164,9 +3532,18 @@ define('tools.querytool', [
                 }
 
                 var msg = e.responseText;
-                if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                  msg = e.responseJSON.errormsg;
+                if (e.responseJSON != undefined) {
+                  if(e.responseJSON.errormsg != undefined) {
+                    msg = e.responseJSON.errormsg;
+                  }
+                  if(e.status == 503 && e.responseJSON.info != undefined &&
+                      e.responseJSON.info == 'CONNECTION_LOST') {
+                    setTimeout(function() {
+                      self.save_state('_remove_filter', []);
+                      self.handle_connection_lost(false, e);
+                    });
+                  }
+                }
 
                 alertify.alert(gettext('Remove Filter Error'), msg);
               }
@@ -3210,6 +3587,16 @@ define('tools.querytool', [
           },
           error: function(e) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_apply_filter', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_apply_filter', []);
+              return self.init_transaction();
+            }
+
             setTimeout(
               function() {
                 if (e.readyState == 0) {
@@ -3220,9 +3607,18 @@ define('tools.querytool', [
                 }
 
                 var msg = e.responseText;
-                if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                  msg = e.responseJSON.errormsg;
+                if (e.responseJSON != undefined) {
+                  if(e.responseJSON.errormsg != undefined) {
+                    msg = e.responseJSON.errormsg;
+                  }
+                  if(e.status == 503 && e.responseJSON.info != undefined &&
+                      e.responseJSON.info == 'CONNECTION_LOST') {
+                    setTimeout(function() {
+                      self.save_state('_apply_filter', []);
+                      self.handle_connection_lost(false, e);
+                    });
+                  }
+                }
 
                 alertify.alert(gettext('Apply Filter Error'), msg);
               }, 10
@@ -3346,6 +3742,16 @@ define('tools.querytool', [
           },
           error: function(e) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_set_limit', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_set_limit', []);
+              return self.init_transaction();
+            }
+
             setTimeout(
               function() {
                 if (e.readyState == 0) {
@@ -3356,9 +3762,18 @@ define('tools.querytool', [
                 }
 
                 var msg = e.responseText;
-                if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                  msg = e.responseJSON.errormsg;
+                if (e.responseJSON != undefined) {
+                  if(e.responseJSON.errormsg != undefined) {
+                    msg = e.responseJSON.errormsg;
+                  }
+                  if(e.status == 503 && e.responseJSON.info != undefined &&
+                      e.responseJSON.info == 'CONNECTION_LOST') {
+                    setTimeout(function() {
+                      self.save_state('_set_limit', []);
+                      self.handle_connection_lost(false, e);
+                    });
+                  }
+                }
 
                 alertify.alert(gettext('Change limit Error'), msg);
               }, 10
@@ -3380,7 +3795,10 @@ define('tools.querytool', [
       // and execute the query.
       execute: function(explain_prefix) {
         var self = this,
-          sql = '';
+          sql = '',
+          url = url_for('sqleditor.query_tool_start', {
+            'trans_id': self.transId,
+          });
 
         self.has_more_rows = false;
         self.fetching_rows = false;
@@ -3416,10 +3834,13 @@ define('tools.querytool', [
         self.disable_tool_buttons(true);
         $('#btn-cancel-query').prop('disabled', false);
 
+        if (arguments.length > 0 &&
+          arguments[arguments.length - 1] == 'connect') {
+          url += '?connect=1';
+        }
+
         $.ajax({
-          url: url_for('sqleditor.query_tool_start', {
-            'trans_id': self.transId,
-          }),
+          url: url,
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify(sql),
@@ -3468,11 +3889,29 @@ define('tools.querytool', [
               return;
             }
 
-            var msg = e.responseText;
-            if (e.responseJSON != undefined &&
-              e.responseJSON.errormsg != undefined)
-              msg = e.responseJSON.errormsg;
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('execute', [explain_prefix]);
+              pgAdmin.Browser.UserManagement.pga_login();
+            }
 
+            if(is_new_transaction_required(e)) {
+              self.save_state('execute', [explain_prefix]);
+              self.init_transaction();
+            }
+            var msg = e.responseText;
+            if (e.responseJSON != undefined) {
+              if(e.responseJSON.errormsg != undefined) {
+                msg = e.responseJSON.errormsg;
+              }
+
+              if(e.status == 503 && e.responseJSON.info != undefined &&
+                  e.responseJSON.info == 'CONNECTION_LOST') {
+                setTimeout(function() {
+                  self.save_state('execute', [explain_prefix]);
+                  self.handle_connection_lost(false, e);
+                });
+              }
+            }
             self.update_msg_history(false, msg);
           },
         });
@@ -3573,6 +4012,11 @@ define('tools.querytool', [
               return;
             }
 
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_cancel_query', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
             var msg = e.responseText;
             if (e.responseJSON != undefined &&
               e.responseJSON.errormsg != undefined)
@@ -3629,10 +4073,30 @@ define('tools.querytool', [
               return;
             }
 
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_auto_rollback', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_auto_rollback', []);
+              self.init_transaction();
+            }
+
             var msg = e.responseText;
-            if (e.responseJSON != undefined &&
-              e.responseJSON.errormsg != undefined)
-              msg = e.responseJSON.errormsg;
+            if (e.responseJSON != undefined) {
+              if(e.responseJSON.errormsg != undefined) {
+                msg = e.responseJSON.errormsg;
+              }
+
+              if(e.status == 503 && e.responseJSON.info != undefined &&
+                  e.responseJSON.info == 'CONNECTION_LOST') {
+                setTimeout(function() {
+                  self.save_state('_auto_rollback', []);
+                  self.handle_connection_lost(false, e);
+                });
+              }
+            }
 
             alertify.alert(gettext('Auto Rollback Error'), msg);
           },
@@ -3650,7 +4114,7 @@ define('tools.querytool', [
           auto_commit = false;
         }
 
-        // Make ajax call to change the limit
+        // Make ajax call to toggle auto commit
         $.ajax({
           url: url_for('sqleditor.auto_commit', {
             'trans_id': self.transId,
@@ -3670,10 +4134,30 @@ define('tools.querytool', [
               return;
             }
 
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_auto_commit', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_auto_commit', []);
+              return self.init_transaction();
+            }
+
             var msg = e.responseText;
-            if (e.responseJSON != undefined &&
-              e.responseJSON.errormsg != undefined)
-              msg = e.responseJSON.errormsg;
+            if (e.responseJSON != undefined) {
+              if(e.responseJSON.errormsg != undefined) {
+                msg = e.responseJSON.errormsg;
+              }
+
+              if(e.status == 503 && e.responseJSON.info != undefined &&
+                  e.responseJSON.info == 'CONNECTION_LOST') {
+                setTimeout(function() {
+                  self.save_state('_auto_commit', []);
+                  self.handle_connection_lost(false, e);
+                });
+              }
+            }
 
             alertify.alert(gettext('Auto Commit Error'), msg);
           },
@@ -3710,7 +4194,18 @@ define('tools.querytool', [
               );
             }
           },
-          error: function() {
+          error: function(e) {
+
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_explain_verbose', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_explain_verbose', []);
+              return self.init_transaction();
+            }
+
             alertify.alert(gettext('Explain options error'),
               gettext('Error occurred while setting verbose option in explain.')
             );
@@ -3749,7 +4244,17 @@ define('tools.querytool', [
               );
             }
           },
-          error: function() {
+          error: function(e) {
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_explain_costs', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_explain_costs', []);
+              return self.init_transaction();
+            }
+
             alertify.alert(gettext('Explain options error'),
               gettext('Error occurred while setting costs option in explain.')
             );
@@ -3787,7 +4292,17 @@ define('tools.querytool', [
               );
             }
           },
-          error: function() {
+          error: function(e) {
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_explain_buffers', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_explain_buffers', []);
+              return self.init_transaction();
+            }
+
             alertify.alert(gettext('Explain options error'),
               gettext('Error occurred while setting buffers option in explain.')
             );
@@ -3824,7 +4339,17 @@ define('tools.querytool', [
               );
             }
           },
-          error: function() {
+          error: function(e) {
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('_explain_timing', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('_explain_timing', []);
+              return self.init_transaction();
+            }
+
             alertify.alert(gettext('Explain options error'),
               gettext('Error occurred while setting timing option in explain.')
             );
@@ -3924,7 +4449,17 @@ define('tools.querytool', [
               updateUI();
             }
           },
-          error: function() {
+          error: function(e) {
+            if (pgAdmin.Browser.UserManagement.is_pga_login_required(e)) {
+              self.save_state('get_preferences', []);
+              return pgAdmin.Browser.UserManagement.pga_login();
+            }
+
+            if(is_new_transaction_required(e)) {
+              self.save_state('get_preferences', []);
+              return self.init_transaction();
+            }
+
             updateUI();
             alertify.alert(
               gettext('Get Preferences error'),
@@ -3935,6 +4470,8 @@ define('tools.querytool', [
       },
       close: function() {
         var self = this;
+
+        pgBrowser.Events.off('pgadmin:user:logged-in', this.init_transaction);
         _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(panel) {
           if (panel.isVisible()) {
             window.onbeforeunload = null;

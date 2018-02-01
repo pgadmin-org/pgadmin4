@@ -104,7 +104,9 @@ class BaseCommand(object):
             **kwargs : N number of parameters
         """
 
-        # Save the server id and database id, namespace id, object id
+        # Save the server group id, server id and database id, namespace id,
+        # object id
+        self.sgid = kwargs['sgid'] if 'sgid' in kwargs else None
         self.sid = kwargs['sid'] if 'sid' in kwargs else None
         self.did = kwargs['did'] if 'did' in kwargs else None
 
@@ -922,7 +924,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         BaseCommand.__init__(self, **kwargs)
         FetchedRowTracker.__init__(self, **kwargs)
 
-        self.conn_id = None
+        self.conn_id = kwargs['conn_id'] if 'conn_id' in kwargs else None
         self.auto_rollback = False
         self.auto_commit = True
 

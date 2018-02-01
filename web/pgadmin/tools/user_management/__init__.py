@@ -13,7 +13,7 @@ import simplejson as json
 import re
 
 from flask import render_template, request, \
-    url_for, Response, abort
+    url_for, Response, abort, current_app
 from flask_babel import gettext as _
 from flask_security import login_required, roles_required, current_user
 from flask_security.utils import encrypt_password
@@ -73,7 +73,7 @@ class UserManagementModule(PgAdminModule):
             'user_management.roles', 'user_management.role',
             'user_management.update_user', 'user_management.delete_user',
             'user_management.create_user', 'user_management.users',
-            'user_management.user'
+            'user_management.user', current_app.login_manager.login_view
         ]
 
 

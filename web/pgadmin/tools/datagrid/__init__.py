@@ -17,7 +17,6 @@ import random
 from flask import Response, url_for, session, request, make_response
 from werkzeug.useragents import UserAgent
 from flask import current_app as app
-from flask_babel import gettext
 from flask_security import login_required
 from pgadmin.tools.sqleditor.command import *
 from pgadmin.utils import PgAdminModule
@@ -27,6 +26,8 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.preferences import Preferences
 from pgadmin.model import Server
+from pgadmin.utils.driver import get_driver
+from pgadmin.utils.exception import ConnectionLost
 
 
 class DataGridModule(PgAdminModule):
@@ -93,13 +94,13 @@ def show_filter():
 
 
 @blueprint.route(
-    '/initialize/datagrid/<int:cmd_type>/<obj_type>/<int:sid>/<int:did>/'
-    '<int:obj_id>',
+    '/initialize/datagrid/<int:cmd_type>/<obj_type>/<int:sgid>/<int:sid>/'
+    '<int:did>/<int:obj_id>',
     methods=["PUT", "POST"],
     endpoint="initialize_datagrid"
 )
 @login_required
-def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
+def initialize_datagrid(cmd_type, obj_type, sgid, sid, did, obj_id):
     """
     This method is responsible for creating an asynchronous connection.
     After creating the connection it will instantiate and initialize
@@ -110,7 +111,7 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
         cmd_type: Contains value for which menu item is clicked.
         obj_type: Contains type of selected object for which data grid to
         be render
-
+        sgid: Server group Id
         sid: Server Id
         did: Database Id
         obj_id: Id of currently selected object
@@ -125,15 +126,27 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
     conn_id = str(random.randint(1, 9999999))
     try:
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        # default_conn is same connection which is created when user connect to
+        # database from tree
+        default_conn = manager.connection(did=did)
         conn = manager.connection(did=did, conn_id=conn_id,
+                                  auto_reconnect=False,
                                   use_binary_placeholder=True,
                                   array_to_string=True)
+    except ConnectionLost as e:
+        raise
     except Exception as e:
+        app.logger.error(e)
         return internal_server_error(errormsg=str(e))
 
-    # Connect the Server
+    status, msg = default_conn.connect()
+    if not status:
+        app.logger.error(msg)
+        return internal_server_error(errormsg=str(msg))
+
     status, msg = conn.connect()
     if not status:
+        app.logger.error(msg)
         return internal_server_error(errormsg=str(msg))
 
     try:
@@ -143,11 +156,12 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
 
         # Get the object as per the object type
         command_obj = ObjectRegistry.get_object(
-            obj_type, conn_id=conn_id, sid=sid,
+            obj_type, conn_id=conn_id, sgid=sgid, sid=sid,
             did=did, obj_id=obj_id, cmd_type=cmd_type,
             sql_filter=filter_sql
         )
     except Exception as e:
+        app.logger.error(e)
         return internal_server_error(errormsg=str(e))
 
     # Create a unique id for the transaction
@@ -236,17 +250,6 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         new_browser_tab = 'false'
 
-    if is_query_tool == 'true':
-        prompt_save_changes = pref.preference(
-            'prompt_save_query_changes'
-        ).get()
-    else:
-        prompt_save_changes = pref.preference(
-            'prompt_save_data_changes'
-        ).get()
-
-    display_connection_status = pref.preference('connection_status').get()
-
     # Fetch the server details
     bgcolor = None
     fgcolor = None
@@ -263,6 +266,27 @@ def panel(trans_id, is_query_tool, editor_title):
             if s.bgcolor != '#ffffff':
                 bgcolor = s.bgcolor
             fgcolor = s.fgcolor or 'black'
+
+    url_params = dict()
+    if is_query_tool == 'true':
+        prompt_save_changes = pref.preference(
+            'prompt_save_query_changes'
+        ).get()
+        url_params['sgid'] = trans_obj.sgid
+        url_params['sid'] = trans_obj.sid
+        url_params['did'] = trans_obj.did
+    else:
+        prompt_save_changes = pref.preference(
+            'prompt_save_data_changes'
+        ).get()
+        url_params['cmd_type'] = trans_obj.cmd_type
+        url_params['obj_type'] = trans_obj.object_type
+        url_params['sgid'] = trans_obj.sgid
+        url_params['sid'] = trans_obj.sid
+        url_params['did'] = trans_obj.did
+        url_params['obj_id'] = trans_obj.obj_id
+
+    display_connection_status = pref.preference('connection_status').get()
 
     return render_template(
         "datagrid/index.html",
@@ -281,50 +305,62 @@ def panel(trans_id, is_query_tool, editor_title):
         # convert python boolean value to equivalent js boolean literal
         # before passing it to html template.
         prompt_save_changes='true' if prompt_save_changes else 'false',
-        display_connection_status=display_connection_status
+        display_connection_status=display_connection_status,
+        url_params=json.dumps(url_params)
     )
 
 
 @blueprint.route(
-    '/initialize/query_tool/<int:sid>/<int:did>',
+    '/initialize/query_tool/<int:sgid>/<int:sid>/<int:did>',
     methods=["POST"], endpoint='initialize_query_tool_with_did'
 )
 @blueprint.route(
-    '/initialize/query_tool/<int:sid>',
+    '/initialize/query_tool/<int:sgid>/<int:sid>',
     methods=["POST"], endpoint='initialize_query_tool'
 )
 @login_required
-def initialize_query_tool(sid, did=None):
+def initialize_query_tool(sgid, sid, did=None):
     """
     This method is responsible for instantiating and initializing
     the query tool object. It will also create a unique
     transaction id and store the information into session variable.
 
     Args:
+        sgid: Server group Id
         sid: Server Id
         did: Database Id
     """
+    connect = True
+    if ('recreate' in request.args and
+            request.args['recreate'] == '1'):
+        connect = False
+    # Create asynchronous connection using random connection id.
+    conn_id = str(random.randint(1, 9999999))
+
+    # Use Maintenance database OID
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
 
     if did is None:
-        # Use Maintenance database OID
-        from pgadmin.utils.driver import get_driver
-        driver = get_driver(PG_DEFAULT_DRIVER)
-        manager = driver.connection_manager(sid)
-        conn = manager.connection()
-        if conn.connected():
-            did = manager.did
-        else:
-            internal_server_error(
-                errormsg=gettext(
-                    'Server disconnected. Please connect and try again.'
-                )
-            )
-
+        did = manager.did
     try:
         command_obj = ObjectRegistry.get_object(
-            'query_tool', sid=sid, did=did
+            'query_tool', conn_id=conn_id, sgid=sgid, sid=sid, did=did
         )
     except Exception as e:
+        app.logger.error(e)
+        return internal_server_error(errormsg=str(e))
+
+    try:
+        conn = manager.connection(did=did, conn_id=conn_id,
+                                  auto_reconnect=False,
+                                  use_binary_placeholder=True,
+                                  array_to_string=True)
+        if connect:
+            conn.connect()
+    except ConnectionLost as e:
+        raise
+    except Exception as e:
+        app.logger.error(e)
         return internal_server_error(errormsg=str(e))
 
     # Create a unique id for the transaction
@@ -366,6 +402,8 @@ def close(trans_id):
     Args:
         trans_id: unique transaction id
     """
+    if 'gridData' not in session:
+        return make_json_response(data={'status': True})
 
     grid_data = session['gridData']
     # Return from the function if transaction id not found
@@ -384,6 +422,7 @@ def close(trans_id):
             conn = manager.connection(
                 did=cmd_obj.did, conn_id=cmd_obj.conn_id)
         except Exception as e:
+            app.logger.error(e)
             return internal_server_error(errormsg=str(e))
 
         # Release the connection
@@ -424,6 +463,7 @@ def validate_filter(sid, did, obj_id):
         # Call validate_filter method to validate the SQL.
         status, res = sql_filter_obj.validate_filter(filter_sql)
     except Exception as e:
+        app.logger.error(e)
         return internal_server_error(errormsg=str(e))
 
     return make_json_response(data={'status': status, 'result': res})

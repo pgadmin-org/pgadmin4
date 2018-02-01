@@ -202,6 +202,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         """
         ServerType.register_preferences()
 
+    def get_exposed_url_endpoints(self):
+        return ['NODE-server.connect_id']
+
 
 class ServerMenuItem(MenuItem):
     def __init__(self, **kwargs):

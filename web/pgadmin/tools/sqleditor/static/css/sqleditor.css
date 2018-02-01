@@ -581,3 +581,24 @@ input.editor-checkbox:focus {
 .sql-editor .copy-all:focus {
   outline: 5px auto -webkit-focus-ring-color;
 }
+
+.ajs-body .warn-icon {
+  color:#f1c40f;
+  font-size: 2em;
+  margin-right: 20px;
+  padding-top: 10px;
+}
+.ajs-body .warn-header {
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 3em;
+}
+
+.ajs-body .warn-body {
+  font-size: 13px;
+}
+
+.ajs-body .warn-footer {
+  font-size: 13px;
+  line-height: 3em;
+}

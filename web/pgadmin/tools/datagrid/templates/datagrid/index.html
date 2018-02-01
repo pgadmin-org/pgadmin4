@@ -24,7 +24,7 @@
         <span class="sql-editor-busy-icon wcLoadingIcon fa fa-spinner fa-pulse"></span>
         <span class="sql-editor-busy-text wcLoadingLabel"></span>
     </div>
-    <div class="sql-editor" data-trans-id="{{ uniqueId }}">
+    <div class="sql-editor">
         <div id="btn-toolbar" class="pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-load-file" type="button" class="btn btn-default btn-load-file"
@@ -361,44 +361,21 @@
           loadingDiv.addClass('hide');
           }
           });
-
-    // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
-    var script_sql = '';
-{% if script_type_url%}
-    // Call AJAX only if script type url is present
-    $.ajax({
-      url: '{{ script_type_url }}',
-      type:'GET',
-      async: false,
-      success: function(res) {
-        script_sql = res;
-      },
-      error: function(jqx) {
-        var msg = jqx.responseText;
-        /* Error from the server */
-        if (jqx.status == 410 || jqx.status == 500) {
-          try {
-            var data = $.parseJSON(jqx.responseText);
-            msg = data.errormsg;
-          } catch (e) {}
-        }
-        pgBrowser.report_error(
-          S('{{ _('Error fetching SQL for script: "%s"') }}')
-          .sprintf(msg)
-          .value(), msg
-        );
-      }
-    });
-{% endif %}
-
+    {% if script_type_url %}
+        var script_type_url = '{{ script_type_url }}';
+    {% else %}
+        var script_type_url = '';
+    {% endif %}
     // Start the query tool.
     sqlEditorController.start(
+        {{ uniqueId }},
         {{ is_query_tool }},
         "{{ editor_title }}",
-        script_sql,
+        script_type_url,
         {{ is_new_browser_tab }},
         "{{ server_type }}",
-        {{ prompt_save_changes }}
+        {{ prompt_save_changes }},
+        {{ url_params|safe}}
     );
 });
 {% endblock %}

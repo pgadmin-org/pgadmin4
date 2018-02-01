@@ -129,6 +129,95 @@ define([
       alertify.ChangePassword(title, url).resizeTo('75%', '70%');
     },
 
+    is_pga_login_required(xhr) {
+      return xhr.status == 401 && xhr.responseJSON &&
+                xhr.responseJSON.info &&
+                xhr.responseJSON.info == 'PGADMIN_LOGIN_REQUIRED';
+    },
+
+    // Callback to draw pgAdmin4 login dialog.
+    pga_login: function(url) {
+      var title = gettext('pgAdmin 4 login');
+      url = url || url_for('security.login');
+      if(!alertify.PgaLogin) {
+        alertify.dialog('PgaLogin' ,function factory() {
+          return {
+            main: function(title, url) {
+              this.set({
+                'title': title,
+                'url': url,
+              });
+            },
+            build: function() {
+              alertify.pgDialogBuild.apply(this);
+            },
+            settings:{
+              url: undefined,
+            },
+            setup:function() {
+              return {
+                buttons: [{
+                  text: gettext('Close'), key: 27,
+                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                  attrs:{name:'close', type:'button'},
+                }],
+                // Set options for dialog
+                options: {
+                  //disable both padding and overflow control.
+                  padding : !1,
+                  overflow: !1,
+                  modal: true,
+                  resizable: true,
+                  maximizable: true,
+                  pinnable: false,
+                  closableByDimmer: false,
+                  closable: false,
+                },
+              };
+            },
+            hooks: {
+              // Triggered when the dialog is closed
+              onclose: function() {
+                // Clear the view
+                return setTimeout((function() {
+                  return alertify.PgaLogin().destroy();
+                }));
+              },
+            },
+            prepare: function() {
+              // create the iframe element
+              var self = this,
+                iframe = document.createElement('iframe'),
+                url = this.setting('url');
+
+              iframe.onload = function() {
+                var doc = this.contentDocument || this.contentWindow.document;
+                if (doc.location.href.indexOf(url) == -1) {
+                  // login successful.
+
+                  this.contentWindow.stop();
+                  this.onload = null;
+
+                  // close the dialog.
+                  self.close();
+                  pgBrowser.Events.trigger('pgadmin:user:logged-in');
+                }
+              };
+
+              iframe.frameBorder = 'no';
+              iframe.width = '100%';
+              iframe.height = '100%';
+              iframe.src = url;
+              // add it to the dialog
+              self.elements.content.appendChild(iframe);
+            },
+          };
+        });
+      }
+
+      alertify.PgaLogin(title, url).resizeTo('75%','70%');
+    },
+
     // Callback to draw User Management Dialog.
     show_users: function() {
       if (!userInfo['is_admin']) return;
