@@ -143,6 +143,7 @@ var webpackShimConfig = {
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
     'snap.svg': path.join(__dirname, './node_modules/snapsvg/dist/snap.svg'),
     'spectrum': path.join(__dirname, './node_modules/spectrum-colorpicker/spectrum'),
+    'mousetrap': path.join(__dirname, './node_modules/mousetrap'),
 
     // AciTree
     'jquery.acitree': path.join(__dirname, './node_modules/acitree/js/jquery.aciTree.min'),
@@ -259,6 +260,7 @@ var webpackShimConfig = {
     'pgadmin.browser.frame': path.join(__dirname, './pgadmin/browser/static/js/frame'),
     'pgadmin.node.type': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type'),
     'pgadmin.file_manager': path.join(__dirname, './pgadmin/misc/file_manager/static/js/file_manager'),
+    'pgadmin.browser.keyboard': path.join(__dirname, './pgadmin/browser/static/js/keyboard'),
   },
   externals: [
     'pgadmin.user_management.current_user',

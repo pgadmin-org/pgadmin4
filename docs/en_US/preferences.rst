@@ -20,6 +20,13 @@ Use the fields on the *Display* panel to specify general display preferences:
 
 * When the *Show system objects* switch is set to *True*, the client will display system objects such as system schemas (for example, *pg_temp*) or system columns (for example,  *xmin* or *ctid*) in the tree control.
 
+Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the main window navigation:
+
+.. image:: images/preferences_browser_keyboard_shortcuts.png
+    :alt: Preferences dialog browser keyboard shortcuts section
+
+* The panel displays a list of keyboard shortcuts available for the main window; select the combination of the modifier keys along with the key to configure each shortcut.
+
 Use the fields on the *Nodes* panel to select the object types that will be displayed in the *Browser* tree control:
 
 .. image:: images/preferences_browser_nodes.png

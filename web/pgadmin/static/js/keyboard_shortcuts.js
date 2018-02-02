@@ -8,7 +8,8 @@ const EDIT_KEY = 71,  // Key: G -> Grid values
   F7_KEY = 118,
   F8_KEY = 119,
   PERIOD_KEY = 190,
-  FWD_SLASH_KEY = 191;
+  FWD_SLASH_KEY = 191,
+  ESC_KEY = 27;
 
 function isMac() {
   return window.navigator.platform.search('Mac') != -1;
@@ -158,6 +159,8 @@ function keyboardShortcutsQueryTool(sqlEditorController, queryToolActions, event
     panel_id = this.getInnerPanel(
       sqlEditorController.container, 'right'
     );
+  }  else if (keyCode == ESC_KEY) {
+    queryToolActions.focusOut(sqlEditorController);
   }
   return panel_id;
 }

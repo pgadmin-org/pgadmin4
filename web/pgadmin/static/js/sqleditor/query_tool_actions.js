@@ -96,6 +96,11 @@ let queryToolActions = {
       {lineComment: '--'}
     );
   },
+
+  focusOut: function() {
+    document.activeElement.blur();
+    window.top.document.activeElement.blur();
+  },
 };
 
 module.exports = queryToolActions;

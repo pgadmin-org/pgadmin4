@@ -213,7 +213,117 @@ class BrowserModule(PgAdminModule):
             gettext("Count rows if estimated less than"), 'integer', 2000,
             category_label=gettext('Properties')
         )
+        fields = [
+            {'name': 'alt', 'type': 'checkbox', 'label': gettext('Alt / Option')},
+            {'name': 'shift', 'type': 'checkbox', 'label': gettext('Shift')},
+            {'name': 'control', 'type': 'checkbox', 'label': gettext('Ctrl')},
+            {'name': 'key', 'type': 'keyCode', 'label': gettext('Key')}
+        ]
 
+        self.preference.register(
+            'keyboard_shortcuts',
+            'browser_tree',
+            gettext('Browser tree'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 66, 'char': 'b'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'tabbed_panel_backward',
+            gettext('Tabbed panel backward'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 91, 'char': '['}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'tabbed_panel_forward',
+            gettext('Tabbed panel forward'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 93, 'char': ']'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_file',
+            gettext('File main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 70, 'char': 'f'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_object',
+            gettext('Object main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 79, 'char': 'o'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_tools',
+            gettext('Tools main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 76, 'char': 'l'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_help',
+            gettext('Help main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 72, 'char': 'h'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
     def get_exposed_url_endpoints(self):
         """
         Returns:

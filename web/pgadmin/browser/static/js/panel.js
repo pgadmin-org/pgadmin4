@@ -42,7 +42,8 @@ define(
               if (!that.showTitle)
                 myPanel.title(false);
               else {
-                myPanel.title(title || that.title);
+                var title_elem = '<a href="#" tabindex="0" class="panel-link-heading">' + (title || that.title) + '</a>';
+                myPanel.title(title_elem);
                 if (that.icon != '')
                   myPanel.icon(that.icon);
               }

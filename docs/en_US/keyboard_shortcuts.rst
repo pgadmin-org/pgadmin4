@@ -3,6 +3,7 @@ Keyboard Shortcuts
 ******************
 
 Keyboard shortcuts are provided in pgAdmin to allow easy access to specific functions.
+The shortcuts can be configured through File > Preferences dialogue as per the need.
 
 
 **Desktop Runtime**
@@ -26,6 +27,27 @@ When running in the Desktop Runtime, the following keyboard shortcuts are availa
 +--------------------------+----------------+---------------------------------------+
 | Ctrl+0                   | Cmd+0          | Reset the zoom level                  |
 +--------------------------+----------------+---------------------------------------+
+
+**Main Browser Window**
+
+When using main browser window, the following keyboard shortcuts are available:
+
++---------------------------+--------------------------------------------------------+
+| Shortcut for all platform | Function                                               |
++===========================+========================================================+
+| Alt+Shift+F               | Open the File menu                                     |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+O               | Open the Object menu                                   |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+L               | Open the Tools menu                                    |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+H               | Open the Help menu                                     |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+B               | Focus the browser tree                                 |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+[               | Move tabbed panel backward/forward                     |
+| Alt+Shift+]               |                                                        |
++---------------------------+--------------------------------------------------------+
 
 
 **SQL Editors**
