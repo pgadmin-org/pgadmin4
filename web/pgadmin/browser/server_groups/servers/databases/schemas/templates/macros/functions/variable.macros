@@ -5,7 +5,7 @@
 
 {% for opt in options %}
 ALTER {{object_type}} {{ conn|qtIdent(schema, object_name) }}({{func_args}})
-    SET {{ conn|qtIdent(opt.name) }}={{ opt.value|qtLiteral }};
+    SET {{ conn|qtIdent(opt.name) }}={{ opt.value }};
 
 {% endfor %}
 {%- endmacro %}
