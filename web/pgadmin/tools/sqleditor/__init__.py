@@ -760,6 +760,14 @@ def poll(trans_id):
         status, result = conn.poll(
             formatted_exception_msg=True, no_result=True)
         if not status:
+            messages = conn.messages()
+            if messages and len(messages) > 0:
+                additional_messages = ''.join(messages)
+                result = '{0}\n{1}\n\n{2}'.format(
+                             additional_messages,
+                             gettext('******* Error *******'),
+                             result
+                )
             return internal_server_error(result)
         elif status == ASYNC_OK:
             status = 'Success'
@@ -800,10 +808,11 @@ def poll(trans_id):
                             conn.manager.version
                         )
 
-                        SQL = render_template("/".join([template_path,
-                                                        'nodes.sql']),
-                                              tid=command_obj.obj_id,
-                                              has_oids=True)
+                        SQL = render_template(
+                            "/".join([template_path,'nodes.sql']),
+                            tid=command_obj.obj_id,
+                            has_oids=True
+                        )
                         # rows with attribute not_null
                         colst, rset = conn.execute_2darray(SQL)
                         if not colst:
@@ -973,7 +982,8 @@ def fetch(trans_id, fetch_all=None):
 
     return make_json_response(
         data={
-            'status': status, 'result': result,
+            'status': status,
+            'result': result,
             'has_more_rows': has_more_rows,
             'rows_fetched_from': rows_fetched_from,
             'rows_fetched_to': rows_fetched_to

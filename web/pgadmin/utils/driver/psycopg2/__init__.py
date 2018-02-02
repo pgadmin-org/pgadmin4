@@ -1333,6 +1333,7 @@ Failed to reset the connection to the server due to following error:
             )
         )
 
+        is_error = False
         try:
             status = self._wait_timeout(self.conn)
         except psycopg2.Error as pe:
@@ -1343,11 +1344,17 @@ Failed to reset the connection to the server due to following error:
                     self.conn_id[5:]
                 )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
-            return False, errmsg
+            is_error = True
 
         if self.conn.notices and self.__notices is not None:
             while self.conn.notices:
                 self.__notices.append(self.conn.notices.pop(0)[:])
+
+        # We also need to fetch notices before we return from function in case
+        # of any Exception, To avoid code duplication we will return after
+        # fetching the notices in case of any Exception
+        if is_error:
+            return False, errmsg
 
         result = None
         self.row_count = 0
