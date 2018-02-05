@@ -28,11 +28,11 @@ Contents:
    change_user_password
 
 In a Desktop Deployment, the pgAdmin application is configured to use the
-desktop runtime environment to host and display the program on a supported
-platform. Typically, users will install a pre-built package to run pgAdmin
-in desktop mode, but a manual desktop deployment can be installed and though
-it is more difficult to setup, it may be useful for developers interested
-in understanding how pgAdmin works.
+desktop runtime environment to host the program on a supported platform.
+Typically, users will install a pre-built package to run pgAdmin in desktop
+mode, but a manual desktop deployment can be installed and though it is more
+difficult to setup, it may be useful for developers interested in understanding
+how pgAdmin works.
 
 Contents:
 

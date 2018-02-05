@@ -2,31 +2,9 @@
 Keyboard Shortcuts
 ******************
 
-Keyboard shortcuts are provided in pgAdmin to allow easy access to specific functions.
-The shortcuts can be configured through File > Preferences dialogue as per the need.
-
-
-**Desktop Runtime**
-
-When running in the Desktop Runtime, the following keyboard shortcuts are available:
-
-+--------------------------+----------------+---------------------------------------+
-| Shortcut (Windows/Linux) | Shortcut (Mac) | Function                              |
-+==========================+================+=======================================+
-| Alt+Shift+A              | Option+Shift+A | Display the runtime's About box       |
-+--------------------------+----------------+---------------------------------------+
-| Alt+Shift+P              | Option+Shift+U | Open the runtime preferences dialogue |
-+--------------------------+----------------+---------------------------------------+
-| Alt+Shift+U              | Option+Shift+U | Open an arbitrary URL                 |
-+--------------------------+----------------+---------------------------------------+
-| Ctrl+Q                   | Cmd+Q          | Quit                                  |
-+--------------------------+----------------+---------------------------------------+
-| Ctrl+Plus                | Cmd+Plus       | Zoom in                               |
-+--------------------------+----------------+---------------------------------------+
-| Ctrl+Minus               | Cmd+Minus      | Zoom out                              |
-+--------------------------+----------------+---------------------------------------+
-| Ctrl+0                   | Cmd+0          | Reset the zoom level                  |
-+--------------------------+----------------+---------------------------------------+
+Keyboard shortcuts are provided in pgAdmin to allow easy access to specific
+functions. Alternate shortcuts can be configured through File > Preferences if
+desired.
 
 **Main Browser Window**
 

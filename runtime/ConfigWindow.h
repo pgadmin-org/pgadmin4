@@ -26,9 +26,11 @@ public:
     explicit ConfigWindow(QWidget *parent = 0);
     ~ConfigWindow();
 
+    QString getBrowserCommand();
     QString getPythonPath();
     QString getApplicationPath();
 
+    void setBrowserCommand(QString command);
     void setPythonPath(QString path);
     void setApplicationPath(QString path);
 
@@ -38,7 +40,6 @@ private slots:
 
 private:
     Ui::ConfigWindow *ui;
-    QString m_pythonpath, m_applicationpath;
 };
 
 #endif // CONFIGWINDOW_H

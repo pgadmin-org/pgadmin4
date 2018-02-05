@@ -53,11 +53,12 @@ static void add_to_path(QString &python_path, QString path, bool prepend=false)
     }
 }
 
-Server::Server(quint16 port, QString key)
+Server::Server(quint16 port, QString key, QString logFileName)
 {
     // Appserver port etc
     m_port = port;
     m_key = key;
+    m_logFileName = logFileName;
     m_wcAppName = NULL;
     m_wcPythonHome = NULL;
 
@@ -206,6 +207,11 @@ Server::Server(quint16 port, QString key)
 #endif
 #endif
     }
+
+    // Redirect stderr
+    PyObject *sys = PyImport_ImportModule("sys");
+    PyObject *err = PyFile_FromString(m_logFileName.toUtf8().data(), (char *)"w");
+    PyObject_SetAttrString(sys, "stderr", err);
 }
 
 Server::~Server()
@@ -315,3 +321,4 @@ void Server::run()
 
     fclose(cp);
 }
+

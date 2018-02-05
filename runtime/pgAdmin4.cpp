@@ -28,153 +28,22 @@
 #include <QSplashScreen>
 #include <QUuid>
 #include <QNetworkProxyFactory>
-#include <QSslConfiguration>
 #endif
 
 // App headers
-#include "BrowserWindow.h"
 #include "ConfigWindow.h"
 #include "Server.h"
+#include "TrayIcon.h"
 
 #include <QTime>
 
-// Implement support for system proxies for Qt 4.x on Linux
-#if defined (Q_OS_LINUX) && QT_VERSION < 0x050000
-
-#include "qnetworkproxy.h"
-
-#include <QtCore/QByteArray>
-#include <QtCore/QUrl>
-
-#ifndef QT_NO_NETWORKPROXY
-
-QT_BEGIN_NAMESPACE
-
-static bool ignoreProxyFor(const QNetworkProxyQuery &query)
-{
-    const QByteArray noProxy = qgetenv("no_proxy").trimmed();
-    if (noProxy.isEmpty())
-        return false;
-
-    const QList<QByteArray> noProxyTokens = noProxy.split(',');
-
-    foreach (const QByteArray &rawToken, noProxyTokens) {
-        QByteArray token = rawToken.trimmed();
-        QString peerHostName = query.peerHostName();
-
-        // Since we use suffix matching, "*" is our 'default' behaviour
-        if (token.startsWith("*"))
-            token = token.mid(1);
-
-        // Harmonize trailing dot notation
-        if (token.endsWith('.') && !peerHostName.endsWith('.'))
-            token = token.left(token.length()-1);
-
-        // We prepend a dot to both values, so that when we do a suffix match,
-        // we don't match "donotmatch.com" with "match.com"
-        if (!token.startsWith('.'))
-            token.prepend('.');
-
-        if (!peerHostName.startsWith('.'))
-            peerHostName.prepend('.');
-
-        if (peerHostName.endsWith(QString::fromLatin1(token)))
-            return true;
-    }
-
-    return false;
-}
-
-static QList<QNetworkProxy> pgAdminSystemProxyForQuery(const QNetworkProxyQuery &query)
-{
-    QList<QNetworkProxy> proxyList;
-
-    if (ignoreProxyFor(query))
-        return proxyList << QNetworkProxy::NoProxy;
-
-    // No need to care about casing here, QUrl lowercases values already
-    const QString queryProtocol = query.protocolTag();
-    QByteArray proxy_env;
-
-    if (queryProtocol == QLatin1String("http"))
-        proxy_env = qgetenv("http_proxy");
-    else if (queryProtocol == QLatin1String("https"))
-        proxy_env = qgetenv("https_proxy");
-    else if (queryProtocol == QLatin1String("ftp"))
-        proxy_env = qgetenv("ftp_proxy");
-    else
-        proxy_env = qgetenv("all_proxy");
-
-    // Fallback to http_proxy is no protocol specific proxy was found
-    if (proxy_env.isEmpty())
-        proxy_env = qgetenv("http_proxy");
-
-    if (!proxy_env.isEmpty()) 
-    {
-        QUrl url = QUrl(QString::fromLocal8Bit(proxy_env));
-	if (url.scheme() == QLatin1String("socks5"))
-	{
-	    QNetworkProxy proxy(QNetworkProxy::Socks5Proxy, url.host(),
-				url.port() ? url.port() : 1080, url.userName(), url.password());
-	    proxyList << proxy;
-	} else if (url.scheme() == QLatin1String("socks5h"))
-	{
-	    QNetworkProxy proxy(QNetworkProxy::Socks5Proxy, url.host(),
-				url.port() ? url.port() : 1080, url.userName(), url.password());
-	    proxy.setCapabilities(QNetworkProxy::HostNameLookupCapability);
-	    proxyList << proxy;
-	} else if ((url.scheme() == QLatin1String("http") || url.scheme() == QLatin1String("https") || url.scheme().isEmpty())
-		   && query.queryType() != QNetworkProxyQuery::UdpSocket
-		   && query.queryType() != QNetworkProxyQuery::TcpServer)
-	{
-	    QNetworkProxy proxy(QNetworkProxy::HttpProxy, url.host(),
-				url.port() ? url.port() : 8080, url.userName(), url.password());
-	    proxyList << proxy;
-	}
-    }
-    if (proxyList.isEmpty())
-        proxyList << QNetworkProxy::NoProxy;
-
-    return proxyList;
-}
-
-class pgAdminSystemConfigurationProxyFactory : public QNetworkProxyFactory
-{
-public:
-    pgAdminSystemConfigurationProxyFactory() : QNetworkProxyFactory() {}
-
-    virtual QList<QNetworkProxy> queryProxy(const QNetworkProxyQuery& query)
-    {
-        QList<QNetworkProxy> proxies = pgAdminSystemProxyForQuery(query);
-
-        // Make sure NoProxy is in the list, so that QTcpServer can work:
-        // it searches for the first proxy that can has the ListeningCapability capability
-        // if none have (as is the case with HTTP proxies), it fails to bind.
-        // NoProxy allows it to fallback to the 'no proxy' case and bind.
-        proxies.append(QNetworkProxy::NoProxy);
-
-        return proxies;
-    }
-};
-
-QT_END_NAMESPACE
-
-#endif // QT_NO_NETWORKINTERFACE
-
-#endif
-
-
-void delay( int milliseconds )
-{
-    QTime endTime = QTime::currentTime().addMSecs( milliseconds );
-    while( QTime::currentTime() < endTime )
-    {
-        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
-    }
-}
+QString logFileName;
+QString addrFileName;
 
 int main(int argc, char * argv[])
 {
+    QSettings settings;
+
     /*
      * Before starting main application, need to set 'QT_X11_NO_MITSHM=1'
      * to make the runtime work with IBM PPC machine.
@@ -186,6 +55,7 @@ int main(int argc, char * argv[])
 
     // Create the QT application
     QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
 
     // Setup the settings management
     QCoreApplication::setOrganizationName("pgadmin");
@@ -197,36 +67,84 @@ int main(int argc, char * argv[])
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
-#ifdef _WIN32
-    // Set registry "HKEY_CLASSES_ROOT\.css\Content Type" to value "text/css" to avoid rendering issue in windows OS.
-    QString infoMsgStr("");
-    QSettings css_keys("HKEY_CLASSES_ROOT", QSettings::NativeFormat);
+    // Create a hash of the executable path so we can run copies side-by-side
+    QString homeDir = QDir::homePath();
+    unsigned long exeHash = sdbm((unsigned char *)argv[0]);
 
-    // If key already exists then check for existing value and it differs then only change it.
-    if (css_keys.childGroups().contains(".css", Qt::CaseInsensitive))
-    {
-        QSettings set("HKEY_CLASSES_ROOT\\.css", QSettings::NativeFormat);
-        if (set.value("Content Type").toString() != "text/css")
-        {
-            set.setValue("Content Type", "text/css");
-            // If error while setting registry then it should be issue with permissions.
-            if (set.status() == QSettings::NoError)
-                infoMsgStr = "pgAdmin 4 application has reset the registry key 'HKEY_CLASSES_ROOT\\css\\Content Type' to 'text/css' to fix a system  misconfiguration that can lead to rendering problems.";
-            else
-                infoMsgStr = "Failed to reset the registry key 'HKEY_CLASSES_ROOT\\css\\Content Type' to 'text/css'. Try to run with Administrator privileges.";
-        }
-    }
+    // Create the address file, that will be used to store the appserver URL for this instance
+    addrFileName = homeDir + QString("/.%1.%2.addr").arg(PGA_APP_NAME).arg(exeHash);
+    addrFileName.remove(" ");
+    QFile addrFile(addrFileName);
+
+    // Create a system-wide semaphore keyed by app name, exe hash and the username
+    // to ensure instances are unique to the user and path
+    QString userName = qgetenv("USER"); // *nix
+    if (userName.isEmpty())
+        userName = qgetenv("USERNAME"); // Windows
+
+    QString semaName = QString("%1-%2-%3-sema").arg(PGA_APP_NAME).arg(userName).arg(exeHash);
+    QString shmemName = QString("%1-%2-%3-shmem").arg(PGA_APP_NAME).arg(userName).arg(exeHash);
+
+    QSystemSemaphore sema(semaName, 1);
+    sema.acquire();
+
+#ifndef Q_OS_WIN32
+    // We may need to clean up stale shmem segments on *nix. Attaching and detaching
+    // should remove the segment if it is orphaned.
+    QSharedMemory stale_shmem(shmemName);
+    if (stale_shmem.attach())
+        stale_shmem.detach();
 #endif
 
-    /* In windows and linux, it is required to set application level proxy
-     * becuase socket bind logic to find free port gives socket creation error
-     * when system proxy is configured. We are also setting
-     * "setUseSystemConfiguration"=true to use the system proxy which will
-     * override this application level proxy. As this bug is fixed in Qt 5.9 so
-     * need to set application proxy for Qt version < 5.9.
-     */
-#ifndef PGADMIN4_USE_WEBENGINE
-  #if defined (Q_OS_WIN) && QT_VERSION <= 0x050800
+    QSharedMemory shmem(shmemName);
+    bool is_running;
+    if (shmem.attach())
+    {
+        is_running = true;
+    }
+    else
+    {
+        shmem.create(1);
+        is_running = false;
+    }
+    sema.release();
+
+    if (is_running){
+        addrFile.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream in(&addrFile);
+        QString addr = in.readLine();
+
+        QString cmd = settings.value("BrowserCommand").toString();
+
+        if (!cmd.isEmpty())
+        {
+            cmd.replace("%URL%", addr);
+            QProcess::startDetached(cmd);
+        }
+        else
+        {
+            if (!QDesktopServices::openUrl(addr))
+            {
+                QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
+                QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+                exit(1);
+            }
+        }
+
+        return 0;
+    }
+
+    atexit(cleanup);
+
+    // In windows and linux, it is required to set application level proxy
+    // because socket bind logic to find free port gives socket creation error
+    // when system proxy is configured. We are also setting
+    // "setUseSystemConfiguration"=true to use the system proxy which will
+    // override this application level proxy. As this bug is fixed in Qt 5.9 so
+    // need to set application proxy for Qt version < 5.9.
+    //
+#if defined (Q_OS_WIN) && QT_VERSION <= 0x050800
     // Give dummy URL required to find proxy server configured in windows.
     QNetworkProxyQuery proxyQuery(QUrl("https://www.pgadmin.org"));
     QNetworkProxy l_proxy;
@@ -241,18 +159,15 @@ int main(int argc, char * argv[])
             QNetworkProxy::setApplicationProxy(QNetworkProxy());
         }
     }
-  #endif
 #endif
 
-#ifndef PGADMIN4_USE_WEBENGINE
-  #if defined (Q_OS_LINUX) && QT_VERSION <= 0x050800
+#if defined (Q_OS_LINUX) && QT_VERSION <= 0x050800
     QByteArray proxy_env;
     proxy_env = qgetenv("http_proxy");
     // If http_proxy environment is defined in linux then proxy server is configured.
     if (!proxy_env.isEmpty()) {
         QNetworkProxy::setApplicationProxy(QNetworkProxy());
     }
-  #endif
 #endif
 
     // Display the spash screen
@@ -288,19 +203,20 @@ int main(int argc, char * argv[])
     QString key = QUuid::createUuid().toString();
     key = key.mid(1, key.length() - 2);
 
-#if defined (Q_OS_LINUX) && QT_VERSION < 0x050000
-    QNetworkProxyFactory::setApplicationProxyFactory(new pgAdminSystemConfigurationProxyFactory);
-    QSslConfiguration sslCfg = QSslConfiguration::defaultConfiguration();
-    QList<QSslCertificate> ca_list = sslCfg.caCertificates();
-    QList<QSslCertificate> ca_new = QSslCertificate::fromData("CaCertificates");
-    ca_list += ca_new;
+    // Generate the filename for the log
+    logFileName = homeDir + QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash);
+    logFileName.remove(" ");
 
-    sslCfg.setCaCertificates(ca_list);
-    sslCfg.setProtocol(QSsl::AnyProtocol);
-    QSslConfiguration::setDefaultConfiguration(sslCfg);
-#else
-    QNetworkProxyFactory::setUseSystemConfiguration(true);
-#endif
+    // Start the tray service
+    TrayIcon *trayicon = new TrayIcon(logFileName);
+
+    if (!trayicon->Init())
+    {
+        QString error = QString(QWidget::tr("An error occurred initialising the tray icon"));
+        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+        exit(1);
+    }
 
     // Fire up the webserver
     Server *server;
@@ -309,7 +225,7 @@ int main(int argc, char * argv[])
 
     while (done != true)
     {
-        server = new Server(port, key);
+        server = new Server(port, key, logFileName);
 
         if (!server->Init())
         {
@@ -324,6 +240,13 @@ int main(int argc, char * argv[])
         }
 
         server->start();
+
+        // This is a hack to give the server a chance to start and potentially fail. As
+        // the Python interpreter is a synchronous call, we can't check for proper startup
+        // easily in a more robust way - we have to rely on a clean startup not returning.
+        // It should always fail pretty quickly, and take longer to start if it succeeds, so
+        // we don't really get a visible delay here.
+        delay(1000);
 
         // Any errors?
         if (server->isFinished() || server->getError().length() > 0)
@@ -341,16 +264,19 @@ int main(int argc, char * argv[])
 
             ConfigWindow *dlg = new ConfigWindow();
             dlg->setWindowTitle(QWidget::tr("Configuration"));
+            dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
             dlg->setPythonPath(settings.value("PythonPath").toString());
             dlg->setApplicationPath(settings.value("ApplicationPath").toString());
             dlg->setModal(true);
             ok = dlg->exec();
 
+            QString browsercommand = dlg->getBrowserCommand();
             QString pythonpath = dlg->getPythonPath();
             QString applicationpath = dlg->getApplicationPath();
 
             if (ok)
             {
+                settings.setValue("BrowserCommand", browsercommand);
                 settings.setValue("PythonPath", pythonpath);
                 settings.setValue("ApplicationPath", applicationpath);
                 settings.sync();
@@ -371,7 +297,6 @@ int main(int argc, char * argv[])
     QString appServerUrl = QString("http://127.0.0.1:%1/?key=%2").arg(port).arg(key);
 
     // Read the server connection timeout from the registry or set the default timeout.
-    QSettings settings;
     int timeout = settings.value("ConnectionTimeout", 30).toInt();
 
     // Now the server should be up, we'll attempt to connect and get a response.
@@ -393,7 +318,7 @@ int main(int argc, char * argv[])
     }
 
     // Attempt to connect one more time in case of a long network timeout while looping
-    if(!alive && !PingServer(QUrl(appServerUrl)))
+    if (!alive && !PingServer(QUrl(appServerUrl)))
     {
         splash->finish(NULL);
         QString error(QWidget::tr("The application server could not be contacted."));
@@ -402,26 +327,35 @@ int main(int argc, char * argv[])
         exit(1);
     }
 
-    // Create & show the main window
-    BrowserWindow browserWindow(appServerUrl);
-    browserWindow.setWindowTitle(PGA_APP_NAME);
-    browserWindow.setWindowIcon(QIcon(":/pgAdmin4.ico"));
-#ifdef _WIN32
-    browserWindow.setRegistryMessage(infoMsgStr);
-#endif
-    browserWindow.show();
+    // Stash the URL for any duplicate processes to open
+    if (addrFile.open(QIODevice::WriteOnly))
+    {
+        QTextStream out(&addrFile);
+        out << appServerUrl << endl;
+    }
 
     // Go!
-    splash->finish(NULL);
+    trayicon->setAppServerUrl(appServerUrl);
 
-    // Set global application stylesheet.
-    QFile file(":/qss/pgadmin4.qss");
-    if(file.open(QFile::ReadOnly))
+    QString cmd = settings.value("BrowserCommand").toString();
+
+    if (!cmd.isEmpty())
     {
-       QString StyleSheet = QLatin1String(file.readAll());
-       qApp->setStyleSheet(StyleSheet);
-       file.close();
+        cmd.replace("%URL%", appServerUrl);
+        QProcess::startDetached(cmd);
     }
+    else
+    {
+        if (!QDesktopServices::openUrl(appServerUrl))
+        {
+            QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
+            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+            exit(1);
+        }
+    }
+
+    splash->finish(NULL);
 
     return app.exec();
 }
@@ -468,3 +402,36 @@ bool PingServer(QUrl url)
     return true;
 }
 
+
+void delay(int milliseconds)
+{
+    QTime endTime = QTime::currentTime().addMSecs(milliseconds);
+    while(QTime::currentTime() < endTime)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
+}
+
+
+void cleanup()
+{
+    // Remove the address file
+    QFile addrFile(addrFileName);
+    addrFile.remove();
+
+    // Remove the log file
+    QFile logFile(logFileName);
+    logFile.remove();
+}
+
+
+unsigned long sdbm(unsigned char *str)
+{
+    unsigned long hash = 0;
+    int c;
+
+    while ((c = *str++))
+        hash = c + (hash << 6) + (hash << 16) - hash;
+
+    return hash;
+}

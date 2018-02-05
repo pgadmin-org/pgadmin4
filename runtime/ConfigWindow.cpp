@@ -34,6 +34,11 @@ void ConfigWindow::on_buttonBox_rejected()
     this->close();
 }
 
+QString ConfigWindow::getBrowserCommand()
+{
+    return ui->browserCommandLineEdit->text();
+}
+
 QString ConfigWindow::getPythonPath()
 {
     return ui->pythonPathLineEdit->text();
@@ -44,6 +49,11 @@ QString ConfigWindow::getApplicationPath()
     return ui->applicationPathLineEdit->text();
 }
 
+
+void ConfigWindow::setBrowserCommand(QString command)
+{
+    ui->browserCommandLineEdit->setText(command);
+}
 
 void ConfigWindow::setPythonPath(QString path)
 {

@@ -5,8 +5,16 @@ Desktop Deployment
 ******************
 
 pgAdmin may be deployed as a desktop application by configuring the application
-to run in desktop mode and then utilising the desktop runtime to host and
-display the program on a supported Windows, Mac OS X or Linux installation.
+to run in desktop mode and then utilising the desktop runtime to host the
+program on a supported Windows, Mac OS X or Linux installation.
+
+The desktop runtime is a system-tray application that when launched, runs the
+pgAdmin server and launches a web browser to render the user interface. If
+additional instances of pgAdmin are launched, a new browser tab will be opened
+and be served by the existing instance of the server in order to minimise system
+resource utilisation. Clicking the icon in the system tray will present a menu
+offering options to open a new pgAdmin window, configure the runtime, view the
+server log and shutdown the server.
 
 .. note:: Pre-compiled and configured installation packages are available for
      a number of platforms. These packages should be used by end-users whereever

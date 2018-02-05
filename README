@@ -18,18 +18,16 @@ utilised.
 Although developed using web technologies, pgAdmin 4 can be deployed either on
 a web server using a browser, or standalone on a workstation. The runtime/
 subdirectory contains a QT based runtime application intended to allow this -
-it is essentially a browser and Python interpreter in one package which is
-capable of hosting the Python application and presenting it to the user as a
-desktop application.
+it is essentially a Python application server that runs in the system tray
+and allows the user to connect to the application using their web browser.
 
 Building the Runtime
 --------------------
 
 To build the runtime, the following packages must be installed:
 
-- QT 4.6 or above, up to 5.5 (older versions may work, but haven't been tested,
-  newer versions are not yet supported as Qt Webkit has been deprecated).
-- Python 2.6, 2.7 or 3.3+
+- QT 4.6 or above
+- Python 2.6, 2.7 or 3.3+ (2.7 only on Windows)
 
 Assuming both qmake and python-config are in the path:
 
@@ -230,8 +228,8 @@ a number of known locations for the pgAdmin4.py file needed to run pgAdmin
 an alternate path if needed.
 
 If either a working environment or pgAdmin4.py cannot be found at startup, the
-runtime will prompt for the locations. Alternatively, you can use Alt+Shift+P
-to open the path configuration dialogue.
+runtime will prompt for the locations. Alternatively, you can click the try
+icon and select the Configuration option to open the configuration dialogue.
 
 On a Linux/Mac system, the Python Path will typically consist of a single path
 to the virtual environment's site-packages directory, e.g.
@@ -308,11 +306,11 @@ Qt 5.5.1, Python 2.7 and Visual Studio 2013. The examples below are for a
 similar 32 bit system:
 
 INNOTOOL=C:\Program Files\Inno Setup 5
-PGDIR=C:\Program Files\PostgreSQL\9.6
+PGDIR=C:\Program Files\PostgreSQL\10
 PYTHON_DLL=C:\Windows\System32\Python27.dll
 PYTHON_HOME=C:\Python27
 PYTHON_VERSION=27
-QTDIR=C:\Qt\5.5\msvc2013
+QTDIR=C:\Qt\5.9\msvc2013
 VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC
 
 To build the installer:
