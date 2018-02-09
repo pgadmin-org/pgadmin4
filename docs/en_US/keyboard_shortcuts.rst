@@ -26,7 +26,20 @@ When using main browser window, the following keyboard shortcuts are available:
 | Alt+Shift+[               | Move tabbed panel backward/forward                     |
 | Alt+Shift+]               |                                                        |
 +---------------------------+--------------------------------------------------------+
-
+| Alt+Shift+Q               | Open the Query Tool in the current database            |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+V               | View Data in the selected table/view                   |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+C               | Open the context menu                                  |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+N               | Create an object                                       |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+E               | Edit object properties                                 |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+D               | Delete the object                                      |
++---------------------------+--------------------------------------------------------+
+| Alt+Shift+G               | Direct debugging                                       |
++---------------------------+--------------------------------------------------------+
 
 **SQL Editors**
 

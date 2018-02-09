@@ -428,6 +428,12 @@ define('pgadmin.browser', [
             items: context_menu,
           };
         },
+        events: {
+          hide: function() {
+            // Return focus to the tree
+            obj.keyboardNavigation.bindLeftTree();
+          },
+        },
       });
 
       // Treeview event handler

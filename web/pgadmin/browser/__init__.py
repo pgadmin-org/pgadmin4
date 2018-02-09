@@ -324,6 +324,112 @@ class BrowserModule(PgAdminModule):
             category_label=gettext('Keyboard shortcuts'),
             fields=fields
         )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'sub_menu_query_tool',
+            gettext('Open query tool'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 81, 'char': 'q'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'sub_menu_view_data',
+            gettext('View data'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 86, 'char': 'v'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'sub_menu_create',
+            gettext('Create object'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 78, 'char': 'n'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'sub_menu_properties',
+            gettext('Edit object properties'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 69, 'char': 'e'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'sub_menu_delete',
+            gettext('Delete object'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 68, 'char': 'd'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'context_menu',
+            gettext('Open context menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 67, 'char': 'c'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'direct_debugging',
+            gettext('Direct debugging'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 71, 'char': 'g'}
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=fields
+        )
+
     def get_exposed_url_endpoints(self):
         """
         Returns:
