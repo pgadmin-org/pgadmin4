@@ -6,7 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
 from flask.templating import DispatchingJinjaLoader
 from jinja2 import TemplateNotFound
 
@@ -54,6 +53,7 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
 
             template_path = path_start + '/' + \
                 server_version['name'] + '/' + file_name
+
             try:
                 return super(VersionedTemplateLoader, self).get_source(
                     environment, template_path

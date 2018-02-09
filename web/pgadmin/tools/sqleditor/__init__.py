@@ -8,28 +8,32 @@
 ##########################################################################
 
 """A blueprint module implementing the sqleditor frame."""
-import simplejson as json
+import codecs
 import os
 import pickle
 import random
-import codecs
 
-from flask import Response, url_for, render_template, session, request,\
+import simplejson as json
+from flask import Response, url_for, render_template, session, request, \
     current_app
 from flask_babel import gettext
 from flask_security import login_required
+
+from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
+from pgadmin.misc.file_manager import Filemanager
 from pgadmin.tools.sqleditor.command import QueryToolCommand
+from pgadmin.tools.sqleditor.utils.constant_definition import ASYNC_OK, ASYNC_EXECUTION_ABORTED, \
+    CONNECTION_STATUS_MESSAGE_MAPPING, TX_STATUS_INERROR
+from pgadmin.tools.sqleditor.utils.start_running_query import StartRunningQuery
+from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import update_session_grid_transaction
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error, unauthorized
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
-from pgadmin.misc.file_manager import Filemanager
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.exception import ConnectionLost
-
-from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
+from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 
 MODULE_NAME = 'sqleditor'
 
@@ -38,28 +42,6 @@ try:
     from urllib import unquote
 except ImportError:
     from urllib.parse import unquote
-
-# Async Constants
-ASYNC_OK = 1
-ASYNC_READ_TIMEOUT = 2
-ASYNC_WRITE_TIMEOUT = 3
-ASYNC_NOT_CONNECTED = 4
-ASYNC_EXECUTION_ABORTED = 5
-
-# Transaction status constants
-TX_STATUS_IDLE = 0
-TX_STATUS__ACTIVE = 1
-TX_STATUS_INTRANS = 2
-TX_STATUS_INERROR = 3
-
-# Connection status codes mapping
-CONNECTION_STATUS_MESSAGE_MAPPING = dict([
-    (0, 'The session is idle and there is no current transaction.'),
-    (1, 'A command is currently in progress.'),
-    (2, 'The session is idle in a valid transaction block.'),
-    (3, 'The session is idle in a failed transaction block.'),
-    (4, 'The connection with the server is bad.')
-])
 
 
 class SqlEditorModule(PgAdminModule):
@@ -376,13 +358,6 @@ def index():
     )
 
 
-def update_session_grid_transaction(trans_id, data):
-    if 'gridData' in session:
-        grid_data = session['gridData']
-        grid_data[str(trans_id)] = data
-        session['gridData'] = grid_data
-
-
 def check_transaction_status(trans_id):
     """
     This function is used to check the transaction id
@@ -458,7 +433,7 @@ def start_view_data(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -486,7 +461,7 @@ def start_view_data(trans_id):
             )
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
         # set fetched row count to 0 as we are executing query again.
         trans_obj.update_fetched_row_cnt(0)
         session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
@@ -554,107 +529,19 @@ def start_query_tool(trans_id):
         trans_id: unique transaction id
     """
 
-    if request.data:
-        sql = json.loads(request.data, encoding='utf-8')
+    sql = extract_sql_from_network_parameters(request.data, request.args, request.form)
+
+    return StartRunningQuery(blueprint, current_app).execute(sql, trans_id, session)
+
+
+def extract_sql_from_network_parameters(request_data, request_arguments, request_form_data):
+    if request_data:
+        sql_parameters = json.loads(request_data, encoding='utf-8')
+        if type(sql_parameters) is str:
+            return dict(sql=sql_parameters, explain_plan=None)
+        return sql_parameters
     else:
-        sql = request.args or request.form
-
-    connect = True if 'connect' in request.args and \
-                      request.args['connect'] == '1' else False
-
-    if 'gridData' not in session:
-        return make_json_response(
-            success=0,
-            errormsg=gettext('Transaction ID not found in the session.'),
-            info='DATAGRID_TRANSACTION_REQUIRED', status=404)
-
-    grid_data = session['gridData']
-
-    # Return from the function if transaction id not found
-    if str(trans_id) not in grid_data:
-        return make_json_response(
-            success=0,
-            errormsg=gettext('Transaction ID not found in the session.'),
-            info='DATAGRID_TRANSACTION_REQUIRED',
-            status=404)
-
-    # Fetch the object for the specified transaction id.
-    # Use pickle.loads function to get the command object
-    session_obj = grid_data[str(trans_id)]
-    trans_obj = pickle.loads(session_obj['command_obj'])
-    # set fetched row count to 0 as we are executing query again.
-    trans_obj.update_fetched_row_cnt(0)
-
-    can_edit = False
-    can_filter = False
-
-    if trans_obj is not None and session_obj is not None:
-        conn_id = trans_obj.conn_id
-        try:
-            manager = get_driver(
-                PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
-            conn = manager.connection(did=trans_obj.did, conn_id=conn_id,
-                                      auto_reconnect=False,
-                                      use_binary_placeholder=True,
-                                      array_to_string=True)
-        except ConnectionLost as e:
-            raise
-        except Exception as e:
-            current_app.logger.error(e)
-            return internal_server_error(errormsg=str(e))
-
-        # Connect to the Server if not connected.
-        if connect and not conn.connected():
-            status, msg = conn.connect()
-            if not status:
-                current_app.logger.error(msg)
-                return internal_server_error(errormsg=str(msg))
-
-        # on successful connection set the connection id to the
-        # transaction object
-        trans_obj.set_connection_id(conn_id)
-
-        # As we changed the transaction object we need to
-        # restore it and update the session variable.
-        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
-        update_session_grid_transaction(trans_id, session_obj)
-
-        # If auto commit is False and transaction status is Idle
-        # then call is_begin_not_required() function to check BEGIN
-        # is required or not.
-
-        if not trans_obj.auto_commit \
-                and conn.transaction_status() == TX_STATUS_IDLE \
-                and is_begin_required(sql):
-            conn.execute_void("BEGIN;")
-
-        # Execute sql asynchronously with params is None
-        # and formatted_error is True.
-        try:
-            status, result = conn.execute_async(sql)
-        except ConnectionLost as e:
-            raise
-        # If the transaction aborted for some reason and
-        # Auto RollBack is True then issue a rollback to cleanup.
-        trans_status = conn.transaction_status()
-        if trans_status == TX_STATUS_INERROR and trans_obj.auto_rollback:
-            conn.execute_void("ROLLBACK;")
-
-        can_edit = trans_obj.can_edit()
-        can_filter = trans_obj.can_filter()
-
-    else:
-        status = False
-        result = gettext(
-            'Either transaction object or session object not found.')
-
-    return make_json_response(
-        data={
-            'status': status, 'result': result,
-            'can_edit': can_edit, 'can_filter': can_filter,
-            'info_notifier_timeout': blueprint.info_notifier_timeout.get()
-        }
-    )
+        return request_arguments or request_form_data
 
 
 @blueprint.route(
@@ -675,13 +562,13 @@ def preferences(trans_id):
             check_transaction_status(trans_id)
 
         if error_msg == gettext(
-                'Transaction ID not found in the session.'):
+            'Transaction ID not found in the session.'):
             return make_json_response(success=0, errormsg=error_msg,
                                       info='DATAGRID_TRANSACTION_REQUIRED',
                                       status=404)
 
         if status and conn is not None \
-                and trans_obj is not None and session_obj is not None:
+            and trans_obj is not None and session_obj is not None:
             # Call the set_auto_commit and set_auto_rollback method of
             # transaction object
             trans_obj.set_auto_commit(blueprint.auto_commit.get())
@@ -751,7 +638,7 @@ def poll(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -779,7 +666,7 @@ def poll(trans_id):
             if isinstance(trans_obj, QueryToolCommand):
                 trans_status = conn.transaction_status()
                 if (trans_status == TX_STATUS_INERROR and
-                        trans_obj.auto_rollback):
+                    trans_obj.auto_rollback):
                     conn.execute_void("ROLLBACK;")
 
             st, result = conn.async_fetchmany_2darray(ON_DEMAND_RECORD_COUNT)
@@ -854,15 +741,15 @@ def poll(trans_id):
                                         typname == 'character varying'
                                     ):
                                         typname = typname + '(' + \
-                                            str(col_info['internal_size']) + \
-                                            ')'
+                                                  str(col_info['internal_size']) + \
+                                                  ')'
                                     elif (
                                         typname == 'character[]' or
                                         typname == 'character varying[]'
                                     ):
                                         typname = typname[:-2] + '(' + \
-                                            str(col_info['internal_size']) + \
-                                            ')[]'
+                                                  str(col_info['internal_size']) + \
+                                                  ')[]'
 
                                 col_info['type_name'] = typname
 
@@ -913,7 +800,7 @@ def poll(trans_id):
     if status == 'Success' and result is None:
         result = conn.status_message()
         if (result != 'SELECT 1' or result != 'SELECT 0') \
-                and result is not None and additional_messages:
+            and result is not None and additional_messages:
             result = additional_messages + result
 
     return make_json_response(
@@ -954,7 +841,7 @@ def fetch(trans_id, fetch_all=None):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -1018,7 +905,7 @@ def fetch_pg_types(columns_info, trans_obj):
 
     if oids:
         status, res = default_conn.execute_dict(
-            u"SELECT oid, format_type(oid,null) as typname FROM pg_type "
+            u"SELECT oid, format_type(oid, NULL) AS typname FROM pg_type "
             u"WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
         )
 
@@ -1077,17 +964,17 @@ def save(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         # If there is no primary key found then return from the function.
         if (len(session_obj['primary_keys']) <= 0 or len(changed_data) <= 0) \
-                and 'has_oids' not in session_obj:
+            and 'has_oids' not in session_obj:
             return make_json_response(
                 data={
                     'status': False,
@@ -1146,12 +1033,12 @@ def get_filter(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         res = trans_obj.get_filter()
     else:
@@ -1183,13 +1070,13 @@ def apply_filter(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         status, res = trans_obj.set_filter(filter_sql)
 
@@ -1226,13 +1113,13 @@ def append_filter_inclusive(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         res = None
         filter_sql = ''
@@ -1282,12 +1169,12 @@ def append_filter_exclusive(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         res = None
         filter_sql = ''
@@ -1335,13 +1222,13 @@ def remove_filter(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         res = None
 
@@ -1380,13 +1267,13 @@ def set_limit(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         res = None
 
@@ -1501,13 +1388,13 @@ def get_object_name(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
         res = trans_obj.object_name
     else:
         status = False
@@ -1538,13 +1425,13 @@ def set_auto_commit(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         res = None
 
@@ -1587,13 +1474,13 @@ def set_auto_rollback(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         res = None
 
@@ -1643,13 +1530,13 @@ def auto_complete(trans_id):
         check_transaction_status(trans_id)
 
     if error_msg == gettext(
-            'Transaction ID not found in the session.'):
+        'Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         # Create object of SQLAutoComplete class and pass connection object
         auto_complete_obj = SQLAutoComplete(
@@ -1680,165 +1567,6 @@ def script():
     )
 
 
-def is_begin_required(query):
-    word_len = 0
-    query = query.strip()
-    query_len = len(query)
-
-    # Check word length (since "beginx" is not "begin").
-    while (word_len < query_len) and query[word_len].isalpha():
-        word_len += 1
-
-    # Transaction control commands.  These should include every keyword that
-    #  gives rise to a TransactionStmt in the backend grammar, except for the
-    #  savepoint-related commands.
-    #
-    #  (We assume that START must be START TRANSACTION, since there is
-    #  presently no other "START foo" command.)
-
-    keyword = query[0:word_len]
-
-    if word_len == 5 and keyword.lower() == "abort":
-        return False
-    if word_len == 5 and keyword.lower() == "begin":
-        return False
-    if word_len == 5 and keyword.lower() == "start":
-        return False
-    if word_len == 6:
-        # SELECT is protected from dirty reads hence don't require transaction
-        if keyword.lower() in ["select", "commit"]:
-            return False
-    if word_len == 3 and keyword.lower() == "end":
-        return False
-    if word_len == 8 and keyword.lower() == "rollback":
-        return False
-    if word_len == 7 and keyword.lower() == "prepare":
-        # PREPARE TRANSACTION is a TC command, PREPARE foo is not
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-        if word_len == 11 and keyword.lower() == "transaction":
-            return False
-        return True
-
-    # Commands not allowed within transactions. The statements checked for
-    # here should be exactly those that call PreventTransactionChain() in the
-    # backend.
-    if word_len == 6 and keyword.lower() == "vacuum":
-        return False
-
-    if word_len == 7 and keyword.lower() == "cluster":
-        # CLUSTER with any arguments is allowed in transactions
-        query = query[word_len:query_len]
-        query = query.strip()
-
-        if query[0].isalpha():
-            return True  # has additional words
-        return False  # it's CLUSTER without arguments
-
-    if word_len == 6 and keyword.lower() == "create":
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-        if word_len == 8 and keyword.lower() == "database":
-            return False
-        if word_len == 10 and keyword.lower() == "tablespace":
-            return False
-
-        # CREATE [UNIQUE] INDEX CONCURRENTLY isn't allowed in xacts
-        if word_len == 7 and keyword.lower() == "cluster":
-            query = query[word_len:query_len]
-            query = query.strip()
-            query_len = len(query)
-            word_len = 0
-
-            while (word_len < query_len) and query[word_len].isalpha():
-                word_len += 1
-
-            keyword = query[0:word_len]
-
-        if word_len == 5 and keyword.lower() == "index":
-            query = query[word_len:query_len]
-            query = query.strip()
-            query_len = len(query)
-            word_len = 0
-
-            while (word_len < query_len) and query[word_len].isalpha():
-                word_len += 1
-
-            keyword = query[0:word_len]
-            if word_len == 12 and keyword.lower() == "concurrently":
-                return False
-        return True
-
-    if word_len == 5 and keyword.lower() == "alter":
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-
-        # ALTER SYSTEM isn't allowed in xacts
-        if word_len == 6 and keyword.lower() == "system":
-            return False
-        return True
-
-    # Note: these tests will match DROP SYSTEM and REINDEX TABLESPACE, which
-    # aren't really valid commands so we don't care much. The other four
-    # possible matches are correct.
-    if word_len == 4 and keyword.lower() == "drop" \
-            or word_len == 7 and keyword.lower() == "reindex":
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-        if word_len == 8 and keyword.lower() == "database":
-            return False
-        if word_len == 6 and keyword.lower() == "system":
-            return False
-        if word_len == 10 and keyword.lower() == "tablespace":
-            return False
-        return True
-
-    # DISCARD ALL isn't allowed in xacts, but other variants are allowed.
-    if word_len == 7 and keyword.lower() == "discard":
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-        if word_len == 3 and keyword.lower() == "all":
-            return False
-        return True
-
-    return True
-
-
 @blueprint.route('/load_file/', methods=["PUT", "POST"], endpoint='load_file')
 @login_required
 def load_file():
@@ -1865,9 +1593,9 @@ def load_file():
         )
 
     status, err_msg, is_binary, \
-        is_startswith_bom, enc = Filemanager.check_file_for_bom_and_binary(
-            file_path
-        )
+    is_startswith_bom, enc = Filemanager.check_file_for_bom_and_binary(
+        file_path
+    )
 
     if not status:
         return internal_server_error(
@@ -1960,10 +1688,10 @@ def save_file():
 def start_query_download_tool(trans_id):
     sync_conn = None
     status, error_msg, conn, trans_obj, \
-        session_obj = check_transaction_status(trans_id)
+    session_obj = check_transaction_status(trans_id)
 
     if status and conn is not None \
-            and trans_obj is not None and session_obj is not None:
+        and trans_obj is not None and session_obj is not None:
 
         data = request.args if request.args else None
         try:
@@ -2063,7 +1791,7 @@ def query_tool_status(trans_id):
         TRANSACTION_STATUS_UNKNOWN  = 4
     """
     status, error_msg, conn, trans_obj, \
-        session_obj = check_transaction_status(trans_id)
+    session_obj = check_transaction_status(trans_id)
 
     if not status and error_msg and type(error_msg) == str:
         return internal_server_error(

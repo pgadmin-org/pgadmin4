@@ -7,10 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-define(function () {
-  return {
-    'static': '/base/pgadmin/static/<path:filename>',
-    'sqleditor.poll': '/sqleditor/query_tool/poll/<path:trans_id>',
-    'sqleditor.query_tool_start': '/sqleditor/query_tool/start/<path:trans_id>'
-  };
-});
+export function is_new_transaction_required(xhr) {
+  return xhr.status === 404 && xhr.responseJSON &&
+    xhr.responseJSON.info &&
+    xhr.responseJSON.info === 'DATAGRID_TRANSACTION_REQUIRED';
+}

@@ -43,7 +43,6 @@ describe('queryToolActions', () => {
 
         expect(sqlEditorController.execute_data_query).toHaveBeenCalled();
       });
-
     });
   });
 
@@ -51,60 +50,100 @@ describe('queryToolActions', () => {
     describe('when verbose and costs are not selected and buffers and timing are not selected', () => {
       beforeEach(() => {
         setUpSpies('', '');
-        spyOn(queryToolActions, '_verbose').and.returnValue('OFF');
-        spyOn(queryToolActions, '_costsEnabled').and.returnValue('OFF');
-        spyOn(queryToolActions, '_buffers').and.returnValue('OFF');
-        spyOn(queryToolActions, '_timing').and.returnValue('OFF');
+        spyOn(queryToolActions, '_verbose').and.returnValue(false);
+        spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
+        spyOn(queryToolActions, '_buffers').and.returnValue(false);
+        spyOn(queryToolActions, '_timing').and.returnValue(false);
       });
+
       it('calls the execute function', () => {
         queryToolActions.explainAnalyze(sqlEditorController);
-        let explainAnalyzeQuery = 'EXPLAIN (FORMAT JSON, ANALYZE ON, VERBOSE OFF, COSTS OFF, BUFFERS OFF, TIMING OFF) ';
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainAnalyzeQuery);
+
+        // let explainAnalyzeQuery = 'EXPLAIN (FORMAT JSON, ANALYZE ON, VERBOSE OFF, COSTS OFF, BUFFERS OFF, TIMING OFF) ';
+        const explainObject = {
+          format: 'json',
+          analyze: true,
+          verbose: false,
+          costs: false,
+          buffers: false,
+          timing: false,
+          summary: false,
+        };
+
+        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
     });
 
     describe('when verbose and costs and buffers and timing are all selected', () => {
       beforeEach(() => {
         setUpSpies('', '');
-        spyOn(queryToolActions, '_verbose').and.returnValue('ON');
-        spyOn(queryToolActions, '_costsEnabled').and.returnValue('ON');
-        spyOn(queryToolActions, '_buffers').and.returnValue('ON');
-        spyOn(queryToolActions, '_timing').and.returnValue('ON');
+        spyOn(queryToolActions, '_verbose').and.returnValue(true);
+        spyOn(queryToolActions, '_costsEnabled').and.returnValue(true);
+        spyOn(queryToolActions, '_buffers').and.returnValue(true);
+        spyOn(queryToolActions, '_timing').and.returnValue(true);
       });
       it('calls the execute function', () => {
         queryToolActions.explainAnalyze(sqlEditorController);
-        let explainAnalyzeQuery = 'EXPLAIN (FORMAT JSON, ANALYZE ON, VERBOSE ON, COSTS ON, BUFFERS ON, TIMING ON) ';
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainAnalyzeQuery);
+        const explainObject = {
+          format: 'json',
+          analyze: true,
+          verbose: true,
+          costs: true,
+          buffers: true,
+          timing: true,
+          summary: false,
+        };
+        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
     });
 
     describe('when verbose is selected and costs is not selected and buffer is selected and timing is not selected', () => {
       beforeEach(() => {
         setUpSpies('', '');
-        spyOn(queryToolActions, '_verbose').and.returnValue('ON');
-        spyOn(queryToolActions, '_costsEnabled').and.returnValue('OFF');
-        spyOn(queryToolActions, '_buffers').and.returnValue('ON');
-        spyOn(queryToolActions, '_timing').and.returnValue('OFF');
+        spyOn(queryToolActions, '_verbose').and.returnValue(true);
+        spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
+        spyOn(queryToolActions, '_buffers').and.returnValue(true);
+        spyOn(queryToolActions, '_timing').and.returnValue(false);
       });
       it('calls the execute function', () => {
         queryToolActions.explainAnalyze(sqlEditorController);
-        let explainAnalyzeQuery = 'EXPLAIN (FORMAT JSON, ANALYZE ON, VERBOSE ON, COSTS OFF, BUFFERS ON, TIMING OFF) ';
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainAnalyzeQuery);
+
+        const explainObject = {
+          format: 'json',
+          analyze: true,
+          verbose: true,
+          costs: false,
+          buffers: true,
+          timing: false,
+          summary: false,
+        };
+
+        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
     });
 
     describe('when verbose is  not selected and costs is selected and buffer is not selected and timing is  selected', () => {
       beforeEach(() => {
         setUpSpies('', '');
-        spyOn(queryToolActions, '_verbose').and.returnValue('OFF');
-        spyOn(queryToolActions, '_costsEnabled').and.returnValue('ON');
-        spyOn(queryToolActions, '_buffers').and.returnValue('OFF');
-        spyOn(queryToolActions, '_timing').and.returnValue('ON');
+        spyOn(queryToolActions, '_verbose').and.returnValue(false);
+        spyOn(queryToolActions, '_costsEnabled').and.returnValue(true);
+        spyOn(queryToolActions, '_buffers').and.returnValue(false);
+        spyOn(queryToolActions, '_timing').and.returnValue(true);
       });
       it('calls the execute function', () => {
         queryToolActions.explainAnalyze(sqlEditorController);
-        let explainAnalyzeQuery = 'EXPLAIN (FORMAT JSON, ANALYZE ON, VERBOSE OFF, COSTS ON, BUFFERS OFF, TIMING ON) ';
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainAnalyzeQuery);
+
+        const explainObject = {
+          format: 'json',
+          analyze: true,
+          verbose: false,
+          costs: true,
+          buffers: false,
+          timing: true,
+          summary: false,
+        };
+
+        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
     });
   });
@@ -113,39 +152,67 @@ describe('queryToolActions', () => {
     describe('when verbose and costs are selected', () => {
       beforeEach(() => {
         setUpSpies('', '');
-        spyOn(queryToolActions, '_verbose').and.returnValue('ON');
-        spyOn(queryToolActions, '_costsEnabled').and.returnValue('ON');
+        spyOn(queryToolActions, '_verbose').and.returnValue(true);
+        spyOn(queryToolActions, '_costsEnabled').and.returnValue(true);
       });
+
       it('calls the execute function', () => {
         queryToolActions.explain(sqlEditorController);
-        let explainQuery = 'EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE ON, COSTS ON, BUFFERS OFF, TIMING OFF) ';
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainQuery);
+        const explainObject = {
+          format: 'json',
+          analyze: false,
+          verbose: true,
+          costs: true,
+          buffers: false,
+          timing: false,
+          summary: false,
+        };
+        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
     });
 
     describe('when verbose and costs are not selected', () => {
       beforeEach(() => {
         setUpSpies('', '');
-        spyOn(queryToolActions, '_verbose').and.returnValue('OFF');
-        spyOn(queryToolActions, '_costsEnabled').and.returnValue('OFF');
+        spyOn(queryToolActions, '_verbose').and.returnValue(false);
+        spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
       });
+
       it('calls the execute function', () => {
         queryToolActions.explain(sqlEditorController);
-        let explainQuery = 'EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE OFF, COSTS OFF, BUFFERS OFF, TIMING OFF) ';
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainQuery);
+        const explainObject = {
+          format: 'json',
+          analyze: false,
+          verbose: false,
+          costs: false,
+          buffers: false,
+          timing: false,
+          summary: false,
+        };
+
+        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
     });
 
     describe('when verbose is selected and costs is not selected', () => {
       beforeEach(() => {
         setUpSpies('', '');
-        spyOn(queryToolActions, '_verbose').and.returnValue('ON');
-        spyOn(queryToolActions, '_costsEnabled').and.returnValue('OFF');
+        spyOn(queryToolActions, '_verbose').and.returnValue(true);
+        spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
       });
+
       it('calls the execute function', () => {
         queryToolActions.explain(sqlEditorController);
-        let explainQuery = 'EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE ON, COSTS OFF, BUFFERS OFF, TIMING OFF) ';
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainQuery);
+        const explainObject = {
+          format: 'json',
+          analyze: false,
+          verbose: true,
+          costs: false,
+          buffers: false,
+          timing: false,
+          summary: false,
+        };
+        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
     });
   });

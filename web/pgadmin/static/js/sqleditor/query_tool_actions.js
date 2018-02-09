@@ -2,19 +2,19 @@ import $ from 'jquery';
 
 let queryToolActions = {
   _verbose: function () {
-    return $('.explain-verbose').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+    return !$('.explain-verbose').hasClass('visibility-hidden');
   },
 
   _costsEnabled: function () {
-    return $('.explain-costs').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+    return !$('.explain-costs').hasClass('visibility-hidden');
   },
 
   _buffers: function () {
-    return $('.explain-buffers').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+    return !$('.explain-buffers').hasClass('visibility-hidden');
   },
 
   _timing: function () {
-    return $('.explain-timing').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+    return !$('.explain-timing').hasClass('visibility-hidden');
   },
 
   _clearMessageTab: function () {
@@ -35,18 +35,35 @@ let queryToolActions = {
     let verbose = this._verbose();
     let buffers = this._buffers();
     let timing = this._timing();
-    let explainAnalyzeQuery = `EXPLAIN (FORMAT JSON, ANALYZE ON, VERBOSE ${verbose}, COSTS ${costEnabled}, BUFFERS ${buffers}, TIMING ${timing}) `;
+    const explainObject = {
+      format: 'json',
+      analyze: true,
+      verbose: verbose,
+      costs: costEnabled,
+      buffers: buffers,
+      timing: timing,
+      summary: false,
+    };
     this._clearMessageTab();
-    sqlEditorController.execute(explainAnalyzeQuery);
+    sqlEditorController.execute(explainObject);
   },
 
   explain: function (sqlEditorController) {
     let costEnabled = this._costsEnabled();
     let verbose = this._verbose();
 
-    let explainQuery = `EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE ${verbose}, COSTS ${costEnabled}, BUFFERS OFF, TIMING OFF) `;
+    // let explainQuery = `EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE ${verbose}, COSTS ${costEnabled}, BUFFERS OFF, TIMING OFF) `;
+    const explainObject = {
+      format: 'json',
+      analyze: false,
+      verbose: verbose,
+      costs: costEnabled,
+      buffers: false,
+      timing: false,
+      summary: false,
+    };
     this._clearMessageTab();
-    sqlEditorController.execute(explainQuery);
+    sqlEditorController.execute(explainObject);
   },
 
   download: function (sqlEditorController) {
