@@ -31,21 +31,26 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     ]
 
     def before(self):
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
         test_utils.create_database(self.server, "acceptance_test_db")
-        test_utils.create_table(self.server, "acceptance_test_db",
-                                "<h1>X")
+        test_utils.create_table(
+            self.server, "acceptance_test_db", "<h1>X"
+        )
 
         # This is needed to test dependents tab (eg: BackGrid)
-        test_utils.create_constraint(self.server, "acceptance_test_db",
-                                     "<h1>X",
-                                     "unique", "<h1 onmouseover='console.log(2);'>Y")
+        test_utils.create_constraint(
+            self.server, "acceptance_test_db",
+            "<h1>X",
+            "unique", "<h1 onmouseover='console.log(2);'>Y"
+        )
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
@@ -62,12 +67,14 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def after(self):
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
 
     def _tables_node_expandable(self):
@@ -106,7 +113,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.click_tab("SQL")
         # Fetch the inner html & check for escaped characters
         source_code = self.page.find_by_xpath(
-            "//*[contains(@class,'CodeMirror-lines') and contains(.,'CREATE TABLE')]"
+            "//*[contains(@class,'CodeMirror-lines') and "
+            "contains(.,'CREATE TABLE')]"
         ).get_attribute('innerHTML')
 
         self._check_escaped_characters(
@@ -115,11 +123,13 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "SQL tab (Code Mirror)"
         )
 
-    def _check_xss_in_dependents_tab(self): # Create any constraint with xss name to test this
+    # Create any constraint with xss name to test this
+    def _check_xss_in_dependents_tab(self):
         self.page.click_tab("Dependents")
 
         source_code = self.page.find_by_xpath(
-            "//*[@id='5']/table/tbody/tr/td/div/div/div[2]/table/tbody/tr/td[2]"
+            "//*[@id='5']/table/tbody/tr/td/div/div/div[2]/"
+            "table/tbody/tr/td[2]"
         ).get_attribute('innerHTML')
 
         self._check_escaped_characters(
@@ -138,7 +148,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.find_by_id("btn-flash").click()
 
         result_row = self.page.find_by_xpath(
-            "//*[contains(@class, 'ui-widget-content') and contains(@style, 'top:0px')]"
+            "//*[contains(@class, 'ui-widget-content') and "
+            "contains(@style, 'top:0px')]"
         )
 
         cells = result_row.find_elements_by_tag_name('div')
@@ -154,4 +165,5 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code
-        assert source_code.find(string_to_find) != -1, "{0} might be vulnerable to XSS ".format(source)
+        assert source_code.find(string_to_find) != - \
+            1, "{0} might be vulnerable to XSS ".format(source)

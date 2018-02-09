@@ -23,7 +23,8 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     def before(self):
         with test_utils.Database(self.server) as (connection, _):
             if connection.server_version < 90100:
-                self.skipTest("Membership is not present in Postgres below PG v9.1")
+                self.skipTest(
+                    "Membership is not present in Postgres below PG v9.1")
 
         # Some test function is needed for debugger
         test_utils.create_role(self.server, "postgres",
@@ -45,11 +46,14 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         self.page.remove_server(self.server)
 
     def _connects_to_server(self):
-        self.page.find_by_xpath("//*[@class='aciTreeText' and .='Servers']").click()
+        self.page.find_by_xpath(
+            "//*[@class='aciTreeText' and .='Servers']").click()
         self.page.driver.find_element_by_link_text("Object").click()
-        ActionChains(self.page.driver) \
-            .move_to_element(self.page.driver.find_element_by_link_text("Create")) \
-            .perform()
+        ActionChains(
+            self.page.driver
+        ).move_to_element(
+            self.page.driver.find_element_by_link_text("Create")
+        ).perform()
         self.page.find_by_partial_link_text("Server...").click()
 
         server_config = self.server
@@ -57,8 +61,10 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         self.page.find_by_partial_link_text("Connection").click()
         self.page.fill_input_by_field_name("host", server_config['host'])
         self.page.fill_input_by_field_name("port", server_config['port'])
-        self.page.fill_input_by_field_name("username", server_config['username'])
-        self.page.fill_input_by_field_name("password", server_config['db_password'])
+        self.page.fill_input_by_field_name(
+            "username", server_config['username'])
+        self.page.fill_input_by_field_name(
+            "password", server_config['db_password'])
         self.page.find_by_xpath("//button[contains(.,'Save')]").click()
 
     def _role_node_expandable(self):
@@ -80,8 +86,12 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
             '&lt;h1&gt;test&lt;/h1&gt;',
             'Role Membership Control'
         )
-        self.page.find_by_xpath("//button[contains(@type, 'cancel') and contains(.,'Cancel')]").click()
+        self.page.find_by_xpath(
+            "//button[contains(@type, 'cancel') and "
+            "contains(.,'Cancel')]"
+        ).click()
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code
-        assert source_code.find(string_to_find) != -1, "{0} might be vulnerable to XSS ".format(source)
+        assert source_code.find(string_to_find) != - \
+            1, "{0} might be vulnerable to XSS ".format(source)

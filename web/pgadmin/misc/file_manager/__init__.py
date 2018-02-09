@@ -253,12 +253,12 @@ def file_manager_config(trans_id):
     show_hidden_files = pref.preference('show_hidden_files').get()
 
     return Response(response=render_template(
-            "file_manager/js/file_manager_config.json",
-            _=gettext,
-            data=data,
-            file_dialog_view=file_dialog_view,
-            show_hidden_files=show_hidden_files
-        ),
+        "file_manager/js/file_manager_config.json",
+        _=gettext,
+        data=data,
+        file_dialog_view=file_dialog_view,
+        show_hidden_files=show_hidden_files
+    ),
         status=200,
         mimetype="application/json"
     )
@@ -301,6 +301,7 @@ def save_last_directory_visited(trans_id):
         data={'status': True}
     )
 
+
 @blueprint.route(
     "/save_file_dialog_view/<int:trans_id>", methods=["POST"],
     endpoint='save_file_dialog_view'
@@ -311,6 +312,7 @@ def save_file_dialog_view(trans_id):
     return make_json_response(
         data={'status': True}
     )
+
 
 @blueprint.route(
     "/save_show_hidden_file_option/<int:trans_id>", methods=["PUT"],
@@ -331,7 +333,9 @@ class Filemanager(object):
         self.trans_id = trans_id
         self.patherror = encode_json(
             {
-                'Error': gettext('No permission to operate on specified path.'),
+                'Error': gettext(
+                    'No permission to operate on specified path.'
+                ),
                 'Code': 0
             }
         )
@@ -407,7 +411,8 @@ class Filemanager(object):
                 last_dir = last_dir[:-1]
             while last_dir:
                 if os.path.exists(
-                        (storage_dir if storage_dir is not None else '') + last_dir):
+                        storage_dir
+                        if storage_dir is not None else '' + last_dir):
                     break
                 if _platform == 'win32':
                     index = max(last_dir.rfind('\\'), last_dir.rfind('/'))
@@ -426,7 +431,8 @@ class Filemanager(object):
 
         # create configs using above configs
         configs = {
-            "fileroot": last_dir.replace('\\', '\\\\'),  # for JS json compatibility
+            # for JS json compatibility
+            "fileroot": last_dir.replace('\\', '\\\\'),
             "dialog_type": fm_type,
             "title": title,
             "upload": {
@@ -516,7 +522,7 @@ class Filemanager(object):
                         drives.append(letter)
                     bitmask >>= 1
                 if (drive_name != '' and drive_name is not None and
-                            drive_name in drives):
+                        drive_name in drives):
                     return u"{0}{1}".format(drive_name, ':')
                 else:
                     return drives  # return drives if no argument is passed
@@ -577,7 +583,7 @@ class Filemanager(object):
                 try:
                     drive_size = getDriveSize(path)
                     drive_size_in_units = sizeof_fmt(drive_size)
-                except:
+                except Exception:
                     drive_size = 0
                 protected = 1 if drive_size == 0 else 0
                 files[file_name] = {
@@ -606,10 +612,10 @@ class Filemanager(object):
             }
 
         user_dir = path
-        folders_only = trans_data['folders_only'] if 'folders_only' in \
-                                                     trans_data else ''
-        files_only = trans_data['files_only'] if 'files_only' in \
-                                                 trans_data else ''
+        folders_only = trans_data['folders_only'] \
+            if 'folders_only' in trans_data else ''
+        files_only = trans_data['files_only'] \
+            if 'files_only' in trans_data else ''
         supported_types = trans_data['supported_types'] \
             if 'supported_types' in trans_data else []
 
@@ -622,7 +628,7 @@ class Filemanager(object):
 
                 # continue if file/folder is hidden (based on user preference)
                 if not is_show_hidden_files and \
-                    (is_folder_hidden(system_path) or f.startswith('.')):
+                        (is_folder_hidden(system_path) or f.startswith('.')):
                     continue
 
                 user_path = os.path.join(os.path.join(user_dir, f))
@@ -645,8 +651,8 @@ class Filemanager(object):
                     # filter files based on file_type
                     if file_type is not None and file_type != "*":
                         if folders_only or len(supported_types) > 0 and \
-                                        file_extension not in supported_types or \
-                                        file_type != file_extension:
+                                file_extension not in supported_types or \
+                                file_type != file_extension:
                             continue
 
                 # create a list of files and folders
@@ -790,8 +796,9 @@ class Filemanager(object):
         }
 
         if not path_exists(orig_path):
-            thefile['Error'] = gettext(u"'{0}' file does not exist.".format(
-                path))
+            thefile['Error'] = gettext(
+                u"'{0}' file does not exist.".format(path)
+            )
             thefile['Code'] = -1
             return thefile
 
@@ -822,7 +829,8 @@ class Filemanager(object):
             if not dir.endswith('/'):
                 dir += u'/'
 
-        filelist = self.list_filesystem(dir, path, trans_data, file_type, show_hidden)
+        filelist = self.list_filesystem(
+            dir, path, trans_data, file_type, show_hidden)
         return filelist
 
     def rename(self, old=None, new=None, req=None):
@@ -901,7 +909,8 @@ class Filemanager(object):
             }
 
         dir = self.dir if self.dir is not None else ''
-        path = path.encode('utf-8').decode('utf-8') if hasattr(str, 'decode') else path
+        path = path.encode(
+            'utf-8').decode('utf-8') if hasattr(str, 'decode') else path
         orig_path = u"{0}{1}".format(dir, path)
 
         try:
@@ -951,20 +960,23 @@ class Filemanager(object):
             file_obj = req.files['newfile']
             file_name = file_obj.filename
             if hasattr(str, 'decode'):
-                path = req.form.get('currentpath').encode('utf-8').decode('utf-8')
+                path = req.form.get('currentpath').encode(
+                    'utf-8').decode('utf-8')
                 file_name = file_obj.filename.encode('utf-8').decode('utf-8')
             orig_path = u"{0}{1}".format(dir, path)
             newName = u"{0}{1}".format(orig_path, file_name)
 
             with open(newName, 'wb') as f:
                 while True:
-                    data = file_obj.read(4194304)  # 4MB chunk (4 * 1024 * 1024 Bytes)
+                    # 4MB chunk (4 * 1024 * 1024 Bytes)
+                    data = file_obj.read(4194304)
                     if not data:
                         break
                     f.write(data)
         except Exception as e:
             code = 0
-            err_msg = u"Error: {0}".format(e.strerror if hasattr(e, 'strerror') else u'Unknown')
+            err_msg = u"Error: {0}".format(
+                e.strerror if hasattr(e, 'strerror') else u'Unknown')
 
         try:
             Filemanager.check_access_permission(dir, path)
@@ -998,7 +1010,8 @@ class Filemanager(object):
             path = path.encode('utf-8').decode('utf-8')
         try:
             orig_path = u"{0}{1}".format(dir, path)
-            Filemanager.check_access_permission(dir, u"{}{}".format(path, name))
+            Filemanager.check_access_permission(
+                dir, u"{}{}".format(path, name))
 
             newName = u"{0}{1}".format(orig_path, name)
             if not os.path.exists(newName):
@@ -1059,14 +1072,14 @@ class Filemanager(object):
 
         # check if file type is text or binary
         text_chars = bytearray([7, 8, 9, 10, 12, 13, 27]) \
-                    + bytearray(range(0x20, 0x7f)) \
-                    + bytearray(range(0x80, 0x100))
+            + bytearray(range(0x20, 0x7f)) \
+            + bytearray(range(0x80, 0x100))
 
         def is_binary_string(bytes_data):
             """Checks if string data is binary"""
             return bool(
-                    bytes_data.translate(None, text_chars)
-                )
+                bytes_data.translate(None, text_chars)
+            )
 
         # read the file
         try:
@@ -1180,11 +1193,13 @@ class Filemanager(object):
             orig_path = u"{0}{1}".format(dir, path)
 
         try:
-            Filemanager.check_access_permission(dir, u"{}{}".format(
-                path, path))
+            Filemanager.check_access_permission(
+                dir, u"{}{}".format(path, path)
+            )
         except Exception as e:
             resp = Response(gettext(u"Error: {0}".format(e)))
-            resp.headers['Content-Disposition'] = 'attachment; filename=' + name
+            resp.headers['Content-Disposition'] = \
+                'attachment; filename=' + name
             return resp
 
         name = path.split('/')[-1]

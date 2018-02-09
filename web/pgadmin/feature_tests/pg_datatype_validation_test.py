@@ -25,7 +25,8 @@ try:
     with open(CURRENT_PATH + '/datatype_test.json') as data_file:
         test_data_configuration = json.load(data_file)
         config_data = test_data_configuration['tests']
-        type_minimum_version = test_data_configuration['datatype_minimum_version']
+        type_minimum_version = \
+            test_data_configuration['datatype_minimum_version']
 except Exception as e:
     print(str(e))
 
@@ -41,12 +42,14 @@ class PGDataypeFeatureTest(BaseFeatureTest):
     ]
 
     def before(self):
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
 
         self.timezone = int(test_utils.get_timezone_without_dst(connection))
 
@@ -82,17 +85,20 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             (By.XPATH, "//*[contains(string(), 'Show system objects?')]"))
         )
 
-        self.page.find_by_css_selector(".ajs-dialog.pg-el-container .ajs-maximize").click()
+        self.page.find_by_css_selector(
+            ".ajs-dialog.pg-el-container .ajs-maximize").click()
 
         sql_editor = self.page.find_by_xpath(
             "//*[contains(@class,'aciTreeLi') and contains(.,'SQL Editor')]")
 
         sql_editor.find_element_by_xpath(
-            "//*[contains(@class,'aciTreeText') and contains(.,'Options')]")\
-            .click()
+            "//*[contains(@class,'aciTreeText') and contains(.,'Options')]"
+        ).click()
 
-        insert_bracket_pairs_control= self.page.find_by_xpath(
-             "//div[contains(@class,'pgadmin-control-group') and contains(.,'Insert bracket pairs?')]")
+        insert_bracket_pairs_control = self.page.find_by_xpath(
+            "//div[contains(@class,'pgadmin-control-group') and "
+            "contains(.,'Insert bracket pairs?')]"
+        )
 
         switch_btn = insert_bracket_pairs_control.\
             find_element_by_class_name('bootstrap-switch')
@@ -103,7 +109,9 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
         # save and close the preference dialog.
         self.page.find_by_xpath(
-            "//*[contains(@class,'pg-alertify-button') and contains(.,'OK')]").click()
+            "//*[contains(@class,'pg-alertify-button') and "
+            "contains(.,'OK')]"
+        ).click()
 
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element_by_css_selector(".ajs-modal")
@@ -129,12 +137,14 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
     def after(self):
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
 
     def _schema_node_expandable(self):
@@ -155,9 +165,10 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
             wait.until(EC.presence_of_element_located(
                 (By.XPATH,
-                 "//*[contains(@class,'column-type') and contains(.,'{}')]".format(batch['datatype'][0])
-                 ))
-            )
+                 "//*[contains(@class,'column-type') and "
+                 "contains(.,'{}')]".format(batch['datatype'][0])
+                 )
+            ))
 
             canvas = wait.until(EC.presence_of_element_located(
                 (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas"))
@@ -168,10 +179,12 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             cells = canvas.find_elements_by_css_selector('.slick-cell')
             # remove first element as it is row number.
             cells.pop(0)
-            for val, cell, datatype in zip(batch['output'], cells, batch['datatype']):
+            for val, cell, datatype in zip(
+                    batch['output'], cells, batch['datatype']):
                 expected_output = batch['output'][cnt - 2]
 
-                if not self._is_datatype_available_in_current_database(datatype):
+                if not self._is_datatype_available_in_current_database(
+                        datatype):
                     cnt += 1
                     continue
 
@@ -212,7 +225,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             if first:
                 query += dataformatter.format(inputdata, datatype)
             else:
-                query += ','+dataformatter.format(inputdata, datatype)
+                query += ',' + dataformatter.format(inputdata, datatype)
             first = False
         return query + ';'
 
@@ -236,4 +249,6 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         self.page.click_modal('Yes')
 
     def _is_datatype_available_in_current_database(self, datatype):
-        return datatype == '' or self.database_version >= type_minimum_version[datatype]
+        if datatype == '':
+            return True
+        return self.database_version >= type_minimum_version[datatype]

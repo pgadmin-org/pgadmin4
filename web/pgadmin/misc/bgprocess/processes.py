@@ -66,7 +66,9 @@ class BatchProcess(object):
         if 'id' in kwargs:
             self._retrieve_process(kwargs['id'])
         else:
-            self._create_process(kwargs['desc'], kwargs['cmd'], kwargs['args'])
+            self._create_process(
+                kwargs['desc'], kwargs['cmd'], kwargs['args']
+            )
 
     def _retrieve_process(self, _id):
         p = Process.query.filter_by(pid=_id, user_id=current_user.id).first()
@@ -159,17 +161,25 @@ class BatchProcess(object):
             args_csv_io, delimiter=str(','), quoting=csv.QUOTE_MINIMAL
         )
         if sys.version_info.major == 2:
-            csv_writer.writerow([a.encode('utf-8') if isinstance(a, unicode) else a for a in _args])
+            csv_writer.writerow(
+                [
+                    a.encode('utf-8')
+                    if isinstance(a, unicode) else a for a in _args
+                ]
+            )
         else:
             csv_writer.writerow(_args)
 
         args_val = args_csv_io.getvalue().strip(str('\r\n'))
 
         j = Process(
-            pid=int(id), command=_cmd,
-            arguments=args_val.decode('utf-8', 'replace') if IS_PY2 and hasattr(args_val, 'decode') \
-                else args_val,
-            logdir=log_dir, desc=dumps(self.desc), user_id=current_user.id
+            pid=int(id),
+            command=_cmd,
+            arguments=args_val.decode('utf-8', 'replace')
+            if IS_PY2 and hasattr(args_val, 'decode') else args_val,
+            logdir=log_dir,
+            desc=dumps(self.desc),
+            user_id=current_user.id
         )
         db.session.add(j)
         db.session.commit()
@@ -278,7 +288,9 @@ class BatchProcess(object):
         if os.name == 'nt' and IS_PY2:
             command = []
             for c in cmd:
-                command.append(c.encode('utf-8') if isinstance(c, unicode) else str(c))
+                command.append(
+                    c.encode('utf-8') if isinstance(c, unicode) else str(c)
+                )
 
             current_app.logger.info(
                 u"Executing the process executor with the arguments: %s",
@@ -288,7 +300,8 @@ class BatchProcess(object):
             cmd = command
         else:
             current_app.logger.info(
-                u"Executing the process executor with the arguments: %s", str(cmd)
+                u"Executing the process executor with the arguments: %s",
+                str(cmd)
             )
 
         # Make a copy of environment, and add new variables to support
@@ -318,8 +331,12 @@ class BatchProcess(object):
             stderr = open(stderr, "a")
 
             p = Popen(
-                cmd, close_fds=False, env=env, stdout=stdout.fileno(),
-                stderr=stderr.fileno(), stdin=stdin.fileno(),
+                cmd,
+                close_fds=False,
+                env=env,
+                stdout=stdout.fileno(),
+                stderr=stderr.fileno(),
+                stdin=stdin.fileno(),
                 creationflags=(CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
             )
         else:
@@ -424,10 +441,12 @@ class BatchProcess(object):
                 execution_time = (etime - stime).total_seconds()
 
             if process_output:
-                out, out_completed = read_log(self.stdout, stdout, out, ctime,
-                                              self.ecode)
-                err, err_completed = read_log(self.stderr, stderr, err, ctime,
-                                              self.ecode)
+                out, out_completed = read_log(
+                    self.stdout, stdout, out, ctime, self.ecode
+                )
+                err, err_completed = read_log(
+                    self.stderr, stderr, err, ctime, self.ecode
+                )
         else:
             out_completed = err_completed = False
 
@@ -439,8 +458,16 @@ class BatchProcess(object):
             }
 
         return {
-            'out': {'pos': out, 'lines': stdout, 'done': out_completed},
-            'err': {'pos': err, 'lines': stderr, 'done': err_completed},
+            'out': {
+                'pos': out,
+                'lines': stdout,
+                'done': out_completed
+            },
+            'err': {
+                'pos': err,
+                'lines': stderr,
+                'done': err_completed
+            },
             'start_time': self.stime,
             'exit_code': self.ecode,
             'execution_time': execution_time
@@ -475,9 +502,8 @@ class BatchProcess(object):
 
                 except ValueError as e:
                     current_app.logger.warning(
-                        _("Status for the background process '{0}' could not be loaded.").format(
-                            p.pid
-                        )
+                        _("Status for the background process '{0}' could "
+                          "not be loaded.").format(p.pid)
                     )
                     current_app.logger.exception(e)
                     return False, False
@@ -514,8 +540,8 @@ class BatchProcess(object):
             if isinstance(desc, IProcessDesc):
                 args = []
                 args_csv = StringIO(
-                  p.arguments.encode('utf-8') \
-                      if hasattr(p.arguments, 'decode') else p.arguments
+                    p.arguments.encode('utf-8')
+                    if hasattr(p.arguments, 'decode') else p.arguments
                 )
                 args_reader = csv.reader(args_csv, delimiter=str(','))
                 for arg in args_reader:

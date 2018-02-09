@@ -11,7 +11,7 @@
 
 import pgadmin.utils.driver as driver
 from flask import url_for, render_template, Response
-from flask_babel import gettext as _
+from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
 
@@ -22,18 +22,20 @@ MODULE_NAME = 'misc'
 
 class MiscModule(PgAdminModule):
     def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.misc.explain',
-            'path': url_for('misc.index') + 'explain/explain',
-            'preloaded': False
-        }, {
-            'name': 'snap.svg',
-            'path': url_for(
-                'misc.static', filename='explain/vendor/snap.svg/' + (
-                    'snap.svg' if config.DEBUG else 'snap.svg-min'
-                )),
-            'preloaded': False
-        }]
+        return [
+            {
+                'name': 'pgadmin.misc.explain',
+                'path': url_for('misc.index') + 'explain/explain',
+                'preloaded': False
+            }, {
+                'name': 'snap.svg',
+                'path': url_for(
+                    'misc.static', filename='explain/vendor/snap.svg/' + (
+                        'snap.svg' if config.DEBUG else 'snap.svg-min'
+                    )),
+                'preloaded': False
+            }
+        ]
 
     def get_own_stylesheets(self):
         stylesheets = []
@@ -46,18 +48,24 @@ class MiscModule(PgAdminModule):
         """
         Register preferences for this module.
         """
-        self.misc_preference = Preferences('miscellaneous', _('Miscellaneous'))
+        self.misc_preference = Preferences(
+            'miscellaneous', gettext('Miscellaneous')
+        )
 
         lang_options = []
         for lang in config.LANGUAGES:
-            lang_options.append({'label': config.LANGUAGES[lang],
-                                 'value': lang})
+            lang_options.append(
+                {
+                    'label': config.LANGUAGES[lang],
+                    'value': lang
+                }
+            )
 
         # Register options for the User language settings
         self.misc_preference.register(
             'miscellaneous', 'user_language',
-            _("User language"), 'options', 'en',
-            category_label=_('User language'),
+            gettext("User language"), 'options', 'en',
+            category_label=gettext('User language'),
             options=lang_options
         )
 
@@ -102,7 +110,8 @@ def explain_js():
     """
     return Response(
         response=render_template(
-            "explain/js/explain.js", _=_
+            "explain/js/explain.js",
+            _=gettext
         ),
         status=200,
         mimetype="application/javascript"

@@ -26,14 +26,17 @@ class QueryToolJourneyTest(BaseFeatureTest):
     ]
 
     def before(self):
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
         test_utils.create_database(self.server, "acceptance_test_db")
-        test_utils.create_table(self.server, "acceptance_test_db", "test_table")
+        test_utils.create_table(
+            self.server, "acceptance_test_db", "test_table")
         self.page.add_server(self.server)
 
     def runTest(self):
@@ -50,8 +53,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _test_copies_rows(self):
         pyperclip.copy("old clipboard contents")
         self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to_frame(self.page.driver.find_element_by_tag_name("iframe"))
-        self.page.find_by_xpath("//*[contains(@class, 'slick-row')]/*[1]").click()
+        self.page.driver.switch_to_frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
+        self.page.find_by_xpath(
+            "//*[contains(@class, 'slick-row')]/*[1]").click()
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
 
         self.assertEqual('"Some-Name"\t"6"\t"some info"',
@@ -61,8 +66,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
         pyperclip.copy("old clipboard contents")
 
         self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to_frame(self.page.driver.find_element_by_tag_name("iframe"))
-        self.page.find_by_xpath("//*[@data-test='output-column-header' and contains(., 'some_column')]").click()
+        self.page.driver.switch_to_frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
+        self.page.find_by_xpath(
+            "//*[@data-test='output-column-header' and "
+            "contains(., 'some_column')]"
+        ).click()
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
 
         self.assertTrue('"Some-Name"' in pyperclip.paste())
@@ -76,22 +85,32 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._execute_query("SELECT * FROM table_that_doesnt_exist")
 
         self.page.click_tab("Query History")
-        selected_history_entry = self.page.find_by_css_selector("#query_list .selected")
-        self.assertIn("SELECT * FROM table_that_doesnt_exist", selected_history_entry.text)
+        selected_history_entry = self.page.find_by_css_selector(
+            "#query_list .selected")
+        self.assertIn("SELECT * FROM table_that_doesnt_exist",
+                      selected_history_entry.text)
         failed_history_detail_pane = self.page.find_by_id("query_detail")
 
-        self.assertIn("Error Message relation \"table_that_doesnt_exist\" does not exist", failed_history_detail_pane.text)
+        self.assertIn(
+            "Error Message relation \"table_that_doesnt_exist\" "
+            "does not exist", failed_history_detail_pane.text
+        )
         ActionChains(self.page.driver) \
             .send_keys(Keys.ARROW_DOWN) \
             .perform()
-        selected_history_entry = self.page.find_by_css_selector("#query_list .selected")
-        self.assertIn("SELECT * FROM test_table ORDER BY value", selected_history_entry.text)
+        selected_history_entry = self.page.find_by_css_selector(
+            "#query_list .selected")
+        self.assertIn("SELECT * FROM test_table ORDER BY value",
+                      selected_history_entry.text)
         selected_history_detail_pane = self.page.find_by_id("query_detail")
-        self.assertIn("SELECT * FROM test_table ORDER BY value", selected_history_detail_pane.text)
-        newly_selected_history_entry = self.page.find_by_xpath("//*[@id='query_list']/ul/li[2]")
+        self.assertIn("SELECT * FROM test_table ORDER BY value",
+                      selected_history_detail_pane.text)
+        newly_selected_history_entry = self.page.find_by_xpath(
+            "//*[@id='query_list']/ul/li[2]")
         self.page.click_element(newly_selected_history_entry)
         selected_history_detail_pane = self.page.find_by_id("query_detail")
-        self.assertIn("SELECT * FROM table_that_doesnt_exist", selected_history_detail_pane.text)
+        self.assertIn("SELECT * FROM table_that_doesnt_exist",
+                      selected_history_detail_pane.text)
 
         self.__clear_query_tool()
 
@@ -104,7 +123,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self.page.click_tab("Query History")
 
-        query_we_need_to_scroll_to = self.page.find_by_xpath("//*[@id='query_list']/ul/li[17]")
+        query_we_need_to_scroll_to = self.page.find_by_xpath(
+            "//*[@id='query_list']/ul/li[17]")
 
         self.page.click_element(query_we_need_to_scroll_to)
 

@@ -29,12 +29,14 @@ class QueryToolFeatureTest(BaseFeatureTest):
     ]
 
     def before(self):
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
         test_utils.create_database(self.server, "acceptance_test_db")
         self.page.wait_for_spinner_to_disappear()
@@ -96,12 +98,14 @@ class QueryToolFeatureTest(BaseFeatureTest):
 
     def after(self):
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
 
     def _reset_options(self):
@@ -152,7 +156,9 @@ class QueryToolFeatureTest(BaseFeatureTest):
         ON_DEMAND_CHUNKS = 2
         row_id_to_find = config.ON_DEMAND_RECORD_COUNT * ON_DEMAND_CHUNKS
 
-        query = """-- On demand query result on scroll, grid select all, column select all
+        query = """-- On demand query result on scroll
+-- Grid select all
+-- Column select all
 SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
             config.ON_DEMAND_RECORD_COUNT * ON_DEMAND_CHUNKS)
 
@@ -172,7 +178,8 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         # scroll to bottom to fetch next chunk of result set.
         self.driver.execute_script(
-            "pgAdmin.SqlEditor.jquery('.slick-viewport').scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
+            "pgAdmin.SqlEditor.jquery('.slick-viewport')"
+            ".scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
         )
 
         canvas = wait.until(EC.presence_of_element_located(
@@ -214,9 +221,10 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         # click on first data column to select all column.
         wait.until(EC.presence_of_element_located(
-          (
-            By.XPATH,
-            "//span[contains(@class, 'column-name') and contains(., 'id1')]"))
+            (
+                By.XPATH,
+                "//span[contains(@class, 'column-name') "
+                "and contains(., 'id1')]"))
         ).click()
 
         canvas = wait.until(EC.presence_of_element_located(
@@ -228,7 +236,8 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
     def _check_ondemand_result(self, row_id_to_find, canvas):
         # scroll to bottom to bring last row of next chunk in viewport.
         self.driver.execute_script(
-            "pgAdmin.SqlEditor.jquery('.slick-viewport').scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
+            "pgAdmin.SqlEditor.jquery('.slick-viewport')"
+            ".scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
         )
 
         canvas.find_element_by_xpath(
@@ -325,7 +334,8 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and contains(string(), "CREATE TABLE")]'
+            '//div[contains(@class, "sql-editor-message") and '
+            'contains(string(), "CREATE TABLE")]'
         )
 
         self._clear_query_tool()
@@ -339,7 +349,8 @@ ROLLBACK;"""
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and contains(string(), "ROLLBACK")]'
+            '//div[contains(@class, "sql-editor-message") and '
+            'contains(string(), "ROLLBACK")]'
         )
 
         self._clear_query_tool()
@@ -347,7 +358,8 @@ ROLLBACK;"""
 -- 2. (Done) Create table in public schema.
 -- 3. (Done) ROLLBACK transaction.
 -- 4. Check if table is *NOT* created.
-SELECT relname FROM pg_class WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
+SELECT relname FROM pg_class
+    WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -355,9 +367,14 @@ SELECT relname FROM pg_class WHERE relkind IN ('r','s','t') and relnamespace = 2
         canvas = wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
 
-        el = canvas.find_elements_by_xpath("//div[contains(@class, 'slick-cell') and contains(text(), '{}')]".format(table_name))
+        el = canvas.find_elements_by_xpath(
+            "//div[contains(@class, 'slick-cell') and "
+            "contains(text(), '{}')]".format(table_name))
 
-        assert len(el) == 0, "Table '{}' created with auto commit disabled and without any explicit commit.".format(table_name)
+        assert len(el) == 0, "Table '{}' created with auto commit disabled " \
+                             "and without any explicit commit.".format(
+            table_name
+        )
 
     def _query_tool_auto_commit_enabled(self):
 
@@ -400,7 +417,8 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and contains(string(), "CREATE TABLE")]'
+            '//div[contains(@class, "sql-editor-message") and '
+            'contains(string(), "CREATE TABLE")]'
         )
 
         self._clear_query_tool()
@@ -415,7 +433,8 @@ ROLLBACK;"""
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and contains(string(), "ROLLBACK")]'
+            '//div[contains(@class, "sql-editor-message") and '
+            'contains(string(), "ROLLBACK")]'
         )
 
         self._clear_query_tool()
@@ -424,7 +443,8 @@ ROLLBACK;"""
 -- 3. (Done) Create table in public schema.
 -- 4. (Done) ROLLBACK transaction
 -- 5. Check if table is created event after ROLLBACK.
-SELECT relname FROM pg_class WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
+SELECT relname FROM pg_class
+    WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
         self.page.click_tab('Data Output')
@@ -433,9 +453,12 @@ SELECT relname FROM pg_class WHERE relkind IN ('r','s','t') and relnamespace = 2
         canvas = wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
 
-        el = canvas.find_elements_by_xpath("//div[contains(@class, 'slick-cell') and contains(text(), '{}')]".format(table_name))
+        el = canvas.find_elements_by_xpath(
+            "//div[contains(@class, 'slick-cell') and "
+            "contains(text(), '{}')]".format(table_name))
 
-        assert len(el) != 0, "Table '{}' is not created with auto commit enabled.".format(table_name)
+        assert len(el) != 0, "Table '{}' is not created with auto " \
+                             "commit enabled.".format(table_name)
 
     def _query_tool_auto_rollback_enabled(self):
         table_name = 'query_tool_auto_rollback_enabled_table'
@@ -473,7 +496,8 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and contains(string(), "CREATE TABLE")]'
+            '//div[contains(@class, "sql-editor-message") and '
+            'contains(string(), "CREATE TABLE")]'
         )
 
         self._clear_query_tool()
@@ -489,7 +513,8 @@ SELECT 1/0;"""
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and contains(string(), "division by zero")]'
+            '//div[contains(@class, "sql-editor-message") and '
+            'contains(string(), "division by zero")]'
         )
 
         self._clear_query_tool()
@@ -506,7 +531,8 @@ END;"""
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and contains(string(), "Query returned successfully")]'
+            '//div[contains(@class, "sql-editor-message") and '
+            'contains(string(), "Query returned successfully")]'
         )
 
         self._clear_query_tool()
@@ -516,7 +542,8 @@ END;"""
 -- 4. (Done) Generate error in transaction.
 -- 5. (Done) END transaction.
 -- 6. Check if table is *NOT* created after ending transaction.
-SELECT relname FROM pg_class WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
+SELECT relname FROM pg_class
+    WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -524,9 +551,12 @@ SELECT relname FROM pg_class WHERE relkind IN ('r','s','t') and relnamespace = 2
         canvas = wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
 
-        el = canvas.find_elements_by_xpath("//div[contains(@class, 'slick-cell') and contains(text(), '{}')]".format(table_name))
+        el = canvas.find_elements_by_xpath(
+            "//div[contains(@class, 'slick-cell') and "
+            "contains(text(), '{}')]".format(table_name))
 
-        assert len(el) == 0, "Table '{}' created even after ROLLBACK due to sql error.".format(table_name)
+        assert len(el) == 0, "Table '{}' created even after ROLLBACK due to " \
+                             "sql error.".format(table_name)
 
     def _query_tool_cancel_query(self):
         query = """-- 1. END any open transaction.
@@ -548,8 +578,8 @@ SELECT 1, pg_sleep(300)"""
         # if auto rollback is disabled then 'i' element will
         # have 'auto-rollback fa fa-check visibility-hidden' classes
 
-        if 'auto-rollback fa fa-check' == str(auto_rollback_check.get_attribute(
-                'class')):
+        if 'auto-rollback fa fa-check' == str(
+                auto_rollback_check.get_attribute('class')):
             auto_rollback_btn.click()
 
         auto_commit_btn = self.page.find_by_id("btn-auto-commit")
@@ -561,8 +591,8 @@ SELECT 1, pg_sleep(300)"""
         # if auto commit is disabled then 'i' element will
         # have 'auto-commit fa fa-check visibility-hidden' classes
 
-        if 'auto-commit fa fa-check visibility-hidden' == str(auto_commit_check.get_attribute(
-                'class')):
+        if 'auto-commit fa fa-check visibility-hidden' == str(
+                auto_commit_check.get_attribute('class')):
             auto_commit_btn.click()
 
         self.page.find_by_id("btn-flash").click()
@@ -571,14 +601,17 @@ SELECT 1, pg_sleep(300)"""
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and contains(string(), "canceling statement due to user request")]'
+            '//div[contains(@class, "sql-editor-message") and '
+            'contains(string(), "canceling statement due to user request")]'
         )
 
     def _test_explain_plan_feature(self):
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         return connection.server_version > 90100

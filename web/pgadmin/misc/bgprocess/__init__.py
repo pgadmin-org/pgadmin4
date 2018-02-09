@@ -103,7 +103,6 @@ def acknowledge(pid):
     """
     try:
         BatchProcess.acknowledge(pid)
-
         return success_return()
     except LookupError as lerr:
         return gone(errormsg=str(lerr))

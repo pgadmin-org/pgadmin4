@@ -55,11 +55,13 @@ if _IS_PY2:
 else:
     def _log(msg):
         with open(_log_file, 'a') as fp:
-            fp.write(('INFO:: %s\n' % msg.encode('ascii', 'xmlcharrefreplace')))
+            fp.write(
+                ('INFO:: %s\n' % msg.encode('ascii', 'xmlcharrefreplace'))
+            )
 
 
 def _log_exception():
-    type_, value_, traceback_ = info=sys.exc_info()
+    type_, value_, traceback_ = info = sys.exc_info()
 
     with open(_log_file, 'ab') as fp:
         from traceback import format_exception
@@ -159,7 +161,7 @@ class ProcessLogger(Thread):
         Thread.__init__(self)
         self.process = None
         self.stream = None
-        self.logger = open(os.path.join(_out_dir, stream_type),  'wb')
+        self.logger = open(os.path.join(_out_dir, stream_type), 'wb')
 
     def attach_process_stream(self, process, stream):
         """
@@ -189,9 +191,15 @@ class ProcessLogger(Thread):
             # Write into log file
             if self.logger:
                 if msg:
-                    self.logger.write(get_current_time(format='%y%m%d%H%M%S%f').encode('utf-8'))
+                    self.logger.write(
+                        get_current_time(
+                            format='%y%m%d%H%M%S%f'
+                        ).encode('utf-8')
+                    )
                     self.logger.write(b',')
-                    self.logger.write(msg.lstrip(b'\r\n' if _IS_WIN else b'\n'))
+                    self.logger.write(
+                        msg.lstrip(b'\r\n' if _IS_WIN else b'\n')
+                    )
                     self.logger.write(os.linesep.encode('utf-8'))
 
                 return True
@@ -215,7 +223,10 @@ class ProcessLogger(Thread):
                             get_current_time(
                                 format='%y%m%d%H%M%S%f'
                             ),
-                            msg.lstrip(b'\r\n' if _IS_WIN else b'\n'), os.linesep
+                            msg.lstrip(
+                                b'\r\n' if _IS_WIN else b'\n'
+                            ),
+                            os.linesep
                         )
                     )
 
@@ -253,9 +264,8 @@ def update_status(**kw):
 
     if _out_dir:
         status = dict(
-            (k, v) for k, v in kw.items() if k in [
-                'start_time', 'end_time', 'exit_code', 'pid'
-            ]
+            (k, v) for k, v in kw.items()
+            if k in ('start_time', 'end_time', 'exit_code', 'pid')
         )
         _log('Updating the status:\n{0}'.format(json.dumps(status)))
         with open(os.path.join(_out_dir, 'status'), 'w') as fp:
@@ -396,7 +406,7 @@ def convert_environment_variables(env):
             if not isinstance(value, str):
                 value = value.encode(_sys_encoding)
             temp_env[key] = value
-        except Exception as e:
+        except Exception:
             _log_exception()
     return temp_env
 
@@ -411,8 +421,8 @@ if __name__ == '__main__':
 
     _fs_encoding = sys.getfilesystemencoding()
     if not _fs_encoding or _fs_encoding == 'ascii':
-        # Fall back to 'utf-8', if we couldn't determine the file-system encoding,
-        # or 'ascii'.
+        # Fall back to 'utf-8', if we couldn't determine the file-system
+        # encoding or 'ascii'.
         _fs_encoding = 'utf-8'
 
     def u(_s, _encoding=_sys_encoding):
@@ -442,14 +452,14 @@ if __name__ == '__main__':
         # the child process to run as a daemon. And, it would run without
         # depending on the status of the web-server.
         if 'PGA_BGP_FOREGROUND' in os.environ and \
-        os.environ['PGA_BGP_FOREGROUND'] == "1":
+                os.environ['PGA_BGP_FOREGROUND'] == "1":
             _log('[CHILD] Start process execution...')
             # This is a child process running as the daemon process.
             # Let's do the job assigning to it.
             try:
                 _log('Executing the command now from the detached child...')
                 execute()
-            except:
+            except Exception:
                 _log_exception()
         else:
             from subprocess import CREATE_NEW_PROCESS_GROUP
@@ -464,10 +474,11 @@ if __name__ == '__main__':
             env['PGA_BGP_FOREGROUND'] = "1"
 
             # We need environment variables & values in string
-            _log('[PARENT] Converting the environment variable in the bytes format...')
+            _log('[PARENT] Converting the environment variable in the '
+                 'bytes format...')
             try:
                 env = convert_environment_variables(env)
-            except Exception as e:
+            except Exception:
                 _log_exception()
 
             kwargs = {
@@ -477,7 +488,7 @@ if __name__ == '__main__':
                 'creationflags': CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS,
                 'close_fds': False,
                 'cwd': _out_dir,
-                'env':  env
+                'env': env
             }
 
             cmd = [sys.executable]

@@ -22,7 +22,8 @@ CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 try:
     with open(CURRENT_PATH + '/test_data.json') as data_file:
-        config_data = json.load(data_file)['table_insert_update_cases']['add_update']
+        config_data = json.load(data_file)[
+            'table_insert_update_cases']['add_update']
 except Exception as e:
     print(str(e))
 
@@ -44,8 +45,8 @@ class CheckForViewDataTest(BaseFeatureTest):
     """
 
     scenarios = [
-        ("Validate Insert, Update operations in View/Edit data with given test "
-         "data",
+        ("Validate Insert, Update operations in View/Edit data with "
+         "given test data",
          dict())
     ]
 
@@ -58,7 +59,8 @@ CREATE TABLE public.defaults
     id serial NOT NULL,
     number_defaults numeric(100) DEFAULT 1,
     number_null numeric(100),
-    text_defaults text COLLATE pg_catalog."default" DEFAULT 'Hello World'::text,
+    text_defaults text COLLATE pg_catalog."default"
+        DEFAULT 'Hello World'::text,
     text_null1 text COLLATE pg_catalog."default",
     text_null2 text COLLATE pg_catalog."default",
     text_null3 text COLLATE pg_catalog."default",
@@ -82,14 +84,18 @@ CREATE TABLE public.defaults
     def before(self):
         with test_utils.Database(self.server) as (connection, _):
             if connection.server_version < 90100:
-                self.skipTest("COLLATE is not present in PG versions below v9.1")
+                self.skipTest(
+                    "COLLATE is not present in PG versions below v9.1"
+                )
 
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
         test_utils.create_database(self.server, "acceptance_test_db")
 
@@ -120,12 +126,14 @@ CREATE TABLE public.defaults
 
     def after(self):
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
 
     @staticmethod
@@ -138,7 +146,7 @@ CREATE TABLE public.defaults
             xpath_grid_row = "//*[contains(@class, 'ui-widget-content') " \
                              "and contains(@style, 'top:25px')]"
 
-        xpath_row_cell = '//div[contains(@class, "'+cell+'")]'
+        xpath_row_cell = '//div[contains(@class, "' + cell + '")]'
 
         xpath_cell = '{0}{1}'.format(xpath_grid_row, xpath_row_cell)
 
@@ -149,7 +157,7 @@ CREATE TABLE public.defaults
         wait = WebDriverWait(self.driver, 5)
         try:
             wait.until(EC.text_to_be_present_in_element(
-                (By.XPATH, xpath+"//span"), str(value)),
+                (By.XPATH, xpath + "//span"), str(value)),
                 CheckForViewDataTest.TIMEOUT_STRING
             )
         except Exception:
@@ -192,16 +200,20 @@ CREATE TABLE public.defaults
             ActionChains(self.driver).send_keys(value).perform()
 
             # Click on editor's Save button
-            self.page.find_by_xpath("//*[contains(@class, 'pg_text_editor')]"
-                                    "//button[contains(@class, 'fa-save')]").click()
+            self.page.find_by_xpath(
+                "//*[contains(@class, 'pg_text_editor')]"
+                "//button[contains(@class, 'fa-save')]"
+            ).click()
         else:
             # Boolean editor test for to True click
             if data[1] == 'true':
-                checkbox_el = cell_el.find_element_by_xpath(".//*[contains(@class, 'multi-checkbox')]")
+                checkbox_el = cell_el.find_element_by_xpath(
+                    ".//*[contains(@class, 'multi-checkbox')]")
                 checkbox_el.click()
             # Boolean editor test for to False click
             elif data[1] == 'false':
-                checkbox_el = cell_el.find_element_by_xpath(".//*[contains(@class, 'multi-checkbox')]")
+                checkbox_el = cell_el.find_element_by_xpath(
+                    ".//*[contains(@class, 'multi-checkbox')]")
                 # Sets true
                 checkbox_el.click()
                 # Sets false
@@ -217,10 +229,11 @@ CREATE TABLE public.defaults
 
     def _view_data_grid(self):
         self.page.driver.find_element_by_link_text("Object").click()
-        ActionChains(self.page.driver) \
-            .move_to_element(
-                self.page.driver.find_element_by_link_text("View/Edit Data")) \
-            .perform()
+        ActionChains(
+            self.page.driver
+        ).move_to_element(
+            self.page.driver.find_element_by_link_text("View/Edit Data")
+        ).perform()
         self.page.find_by_partial_link_text("All Rows").click()
 
         # wait until datagrid frame is loaded.
@@ -274,7 +287,7 @@ CREATE TABLE public.defaults
     def _add_row(self):
         for idx in range(1, len(config_data.keys()) + 1):
             cell_xpath = CheckForViewDataTest._get_cell_xpath(
-                'r'+str(idx), 1
+                'r' + str(idx), 1
             )
             time.sleep(0.2)
             self._update_cell(cell_xpath, config_data[str(idx)])

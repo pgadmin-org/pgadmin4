@@ -26,15 +26,18 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
     ]
 
     def before(self):
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")
         test_utils.create_database(self.server, "acceptance_test_db")
-        test_utils.create_table(self.server, "acceptance_test_db", "test_table")
+        test_utils.create_table(
+            self.server, "acceptance_test_db", "test_table")
         self.page.add_server(self.server)
 
     def runTest(self):
@@ -62,7 +65,8 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
     def _copies_rows(self):
         pyperclip.copy("old clipboard contents")
-        self.page.find_by_xpath("//*[contains(@class, 'slick-row')]/*[1]").click()
+        self.page.find_by_xpath(
+            "//*[contains(@class, 'slick-row')]/*[1]").click()
 
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
 
@@ -71,7 +75,10 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
     def _copies_columns(self):
         pyperclip.copy("old clipboard contents")
-        self.page.find_by_xpath("//*[@data-test='output-column-header' and contains(., 'some_column')]").click()
+        self.page.find_by_xpath(
+            "//*[@data-test='output-column-header' and "
+            "contains(., 'some_column')]"
+        ).click()
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
 
         self.assertEqual(
@@ -82,18 +89,24 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
     def _copies_row_using_keyboard_shortcut(self):
         pyperclip.copy("old clipboard contents")
-        self.page.find_by_xpath("//*[contains(@class, 'slick-row')]/*[1]").click()
+        self.page.find_by_xpath(
+            "//*[contains(@class, 'slick-row')]/*[1]").click()
 
-        ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
+        ActionChains(self.page.driver).key_down(
+            Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
         self.assertEqual('"Some-Name"\t"6"\t"some info"',
                          pyperclip.paste())
 
     def _copies_column_using_keyboard_shortcut(self):
         pyperclip.copy("old clipboard contents")
-        self.page.find_by_xpath("//*[@data-test='output-column-header' and contains(., 'some_column')]").click()
+        self.page.find_by_xpath(
+            "//*[@data-test='output-column-header' and "
+            "contains(., 'some_column')]"
+        ).click()
 
-        ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
+        ActionChains(self.page.driver).key_down(
+            Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
         self.assertEqual(
             """\"Some-Name"
@@ -105,12 +118,21 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         pyperclip.copy("old clipboard contents")
 
         top_left_cell = self.page.find_by_xpath(
-            "//div[contains(@class, 'slick-cell') and contains(., 'Some-Other-Name')]")
-        bottom_right_cell = self.page.find_by_xpath("//div[contains(@class, 'slick-cell') and contains(., '14')]")
+            "//div[contains(@class, 'slick-cell') and "
+            "contains(., 'Some-Other-Name')]"
+        )
+        bottom_right_cell = self.page.find_by_xpath(
+            "//div[contains(@class, 'slick-cell') and contains(., '14')]")
 
-        ActionChains(self.page.driver).click_and_hold(top_left_cell).move_to_element(bottom_right_cell) \
-            .release(bottom_right_cell).perform()
-        ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
+        ActionChains(
+            self.page.driver
+        ).click_and_hold(top_left_cell).move_to_element(
+            bottom_right_cell
+        ).release(bottom_right_cell).perform()
+
+        ActionChains(
+            self.page.driver
+        ).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
         self.assertEqual("""\"Some-Other-Name"\t"22"
 "Yet-Another-Name"\t"14\"""", pyperclip.paste())
@@ -119,14 +141,24 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         pyperclip.copy("old clipboard contents")
 
         top_left_cell = self.page.find_by_xpath(
-            "//div[contains(@class, 'slick-cell') and contains(., 'Some-Other-Name')]")
+            "//div[contains(@class, 'slick-cell') and "
+            "contains(., 'Some-Other-Name')]"
+        )
         initial_bottom_right_cell = self.page.find_by_xpath(
             "//div[contains(@class, 'slick-cell') and contains(., '14')]")
-        ActionChains(self.page.driver).click_and_hold(top_left_cell).move_to_element(initial_bottom_right_cell) \
-            .release(initial_bottom_right_cell).perform()
+        ActionChains(
+            self.page.driver
+        ).click_and_hold(top_left_cell).move_to_element(
+            initial_bottom_right_cell
+        ).release(initial_bottom_right_cell).perform()
 
-        ActionChains(self.page.driver).key_down(Keys.SHIFT).send_keys(Keys.ARROW_RIGHT).key_up(Keys.SHIFT).perform()
-        ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
+        ActionChains(self.page.driver).key_down(Keys.SHIFT).send_keys(
+            Keys.ARROW_RIGHT
+        ).key_up(Keys.SHIFT).perform()
+
+        ActionChains(self.page.driver).key_down(
+            Keys.CONTROL
+        ).send_keys('c').key_up(Keys.CONTROL).perform()
 
         self.assertEqual("""\"Some-Other-Name"\t"22"\t"some other info"
 "Yet-Another-Name"\t"14"\t"cool info\"""", pyperclip.paste())
@@ -134,11 +166,16 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
     def _shift_resizes_column_selection(self):
         pyperclip.copy("old clipboard contents")
 
-        self.page.find_by_xpath("//*[@data-test='output-column-header' and contains(., 'value')]").click()
-        ActionChains(self.page.driver).key_down(Keys.SHIFT).send_keys(Keys.ARROW_LEFT) \
-            .key_up(Keys.SHIFT).perform()
+        self.page.find_by_xpath(
+            "//*[@data-test='output-column-header' and "
+            "contains(., 'value')]"
+        ).click()
 
-        ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
+        ActionChains(self.page.driver).key_down(
+            Keys.SHIFT).send_keys(Keys.ARROW_LEFT).key_up(Keys.SHIFT).perform()
+
+        ActionChains(self.page.driver).key_down(
+            Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
         self.assertEqual(
             """\"Some-Name"\t"6"
@@ -150,7 +187,9 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         pyperclip.copy("old clipboard contents")
 
         bottom_right_cell = self.page.find_by_xpath(
-            "//div[contains(@class, 'slick-cell') and contains(., 'cool info')]")
+            "//div[contains(@class, 'slick-cell') and "
+            "contains(., 'cool info')]"
+        )
 
         load_button = self.page.find_by_xpath("//button[@id='btn-load-file']")
         ActionChains(self.page.driver).click_and_hold(bottom_right_cell) \
@@ -158,7 +197,8 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             .release(load_button) \
             .perform()
 
-        ActionChains(self.page.driver).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
+        ActionChains(self.page.driver).key_down(
+            Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
         self.assertEqual('"cool info"', pyperclip.paste())
 
@@ -166,10 +206,12 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         self.page.close_query_tool()
         self.page.remove_server(self.server)
 
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'],
-                                                  self.server['sslmode'])
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
         test_utils.drop_database(connection, "acceptance_test_db")

@@ -26,11 +26,15 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
     def before(self):
         with test_utils.Database(self.server) as (connection, _):
             if connection.server_version < 90100:
-                self.skipTest("Functions tree node is not present in pgAdmin below PG v9.1")
+                self.skipTest(
+                    "Functions tree node is not present in pgAdmin below "
+                    "PG v9.1"
+                )
 
         # Some test function is needed for debugger
-        test_utils.create_debug_function(self.server, "postgres",
-                                   "a_test_function")
+        test_utils.create_debug_function(
+            self.server, "postgres", "a_test_function"
+        )
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
@@ -40,7 +44,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
     def after(self):
         test_utils.drop_debug_function(self.server, "postgres",
-                                   "a_test_function")
+                                       "a_test_function")
         self.page.remove_server(self.server)
 
     def _function_node_expandable(self):
@@ -54,17 +58,21 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
     def _debug_function(self):
         self.page.driver.find_element_by_link_text("Object").click()
-        ActionChains(self.page.driver) \
-            .move_to_element(self.page.driver.find_element_by_link_text("Debugging")) \
-            .perform()
+        ActionChains(
+            self.page.driver
+        ).move_to_element(
+            self.page.driver.find_element_by_link_text("Debugging")
+        ).perform()
         self.page.driver.find_element_by_link_text("Debug").click()
 
         # We need to check if debugger plugin is installed or not
         try:
             wait = WebDriverWait(self.page.driver, 2)
             is_error = wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//div[contains(@class, 'alertify') and not(contains(@class, 'ajs-hidden'))]//div[contains(@class,'ajs-header')]"))
-            )
+                (By.XPATH, "//div[contains(@class, 'alertify') and "
+                           "not(contains(@class, 'ajs-hidden'))]//div["
+                           "contains(@class,'ajs-header')]")
+            ))
 
         except TimeoutException as e:
             is_error = None
@@ -88,7 +96,8 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
             )
 
             wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//td[contains(@class,'test_function') and contains(.,'Hello, pgAdmin4')]"))
+                (By.XPATH, "//td[contains(@class,'test_function') and "
+                           "contains(.,'Hello, pgAdmin4')]"))
             )
 
             # Only this tab is vulnerable rest are BackGrid & Code Mirror
@@ -107,9 +116,11 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
     def _close_debugger(self):
         self.page.driver.switch_to_default_content()
         self.page.click_element(
-            self.page.find_by_xpath("//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]")
+            self.page.find_by_xpath(
+                "//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]")
         )
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code
-        assert source_code.find(string_to_find) != -1, "{0} might be vulnerable to XSS ".format(source)
+        assert source_code.find(string_to_find) != - \
+            1, "{0} might be vulnerable to XSS ".format(source)
