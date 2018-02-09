@@ -1,6 +1,6 @@
 // Karma configuration
-// Generated on Wed Mar 01 2017 14:19:28 GMT-0500 (EST)
 const webpackConfig = require('./webpack.test.config.js');
+const isDocker = require('is-docker')();
 
 module.exports = function (config) {
   config.set({
@@ -8,7 +8,7 @@ module.exports = function (config) {
     reporters: ['progress', 'kjhtml'],
     plugins: [
       'karma-webpack',
-      'karma-phantomjs-launcher',
+      'karma-chrome-launcher',
       'karma-jasmine',
       'karma-jasmine-html-reporter',
     ],
@@ -56,7 +56,15 @@ module.exports = function (config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    customLaunchers: {
+      ChromeCustom: {
+        base: 'ChromeHeadless',
+        // We must disable the Chrome sandbox when running Chrome inside Docker (Chrome's sandbox needs
+        // more permissions than Docker allows by default)
+        flags: isDocker ? ['--no-sandbox'] : []
+      }
+    },
+    browsers: ['ChromeCustom'],
 
 
     // Continuous Integration mode
