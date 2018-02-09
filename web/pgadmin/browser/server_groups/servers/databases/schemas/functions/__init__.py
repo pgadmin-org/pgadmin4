@@ -982,8 +982,14 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            name_with_default_args = self.qtIdent(self.conn,
+                                                  res['rows'][0]['nspname'],
+                                                  res['rows'][0][
+                                                      'proname']) + '(' + \
+                res['rows'][0]['func_args'] + ')'
             # Add newline and tab before each argument to format
-            name_with_default_args = res['rows'][0]['name_with_default_args'].replace(', ', ',\r\t').replace('(', '(\r\t')
+            name_with_default_args = name_with_default_args.replace(
+                ', ', ',\r\t').replace('(', '(\r\t')
 
             # Parse privilege data
             if 'acl' in resp_data:
@@ -1024,8 +1030,11 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            name_with_default_args = self.qtIdent(self.conn,
+                                                  res['rows'][0]['nspname'], res['rows'][0]['proname']) + '(' + res['rows'][0]['func_args'] + ')'
             # Add newline and tab before each argument to format
-            name_with_default_args = res['rows'][0]['name_with_default_args'].replace(', ', ',\r\t').replace('(', '(\r\t')
+            name_with_default_args = name_with_default_args.replace(', ', ',\r\t').replace('(',
+                                                                      '(\r\t')
 
             # Generate sql for "SQL panel"
             # func_def is function signature with default arguments
@@ -1405,7 +1414,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         if not status:
             return internal_server_error(errormsg=res)
 
-        name = res['rows'][0]['name']
+        name = self.qtIdent(self.conn, res['rows'][0]['nspname'],
+                            res['rows'][0]['proname']) + '(' + \
+            res['rows'][0]['func_with_identity_arguments'] + ')'
 
         # Fetch only arguments
         argString = name[name.rfind('('):].strip('(').strip(')')
