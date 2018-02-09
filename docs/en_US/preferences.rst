@@ -69,6 +69,11 @@ Expand the *Debugger* node to specify your debugger display preferences.
 
 * When the *Open in new browser tab* switch is set to *True*, the Debugger will open in a new browser tab when invoked.
 
+Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the debugger window navigation:
+
+.. image:: images/preferences_debugger_keyboard_shortcuts.png
+    :alt: Preferences dialog debugger keyboard shortcuts section
+
 **The Miscellaneous Node**
 
 Expand the *Miscellaneous* node to specify miscellaneous display preferences.

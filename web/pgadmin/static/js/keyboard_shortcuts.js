@@ -1,8 +1,6 @@
 import $ from 'jquery';
 
-// Debugger
-const EDIT_KEY = 71,  // Key: G -> Grid values
-  LEFT_ARROW_KEY = 37,
+const LEFT_ARROW_KEY = 37,
   RIGHT_ARROW_KEY = 39,
   F5_KEY = 116,
   F7_KEY = 118,
@@ -50,38 +48,44 @@ function _stopEventPropagation(event) {
   event.stopImmediatePropagation();
 }
 
-/* Debugger: Keyboard Shortcuts handling */
-function keyboardShortcutsDebugger($el, event) {
-  let keyCode = event.which || event.keyCode;
-
-  // To handle debugger's internal tab navigation like Parameters/Messages...
-  if (this.isAltShiftBoth(event)) {
-    // Get the active wcDocker panel from DOM element
-    let panel_id, panel_content, $input;
-    switch(keyCode) {
-    case LEFT_ARROW_KEY:
-      this._stopEventPropagation(event);
-      panel_id = this.getInnerPanel($el, 'left');
-      break;
-    case RIGHT_ARROW_KEY:
-      this._stopEventPropagation(event);
-      panel_id = this.getInnerPanel($el, 'right');
-      break;
-    case EDIT_KEY:
-      this._stopEventPropagation(event);
-      panel_content = $el.find(
-        'div.wcPanelTabContent:not(".wcPanelTabContentHidden")'
-      );
-      if(panel_content.length) {
-        $input = $(panel_content).find('td.editable:first');
-        if($input.length)
-          $input.click();
-      }
-      break;
-    }
-    // Actual panel starts with 1 in wcDocker
-    return panel_id;
+/* Function use to validate shortcut keys */
+function validateShortcutKeys(user_defined_shortcut, event) {
+  if(!user_defined_shortcut) {
+    return false;
   }
+
+  let keyCode = event.which || event.keyCode;
+  return user_defined_shortcut.alt == event.altKey &&
+    user_defined_shortcut.shift == event.shiftKey &&
+    user_defined_shortcut.control == event.ctrlKey &&
+    user_defined_shortcut.key.key_code == keyCode;
+}
+
+/* Debugger: Keyboard Shortcuts handling */
+function keyboardShortcutsDebugger($el, event, user_defined_shortcuts) {
+  let panel_id, panel_content, $input;
+  let edit_grid_keys = user_defined_shortcuts.edit_grid_keys,
+    next_panel_keys = user_defined_shortcuts.next_panel_keys,
+    previous_panel_keys = user_defined_shortcuts.previous_panel_keys;
+
+  if(this.validateShortcutKeys(edit_grid_keys, event)) {
+    this._stopEventPropagation(event);
+    panel_content = $el.find(
+      'div.wcPanelTabContent:not(".wcPanelTabContentHidden")'
+    );
+    if(panel_content.length) {
+      $input = $(panel_content).find('td.editable:first');
+      if($input.length)
+        $input.click();
+    }
+  } else if(this.validateShortcutKeys(next_panel_keys, event)) {
+    this._stopEventPropagation(event);
+    panel_id = this.getInnerPanel($el, 'right');
+  } else if(this.validateShortcutKeys(previous_panel_keys, event)) {
+    this._stopEventPropagation(event);
+    panel_id = this.getInnerPanel($el, 'left');
+  }
+  return panel_id;
 }
 
 // Finds the desired panel on which user wants to navigate to
@@ -169,6 +173,7 @@ module.exports = {
   processEventDebugger: keyboardShortcutsDebugger,
   processEventQueryTool: keyboardShortcutsQueryTool,
   getInnerPanel: getInnerPanel,
+  validateShortcutKeys: validateShortcutKeys,
   // misc functions
   _stopEventPropagation: _stopEventPropagation,
   isMac: isMac,

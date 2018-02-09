@@ -41,19 +41,19 @@ try {
             <div class="btn-group" role="group" aria-label="">
                 <button type="button" class="btn btn-default btn-step-into"
                         title="{{ _('Step into') }}"
-                        accesskey="i"
+                        accesskey="{{ accesskey.step_into }}"
                         tabindex="0" autofocus="autofocus">
                     <i class="fa fa-indent"></i>
                 </button>
                 <button type="button" class="btn btn-default btn-step-over"
                         title="{{ _('Step over') }}"
-                        accesskey="o"
+                        accesskey="{{ accesskey.step_over }}"
                         tabindex="0">
                     <i class="fa fa-outdent"></i>
                 </button>
                 <button type="button" class="btn btn-default btn-continue"
                         title="{{ _('Continue/Start') }}"
-                        accesskey="c"
+                        accesskey="{{ accesskey.toggle_breakpoint }}"
                         tabindex="0">
                     <i class="fa fa-play-circle"></i>
                 </button>
@@ -61,20 +61,20 @@ try {
             <div class="btn-group" role="group" aria-label="">
                 <button type="button" class="btn btn-default btn-toggle-breakpoint"
                         title="{{ _('Toggle breakpoint') }}"
-                        accesskey="t"
+                        accesskey="{{ accesskey.toggle_breakpoint }}"
                         tabindex="0">
                     <i class="fa fa-circle"></i>
                 </button>
                 <button type="button" class="btn btn-default btn-clear-breakpoint"
                         title="{{ _('Clear all breakpoints') }}"
-                        accesskey="x"
+                        accesskey="{{ accesskey.clear_breakpoints }}"
                         tabindex="0">
                     <i class="fa fa-ban"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button type="button" class="btn btn-default btn-stop"
-                        accesskey="s"
+                        accesskey="{{ accesskey.stop }}"
                         title="{{ _('Stop') }}"
                         tabindex="0">
                     <i class="fa fa-stop-circle"></i>

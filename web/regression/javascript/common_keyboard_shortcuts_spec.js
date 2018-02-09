@@ -16,7 +16,14 @@ describe('the keyboard shortcuts', () => {
     RIGHT_ARROW_KEY = 39,
     MOVE_NEXT = 'right';
 
-  let debuggerElementSpy, event;
+  let debuggerElementSpy, event, debuggerUserShortcutSpy;
+  debuggerUserShortcutSpy = jasmine.createSpyObj(
+    'userDefinedShortcuts', [
+      { 'edit_grid_keys': null },
+      { 'next_panel_keys': null },
+      { 'previous_panel_keys': null }
+    ]
+  );
   beforeEach(() => {
     event = {
       shift: false,
@@ -31,7 +38,9 @@ describe('the keyboard shortcuts', () => {
   describe('when the key is not handled by the function', function () {
     beforeEach(() => {
       event.which = F1_KEY;
-      keyboardShortcuts.processEventDebugger(debuggerElementSpy, event);
+      keyboardShortcuts.processEventDebugger(
+        debuggerElementSpy, event, debuggerUserShortcutSpy
+      );
     });
 
     it('should allow event to propagate', () => {

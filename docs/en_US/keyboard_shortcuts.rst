@@ -4,7 +4,7 @@ Keyboard Shortcuts
 
 Keyboard shortcuts are provided in pgAdmin to allow easy access to specific
 functions. Alternate shortcuts can be configured through File > Preferences if
-desired.
+desired.˝
 
 **Main Browser Window**
 
@@ -130,7 +130,7 @@ When using the Debugger, the following shortcuts are available:
 +--------------------------+--------------------+-----------------------------------+
 | <accesskey> + s          | <accesskey> + s    | Stop                              |
 +--------------------------+--------------------+-----------------------------------+
-| Alt + Shift + g          | Alt + Shift + g    | Enter or Edit values in Grid      |
+| Alt + Shift + q          | Alt + Shift + q    | Enter or Edit values in Grid      |
 +--------------------------+--------------------+-----------------------------------+
 
 

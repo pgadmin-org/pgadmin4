@@ -73,6 +73,172 @@ class DebuggerModule(PgAdminModule):
                              'will be opened in a new browser tab.')
         )
 
+        # Shortcut configuration for Accesskey
+        accesskey_fields = [
+            {
+                'name': 'key',
+                'type': 'keyCode',
+                'label': gettext('Key')
+            }
+        ]
+
+        shortcut_fields = [
+            {
+                'name': 'alt',
+                'type': 'checkbox',
+                'label': gettext('Alt/Option')
+            },
+            {
+                'name': 'shift',
+                'type': 'checkbox',
+                'label': gettext('Shift')
+            },
+
+            {
+                'name': 'control',
+                'type': 'checkbox',
+                'label': gettext('Ctrl')
+            },
+            {
+                'name': 'key',
+                'type': 'keyCode',
+                'label': gettext('Key')
+            }
+        ]
+
+        self.preference.register(
+            'keyboard_shortcuts', 'btn_start',
+            gettext('Accesskey (Continue/Start)'), 'keyboardshortcut',
+            {
+                'key': {
+                    'key_code': 67,
+                    'char': 'c'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=accesskey_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts', 'btn_stop',
+            gettext('Accesskey (Stop)'), 'keyboardshortcut',
+            {
+                'key': {
+                    'key_code': 83,
+                    'char': 's'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=accesskey_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts', 'btn_step_into',
+            gettext('Accesskey (Step into)'), 'keyboardshortcut',
+            {
+                'key': {
+                    'key_code': 73,
+                    'char': 'i'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=accesskey_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts', 'btn_step_over',
+            gettext('Accesskey (Step over)'), 'keyboardshortcut',
+            {
+                'key': {
+                    'key_code': 79,
+                    'char': 'o'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=accesskey_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts', 'btn_toggle_breakpoint',
+            gettext('Accesskey (Toggle breakpoint)'), 'keyboardshortcut',
+            {
+                'key': {
+                    'key_code': 84,
+                    'char': 't'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=accesskey_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts', 'btn_clear_breakpoints',
+            gettext('Accesskey (Clear all breakpoints)'), 'keyboardshortcut',
+            {
+                'key': {
+                    'key_code': 88,
+                    'char': 'x'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=accesskey_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'edit_grid_values',
+            gettext('Edit grid values'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {
+                    'key_code': 81,
+                    'char': 'q'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=shortcut_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'move_previous',
+            gettext('Previous tab'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {
+                    'key_code': 37,
+                    'char': 'ArrowLeft'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=shortcut_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'move_next',
+            gettext('Next tab'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {
+                    'key_code': 39,
+                    'char': 'ArrowRight'
+                }
+            },
+            category_label=gettext('Keyboard shortcuts'),
+            fields=shortcut_fields
+        )
+
+
     def get_exposed_url_endpoints(self):
         """
         Returns the list of URLs exposed to the client.
@@ -157,6 +323,33 @@ def update_session_function_transaction(trans_id, data):
     function_data = session['functionData']
     function_data[str(trans_id)] = data
     session['functionData'] = function_data
+
+
+def get_shortcuts_for_accesskey():
+    """
+    This function will fetch and return accesskey shortcuts for debugger
+    toolbar buttons
+
+    Returns:
+        Dict of shortcut keys
+    """
+    # Fetch debugger preferences
+    dp = Preferences.module('debugger')
+    btn_start = dp.preference('btn_start').get()
+    btn_stop = dp.preference('btn_stop').get()
+    btn_step_into = dp.preference('btn_step_into').get()
+    btn_step_over = dp.preference('btn_step_over').get()
+    btn_toggle_breakpoint = dp.preference('btn_toggle_breakpoint').get()
+    btn_clear_breakpoints = dp.preference('btn_clear_breakpoints').get()
+
+    return {
+        'start': btn_start.get('key').get('char'),
+        'stop': btn_stop.get('key').get('char'),
+        'step_into': btn_step_into.get('key').get('char'),
+        'step_over': btn_step_over.get('key').get('char'),
+        'toggle_breakpoint': btn_toggle_breakpoint.get('key').get('char'),
+        'clear_breakpoints': btn_clear_breakpoints.get('key').get('char')
+    }
 
 
 @blueprint.route(
@@ -411,6 +604,8 @@ def direct_new(trans_id):
     # We need client OS information to render correct Keyboard shortcuts
     user_agent = UserAgent(request.headers.get('User-Agent'))
 
+
+
     return render_template(
         "debugger/direct.html",
         _=gettext,
@@ -420,7 +615,8 @@ def direct_new(trans_id):
         is_desktop_mode=current_app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
         client_platform=user_agent.platform,
-        stylesheets=[url_for('debugger.static', filename='css/debugger.css')]
+        stylesheets=[url_for('debugger.static', filename='css/debugger.css')],
+        accesskey=get_shortcuts_for_accesskey()
     )
 
 

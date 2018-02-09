@@ -625,9 +625,8 @@ define([
       Restart: function(trans_id) {
 
         var self = this,
-          baseUrl = url_for('debugger.restart', {
-            'trans_id': trans_id,
-          });
+          baseUrl = url_for('debugger.restart', {'trans_id': trans_id});
+
         self.enable('stop', false);
         self.enable('step_over', false);
         self.enable('step_into', false);
@@ -636,7 +635,11 @@ define([
         self.enable('continue', false);
 
         // Clear msg tab
-        pgTools.DirectDebug.messages_panel.$container.find('.messages').html('');
+        pgTools.DirectDebug
+               .messages_panel
+               .$container
+               .find('.messages')
+               .html('');
 
         $.ajax({
           url: baseUrl,
@@ -1161,7 +1164,9 @@ define([
           model: DebuggerVariablesModel,
         });
 
-        VariablesCollection.prototype.on('change', self.deposit_parameter_value, self);
+        VariablesCollection.prototype.on(
+          'change', self.deposit_parameter_value, self
+        );
 
         var gridCols = [{
           name: 'name',
@@ -1205,14 +1210,19 @@ define([
           className: 'backgrid table-bordered',
         });
 
+        variable_grid.collection.on(
+          'backgrid:edited', () => {
+            pgTools.DirectDebug.editor.focus();
+          }
+        );
+
         variable_grid.render();
 
         // Render the variables grid into local variables panel
         pgTools.DirectDebug.local_variables_panel
-          .$container
-          .find('.local_variables')
-          .append(variable_grid.el);
-
+                           .$container
+                           .find('.local_variables')
+                           .append(variable_grid.el);
       },
 
       AddParameters: function(result) {
@@ -1237,7 +1247,9 @@ define([
           model: DebuggerParametersModel,
         });
 
-        self.ParametersCollection.prototype.on('change', self.deposit_parameter_value, self);
+        ParametersCollection.prototype.on(
+          'change', self.deposit_parameter_value, self
+        );
 
         var paramGridCols = [{
           name: 'name',
@@ -1281,12 +1293,20 @@ define([
           className: 'backgrid table-bordered',
         });
 
+        param_grid.collection.on(
+          'backgrid:edited', () => {
+            pgTools.DirectDebug.editor.focus();
+          }
+        );
+
         param_grid.render();
 
         // Render the parameters grid into parameter panel
-        pgTools.DirectDebug.parameters_panel.$container.find('.parameters').append(param_grid.el);
+        pgTools.DirectDebug.parameters_panel
+                           .$container
+                           .find('.parameters')
+                           .append(param_grid.el);
       },
-
       deposit_parameter_value: function(model) {
         var self = this;
 
@@ -1476,7 +1496,45 @@ define([
     },
     keyAction: function (event) {
       var $el = this.$el, panel_id, actual_panel;
-      panel_id = keyboardShortcuts.processEventDebugger($el, event);
+
+      // If already fetched earlier then don't do it again
+      if(_.size(pgTools.DirectDebug.debugger_keyboard_shortcuts) == 0) {
+        // Fetch keyboard shortcut keys
+        var edit_grid_shortcut_perf, next_panel_perf, previous_panel_perf;
+        edit_grid_shortcut_perf = window.top.pgAdmin.Browser.get_preference(
+          'debugger', 'edit_grid_values'
+        );
+        next_panel_perf = window.top.pgAdmin.Browser.get_preference(
+          'debugger', 'move_next'
+        );
+        previous_panel_perf = window.top.pgAdmin.Browser.get_preference(
+          'debugger', 'move_previous'
+        );
+
+        // If debugger opened in new Tab then window.top won't be available
+        if(!edit_grid_shortcut_perf || !next_panel_perf || !previous_panel_perf) {
+          edit_grid_shortcut_perf = window.opener.pgAdmin.Browser.get_preference(
+            'debugger', 'edit_grid_values'
+          );
+          next_panel_perf = window.opener.pgAdmin.Browser.get_preference(
+            'debugger', 'move_next'
+          );
+          previous_panel_perf = window.opener.pgAdmin.Browser.get_preference(
+            'debugger', 'move_previous'
+          );
+        }
+
+        pgTools.DirectDebug.debugger_keyboard_shortcuts = {
+          'edit_grid_keys': edit_grid_shortcut_perf.value,
+          'next_panel_keys': next_panel_perf.value,
+          'previous_panel_keys': previous_panel_perf.value,
+        };
+      }
+
+      panel_id = keyboardShortcuts.processEventDebugger(
+        $el, event, pgTools.DirectDebug.debugger_keyboard_shortcuts
+      );
+
       // Panel navigation
       if(!_.isUndefined(panel_id) && !_.isNull(panel_id)) {
         actual_panel = panel_id + 1;
@@ -1513,6 +1571,7 @@ define([
       this.debug_restarted = false;
       this.is_user_aborted_debugging = false;
       this.is_polling_required = true; // Flag to stop unwanted ajax calls
+      this.debugger_keyboard_shortcuts = {};
 
       this.docker = new wcDocker(
         '#container', {
@@ -1748,7 +1807,7 @@ define([
       // To show the line-number and set breakpoint marker details by user.
       self.editor = CodeMirror.fromTextArea(
         code_editor_area.get(0), {
-          tabindex: 0,
+          tabindex: -1,
           lineNumbers: true,
           foldOptions: {
             widget: '\u2026',
@@ -1774,6 +1833,14 @@ define([
           autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
           matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
         });
+
+      // Useful for keyboard navigation, when user presses escape key we will
+      // defocus from the codemirror editor allow user to navigate further
+      CodeMirror.on(self.editor, 'keydown', function(cm,event) {
+        if(event.keyCode==27){
+          document.activeElement.blur();
+        }
+      });
 
       // On loading the docker, register the callbacks
       var onLoad = function() {
