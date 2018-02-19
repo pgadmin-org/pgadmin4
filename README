@@ -208,7 +208,7 @@ installed. Then, you can run the following commands on a *nix system to
 download the required packages and build the bundle:
 
     (pgadmin4) $ cd $PGADMIN4_SRC
-    (pgadmin4) $ make node-install
+    (pgadmin4) $ make install-node
     (pgadmin4) $ make bundle
 
 On Windows systems (where "make" is not available, the following commands
