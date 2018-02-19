@@ -1,3 +1,4 @@
+/*pga4dash*/
 SELECT
     name,
     category,
