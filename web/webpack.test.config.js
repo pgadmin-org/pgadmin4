@@ -24,7 +24,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015', 'react'],
+            presets: ['es2015', 'react', 'airbnb'],
           },
         },
       }, {
@@ -81,12 +81,5 @@ module.exports = {
       'pgadmin.backgrid': sourcesDir + '/js/backgrid.pgadmin',
       'pgadmin.backform': sourcesDir + '/js/backform.pgadmin',
     },
-  },
-  externals: {
-    'react/addons': true,
-    'react/lib/ReactContext': true,
-    'react/lib/ExecutionEnvironment': true,
-    'react-dom/test-utils': true,
-    'react-test-renderer/shallow': true,
   },
 };

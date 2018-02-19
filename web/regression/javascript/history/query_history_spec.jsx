@@ -23,6 +23,8 @@ import HistoryCollection from '../../../pgadmin/static/js/history/history_collec
 import clipboard from '../../../pgadmin/static/js/selection/clipboard';
 
 import {mount} from 'enzyme';
+import '../helper/enzyme.helper';
+
 
 describe('QueryHistory', () => {
   let historyCollection;
@@ -40,12 +42,12 @@ describe('QueryHistory', () => {
 
     describe('when we switch to the query history tab', () => {
       beforeEach(() => {
-        historyWrapper.node.refocus();
-        spyOn(historyWrapper.node, 'retrieveSelectedQuery');
+        historyWrapper.instance().refocus();
+        spyOn(historyWrapper.instance(), 'retrieveSelectedQuery');
       });
 
       it('does not try to focus on any element', () => {
-        expect(historyWrapper.node.retrieveSelectedQuery).not.toHaveBeenCalled();
+        expect(historyWrapper.instance().retrieveSelectedQuery).not.toHaveBeenCalled();
       });
     });
 
@@ -66,6 +68,7 @@ describe('QueryHistory', () => {
     let queryEntries;
     let queryDetail;
     let isInvisibleSpy;
+    let queryHistoryEntriesComponent;
 
     describe('when two SQL queries were executed', () => {
 
@@ -89,8 +92,8 @@ describe('QueryHistory', () => {
 
         historyWrapper = mount(<QueryHistory historyCollection={historyCollection}/>);
 
-        const queryHistoryEntriesComponent = historyWrapper.find(QueryHistoryEntries);
-        isInvisibleSpy = spyOn(queryHistoryEntriesComponent.node, 'isInvisible')
+        queryHistoryEntriesComponent = historyWrapper.find(QueryHistoryEntries);
+        isInvisibleSpy = spyOn(queryHistoryEntriesComponent.instance(), 'isInvisible')
           .and.returnValue(false);
 
         queryEntries = queryHistoryEntriesComponent.find(QueryHistoryEntry);
@@ -113,55 +116,60 @@ describe('QueryHistory', () => {
         });
 
         it('renders the most recent query as selected', () => {
-          expect(queryEntries.at(0).nodes.length).toBe(1);
-          expect(queryEntries.at(0).hasClass('selected')).toBeTruthy();
+          expect(queryEntries.at(0).getElements().length).toBe(1);
+          expect(queryEntries.at(0).render().hasClass('selected')).toBeTruthy();
         });
 
         it('renders the older query as not selected', () => {
-          expect(queryEntries.at(1).nodes.length).toBe(1);
-          expect(queryEntries.at(1).hasClass('selected')).toBeFalsy();
-          expect(queryEntries.at(1).hasClass('error')).toBeTruthy();
+          expect(queryEntries.at(1).getElements().length).toBe(1);
+          expect(queryEntries.at(1).render().hasClass('selected')).toBeFalsy();
+          expect(queryEntries.at(1).render().hasClass('error')).toBeTruthy();
         });
 
         describe('when the selected query is the most recent', () => {
           describe('when we press arrow down', () => {
             beforeEach(() => {
-              pressArrowDownKey(queryEntries.parent().at(0));
+              pressArrowDownKey(queryHistoryEntriesComponent.find('.list-item').at(0));
             });
 
             it('should select the next query', () => {
-              expect(queryEntries.at(1).nodes.length).toBe(1);
-              expect(queryEntries.at(1).hasClass('selected')).toBeTruthy();
+              expect(queryEntries.at(1).getElements().length).toBe(1);
+              expect(queryEntries.at(1).render().hasClass('selected')).toBeTruthy();
             });
 
             it('should display the corresponding detail on the right pane', () => {
-              expect(queryDetail.at(0).text()).toContain('message from second sql query');
+              expect(queryDetail.at(0).render().text()).toContain('message from second sql query');
             });
 
             describe('when arrow down pressed again', () => {
               it('should not change the selected query', () => {
-                pressArrowDownKey(queryEntries.parent().at(0));
+                pressArrowDownKey(queryHistoryEntriesComponent.find('.list-item').at(0));
 
-                expect(queryEntries.at(1).nodes.length).toBe(1);
-                expect(queryEntries.at(1).hasClass('selected')).toBeTruthy();
+                expect(queryEntries.at(1).getElements().length).toBe(1);
+                expect(queryEntries.at(1).render().hasClass('selected')).toBeTruthy();
               });
             });
 
             describe('when arrow up is pressed', () => {
-              it('should select the most recent query', () => {
-                pressArrowUpKey(queryEntries.parent().at(0));
+              beforeEach(() => {
+                pressArrowUpKey(queryHistoryEntriesComponent.find('.list-item').at(0));
+              });
 
-                expect(queryEntries.at(0).nodes.length).toBe(1);
-                expect(queryEntries.at(0).hasClass('selected')).toBeTruthy();
+              it('should select the most recent query', () => {
+                expect(queryEntries.at(0).getElements().length).toBe(1);
+                expect(queryEntries.at(0).render().hasClass('selected')).toBeTruthy();
               });
             });
           });
 
           describe('when arrow up is pressed', () => {
+            beforeEach(() => {
+              pressArrowUpKey(queryHistoryEntriesComponent.find('.list-item').at(0));
+            });
+
             it('should not change the selected query', () => {
-              pressArrowUpKey(queryEntries.parent().at(0));
-              expect(queryEntries.at(0).nodes.length).toBe(1);
-              expect(queryEntries.at(0).hasClass('selected')).toBeTruthy();
+              expect(queryEntries.at(0).getElements().length).toBe(1);
+              expect(queryEntries.at(0).render().hasClass('selected')).toBeTruthy();
             });
           });
         });
@@ -173,6 +181,7 @@ describe('QueryHistory', () => {
         beforeEach(() => {
           copyAllButton = () => queryDetail.find('#history-detail-query > button');
         });
+
         it('displays the formatted timestamp', () => {
           expect(queryDetail.at(0).text()).toContain('6-3-17 14:03:15Date');
         });
@@ -243,7 +252,7 @@ describe('QueryHistory', () => {
               });
 
               it('should have the class \'was-copied\'', () => {
-                expect(copyAllButton().hasClass('was-copied')).toBe(true);
+                expect(copyAllButton().render().hasClass('was-copied')).toBe(true);
               });
             });
 
@@ -274,7 +283,7 @@ describe('QueryHistory', () => {
                 });
 
                 it('should have the class \'was-copied\'', () => {
-                  expect(copyAllButton().hasClass('was-copied')).toBe(true);
+                  expect(copyAllButton().render().hasClass('was-copied')).toBe(true);
                 });
               });
 
@@ -319,14 +328,14 @@ describe('QueryHistory', () => {
         });
 
         it('deselects the first history entry', () => {
-          expect(firstEntry.nodes.length).toBe(1);
+          expect(firstEntry.getElements().length).toBe(1);
           expect(firstEntry.hasClass('selected')).toBeFalsy();
 
         });
 
         it('selects the second history entry', () => {
-          expect(secondEntry.nodes.length).toBe(1);
-          expect(secondEntry.hasClass('selected')).toBeTruthy();
+          expect(secondEntry.getElements().length).toBe(1);
+          expect(secondEntry.render().hasClass('selected')).toBeTruthy();
         });
       });
 
@@ -342,7 +351,7 @@ describe('QueryHistory', () => {
             let selectedListItem;
 
             beforeEach(() => {
-              selectedListItem = ReactDOM.findDOMNode(historyWrapper.node)
+              selectedListItem = ReactDOM.findDOMNode(historyWrapper.instance())
                 .getElementsByClassName('selected')[0].parentElement;
 
               spyOn(selectedListItem, 'focus');
@@ -355,7 +364,7 @@ describe('QueryHistory', () => {
             });
 
             it('the first query scrolls into view', () => {
-              historyWrapper.node.refocus();
+              historyWrapper.instance().refocus();
               expect(selectedListItem.focus).toHaveBeenCalledTimes(0);
               jasmine.clock().tick(1);
               expect(selectedListItem.focus).toHaveBeenCalledTimes(1);
@@ -473,7 +482,7 @@ describe('QueryHistory', () => {
         historyWrapper = mount(<QueryHistory historyCollection={historyCollection}/>);
 
         const queryHistoryEntriesComponent = historyWrapper.find(QueryHistoryEntries);
-        isInvisibleSpy = spyOn(queryHistoryEntriesComponent.node, 'isInvisible')
+        isInvisibleSpy = spyOn(queryHistoryEntriesComponent.instance(), 'isInvisible')
           .and.returnValue(false);
 
         queryEntries = queryHistoryEntriesComponent.find(QueryHistoryEntry);

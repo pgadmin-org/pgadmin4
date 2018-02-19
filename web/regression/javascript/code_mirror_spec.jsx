@@ -13,7 +13,7 @@ import CodeMirror from '../../pgadmin/static/jsx/history/detail/code_mirror';
 import jasmineEnzyme from 'jasmine-enzyme';
 
 import {shallow} from 'enzyme';
-
+import './helper/enzyme.helper';
 
 describe('CodeMirror', () => {
   beforeEach(() => {

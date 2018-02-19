@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import HistoryCollection from '../../../pgadmin/static/js/history/history_collection';
+import '../helper/enzyme.helper';
 
 describe('historyCollection', function () {
   let historyCollection, historyModel, onChangeSpy, onResetSpy;
