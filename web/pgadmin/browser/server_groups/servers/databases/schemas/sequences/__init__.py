@@ -141,15 +141,19 @@ class SequenceView(PGChildNodeView):
             @wraps(f)
             def wrapped(self, *args, **kwargs):
 
-                self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+                driver = get_driver(PG_DEFAULT_DRIVER)
+                self.manager = driver.connection_manager(kwargs['sid'])
+
                 if action and action in ["drop"]:
                     self.conn = self.manager.connection()
                 elif 'did' in kwargs:
                     self.conn = self.manager.connection(did=kwargs['did'])
                 else:
                     self.conn = self.manager.connection()
+
                 self.template_path = 'sequence/sql/#{0}#'.format(self.manager.version)
                 self.acl = ['r', 'w', 'U']
+                self.qtIdent = driver.qtIdent
 
                 return f(self, *args, **kwargs)
             return wrapped
@@ -625,6 +629,15 @@ class SequenceView(PGChildNodeView):
         if not isinstance(SQL, (str, unicode)):
             return SQL
         SQL = SQL.strip('\n').strip(' ')
+
+        sql_header = u"""-- SEQUENCE: {0}
+
+-- DROP SEQUENCE {0};
+
+""".format(self.qtIdent(self.conn, result['schema'], result['name']))
+
+        SQL = sql_header + SQL
+
         return ajax_response(response=SQL)
 
     def _formatter(self, data, scid, seid):
