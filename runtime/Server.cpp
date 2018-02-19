@@ -210,7 +210,13 @@ Server::Server(quint16 port, QString key, QString logFileName)
 
     // Redirect stderr
     PyObject *sys = PyImport_ImportModule("sys");
+#if PY_MINOR_VERSION > 2
+    FILE *log = fopen(m_logFileName.toUtf8().data(), (char *)"w");
+    int fd = fileno(log);
+    PyObject *err = PyFile_FromFd(fd, NULL, (char *)"w", -1, NULL, NULL, NULL, 0);
+#else
     PyObject *err = PyFile_FromString(m_logFileName.toUtf8().data(), (char *)"w");
+#endif
     PyObject_SetAttrString(sys, "stderr", err);
 }
 
