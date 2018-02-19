@@ -618,7 +618,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             show_system_objects=self.blueprint.show_system_objects
         )
 
-        status, types = self.get_types(self.conn, condition, True)
+        status, types = self.get_types(self.conn, condition, True, sid)
 
         if not status:
             return internal_server_error(errormsg=types)

@@ -16,6 +16,7 @@ module.exports = function (config) {
       {pattern: 'pgadmin/static/**/*.js', included: false},
       {pattern: 'pgadmin/static/vendor/**/*.js', included: false},
       {pattern: 'pgadmin/browser/static/js/**/*.js', included: false},
+      {pattern: 'pgadmin/browser/static/server_groups/servers/databases/schemas/tables/static/js/*.js', included: false},
       'regression/javascript/**/*.jsx',
       'regression/javascript/**/*.js',
       'pgadmin/static/bundle/slickgrid.js',

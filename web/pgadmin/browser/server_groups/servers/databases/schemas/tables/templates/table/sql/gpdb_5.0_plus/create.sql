@@ -92,10 +92,13 @@ TABLESPACE {{ conn|qtIdent(data.spcname) }}
 {### SQL for Distribution ###}
 {% if data.distribution %}
 DISTRIBUTED BY ({% for attrnum in data.distribution %}{% if loop.index != 1 %}, {% endif %}{{ data.columns[attrnum-1].name }}{% endfor %})
+{% elif data.primary_key|length > 0 %}
+DISTRIBUTED BY ({% for c in data.primary_key[0].columns%}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% endfor %})
 {% else %}
 DISTRIBUTED RANDOMLY
 {% endif %}
 {% if data.is_partitioned %} PARTITION BY {{ data.partition_scheme }}; {% endif %}
+;
 
 {### Alter SQL for Owner ###}
 {% if data.relowner %}

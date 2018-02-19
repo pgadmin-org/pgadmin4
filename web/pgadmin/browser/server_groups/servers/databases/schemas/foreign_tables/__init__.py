@@ -27,6 +27,7 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
+from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
@@ -344,7 +345,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
             # Set template path for sql scripts depending
             # on the server version.
-            self.template_path = 'foreign_tables/sql/#{0}#'.format(self.manager.version)
+            self.template_path = compile_template_path(
+                'foreign_tables/sql/',
+                self.manager.server_type,
+                self.manager.version
+            )
 
             return f(*args, **kwargs)
         return wrap

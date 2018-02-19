@@ -20,6 +20,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.partitions i
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
+from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
@@ -249,7 +250,11 @@ class IndexesView(PGChildNodeView):
                 kwargs['did'] in self.manager.db_info else 0
 
             # we will set template path for sql scripts
-            self.template_path = 'index/sql/#{0}#'.format(self.manager.version)
+            self.template_path = compile_template_path(
+                'index/sql/',
+                self.manager.server_type,
+                self.manager.version
+            )
 
             # We need parent's name eg table name and schema name
             # when we create new index in update we can fetch it using

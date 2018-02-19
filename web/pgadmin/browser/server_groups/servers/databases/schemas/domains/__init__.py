@@ -22,6 +22,7 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
+from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
@@ -267,7 +268,11 @@ class DomainView(PGChildNodeView, DataTypeReader):
             self.qtIdent = driver.qtIdent
 
             # we will set template path for sql scripts
-            self.template_path = 'domains/sql/#{0}#'.format(self.manager.version)
+            self.template_path = compile_template_path(
+                'domains/sql/',
+                self.manager.server_type,
+                self.manager.version
+            )
 
             return f(*args, **kwargs)
 
