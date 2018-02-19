@@ -14,8 +14,9 @@ from pgadmin import PgAdminModule
 
 MODULE_NAME = 'redirects'
 
-blueprint = PgAdminModule(MODULE_NAME, __name__,
-                          url_prefix='/')
+blueprint = PgAdminModule(
+    MODULE_NAME, __name__, url_prefix='/'
+)
 
 
 @blueprint.route('/')

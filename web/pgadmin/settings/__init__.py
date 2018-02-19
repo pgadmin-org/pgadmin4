@@ -35,12 +35,14 @@ class SettingsModule(PgAdminModule):
     def get_own_menuitems(self):
         return {
             'file_items': [
-                MenuItem(name='mnu_resetlayout',
-                         priority=999,
-                         module="pgAdmin.Settings",
-                         callback='show',
-                         icon='fa fa-retweet',
-                         label=gettext('Reset Layout'))
+                MenuItem(
+                    name='mnu_resetlayout',
+                    priority=999,
+                    module="pgAdmin.Settings",
+                    callback='show',
+                    icon='fa fa-retweet',
+                    label=gettext('Reset Layout')
+                )
             ]
         }
 
@@ -49,7 +51,9 @@ class SettingsModule(PgAdminModule):
         Returns:
             list: a list of url endpoints exposed to the client.
         """
-        return ['settings.store', 'settings.store_bulk', 'settings.reset_layout']
+        return [
+            'settings.store', 'settings.store_bulk', 'settings.reset_layout'
+        ]
 
 
 blueprint = SettingsModule(MODULE_NAME, __name__)
@@ -66,7 +70,8 @@ def store_setting(setting, value):
 def get_setting(setting, default=None):
     """Retrieve a configuration setting for the current user, or return the
     default value specified by the caller."""
-    data = Setting.query.filter_by(user_id=current_user.id, setting=setting).first()
+    data = Setting.query.filter_by(
+        user_id=current_user.id, setting=setting).first()
 
     if not data or data.value is None:
         return default
@@ -102,7 +107,8 @@ def store(setting=None, value=None):
         if request.method == 'POST':
             if 'count' in request.form:
                 for x in range(int(request.form['count'])):
-                    store_setting(request.form['setting%d' % (x + 1)], request.form['value%d' % (x + 1)])
+                    store_setting(request.form['setting%d' % (
+                        x + 1)], request.form['value%d' % (x + 1)])
             else:
                 store_setting(request.form['setting'], request.form['value'])
         else:

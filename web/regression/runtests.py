@@ -87,7 +87,7 @@ if pgadmin_credentials:
                 'login_password'])
 
 # Execute the setup file
-exec (open("setup.py").read())
+exec(open("setup.py").read())
 
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
@@ -210,10 +210,15 @@ def add_arguments():
     """
 
     parser = argparse.ArgumentParser(description='Test suite for pgAdmin4')
-    parser.add_argument('--pkg', help='Executes the test cases of particular'
-                                      ' package and subpackages')
-    parser.add_argument('--exclude', help='Skips execution of the test '
-                                          'cases of particular package and sub-packages')
+    parser.add_argument(
+        '--pkg',
+        help='Executes the test cases of particular package and subpackages'
+    )
+    parser.add_argument(
+        '--exclude',
+        help='Skips execution of the test cases of particular package and '
+             'sub-packages'
+    )
     arg = parser.parse_args()
 
     return arg
@@ -314,12 +319,12 @@ if __name__ == '__main__':
         signal.signal(getattr(signal, sig), sig_handler)
 
     # Set basic logging configuration for log file
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
-                        ,
-                        filename=CURRENT_PATH + "/" + "regression.log",
-                        filemode='w'
-                        )
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s:%(levelname)s:%(name)s:%(message)s',
+        filename=CURRENT_PATH + "/" + "regression.log",
+        filemode='w'
+    )
 
     # Create logger to write log in the logger file as well as on console
     stderr_logger = logging.getLogger('STDERR')
@@ -343,8 +348,8 @@ if __name__ == '__main__':
 
             suite = get_suite(test_module_list, server, test_client)
             tests = unit_test.TextTestRunner(stream=sys.stderr,
-                                            descriptions=True,
-                                            verbosity=2).run(suite)
+                                             descriptions=True,
+                                             verbosity=2).run(suite)
 
             ran_tests, failed_cases, skipped_cases, passed_cases = \
                 get_tests_result(tests)
@@ -364,12 +369,16 @@ if __name__ == '__main__':
         if handle_cleanup:
             handle_cleanup()
 
-    print("\n==============================================================="
-          "=======", file=sys.stderr)
+    print(
+        "\n==============================================================="
+        "=======",
+        file=sys.stderr
+    )
     print("Test Result Summary", file=sys.stderr)
     print(
         "==================================================================="
-        "===\n", file=sys.stderr)
+        "===\n", file=sys.stderr
+    )
 
     test_result_json = {}
     for server_res in test_result:
@@ -404,10 +413,11 @@ if __name__ == '__main__':
             file=sys.stderr)
 
         temp_dict_for_server = {
-            server_res: {"tests_passed": [total_passed_cases, passed_cases],
-                         "tests_failed": [total_failed, failed_cases_json],
-                         "tests_skipped": [total_skipped, skipped_cases_json]
-                         }
+            server_res: {
+                "tests_passed": [total_passed_cases, passed_cases],
+                "tests_failed": [total_failed, failed_cases_json],
+                "tests_skipped": [total_skipped, skipped_cases_json]
+            }
         }
         test_result_json.update(temp_dict_for_server)
 
@@ -418,7 +428,9 @@ if __name__ == '__main__':
 
     print(
         "==================================================================="
-        "===\n", file=sys.stderr)
+        "===\n",
+        file=sys.stderr
+    )
 
     print("Please check output in file: %s/regression.log\n" % CURRENT_PATH)
 

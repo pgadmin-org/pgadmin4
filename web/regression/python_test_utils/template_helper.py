@@ -12,7 +12,9 @@ from jinja2 import Environment
 
 
 class SimpleTemplateLoader(BaseLoader):
-    """ This class pretends to load whatever file content it is initialized with"""
+    """ This class pretends to load whatever file content it is initialized
+    with"""
+
     def __init__(self, file_content):
         self.file_content = file_content
 

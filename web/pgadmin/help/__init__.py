@@ -15,14 +15,13 @@ from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem, Panel
 from pgadmin.utils.preferences import Preferences
-
 import config
 
 
 class HelpModule(PgAdminModule):
     def get_own_menuitems(self):
-        """Return a (set) of dicts of help menu items, with name, priority, URL,
-        target and onclick code."""
+        """Return a (set) of dicts of help menu items, with name, priority,
+        URL, target and onclick code."""
         return {'help_items': [
             MenuItem(name='mnu_online_help',
                      label=gettext('Online Help'),
@@ -75,7 +74,9 @@ class HelpModule(PgAdminModule):
             'https://www.postgresql.org/docs/$VERSION$/static/',
             category_label=gettext('Help'),
             help_str=gettext(
-                'Path to the PostgreSQL documentation. $VERSION$ will be replaced with the major.minor version number.')
+                'Path to the PostgreSQL documentation. $VERSION$ will be '
+                'replaced with the major.minor version number.'
+            )
         )
 
         self.edbas_help_path = self.help_preference.register(
@@ -84,7 +85,9 @@ class HelpModule(PgAdminModule):
             'https://www.enterprisedb.com/docs/en/$VERSION$/pg/',
             category_label=gettext('Help'),
             help_str=gettext(
-                'Path to the EDB Advanced Server documentation. $VERSION$ will be replaced with the major.minor version number.')
+                'Path to the EDB Advanced Server documentation. $VERSION$ '
+                'will be replaced with the major.minor version number.'
+            )
         )
 
     def get_exposed_url_endpoints(self):
@@ -95,5 +98,8 @@ class HelpModule(PgAdminModule):
 
 
 # Initialise the module
-blueprint = HelpModule(MODULE_NAME, __name__, static_url_path='/help',
-                       static_folder=config.HELP_PATH)
+blueprint = HelpModule(
+    MODULE_NAME, __name__,
+    static_url_path='/help',
+    static_folder=config.HELP_PATH
+)

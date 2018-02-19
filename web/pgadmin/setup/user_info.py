@@ -37,7 +37,7 @@ def user_info():
             email = ''
             p1 = ''
             if os.environ['PGADMIN_SETUP_EMAIL'] and os.environ[
-                'PGADMIN_SETUP_PASSWORD']:
+                    'PGADMIN_SETUP_PASSWORD']:
                 email = os.environ['PGADMIN_SETUP_EMAIL']
                 p1 = os.environ['PGADMIN_SETUP_PASSWORD']
         else:
@@ -66,7 +66,8 @@ def user_info():
                     print(u'Passwords do not match. Please try again.')
                 else:
                     print(
-                        u'Password must be at least 6 characters. Please try again.'
+                        u'Password must be at least 6 characters. '
+                        u'Please try again.'
                     )
                 p1, p2 = pprompt()
     return email, p1

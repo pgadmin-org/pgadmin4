@@ -13,6 +13,7 @@ import random
 
 import time
 
+
 class AppStarter:
     """ Helper for starting the full pgadmin4 app and loading the page via
     selenium
@@ -43,7 +44,8 @@ class AppStarter:
         self.driver.set_window_size(1280, 1024)
         self.driver.get(
             "http://" + self.app_config.DEFAULT_SERVER + ":" +
-            random_server_port)
+            random_server_port
+        )
 
     def stop_app(self):
         """ This function stop the started app by killing process """

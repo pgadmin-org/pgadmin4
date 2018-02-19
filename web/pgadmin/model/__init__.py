@@ -120,24 +120,28 @@ class Server(db.Model):
     ssl_mode = db.Column(
         db.String(16),
         db.CheckConstraint(
-            "ssl_mode IN ('allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full')"
+            "ssl_mode IN ('allow', 'prefer', 'require', 'disable', "
+            "'verify-ca', 'verify-full')"
         ),
         nullable=False)
     comment = db.Column(db.String(1024), nullable=True)
     discovery_id = db.Column(db.String(128), nullable=True)
-    servers = db.relationship('ServerGroup',
-                           backref=db.backref('server', cascade="all, delete-orphan"),
-                           lazy='joined')
+    servers = db.relationship(
+        'ServerGroup',
+        backref=db.backref('server', cascade="all, delete-orphan"),
+        lazy='joined'
+    )
     db_res = db.Column(db.Text(), nullable=True)
     passfile = db.Column(db.Text(), nullable=True)
     sslcert = db.Column(db.Text(), nullable=True)
     sslkey = db.Column(db.Text(), nullable=True)
     sslrootcert = db.Column(db.Text(), nullable=True)
     sslcrl = db.Column(db.Text(), nullable=True)
-    sslcompression =db.Column(db.Integer(),
-                              db.CheckConstraint(
-                                  'sslcompression >= 0 AND sslcompression <= 1'
-                              ), nullable=False)
+    sslcompression = db.Column(
+        db.Integer(),
+        db.CheckConstraint('sslcompression >= 0 AND sslcompression <= 1'),
+        nullable=False
+    )
     bgcolor = db.Column(db.Text(10), nullable=True)
     fgcolor = db.Column(db.Text(10), nullable=True)
 
@@ -193,15 +197,25 @@ class DebuggerFunctionArguments(db.Model):
     schema_id = db.Column(db.Integer(), nullable=False, primary_key=True)
     function_id = db.Column(db.Integer(), nullable=False, primary_key=True)
     arg_id = db.Column(db.Integer(), nullable=False, primary_key=True)
-    is_null = db.Column(db.Integer(),
-                        db.CheckConstraint('is_null >= 0 AND is_null <= 1'),
-                        nullable=False)
-    is_expression = db.Column(db.Integer(),
-                              db.CheckConstraint('is_expression >= 0 AND is_expression <= 1'),
-                              nullable=False)
-    use_default = db.Column(db.Integer(),
-                            db.CheckConstraint('use_default >= 0 AND use_default <= 1'),
-                            nullable=False)
+    is_null = db.Column(
+        db.Integer(),
+        db.CheckConstraint('is_null >= 0 AND is_null <= 1'),
+        nullable=False
+    )
+    is_expression = db.Column(
+        db.Integer(),
+        db.CheckConstraint(
+            'is_expression >= 0 AND is_expression <= 1'
+        ),
+        nullable=False
+    )
+    use_default = db.Column(
+        db.Integer(),
+        db.CheckConstraint(
+            'use_default >= 0 AND use_default <= 1'
+        ),
+        nullable=False
+    )
 
     value = db.Column(db.String(), nullable=True)
 

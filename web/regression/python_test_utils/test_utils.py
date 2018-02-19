@@ -75,17 +75,19 @@ def get_config_data():
     """This function reads the server data from config_data"""
     server_data = []
     for srv in test_setup.config_data['server_credentials']:
-        if (not 'enabled' in srv) or srv['enabled']:
-            data = {"name": srv['name'],
-                    "comment": srv['comment'],
-                    "host": srv['host'],
-                    "port": srv['db_port'],
-                    "db": srv['maintenance_db'],
-                    "username": srv['db_username'],
-                    "db_password": srv['db_password'],
-                    "role": "",
-                    "sslmode": srv['sslmode'],
-                    "tablespace_path": srv.get('tablespace_path', None)}
+        if 'enabled' not in srv or srv['enabled']:
+            data = {
+                "name": srv['name'],
+                "comment": srv['comment'],
+                "host": srv['host'],
+                "port": srv['db_port'],
+                "db": srv['maintenance_db'],
+                "username": srv['db_username'],
+                "db_password": srv['db_password'],
+                "role": "",
+                "sslmode": srv['sslmode'],
+                "tablespace_path": srv.get('tablespace_path', None)
+            }
             server_data.append(data)
     return server_data
 
@@ -115,12 +117,14 @@ def clear_node_info_dict():
 def create_database(server, db_name):
     """This function used to create database and returns the database id"""
     try:
-        connection = get_db_connection(server['db'],
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'],
-                                       server['sslmode'])
+        connection = get_db_connection(
+            server['db'],
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -154,24 +158,29 @@ def create_table(server, db_name, table_name):
     :return: None
     """
     try:
-        connection = get_db_connection(db_name,
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'],
-                                       server['sslmode'])
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            '''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC, details VARCHAR)''' %
-            table_name)
+            '''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC,
+            details VARCHAR)''' % table_name)
         pg_cursor.execute(
-            '''INSERT INTO "%s" VALUES ('Some-Name', 6, 'some info')''' % table_name)
+            '''INSERT INTO "%s" VALUES ('Some-Name', 6, 'some info')'''
+            % table_name)
         pg_cursor.execute(
-            '''INSERT INTO "%s" VALUES ('Some-Other-Name', 22, 'some other info')''' % table_name)
+            '''INSERT INTO "%s" VALUES ('Some-Other-Name', 22,
+            'some other info')''' % table_name)
         pg_cursor.execute(
-            '''INSERT INTO "%s" VALUES ('Yet-Another-Name', 14, 'cool info')''' % table_name)
+            '''INSERT INTO "%s" VALUES ('Yet-Another-Name', 14,
+            'cool info')''' % table_name)
 
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
@@ -192,12 +201,14 @@ def create_table_with_query(server, db_name, query):
     :return: None
     """
     try:
-        connection = get_db_connection(db_name,
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'],
-                                       server['sslmode'])
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -213,12 +224,14 @@ def create_constraint(
         server, db_name, table_name,
         constraint_type="unique", constraint_name="test_unique"):
     try:
-        connection = get_db_connection(db_name,
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'],
-                                       server['sslmode'])
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -237,12 +250,14 @@ def create_constraint(
 
 def create_debug_function(server, db_name, function_name="test_func"):
     try:
-        connection = get_db_connection(db_name,
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'],
-                                       server['sslmode'])
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -271,12 +286,14 @@ def create_debug_function(server, db_name, function_name="test_func"):
 
 def drop_debug_function(server, db_name, function_name="test_func"):
     try:
-        connection = get_db_connection(db_name,
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'],
-                                       server['sslmode'])
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -293,12 +310,14 @@ def drop_debug_function(server, db_name, function_name="test_func"):
 
 def create_role(server, db_name, role_name="test_role"):
     try:
-        connection = get_db_connection(db_name,
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'],
-                                       server['sslmode'])
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -325,12 +344,14 @@ def create_role(server, db_name, role_name="test_role"):
 
 def drop_role(server, db_name, role_name="test_role"):
     try:
-        connection = get_db_connection(db_name,
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'],
-                                       server['sslmode'])
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -351,13 +372,17 @@ def drop_database(connection, database_name):
         pg_cursor = connection.cursor()
         if connection.server_version >= 90100:
             pg_cursor.execute(
-                "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity "
-                "WHERE pg_stat_activity.datname ='%s' AND pid <> pg_backend_pid();" % database_name
+                "SELECT pg_terminate_backend(pg_stat_activity.pid) "
+                "FROM pg_stat_activity "
+                "WHERE pg_stat_activity.datname ='%s' AND "
+                "pid <> pg_backend_pid();" % database_name
             )
         else:
             pg_cursor.execute(
-                "SELECT pg_terminate_backend(procpid) FROM pg_stat_activity " \
-                "WHERE pg_stat_activity.datname ='%s' AND current_query='<IDLE>';" % database_name
+                "SELECT pg_terminate_backend(procpid) "
+                "FROM pg_stat_activity "
+                "WHERE pg_stat_activity.datname ='%s' "
+                "AND current_query='<IDLE>';" % database_name
             )
         pg_cursor.execute("SELECT * FROM pg_database db WHERE"
                           " db.datname='%s'" % database_name)
@@ -401,8 +426,12 @@ def create_server(server):
         server_id = cur.lastrowid
         conn.commit()
         # Add server info to parent_node_dict
-        regression.parent_node_dict["server"].append({"server_id": server_id,
-                                                      "server": server})
+        regression.parent_node_dict["server"].append(
+            {
+                "server_id": server_id,
+                "server": server
+            }
+        )
 
         return server_id
     except Exception as exception:
@@ -421,17 +450,21 @@ def delete_server_with_api(tester, sid):
 
 def add_db_to_parent_node_dict(srv_id, db_id, test_db_name):
     """ This function stores the database details into parent dict """
-    regression.parent_node_dict["database"].append({"server_id": srv_id,
-                                                    "db_id": db_id,
-                                                    "db_name": test_db_name})
+    regression.parent_node_dict["database"].append({
+        "server_id": srv_id,
+        "db_id": db_id,
+        "db_name": test_db_name
+    })
 
 
 def add_schema_to_parent_node_dict(srv_id, db_id, schema_id, schema_name):
     """ This function stores the schema details into parent dict """
-    regression.parent_node_dict["schema"].append({"server_id": srv_id,
-                                                  "db_id": db_id,
-                                                  "schema_id": schema_id,
-                                                  "schema_name": schema_name})
+    regression.parent_node_dict["schema"].append({
+        "server_id": srv_id,
+        "db_id": db_id,
+        "schema_id": schema_id,
+        "schema_name": schema_name
+    })
 
 
 def create_parent_server_node(server_info):
@@ -449,16 +482,19 @@ def create_parent_server_node(server_info):
     add_db_to_parent_node_dict(srv_id, db_id, test_db_name)
     # Create schema
     schema_name = "test_schema_%s" % str(uuid.uuid4())[1:6]
-    connection = get_db_connection(test_db_name,
-                                   server_info['username'],
-                                   server_info['db_password'],
-                                   server_info['host'],
-                                   server_info['port'],
-                                   server_info['sslmode'])
+    connection = get_db_connection(
+        test_db_name,
+        server_info['username'],
+        server_info['db_password'],
+        server_info['host'],
+        server_info['port'],
+        server_info['sslmode']
+    )
 
     schema = regression.schema_utils.create_schema(connection, schema_name)
-    add_schema_to_parent_node_dict(srv_id, db_id, schema[0],
-                                   schema[1])
+    add_schema_to_parent_node_dict(
+        srv_id, db_id, schema[0], schema[1]
+    )
 
 
 def delete_test_server(tester):
@@ -473,35 +509,43 @@ def delete_test_server(tester):
             srv_id = test_server["server_id"]
             servers_dict = test_server["server"]
             for database in test_databases:
-                connection = get_db_connection(servers_dict['db'],
-                                               servers_dict['username'],
-                                               servers_dict['db_password'],
-                                               servers_dict['host'],
-                                               servers_dict['port'],
-                                               servers_dict['sslmode'])
+                connection = get_db_connection(
+                    servers_dict['db'],
+                    servers_dict['username'],
+                    servers_dict['db_password'],
+                    servers_dict['host'],
+                    servers_dict['port'],
+                    servers_dict['sslmode']
+                )
                 database_name = database["db_name"]
                 # Drop database
                 drop_database(connection, database_name)
             for role in test_roles:
-                connection = get_db_connection(servers_dict['db'],
-                                               servers_dict['username'],
-                                               servers_dict['db_password'],
-                                               servers_dict['host'],
-                                               servers_dict['port'],
-                                               servers_dict['sslmode'])
+                connection = get_db_connection(
+                    servers_dict['db'],
+                    servers_dict['username'],
+                    servers_dict['db_password'],
+                    servers_dict['host'],
+                    servers_dict['port'],
+                    servers_dict['sslmode']
+                )
                 # Delete role
-                regression.roles_utils.delete_role(connection,
-                                                   role["role_name"])
+                regression.roles_utils.delete_role(
+                    connection, role["role_name"]
+                )
             for tablespace in test_table_spaces:
-                connection = get_db_connection(servers_dict['db'],
-                                               servers_dict['username'],
-                                               servers_dict['db_password'],
-                                               servers_dict['host'],
-                                               servers_dict['port'],
-                                               servers_dict['sslmode'])
+                connection = get_db_connection(
+                    servers_dict['db'],
+                    servers_dict['username'],
+                    servers_dict['db_password'],
+                    servers_dict['host'],
+                    servers_dict['port'],
+                    servers_dict['sslmode']
+                )
                 # Delete tablespace
                 regression.tablespace_utils.delete_tablespace(
-                    connection, tablespace["tablespace_name"])
+                    connection, tablespace["tablespace_name"]
+                )
             # Delete server
             delete_server_with_api(tester, srv_id)
     except Exception:
@@ -528,8 +572,10 @@ def get_db_server(sid):
     connection = ''
     conn = sqlite3.connect(config.TEST_SQLITE_PATH)
     cur = conn.cursor()
-    server = cur.execute('SELECT name, host, port, maintenance_db,'
-                         ' username, ssl_mode FROM server where id=%s' % sid)
+    server = cur.execute(
+        'SELECT name, host, port, maintenance_db,'
+        ' username, ssl_mode FROM server where id=%s' % sid
+    )
     server = server.fetchone()
     if server:
         name = server[0]
@@ -543,12 +589,9 @@ def get_db_server(sid):
         db_password = get_db_password(config_servers, name, host, db_port)
         if db_password:
             # Drop database
-            connection = get_db_connection(db_name,
-                                           username,
-                                           db_password,
-                                           host,
-                                           db_port,
-                                           ssl_mode)
+            connection = get_db_connection(
+                db_name, username, db_password, host, db_port, ssl_mode
+            )
     conn.close()
     return connection
 
@@ -564,13 +607,13 @@ def _cleanup(tester, app_starter):
      schemas etc) during the test suite run"""
     try:
         test_servers = regression.parent_node_dict["server"] + \
-                       regression.node_info_dict["sid"]
+            regression.node_info_dict["sid"]
         test_databases = regression.parent_node_dict["database"] + \
-                         regression.node_info_dict["did"]
+            regression.node_info_dict["did"]
         test_table_spaces = regression.parent_node_dict["tablespace"] + \
-                            regression.node_info_dict["tsid"]
+            regression.node_info_dict["tsid"]
         test_roles = regression.parent_node_dict["role"] + \
-                     regression.node_info_dict["lrid"]
+            regression.node_info_dict["lrid"]
         # Drop databases
         for database in test_databases:
             connection = get_db_server(database["server_id"])

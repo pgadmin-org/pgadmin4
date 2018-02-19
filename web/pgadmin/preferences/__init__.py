@@ -60,7 +60,11 @@ class PreferencesModule(PgAdminModule):
         Returns:
             list: a list of url endpoints exposed to the client.
         """
-        return ['preferences.index', 'preferences.get_by_name', 'preferences.get_all']
+        return [
+            'preferences.index',
+            'preferences.get_by_name',
+            'preferences.get_all'
+        ]
 
 
 blueprint = PreferencesModule(MODULE_NAME, __name__)
@@ -70,9 +74,11 @@ blueprint = PreferencesModule(MODULE_NAME, __name__)
 @login_required
 def script():
     """render the required javascript"""
-    return Response(response=render_template("preferences/preferences.js", _=gettext),
-                    status=200,
-                    mimetype="application/javascript")
+    return Response(
+        response=render_template("preferences/preferences.js", _=gettext),
+        status=200,
+        mimetype="application/javascript"
+    )
 
 
 @blueprint.route("/", methods=["GET"], endpoint='index')
@@ -171,7 +177,8 @@ def save(pid):
     """
     data = request.form if request.form else json.loads(request.data.decode())
 
-    res, msg = Preferences.save(data['mid'], data['category_id'], data['id'], data['value'])
+    res, msg = Preferences.save(
+        data['mid'], data['category_id'], data['id'], data['value'])
 
     if not res:
         return internal_server_error(errormsg=msg)
@@ -195,4 +202,3 @@ def save(pid):
     response.set_cookie("PGADMIN_LANGUAGE", language)
 
     return response
-
