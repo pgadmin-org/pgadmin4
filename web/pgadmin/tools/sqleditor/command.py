@@ -533,8 +533,7 @@ class TableCommand(GridCommand):
                 for each_col in columns_info:
                     if (
                         columns_info[each_col]['not_null'] and
-                        not columns_info[each_col][
-                            'has_default_val']
+                        not columns_info[each_col]['has_default_val']
                     ):
                         column_data[each_col] = None
                         column_type[each_col] =\
@@ -595,8 +594,7 @@ class TableCommand(GridCommand):
                             "/".join([self.sql_path, 'select.sql']),
                             object_name=self.object_name,
                             nsp_name=self.nsp_name,
-                            pk_names=pk_names.split(",") if pk_names
-                            else None,
+                            primary_keys=primary_keys,
                             has_oids=has_oids
                         )
 

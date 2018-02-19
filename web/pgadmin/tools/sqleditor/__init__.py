@@ -529,12 +529,17 @@ def start_query_tool(trans_id):
         trans_id: unique transaction id
     """
 
-    sql = extract_sql_from_network_parameters(request.data, request.args, request.form)
+    sql = extract_sql_from_network_parameters(
+        request.data, request.args, request.form
+    )
 
-    return StartRunningQuery(blueprint, current_app).execute(sql, trans_id, session)
+    return StartRunningQuery(blueprint, current_app).execute(
+        sql, trans_id, session
+    )
 
 
-def extract_sql_from_network_parameters(request_data, request_arguments, request_form_data):
+def extract_sql_from_network_parameters(request_data, request_arguments,
+                                        request_form_data):
     if request_data:
         sql_parameters = json.loads(request_data, encoding='utf-8')
         if type(sql_parameters) is str:
@@ -741,15 +746,17 @@ def poll(trans_id):
                                         typname == 'character varying'
                                     ):
                                         typname = typname + '(' + \
-                                                  str(col_info['internal_size']) + \
-                                                  ')'
+                                                  str(
+                                                      col_info['internal_size']
+                                                  ) + ')'
                                     elif (
                                         typname == 'character[]' or
                                         typname == 'character varying[]'
                                     ):
                                         typname = typname[:-2] + '(' + \
-                                                  str(col_info['internal_size']) + \
-                                                  ')[]'
+                                                  str(
+                                                      col_info['internal_size']
+                                                  ) + ')[]'
 
                                 col_info['type_name'] = typname
 

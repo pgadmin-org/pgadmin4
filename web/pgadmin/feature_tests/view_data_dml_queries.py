@@ -54,9 +54,9 @@ class CheckForViewDataTest(BaseFeatureTest):
 
     # query for creating 'defaults_text' table
     defaults_query = """
-CREATE TABLE public.defaults
+CREATE TABLE public.defaults_{0}
 (
-    id serial NOT NULL,
+    {1} serial NOT NULL,
     number_defaults numeric(100) DEFAULT 1,
     number_null numeric(100),
     text_defaults text COLLATE pg_catalog."default"
@@ -77,7 +77,7 @@ CREATE TABLE public.defaults
     int_arr_empty integer[],
     boolean_arr boolean[],
     boolean_arr_null boolean[],
-    CONSTRAINT defaults_pkey PRIMARY KEY (id)
+    CONSTRAINT defaults_pkey_{0} PRIMARY KEY ({1})
 )
 """
 
@@ -100,10 +100,12 @@ CREATE TABLE public.defaults
         test_utils.create_database(self.server, "acceptance_test_db")
 
         # Create pre-requisite table
-        test_utils.create_table_with_query(
-            self.server,
-            "acceptance_test_db",
-            CheckForViewDataTest.defaults_query)
+        for k, v in { 1: 'id', 2:'"ID"' }.items():
+            test_utils.create_table_with_query(
+                self.server,
+                "acceptance_test_db",
+                CheckForViewDataTest.defaults_query.format(k, v))
+
         # Initialize an instance of WebDriverWait with timeout of 3 seconds
         self.wait = WebDriverWait(self.driver, 3)
 
@@ -111,18 +113,20 @@ CREATE TABLE public.defaults
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
         self._tables_node_expandable()
-        self.page.select_tree_item('defaults')
-        # Open Object -> View/Edit data
-        self._view_data_grid()
+        # iterate on both tables
+        for cnt in (1,2):
+            self.page.select_tree_item('defaults_{0}'.format(str(cnt)))
+            # Open Object -> View/Edit data
+            self._view_data_grid()
 
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        # Run test to insert a new row in table with default values
-        self._add_row()
-        self._verify_row_data(True)
+            self.page.wait_for_query_tool_loading_indicator_to_disappear()
+            # Run test to insert a new row in table with default values
+            self._add_row()
+            self._verify_row_data(True)
 
-        # Run test to copy/paste a row
-        self._copy_paste_row()
-        self.page.close_data_grid()
+            # Run test to copy/paste a row
+            self._copy_paste_row()
+            self.page.close_data_grid()
 
     def after(self):
         self.page.remove_server(self.server)
@@ -235,7 +239,7 @@ CREATE TABLE public.defaults
             self.page.driver.find_element_by_link_text("View/Edit Data")
         ).perform()
         self.page.find_by_partial_link_text("All Rows").click()
-
+        time.sleep(1)
         # wait until datagrid frame is loaded.
         self.page.click_tab('Edit Data -')
 
