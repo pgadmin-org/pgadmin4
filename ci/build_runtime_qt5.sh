@@ -4,7 +4,7 @@ echo "EXECUTING: Build runtime - QT5"
 echo
 
 if [ ${PYTHON_VERSION:0:1} == "3" ]; then
-    CONFIG=/usr/local/python-$PYTHON_VERSION/bin/python-config3
+    CONFIG=/usr/local/python-$PYTHON_VERSION/bin/python3-config
 else
     CONFIG=/usr/local/python-$PYTHON_VERSION/bin/python-config
 fi
