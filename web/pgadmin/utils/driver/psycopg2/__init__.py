@@ -1752,6 +1752,8 @@ class ServerManager(object):
 
         res = dict()
         res['sid'] = self.sid
+        res['ver'] = self.ver
+        res['sversion'] = self.sversion
         if hasattr(self, 'password') and self.password:
             # If running under PY2
             if hasattr(self.password, 'decode'):
@@ -1861,6 +1863,20 @@ WHERE db.oid = {0}""".format(did))
         Helps restoring to reconnect the auto-connect connections smoothly on
         reload/restart of the app server..
         """
+        # restore server version from flask session if flask server was
+        # restarted. As we need server version to resolve sql template paths.
+
+        self.ver = data.get('ver', None)
+        self.sversion = data.get('sversion', None)
+
+        if self.ver and not self.server_type:
+            from pgadmin.browser.server_groups.servers.types import ServerType
+            for st in ServerType.types():
+                if st.instanceOf(self.ver):
+                    self.server_type = st.stype
+                    self.server_cls = st
+                    break
+
         # Hmm.. we will not honour this request, when I already have
         # connections
         if len(self.connections) != 0:
@@ -1967,6 +1983,7 @@ WHERE db.oid = {0}""".format(did))
         else:
             managers[self.sid] = updated_mgr
         session['__pgsql_server_managers'] = managers
+        session.force_write = True
 
     def utility(self, operation):
         """
