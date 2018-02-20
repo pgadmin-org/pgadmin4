@@ -7,9 +7,10 @@
 #
 ##########################################################################
 
-import os
-import json
+from __future__ import print_function
 import time
+import sys
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -64,6 +65,8 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
                 Keys.ALT
             ).perform()
 
+            print("Executing shortcut: " + self.new_shortcuts[s]['locator'] + "...", file=sys.stderr, end="")
+
             self.wait.until(
                 EC.presence_of_element_located(
                     (By.XPATH, "//li[contains(@id, " +
@@ -75,6 +78,8 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
             is_open = 'open' in self.page.find_by_id(s).get_attribute('class')
 
             assert is_open is True, "Keyboard shortcut change is unsuccessful."
+
+            print("OK", file=sys.stderr)
 
     def _update_preferences(self):
         self.page.find_by_id("mnu_file").click()
