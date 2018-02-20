@@ -84,25 +84,24 @@ class DebuggerModule(PgAdminModule):
 
         shortcut_fields = [
             {
-                'name': 'alt',
-                'type': 'checkbox',
-                'label': gettext('Alt/Option')
+                'name': 'key',
+                'type': 'keyCode',
+                'label': gettext('Key')
             },
             {
                 'name': 'shift',
                 'type': 'checkbox',
                 'label': gettext('Shift')
             },
-
             {
                 'name': 'control',
                 'type': 'checkbox',
                 'label': gettext('Ctrl')
             },
             {
-                'name': 'key',
-                'type': 'keyCode',
-                'label': gettext('Key')
+                'name': 'alt',
+                'type': 'checkbox',
+                'label': gettext('Alt/Option')
             }
         ]
 
