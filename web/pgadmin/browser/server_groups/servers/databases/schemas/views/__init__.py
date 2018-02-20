@@ -776,7 +776,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
             # We need all data as collection for ColumnsModel
             cols_data = {
-                'colname': row['attdef'].strip('"'),
+                'colname': row['attdef'],
                 'collspcname': row['collnspname'],
                 'op_class': row['opcname'],
             }
