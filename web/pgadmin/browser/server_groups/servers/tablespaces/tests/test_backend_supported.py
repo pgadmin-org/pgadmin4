@@ -6,8 +6,12 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+import sys
 
-from mock import MagicMock
+if sys.version_info < (3, 3):
+    from mock import MagicMock
+else:
+    from unittest.mock import MagicMock
 
 from pgadmin.browser.server_groups.servers.tablespaces import TablespaceModule
 from pgadmin.utils.route import BaseTestGenerator
@@ -43,4 +47,6 @@ class BackendSupportedTestCase(BaseTestGenerator):
         manager = MagicMock()
         manager.sversion = self.manager['sversion']
         manager.server_type = self.manager['server_type']
-        self.assertEquals(self.expected_result, module.BackendSupported(manager))
+        self.assertEquals(
+            self.expected_result, module.BackendSupported(manager)
+        )
