@@ -3,7 +3,7 @@ SELECT t.oid,t.tgname AS name, t.xmin, t.*, relname, CASE WHEN relkind = 'r' THE
     COALESCE(substring(pg_get_triggerdef(t.oid), 'WHEN (.*) EXECUTE PROCEDURE'),
     substring(pg_get_triggerdef(t.oid), 'WHEN (.*)  \\$trigger')) AS whenclause,
     -- We need to convert tgargs column bytea datatype to array datatype
-    (string_to_array(encode(tgargs, 'escape'), '\000')::text[])[1:tgnargs] AS custom_tgargs,
+    (string_to_array(encode(tgargs, 'escape'), E'\\000')::text[])[1:tgnargs] AS custom_tgargs,
 {% if datlastsysoid %}
     (CASE WHEN t.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_trigger,
 {% endif %}
