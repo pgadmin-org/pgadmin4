@@ -324,7 +324,6 @@ module.exports = {
     uglifyPlugin,
     optimizeAssetsPlugin,
     definePlugin,
-    hardSourceWebpackPlugin,
     sourceMapDevToolPlugin,
   ]: [
     extractSass,
