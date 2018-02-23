@@ -237,7 +237,6 @@ class DebuggerModule(PgAdminModule):
             fields=shortcut_fields
         )
 
-
     def get_exposed_url_endpoints(self):
         """
         Returns the list of URLs exposed to the client.
@@ -602,8 +601,6 @@ def direct_new(trans_id):
 
     # We need client OS information to render correct Keyboard shortcuts
     user_agent = UserAgent(request.headers.get('User-Agent'))
-
-
 
     return render_template(
         "debugger/direct.html",

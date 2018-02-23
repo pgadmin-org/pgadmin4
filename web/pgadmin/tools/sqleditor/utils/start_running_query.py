@@ -16,11 +16,13 @@ from flask import Response
 from flask_babel import gettext
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import apply_explain_plan_wrapper_if_needed
-from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import update_session_grid_transaction
+from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
+    apply_explain_plan_wrapper_if_needed
+from pgadmin.tools.sqleditor.utils.constant_definition import TX_STATUS_IDLE, \
+    TX_STATUS_INERROR
 from pgadmin.tools.sqleditor.utils.is_begin_required import is_begin_required
-from pgadmin.tools.sqleditor.utils.constant_definition import TX_STATUS_IDLE, TX_STATUS_INERROR
-
+from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
+    update_session_grid_transaction
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost
@@ -35,7 +37,10 @@ class StartRunningQuery:
         self.logger = logger
 
     def execute(self, sql, trans_id, http_session):
-        session_obj = StartRunningQuery.retrieve_session_information(http_session, trans_id)
+        session_obj = StartRunningQuery.retrieve_session_information(
+            http_session,
+            trans_id
+        )
         if type(session_obj) is Response:
             return session_obj
 
@@ -49,8 +54,10 @@ class StartRunningQuery:
 
             try:
                 manager = get_driver(
-                    PG_DEFAULT_DRIVER).connection_manager(transaction_object.sid)
-                conn = manager.connection(did=transaction_object.did, conn_id=self.connection_id,
+                    PG_DEFAULT_DRIVER).connection_manager(
+                    transaction_object.sid)
+                conn = manager.connection(did=transaction_object.did,
+                                          conn_id=self.connection_id,
                                           auto_reconnect=False,
                                           use_binary_placeholder=True,
                                           array_to_string=True)
@@ -67,7 +74,8 @@ class StartRunningQuery:
                     self.logger.error(msg)
                     return internal_server_error(errormsg=str(msg))
 
-            effective_sql_statement = apply_explain_plan_wrapper_if_needed(manager, sql)
+            effective_sql_statement = apply_explain_plan_wrapper_if_needed(
+                manager, sql)
 
             result, status = self.__execute_query(
                 conn,
@@ -88,7 +96,8 @@ class StartRunningQuery:
             data={
                 'status': status, 'result': result,
                 'can_edit': can_edit, 'can_filter': can_filter,
-                'info_notifier_timeout': self.blueprint_object.info_notifier_timeout.get()
+                'info_notifier_timeout':
+                    self.blueprint_object.info_notifier_timeout.get()
             }
         )
 
@@ -104,13 +113,15 @@ class StartRunningQuery:
             # transaction object
             trans_obj.set_connection_id(self.connection_id)
 
-            StartRunningQuery.save_transaction_in_session(session_obj, trans_id, trans_obj)
+            StartRunningQuery.save_transaction_in_session(session_obj,
+                                                          trans_id, trans_obj)
 
             # If auto commit is False and transaction status is Idle
             # then call is_begin_not_required() function to check BEGIN
             # is required or not.
 
-            if StartRunningQuery.is_begin_required_for_sql_query(trans_obj, conn, sql):
+            if StartRunningQuery.is_begin_required_for_sql_query(trans_obj,
+                                                                 conn, sql):
                 conn.execute_void("BEGIN;")
 
             # Execute sql asynchronously with params is None
@@ -122,7 +133,8 @@ class StartRunningQuery:
 
             # If the transaction aborted for some reason and
             # Auto RollBack is True then issue a rollback to cleanup.
-            if StartRunningQuery.is_rollback_statement_required(trans_obj, conn):
+            if StartRunningQuery.is_rollback_statement_required(trans_obj,
+                                                                conn):
                 conn.execute_void("ROLLBACK;")
         else:
             status = False
@@ -133,13 +145,17 @@ class StartRunningQuery:
 
     @staticmethod
     def is_begin_required_for_sql_query(trans_obj, conn, sql):
-        return not trans_obj.auto_commit \
-               and conn.transaction_status() == TX_STATUS_IDLE \
-               and is_begin_required(sql)
+        return (not trans_obj.auto_commit and
+                conn.transaction_status() == TX_STATUS_IDLE and
+                is_begin_required(sql)
+                )
 
     @staticmethod
     def is_rollback_statement_required(trans_obj, conn):
-        return conn.transaction_status() == TX_STATUS_INERROR and trans_obj.auto_rollback
+        return (
+            conn.transaction_status() == TX_STATUS_INERROR and
+            trans_obj.auto_rollback
+        )
 
     @staticmethod
     def save_transaction_in_session(session, transaction_id, transaction):
@@ -168,5 +184,3 @@ class StartRunningQuery:
         # Fetch the object for the specified transaction id.
         # Use pickle.loads function to get the command object
         return grid_data[str(transaction_id)]
-
-

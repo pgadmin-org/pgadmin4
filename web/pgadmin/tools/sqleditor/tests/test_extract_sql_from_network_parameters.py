@@ -29,7 +29,10 @@ class ExtractSQLFromNetworkParametersTest(BaseTestGenerator):
             expected_result=dict(sql='some sql', explain_plan=None)
         )),
         ('Payload that requests explain plan using json', dict(
-            request_strigified_data='{"sql": "some sql", "explain_plan": {"format": "json", "analyze": false, "verbose": false, "costs": false, "buffers": false, "timing": false}}',
+            request_strigified_data='{"sql": "some sql", "explain_plan": '
+                                    '{"format": "json", "analyze": false, '
+                                    '"verbose": false, "costs": false, '
+                                    '"buffers": false, "timing": false}}',
             request_arguments=ImmutableMultiDict(),
             request_form_data=ImmutableMultiDict(),
 

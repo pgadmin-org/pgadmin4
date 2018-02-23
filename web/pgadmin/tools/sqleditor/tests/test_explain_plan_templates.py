@@ -23,19 +23,21 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'when passing all parameters,'
             'it returns the explain plan with all parameters',
             dict(
-                template_path=os.path.join('sqleditor', 'sql', 'default', 'explain_plan.sql'),
+                template_path=os.path.join('sqleditor', 'sql', 'default',
+                                           'explain_plan.sql'),
                 input_parameters=dict(
-                    sql='select * from places',
+                    sql='SELECT * FROM places',
                     format='xml',
                     analyze=True,
                     verbose=True,
                     costs=False,
                     buffers=True
                 ),
-                sql_statement='select * from places',
+                sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(  FORMAT XML,  ANALYZE True,  VERBOSE True,  '
-                                      'COSTS False,  BUFFERS True) select * from places'
+                                      '(  FORMAT XML,  ANALYZE True,  '
+                                      'VERBOSE True,  COSTS False,  '
+                                      'BUFFERS True) SELECT * FROM places'
             )
         ),
         (
@@ -43,15 +45,17 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'when not all parameters are present,'
             'it returns the explain plan with the present parameters',
             dict(
-                template_path=os.path.join('sqleditor', 'sql', 'default', 'explain_plan.sql'),
+                template_path=os.path.join('sqleditor', 'sql', 'default',
+                                           'explain_plan.sql'),
                 input_parameters=dict(
-                    sql='select * from places',
+                    sql='SELECT * FROM places',
                     format='json',
                     buffers=True
                 ),
-                sql_statement='select * from places',
+                sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(  FORMAT JSON,  BUFFERS True) select * from places'
+                                      '(  FORMAT JSON,  BUFFERS True) '
+                                      'SELECT * FROM places'
             )
         ),
         (
@@ -59,16 +63,18 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'when timing is present,'
             'it returns the explain plan with timing',
             dict(
-                template_path=os.path.join('sqleditor', 'sql', '9.2_plus', 'explain_plan.sql'),
+                template_path=os.path.join('sqleditor', 'sql', '9.2_plus',
+                                           'explain_plan.sql'),
                 input_parameters=dict(
-                    sql='select * from places',
+                    sql='SELECT * FROM places',
                     format='json',
                     buffers=True,
                     timing=False
                 ),
-                sql_statement='select * from places',
+                sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(  FORMAT JSON,  TIMING False,  BUFFERS True) select * from places'
+                                      '(  FORMAT JSON,  TIMING False,  '
+                                      'BUFFERS True) SELECT * FROM places'
             )
         ),
         (
@@ -76,17 +82,20 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'when summary is present,'
             'it returns the explain plan with summary',
             dict(
-                template_path=os.path.join('sqleditor', 'sql', '10_plus', 'explain_plan.sql'),
+                template_path=os.path.join('sqleditor', 'sql', '10_plus',
+                                           'explain_plan.sql'),
                 input_parameters=dict(
-                    sql='select * from places',
+                    sql='SELECT * FROM places',
                     format='yaml',
                     buffers=True,
                     timing=False,
                     summary=True
                 ),
-                sql_statement='select * from places',
+                sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(  FORMAT YAML,  TIMING False,  SUMMARY True,  BUFFERS True) select * from places'
+                                      '(  FORMAT YAML,  TIMING False,  '
+                                      'SUMMARY True,  BUFFERS True) '
+                                      'SELECT * FROM places'
             )
         ),
         (
@@ -94,14 +103,15 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'when all parameters are present,'
             'it returns the explain without parameters',
             dict(
-                template_path=os.path.join('sqleditor', 'sql', 'gpdb_5.0_plus', 'explain_plan.sql'),
+                template_path=os.path.join('sqleditor', 'sql', 'gpdb_5.0_plus',
+                                           'explain_plan.sql'),
                 input_parameters=dict(
-                    sql='select * from places',
+                    sql='SELECT * FROM places',
                     format='json',
                     buffers=True
                 ),
-                sql_statement='select * from places',
-                expected_return_value='EXPLAIN select * from places'
+                sql_statement='SELECT * FROM places',
+                expected_return_value='EXPLAIN SELECT * FROM places'
             )
         ),
         (
@@ -109,13 +119,14 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'when analyze is true,'
             'it returns the explain analyze',
             dict(
-                template_path=os.path.join('sqleditor', 'sql', 'gpdb_5.0_plus', 'explain_plan.sql'),
+                template_path=os.path.join('sqleditor', 'sql', 'gpdb_5.0_plus',
+                                           'explain_plan.sql'),
                 input_parameters=dict(
-                    sql='select * from places',
+                    sql='SELECT * FROM places',
                     analyze=True
                 ),
-                sql_statement='select * from places',
-                expected_return_value='EXPLAIN ANALYZE select * from places'
+                sql_statement='SELECT * FROM places',
+                expected_return_value='EXPLAIN ANALYZE SELECT * FROM places'
             )
         ),
         (
@@ -123,13 +134,14 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'when analyze is false,'
             'it returns the only explain',
             dict(
-                template_path=os.path.join('sqleditor', 'sql', 'gpdb_5.0_plus', 'explain_plan.sql'),
+                template_path=os.path.join('sqleditor', 'sql', 'gpdb_5.0_plus',
+                                           'explain_plan.sql'),
                 input_parameters=dict(
-                    sql='select * from places',
+                    sql='SELECT * FROM places',
                     analyze=False
                 ),
-                sql_statement='select * from places',
-                expected_return_value='EXPLAIN select * from places'
+                sql_statement='SELECT * FROM places',
+                expected_return_value='EXPLAIN SELECT * FROM places'
             )
         ),
     ]
@@ -139,7 +151,8 @@ class TestExplainPlanTemplates(BaseTestGenerator):
 
     def runTest(self):
         with FakeApp().app_context():
-            result = render_template(self.template_path, **self.input_parameters)
+            result = render_template(self.template_path,
+                                     **self.input_parameters)
             self.assertEqual(
                 str(result).replace("\n", ""), self.expected_return_value)
 
