@@ -23,7 +23,40 @@ class SequenceAddTestCase(BaseTestGenerator):
     """ This class will add new sequence(s) under schema node. """
     scenarios = [
         # Fetching default URL for sequence node.
-        ('Fetch sequence Node URL', dict(url='/browser/sequence/obj/'))
+        (
+            'Fetch sequence Node URL (valid optional data)',
+            dict(
+                url='/browser/sequence/obj/',
+                # Valid optional data
+                data={
+                    "cache": "1",
+                    "cycled": True,
+                    "increment": "1",
+                    "maximum": "100000",
+                    "minimum": "1",
+                    "name": "test_sequence_add_%s" % (str(uuid.uuid4())[1:8]),
+                    "securities": [],
+                    "start": "100"
+                }
+            )
+        ),
+        (
+            'Fetch sequence Node URL (invalid optional data)',
+            dict(
+                url='/browser/sequence/obj/',
+                # Optional fields should be int but we are passing empty str
+                data={
+                    "cache": "",
+                    "cycled": False,
+                    "increment": "",
+                    "maximum": "",
+                    "minimum": "",
+                    "name": "test_sequence_add_%s" % (str(uuid.uuid4())[1:8]),
+                    "securities": [],
+                    "start": ""
+                }
+            )
+        )
     ]
 
     def setUp(self):
@@ -47,13 +80,8 @@ class SequenceAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add sequence.")
         db_user = self.server["username"]
-        data = {
-            "cache": "1",
-            "cycled": True,
-            "increment": "1",
-            "maximum": "100000",
-            "minimum": "1",
-            "name": "test_sequence_add_%s" % (str(uuid.uuid4())[1:8]),
+
+        common_data = {
             "relacl": [
                 {
                     "grantee": db_user,
@@ -79,15 +107,16 @@ class SequenceAddTestCase(BaseTestGenerator):
                 }
             ],
             "schema": schema_name,
-            "securities": [],
             "seqowner": db_user,
-            "start": "100"
         }
+
+        self.data.update(common_data)
+
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' + str(self.db_id) +
             '/' + str(schema_id) + '/',
-            data=json.dumps(data),
+            data=json.dumps(self.data),
             content_type='html/json')
         self.assertEquals(response.status_code, 200)
 
