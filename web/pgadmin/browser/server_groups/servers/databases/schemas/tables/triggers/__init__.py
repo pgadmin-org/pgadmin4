@@ -269,14 +269,16 @@ class TriggerView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            # We need datlastsysoid to check if current trigger is system trigger
+            # We need datlastsysoid to check if current trigger is system
+            # trigger
             self.datlastsysoid = self.manager.db_info[
                 kwargs['did']
             ]['datlastsysoid'] if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
             # we will set template path for sql scripts
-            self.template_path = 'trigger/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'trigger/sql/#{0}#'.format(
+                self.manager.version)
             # Store server type
             self.server_type = self.manager.server_type
             # We need parent's name eg table name and schema name
@@ -327,10 +329,10 @@ class TriggerView(PGChildNodeView):
                 'value': 'Inline EDB-SPL'
             })
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'get_triggerfunctions.sql']),
-                                  show_system_objects=self.blueprint.show_system_objects
-                                  )
+            SQL = render_template(
+                "/".join([self.template_path, 'get_triggerfunctions.sql']),
+                show_system_objects=self.blueprint.show_system_objects
+            )
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -351,7 +353,8 @@ class TriggerView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did, scid, tid):
         """
-        This function is used to list all the trigger nodes within that collection.
+        This function is used to list all the trigger nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -378,7 +381,8 @@ class TriggerView(PGChildNodeView):
     @check_precondition
     def node(self, gid, sid, did, scid, tid, trid):
         """
-        This function will used to create the child node within that collection.
+        This function will used to create the child node within that
+        collection.
         Here it will create specific the trigger node.
 
         Args:
@@ -402,15 +406,17 @@ class TriggerView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(gettext("""Could not find the trigger in the table."""))
+            return gone(
+                gettext("""Could not find the trigger in the table.""")
+            )
 
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                tid,
-                rset['rows'][0]['name'],
-                icon="icon-trigger" if rset['rows'][0]['is_enable_trigger']
-                else "icon-trigger-bad"
-            )
+            rset['rows'][0]['oid'],
+            tid,
+            rset['rows'][0]['name'],
+            icon="icon-trigger" if
+            rset['rows'][0]['is_enable_trigger'] else "icon-trigger-bad"
+        )
 
         return make_json_response(
             data=res,
@@ -420,7 +426,8 @@ class TriggerView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child node within that
+        collection.
         Here it will create all the trigger node.
 
         Args:
@@ -542,7 +549,6 @@ class TriggerView(PGChildNodeView):
         formatted_args = ["'{0}'".format(arg) for arg in args]
         return ', '.join(formatted_args)
 
-
     @check_precondition
     def properties(self, gid, sid, did, scid, tid, trid):
         """
@@ -572,7 +578,8 @@ class TriggerView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the trigger in the table."""))
+            return gone(
+                gettext("""Could not find the trigger in the table."""))
 
         # Making copy of output for future use
         data = dict(res['rows'][0])
@@ -626,8 +633,10 @@ class TriggerView(PGChildNodeView):
                 return make_json_response(
                     status=410,
                     success=0,
-                    errormsg=gettext("Could not find the required parameter (%s)." % \
-                                     required_args[arg])
+                    errormsg=gettext(
+                        "Could not find the required parameter (%s)." %
+                        required_args[arg]
+                    )
                 )
 
         # Adding parent into data dict, will be using it while creating sql
@@ -757,8 +766,10 @@ class TriggerView(PGChildNodeView):
             # We need oid to add object in browser tree and if user
             # update the trigger then new OID is getting generated
             # so we need to return new OID of trigger.
-            SQL = render_template("/".join([self.template_path, 'get_oid.sql']),
-                                  tid=tid, data=data)
+            SQL = render_template(
+                "/".join([self.template_path, 'get_oid.sql']),
+                tid=tid, data=data
+            )
             status, new_trid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=new_trid)
@@ -836,23 +847,26 @@ class TriggerView(PGChildNodeView):
         """
         This function will return trigger function with schema name
         """
-        # If language is 'edbspl' then trigger function should be 'Inline EDB-SPL'
-        # else we will find the trigger function with schema name.
+        # If language is 'edbspl' then trigger function should be
+        # 'Inline EDB-SPL' else we will find the trigger function
+        # with schema name.
         if data['lanname'] == 'edbspl':
             data['tfunction'] = 'Inline EDB-SPL'
         else:
-            SQL = render_template("/".join([self.template_path,
-                                            'get_triggerfunctions.sql']),
-                                  tgfoid=data['tgfoid'],
-                                  show_system_objects=self.blueprint.show_system_objects)
+            SQL = render_template(
+                "/".join([self.template_path, 'get_triggerfunctions.sql']),
+                tgfoid=data['tgfoid'],
+                show_system_objects=self.blueprint.show_system_objects
+            )
 
             status, result = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
-            # Update the trigger function which we have fetched with schema name
+            # Update the trigger function which we have fetched with schema
+            # name
             if 'rows' in result and len(result['rows']) > 0 and \
-                            'tfunctions' in result['rows'][0]:
+                    'tfunctions' in result['rows'][0]:
                 data['tfunction'] = result['rows'][0]['tfunctions']
         return data
 
@@ -888,8 +902,10 @@ class TriggerView(PGChildNodeView):
             old_data = self.get_trigger_function_schema(old_data)
 
             if len(old_data['custom_tgargs']) > 1:
-                # We know that trigger has more than 1 argument, let's join them
-                old_data['tgargs'] = self._format_args(old_data['custom_tgargs'])
+                # We know that trigger has more than 1 argument, let's join
+                # them
+                old_data['tgargs'] = \
+                    self._format_args(old_data['custom_tgargs'])
 
             if len(old_data['tgattr']) > 1:
                 columns = ', '.join(old_data['tgattr'].split(' '))
@@ -939,7 +955,8 @@ class TriggerView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the trigger in the table."""))
+            return gone(
+                gettext("""Could not find the trigger in the table."""))
 
         data = dict(res['rows'][0])
         # Adding parent into data dict, will be using it while creating sql

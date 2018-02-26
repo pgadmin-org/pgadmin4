@@ -248,10 +248,10 @@ class RuleView(PGChildNodeView):
             return gone(gettext("""Could not find the rule in the table."""))
 
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                tid,
-                rset['rows'][0]['name'],
-                icon="icon-rule"
+            rset['rows'][0]['oid'],
+            tid,
+            rset['rows'][0]['name'],
+            icon="icon-rule"
         )
 
         return make_json_response(
@@ -485,7 +485,9 @@ class RuleView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(gettext("""Could not find the rule in the table."""))
+                return gone(
+                    gettext("""Could not find the rule in the table.""")
+                )
             res_data = parse_rule_definition(res)
 
             old_data = res_data

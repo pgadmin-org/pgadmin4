@@ -10,7 +10,8 @@
 import os
 import sys
 
-from regression.python_test_utils.sql_template_test_base import SQLTemplateTestBase
+from regression.python_test_utils.sql_template_test_base import \
+    SQLTemplateTestBase
 from regression.python_test_utils.template_helper import file_as_template
 
 if sys.version_info[0] >= 3:
@@ -52,4 +53,7 @@ class TestTablesNodeSql(SQLTemplateTestBase):
 
     @staticmethod
     def get_template_file(version, filename):
-        return os.path.join(os.path.dirname(__file__), "..", "templates", "table", "sql", version, filename)
+        return os.path.join(
+            os.path.dirname(__file__), "..", "templates", "table", "sql",
+            version, filename
+        )

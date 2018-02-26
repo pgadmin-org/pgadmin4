@@ -109,9 +109,10 @@ class TableUpdateTestCase(BaseTestGenerator):
                 'partitioned',
                 self.partition_type)
         else:
-            self.table_id = tables_utils.create_table(self.server, self.db_name,
-                                                      self.schema_name,
-                                                      self.table_name)
+            self.table_id = tables_utils.create_table(
+                self.server, self.db_name,
+                self.schema_name,
+                self.table_name)
 
     def runTest(self):
         """This function will fetch added table under schema node."""

@@ -31,7 +31,8 @@ class ConstraintsModule(CollectionNodeModule):
     Methods:
     -------
     * __init__(*args, **kwargs)
-      - Method is used to initialize the ConstraintsModule and it's base module.
+      - Method is used to initialize the ConstraintsModule and it's base
+      module.
 
     * get_nodes(gid, sid, did)
       - Method is used to generate the browser collection node.
@@ -40,8 +41,8 @@ class ConstraintsModule(CollectionNodeModule):
       - Method is overridden from its base class to make the node as leaf node.
 
     * script_load()
-      - Load the module script for constraint node, when any of the database node is
-        initialized.
+      - Load the module script for constraint node, when any of the database
+      node is initialized.
     """
 
     NODE_TYPE = 'constraints'
@@ -108,6 +109,7 @@ def nodes(**kwargs):
         status=200
     )
 
+
 @blueprint.route('/obj/<int:gid>/<int:sid>/<int:did>/<int:scid>/<int:tid>/')
 def proplist(**kwargs):
     """
@@ -143,9 +145,9 @@ def module_js():
             "constraints/js/constraints.js",
             _=gettext,
             constraints=[
-                (ConstraintRegistry.registry[n])['blueprint'].NODE_TYPE \
+                (ConstraintRegistry.registry[n])['blueprint'].NODE_TYPE
                 for n in ConstraintRegistry.registry
-                ]
+            ]
         ),
         200, {'Content-Type': 'application/x-javascript'}
     )

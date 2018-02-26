@@ -16,8 +16,8 @@ import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext as _
 from pgadmin.browser.collection import CollectionNodeModule
-from pgadmin.browser.server_groups.servers.databases.schemas.tables.constraints.type \
-    import ConstraintRegistry
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.type import ConstraintRegistry
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
@@ -75,7 +75,6 @@ class CheckConstraintModule(CollectionNodeModule):
         """
         return database.DatabaseModule.NODE_TYPE
 
-
     @property
     def module_use_template_javascript(self):
         """
@@ -83,7 +82,6 @@ class CheckConstraintModule(CollectionNodeModule):
         module.
         """
         return False
-
 
     @property
     def csssnippets(self):
@@ -217,7 +215,8 @@ class CheckConstraintView(PGChildNodeView):
             self.qtIdent = driver.qtIdent
 
             # Set the template path for the SQL scripts
-            self.template_path = 'check_constraint/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'check_constraint/sql/#{0}#'.format(
+                self.manager.version)
 
             SQL = render_template("/".join([self.template_path,
                                             'get_parent.sql']),
@@ -286,7 +285,8 @@ class CheckConstraintView(PGChildNodeView):
         self.qtIdent = driver.qtIdent
 
         # Set the template path for the SQL scripts
-        self.template_path = 'check_constraint/sql/#{0}#'.format(self.manager.version)
+        self.template_path = 'check_constraint/sql/#{0}#'.format(
+            self.manager.version)
 
         SQL = render_template("/".join([self.template_path,
                                         'get_parent.sql']),
@@ -325,19 +325,20 @@ class CheckConstraintView(PGChildNodeView):
         if len(rset['rows']) == 0:
             return gone(_("""Could not find the check constraint."""))
 
-        if "convalidated" in rset['rows'][0] and rset['rows'][0]["convalidated"]:
+        if "convalidated" in rset['rows'][0] and \
+                rset['rows'][0]["convalidated"]:
             icon = "icon-check_constraint_bad"
             valid = False
         else:
             icon = "icon-check_constraint"
             valid = True
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                tid,
-                rset['rows'][0]['name'],
-                icon=icon,
-                valid=valid
-            )
+            rset['rows'][0]['oid'],
+            tid,
+            rset['rows'][0]['name'],
+            icon=icon,
+            valid=valid
+        )
         return make_json_response(
             data=res,
             status=200
@@ -403,7 +404,8 @@ class CheckConstraintView(PGChildNodeView):
         self.qtIdent = driver.qtIdent
 
         # Set the template path for the SQL scripts
-        self.template_path = 'check_constraint/sql/#{0}#'.format(self.manager.version)
+        self.template_path = 'check_constraint/sql/#{0}#'.format(
+            self.manager.version)
 
         SQL = render_template("/".join([self.template_path,
                                         'get_parent.sql']),
@@ -546,15 +548,18 @@ class CheckConstraintView(PGChildNodeView):
                 data['name'] = res['rows'][0]['name']
 
             else:
-                sql = render_template("/".join([self.template_path, 'get_oid.sql']),
-                                      tid=tid,
-                                      name=data['name'])
+                sql = render_template(
+                    "/".join([self.template_path, 'get_oid.sql']),
+                    tid=tid,
+                    name=data['name']
+                )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
-            if "convalidated" in res['rows'][0] and res['rows'][0]["convalidated"]:
+            if "convalidated" in res['rows'][0] and \
+                    res['rows'][0]["convalidated"]:
                 icon = "icon-check_constraint_bad"
                 valid = False
             else:
@@ -666,13 +671,14 @@ class CheckConstraintView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'get_name.sql']),
-                                  cid=cid)
+            sql = render_template(
+                "/".join([self.template_path, 'get_name.sql']), cid=cid)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
-            if "convalidated" in res['rows'][0] and res['rows'][0]["convalidated"]:
+            if "convalidated" in res['rows'][0] and \
+                    res['rows'][0]["convalidated"]:
                 icon = 'icon-check_constraint_bad'
                 valid = False
             else:
@@ -884,13 +890,15 @@ class CheckConstraintView(PGChildNodeView):
         try:
             data['schema'] = self.schema
             data['table'] = self.table
-            sql = render_template("/".join([self.template_path, 'get_name.sql']), cid=cid)
+            sql = render_template(
+                "/".join([self.template_path, 'get_name.sql']), cid=cid)
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
             data['name'] = res
-            sql = render_template("/".join([self.template_path, 'validate.sql']), data=data)
+            sql = render_template(
+                "/".join([self.template_path, 'validate.sql']), data=data)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)

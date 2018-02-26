@@ -51,15 +51,16 @@ class ColumnAddTestCase(BaseTestGenerator):
     def runTest(self):
         """This function will add column under table node."""
         self.column_name = "test_column_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {"name": self.column_name,
-                "cltype": "\"char\"",
-                "attacl": [],
-                "is_primary_key": False,
-                "attnotnull": False,
-                "attlen": None,
-                "attprecision": None,
-                "attoptions": [],
-                "seclabels": []
+        data = {
+            "name": self.column_name,
+            "cltype": "\"char\"",
+            "attacl": [],
+            "is_primary_key": False,
+            "attnotnull": False,
+            "attlen": None,
+            "attprecision": None,
+            "attoptions": [],
+            "seclabels": []
         }
         # Add table
         response = self.tester.post(

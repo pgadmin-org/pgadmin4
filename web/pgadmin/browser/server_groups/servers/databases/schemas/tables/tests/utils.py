@@ -89,8 +89,10 @@ def verify_table(server, db_name, table_id):
         raise
 
 
-def create_table_for_partition(server, db_name, schema_name, table_name,
-                               table_type, partition_type, partition_name=None):
+def create_table_for_partition(
+    server, db_name, schema_name, table_name,
+    table_type, partition_type, partition_name=None
+):
     """
     This function creates partitioned/partition/regular table
     under provided schema.
@@ -216,9 +218,10 @@ def set_partition_data(server, db_name, schema_name, table_name,
              }
         )
     elif partition_type == 'range' and mode == 'attach':
-        partition_id = create_table_for_partition(server, db_name, schema_name,
-                                                  'attach_sale_2010', 'regular',
-                                                  partition_type)
+        partition_id = create_table_for_partition(
+            server, db_name, schema_name, 'attach_sale_2010', 'regular',
+            partition_type
+        )
         data['partitions'].update(
             {'added': [{'values_from': "'2010-01-01'",
                         'values_to': "'2010-12-31'",
@@ -228,9 +231,10 @@ def set_partition_data(server, db_name, schema_name, table_name,
              }
         )
     elif partition_type == 'list' and mode == 'attach':
-        partition_id = create_table_for_partition(server, db_name, schema_name,
-                                                  'attach_sale_2011', 'regular',
-                                                  partition_type)
+        partition_id = create_table_for_partition(
+            server, db_name, schema_name, 'attach_sale_2011', 'regular',
+            partition_type
+        )
         data['partitions'].update(
             {'added': [{'values_in': "'2011-01-01'",
                         'is_attach': True,

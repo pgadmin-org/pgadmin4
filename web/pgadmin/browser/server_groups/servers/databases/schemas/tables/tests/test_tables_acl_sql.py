@@ -9,7 +9,8 @@
 
 import os
 from regression.python_test_utils.template_helper import file_as_template
-from regression.python_test_utils.sql_template_test_base import SQLTemplateTestBase
+from regression.python_test_utils.sql_template_test_base import \
+    SQLTemplateTestBase
 
 
 class TestTablesAclSql(SQLTemplateTestBase):
@@ -37,10 +38,14 @@ class TestTablesAclSql(SQLTemplateTestBase):
         return sql
 
     def assertions(self, fetch_result, descriptions):
-        public_acls = list(filter(lambda acl: acl[1] == 'PUBLIC', fetch_result))
+        public_acls = list(
+            filter(lambda acl: acl[1] == 'PUBLIC', fetch_result)
+        )
         self.assertEqual(len(public_acls), 1)
 
-        new_acl_map = dict(zip(map(lambda column: column.name, descriptions), public_acls[0]))
+        new_acl_map = dict(
+            zip(map(lambda column: column.name, descriptions), public_acls[0])
+        )
 
         self.assertEqual('PUBLIC', new_acl_map['grantee'])
         self.assertEqual(self.server['username'], new_acl_map['grantor'])
@@ -51,4 +56,7 @@ class TestTablesAclSql(SQLTemplateTestBase):
 
     @staticmethod
     def get_template_file(version, filename):
-        return os.path.join(os.path.dirname(__file__), "..", "templates", "table", "sql", version, filename)
+        return os.path.join(
+            os.path.dirname(__file__), "..", "templates", "table", "sql",
+            version, filename
+        )

@@ -54,7 +54,7 @@ class TriggersUpdateTestCase(BaseTestGenerator):
         self.func_name = "trigger_func_add_%s" % str(uuid.uuid4())[1:8]
         self.function_info = \
             trigger_funcs_utils.create_trigger_function_with_trigger(
-            self.server, self.db_name, self.schema_name, self.func_name)
+                self.server, self.db_name, self.schema_name, self.func_name)
         self.trigger_name = "test_trigger_delete_%s" % (str(uuid.uuid4())[1:8])
         self.trigger_id = triggers_utils.create_trigger(self.server,
                                                         self.db_name,

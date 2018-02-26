@@ -27,10 +27,13 @@ from pgadmin.browser.utils import PGChildModule
 
 
 def backend_supported(module, manager, **kwargs):
-    if 'tid' in kwargs and CollectionNodeModule.BackendSupported(module, manager, **kwargs):
+    if 'tid' in kwargs and CollectionNodeModule.BackendSupported(
+            module, manager, **kwargs):
         conn = manager.connection(did=kwargs['did'])
 
-        template_path = 'partition/sql/{0}/#{0}#{1}#'.format(manager.server_type, manager.version)
+        template_path = 'partition/sql/{0}/#{0}#{1}#'.format(
+            manager.server_type, manager.version
+        )
         SQL = render_template("/".join(
             [template_path, 'backend_support.sql']), tid=kwargs['tid'])
         status, res = conn.execute_scalar(SQL)
@@ -40,6 +43,7 @@ def backend_supported(module, manager, **kwargs):
             return internal_server_error(errormsg=res)
 
         return res
+
 
 class PartitionsModule(CollectionNodeModule):
     """
@@ -114,7 +118,9 @@ class PartitionsModule(CollectionNodeModule):
         if first_registration:
             self.submodules = list(app.find_submodules(self.import_name))
 
-        super(CollectionNodeModule, self).register(app, options, first_registration)
+        super(CollectionNodeModule, self).register(
+            app, options, first_registration
+        )
 
         for module in self.submodules:
             if first_registration:
@@ -290,9 +296,9 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
             JSON of available table nodes
         """
         SQL = render_template(
-                "/".join([self.partition_template_path, 'nodes.sql']),
-                scid=scid, tid=tid
-                )
+            "/".join([self.partition_template_path, 'nodes.sql']),
+            scid=scid, tid=tid
+        )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -319,7 +325,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
 
             return make_json_response(
                 data=browser_node(rset['rows'][0]), status=200
-                )
+            )
 
         res = []
         for row in rset['rows']:
@@ -462,9 +468,10 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
             temp_data['schema'] = partition_schema
             temp_data['name'] = partition_name
 
-            SQL = render_template("/".join(
-                            [self.partition_template_path, 'detach.sql']),
-                            data=temp_data, conn=self.conn)
+            SQL = render_template(
+                "/".join([self.partition_template_path, 'detach.sql']),
+                data=temp_data, conn=self.conn
+            )
 
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -578,7 +585,9 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            return super(PartitionsView, self).truncate(gid, sid, did, scid, ptid, res)
+            return super(PartitionsView, self).truncate(
+                gid, sid, did, scid, ptid, res
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -599,7 +608,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
         try:
             SQL = render_template(
                 "/".join([self.partition_template_path, 'properties.sql']),
-                did=did, scid=scid, tid=tid,ptid=ptid,
+                did=did, scid=scid, tid=tid, ptid=ptid,
                 datlastsysoid=self.datlastsysoid
             )
             status, res = self.conn.execute_dict(SQL)

@@ -16,7 +16,8 @@ import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
-from pgadmin.browser.server_groups.servers.databases.schemas.tables.partitions import backend_supported
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    partitions import backend_supported
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
@@ -373,7 +374,8 @@ class IndexesView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did, scid, tid):
         """
-        This function is used to list all the schema nodes within that collection.
+        This function is used to list all the schema nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -401,8 +403,8 @@ class IndexesView(PGChildNodeView):
     @check_precondition
     def node(self, gid, sid, did, scid, tid, idx):
         """
-        This function will used to create all the child node within that collection.
-        Here it will create all the schema node.
+        This function will used to create all the child node within that
+        collection. Here it will create all the schema node.
 
         Args:
             gid: Server Group ID
@@ -427,11 +429,11 @@ class IndexesView(PGChildNodeView):
             return gone(gettext("""Could not find the index in the table."""))
 
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                tid,
-                rset['rows'][0]['name'],
-                icon="icon-index"
-            )
+            rset['rows'][0]['oid'],
+            tid,
+            rset['rows'][0]['name'],
+            icon="icon-index"
+        )
 
         return make_json_response(
             data=res,
@@ -441,8 +443,8 @@ class IndexesView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid):
         """
-        This function will used to create all the child node within that collection.
-        Here it will create all the schema node.
+        This function will used to create all the child node within that
+        collection. Here it will create all the schema node.
 
         Args:
             gid: Server Group ID
@@ -826,7 +828,9 @@ class IndexesView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(gettext("""Could not find the index in the table."""))
+                return gone(
+                    gettext("""Could not find the index in the table.""")
+                )
 
             old_data = dict(res['rows'][0])
 

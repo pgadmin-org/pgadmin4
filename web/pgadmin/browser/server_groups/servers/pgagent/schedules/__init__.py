@@ -391,7 +391,6 @@ class JobScheduleView(PGChildNodeView):
             )
         )
 
-
     @check_precondition
     def update(self, gid, sid, jid, jscid):
         """

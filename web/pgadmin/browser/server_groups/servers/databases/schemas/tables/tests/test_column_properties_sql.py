@@ -9,7 +9,8 @@
 
 import os
 
-from regression.python_test_utils.sql_template_test_base import SQLTemplateTestBase
+from regression.python_test_utils.sql_template_test_base import \
+    SQLTemplateTestBase
 from regression.python_test_utils.template_helper import file_as_template
 
 
@@ -49,4 +50,7 @@ class TestColumnPropertiesSql(SQLTemplateTestBase):
 
     @staticmethod
     def get_template_file(version, filename):
-        return os.path.join(os.path.dirname(__file__), "..", "templates", "column", "sql", version, filename)
+        return os.path.join(
+            os.path.dirname(__file__), "..", "templates", "column", "sql",
+            version, filename
+        )

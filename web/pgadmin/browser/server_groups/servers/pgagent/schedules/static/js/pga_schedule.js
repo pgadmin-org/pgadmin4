@@ -464,18 +464,16 @@ define('pgadmin.node.pga_schedule', [
             this.errorModel.unset('jscstart');
           }
 
-          val = this.get('jscend');
-          if (_.isUndefined(val) || _.isNull(val) ||
-            String(val).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Please enter the end time.');
-            this.errorModel.set('jscend', msg);
-            errMsg = errMsg || msg;
-          } else {
-            this.errorModel.unset('jscend');
-          }
-
           // End time must be greater than Start time
           if(!errMsg) {
+            val = this.get('jscend');
+            // No further validation required if end date is not provided by
+            // the user
+            if (_.isUndefined(val) || _.isNull(val) ||
+              String(val).replace(/^\s+|\s+$/g, '') == '') {
+              return;
+            }
+
             var start_time = this.get('jscstart'),
               end_time = this.get('jscend'),
               start_time_js =  start_time.split(' '),

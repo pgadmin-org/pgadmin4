@@ -15,8 +15,8 @@ from functools import wraps
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext as _
-from pgadmin.browser.server_groups.servers.databases.schemas.tables.constraints.type \
-    import ConstraintRegistry, ConstraintTypeModule
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.type import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
@@ -32,12 +32,14 @@ class ExclusionConstraintModule(ConstraintTypeModule):
     """
     class ForeignKeyConstraintModule(CollectionNodeModule)
 
-        A module class for Exclusion constraint node derived from ConstraintTypeModule.
+        A module class for Exclusion constraint node derived from
+        ConstraintTypeModule.
 
     Methods:
     -------
     * __init__(*args, **kwargs)
-      - Method is used to initialize the ForeignKeyConstraintModule and it's base module.
+      - Method is used to initialize the ForeignKeyConstraintModule and
+      it's base module.
 
     * get_nodes(gid, sid, did)
       - Method is used to generate the browser collection node.
@@ -55,7 +57,8 @@ class ExclusionConstraintModule(ConstraintTypeModule):
 
     def __init__(self, *args, **kwargs):
         """
-        Method is used to initialize the ForeignKeyConstraintModule and it's base module.
+        Method is used to initialize the ForeignKeyConstraintModule and
+        it's base module.
 
         Args:
           *args:
@@ -86,8 +89,8 @@ class ExclusionConstraintModule(ConstraintTypeModule):
     @property
     def script_load(self):
         """
-        Load the module script for exclusion_constraint, when any of the table node is
-        initialized.
+        Load the module script for exclusion_constraint, when any of the
+        table node is initialized.
 
         Returns: node type of the server module.
         """
@@ -109,14 +112,16 @@ class ExclusionConstraintView(PGChildNodeView):
     """
     class ExclusionConstraintView(PGChildNodeView)
 
-        A view class for Exclusion constraint node derived from PGChildNodeView. This class is
-        responsible for all the stuff related to view like creating, updating Exclusion constraint
-        node, showing properties, showing sql in sql pane.
+        A view class for Exclusion constraint node derived from
+        PGChildNodeView. This class is responsible for all the stuff related
+        to view like creating, updating Exclusion constraint node, showing
+        properties, showing sql in sql pane.
 
     Methods:
     -------
     * __init__(**kwargs)
-      - Method is used to initialize the ForeignKeyConstraintView and it's base view.
+      - Method is used to initialize the ForeignKeyConstraintView and
+      it's base view.
 
     * module_js()
       - This property defines (if javascript) exists for this node.
@@ -135,8 +140,8 @@ class ExclusionConstraintView(PGChildNodeView):
         collection as http response.
 
     * get_list()
-      - This function is used to list all the language nodes within that collection
-        and return list of Exclusion constraint nodes.
+      - This function is used to list all the language nodes within that
+        collection and return list of Exclusion constraint nodes.
 
     * nodes()
       - This function returns child node within that collection.
@@ -152,13 +157,15 @@ class ExclusionConstraintView(PGChildNodeView):
       - This function will update the data for the selected Exclusion.
 
     * msql()
-      - This function is used to return modified SQL for the selected Exclusion.
+      - This function is used to return modified SQL for the selected
+        Exclusion.
 
     * get_sql()
       - This function will generate sql from model data.
 
     * sql():
-      - This function will generate sql to show it in sql pane for the selected Exclusion.
+      - This function will generate sql to show it in sql pane for the
+        selected Exclusion.
 
     * get_access_methods():
       - Returns access methods for exclusion constraint.
@@ -235,7 +242,8 @@ class ExclusionConstraintView(PGChildNodeView):
             )
             self.conn = self.manager.connection(did=kwargs['did'])
 
-            self.template_path = 'exclusion_constraint/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'exclusion_constraint/sql/#{0}#'.format(
+                self.manager.version)
 
             # We need parent's name eg table name and schema name
             SQL = render_template("/".join([self.template_path,
@@ -284,7 +292,9 @@ class ExclusionConstraintView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(_("""Could not find the exclusion constraint in the table."""))
+            return gone(_(
+                """Could not find the exclusion constraint in the table."""
+            ))
 
         result = res['rows'][0]
 
@@ -363,12 +373,11 @@ class ExclusionConstraintView(PGChildNodeView):
         Returns:
 
         """
-        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
-                sid
-            )
+        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
 
-        self.template_path = 'exclusion_constraint/sql/#{0}#'.format(self.manager.version)
+        self.template_path = 'exclusion_constraint/sql/#{0}#'.format(
+            self.manager.version)
 
         # We need parent's name eg table name and schema name
         SQL = render_template("/".join([self.template_path,
@@ -418,11 +427,11 @@ class ExclusionConstraintView(PGChildNodeView):
             return gone(_("""Could not find the exclusion constraint."""))
 
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                tid,
-                rset['rows'][0]['name'],
-                icon="icon-exclusion_constraint"
-            )
+            rset['rows'][0]['oid'],
+            tid,
+            rset['rows'][0]['name'],
+            icon="icon-exclusion_constraint"
+        )
         return make_json_response(
             data=res,
             status=200
@@ -479,12 +488,11 @@ class ExclusionConstraintView(PGChildNodeView):
         Returns:
 
         """
-        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
-                sid
-            )
+        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
 
-        self.template_path = 'exclusion_constraint/sql/#{0}#'.format(self.manager.version)
+        self.template_path = 'exclusion_constraint/sql/#{0}#'.format(
+            self.manager.version)
 
         # We need parent's name eg table name and schema name
         SQL = render_template("/".join([self.template_path,
@@ -598,7 +606,10 @@ class ExclusionConstraintView(PGChildNodeView):
                 data['name'] = res['rows'][0]['name']
 
             else:
-                sql = render_template("/".join([self.template_path, 'get_oid.sql']), name=data['name'])
+                sql = render_template(
+                    "/".join([self.template_path, 'get_oid.sql']),
+                    name=data['name']
+                )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
                     self.end_transaction()
@@ -654,7 +665,10 @@ class ExclusionConstraintView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'get_oid.sql']), name=data['name'])
+            sql = render_template(
+                "/".join([self.template_path, 'get_oid.sql']),
+                name=data['name']
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -694,8 +708,10 @@ class ExclusionConstraintView(PGChildNodeView):
         else:
             cascade = False
         try:
-            sql = render_template("/".join([self.template_path, 'get_name.sql']),
-                                  cid=exid)
+            sql = render_template(
+                "/".join([self.template_path, 'get_name.sql']),
+                cid=exid
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -707,7 +723,8 @@ class ExclusionConstraintView(PGChildNodeView):
                         'Error: Object not found.'
                     ),
                     info=_(
-                        'The specified exclusion constraint could not be found.\n'
+                        'The specified exclusion constraint could not '
+                        'be found.\n'
                     )
                 )
 
@@ -790,10 +807,12 @@ class ExclusionConstraintView(PGChildNodeView):
 
         """
         if exid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
-                                  did=did,
-                                  tid=tid,
-                                  cid=exid)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                did=did,
+                tid=tid,
+                cid=exid
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)

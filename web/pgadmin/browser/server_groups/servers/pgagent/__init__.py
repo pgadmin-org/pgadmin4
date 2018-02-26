@@ -55,7 +55,9 @@ class JobModule(CollectionNodeModule):
 
         status, res = conn.execute_scalar("""
 SELECT
-    has_table_privilege('pgagent.pga_job', 'INSERT, SELECT, UPDATE') has_priviledge
+    has_table_privilege(
+      'pgagent.pga_job', 'INSERT, SELECT, UPDATE'
+    ) has_priviledge
 WHERE EXISTS(
     SELECT has_schema_privilege('pgagent', 'USAGE')
     WHERE EXISTS(
@@ -148,7 +150,11 @@ class JobView(PGChildNodeView):
         @wraps(f)
         def wrap(self, *args, **kwargs):
 
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+            self.manager = get_driver(
+                PG_DEFAULT_DRIVER
+            ).connection_manager(
+                kwargs['sid']
+            )
             self.conn = self.manager.connection()
 
             # Set the template path for the sql scripts.
@@ -182,9 +188,8 @@ SELECT EXISTS(
         if jid is not None:
             if len(rset['rows']) != 1:
                 return gone(
-                    errormsg=_(
-                        "Could not find the pgAgent job on the server."
-                        ))
+                    errormsg=_("Could not find the pgAgent job on the server.")
+                )
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
                     rset['rows'][0]['jobid'],
@@ -356,8 +361,8 @@ SELECT EXISTS(
                 jid,
                 sid,
                 row['jobname'],
-                icon="icon-pga_job" if row['jobenabled'] else
-                    "icon-pga_job-disabled"
+                icon="icon-pga_job" if row['jobenabled']
+                else "icon-pga_job-disabled"
             )
         )
 
@@ -438,7 +443,6 @@ SELECT EXISTS(
         if not status:
             return internal_server_error(errormsg=res)
 
-
         if len(res['rows']) == 0:
             return gone(
                 _("Could not find the object on the server.")
@@ -446,7 +450,7 @@ SELECT EXISTS(
 
         row = res['rows'][0]
 
-        status, res= self.conn.execute_dict(
+        status, res = self.conn.execute_dict(
             render_template(
                 "/".join([self.template_path, 'steps.sql']),
                 jid=jid, conn=self.conn,
@@ -478,7 +482,7 @@ SELECT EXISTS(
                         'jexdate': schedule['jexdate'][idx],
                         'jextime': schedule['jextime'][idx]
                     })
-                    idx+=1
+                    idx += 1
             del schedule['jexid']
             del schedule['jexdate']
             del schedule['jextime']
@@ -526,5 +530,6 @@ SELECT EXISTS(
             data=res['rows'],
             status=200
         )
+
 
 JobView.register_node_view(blueprint)

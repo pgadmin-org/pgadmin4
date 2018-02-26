@@ -487,7 +487,6 @@ SELECT EXISTS(
 
         return make_json_response(success=1)
 
-
     @check_precondition
     def msql(self, gid, sid, jid, jstid=None):
         """

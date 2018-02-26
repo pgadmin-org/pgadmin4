@@ -10,7 +10,8 @@
 import os
 
 import jinja2
-from regression.python_test_utils.sql_template_test_base import SQLTemplateTestBase
+from regression.python_test_utils.sql_template_test_base import \
+    SQLTemplateTestBase
 from regression.python_test_utils.template_helper import file_as_template
 
 
@@ -27,7 +28,8 @@ class TestTriggerGetOidSql(SQLTemplateTestBase):
     def test_setup(self, connection, cursor):
         cursor.execute("SELECT pg_class.oid AS table_id, "
                        "pg_attribute.attnum AS column_id "
-                       "FROM pg_class JOIN pg_attribute ON attrelid=pg_class.oid "
+                       "FROM pg_class JOIN pg_attribute ON "
+                       "attrelid=pg_class.oid "
                        "WHERE pg_class.relname='test_table'"
                        " AND pg_attribute.attname = 'some_column'")
         self.table_id, self.column_id = cursor.fetchone()
@@ -48,5 +50,7 @@ class TestTriggerGetOidSql(SQLTemplateTestBase):
 
     @staticmethod
     def get_template_file(version, filename):
-        return os.path.join(os.path.dirname(__file__), "..", "templates", "trigger", "sql", version, filename)
-
+        return os.path.join(
+            os.path.dirname(__file__), "..", "templates", "trigger", "sql",
+            version, filename
+        )

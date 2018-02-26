@@ -212,7 +212,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             self.qtTypeIdent = driver.qtTypeIdent
 
             # Set the template path for the SQL scripts
-            self.template_path = 'column/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'column/sql/#{0}#'.format(
+                self.manager.version)
 
             # Allowed ACL for column 'Select/Update/Insert/References'
             self.acl = ['a', 'r', 'w', 'x']
@@ -236,7 +237,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     @check_precondition
     def list(self, gid, sid, did, scid, tid):
         """
-        This function is used to list all the schema nodes within that collection.
+        This function is used to list all the schema nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -249,9 +251,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             JSON of available column nodes
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), tid=tid,
-                              show_sys_objects=self.blueprint.show_system_objects)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            tid=tid, show_sys_objects=self.blueprint.show_system_objects
+        )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -264,8 +267,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid, clid=None):
         """
-        This function will used to create all the child node within that collection.
-        Here it will create all the schema node.
+        This function will used to create all the child node within that
+        collection. Here it will create all the schema node.
 
         Args:
             gid: Server Group ID
@@ -354,7 +357,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         length = False
         precision = False
         if 'elemoid' in data:
-            length, precision, typeval = self.get_length_precision(data['elemoid'])
+            length, precision, typeval = \
+                self.get_length_precision(data['elemoid'])
 
         # Set length and precision to None
         data['attlen'] = None
@@ -434,7 +438,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         edit_types_list = list()
         # We will need present type in edit mode
-        if data['typnspname'] == "pg_catalog" or data['typnspname'] == "public":
+        if data['typnspname'] == "pg_catalog" or \
+                data['typnspname'] == "public":
             edit_types_list.append(present_type)
         else:
             t = self.qtTypeIdent(self.conn, data['typnspname'], present_type)
@@ -442,9 +447,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             data['cltype'] = t
 
         if int(is_reference) == 0:
-            SQL = render_template("/".join([self.template_path,
-                                            'edit_mode_types.sql']),
-                                  type_id=type_id)
+            SQL = render_template(
+                "/".join([self.template_path, 'edit_mode_types.sql']),
+                type_id=type_id
+            )
             status, rset = self.conn.execute_2darray(SQL)
 
             for row in rset['rows']:
@@ -476,9 +482,11 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             JSON of selected schema node
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), tid=tid, clid=clid
-                              , show_sys_objects=self.blueprint.show_system_objects)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            tid=tid, clid=clid,
+            show_sys_objects=self.blueprint.show_system_objects
+        )
 
         status, res = self.conn.execute_dict(SQL)
 
@@ -636,9 +644,11 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         # so that we create template for dropping column
         try:
 
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']), tid=tid, clid=clid
-                                  , show_sys_objects=self.blueprint.show_system_objects)
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                tid=tid, clid=clid,
+                show_sys_objects=self.blueprint.show_system_objects
+            )
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -773,9 +783,11 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         data = self.convert_length_precision_to_string(data)
 
         if clid is not None:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']), tid=tid, clid=clid
-                                  , show_sys_objects=self.blueprint.show_system_objects)
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                tid=tid, clid=clid,
+                show_sys_objects=self.blueprint.show_system_objects
+            )
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -834,8 +846,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                 data['attacl'] = parse_priv_to_db(data['attacl'],
                                                   self.acl)
             # If the request for new object which do not have did
-            SQL = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data, conn=self.conn, is_sql=is_sql)
+            SQL = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data, conn=self.conn, is_sql=is_sql
+            )
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
@@ -852,9 +866,11 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            clid: Column ID
         """
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']), tid=tid, clid=clid
-                                  , show_sys_objects=self.blueprint.show_system_objects)
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                tid=tid, clid=clid,
+                show_sys_objects=self.blueprint.show_system_objects
+            )
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -883,14 +899,15 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if not isinstance(SQL, (str, unicode)):
                 return SQL
 
-            sql_header = u"-- Column: {0}\n\n-- ".format(self.qtIdent(self.conn,
-                                                                     data['schema'],
-                                                                     data['table'],
-                                                                     data['name']))
+            sql_header = u"-- Column: {0}\n\n-- ".format(
+                self.qtIdent(
+                    self.conn, data['schema'], data['table'], data['name'])
+            )
 
-            sql_header += render_template("/".join([self.template_path,
-                                                    'delete.sql']),
-                                          data=data, conn=self.conn)
+            sql_header += render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                data=data, conn=self.conn
+            )
             SQL = sql_header + '\n\n' + SQL
 
             return ajax_response(response=SQL.strip('\n'))
@@ -943,7 +960,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             elif dep_str == 'i':
                 dep_type = 'internal'
 
-            dependents_result.append({'type': 'sequence', 'name': ref_name, 'field': dep_type})
+            dependents_result.append(
+                {'type': 'sequence', 'name': ref_name, 'field': dep_type}
+            )
 
         return ajax_response(
             response=dependents_result,
@@ -990,9 +1009,11 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         Returns the statistics for a particular object if seid is specified
         """
         # Fetch column name
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), tid=tid, clid=clid
-                              , show_sys_objects=self.blueprint.show_system_objects)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            tid=tid, clid=clid,
+            show_sys_objects=self.blueprint.show_system_objects
+        )
 
         status, res = self.conn.execute_dict(SQL)
         if not status:

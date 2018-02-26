@@ -27,7 +27,9 @@ class TestTemplateCreate(BaseTestGenerator):
             'when no primary key is present, '
             'it returns "DISTRIBUTED RANDOMLY"',
             dict(
-                template_path=os.path.join('table', 'sql', 'gpdb_5.0_plus', 'create.sql'),
+                template_path=os.path.join(
+                    'table', 'sql', 'gpdb_5.0_plus', 'create.sql'
+                ),
                 input_parameters=dict(
                     data=dict()
                 ),
@@ -41,7 +43,8 @@ class TestTemplateCreate(BaseTestGenerator):
             'when primary key is present, '
             'it returns "DISTRIBUTED BY (attr_primary_key)"',
             dict(
-                template_path=os.path.join('table', 'sql', 'gpdb_5.0_plus', 'create.sql'),
+                template_path=os.path.join(
+                    'table', 'sql', 'gpdb_5.0_plus', 'create.sql'),
                 input_parameters=dict(
                     data=dict(
                         primary_key=[
@@ -55,7 +58,9 @@ class TestTemplateCreate(BaseTestGenerator):
                         ]
                     )
                 ),
-                expected_in_return_value='DISTRIBUTED BY (attr_primary_key_column_1, attr_primary_key_column_2)',
+                expected_in_return_value='DISTRIBUTED BY '
+                                         '(attr_primary_key_column_1, '
+                                         'attr_primary_key_column_2)',
                 expected_not_in_return_value='DISTRIBUTED RANDOMLY'
             )
         ),
@@ -64,7 +69,8 @@ class TestTemplateCreate(BaseTestGenerator):
             'when distribution is present, '
             'it returns "DISTRIBUTED BY (attr1, attr2, attr4)"',
             dict(
-                template_path=os.path.join('table', 'sql', 'gpdb_5.0_plus', 'create.sql'),
+                template_path=os.path.join(
+                    'table', 'sql', 'gpdb_5.0_plus', 'create.sql'),
                 input_parameters=dict(
                     data=dict(
                         distribution=[1, 2, 4],
@@ -77,7 +83,8 @@ class TestTemplateCreate(BaseTestGenerator):
                         ]
                     )
                 ),
-                expected_in_return_value='DISTRIBUTED BY (attr1, attr2, attr4)',
+                expected_in_return_value='DISTRIBUTED BY '
+                                         '(attr1, attr2, attr4)',
                 expected_not_in_return_value='DISTRIBUTED RANDOMLY'
             )
         ),
@@ -88,14 +95,17 @@ class TestTemplateCreate(BaseTestGenerator):
 
     def runTest(self):
         with FakeApp().app_context():
-            result = render_template(self.template_path, **self.input_parameters)
-            result_beautified = re.sub(' +', ' ', str(result).replace("\n", " ").strip())
+            result = render_template(
+                self.template_path, **self.input_parameters)
+            result_beautified = re.sub(
+                ' +', ' ', str(result).replace("\n", " ").strip())
             if hasattr(self, 'expected_return_value'):
                 self.assertEqual(result_beautified, self.expected_return_value)
             if hasattr(self, 'expected_in_return_value'):
                 self.assertIn(self.expected_in_return_value, result_beautified)
             if hasattr(self, 'expected_not_in_return_value'):
-                self.assertNotIn(self.expected_not_in_return_value, result_beautified)
+                self.assertNotIn(
+                    self.expected_not_in_return_value, result_beautified)
 
 
 class FakeApp(Flask):
@@ -107,16 +117,20 @@ class FakeApp(Flask):
         self.jinja_env.filters['qtTypeIdent'] = driver.qtTypeIdent
         self.jinja_loader = ChoiceLoader([
             FileSystemLoader(
-                os.path.dirname(os.path.realpath(__file__)) + '/../templates/'
+                os.path.dirname(
+                    os.path.realpath(__file__)) + '/../templates/'
             ),
             FileSystemLoader(
-                os.path.dirname(os.path.realpath(__file__)) + '/../../templates/'
+                os.path.dirname(
+                    os.path.realpath(__file__)) + '/../../templates/'
             ),
             FileSystemLoader(
-                os.path.dirname(os.path.realpath(__file__)) + '/../../types/templates/'
+                os.path.dirname(
+                    os.path.realpath(__file__)) + '/../../types/templates/'
             ),
             FileSystemLoader(
-                os.path.dirname(os.path.realpath(__file__)) + '/../../../../templates/'
+                os.path.dirname(
+                    os.path.realpath(__file__)) + '/../../../../templates/'
             ),
         ]
         )

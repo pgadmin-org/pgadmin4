@@ -15,8 +15,8 @@ from functools import wraps
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext as _
-from pgadmin.browser.server_groups.servers.databases.schemas.tables.constraints.type \
-    import ConstraintRegistry, ConstraintTypeModule
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.type import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
@@ -32,12 +32,14 @@ class IndexConstraintModule(ConstraintTypeModule):
     """
     class IndexConstraintModule(CollectionNodeModule)
 
-        A module class for Primary key constraint node derived from ConstraintTypeModule.
+        A module class for Primary key constraint node derived from
+        ConstraintTypeModule.
 
     Methods:
     -------
     * __init__(*args, **kwargs)
-      - Method is used to initialize the PrimaryKeyConstraintModule and it's base module.
+      - Method is used to initialize the PrimaryKeyConstraintModule and
+      it's base module.
 
     * get_nodes(gid, sid, did)
       - Method is used to generate the browser collection node.
@@ -55,7 +57,8 @@ class IndexConstraintModule(ConstraintTypeModule):
 
     def __init__(self, *args, **kwargs):
         """
-        Method is used to initialize the PrimaryKeyConstraintModule and it's base module.
+        Method is used to initialize the PrimaryKeyConstraintModule and
+        it's base module.
 
         Args:
           *args:
@@ -106,7 +109,8 @@ class PrimaryKeyConstraintModule(IndexConstraintModule):
     """
      class PrimaryKeyConstraintModule(IndexConstraintModule)
 
-        A module class for the catalog schema node derived from IndexConstraintModule.
+        A module class for the catalog schema node derived from
+        IndexConstraintModule.
     """
 
     NODE_TYPE = 'primary_key'
@@ -120,7 +124,8 @@ class UniqueConstraintModule(IndexConstraintModule):
     """
      class UniqueConstraintModule(IndexConstraintModule)
 
-        A module class for the catalog schema node derived from IndexConstraintModule.
+        A module class for the catalog schema node derived from
+        IndexConstraintModule.
     """
 
     NODE_TYPE = 'unique_constraint'
@@ -134,14 +139,16 @@ class IndexConstraintView(PGChildNodeView):
     """
     class PrimaryKeyConstraintView(PGChildNodeView)
 
-        A view class for Primary key constraint node derived from PGChildNodeView. This class is
-        responsible for all the stuff related to view like creating, updating Primary key constraint
+        A view class for Primary key constraint node derived from
+        PGChildNodeView. This class is responsible for all the stuff related
+        to view like creating, updating Primary key constraint
         node, showing properties, showing sql in sql pane.
 
     Methods:
     -------
     * __init__(**kwargs)
-      - Method is used to initialize the PrimaryKeyConstraintView and it's base view.
+      - Method is used to initialize the PrimaryKeyConstraintView and
+      it's base view.
 
     * module_js()
       - This property defines (if javascript) exists for this node.
@@ -157,8 +164,8 @@ class IndexConstraintView(PGChildNodeView):
         collection as http response.
 
     * get_list()
-      - This function is used to list all the language nodes within that collection
-        and return list of primary key constraint nodes.
+      - This function is used to list all the language nodes within that
+      collection and return list of primary key constraint nodes.
 
     * nodes()
       - This function returns child node within that collection.
@@ -174,13 +181,15 @@ class IndexConstraintView(PGChildNodeView):
       - This function will update the data for the selected primary key.
 
     * msql()
-      - This function is used to return modified SQL for the selected primary key.
+      - This function is used to return modified SQL for the selected primary
+      key.
 
     * get_sql()
       - This function will generate sql from model data.
 
     * sql():
-      - This function will generate sql to show it in sql pane for the selected primary key.
+      - This function will generate sql to show it in sql pane for the
+      selected primary key.
 
     * get_indices():
         - This function returns indices for current table.
@@ -373,9 +382,7 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
-                sid
-            )
+        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
         self.template_path = 'index_constraint/sql'
 
@@ -430,15 +437,15 @@ class IndexConstraintView(PGChildNodeView):
             )))
 
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                tid,
-                rset['rows'][0]['name'],
-                icon="icon-%s" % self.node_type
-            )
+            rset['rows'][0]['oid'],
+            tid,
+            rset['rows'][0]['name'],
+            icon="icon-%s" % self.node_type
+        )
         return make_json_response(
-                data=res,
-                status=200
-            )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid):
@@ -474,11 +481,12 @@ class IndexConstraintView(PGChildNodeView):
                     tid,
                     row['name'],
                     icon="icon-%s" % self.node_type
-                ))
-        return make_json_response(
-                data=res,
-                status=200
+                )
             )
+        return make_json_response(
+            data=res,
+            status=200
+        )
 
     def get_nodes(self, gid, sid, did, scid, tid, cid=None):
         """
@@ -495,9 +503,7 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
-                sid
-            )
+        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
         self.template_path = 'index_constraint/sql'
 
@@ -559,20 +565,21 @@ class IndexConstraintView(PGChildNodeView):
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
+        def is_key_list(key, data):
+            return isinstance(data[key], list) and len(data[param]) > 0
+
         for arg in required_args:
             if isinstance(arg, list):
                 for param in arg:
-                    if (param in data and
-                            (not isinstance(data[param], list) or
-                                 (isinstance(data[param], list) and
-                                          len(data[param]) > 0))):
+                    if param in data and is_key_list(param, data):
                         break
                 else:
                     return make_json_response(
                         status=400,
                         success=0,
                         errormsg=_(
-                            "Could not find at least one required parameter (%s)." % str(param)
+                            "Could not find at least one required "
+                            "parameter (%s)." % str(param)
                         )
                     )
 
@@ -626,10 +633,12 @@ class IndexConstraintView(PGChildNodeView):
                 data['name'] = res['rows'][0]['name']
 
             else:
-                sql = render_template("/".join([self.template_path, 'get_oid.sql']),
-                                      tid=tid,
-                                      constraint_type=self.constraint_type,
-                                      name=data['name'])
+                sql = render_template(
+                    "/".join([self.template_path, 'get_oid.sql']),
+                    tid=tid,
+                    constraint_type=self.constraint_type,
+                    name=data['name']
+                )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
                     self.end_transaction()
@@ -685,10 +694,12 @@ class IndexConstraintView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'get_oid.sql']),
-                                  tid=tid,
-                                  constraint_type=self.constraint_type,
-                                  name=data['name'])
+            sql = render_template(
+                "/".join([self.template_path, 'get_oid.sql']),
+                tid=tid,
+                constraint_type=self.constraint_type,
+                name=data['name']
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -727,10 +738,12 @@ class IndexConstraintView(PGChildNodeView):
         else:
             cascade = False
         try:
-            sql = render_template("/".join([self.template_path, 'get_name.sql']),
-                                  tid=tid,
-                                  constraint_type=self.constraint_type,
-                                  cid=cid)
+            sql = render_template(
+                "/".join([self.template_path, 'get_name.sql']),
+                tid=tid,
+                constraint_type=self.constraint_type,
+                cid=cid
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -825,18 +838,23 @@ class IndexConstraintView(PGChildNodeView):
 
         """
         if cid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
-                                  did=did,
-                                  tid=tid,
-                                  cid=cid,
-                                  constraint_type=self.constraint_type)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                did=did,
+                tid=tid,
+                cid=cid,
+                constraint_type=self.constraint_type
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(_("""Could not find the {} in the table.""".format(
-                    "primary key" if self.constraint_type == "p" else "unique key"
-                )))
+                return gone(
+                    _("""Could not find the {} in the table.""".format(
+                        "primary key" if self.constraint_type == "p"
+                        else "unique key"
+                    ))
+                )
 
             old_data = res['rows'][0]
             required_args = [u'name']
@@ -852,15 +870,19 @@ class IndexConstraintView(PGChildNodeView):
                 [u'columns', u'index']  # Either of one should be there.
             ]
 
+            def is_key_str(key, data):
+                return isinstance(data[key], str) and data[key] != ""
+
+            def is_key_list(key, data):
+                return isinstance(data[key], list) and len(data[param]) > 0
+
             for arg in required_args:
                 if isinstance(arg, list):
                     for param in arg:
-                        if (param in data and
-                                ((isinstance(data[param], str) and
-                                          data[param] != "") or
-                                     (isinstance(data[param], list) and
-                                              len(data[param]) > 0))):
-                            break
+                        if param in data:
+                            if is_key_str(param, data) \
+                                    or is_key_list(param, data):
+                                break
                     else:
                         return _('-- definition incomplete')
 
@@ -970,19 +992,24 @@ class IndexConstraintView(PGChildNodeView):
 
         if is_pgstattuple:
             # Fetch index details only if extended stats available
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
-                                  did=did,
-                                  tid=tid,
-                                  cid=cid,
-                                  constraint_type=self.constraint_type)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                did=did,
+                tid=tid,
+                cid=cid,
+                constraint_type=self.constraint_type
+            )
             status, res = self.conn.execute_dict(sql)
 
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(_("""Could not find the {} in the table.""".format(
-                    "primary key" if self.constraint_type == "p" else "unique key"
-                )))
+                return gone(
+                    _("""Could not find the {} in the table.""".format(
+                        "primary key" if self.constraint_type == "p"
+                        else "unique key"
+                    ))
+                )
 
             result = res['rows'][0]
             name = result['name']

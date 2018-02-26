@@ -79,7 +79,8 @@ class TableModule(SchemaChildModule):
 
         scripts.append({
             'name': 'pgadmin.browser.table.partition.utils',
-            'path': url_for('browser.index') + 'table/static/js/partition.utils',
+            'path': url_for('browser.index') +
+                    'table/static/js/partition.utils',
             'when': 'database', 'is_template': False
         })
 
@@ -249,7 +250,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
     @BaseTableView.check_precondition
     def list(self, gid, sid, did, scid):
         """
-        This function is used to list all the table nodes within that collection.
+        This function is used to list all the table nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -277,7 +279,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
     @BaseTableView.check_precondition
     def node(self, gid, sid, did, scid, tid):
         """
-        This function is used to list all the table nodes within that collection.
+        This function is used to list all the table nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -300,15 +303,22 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         if len(rset['rows']) == 0:
                 return gone(gettext("Could not find the table."))
 
+        if 'is_partitioned' in rset['rows'][0] and \
+                rset['rows'][0]['is_partitioned']:
+            icon = "icon-partition"
+        else:
+            icon = "icon-table"
+
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                scid,
-                rset['rows'][0]['name'],
-                icon="icon-partition" if 'is_partitioned' in rset['rows'][0] and rset['rows'][0]['is_partitioned'] else "icon-table",
-                tigger_count=rset['rows'][0]['triggercount'],
-                has_enable_triggers=rset['rows'][0]['has_enable_triggers'],
-                is_partitioned=rset['rows'][0]['is_partitioned'] if 'is_partitioned' in rset['rows'][0] else False
-            )
+            rset['rows'][0]['oid'],
+            scid,
+            rset['rows'][0]['name'],
+            icon=icon,
+            tigger_count=rset['rows'][0]['triggercount'],
+            has_enable_triggers=rset['rows'][0]['has_enable_triggers'],
+            is_partitioned=rset['rows'][0]['is_partitioned'] if
+            'is_partitioned' in rset['rows'][0] else False
+        )
 
         return make_json_response(
             data=res,
@@ -318,7 +328,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
     @BaseTableView.check_precondition
     def nodes(self, gid, sid, did, scid):
         """
-        This function is used to list all the table nodes within that collection.
+        This function is used to list all the table nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -338,16 +349,23 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         if not status:
             return internal_server_error(errormsg=rset)
 
+
         for row in rset['rows']:
+            if 'is_partitioned' in row and row['is_partitioned']:
+                icon = "icon-partition"
+            else:
+                icon = "icon-table"
+
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-partition" if 'is_partitioned' in row and row['is_partitioned'] else "icon-table",
+                    icon=icon,
                     tigger_count=row['triggercount'],
                     has_enable_triggers=row['has_enable_triggers'],
-                    is_partitioned=row['is_partitioned'] if 'is_partitioned' in row else False,
+                    is_partitioned=row['is_partitioned'] if
+                    'is_partitioned' in row else False,
                     rows_cnt=0
                 ))
 
@@ -699,19 +717,23 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
                 return internal_server_error(errormsg=res)
             for row in rset['rows']:
                 # Get columns for all 'OF TYPES'.
-                SQL = render_template("/".join([self.table_template_path,
-                                                'get_columns_for_table.sql']),
-                                      tid=row['oid'])
+                SQL = render_template(
+                    "/".join(
+                        [self.table_template_path,
+                         'get_columns_for_table.sql']
+                    ), tid=row['oid']
+                )
 
                 status, type_cols = self.conn.execute_dict(SQL)
                 if not status:
                     return internal_server_error(errormsg=type_cols)
 
-                res.append(
-                    {'label': row['typname'], 'value': row['typname'],
-                     'tid': row['oid'], 'oftype_columns': type_cols['rows']
-                     }
-                )
+                res.append({
+                    'label': row['typname'],
+                    'value': row['typname'],
+                    'tid': row['oid'],
+                    'oftype_columns': type_cols['rows']
+                })
             return make_json_response(
                 data=res,
                 status=200
@@ -790,8 +812,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
     def get_relations(self, gid, sid, did, scid, tid=None):
         """
         Returns:
-            This function will return list of tables available for like/relation
-            combobox while creating new table
+            This function will return list of tables available for
+            like/relation combobox while creating new table
         """
         res = [{'label': '', 'value': ''}]
         try:
@@ -805,7 +827,10 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
                 return internal_server_error(errormsg=res)
             for row in rset['rows']:
                 res.append(
-                    {'label': row['like_relation'], 'value': row['like_relation']}
+                    {
+                        'label': row['like_relation'],
+                        'value': row['like_relation']
+                    }
                 )
             return make_json_response(
                 data=res,
@@ -836,11 +861,14 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
 
                     for c in final_columns:
                         if 'attacl' in c:
-                            c['attacl'] = parse_priv_to_db(c['attacl'], self.column_acl)
+                            c['attacl'] = parse_priv_to_db(
+                                c['attacl'], self.column_acl
+                            )
 
                         if 'cltype' in c:
                             # check type for '[]' in it
-                            c['cltype'], c['hasSqrBracket'] = self._cltype_formatter(c['cltype'])
+                            c['cltype'], c['hasSqrBracket'] = \
+                                self._cltype_formatter(c['cltype'])
 
                         c = TableView.convert_length_precision_to_string(c)
 
@@ -858,11 +886,14 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             # to include in our create definition, Let's format them
             for c in final_columns:
                 if 'attacl' in c:
-                    c['attacl'] = parse_priv_to_db(c['attacl'], self.column_acl)
+                    c['attacl'] = parse_priv_to_db(
+                        c['attacl'], self.column_acl
+                    )
 
                 if 'cltype' in c:
                     # check type for '[]' in it
-                    c['cltype'], c['hasSqrBracket'] = self._cltype_formatter(c['cltype'])
+                    c['cltype'], c['hasSqrBracket'] = \
+                        self._cltype_formatter(c['cltype'])
 
                 c = TableView.convert_length_precision_to_string(c)
 
@@ -1097,7 +1128,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            return super(TableView, self).truncate(gid, sid, did, scid, tid, res)
+            return super(TableView, self).truncate(
+                gid, sid, did, scid, tid, res
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))

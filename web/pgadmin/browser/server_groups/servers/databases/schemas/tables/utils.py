@@ -111,12 +111,12 @@ class BaseTableView(PGChildNodeView):
                 if server_type == 'gpdb' else
                 '#{0}#'.format(ver)
             )
-            self.data_type_template_path='datatype/sql/'+ (
-                '#{0}#{1}#'.format(server_type, ver)
-                if server_type == 'gpdb' else
-                '#{0}#'.format(ver)
+            self.data_type_template_path = 'datatype/sql/' + (
+                '#{0}#{1}#'.format(server_type, ver) if
+                server_type == 'gpdb' else'#{0}#'.format(ver)
             )
-            self.partition_template_path = 'partition/sql/{0}/#{0}#{1}#'.format(server_type, ver)
+            self.partition_template_path = \
+                'partition/sql/{0}/#{0}#{1}#'.format(server_type, ver)
 
             # Template for Column ,check constraint and exclusion
             # constraint node
@@ -130,7 +130,8 @@ class BaseTableView(PGChildNodeView):
             self.index_constraint_template_path = 'index_constraint/sql'
 
             # Template for foreign key constraint node
-            self.foreign_key_template_path = 'foreign_key/sql/#{0}#'.format(ver)
+            self.foreign_key_template_path = \
+                'foreign_key/sql/#{0}#'.format(ver)
 
             # Template for index node
             self.index_template_path = 'index/sql/#{0}#'.format(ver)
@@ -163,7 +164,7 @@ class BaseTableView(PGChildNodeView):
         else:
             SQL = render_template(
                 "/".join(
-                    [self.trigger_template_path,'get_triggerfunctions.sql']
+                    [self.trigger_template_path, 'get_triggerfunctions.sql']
                 ),
                 tgfoid=data['tgfoid'],
                 show_system_objects=self.blueprint.show_system_objects
@@ -176,7 +177,7 @@ class BaseTableView(PGChildNodeView):
             # Update the trigger function which we have fetched with
             # schema name
             if 'rows' in result and len(result['rows']) > 0 and \
-                            'tfunctions' in result['rows'][0]:
+                    'tfunctions' in result['rows'][0]:
                 data['tfunction'] = result['rows'][0]['tfunctions']
         return data
 
@@ -192,7 +193,6 @@ class BaseTableView(PGChildNodeView):
         """
         formatted_args = ["'{0}'".format(arg) for arg in args]
         return ', '.join(formatted_args)
-
 
     def _columns_formatter(self, tid, data):
         """
@@ -279,7 +279,6 @@ class BaseTableView(PGChildNodeView):
                         column['attlen'] = matchObj.group(1)
                         column['attprecision'] = None
 
-
                 SQL = render_template("/".join([self.column_template_path,
                                                 'is_referenced.sql']),
                                       tid=tid, clid=column['attnum'])
@@ -310,7 +309,9 @@ class BaseTableView(PGChildNodeView):
                     edit_types_list.append(present_type)
 
                 column['edit_types'] = edit_types_list
-                column['cltype'] = DataTypeReader.parse_type_name(column['cltype'])
+                column['cltype'] = DataTypeReader.parse_type_name(
+                    column['cltype']
+                )
 
                 if 'indkey' in column:
                     # Current column
@@ -346,10 +347,14 @@ class BaseTableView(PGChildNodeView):
         for ctype in index_constraints.keys():
             data[index_constraints[ctype]] = []
 
-            sql = render_template("/".join([self.index_constraint_template_path,
-                                            'properties.sql']),
-                                  did=did, tid=tid,
-                                  constraint_type=ctype)
+            sql = render_template(
+                "/".join(
+                    [self.index_constraint_template_path, 'properties.sql']
+                ),
+                did=did,
+                tid=tid,
+                constraint_type=ctype
+            )
             status, res = self.conn.execute_dict(sql)
 
             if not status:
@@ -488,9 +493,12 @@ class BaseTableView(PGChildNodeView):
         """
 
         # We will fetch all the index constraints for the table
-        sql = render_template("/".join([self.exclusion_constraint_template_path,
-                                        'properties.sql']),
-                              did=did, tid=tid)
+        sql = render_template(
+            "/".join(
+                [self.exclusion_constraint_template_path, 'properties.sql']
+            ),
+            did=did, tid=tid
+        )
 
         status, result = self.conn.execute_dict(sql)
 
@@ -844,7 +852,9 @@ class BaseTableView(PGChildNodeView):
         if 'columns' in data:
             for c in data['columns']:
                 if 'attacl' in c:
-                    c['attacl'] = parse_priv_to_db(c['attacl'], self.column_acl)
+                    c['attacl'] = parse_priv_to_db(
+                        c['attacl'], self.column_acl
+                    )
 
                 # check type for '[]' in it
                 if 'cltype' in c:
@@ -999,7 +1009,8 @@ class BaseTableView(PGChildNodeView):
             data = self.get_trigger_function_schema(data)
 
             if len(data['custom_tgargs']) > 1:
-                # We know that trigger has more than 1 argument, let's join them
+                # We know that trigger has more than 1 argument, let's
+                # join them
                 data['tgargs'] = self._format_args(data['custom_tgargs'])
 
             if len(data['tgattr']) >= 1:
@@ -1103,7 +1114,7 @@ class BaseTableView(PGChildNodeView):
                     part_data['relispartition'] = True
                     part_data['name'] = row['name']
                     part_data['partition_value'] = row['partition_value']
-                    part_data['is_partitioned'] = row ['is_partitioned']
+                    part_data['is_partitioned'] = row['is_partitioned']
                     part_data['partition_scheme'] = row['partition_scheme']
 
                     partition_sql += render_template("/".join(
@@ -1112,7 +1123,9 @@ class BaseTableView(PGChildNodeView):
 
                 # Add into main sql
                 partition_sql = re.sub('\n{2,}', '\n\n', partition_sql)
-                main_sql.append(sql_header + '\n\n' + partition_sql.strip('\n'))
+                main_sql.append(
+                    sql_header + '\n\n' + partition_sql.strip('\n')
+                )
 
         sql = '\n'.join(main_sql)
 
@@ -1185,9 +1198,10 @@ class BaseTableView(PGChildNodeView):
                     elif isinstance(data[arg], list) and len(data[arg]) < 1:
                         return False
 
-                if 'autoindex' in data and data['autoindex'] and \
+                if 'autoindex' in data and \
+                        data['autoindex'] and \
                         ('coveringindex' not in data or
-                                                  data['coveringindex'] == ''):
+                         data['coveringindex'] == ''):
                     return False
 
             return True
@@ -1265,9 +1279,18 @@ class BaseTableView(PGChildNodeView):
                         c['schema'] = data['schema']
                         c['table'] = data['name']
 
-                        properties_sql = render_template("/".join(
-                            [self.index_constraint_template_path, 'properties.sql']),
-                            did=did, tid=tid, cid=c['oid'], constraint_type=ctype)
+                        properties_sql = render_template(
+                            "/".join(
+                                [
+                                    self.index_constraint_template_path,
+                                    'properties.sql'
+                                ]
+                            ),
+                            did=did,
+                            tid=tid,
+                            cid=c['oid'],
+                            constraint_type=ctype
+                        )
                         status, res = self.conn.execute_dict(properties_sql)
                         if not status:
                             return internal_server_error(errormsg=res)
@@ -1287,11 +1310,14 @@ class BaseTableView(PGChildNodeView):
                         c['table'] = data['name']
 
                         # Sql to add object
-                        if self.validate_constrains(index_constraints[ctype], c):
+                        if self.validate_constrains(
+                                index_constraints[ctype], c):
                             sql.append(
                                 render_template(
-                                    "/".join([self.index_constraint_template_path,
-                                              'create.sql']),
+                                    "/".join(
+                                        [self.index_constraint_template_path,
+                                            'create.sql']
+                                    ),
                                     data=c, conn=self.conn,
                                     constraint_name='PRIMARY KEY'
                                     if ctype == 'p' else 'UNIQUE'
@@ -1300,7 +1326,10 @@ class BaseTableView(PGChildNodeView):
                         else:
                             sql.append(
                                 gettext(
-                                    '-- definition incomplete for {0} constraint'.format(index_constraints[ctype])
+                                    '-- definition incomplete for {0} '
+                                    'constraint'.format(
+                                        index_constraints[ctype]
+                                    )
                                 )
                             )
         if len(sql) > 0:
@@ -1361,7 +1390,8 @@ class BaseTableView(PGChildNodeView):
                     if not self.validate_constrains('foreign_key', c):
                         sql.append(
                             gettext(
-                                '-- definition incomplete for foreign_key constraint'
+                                '-- definition incomplete for foreign_key '
+                                'constraint'
                             )
                         )
                         return '\n\n'.join(sql)
@@ -1373,13 +1403,19 @@ class BaseTableView(PGChildNodeView):
 
                         coveringindex = self.search_coveringindex(tid, cols)
 
-                        if coveringindex is None and 'autoindex' in c and c['autoindex'] and \
-                                ('coveringindex' in c and
-                                         c['coveringindex'] != ''):
+                        if coveringindex is None and \
+                            'autoindex' in c and \
+                            c['autoindex'] and \
+                            ('coveringindex' in c and
+                                c['coveringindex'] != ''):
                             sql.append(render_template(
-                                "/".join([self.foreign_key_template_path, 'create_index.sql']),
-                                data=c, conn=self.conn).strip('\n')
-                                       )
+                                "/".join(
+                                    [
+                                        self.foreign_key_template_path,
+                                        'create_index.sql'
+                                    ]
+                                ), data=c, conn=self.conn).strip('\n')
+                            )
 
             if 'added' in constraint:
                 for c in constraint['added']:
@@ -1392,14 +1428,17 @@ class BaseTableView(PGChildNodeView):
                     if not self.validate_constrains('foreign_key', c):
                         sql.append(
                             gettext(
-                                '-- definition incomplete for foreign_key constraint'
+                                '-- definition incomplete for foreign_key '
+                                'constraint'
                             )
                         )
                         return '\n\n'.join(sql)
 
-                    SQL = render_template("/".join([self.foreign_key_template_path,
-                                                    'get_parent.sql']),
-                                          tid=c['columns'][0]['references'])
+                    SQL = render_template(
+                        "/".join(
+                            [self.foreign_key_template_path, 'get_parent.sql']
+                        ), tid=c['columns'][0]['references']
+                    )
                     status, rset = self.conn.execute_2darray(SQL)
                     if not status:
                         return internal_server_error(errormsg=rset)
@@ -1462,9 +1501,12 @@ class BaseTableView(PGChildNodeView):
                     c['schema'] = data['schema']
                     c['table'] = data['name']
 
-                    properties_sql = render_template("/".join(
-                        [self.check_constraint_template_path, 'properties.sql']),
-                        tid=tid, cid=c['oid'])
+                    properties_sql = render_template(
+                        "/".join(
+                            [self.check_constraint_template_path,
+                             'properties.sql']
+                        ), tid=tid, cid=c['oid']
+                    )
                     status, res = self.conn.execute_dict(properties_sql)
                     if not status:
                         return internal_server_error(errormsg=res)
@@ -1539,7 +1581,8 @@ class BaseTableView(PGChildNodeView):
                     c['table'] = data['name']
 
                     properties_sql = render_template("/".join(
-                        [self.exclusion_constraint_template_path, 'properties.sql']),
+                        [self.exclusion_constraint_template_path,
+                         'properties.sql']),
                         did=did, tid=tid, cid=c['oid'])
                     status, res = self.conn.execute_dict(properties_sql)
                     if not status:
@@ -1562,7 +1605,8 @@ class BaseTableView(PGChildNodeView):
                     if not self.validate_constrains('exclude_constraint', c):
                         sql.append(
                             gettext(
-                                '-- definition incomplete for exclusion_constraint'
+                                '-- definition incomplete for '
+                                'exclusion_constraint'
                             )
                         )
                         return '\n\n'.join(sql)
@@ -1617,26 +1661,32 @@ class BaseTableView(PGChildNodeView):
                 # If table(s) added
                 if c_len > p_len:
                     data['coll_inherits_added'] = list(
-                        set(data['coll_inherits']) - set(old_data['coll_inherits'])
+                        set(data['coll_inherits']) -
+                        set(old_data['coll_inherits'])
                     )
                 # If table(s)removed
                 elif c_len < p_len:
                     data['coll_inherits_removed'] = list(
-                        set(old_data['coll_inherits']) - set(data['coll_inherits'])
+                        set(old_data['coll_inherits']) -
+                        set(data['coll_inherits'])
                     )
                 # Safe side verification,In case it happens..
                 # If user removes and adds same number of table
                 # eg removed one table and added one new table
                 elif c_len == p_len:
                     data['coll_inherits_added'] = list(
-                        set(data['coll_inherits']) - set(old_data['coll_inherits'])
+                        set(data['coll_inherits']) -
+                        set(old_data['coll_inherits'])
                     )
                     data['coll_inherits_removed'] = list(
-                        set(old_data['coll_inherits']) - set(data['coll_inherits'])
+                        set(old_data['coll_inherits']) -
+                        set(data['coll_inherits'])
                     )
 
-            SQL = render_template("/".join([self.table_template_path, 'update.sql']),
-                                  o_data=old_data, data=data, conn=self.conn)
+            SQL = render_template(
+                "/".join([self.table_template_path, 'update.sql']),
+                o_data=old_data, data=data, conn=self.conn
+            )
             # Removes training new lines
             SQL = SQL.strip('\n') + '\n\n'
 
@@ -1670,25 +1720,39 @@ class BaseTableView(PGChildNodeView):
                             c['attacl'] = parse_priv_to_db(c['attacl'],
                                                            self.column_acl)
 
-                        properties_sql = render_template("/".join([self.column_template_path,
-                                                                   'properties.sql']),
-                                                         tid=tid,
-                                                         clid=c['attnum'],
-                                                         show_sys_objects=self.blueprint.show_system_objects
-                                                         )
+                        properties_sql = render_template(
+                            "/".join([self.column_template_path,
+                                      'properties.sql']),
+                            tid=tid,
+                            clid=c['attnum'],
+                            show_sys_objects=self.blueprint.show_system_objects
+                        )
 
                         status, res = self.conn.execute_dict(properties_sql)
                         if not status:
                             return internal_server_error(errormsg=res)
                         old_data = res['rows'][0]
 
-                        old_data['cltype'], old_data['hasSqrBracket'] = self._cltype_formatter(old_data['cltype'])
-                        old_data = BaseTableView.convert_length_precision_to_string(old_data)
+                        old_data['cltype'], old_data['hasSqrBracket'] = \
+                            self._cltype_formatter(old_data['cltype'])
+                        old_data = \
+                            BaseTableView.convert_length_precision_to_string(
+                                old_data
+                            )
 
                         fulltype = self.get_full_type(
-                            old_data['typnspname'], old_data['typname'],
-                            old_data['isdup'], old_data['attndims'], old_data['atttypmod']
+                            old_data['typnspname'],
+                            old_data['typname'],
+                            old_data['isdup'],
+                            old_data['attndims'],
+                            old_data['atttypmod']
                         )
+
+                        def get_type_attr(key, data):
+                            """Utility function"""
+                            if key in data:
+                                return data[key]
+                            return None
 
                         # If the column data type has not changed then fetch
                         # old length and precision
@@ -1700,13 +1764,19 @@ class BaseTableView(PGChildNodeView):
                             if length and precision:
                                 matchObj = re.search(r'(\d+),(\d+)', fulltype)
                                 if matchObj:
-                                    c['attlen'] = ('attlen' in c and c['attlen']) or matchObj.group(1)
-                                    c['attprecision'] = ('attprecision' in c and c['attprecision']) or matchObj.group(2)
+                                    c['attlen'] = get_type_attr(
+                                        'attlen', c
+                                    ) or matchObj.group(1)
+                                    c['attprecision'] = get_type_attr(
+                                        'attprecision', c
+                                    ) or matchObj.group(2)
                             elif length:
                                 # If we have length only
                                 matchObj = re.search(r'(\d+)', fulltype)
                                 if matchObj:
-                                    c['attlen'] = ('attlen' in c and c['attlen']) or matchObj.group(1)
+                                    c['attlen'] = get_type_attr(
+                                        'attlen', c
+                                    ) or matchObj.group(1)
                                     c['attprecision'] = None
                             else:
                                 c['attlen'] = None
@@ -1783,9 +1853,15 @@ class BaseTableView(PGChildNodeView):
                         temp_data['name'] = table_name
 
                         # Sql for detach partition
-                        partitions_sql += render_template("/".join(
-                            [self.partition_template_path, 'detach.sql']),
-                            data=temp_data, conn=self.conn).strip('\n') + '\n\n'
+                        partitions_sql += render_template(
+                            "/".join(
+                                [
+                                    self.partition_template_path,
+                                    'detach.sql'
+                                ]
+                            ),
+                            data=temp_data,
+                            conn=self.conn).strip('\n') + '\n\n'
 
                 # If partition(s) is/are added
                 if 'added' in partitions:
@@ -1804,7 +1880,8 @@ class BaseTableView(PGChildNodeView):
                 SQL += partitions_sql.strip('\n')
 
             # Check if index constraints are added/changed/deleted
-            index_constraint_sql = self.get_index_constraint_sql(did, tid, data)
+            index_constraint_sql = self.get_index_constraint_sql(
+                did, tid, data)
             # If we have index constraint sql then ad it in main sql
             if index_constraint_sql is not None:
                 SQL += '\n' + index_constraint_sql
@@ -1822,7 +1899,8 @@ class BaseTableView(PGChildNodeView):
                 SQL += '\n' + check_constraint_sql
 
             # Check if exclusion constraint(s) is/are added/changed/deleted
-            exclusion_constraint_sql = self.get_exclusion_constraint_sql(did, tid, data)
+            exclusion_constraint_sql = self.get_exclusion_constraint_sql(
+                did, tid, data)
             # If we have check constraint sql then ad it in main sql
             if exclusion_constraint_sql is not None:
                 SQL += '\n' + exclusion_constraint_sql
@@ -1931,7 +2009,8 @@ class BaseTableView(PGChildNodeView):
                         status, pscid = self.conn.execute_scalar(
                             render_template(
                                 "/".join([
-                                    self.table_template_path, 'get_schema_oid.sql'
+                                    self.table_template_path,
+                                    'get_schema_oid.sql'
                                 ]),
                                 tid=row['oid']
                             )
@@ -1939,7 +2018,9 @@ class BaseTableView(PGChildNodeView):
                         if not status:
                             return internal_server_error(errormsg=pscid)
 
-                        detached.append({'oid': row['oid'], 'schema_id': pscid})
+                        detached.append(
+                            {'oid': row['oid'], 'schema_id': pscid}
+                        )
                     partitions_oid['detached'] = detached
 
                 # Fetch oid and schema oid for all created/attached partitions
@@ -1951,7 +2032,8 @@ class BaseTableView(PGChildNodeView):
                             status, pscid = self.conn.execute_scalar(
                                 render_template(
                                     "/".join([
-                                        self.table_template_path, 'get_schema_oid.sql'
+                                        self.table_template_path,
+                                        'get_schema_oid.sql'
                                     ]),
                                     tid=row['partition_name']
                                 )
@@ -1980,21 +2062,33 @@ class BaseTableView(PGChildNodeView):
 
                             created.append({
                                 'oid': ptid,
-                                 'schema_id': scid
+                                'schema_id': scid
                             })
 
                     partitions_oid['created'] = created
                     partitions_oid['attached'] = attached
+
+            if self.node_type == 'partition':
+                icon = "icon-partition"
+            elif 'is_partitioned' in res['rows'][0] and \
+                    res['rows'][0]['is_partitioned']:
+                icon = "icon-partition"
+            else:
+                icon = "icon-table"
+
+            if 'relkind' in res['rows'][0] and \
+                    res['rows'][0]['relkind'] == 'p':
+                is_partitioned = True
+            else:
+                is_partitioned = False
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     tid,
                     parent_id,
                     name,
-                    icon="icon-partition" if (
-                        'is_partitioned' in res['rows'][0] and res['rows'][0]['is_partitioned']
-                        ) or self.node_type == 'partition' else "icon-table",
-                    is_partitioned=True if 'relkind' in res['rows'][0] and res['rows'][0]['relkind'] == 'p' else False,
+                    icon=icon,
+                    is_partitioned=is_partitioned,
                     parent_schema_id=scid,
                     schema_id=rest['rows'][0]['scid'],
                     schema_name=rest['rows'][0]['nspname'],
@@ -2043,7 +2137,8 @@ class BaseTableView(PGChildNodeView):
         # Fetch partition of this table if it is partitioned table.
         if 'is_partitioned' in data and data['is_partitioned']:
             # get the partition type
-            data['partition_type'] = data['partition_scheme'].split()[0].lower()
+            data['partition_type'] = \
+                data['partition_scheme'].split()[0].lower()
 
             partitions = []
             SQL = render_template("/".join([self.partition_template_path,
@@ -2062,7 +2157,7 @@ class BaseTableView(PGChildNodeView):
 
                 if data['partition_type'] == 'range':
                     range_part = row['partition_value'].split(
-                            'FOR VALUES FROM (')[1].split(') TO')
+                        'FOR VALUES FROM (')[1].split(') TO')
                     range_from = range_part[0]
                     range_to = range_part[1][2:-1]
 
