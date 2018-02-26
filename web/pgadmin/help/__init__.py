@@ -8,14 +8,14 @@
 ##########################################################################
 
 """A blueprint module implementing the pgAdmin help system."""
-MODULE_NAME = 'help'
-
 from flask import url_for
 from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem, Panel
 from pgadmin.utils.preferences import Preferences
 import config
+
+MODULE_NAME = 'help'
 
 
 class HelpModule(PgAdminModule):

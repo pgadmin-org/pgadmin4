@@ -53,14 +53,14 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         """
         return True
 
-
     def get_own_javascripts(self):
         scripts = []
 
         if self.module_use_template_javascript:
             scripts.extend([{
                 'name': 'pgadmin.node.%s' % self.node_type,
-                'path': url_for('browser.index') + '%s/module' % self.node_type,
+                'path': url_for('browser.index') +
+                        '%s/module' % self.node_type,
                 'when': self.script_load,
                 'is_template': True
             }])
@@ -68,7 +68,8 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             scripts.extend([{
                 'name': 'pgadmin.node.%s' % self.node_type,
                 'path': url_for(
-                    '%s.static'% self.name, filename=('js/%s' % self.node_type)
+                    '%s.static' % self.name,
+                    filename=('js/%s' % self.node_type)
                 ),
                 'when': self.script_load,
                 'is_template': False
@@ -86,7 +87,9 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             "id": "%s/%s" % (self.node_type, node_id),
             "label": label,
             "icon": self.node_icon if not icon else icon,
-            "inode": self.node_inode if 'inode' not in kwargs else kwargs['inode'],
+            "inode": self.node_inode
+            if 'inode' not in kwargs
+            else kwargs['inode'],
             "_type": self.node_type,
             "_id": node_id,
             "_pid": parent_id,
@@ -236,7 +239,8 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         along with that get two browser level preferences show_system_objects,
         and show_node will be registered to used by the submodules.
         """
-        # Add the node informaton for browser, not in respective node preferences
+        # Add the node informaton for browser, not in respective node
+        # preferences
         self.browser_preference = Preferences.module('browser')
         self.pref_show_system_objects = self.browser_preference.preference(
             'show_system_objects'

@@ -19,6 +19,7 @@ from pgadmin.utils.ajax import make_json_response, precondition_required
 
 from config import PG_DEFAULT_DRIVER
 
+
 def is_version_in_range(sversion, min_ver, max_ver):
     assert (max_ver is None or isinstance(max_ver, int))
     assert (min_ver is None or isinstance(min_ver, int))
@@ -31,13 +32,14 @@ def is_version_in_range(sversion, min_ver, max_ver):
             return True
     return False
 
+
 class PGChildModule(object):
     """
     class PGChildModule
 
     This is a base class for children/grand-children of PostgreSQL, and
-    all EDB Postgres Advanced Server version (i.e. EDB Postgres Advanced Server, Green Plum,
-    etc).
+    all EDB Postgres Advanced Server version
+    (i.e. EDB Postgres Advanced Server, Green Plum, etc).
 
     Method:
     ------
@@ -68,8 +70,12 @@ class PGChildModule(object):
         assert (self.server_type is None or isinstance(self.server_type, list))
 
         if self.server_type is None or manager.server_type in self.server_type:
-            return is_version_in_range(sversion, self.min_gpdbver if manager.server_type == 'gpdb' else self.min_ver,
-                                       self.max_gpdbver if manager.server_type == 'gpdb' else self.max_ver)
+            return is_version_in_range(sversion, self.min_gpdbver
+                                       if manager.server_type == 'gpdb'
+                                       else self.min_ver,
+                                       self.max_gpdbver
+                                       if manager.server_type == 'gpdb'
+                                       else self.max_ver)
 
         return False
 
@@ -173,8 +179,9 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
         id_url = None
         for p in cls.ids:
-            id_url = '{0}<{1}:{2}>'.format(common_url if not id_url else id_url,
-                                           p['type'], p['id'])
+            id_url = '{0}<{1}:{2}>'.format(
+                common_url if not id_url else id_url,
+                p['type'], p['id'])
 
         return id_url, common_url
 
@@ -217,15 +224,16 @@ class NodeView(with_metaclass(MethodViewType, View)):
                  meth in self.operations[self.cmd][1]) or
                 (len(self.operations[self.cmd]) > 2 and
                  meth in self.operations[self.cmd][2])), \
-            "Unimplemented method ({0}) for command ({1}), which {2} an id".format(
+            "Unimplemented method ({0}) for command ({1}), which {2} an id"\
+            .format(
                 meth, self.cmd,
                 'requires' if has_id else 'does not require'
             )
 
         meth = self.operations[self.cmd][0][meth] if has_id else \
-            self.operations[self.cmd][1][meth] if has_args and \
-                                                  meth in self.operations[self.cmd][1] else \
-                self.operations[self.cmd][2][meth]
+            self.operations[self.cmd][1][meth] \
+            if has_args and meth in self.operations[self.cmd][1] \
+            else self.operations[self.cmd][2][meth]
 
         method = getattr(self, meth, None)
 
@@ -367,8 +375,9 @@ class PGChildNodeView(NodeView):
 
         # fetch role dependencies
         if where_clause.find('subid') < 0:
-            sql = render_template("/".join([sql_path, 'role_dependencies.sql']),
-                                  where_clause=where_clause)
+            sql = render_template(
+                "/".join([sql_path, 'role_dependencies.sql']),
+                where_clause=where_clause)
 
             status, result = conn.execute_dict(sql)
             if not status:
@@ -385,7 +394,11 @@ class PGChildNodeView(NodeView):
                     dep_type = 'Owner'
 
                 if row['refclassid'] == 1260:
-                    dependencies.append({'type': 'role', 'name': ref_name, 'field': dep_type})
+                    dependencies.append(
+                        {'type': 'role',
+                         'name': ref_name,
+                         'field': dep_type}
+                    )
 
         return dependencies
 
@@ -489,7 +502,8 @@ class PGChildNodeView(NodeView):
                             type_name = 'table'
                     elif type_str[0] == 'R':
                         type_name = 'rule'
-                        ref_name = _ref_name + ' ON ' + ref_name + row['ownertable']
+                        ref_name = \
+                            _ref_name + ' ON ' + ref_name + row['ownertable']
                         _ref_name = None
                     elif type_str[0] == 'C':
                         if type_str[1] == 'c':
@@ -535,6 +549,12 @@ class PGChildNodeView(NodeView):
                 else:
                     dep_type = dep_types[dep_str[0]]
 
-            dependency.append({'type': type_name, 'name': ref_name, 'field': dep_type})
+            dependency.append(
+                {
+                    'type': type_name,
+                    'name': ref_name,
+                    'field': dep_type
+                }
+            )
 
         return dependency

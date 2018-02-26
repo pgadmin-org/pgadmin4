@@ -13,10 +13,10 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 import six
 from socket import error as SOCKETErrorException
 from smtplib import SMTPConnectError, SMTPResponseException,\
-    SMTPServerDisconnected, SMTPDataError,SMTPHeloError, SMTPException, \
+    SMTPServerDisconnected, SMTPDataError, SMTPHeloError, SMTPException, \
     SMTPAuthenticationError, SMTPSenderRefused, SMTPRecipientsRefused
-from flask import current_app, render_template, url_for, make_response, flash,\
-    Response, request, after_this_request, redirect
+from flask import current_app, render_template, url_for, make_response, \
+    flash, Response, request, after_this_request, redirect
 from flask_babel import gettext
 from flask_login import current_user, login_required
 from flask_security.decorators import anonymous_user_required
@@ -40,7 +40,7 @@ from pgadmin import current_blueprint
 
 try:
     import urllib.request as urlreq
-except:
+except ImportError as e:
     import urllib2 as urlreq
 
 MODULE_NAME = 'browser'
@@ -55,10 +55,13 @@ class BrowserModule(PgAdminModule):
         for (endpoint, filename) in [
             ('static', 'vendor/codemirror/codemirror.css'),
             ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
-            ('static', 'vendor/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
-            else 'vendor/jQuery-contextMenu/jquery.contextMenu.min.css'),
-            ('static', 'vendor/wcDocker/wcDocker.css' if current_app.debug
-            else 'vendor/wcDocker/wcDocker.min.css'),
+            ('static', 'vendor/jQuery-contextMenu/jquery.contextMenu.css'
+                       if current_app.debug
+                       else
+                       'vendor/jQuery-contextMenu/jquery.contextMenu.min.css'),
+            ('static', 'vendor/wcDocker/wcDocker.css'
+                       if current_app.debug
+                       else 'vendor/wcDocker/wcDocker.min.css'),
             ('browser.static', 'css/browser.css'),
             ('browser.static', 'vendor/aciTree/css/aciTree.css')
         ]:
@@ -82,8 +85,8 @@ class BrowserModule(PgAdminModule):
             'name': 'jqueryui.position',
             'path': url_for(
                 'static',
-                filename='vendor/jQuery-contextMenu/jquery.ui.position' if \
-                    current_app.debug else \
+                filename='vendor/jQuery-contextMenu/jquery.ui.position' if
+                    current_app.debug else
                     'vendor/jQuery-contextMenu/jquery.ui.position.min'
             ),
             'deps': ['jquery'],
@@ -94,8 +97,8 @@ class BrowserModule(PgAdminModule):
             'name': 'jquery.contextmenu',
             'path': url_for(
                 'static',
-                filename='vendor/jQuery-contextMenu/jquery.contextMenu' if \
-                    current_app.debug else \
+                filename='vendor/jQuery-contextMenu/jquery.contextMenu' if
+                    current_app.debug else
                     'vendor/jQuery-contextMenu/jquery.contextMenu.min'
             ),
             'deps': ['jquery', 'jqueryui.position'],
@@ -164,9 +167,9 @@ class BrowserModule(PgAdminModule):
         })
 
         for name, script in [
-            ['pgadmin.browser', 'js/browser'],
-            ['pgadmin.browser.endpoints', 'js/endpoints'],
-            ['pgadmin.browser.error', 'js/error']]:
+                ['pgadmin.browser', 'js/browser'],
+                ['pgadmin.browser.endpoints', 'js/endpoints'],
+                ['pgadmin.browser.error', 'js/error']]:
             scripts.append({
                 'name': name,
                 'path': url_for('browser.index') + script,
@@ -174,9 +177,9 @@ class BrowserModule(PgAdminModule):
             })
 
         for name, script in [
-            ['pgadmin.browser.node', 'js/node'],
-            ['pgadmin.browser.messages', 'js/messages'],
-            ['pgadmin.browser.collection', 'js/collection']]:
+                ['pgadmin.browser.node', 'js/node'],
+                ['pgadmin.browser.messages', 'js/messages'],
+                ['pgadmin.browser.collection', 'js/collection']]:
             scripts.append({
                 'name': name,
                 'path': url_for('browser.index') + script,
@@ -185,9 +188,9 @@ class BrowserModule(PgAdminModule):
             })
 
         for name, end in [
-            ['pgadmin.browser.menu', 'js/menu'],
-            ['pgadmin.browser.panel', 'js/panel'],
-            ['pgadmin.browser.frame', 'js/frame']]:
+                ['pgadmin.browser.menu', 'js/menu'],
+                ['pgadmin.browser.panel', 'js/panel'],
+                ['pgadmin.browser.frame', 'js/frame']]:
             scripts.append({
                 'name': name, 'path': url_for('browser.static', filename=end),
                 'preloaded': True})
@@ -437,6 +440,7 @@ class BrowserModule(PgAdminModule):
         """
         return ['browser.index', 'browser.nodes']
 
+
 blueprint = BrowserModule(MODULE_NAME, __name__)
 
 
@@ -471,7 +475,8 @@ class BrowserPluginModule(PgAdminModule):
         Every module extended from this will be identified as 'NODE-<type>'.
 
         Also, create a preference 'show_node_<type>' to fetch whether it
-        can be shown in the browser or not. Also,  refer to the browser-preference.
+        can be shown in the browser or not. Also,  refer to the
+        browser-preference.
         """
         kwargs.setdefault("url_prefix", self.node_path)
         kwargs.setdefault("static_url_path", '/static')
@@ -525,7 +530,8 @@ class BrowserPluginModule(PgAdminModule):
         if self.module_use_template_javascript:
             scripts.extend([{
                 'name': 'pgadmin.node.%s' % self.node_type,
-                'path': url_for('browser.index') + '%s/module' % self.node_type,
+                'path': url_for('browser.index') +
+                        '%s/module' % self.node_type,
                 'when': self.script_load,
                 'is_template': True
             }])
@@ -533,7 +539,8 @@ class BrowserPluginModule(PgAdminModule):
             scripts.extend([{
                 'name': 'pgadmin.node.%s' % self.node_type,
                 'path': url_for(
-                    '%s.static'% self.name, filename=('js/%s' % self.node_type)
+                    '%s.static' % self.name,
+                    filename=('js/%s' % self.node_type)
                 ),
                 'when': self.script_load,
                 'is_template': False
@@ -648,7 +655,8 @@ class BrowserPluginModule(PgAdminModule):
     @property
     def show_node(self):
         """
-        A proper to check to show node for this module on the browser tree or not.
+        A proper to check to show node for this module on the browser tree or
+        not.
 
         Relies on show_node preference object, otherwise on the SHOW_ON_BROWSER
         default value.
@@ -675,14 +683,16 @@ class BrowserPluginModule(PgAdminModule):
         Sets the browser_preference, show_system_objects, show_node preference
         objects for this submodule.
         """
-        # Add the node informaton for browser, not in respective node preferences
+        # Add the node informaton for browser, not in respective node
+        # preferences
         self.browser_preference = blueprint.preference
         self.pref_show_system_objects = blueprint.preference.preference(
             'display', 'show_system_objects'
         )
         self.pref_show_node = self.browser_preference.preference(
             'node', 'show_node_' + self.node_type,
-            self.label, 'boolean', self.SHOW_ON_BROWSER, category_label=gettext('Nodes')
+            self.label, 'boolean', self.SHOW_ON_BROWSER,
+            category_label=gettext('Nodes')
         )
 
 
@@ -721,7 +731,7 @@ def index():
             if response.getcode() == 200:
                 data = json.loads(response.read().decode('utf-8'))
                 current_app.logger.debug('Response data: %s' % data)
-        except:
+        except Exception as e:
             current_app.logger.exception('Exception when checking for update')
 
         if data is not None:
@@ -799,7 +809,7 @@ def utils():
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
         pg_libpq_version = driver.libpq_version()
-    except:
+    except Exception as e:
         pg_libpq_version = 0
 
     for submodule in current_blueprint.submodules:
@@ -887,7 +897,9 @@ def browser_css():
     sql_font_size = round(float(sql_font_size_pref.get()), 2)
 
     if sql_font_size != 0:
-        snippets.append('.CodeMirror { font-size: %sem; }' % str(sql_font_size))
+        snippets.append(
+            '.CodeMirror { font-size: %sem; }' % str(sql_font_size)
+        )
 
     for submodule in blueprint.submodules:
         snippets.extend(submodule.csssnippets)
@@ -911,6 +923,8 @@ def get_nodes():
 # Only register route if SECURITY_CHANGEABLE is set to True
 # We can't access app context here so cannot
 # use app.config['SECURITY_CHANGEABLE']
+
+
 if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
     @blueprint.route("/change_password", endpoint="change_password",
                      methods=['GET', 'POST'])
@@ -932,7 +946,10 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
             except SOCKETErrorException as e:
                 # Handle socket errors which are not covered by SMTPExceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'SMTP Socket error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'SMTP Socket error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
             except (SMTPConnectError, SMTPResponseException,
                     SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
@@ -940,12 +957,18 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                     SMTPRecipientsRefused) as e:
                 # Handle smtp specific exceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'SMTP error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'SMTP error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
             except Exception as e:
                 # Handle other exceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'Error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'Error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
 
             if request.json is None and not has_error:
@@ -984,7 +1007,6 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
             current_app._get_current_object(),
             user=user, token=token)
 
-
     @blueprint.route("/reset_password", endpoint="forgot_password",
                      methods=['GET', 'POST'])
     @anonymous_user_required
@@ -1004,7 +1026,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
             except SOCKETErrorException as e:
                 # Handle socket errors which are not covered by SMTPExceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'SMTP Socket error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'SMTP Socket error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
             except (SMTPConnectError, SMTPResponseException,
                     SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
@@ -1013,12 +1038,18 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
                 # Handle smtp specific exceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'SMTP error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'SMTP error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
             except Exception as e:
                 # Handle other exceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'Error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'Error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
 
             if request.json is None and not has_error:
@@ -1033,8 +1064,8 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
             forgot_password_form=form,
             **_ctx('forgot_password'))
 
-
-    # We are not in app context so cannot use url_for('browser.forgot_password')
+    # We are not in app context so cannot use
+    # url_for('browser.forgot_password')
     # So hard code the url '/browser/reset_password' while passing as
     # parameter to slash_url_suffix function.
     @blueprint.route('/reset_password' + slash_url_suffix(
@@ -1063,7 +1094,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
             except SOCKETErrorException as e:
                 # Handle socket errors which are not covered by SMTPExceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'SMTP Socket error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'SMTP Socket error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
             except (SMTPConnectError, SMTPResponseException,
                     SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
@@ -1072,12 +1106,18 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
                 # Handle smtp specific exceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'SMTP error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'SMTP error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
             except Exception as e:
                 # Handle other exceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'Error: {}\nYour password has not been changed.').format(e), 'danger')
+                flash(gettext(u'Error: {}\n'
+                              u'Your password has not been changed.'
+                              ).format(e),
+                      'danger')
                 has_error = True
 
             if not has_error:

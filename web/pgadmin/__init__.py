@@ -291,10 +291,10 @@ def create_app(app_name=None):
     # Setup authentication
     ##########################################################################
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = u'sqlite:///{0}?timeout={1}'.format(
-        config.SQLITE_PATH.replace(u'\\', u'/'),
-        getattr(config, 'SQLITE_TIMEOUT', 500)
-    )
+    app.config['SQLALCHEMY_DATABASE_URI'] = u'sqlite:///{0}?timeout={1}'\
+        .format(config.SQLITE_PATH.replace(u'\\', u'/'),
+                getattr(config, 'SQLITE_TIMEOUT', 500)
+                )
 
     # Create database connection object and mailer
     db.init_app(app)
@@ -406,7 +406,8 @@ def create_app(app_name=None):
             servergroup_id = servergroup.id
 
         '''Add a server to the config database'''
-        def add_server(user_id, servergroup_id, name, superuser, port, discovery_id, comment):
+        def add_server(user_id, servergroup_id, name, superuser, port,
+                       discovery_id, comment):
             # Create a server object if needed, and store it.
             servers = Server.query.filter_by(
                 user_id=user_id,
@@ -437,7 +438,7 @@ def create_app(app_name=None):
 
             try:
                 proc_arch64 = os.environ['PROCESSOR_ARCHITEW6432'].lower()
-            except:
+            except Exception as e:
                 proc_arch64 = None
 
             if proc_arch == 'x86' and not proc_arch64:
@@ -467,7 +468,8 @@ def create_app(app_name=None):
                             svr_port = winreg.QueryValueEx(inst_key, 'Port')[0]
                             svr_discovery_id = inst_id
                             svr_comment = gettext(
-                                "Auto-detected %s installation with the data directory at %s" % (
+                                "Auto-detected %s installation with the data "
+                                "directory at %s" % (
                                     winreg.QueryValueEx(
                                         inst_key, 'Display Name'
                                     )[0],
@@ -484,7 +486,7 @@ def create_app(app_name=None):
                             )
 
                             inst_key.Close()
-                    except:
+                    except Exception as e:
                         pass
         else:
             # We use the postgres-winreg.ini file on non-Windows
@@ -501,7 +503,8 @@ def create_app(app_name=None):
 
             # Loop the sections, and get the data from any that are PG or PPAS
             for section in sections:
-                if section.startswith('PostgreSQL/') or section.startswith('EnterpriseDB/'):
+                if section.startswith('PostgreSQL/') \
+                        or section.startswith('EnterpriseDB/'):
                     svr_name = registry.get(section, 'Description')
                     svr_superuser = registry.get(section, 'Superuser')
                     svr_port = registry.getint(section, 'Port')
@@ -511,14 +514,17 @@ def create_app(app_name=None):
                     if hasattr(str, 'decode'):
                         description = description.decode('utf-8')
                         data_directory = data_directory.decode('utf-8')
-                    svr_comment = gettext(u"Auto-detected %s installation with the data directory at %s" % (
-                        description,
-                        data_directory
-                    ))
+                    svr_comment = gettext(u"Auto-detected %s installation "
+                                          u"with the data directory at %s" % (
+                                                description,
+                                                data_directory
+                                            )
+                                          )
                     add_server(user_id, servergroup_id, svr_name,
-                               svr_superuser, svr_port, svr_discovery_id, svr_comment)
+                               svr_superuser, svr_port, svr_discovery_id,
+                               svr_comment)
 
-        except:
+        except Exception as e:
             pass
 
     @user_logged_in.connect_via(app)
@@ -545,7 +551,8 @@ def create_app(app_name=None):
         # mode, and it's not a help file request.
         if not config.SERVER_MODE and app.PGADMIN_KEY != '':
             if (
-                (not 'key' in request.args or request.args['key'] != app.PGADMIN_KEY) and
+                ('key' not in request.args or
+                    request.args['key'] != app.PGADMIN_KEY) and
                 request.cookies.get('PGADMIN_KEY') != app.PGADMIN_KEY and
                 request.endpoint != 'help.static'
             ):
@@ -558,7 +565,8 @@ def create_app(app_name=None):
             # that'll through a nice 500 error for us.
             if user is None:
                 app.logger.error(
-                    'The desktop user %s was not found in the configuration database.'
+                    'The desktop user %s was not found in the configuration '
+                    'database.'
                     % config.DESKTOP_USER
                 )
                 abort(401)
