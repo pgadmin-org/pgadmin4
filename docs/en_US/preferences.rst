@@ -60,6 +60,14 @@ Use the fields on the *Graphs* panel to specify your display preferences for the
 
 * Use the *Tuples out refresh rate* field to specify the number of seconds between tuples-out samples displayed in graphs.
 
+.. image:: images/preferences_dashboard_display.png
+    :alt: Preferences dialog dashboard display options
+
+* When the *Show graphs?* switch is set to *True*, graphs will be displayed on dashboards.
+
+* When the *Show activity?* switch is set to *True*, activity tables will be displayed on dashboards.
+
+
 **The Debugger Node**
 
 Expand the *Debugger* node to specify your debugger display preferences.

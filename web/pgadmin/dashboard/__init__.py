@@ -115,6 +115,22 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('The number of seconds between graph samples.')
         )
 
+        self.display_graphs = self.dashboard_preference.register(
+            'display', 'show_graphs',
+            gettext("Show graphs?"), 'boolean', True,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, graphs '
+                             'will be displayed on dashboards.')
+        )
+
+        self.display_server_activity = self.dashboard_preference.register(
+            'display', 'show_activity',
+            gettext("Show activity?"), 'boolean', True,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, activity tables '
+                             'will be displayed on dashboards.')
+        )
+
     def get_exposed_url_endpoints(self):
         """
         Returns:
@@ -262,6 +278,7 @@ def index(sid=None, did=None):
 
     """
     rates = {}
+    settings = {}
 
     prefs = Preferences.module('dashboards')
 
@@ -286,6 +303,11 @@ def index(sid=None, did=None):
     rates['to_stats_refresh'] = to_stats_refresh_pref.get()
     bio_stats_refresh_pref = prefs.preference('bio_stats_refresh')
     rates['bio_stats_refresh'] = bio_stats_refresh_pref.get()
+    # Whether to display graphs and server activity preferences
+    show_graphs_pref = prefs.preference('show_graphs')
+    settings['show_graphs'] = show_graphs_pref.get()
+    show_activity_pref = prefs.preference('show_activity')
+    settings['show_activity'] = show_activity_pref.get()
 
     # Show the appropriate dashboard based on the identifiers passed to us
     if sid is None and did is None:
@@ -295,7 +317,8 @@ def index(sid=None, did=None):
             '/dashboard/server_dashboard.html',
             sid=sid,
             rates=rates,
-            version=g.version
+            version=g.version,
+            settings=settings
         )
     else:
         return render_template(
@@ -303,7 +326,8 @@ def index(sid=None, did=None):
             sid=sid,
             did=did,
             rates=rates,
-            version=g.version
+            version=g.version,
+            settings=settings
         )
 
 

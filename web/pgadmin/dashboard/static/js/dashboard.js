@@ -609,7 +609,17 @@ define('pgadmin.dashboard', [
     },
 
     // Rock n' roll on the server dashboard
-    init_server_dashboard: function(sid, version, session_stats_refresh, tps_stats_refresh, ti_stats_refresh, to_stats_refresh, bio_stats_refresh) {
+    init_server_dashboard: function(
+      sid,
+      version,
+      session_stats_refresh,
+      tps_stats_refresh,
+      ti_stats_refresh,
+      to_stats_refresh,
+      bio_stats_refresh,
+      show_graphs,
+      show_server_activity
+    ) {
       var div_sessions = $('.dashboard-container').find('#graph-sessions')[0];
       var div_tps = $('.dashboard-container').find('#graph-tps')[0];
       var div_ti = $('.dashboard-container').find('#graph-ti')[0];
@@ -649,328 +659,344 @@ define('pgadmin.dashboard', [
         },
       };
 
-      var server_activity_columns = [{
-        name: 'pid',
-        label: gettext('PID'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'datname',
-        label: gettext('Database'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'usename',
-        label: gettext('User'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'application_name',
-        label: gettext('Application'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'client_addr',
-        label: gettext('Client'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'backend_start',
-        label: gettext('Backend start'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'state',
-        label: gettext('State'),
-        editable: false,
-        cell: 'string',
-      }];
-
-      if (version < 90600) {
-        server_activity_columns = server_activity_columns.concat(
-          [{
-            name: 'waiting',
-            label: gettext('Waiting?'),
-            editable: false,
-            cell: 'string',
-          }]);
-      } else {
-        server_activity_columns = server_activity_columns.concat(
-          [{
-            name: 'wait_event',
-            label: gettext('Wait Event'),
-            editable: false,
-            cell: 'string',
-          }, {
-            name: 'blocking_pids',
-            label: gettext('Blocking PIDs'),
-            editable: false,
-            cell: 'string',
-          }]);
+      // Display graphs
+      if(show_graphs) {
+        // Render the graphs
+        pgAdmin.Dashboard.render_chart(
+          div_sessions, data_sessions, dataset_sessions, sid, did,
+          url_for('dashboard.session_stats'), options_line, false,
+          session_stats_refresh
+        );
+        pgAdmin.Dashboard.render_chart(
+          div_tps, data_tps, dataset_tps, sid, did,
+          url_for('dashboard.tps_stats'), options_line, true,
+          tps_stats_refresh
+        );
+        pgAdmin.Dashboard.render_chart(
+          div_ti, data_ti, dataset_ti, sid, did,
+          url_for('dashboard.ti_stats'), options_line, true,
+          ti_stats_refresh
+        );
+        pgAdmin.Dashboard.render_chart(
+          div_to, data_to, dataset_to, sid, did,
+          url_for('dashboard.to_stats'), options_line, true,
+          to_stats_refresh
+        );
+        pgAdmin.Dashboard.render_chart(
+          div_bio, data_bio, dataset_bio, sid, did,
+          url_for('dashboard.bio_stats'), options_line, true,
+          bio_stats_refresh
+        );
       }
 
-      var newActiveQueryDetailsModel = new ActiveQueryDetailsModel();
+      // Display server activity
+      if (show_server_activity) {
+        var server_activity_columns = [{
+          name: 'pid',
+          label: gettext('PID'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'datname',
+          label: gettext('Database'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'usename',
+          label: gettext('User'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'application_name',
+          label: gettext('Application'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'client_addr',
+          label: gettext('Client'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'backend_start',
+          label: gettext('Backend start'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'state',
+          label: gettext('State'),
+          editable: false,
+          cell: 'string',
+        }];
 
-      var subNodeFieldsModel = Backform.generateViewSchema(
-        null, newActiveQueryDetailsModel, 'create', null, null, true
-      );
-
-      // Add version to each field
-      _.each(subNodeFieldsModel[0].fields, function(obj) {
-        obj['version'] = version;
-      });
-
-      // Add cancel active query button
-      server_activity_columns.unshift({
-        name: 'pg-backform-expand',
-        label: '',
-        cell: SessionDetailsCell,
-        cell_priority: -1,
-        postgres_version: version,
-        schema: subNodeFieldsModel,
-      });
-
-      // Add cancel active query button
-      server_activity_columns.unshift({
-        name: 'pg-backform-delete',
-        label: '',
-        cell: customDashboardActionCell,
-        cell_action: 'cancel',
-        editable: false,
-        cell_priority: -1,
-        canDeleteRow: pgAdmin.Dashboard.can_take_action,
-        postgres_version: version,
-      });
-
-      server_activity_columns.unshift({
-        name: 'pg-backform-delete',
-        label: '',
-        cell: customDashboardActionCell,
-        cell_action: 'terminate',
-        editable: false,
-        cell_priority: -1,
-        canDeleteRow: pgAdmin.Dashboard.can_take_action,
-        postgres_version: version,
-      });
-
-      var server_locks_columns = [{
-        name: 'pid',
-        label: gettext('PID'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'datname',
-        label: gettext('Database'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'locktype',
-        label: gettext('Lock type'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'relation',
-        label: gettext('Target relation'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'page',
-        label: gettext('Page'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'tuple',
-        label: gettext('Tuple'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'virtualxid',
-        label: gettext('vXID (target)'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'transactionid',
-        label: gettext('XID (target)'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'classid',
-        label: gettext('Class'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'objid',
-        label: gettext('Object ID'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'virtualtransaction',
-        label: gettext('vXID (owner)'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'mode',
-        label: gettext('Mode'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'granted',
-        label: gettext('Granted?'),
-        editable: false,
-        cell: 'string',
-      }];
-
-      var server_prepared_columns = [{
-        name: 'git',
-        label: gettext('Name'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'database',
-        label: gettext('Database'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'Owner',
-        label: gettext('Owner'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'transaction',
-        label: gettext('XID'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'prepared',
-        label: gettext('Prepared at'),
-        editable: false,
-        cell: 'string',
-      }];
-
-      var server_config_columns = [{
-        name: 'name',
-        label: gettext('Name'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'category',
-        label: gettext('Category'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'setting',
-        label: gettext('Setting'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'unit',
-        label: gettext('Unit'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'short_desc',
-        label: gettext('Description'),
-        editable: false,
-        cell: 'string',
-      }];
-
-      // Render the graphs
-      pgAdmin.Dashboard.render_chart(
-        div_sessions, data_sessions, dataset_sessions, sid, did,
-        url_for('dashboard.session_stats'), options_line, false,
-        session_stats_refresh
-      );
-      pgAdmin.Dashboard.render_chart(
-        div_tps, data_tps, dataset_tps, sid, did,
-        url_for('dashboard.tps_stats'), options_line, true,
-        tps_stats_refresh
-      );
-      pgAdmin.Dashboard.render_chart(
-        div_ti, data_ti, dataset_ti, sid, did,
-        url_for('dashboard.ti_stats'), options_line, true,
-        ti_stats_refresh
-      );
-      pgAdmin.Dashboard.render_chart(
-        div_to, data_to, dataset_to, sid, did,
-        url_for('dashboard.to_stats'), options_line, true,
-        to_stats_refresh
-      );
-      pgAdmin.Dashboard.render_chart(
-        div_bio, data_bio, dataset_bio, sid, did,
-        url_for('dashboard.bio_stats'), options_line, true,
-        bio_stats_refresh
-      );
-
-      // To align subnode controls properly
-      $(div_server_activity).addClass('pg-el-container');
-      $(div_server_activity).attr('el', 'sm');
-
-      // Render the tabs, but only get data for the activity tab for now
-      pgAdmin.Dashboard.render_grid(
-        div_server_activity, sid, did,
-        url_for('dashboard.activity'), server_activity_columns
-      );
-      pgAdmin.Dashboard.render_grid(
-        div_server_locks, sid, did, url_for('dashboard.locks'),
-        server_locks_columns
-      );
-      pgAdmin.Dashboard.render_grid(
-        div_server_prepared, sid, did, url_for('dashboard.prepared'),
-        server_prepared_columns
-      );
-      pgAdmin.Dashboard.render_grid(
-        div_server_config, sid, did, url_for('dashboard.config'),
-        server_config_columns
-      );
-
-      pgAdmin.Dashboard.render_grid_data(div_server_activity);
-
-      // (Re)render the appropriate tab
-      $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-        switch ($(e.target).attr('aria-controls')) {
-        case 'tab_server_activity':
-          pgAdmin.Dashboard.render_grid_data(div_server_activity);
-          break;
-
-        case 'tab_server_locks':
-          pgAdmin.Dashboard.render_grid_data(div_server_locks);
-          break;
-
-        case 'tab_server_prepared':
-          pgAdmin.Dashboard.render_grid_data(div_server_prepared);
-          break;
-
-        case 'tab_server_config':
-          pgAdmin.Dashboard.render_grid_data(div_server_config);
-          break;
+        if (version < 90600) {
+          server_activity_columns = server_activity_columns.concat(
+            [{
+              name: 'waiting',
+              label: gettext('Waiting?'),
+              editable: false,
+              cell: 'string',
+            }]);
+        } else {
+          server_activity_columns = server_activity_columns.concat(
+            [{
+              name: 'wait_event',
+              label: gettext('Wait Event'),
+              editable: false,
+              cell: 'string',
+            }, {
+              name: 'blocking_pids',
+              label: gettext('Blocking PIDs'),
+              editable: false,
+              cell: 'string',
+            }]);
         }
-      });
 
-      // Handle button clicks
-      $('button').click(function() {
-        switch (this.id) {
-        case 'btn_server_activity_refresh':
-          pgAdmin.Dashboard.render_grid_data(div_server_activity);
-          break;
+        var newActiveQueryDetailsModel = new ActiveQueryDetailsModel();
 
-        case 'btn_server_locks_refresh':
-          pgAdmin.Dashboard.render_grid_data(div_server_locks);
-          break;
+        var subNodeFieldsModel = Backform.generateViewSchema(
+          null, newActiveQueryDetailsModel, 'create', null, null, true
+        );
 
-        case 'btn_server_prepared_refresh':
-          pgAdmin.Dashboard.render_grid_data(div_server_prepared);
-          break;
+        // Add version to each field
+        _.each(subNodeFieldsModel[0].fields, function(obj) {
+          obj['version'] = version;
+        });
 
-        case 'btn_server_config_refresh':
-          pgAdmin.Dashboard.render_grid_data(div_server_config);
-          break;
-        }
-      });
+        // Add cancel active query button
+        server_activity_columns.unshift({
+          name: 'pg-backform-expand',
+          label: '',
+          cell: SessionDetailsCell,
+          cell_priority: -1,
+          postgres_version: version,
+          schema: subNodeFieldsModel,
+        });
 
+        // Add cancel active query button
+        server_activity_columns.unshift({
+          name: 'pg-backform-delete',
+          label: '',
+          cell: customDashboardActionCell,
+          cell_action: 'cancel',
+          editable: false,
+          cell_priority: -1,
+          canDeleteRow: pgAdmin.Dashboard.can_take_action,
+          postgres_version: version,
+        });
+
+        server_activity_columns.unshift({
+          name: 'pg-backform-delete',
+          label: '',
+          cell: customDashboardActionCell,
+          cell_action: 'terminate',
+          editable: false,
+          cell_priority: -1,
+          canDeleteRow: pgAdmin.Dashboard.can_take_action,
+          postgres_version: version,
+        });
+
+        var server_locks_columns = [{
+          name: 'pid',
+          label: gettext('PID'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'datname',
+          label: gettext('Database'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'locktype',
+          label: gettext('Lock type'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'relation',
+          label: gettext('Target relation'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'page',
+          label: gettext('Page'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'tuple',
+          label: gettext('Tuple'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'virtualxid',
+          label: gettext('vXID (target)'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'transactionid',
+          label: gettext('XID (target)'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'classid',
+          label: gettext('Class'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'objid',
+          label: gettext('Object ID'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'virtualtransaction',
+          label: gettext('vXID (owner)'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'mode',
+          label: gettext('Mode'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'granted',
+          label: gettext('Granted?'),
+          editable: false,
+          cell: 'string',
+        }];
+
+        var server_prepared_columns = [{
+          name: 'git',
+          label: gettext('Name'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'database',
+          label: gettext('Database'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'Owner',
+          label: gettext('Owner'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'transaction',
+          label: gettext('XID'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'prepared',
+          label: gettext('Prepared at'),
+          editable: false,
+          cell: 'string',
+        }];
+
+        var server_config_columns = [{
+          name: 'name',
+          label: gettext('Name'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'category',
+          label: gettext('Category'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'setting',
+          label: gettext('Setting'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'unit',
+          label: gettext('Unit'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'short_desc',
+          label: gettext('Description'),
+          editable: false,
+          cell: 'string',
+        }];
+
+        // To align subnode controls properly
+        $(div_server_activity).addClass('pg-el-container');
+        $(div_server_activity).attr('el', 'sm');
+
+        // Render the tabs, but only get data for the activity tab for now
+        pgAdmin.Dashboard.render_grid(
+          div_server_activity, sid, did,
+          url_for('dashboard.activity'), server_activity_columns
+        );
+        pgAdmin.Dashboard.render_grid(
+          div_server_locks, sid, did, url_for('dashboard.locks'),
+          server_locks_columns
+        );
+        pgAdmin.Dashboard.render_grid(
+          div_server_prepared, sid, did, url_for('dashboard.prepared'),
+          server_prepared_columns
+        );
+        pgAdmin.Dashboard.render_grid(
+          div_server_config, sid, did, url_for('dashboard.config'),
+          server_config_columns
+        );
+
+        pgAdmin.Dashboard.render_grid_data(div_server_activity);
+
+        // (Re)render the appropriate tab
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+          switch ($(e.target).attr('aria-controls')) {
+          case 'tab_server_activity':
+            pgAdmin.Dashboard.render_grid_data(div_server_activity);
+            break;
+
+          case 'tab_server_locks':
+            pgAdmin.Dashboard.render_grid_data(div_server_locks);
+            break;
+
+          case 'tab_server_prepared':
+            pgAdmin.Dashboard.render_grid_data(div_server_prepared);
+            break;
+
+          case 'tab_server_config':
+            pgAdmin.Dashboard.render_grid_data(div_server_config);
+            break;
+          }
+        });
+
+        // Handle button clicks
+        $('button').click(function() {
+          switch (this.id) {
+          case 'btn_server_activity_refresh':
+            pgAdmin.Dashboard.render_grid_data(div_server_activity);
+            break;
+
+          case 'btn_server_locks_refresh':
+            pgAdmin.Dashboard.render_grid_data(div_server_locks);
+            break;
+
+          case 'btn_server_prepared_refresh':
+            pgAdmin.Dashboard.render_grid_data(div_server_prepared);
+            break;
+
+          case 'btn_server_config_refresh':
+            pgAdmin.Dashboard.render_grid_data(div_server_config);
+            break;
+          }
+        });
+      }
     },
 
     // Rock n' roll on the database dashboard
-    init_database_dashboard: function(sid, did, version, session_stats_refresh, tps_stats_refresh, ti_stats_refresh, to_stats_refresh, bio_stats_refresh) {
+    init_database_dashboard: function(
+      sid,
+      did,
+      version,
+      session_stats_refresh,
+      tps_stats_refresh,
+      ti_stats_refresh,
+      to_stats_refresh,
+      bio_stats_refresh,
+      show_graphs,
+      show_database_activity
+    ) {
       var div_sessions = document.getElementById('graph-sessions');
       var div_tps = document.getElementById('graph-tps');
       var div_ti = document.getElementById('graph-ti');
@@ -1006,269 +1032,273 @@ define('pgadmin.dashboard', [
         },
       };
 
-      var database_activity_columns = [{
-        name: 'pid',
-        label: gettext('PID'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'usename',
-        label: gettext('User'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'application_name',
-        label: gettext('Application'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'client_addr',
-        label: gettext('Client'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'backend_start',
-        label: gettext('Backend start'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'state',
-        label: gettext('State'),
-        editable: false,
-        cell: 'string',
-      }];
-
-      if (version < 90600) {
-        database_activity_columns = database_activity_columns.concat(
-          [{
-            name: 'waiting',
-            label: gettext('Waiting?'),
-            editable: false,
-            cell: 'string',
-          }]);
-      } else {
-        database_activity_columns = database_activity_columns.concat(
-          [{
-            name: 'wait_event',
-            label: gettext('Wait Event'),
-            editable: false,
-            cell: 'string',
-          }, {
-            name: 'blocking_pids',
-            label: gettext('Blocking PIDs'),
-            editable: false,
-            cell: 'string',
-          }]);
+      // Display graphs
+      if(show_graphs) {
+        // Render the graphs
+        pgAdmin.Dashboard.render_chart(
+          div_sessions, data_sessions, dataset_sessions, sid, did,
+          url_for('dashboard.session_stats'), options_line, false,
+          session_stats_refresh
+        );
+        pgAdmin.Dashboard.render_chart(
+          div_tps, data_tps, dataset_tps, sid, did,
+          url_for('dashboard.tps_stats'), options_line, true,
+          tps_stats_refresh
+        );
+        pgAdmin.Dashboard.render_chart(
+          div_ti, data_ti, dataset_ti, sid, did,
+          url_for('dashboard.ti_stats'), options_line, true,
+          ti_stats_refresh
+        );
+        pgAdmin.Dashboard.render_chart(
+          div_to, data_to, dataset_to, sid, did,
+          url_for('dashboard.to_stats'), options_line, true,
+          to_stats_refresh
+        );
+        pgAdmin.Dashboard.render_chart(
+          div_bio, data_bio, dataset_bio, sid, did,
+          url_for('dashboard.bio_stats'), options_line, true,
+          bio_stats_refresh
+        );
       }
 
-      var newActiveQueryDetailsModel = new ActiveQueryDetailsModel();
+      // Display server activity
+      if (show_database_activity) {
+        var database_activity_columns = [{
+          name: 'pid',
+          label: gettext('PID'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'usename',
+          label: gettext('User'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'application_name',
+          label: gettext('Application'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'client_addr',
+          label: gettext('Client'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'backend_start',
+          label: gettext('Backend start'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'state',
+          label: gettext('State'),
+          editable: false,
+          cell: 'string',
+        }];
 
-      var subNodeFieldsModel = Backform.generateViewSchema(
-        null, newActiveQueryDetailsModel, 'create', null, null, true
-      );
-
-      // Add version to each field
-      _.each(subNodeFieldsModel[0].fields, function(obj) {
-        obj['version'] = version;
-      });
-
-
-      // Add cancel active query button
-      database_activity_columns.unshift({
-        name: 'pg-backform-expand',
-        label: '',
-        cell: SessionDetailsCell,
-        cell_priority: -1,
-        postgres_version: version,
-        schema: subNodeFieldsModel,
-      });
-
-      database_activity_columns.unshift({
-        name: 'pg-backform-delete',
-        label: '',
-        cell: customDashboardActionCell,
-        cell_action: 'cancel',
-        editable: false,
-        cell_priority: -1,
-        canDeleteRow: pgAdmin.Dashboard.can_take_action,
-        postgres_version: version,
-      });
-      database_activity_columns.unshift({
-        name: 'pg-backform-delete',
-        label: '',
-        cell: customDashboardActionCell,
-        cell_action: 'terminate',
-        editable: false,
-        cell_priority: -1,
-        canDeleteRow: pgAdmin.Dashboard.can_take_action,
-        postgres_version: version,
-      });
-
-      var database_locks_columns = [{
-        name: 'pid',
-        label: gettext('PID'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'locktype',
-        label: gettext('Lock type'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'relation',
-        label: gettext('Target relation'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'page',
-        label: gettext('Page'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'tuple',
-        label: gettext('Tuple'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'virtualxid',
-        label: gettext('vXID (target)'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'transactionid',
-        label: gettext('XID (target)'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'classid',
-        label: gettext('Class'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'objid',
-        label: gettext('Object ID'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'virtualtransaction',
-        label: gettext('vXID (owner)'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'mode',
-        label: gettext('Mode'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'granted',
-        label: gettext('Granted?'),
-        editable: false,
-        cell: 'string',
-      }];
-
-      var database_prepared_columns = [{
-        name: 'git',
-        label: gettext('Name'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'Owner',
-        label: gettext('Owner'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'transaction',
-        label: gettext('XID'),
-        editable: false,
-        cell: 'string',
-      }, {
-        name: 'prepared',
-        label: gettext('Prepared at'),
-        editable: false,
-        cell: 'string',
-      }];
-
-      // Render the graphs
-      pgAdmin.Dashboard.render_chart(
-        div_sessions, data_sessions, dataset_sessions, sid, did,
-        url_for('dashboard.session_stats'), options_line, false,
-        session_stats_refresh
-      );
-      pgAdmin.Dashboard.render_chart(
-        div_tps, data_tps, dataset_tps, sid, did,
-        url_for('dashboard.tps_stats'), options_line, true,
-        tps_stats_refresh
-      );
-      pgAdmin.Dashboard.render_chart(
-        div_ti, data_ti, dataset_ti, sid, did,
-        url_for('dashboard.ti_stats'), options_line, true,
-        ti_stats_refresh
-      );
-      pgAdmin.Dashboard.render_chart(
-        div_to, data_to, dataset_to, sid, did,
-        url_for('dashboard.to_stats'), options_line, true,
-        to_stats_refresh
-      );
-      pgAdmin.Dashboard.render_chart(
-        div_bio, data_bio, dataset_bio, sid, did,
-        url_for('dashboard.bio_stats'), options_line, true,
-        bio_stats_refresh
-      );
-
-      // To align subnode controls properly
-      $(div_database_activity).addClass('pg-el-container');
-      $(div_database_activity).attr('el', 'sm');
-
-      // Render the tabs, but only get data for the activity tab for now
-      pgAdmin.Dashboard.render_grid(
-        div_database_activity, sid, did, url_for('dashboard.activity'),
-        database_activity_columns
-      );
-      pgAdmin.Dashboard.render_grid(
-        div_database_locks, sid, did, url_for('dashboard.locks'),
-        database_locks_columns
-      );
-      pgAdmin.Dashboard.render_grid(
-        div_database_prepared, sid, did, url_for('dashboard.prepared'),
-        database_prepared_columns
-      );
-
-      pgAdmin.Dashboard.render_grid_data(div_database_activity);
-
-      // (Re)render the appropriate tab
-      $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-        switch ($(e.target).attr('aria-controls')) {
-        case 'tab_database_activity':
-          pgAdmin.Dashboard.render_grid_data(div_database_activity);
-          break;
-
-        case 'tab_database_locks':
-          pgAdmin.Dashboard.render_grid_data(div_database_locks);
-          break;
-
-        case 'tab_database_prepared':
-          pgAdmin.Dashboard.render_grid_data(div_database_prepared);
-          break;
+        if (version < 90600) {
+          database_activity_columns = database_activity_columns.concat(
+            [{
+              name: 'waiting',
+              label: gettext('Waiting?'),
+              editable: false,
+              cell: 'string',
+            }]);
+        } else {
+          database_activity_columns = database_activity_columns.concat(
+            [{
+              name: 'wait_event',
+              label: gettext('Wait Event'),
+              editable: false,
+              cell: 'string',
+            }, {
+              name: 'blocking_pids',
+              label: gettext('Blocking PIDs'),
+              editable: false,
+              cell: 'string',
+            }]);
         }
-      });
 
-      // Handle button clicks
-      $('button').click(function() {
-        switch (this.id) {
-        case 'btn_database_activity_refresh':
-          pgAdmin.Dashboard.render_grid_data(div_database_activity);
-          break;
+        var newActiveQueryDetailsModel = new ActiveQueryDetailsModel();
 
-        case 'btn_database_locks_refresh':
-          pgAdmin.Dashboard.render_grid_data(div_database_locks);
-          break;
+        var subNodeFieldsModel = Backform.generateViewSchema(
+          null, newActiveQueryDetailsModel, 'create', null, null, true
+        );
 
-        case 'btn_database_prepared_refresh':
-          pgAdmin.Dashboard.render_grid_data(div_database_prepared);
-          break;
-        }
-      });
+        // Add version to each field
+        _.each(subNodeFieldsModel[0].fields, function(obj) {
+          obj['version'] = version;
+        });
 
+        // Add cancel active query button
+        database_activity_columns.unshift({
+          name: 'pg-backform-expand',
+          label: '',
+          cell: SessionDetailsCell,
+          cell_priority: -1,
+          postgres_version: version,
+          schema: subNodeFieldsModel,
+        });
+
+        database_activity_columns.unshift({
+          name: 'pg-backform-delete',
+          label: '',
+          cell: customDashboardActionCell,
+          cell_action: 'cancel',
+          editable: false,
+          cell_priority: -1,
+          canDeleteRow: pgAdmin.Dashboard.can_take_action,
+          postgres_version: version,
+        });
+        database_activity_columns.unshift({
+          name: 'pg-backform-delete',
+          label: '',
+          cell: customDashboardActionCell,
+          cell_action: 'terminate',
+          editable: false,
+          cell_priority: -1,
+          canDeleteRow: pgAdmin.Dashboard.can_take_action,
+          postgres_version: version,
+        });
+
+        var database_locks_columns = [{
+          name: 'pid',
+          label: gettext('PID'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'locktype',
+          label: gettext('Lock type'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'relation',
+          label: gettext('Target relation'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'page',
+          label: gettext('Page'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'tuple',
+          label: gettext('Tuple'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'virtualxid',
+          label: gettext('vXID (target)'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'transactionid',
+          label: gettext('XID (target)'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'classid',
+          label: gettext('Class'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'objid',
+          label: gettext('Object ID'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'virtualtransaction',
+          label: gettext('vXID (owner)'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'mode',
+          label: gettext('Mode'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'granted',
+          label: gettext('Granted?'),
+          editable: false,
+          cell: 'string',
+        }];
+
+        var database_prepared_columns = [{
+          name: 'git',
+          label: gettext('Name'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'Owner',
+          label: gettext('Owner'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'transaction',
+          label: gettext('XID'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'prepared',
+          label: gettext('Prepared at'),
+          editable: false,
+          cell: 'string',
+        }];
+
+        // To align subnode controls properly
+        $(div_database_activity).addClass('pg-el-container');
+        $(div_database_activity).attr('el', 'sm');
+
+        // Render the tabs, but only get data for the activity tab for now
+        pgAdmin.Dashboard.render_grid(
+          div_database_activity, sid, did, url_for('dashboard.activity'),
+          database_activity_columns
+        );
+        pgAdmin.Dashboard.render_grid(
+          div_database_locks, sid, did, url_for('dashboard.locks'),
+          database_locks_columns
+        );
+        pgAdmin.Dashboard.render_grid(
+          div_database_prepared, sid, did, url_for('dashboard.prepared'),
+          database_prepared_columns
+        );
+
+        pgAdmin.Dashboard.render_grid_data(div_database_activity);
+
+        // (Re)render the appropriate tab
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+          switch ($(e.target).attr('aria-controls')) {
+          case 'tab_database_activity':
+            pgAdmin.Dashboard.render_grid_data(div_database_activity);
+            break;
+
+          case 'tab_database_locks':
+            pgAdmin.Dashboard.render_grid_data(div_database_locks);
+            break;
+
+          case 'tab_database_prepared':
+            pgAdmin.Dashboard.render_grid_data(div_database_prepared);
+            break;
+          }
+        });
+
+        // Handle button clicks
+        $('button').click(function() {
+          switch (this.id) {
+          case 'btn_database_activity_refresh':
+            pgAdmin.Dashboard.render_grid_data(div_database_activity);
+            break;
+
+          case 'btn_database_locks_refresh':
+            pgAdmin.Dashboard.render_grid_data(div_database_locks);
+            break;
+
+          case 'btn_database_prepared_refresh':
+            pgAdmin.Dashboard.render_grid_data(div_database_prepared);
+            break;
+          }
+        });
+      }
     },
     toggleVisibility: function(flag) {
       dashboardVisible = flag;
