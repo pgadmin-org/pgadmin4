@@ -21,6 +21,10 @@ SELECT
     last_autovacuum AS {{ conn|qtIdent(_('Last autovacuum')) }},
     last_analyze AS {{ conn|qtIdent(_('Last analyze')) }},
     last_autoanalyze AS {{ conn|qtIdent(_('Last autoanalyze')) }},
+    pg_stat_get_vacuum_count({{ tid }}::oid) AS {{ conn|qtIdent(_('Vacuum counter')) }},
+    pg_stat_get_autovacuum_count({{ tid }}::oid) AS {{ conn|qtIdent(_('Autovacuum counter')) }},
+    pg_stat_get_analyze_count({{ tid }}::oid) AS {{ conn|qtIdent(_('Analyze counter')) }},
+    pg_stat_get_autoanalyze_count({{ tid }}::oid) AS {{ conn|qtIdent(_('Autoanalyze counter')) }},
     pg_relation_size(stat.relid) AS {{ conn|qtIdent(_('Table size')) }},
     CASE WHEN cl.reltoastrelid = 0 THEN NULL ELSE pg_relation_size(cl.reltoastrelid)
         + COALESCE((SELECT SUM(pg_relation_size(indexrelid))
