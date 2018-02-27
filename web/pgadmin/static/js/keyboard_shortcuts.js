@@ -1,11 +1,6 @@
 import $ from 'jquery';
 
-const LEFT_ARROW_KEY = 37,
-  RIGHT_ARROW_KEY = 39,
-  F5_KEY = 116,
-  F7_KEY = 118,
-  F8_KEY = 119,
-  PERIOD_KEY = 190,
+const PERIOD_KEY = 190,
   FWD_SLASH_KEY = 191,
   ESC_KEY = 27;
 
@@ -115,23 +110,31 @@ function getInnerPanel($el, direction) {
 }
 
 /* Query tool: Keyboard Shortcuts handling */
-function keyboardShortcutsQueryTool(sqlEditorController, queryToolActions, event) {
+function keyboardShortcutsQueryTool(
+  sqlEditorController, keyboardShortcutConfig, queryToolActions, event
+) {
   if (sqlEditorController.isQueryRunning()) {
     return;
   }
   let keyCode = event.which || event.keyCode, panel_id;
+  let executeKeys = keyboardShortcutConfig['execute'];
+  let explainKeys = keyboardShortcutConfig['explain'];
+  let explainAnalyzeKeys = keyboardShortcutConfig['explain_analyze'];
+  let downloadCsvKeys = keyboardShortcutConfig['download_csv'];
+  let nextPanelKeys = keyboardShortcutConfig['move_next'];
+  let previousPanelKeys = keyboardShortcutConfig['move_previous'];
 
-  if (keyCode === F5_KEY) {
-    event.preventDefault();
-    queryToolActions.executeQuery(sqlEditorController);
-  } else if (event.shiftKey && keyCode === F7_KEY) {
+  if (this.validateShortcutKeys(executeKeys, event)) {
     this._stopEventPropagation(event);
-    queryToolActions.explainAnalyze(sqlEditorController);
-  } else if (keyCode === F7_KEY) {
+    queryToolActions.executeQuery(sqlEditorController);
+  } else if (this.validateShortcutKeys(explainKeys, event)) {
     this._stopEventPropagation(event);
     queryToolActions.explain(sqlEditorController);
-  } else if (keyCode === F8_KEY) {
-    event.preventDefault();
+  } else if (this.validateShortcutKeys(explainAnalyzeKeys, event)) {
+    this._stopEventPropagation(event);
+    queryToolActions.explainAnalyze(sqlEditorController);
+  } else if (this.validateShortcutKeys(downloadCsvKeys, event)) {
+    this._stopEventPropagation(event);
     queryToolActions.download(sqlEditorController);
   } else if ((
      (this.isMac() && event.metaKey) ||
@@ -151,21 +154,16 @@ function keyboardShortcutsQueryTool(sqlEditorController, queryToolActions, event
     ) && keyCode === PERIOD_KEY) {
     this._stopEventPropagation(event);
     queryToolActions.uncommentLineCode(sqlEditorController);
-  } else if (this.isAltShiftBoth(event) && keyCode === LEFT_ARROW_KEY) {
-    // Goto previous side panel
-    this._stopEventPropagation(event);
-    panel_id = this.getInnerPanel(
-      sqlEditorController.container, 'left'
-    );
-  } else if (this.isAltShiftBoth(event) && keyCode === RIGHT_ARROW_KEY) {
-    // Goto next side panel
-    this._stopEventPropagation(event);
-    panel_id = this.getInnerPanel(
-      sqlEditorController.container, 'right'
-    );
   }  else if (keyCode == ESC_KEY) {
     queryToolActions.focusOut(sqlEditorController);
+  } else if(this.validateShortcutKeys(nextPanelKeys, event)) {
+    this._stopEventPropagation(event);
+    panel_id = this.getInnerPanel(sqlEditorController.container, 'right');
+  } else if(this.validateShortcutKeys(previousPanelKeys, event)) {
+    this._stopEventPropagation(event);
+    panel_id = this.getInnerPanel(sqlEditorController.container, 'left');
   }
+
   return panel_id;
 }
 

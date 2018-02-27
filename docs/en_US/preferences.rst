@@ -190,6 +190,11 @@ Use the fields on the *Results grid* panel to specify your formatting preference
 * Use the *Result copy quote character* drop-down listbox to select the quote character for copied data.
 * Use the *Result copy quoting* drop-down listbox to select which type of fields require quoting; select *All*, *None*, or *Strings*.
 
+Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the sql editor window navigation:
+
+.. image:: images/preferences_sql_keyboard_shortcuts.png
+    :alt: Preferences dialog sql keyboard shortcuts section
+
 **The Storage Node**
 
 Expand the *Storage* node to specify your storage preferences.

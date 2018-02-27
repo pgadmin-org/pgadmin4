@@ -11,6 +11,7 @@ from collections import defaultdict
 from operator import attrgetter
 
 from flask import Blueprint, current_app
+from flask_babel import gettext
 
 from .paths import get_storage_directory
 from .preferences import Preferences
@@ -280,3 +281,39 @@ def get_complete_file_path(file):
             file = fs_short_path(file)
 
     return file if os.path.isfile(file) else None
+
+
+# Shortcut configuration for Accesskey
+ACCESSKEY_FIELDS = [
+    {
+        'name': 'key',
+        'type': 'keyCode',
+        'label': gettext('Key')
+    }
+]
+
+# Shortcut configuration
+SHORTCUT_FIELDS = [
+    {
+        'name': 'key',
+        'type': 'keyCode',
+        'label': gettext('Key')
+    },
+    {
+        'name': 'shift',
+        'type': 'checkbox',
+        'label': gettext('Shift')
+    },
+
+    {
+        'name': 'control',
+        'type': 'checkbox',
+        'label': gettext('Ctrl')
+    },
+    {
+        'name': 'alt',
+        'type': 'checkbox',
+        'label': gettext('Alt/Option')
+    }
+]
+

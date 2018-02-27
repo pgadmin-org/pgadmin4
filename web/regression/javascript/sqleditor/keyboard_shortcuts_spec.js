@@ -18,7 +18,7 @@ describe('the keyboard shortcuts', () => {
     PERIOD_KEY = 190,
     FWD_SLASH_KEY = 191;
 
-  let sqlEditorControllerSpy, event, queryToolActionsSpy;
+  let sqlEditorControllerSpy, event, queryToolActionsSpy, queryToolkeyboardShortcutsConfig;
   beforeEach(() => {
     event = {
       shift: false,
@@ -27,6 +27,57 @@ describe('the keyboard shortcuts', () => {
       cancelBubble: false,
       stopPropagation: jasmine.createSpy('stopPropagation'),
       stopImmediatePropagation: jasmine.createSpy('stopImmediatePropagation'),
+    };
+
+    queryToolkeyboardShortcutsConfig = {
+      execute: {
+        alt: false,
+        shift: false,
+        control: false,
+        key: {
+          key_code: F5_KEY
+        }
+      },
+      explain: {
+        alt: false,
+        shift: false,
+        control: false,
+        key: {
+          key_code: F7_KEY
+        }
+      },
+      explain_analyze: {
+        alt: false,
+        shift: true,
+        control: false,
+        key: {
+          key_code: F7_KEY
+        }
+      },
+      download_csv: {
+        alt: false,
+        shift: false,
+        control: false,
+        key: {
+          key_code: F8_KEY
+        }
+      },
+      move_next: {
+        alt: false,
+        shift: false,
+        control: false,
+        key: {
+          key_code: null
+        }
+      },
+      move_previous: {
+        alt: false,
+        shift: false,
+        control: false,
+        key: {
+          key_code: null
+        }
+      },
     };
 
     let gridView = {
@@ -42,6 +93,7 @@ describe('the keyboard shortcuts', () => {
     ]);
 
     sqlEditorControllerSpy.gridView = gridView;
+
     queryToolActionsSpy = jasmine.createSpyObj(queryToolActions, [
       'explainAnalyze',
       'explain',
@@ -57,7 +109,10 @@ describe('the keyboard shortcuts', () => {
 
     beforeEach(() => {
       event.which = F1_KEY;
-      keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+      keyboardShortcuts.processEventQueryTool(
+        sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+        queryToolActionsSpy, event
+      );
     });
 
     it('should allow event to propagate', () => {
@@ -69,7 +124,13 @@ describe('the keyboard shortcuts', () => {
     describe('when there is no query already running', () => {
       beforeEach(() => {
         event.keyCode = F5_KEY;
-        keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = false;
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+          queryToolActionsSpy, event
+        );
       });
 
       it('should execute the query', () => {
@@ -84,9 +145,15 @@ describe('the keyboard shortcuts', () => {
     describe('when the query is already running', () => {
       it('does nothing', () => {
         event.keyCode = F5_KEY;
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = false;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
-        keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+          queryToolActionsSpy, event
+        );
 
         expect(queryToolActionsSpy.executeQuery).not.toHaveBeenCalled();
       });
@@ -97,7 +164,13 @@ describe('the keyboard shortcuts', () => {
     describe('when there is not a query already running', () => {
       beforeEach(() => {
         event.which = F7_KEY;
-        keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = false;
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+          queryToolActionsSpy, event
+        );
       });
 
       it('should explain the query plan', () => {
@@ -110,9 +183,15 @@ describe('the keyboard shortcuts', () => {
     describe('when the query is already running', () => {
       it('does nothing', () => {
         event.keyCode = F7_KEY;
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = false;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
-        keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+          queryToolActionsSpy, event
+        );
 
         expect(queryToolActionsSpy.explain).not.toHaveBeenCalled();
       });
@@ -124,7 +203,12 @@ describe('the keyboard shortcuts', () => {
       beforeEach(() => {
         event.shiftKey = true;
         event.which = F7_KEY;
-        keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        event.altKey = false;
+        event.ctrlKey = false;
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+          queryToolActionsSpy, event
+        );
       });
 
       it('should analyze explain the query plan', () => {
@@ -138,9 +222,15 @@ describe('the keyboard shortcuts', () => {
       it('does nothing', () => {
         event.shiftKey = true;
         event.which = F7_KEY;
+        event.altKey = false;
+        event.ctrlKey = false;
+
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
-        keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+          queryToolActionsSpy, event
+        );
 
         expect(queryToolActionsSpy.explainAnalyze).not.toHaveBeenCalled();
       });
@@ -151,7 +241,14 @@ describe('the keyboard shortcuts', () => {
     describe('when there is not a query already running', () => {
       beforeEach(() => {
         event.which = F8_KEY;
-        keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = false;
+
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+          queryToolActionsSpy, event
+        );
       });
 
       it('should download the query results as a CSV', () => {
@@ -166,9 +263,16 @@ describe('the keyboard shortcuts', () => {
     describe('when the query is already running', () => {
       it('does nothing', () => {
         event.keyCode = F8_KEY;
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = false;
+
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
-        keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+          queryToolActionsSpy, event
+        );
 
         expect(queryToolActionsSpy.download).not.toHaveBeenCalled();
       });
@@ -181,7 +285,10 @@ describe('the keyboard shortcuts', () => {
         beforeEach(() => {
           macKeysSetup();
           event.which = FWD_SLASH_KEY;
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
         });
 
         it('should comment the line', () => {
@@ -195,7 +302,10 @@ describe('the keyboard shortcuts', () => {
         beforeEach(() => {
           windowsKeysSetup();
           event.which = FWD_SLASH_KEY;
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
         });
 
         it('should comment the line', () => {
@@ -217,7 +327,10 @@ describe('the keyboard shortcuts', () => {
         });
 
         it('does nothing', () => {
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
 
           expect(queryToolActionsSpy.commentLineCode).not.toHaveBeenCalled();
         });
@@ -230,7 +343,10 @@ describe('the keyboard shortcuts', () => {
         });
 
         it('does nothing', () => {
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
 
           expect(queryToolActionsSpy.commentLineCode).not.toHaveBeenCalled();
         });
@@ -244,7 +360,10 @@ describe('the keyboard shortcuts', () => {
         beforeEach(() => {
           macKeysSetup();
           event.which = PERIOD_KEY;
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
         });
 
         it('should uncomment the line', () => {
@@ -257,7 +376,10 @@ describe('the keyboard shortcuts', () => {
         beforeEach(() => {
           windowsKeysSetup();
           event.which = PERIOD_KEY;
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
         });
 
         it('should uncomment the line', () => {
@@ -279,7 +401,10 @@ describe('the keyboard shortcuts', () => {
         });
 
         it('does nothing', () => {
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
           expect(queryToolActionsSpy.uncommentLineCode).not.toHaveBeenCalled();
         });
       });
@@ -290,7 +415,10 @@ describe('the keyboard shortcuts', () => {
         });
 
         it('does nothing', () => {
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
 
           expect(queryToolActionsSpy.uncommentLineCode).not.toHaveBeenCalled();
         });
@@ -305,7 +433,10 @@ describe('the keyboard shortcuts', () => {
           macKeysSetup();
           event.which = FWD_SLASH_KEY;
           event.shiftKey = true;
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
         });
 
         it('should comment out the block selection', () => {
@@ -322,7 +453,10 @@ describe('the keyboard shortcuts', () => {
           windowsKeysSetup();
           event.which = FWD_SLASH_KEY;
           event.shiftKey = true;
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
         });
 
         it('should comment out the block selection', () => {
@@ -342,7 +476,10 @@ describe('the keyboard shortcuts', () => {
           macKeysSetup();
           event.which = FWD_SLASH_KEY;
           event.shiftKey = true;
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
         });
         it('does nothing', () => {
           expect(queryToolActionsSpy.commentBlockCode).not.toHaveBeenCalled();
@@ -353,7 +490,10 @@ describe('the keyboard shortcuts', () => {
           windowsKeysSetup();
           event.which = FWD_SLASH_KEY;
           event.shiftKey = true;
-          keyboardShortcuts.processEventQueryTool(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          keyboardShortcuts.processEventQueryTool(
+            sqlEditorControllerSpy, queryToolkeyboardShortcutsConfig,
+            queryToolActionsSpy, event
+          );
         });
         it('does nothing', () => {
           expect(queryToolActionsSpy.commentBlockCode).not.toHaveBeenCalled();

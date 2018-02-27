@@ -20,7 +20,9 @@ from flask_babel import gettext
 from flask_security import login_required
 from werkzeug.useragents import UserAgent
 
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, \
+    SHORTCUT_FIELDS as shortcut_fields, \
+    ACCESSKEY_FIELDS as accesskey_fields
 from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.ajax import make_json_response, \
     internal_server_error
@@ -72,38 +74,6 @@ class DebuggerModule(PgAdminModule):
             help_str=gettext('If set to True, the Debugger '
                              'will be opened in a new browser tab.')
         )
-
-        # Shortcut configuration for Accesskey
-        accesskey_fields = [
-            {
-                'name': 'key',
-                'type': 'keyCode',
-                'label': gettext('Key')
-            }
-        ]
-
-        shortcut_fields = [
-            {
-                'name': 'key',
-                'type': 'keyCode',
-                'label': gettext('Key')
-            },
-            {
-                'name': 'shift',
-                'type': 'checkbox',
-                'label': gettext('Shift')
-            },
-            {
-                'name': 'control',
-                'type': 'checkbox',
-                'label': gettext('Ctrl')
-            },
-            {
-                'name': 'alt',
-                'type': 'checkbox',
-                'label': gettext('Alt/Option')
-            }
-        ]
 
         self.preference.register(
             'keyboard_shortcuts', 'btn_start',

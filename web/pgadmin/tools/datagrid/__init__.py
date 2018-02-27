@@ -28,6 +28,8 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.model import Server
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost
+from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
+    get_query_tool_keyboard_shortcuts, get_text_representation_of_shortcut
 
 
 class DataGridModule(PgAdminModule):
@@ -287,6 +289,7 @@ def panel(trans_id, is_query_tool, editor_title):
         url_params['obj_id'] = trans_obj.obj_id
 
     display_connection_status = pref.preference('connection_status').get()
+    queryToolShortcuts = get_query_tool_keyboard_shortcuts()
 
     return render_template(
         "datagrid/index.html",
@@ -306,7 +309,10 @@ def panel(trans_id, is_query_tool, editor_title):
         # before passing it to html template.
         prompt_save_changes='true' if prompt_save_changes else 'false',
         display_connection_status=display_connection_status,
-        url_params=json.dumps(url_params)
+        url_params=json.dumps(url_params),
+        key=queryToolShortcuts.get('keys'),
+        shortcuts=queryToolShortcuts.get('shortcuts'),
+        get_shortcut_text=get_text_representation_of_shortcut
     )
 
 

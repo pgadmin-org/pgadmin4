@@ -114,6 +114,9 @@ define('tools.querytool', [
       $('.editor-title').text(_.unescape(self.editor_title));
       self.checkConnectionStatus();
 
+      // Fetch and assign the shortcuts to current instance
+      self.keyboardShortcutConfig = queryToolActions.getKeyboardShortcuts(self);
+
       self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
         tabindex: '0',
         lineNumbers: true,
@@ -1720,7 +1723,7 @@ define('tools.querytool', [
     keyAction: function(event) {
       var panel_id, self = this;
       panel_id = keyboardShortcuts.processEventQueryTool(
-        this.handler, queryToolActions, event
+        this.handler, this.keyboardShortcutConfig, queryToolActions, event
       );
 
       // If it return panel id then focus it
