@@ -22,7 +22,6 @@ class GPDB(ServerType):
     def icon(self):
         return "gpdb.png"
 
-
     def instanceOf(self, ver):
         return "Greenplum Database" in ver
 

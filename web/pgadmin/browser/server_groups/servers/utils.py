@@ -63,7 +63,8 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
         priv_with_grant = []
         priv_without_grant = []
 
-        if isinstance(priv['privileges'], dict) and 'changed' in priv['privileges']:
+        if isinstance(priv['privileges'], dict) \
+                and 'changed' in priv['privileges']:
             tmp = []
             for p in priv['privileges']['changed']:
                 tmp_p = {'privilege_type': p['privilege_type'],
@@ -162,9 +163,9 @@ def validate_options(options, option_name, option_value):
                 len(option[option_name].strip()) > 0:
             # If option value is valid
             if option_value in option and \
-                            option[option_value] is not None and \
-                            option[option_value] != '' and \
-                            len(option[option_value].strip()) > 0:
+                option[option_value] is not None and \
+                option[option_value] != '' and \
+                    len(option[option_value].strip()) > 0:
                 # Do nothing here
                 pass
             else:

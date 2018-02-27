@@ -240,7 +240,8 @@ class ServerGroupView(NodeView):
 
                 return jsonify(
                     node=self.blueprint.generate_browser_node(
-                        "%d" % (sg.id),None,
+                        "%d" % sg.id,
+                        None,
                         sg.name,
                         "icon-%s" % self.node_type,
                         True,
@@ -297,7 +298,8 @@ class ServerGroupView(NodeView):
             for group in groups:
                 nodes.append(
                     self.blueprint.generate_browser_node(
-                        "%d" % (group.id), None,
+                        "%d" % group.id,
+                        None,
                         group.name,
                         "icon-%s" % self.node_type,
                         True,
@@ -306,7 +308,7 @@ class ServerGroupView(NodeView):
                 )
         else:
             group = ServerGroup.query.filter_by(user_id=current_user.id,
-                                                 id=gid).first()
+                                                id=gid).first()
             if not group:
                 return gone(
                     errormsg=gettext("Could not find the server group.")
