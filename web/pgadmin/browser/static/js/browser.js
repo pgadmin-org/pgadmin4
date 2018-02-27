@@ -1945,7 +1945,7 @@ define('pgadmin.browser', [
       'Shift-Tab': 'indentLess',
     },
     editor_options: {
-      tabSize: pgBrowser.utils.tabSize,
+      tabSize: parseInt(pgBrowser.utils.tabSize),
       wrapCode: pgBrowser.utils.wrapCode,
       insert_pair_brackets: pgBrowser.utils.insertPairBrackets,
       brace_matching: pgBrowser.utils.braceMatching,
