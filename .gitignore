@@ -39,3 +39,4 @@ web/config_local.py
 web/regression/test_config.json
 node_modules/
 web/pgAdmin/static/js/generated
+web/pgadmin/static/js/generated
