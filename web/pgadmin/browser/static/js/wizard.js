@@ -1,7 +1,7 @@
 define([
   'underscore', 'jquery', 'backbone', 'sources/pgadmin', 'pgadmin.browser',
-  'sources/gettext',
-], function(_, $, Backbone, pgAdmin, pgBrowser, gettext) {
+  'sources/gettext', 'sources/utils',
+], function(_, $, Backbone, pgAdmin, pgBrowser, gettext, commonUtils) {
 
   var wcDocker = window.wcDocker;
 
@@ -157,7 +157,8 @@ define([
       this.currPage = this.collection.at(this.options.curr_page).toJSON();
     },
     render: function() {
-      var data = this.currPage;
+      var self = this,
+        data = this.currPage;
 
       /* Check Status of the buttons */
       this.options.disable_next = (this.options.disable_next ? true : this.evalASFunc(this.currPage.disable_next));
@@ -178,6 +179,11 @@ define([
 
       /* OnLoad Callback */
       this.onLoad();
+
+      setTimeout(function() {
+        var container = $(self.el);
+        commonUtils.findAndSetFocus(container);
+      }, 100);
 
       return this;
     },

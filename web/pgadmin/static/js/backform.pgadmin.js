@@ -500,12 +500,12 @@ define([
     template: {
       'header': _.template([
         '<li role="presentation" <%=disabled ? "disabled" : ""%>>',
-        ' <a data-toggle="tab" data-tab-index="<%=tabIndex%>" href="#<%=cId%>"',
+        ' <a data-toggle="tab" tabindex="-1" data-tab-index="<%=tabIndex%>" href="#<%=cId%>"',
         '  id="<%=hId%>" aria-controls="<%=cId%>">',
         '<%=label%></a></li>',
       ].join(' ')),
       'panel': _.template(
-        '<div role="tabpanel" class="tab-pane <%=label%> pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
+        '<div role="tabpanel" tabindex="-1" class="tab-pane <%=label%> pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
       ),
     },
     render: function() {

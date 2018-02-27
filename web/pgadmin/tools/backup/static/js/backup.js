@@ -2,9 +2,10 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'pgadmin.alertifyjs', 'backbone', 'pgadmin.backgrid',
-  'pgadmin.backform', 'pgadmin.browser',
+  'pgadmin.backform', 'pgadmin.browser', 'sources/utils',
 ], function(
-  gettext, url_for, $, _, S, alertify, Backbone, Backgrid, Backform, pgBrowser
+  gettext, url_for, $, _, S, alertify, Backbone, Backgrid, Backform, pgBrowser,
+commonUtils
 ) {
 
   // if module is already initialized, refer to that.
@@ -696,6 +697,9 @@ define([
 
               this.elements.content.appendChild($container.get(0));
 
+              var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
+              commonUtils.findAndSetFocus(container);
+
               // Listen to model & if filename is provided then enable Backup button
               this.view.model.on('change', function() {
                 if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {
@@ -940,6 +944,13 @@ define([
 
               this.elements.content.appendChild($container.get(0));
 
+              if(view) {
+                view.$el.attr('tabindex', -1);
+                // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
+                pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
+                var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
+                commonUtils.findAndSetFocus(container);
+              }
               // Listen to model & if filename is provided then enable Backup button
               this.view.model.on('change', function() {
                 if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {

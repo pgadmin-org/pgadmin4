@@ -2,9 +2,10 @@
 define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'underscore.string', 'pgadmin.alertifyjs', 'pgadmin.browser',
-  'pgadmin.backgrid', 'pgadmin.backform',
+  'pgadmin.backgrid', 'pgadmin.backform', 'sources/utils',
 ], function(
-  gettext, url_for, $, _, Backbone, S, alertify, pgBrowser, Backgrid, Backform
+  gettext, url_for, $, _, Backbone, S, alertify, pgBrowser, Backgrid, Backform,
+commonUtils
 ) {
 
   // if module is already initialized, refer to that.
@@ -571,6 +572,12 @@ define('tools.restore', [
               view.render();
 
               this.elements.content.appendChild($container.get(0));
+
+              view.$el.attr('tabindex', -1);
+              // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
+              pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
+              var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
+              commonUtils.findAndSetFocus(container);
 
               // Listen to model & if filename is provided then enable Backup button
               this.view.model.on('change', function() {

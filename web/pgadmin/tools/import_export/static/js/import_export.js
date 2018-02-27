@@ -1,9 +1,10 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
-  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui',
+  'sources/utils', 'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui',
 ], function(
-  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform
+  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
+Backform, commonUtils
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -652,6 +653,12 @@ define([
               // Give the dialog initial height & width
               this.elements.dialog.style.minHeight = '80%';
               this.elements.dialog.style.minWidth = '70%';
+
+              view.$el.attr('tabindex', -1);
+              // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
+              pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
+              var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
+              commonUtils.findAndSetFocus(container);
             },
           };
         });

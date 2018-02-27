@@ -126,6 +126,7 @@ var webpackShimConfig = {
     'pgadmin': path.join(__dirname, './pgadmin/static/js/pgadmin'),
     'translations': path.join(__dirname, './pgadmin/tools/templates/js/translations'),
     'sources/gettext': path.join(__dirname, './pgadmin/static/js/gettext'),
+    'sources/utils': path.join(__dirname, './pgadmin/static/js/utils'),
     'babel-polyfill': path.join(__dirname, './node_modules/babel-polyfill/dist/polyfill'),
 
     // Vendor JS

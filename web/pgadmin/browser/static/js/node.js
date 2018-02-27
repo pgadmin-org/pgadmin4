@@ -1,8 +1,9 @@
 define('pgadmin.browser.node', [
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
-  'backform', 'sources/browser/generate_url', 'pgadmin.browser.utils', 'pgadmin.backform',
-], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform, generateUrl) {
+  'backform', 'sources/browser/generate_url', 'sources/utils', 'pgadmin.browser.utils',
+  'pgadmin.backform',
+], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform, generateUrl, commonUtils) {
 
   var wcDocker = window.wcDocker,
     keyCode = {
@@ -365,9 +366,8 @@ define('pgadmin.browser.node', [
           }
 
           var setFocusOnEl = function() {
-            setTimeout(function() {
-              $(el).find('.tab-pane.active:first').find('input:first').focus();
-            }, 500);
+            var container = $(el).find('.tab-content:first > .tab-pane.active:first');
+            commonUtils.findAndSetFocus(container);
           };
 
           if (!newModel.isNew()) {
@@ -394,6 +394,8 @@ define('pgadmin.browser.node', [
                 view.render();
                 setFocusOnEl();
                 newModel.startNewSession();
+                // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
+                pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
               },
               error: function(xhr, error, message) {
                 var _label = that && item ?
@@ -430,8 +432,11 @@ define('pgadmin.browser.node', [
             view.render();
             setFocusOnEl();
             newModel.startNewSession();
+            // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
+            pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
           }
         }
+
         return view;
       }
 

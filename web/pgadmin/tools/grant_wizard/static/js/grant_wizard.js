@@ -89,8 +89,10 @@ define([
     cell: Backgrid.Extension.SelectRowCell.extend({
       render: function() {
 
-        // Use the Backform Control's render function
-        Backgrid.Extension.SelectRowCell.prototype.render.apply(this, arguments);
+       // Do not use parent's render function. It set's tabindex to -1 on
+       // checkboxes.
+        this.$el.empty().append('<input type="checkbox" />');
+        this.delegateEvents();
 
         var col = this.column.get('name');
         if (this.model && this.model.has(col)) {

@@ -1,7 +1,6 @@
-/* eslint-disable */
-define(
-   ['underscore', 'underscore.string', 'sources/pgadmin', 'jquery', 'mousetrap'],
-function(_, S, pgAdmin, $, Mousetrap) {
+define(['underscore', 'underscore.string', 'sources/pgadmin', 'jquery', 'mousetrap',
+  'sources/utils', 'sources/dialog_tab_navigator'],
+function(_, S, pgAdmin, $, Mousetrap, commonUtils, dialogTabNavigator) {
   'use strict';
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -12,27 +11,26 @@ function(_, S, pgAdmin, $, Mousetrap) {
     init: function() {
       Mousetrap.reset();
       if (pgBrowser.preferences_cache.length > 0) {
-        var getShortcut = this.parseShortcutValue;
         this.keyboardShortcut = {
-          'file_shortcut': getShortcut(pgBrowser.get_preference('browser', 'main_menu_file').value),
-          'object_shortcut': getShortcut(pgBrowser.get_preference('browser', 'main_menu_object').value),
-          'tools_shortcut': getShortcut(pgBrowser.get_preference('browser', 'main_menu_tools').value),
-          'help_shortcut': getShortcut(pgBrowser.get_preference('browser', 'main_menu_help').value),
-          'left_tree_shortcut': getShortcut(pgBrowser.get_preference('browser', 'browser_tree').value),
-          'tabbed_panel_backward': getShortcut(pgBrowser.get_preference('browser', 'tabbed_panel_backward').value),
-          'tabbed_panel_forward': getShortcut(pgBrowser.get_preference('browser', 'tabbed_panel_forward').value),
-          'sub_menu_query_tool': getShortcut(pgBrowser.get_preference('browser', 'sub_menu_query_tool').value),
-          'sub_menu_view_data': getShortcut(pgBrowser.get_preference('browser', 'sub_menu_view_data').value),
-          'sub_menu_properties': getShortcut(pgBrowser.get_preference('browser', 'sub_menu_properties').value),
-          'sub_menu_create': getShortcut(pgBrowser.get_preference('browser', 'sub_menu_create').value),
-          'sub_menu_delete': getShortcut(pgBrowser.get_preference('browser', 'sub_menu_delete').value),
-          'context_menu': getShortcut(pgBrowser.get_preference('browser', 'context_menu').value),
-          'direct_debugging': getShortcut(pgBrowser.get_preference('browser', 'direct_debugging').value)
+          'file_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_file').value),
+          'object_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_object').value),
+          'tools_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_tools').value),
+          'help_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_help').value),
+          'left_tree_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'browser_tree').value),
+          'tabbed_panel_backward': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'tabbed_panel_backward').value),
+          'tabbed_panel_forward': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'tabbed_panel_forward').value),
+          'sub_menu_query_tool': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_query_tool').value),
+          'sub_menu_view_data': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_view_data').value),
+          'sub_menu_properties': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_properties').value),
+          'sub_menu_create': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_create').value),
+          'sub_menu_delete': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_delete').value),
+          'context_menu': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'context_menu').value),
+          'direct_debugging': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'direct_debugging').value),
         };
         this.shortcutMethods = {
           'bindMainMenu': {'shortcuts': [this.keyboardShortcut.file_shortcut,
-           this.keyboardShortcut.object_shortcut, this.keyboardShortcut.tools_shortcut,
-           this.keyboardShortcut.help_shortcut]}, // Main menu
+            this.keyboardShortcut.object_shortcut, this.keyboardShortcut.tools_shortcut,
+            this.keyboardShortcut.help_shortcut]}, // Main menu
           'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward]}, // Main window panels
           'bindMainMenuLeft': {'shortcuts': 'left', 'bindElem': '.pg-navbar'}, // Main menu
           'bindMainMenuRight': {'shortcuts': 'right', 'bindElem': '.pg-navbar'}, // Main menu
@@ -44,9 +42,9 @@ function(_, S, pgAdmin, $, Mousetrap) {
           'bindSubMenuCreate': {'shortcuts': this.keyboardShortcut.sub_menu_create}, // Sub menu - Create Object,
           'bindSubMenuDelete': {'shortcuts': this.keyboardShortcut.sub_menu_delete}, // Sub menu - Delete object,
           'bindContextMenu': {'shortcuts': this.keyboardShortcut.context_menu}, // Sub menu - Open context menu,
-          'bindDirectDebugging': {'shortcuts': this.keyboardShortcut.direct_debugging} // Sub menu - Direct Debugging
+          'bindDirectDebugging': {'shortcuts': this.keyboardShortcut.direct_debugging}, // Sub menu - Direct Debugging
         };
-      this.bindShortcuts();
+        this.bindShortcuts();
       }
     },
     bindShortcuts: function() {
@@ -70,6 +68,20 @@ function(_, S, pgAdmin, $, Mousetrap) {
     },
     attachShortcut: function(shortcut, callback, bindElem) {
       this._bindWithMousetrap(shortcut, callback, bindElem);
+    },
+    attachDialogTabNavigatorShortcut: function(dialogTabNavigator, shortcuts) {
+      var callback = dialogTabNavigator.on_keyboard_event,
+        domElem = dialogTabNavigator.dialog.el;
+
+      if (domElem) {
+        Mousetrap(domElem).bind(shortcuts, function() {
+          callback.apply(dialogTabNavigator, arguments);
+        }.bind(domElem));
+      } else {
+        Mousetrap.bind(shortcuts, function() {
+          callback.apply(dialogTabNavigator, arguments);
+        });
+      }
     },
     detachShortcut: function(shortcut, bindElem) {
       if (bindElem) Mousetrap(bindElem).unbind(shortcut);
@@ -211,18 +223,18 @@ function(_, S, pgAdmin, $, Mousetrap) {
     },
     bindContextMenu: function(e) {
       var tree = this.getTreeDetails(),
-          e = window.event,
-          left = $(e.srcElement).find('.aciTreeEntry').position().left + 70,
-          top = $(e.srcElement).find('.aciTreeEntry').position().top + 70;
+        left = $(e.srcElement).find('.aciTreeEntry').position().left + 70,
+        top = $(e.srcElement).find('.aciTreeEntry').position().top + 70;
+      e = window.event;
 
       tree.t.blur(tree.i);
       $('#tree').blur();
       // Call context menu and set position
-      var ctx = tree.i.children().contextMenu({x: left, y:top});
+      tree.i.children().contextMenu({x: left, y:top});
     },
-    bindDirectDebugging: function(e) {
+    bindDirectDebugging: function() {
       var tree = this.getTreeDetails(),
-          type = tree.t.itemData(tree.i)._type;
+        type = tree.t.itemData(tree.i)._type;
 
       if (!tree.d || (type != 'function' && type != 'procedure'))
         return;
@@ -232,26 +244,23 @@ function(_, S, pgAdmin, $, Mousetrap) {
         pgAdmin.Tools.Debugger.get_function_information(pgAdmin.Browser.Nodes[type]);
       }
     },
-    parseShortcutValue: function(obj) {
-      var shortcut = "";
-      if (obj.alt) { shortcut += 'alt+'; }
-      if (obj.shift) { shortcut += 'shift+'; }
-      if (obj.control) { shortcut += 'ctrl+'; }
-      shortcut += String.fromCharCode(obj.key.key_code).toLowerCase();
-      return shortcut;
-    },
     getTreeDetails: function() {
       var t = pgAdmin.Browser.tree,
-      i = t.selected().length > 0 ? t.selected() : t.first(),
-      d = i && i.length == 1 ? t.itemData(i) : undefined;
+        i = t.selected().length > 0 ? t.selected() : t.first(),
+        d = i && i.length == 1 ? t.itemData(i) : undefined;
 
       return {
         t: t,
         i: i,
-        d: d
-      }
-    }
+        d: d,
+      };
+    },
+    getDialogTabNavigator: function(dialog) {
+      var backward_shortcut = pgBrowser.get_preference('browser', 'dialog_tab_backward').value,
+        forward_shortcut = pgBrowser.get_preference('browser', 'dialog_tab_forward').value;
 
+      return new dialogTabNavigator.dialogTabNavigator(dialog, backward_shortcut, forward_shortcut);
+    },
   });
 
   return pgAdmin.keyboardNavigation;
