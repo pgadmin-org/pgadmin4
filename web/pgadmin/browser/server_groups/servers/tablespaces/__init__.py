@@ -119,7 +119,11 @@ class TablespaceView(PGChildNodeView):
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,tsid
             self = args[0]
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+            self.manager = get_driver(
+                PG_DEFAULT_DRIVER
+            ).connection_manager(
+                kwargs['sid']
+            )
             self.conn = self.manager.connection()
 
             # If DB not connected then return error to browser
@@ -133,7 +137,9 @@ class TablespaceView(PGChildNodeView):
                     )
                 )
 
-            self.template_path = 'tablespaces/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'tablespaces/sql/#{0}#'.format(
+                self.manager.version
+            )
             current_app.logger.debug(
                 "Using the template path: %s", self.template_path
             )
@@ -173,11 +179,11 @@ class TablespaceView(PGChildNodeView):
             return gone(gettext("""Could not find the tablespace."""))
 
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                sid,
-                rset['rows'][0]['name'],
-                icon="icon-tablespace"
-            )
+            rset['rows'][0]['oid'],
+            sid,
+            rset['rows'][0]['name'],
+            icon="icon-tablespace"
+        )
 
         return make_json_response(
             data=res,
@@ -269,7 +275,9 @@ class TablespaceView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the tablespace information."""))
+            return gone(
+                gettext("""Could not find the tablespace information.""")
+            )
 
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
@@ -494,11 +502,17 @@ class TablespaceView(PGChildNodeView):
             for key in ['spcacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
+                        data[key]['added'] = parse_priv_to_db(
+                            data[key]['added'], self.acl
+                        )
                     if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
+                        data[key]['changed'] = parse_priv_to_db(
+                            data[key]['changed'], self.acl
+                        )
                     if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
+                        data[key]['deleted'] = parse_priv_to_db(
+                            data[key]['deleted'], self.acl
+                        )
 
             # If name is not present with in update data then copy it
             # from old data
@@ -689,7 +703,10 @@ class TablespaceView(PGChildNodeView):
         }
 
         # Fetching databases with CONNECT privileges status.
-        query = render_template("/".join([self.template_path, 'dependents.sql']), fetch_database=True)
+        query = render_template(
+            "/".join([self.template_path, 'dependents.sql']),
+            fetch_database=True
+        )
         status, db_result = self.conn.execute_dict(query)
         if not status:
             current_app.logger.error(db_result)
@@ -726,8 +743,10 @@ class TablespaceView(PGChildNodeView):
                 current_app.logger.exception(e)
 
             if temp_conn.connected():
-                query = render_template("/".join([self.template_path, 'dependents.sql']),
-                                        fetch_dependents=True, tsid=tsid)
+                query = render_template(
+                    "/".join([self.template_path, 'dependents.sql']),
+                    fetch_dependents=True, tsid=tsid
+                )
                 status, result = temp_conn.execute_dict(query)
                 if not status:
                     current_app.logger.error(result)
@@ -763,7 +782,13 @@ class TablespaceView(PGChildNodeView):
                     else:
                         continue
 
-                    dependents.append({'type': type_name, 'name': rel_name, 'field': db_row['datname']})
+                    dependents.append(
+                        {
+                            'type': type_name,
+                            'name': rel_name,
+                            'field': db_row['datname']
+                        }
+                    )
 
                 # Release only those connections which we have created above.
                 if not is_connected:

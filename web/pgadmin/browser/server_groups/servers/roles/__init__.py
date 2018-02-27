@@ -148,8 +148,8 @@ class RoleView(PGChildNodeView):
                 # postgres database datestyle format
                 try:
                     if data[u'rolvaliduntil'] is not None and \
-                                    data[u'rolvaliduntil'] != '' and \
-                                    len(data[u'rolvaliduntil']) > 0:
+                            data[u'rolvaliduntil'] != '' and \
+                            len(data[u'rolvaliduntil']) > 0:
                         data[u'rolvaliduntil'] = dateutil_parser.parse(
                             data[u'rolvaliduntil']
                         ).isoformat()
@@ -161,9 +161,11 @@ class RoleView(PGChildNodeView):
             if u'rolconnlimit' in data:
                 if data[u'rolconnlimit'] is not None:
                     data[u'rolconnlimit'] = int(data[u'rolconnlimit'])
-                    if type(data[u'rolconnlimit']) != int or data[u'rolconnlimit'] < -1:
+                    if type(data[u'rolconnlimit']) != int or \
+                            data[u'rolconnlimit'] < -1:
                         return precondition_required(
-                            _("Connection limit must be an integer value or equal to -1.")
+                            _("Connection limit must be an integer value "
+                              "or equal to -1.")
                         )
 
             if u'rolmembership' in data:
@@ -185,7 +187,8 @@ rolmembership:[{
                     data[u'admins'] = []
 
                     for r in data[u'rolmembership']:
-                        if type(r) != dict or u'role' not in r or u'admin' not in r:
+                        if type(r) != dict or u'role' not in r or \
+                                u'admin' not in r:
                             return precondition_required(msg)
                         else:
                             if r[u'admin']:
@@ -231,8 +234,9 @@ rolmembership:{
                             return precondition_required(msg)
 
                         for r in roles:
-                            if (type(r) != dict or u'role' not in r or
-                                        u'admin' not in r):
+                            if type(r) != dict or \
+                                    u'role' not in r or \
+                                    u'admin' not in r:
                                 return precondition_required(msg)
 
                             if r[u'admin']:
@@ -259,8 +263,9 @@ rolmembership:{
                             return precondition_required(msg)
 
                         for r in roles:
-                            if (type(r) != dict or u'role' not in r or
-                                        u'admin' not in r):
+                            if type(r) != dict or \
+                                    u'role' not in r or \
+                                    u'admin' not in r:
                                 return precondition_required(msg)
 
                             if not r[u'admin']:
@@ -284,8 +289,9 @@ seclabels:[{
                             return precondition_required(msg)
 
                         for s in data[u'seclabels']:
-                            if (type(s) != dict or u'provider' not in s or
-                                        u'label' not in s):
+                            if type(s) != dict or \
+                                    u'provider' not in s or \
+                                    u'label' not in s:
                                 return precondition_required(msg)
                     else:
                         msg = _("""
@@ -322,8 +328,9 @@ seclabels:{
                                 return precondition_required(msg)
 
                             for s in new_seclabels:
-                                if (type(s) != dict or u'provider' not in s or
-                                            u'label' not in s):
+                                if type(s) != dict or \
+                                        u'provider' not in s or \
+                                        u'label' not in s:
                                     return precondition_required(msg)
 
                         if u'deleted' in seclabels:
@@ -343,15 +350,16 @@ seclabels:{
                                 return precondition_required(msg)
 
                             for s in changed_seclabels:
-                                if (type(s) != dict or u'provider' not in s
-                                and u'label' not in s):
+                                if type(s) != dict or \
+                                        u'provider' not in s and \
+                                        u'label' not in s:
                                     return precondition_required(msg)
 
             if u'variables' in data:
                 if u'rid' not in kwargs or kwargs['rid'] == -1:
                     msg = _("""
-Configuration parameters/variables must be passed as an array of JSON objects in
-the following format in create mode:
+Configuration parameters/variables must be passed as an array of JSON objects
+in the following format in create mode:
 variables:[{
     database: <database> or null,
     name: <configuration>,
@@ -363,14 +371,13 @@ variables:[{
                         return precondition_required(msg)
 
                     for r in data[u'variables']:
-                        if (type(r) != dict or
-                                    u'name' not in r or
-                                    u'value' not in r):
+                        if type(r) != dict or u'name' not in r or \
+                                u'value' not in r:
                             return precondition_required(msg)
                 else:
                     msg = _("""
-Configuration parameters/variables must be passed as an array of JSON objects in
-the following format in update mode:
+Configuration parameters/variables must be passed as an array of JSON objects
+in the following format in update mode:
 rolmembership:{
     'added': [{
         database: <database> or null,
@@ -405,8 +412,8 @@ rolmembership:{
                             return precondition_required(msg)
 
                         for v in new_vars:
-                            if (type(v) != dict or u'name' not in v or
-                                        u'value' not in v):
+                            if type(v) != dict or u'name' not in v or \
+                                    u'value' not in v:
                                 return precondition_required(msg)
 
                     if u'deleted' in variables:
@@ -426,8 +433,8 @@ rolmembership:{
                             return precondition_required(msg)
 
                         for v in new_vars:
-                            if (type(v) != dict or u'name' not in v or
-                                        u'value' not in v):
+                            if type(v) != dict or u'name' not in v or \
+                                    u'value' not in v:
                                 return precondition_required(msg)
 
             self.request = data
@@ -466,10 +473,10 @@ rolmembership:{
                 ver = self.manager.version
 
                 self.sql_path = 'role/sql/{0}/'.format(
-                    'post9_4' if ver >= 90500 else \
-                        'post9_1' if ver >= 90200 else \
-                            'post9_0' if ver >= 90100 else \
-                                'post8_4'
+                    'post9_4' if ver >= 90500 else
+                    'post9_1' if ver >= 90200 else
+                    'post9_0' if ver >= 90100 else
+                    'post8_4'
                 )
 
                 self.alterKeys = [
@@ -491,19 +498,22 @@ rolmembership:{
                     fetch_name = True
                     if action == 'drop':
                         forbidden_msg = _(
-                            "The current user does not have permission to drop the role."
+                            "The current user does not have permission to drop"
+                            " the role."
                         )
                     else:
                         forbidden_msg = _(
-                            "The current user does not have permission to update the role."
+                            "The current user does not have permission to "
+                            "update the role."
                         )
                 elif action == 'create':
                     check_permission = True
                     forbidden_msg = _(
-                        "The current user does not have permission to create the role."
+                        "The current user does not have permission to create "
+                        "the role."
                     )
-                elif (action == 'msql' and
-                              'rid' in kwargs and kwargs['rid'] != -1):
+                elif action == 'msql' and 'rid' in kwargs and \
+                        kwargs['rid'] != -1:
                     fetch_name = True
 
                 if check_permission:
@@ -511,13 +521,12 @@ rolmembership:{
 
                     if not user['is_superuser'] and \
                             not user['can_create_role']:
-                        if (action != 'update' or
-                                            'rid' in kwargs and kwargs['rid'] != -1 and
-                                        user['id'] != kwargs['rid']):
-                            return forbidden(forbidden_msg)
+                        if action != 'update' or 'rid' in kwargs:
+                            if kwargs['rid'] != -1:
+                                if user['id'] != kwargs['rid']:
+                                    return forbidden(forbidden_msg)
 
                 if fetch_name:
-
                     status, res = self.conn.execute_dict(
                         render_template(
                             self.sql_path + 'permission.sql',
@@ -535,7 +544,8 @@ rolmembership:{
 
                     if len(res['rows']) == 0:
                         return gone(
-                            _("Could not find the role on the database server.")
+                            _("Could not find the role on the database "
+                              "server.")
                         )
 
                     row = res['rows'][0]
@@ -583,7 +593,8 @@ rolmembership:{
         if not status:
             return internal_server_error(
                 _(
-                    "Error fetching role information from the database server.\n{0}"
+                    "Error fetching role information from the database "
+                    "server.\n{0}"
                 ).format(rset)
             )
 
@@ -617,7 +628,8 @@ rolmembership:{
         if not status:
             return internal_server_error(
                 _(
-                    "Error fetching role information from the database server.\n{0}"
+                    "Error fetching role information from the database "
+                    "server.\n{0}"
                 ).format(rset)
             )
 
@@ -707,7 +719,8 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                _("Could not generate reversed engineered query for the role.\n{0}").format(
+                _("Could not generate reversed engineered query for the "
+                  "role.\n{0}").format(
                     res
                 )
             )
@@ -756,7 +769,8 @@ rolmembership:{
         if not status:
             return internal_server_error(
                 _(
-                    "Error fetching role information from the database server.\n{0}"
+                    "Error fetching role information from the database "
+                    "server.\n{0}"
                 ).format(rset)
             )
         for row in rset['rows']:
@@ -803,7 +817,8 @@ rolmembership:{
         if not status:
             return internal_server_error(
                 _(
-                    "Error fetching role information from the database server.\n{0}"
+                    "Error fetching role information from the database "
+                    "server.\n{0}"
                 ).format(rset)
             )
 
@@ -925,9 +940,21 @@ rolmembership:{
             oid = db_row['datdba']
             if db_row['type'] == 'd':
                 if rid == oid:
-                    dependents.append({'type': 'database', 'name': '', 'field': db_row['datname']})
+                    dependents.append(
+                        {
+                            'type': 'database',
+                            'name': '',
+                            'field': db_row['datname']
+                        }
+                    )
             else:
-                dependents.append({'type': 'tablespace', 'name': db_row['datname'], 'field': ''})
+                dependents.append(
+                    {
+                        'type': 'tablespace',
+                        'name': db_row['datname'],
+                        'field': ''
+                    }
+                )
 
             # If connection to the database is not allowed then continue
             # with the next database
@@ -947,8 +974,11 @@ rolmembership:{
                 current_app.logger.exception(e)
 
             if temp_conn.connected():
-                query = render_template("/".join([self.sql_path, 'dependents.sql']),
-                                        fetch_dependents=True, rid=rid, lastsysoid=db_row['datlastsysoid'])
+                query = render_template(
+                    "/".join([self.sql_path, 'dependents.sql']),
+                    fetch_dependents=True, rid=rid,
+                    lastsysoid=db_row['datlastsysoid']
+                )
 
                 status, result = temp_conn.execute_dict(query)
                 if not status:
@@ -985,7 +1015,13 @@ rolmembership:{
                     else:
                         continue
 
-                    dependents.append({'type': type_name, 'name': rel_name, 'field': db_row['datname']})
+                    dependents.append(
+                        {
+                            'type': type_name,
+                            'name': rel_name,
+                            'field': db_row['datname']
+                        }
+                    )
 
                 # Release only those connections which we have created above.
                 if not is_connected:
@@ -1027,7 +1063,8 @@ SELECT
     NULL AS min_val, NULL AS max_val, NULL::text[] AS enumvals
 UNION ALL
 SELECT
-    name, vartype, min_val::numeric AS min_val, max_val::numeric AS max_val, enumvals
+    name, vartype, min_val::numeric AS min_val, max_val::numeric AS max_val,
+    enumvals
 FROM
     pg_settings
 WHERE

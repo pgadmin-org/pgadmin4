@@ -36,10 +36,11 @@ class LoginRoleAddTestCase(BaseTestGenerator):
 
         data = roles_utils.get_role_data(self.server['db_password'])
         self.role_name = data['rolname']
-        response = self.tester.post(self.url + str(utils.SERVER_GROUP) + '/'
-                                    + str(server_id) + '/',
-                                    data=json.dumps(data),
-                                    content_type='html/json')
+        response = self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' + str(server_id) + '/',
+            data=json.dumps(data),
+            content_type='html/json'
+        )
         self.assertEquals(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         role_id = response_data['node']['_id']

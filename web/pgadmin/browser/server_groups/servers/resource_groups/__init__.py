@@ -32,12 +32,14 @@ class ResourceGroupModule(CollectionNodeModule):
     """
      class ResourceGroupModule(CollectionNodeModule)
 
-        A module class for Resource Group node derived from CollectionNodeModule.
+        A module class for Resource Group node derived from
+        CollectionNodeModule.
 
     Methods:
     -------
     * __init__(*args, **kwargs)
-      - Method is used to initialize the ResourceGroupModule and it's base module.
+      - Method is used to initialize the ResourceGroupModule and it's
+      base module.
 
     * BackendSupported(manager, **kwargs)
       - This function is used to check the database server type and version.
@@ -50,8 +52,8 @@ class ResourceGroupModule(CollectionNodeModule):
       - Method is overridden from its base class to make the node as leaf node.
 
     * script_load()
-      - Load the module script for resource group, when any of the server node is
-        initialized.
+      - Load the module script for resource group, when any of the server
+      node is initialized.
     """
 
     NODE_TYPE = 'resource_group'
@@ -59,7 +61,8 @@ class ResourceGroupModule(CollectionNodeModule):
 
     def __init__(self, *args, **kwargs):
         """
-        Method is used to initialize the ResourceGroupModule and it's base module.
+        Method is used to initialize the ResourceGroupModule and
+        it's base module.
 
         Args:
             *args:
@@ -93,12 +96,12 @@ class ResourceGroupModule(CollectionNodeModule):
     @property
     def script_load(self):
         """
-        Load the module script for resource group, when any of the server node is initialized.
+        Load the module script for resource group, when any of the server
+        node is initialized.
 
         Returns: node type of the server module.
         """
         return servers.ServerModule.NODE_TYPE
-
 
     @property
     def module_use_template_javascript(self):
@@ -116,9 +119,10 @@ class ResourceGroupView(NodeView):
     """
     class ResourceGroupView(NodeView)
 
-        A view class for resource group node derived from NodeView. This class is
-        responsible for all the stuff related to view like create/update/delete resource group,
-        showing properties of resource group node, showing sql in sql pane.
+        A view class for resource group node derived from NodeView.
+        This class is responsible for all the stuff related to view like
+        create/update/delete resource group, showing properties of resource
+        group node, showing sql in sql pane.
 
     Methods:
     -------
@@ -135,14 +139,16 @@ class ResourceGroupView(NodeView):
         manager,conn & template_path properties to self
 
     * list()
-      - This function is used to list all the resource group nodes within that collection.
+      - This function is used to list all the resource group nodes within
+      that collection.
 
     * nodes()
-      - This function will used to create all the child node within that collection.
-        Here it will create all the resource group node.
+      - This function will used to create all the child node within that
+      collection. Here it will create all the resource group node.
 
     * properties(gid, sid, did, rg_id)
-      - This function will show the properties of the selected resource group node
+      - This function will show the properties of the selected resource
+      group node
 
     * create(gid, sid, did, rg_id)
       - This function will create the new resource group object
@@ -154,13 +160,15 @@ class ResourceGroupView(NodeView):
       - This function will drop the resource group object
 
     * msql(gid, sid, did, rg_id)
-      - This function is used to return modified SQL for the selected resource group node
+      - This function is used to return modified SQL for the selected
+      resource group node
 
     * get_sql(data, rg_id)
       - This function will generate sql from model data
 
     * sql(gid, sid, did, rg_id):
-      - This function will generate sql to show it in sql pane for the selected resource group node.
+      - This function will generate sql to show it in sql pane for the
+      selected resource group node.
     """
 
     node_type = blueprint.node_type
@@ -190,7 +198,8 @@ class ResourceGroupView(NodeView):
     def __init__(self, **kwargs):
         """
         Method is used to initialize the ResourceGroupView and it's base view.
-        Also initialize all the variables create/used dynamically like conn, template_path.
+        Also initialize all the variables create/used dynamically like conn,
+        template_path.
 
         Args:
             **kwargs:
@@ -244,7 +253,8 @@ class ResourceGroupView(NodeView):
     @check_precondition
     def list(self, gid, sid):
         """
-        This function is used to list all the resource group nodes within that collection.
+        This function is used to list all the resource group nodes within
+        that collection.
 
         Args:
             gid: Server Group ID
@@ -263,8 +273,8 @@ class ResourceGroupView(NodeView):
     @check_precondition
     def node(self, gid, sid, rg_id):
         """
-        This function will used to create all the child node within that collection.
-        Here it will create all the resource group node.
+        This function will used to create all the child node within that
+        collection. Here it will create all the resource group node.
 
         Args:
             gid: Server Group ID
@@ -281,11 +291,11 @@ class ResourceGroupView(NodeView):
             return gone(gettext("""Could not find the resource group."""))
 
         res = self.blueprint.generate_browser_node(
-                result['rows'][0]['oid'],
-                sid,
-                result['rows'][0]['name'],
-                icon="icon-resource_group"
-            )
+            result['rows'][0]['oid'],
+            sid,
+            result['rows'][0]['name'],
+            icon="icon-resource_group"
+        )
 
         return make_json_response(
             data=res,
@@ -295,8 +305,8 @@ class ResourceGroupView(NodeView):
     @check_precondition
     def nodes(self, gid, sid):
         """
-        This function will used to create all the child node within that collection.
-        Here it will create all the resource group node.
+        This function will used to create all the child node within that
+        collection. Here it will create all the resource group node.
 
         Args:
             gid: Server Group ID
@@ -325,14 +335,16 @@ class ResourceGroupView(NodeView):
     @check_precondition
     def properties(self, gid, sid, rg_id):
         """
-        This function will show the properties of the selected resource group node.
+        This function will show the properties of the selected resource
+        group node.
 
         Args:
             gid: Server Group ID
             sid: Server ID
             rg_id: Resource Group ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), rgid=rg_id)
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']), rgid=rg_id)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -373,21 +385,33 @@ class ResourceGroupView(NodeView):
                 )
         try:
             # Below logic will create new resource group
-            sql = render_template("/".join([self.template_path, 'create.sql']), rgname=data['name'], conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                rgname=data['name'], conn=self.conn
+            )
             if sql and sql.strip('\n') and sql.strip(' '):
                 status, res = self.conn.execute_scalar(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
-            # Below logic will update the cpu_rate_limit and dirty_rate_limit for resource group
-            # we need to add this logic because in resource group you can't run multiple commands in one transaction.
-            sql = render_template("/".join([self.template_path, 'update.sql']), data=data, conn=self.conn)
+            # Below logic will update the cpu_rate_limit and dirty_rate_limit
+            # for resource group, we need to add this logic because in
+            # resource group you can't run multiple commands in one
+            # transaction.
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, conn=self.conn
+            )
             # Checking if we are not executing empty query
             if sql and sql.strip('\n') and sql.strip(' '):
                 status, res = self.conn.execute_scalar(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
-            # Below logic is used to fetch the oid of the newly created resource group
-            sql = render_template("/".join([self.template_path, 'getoid.sql']), rgname=data['name'])
+            # Below logic is used to fetch the oid of the newly created
+            # resource group
+            sql = render_template(
+                "/".join([self.template_path, 'getoid.sql']),
+                rgname=data['name']
+            )
             # Checking if we are not executing empty query
             rg_id = 0
             if sql and sql.strip('\n') and sql.strip(' '):
@@ -424,7 +448,8 @@ class ResourceGroupView(NodeView):
         )
 
         try:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), rgid=rg_id)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']), rgid=rg_id)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -434,19 +459,26 @@ class ResourceGroupView(NodeView):
                     data[arg] = old_data[arg]
 
             if data['name'] != old_data['name']:
-                sql = render_template("/".join([self.template_path, 'update.sql']),
-                                      oldname=old_data['name'], newname=data['name'], conn=self.conn)
+                sql = render_template(
+                    "/".join([self.template_path, 'update.sql']),
+                    oldname=old_data['name'], newname=data['name'],
+                    conn=self.conn
+                )
                 if sql and sql.strip('\n') and sql.strip(' '):
                     status, res = self.conn.execute_scalar(sql)
                     if not status:
                         return internal_server_error(errormsg=res)
 
-            # Below logic will update the cpu_rate_limit and dirty_rate_limit for resource group
-            # we need to add this logic because in resource group you can't run multiple commands
-            # in one transaction.
-            if (data['cpu_rate_limit'] != old_data['cpu_rate_limit']) \
-                    or (data['dirty_rate_limit'] != old_data['dirty_rate_limit']):
-                sql = render_template("/".join([self.template_path, 'update.sql']), data=data, conn=self.conn)
+            # Below logic will update the cpu_rate_limit and dirty_rate_limit
+            # for resource group we need to add this logic because in
+            # resource group you can't run multiple commands in one
+            # transaction.
+            if data['cpu_rate_limit'] != old_data['cpu_rate_limit'] or \
+                    data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
+                sql = render_template(
+                    "/".join([self.template_path, 'update.sql']),
+                    data=data, conn=self.conn
+                )
                 if sql and sql.strip('\n') and sql.strip(' '):
                     status, res = self.conn.execute_scalar(sql)
                     if not status:
@@ -476,7 +508,10 @@ class ResourceGroupView(NodeView):
         """
         try:
             # Get name for resource group from rg_id
-            sql = render_template("/".join([self.template_path, 'delete.sql']), rgid=rg_id, conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                rgid=rg_id, conn=self.conn
+            )
             status, rgname = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=rgname)
@@ -493,7 +528,10 @@ class ResourceGroupView(NodeView):
                 )
 
             # drop resource group
-            sql = render_template("/".join([self.template_path, 'delete.sql']), rgname=rgname, conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                rgname=rgname, conn=self.conn
+            )
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -514,7 +552,8 @@ class ResourceGroupView(NodeView):
     @check_precondition
     def msql(self, gid, sid, rg_id=None):
         """
-        This function is used to return modified SQL for the selected resource group node
+        This function is used to return modified SQL for the selected
+        resource group node
 
         Args:
             gid: Server Group ID
@@ -554,7 +593,8 @@ class ResourceGroupView(NodeView):
             'name', 'cpu_rate_limit', 'dirty_rate_limit'
         ]
         if rg_id is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), rgid=rg_id)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']), rgid=rg_id)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -572,19 +612,41 @@ class ResourceGroupView(NodeView):
             name_changed = False
             if data['name'] != old_data['name']:
                 name_changed = True
-                sql = render_template("/".join([self.template_path, 'update.sql']),
-                                      oldname=old_data['name'], newname=data['name'], conn=self.conn)
-            if (data['cpu_rate_limit'] != old_data['cpu_rate_limit']) \
-                    or data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
+                sql = render_template(
+                    "/".join([self.template_path, 'update.sql']),
+                    oldname=old_data['name'], newname=data['name'],
+                    conn=self.conn
+                )
+            if data['cpu_rate_limit'] != old_data['cpu_rate_limit'] or \
+                    data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
                 if name_changed:
-                    sql += "\n-- Following query will be executed in a separate transaction\n"
-                sql += render_template("/".join([self.template_path, 'update.sql']), data=data, conn=self.conn)
+                    sql += "\n-- Following query will be executed in a " \
+                           "separate transaction\n"
+                sql += render_template(
+                    "/".join([self.template_path, 'update.sql']),
+                    data=data, conn=self.conn
+                )
         else:
-            sql = render_template("/".join([self.template_path, 'create.sql']), rgname=data['name'], conn=self.conn)
-            if ('cpu_rate_limit' in data and data['cpu_rate_limit'] > 0) \
-                    or ('dirty_rate_limit' in data and data['dirty_rate_limit'] > 0):
-                sql += "\n-- Following query will be executed in a separate transaction\n"
-                sql += render_template("/".join([self.template_path, 'update.sql']), data=data, conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                rgname=data['name'], conn=self.conn
+            )
+
+            cpu_rate_limit_flag = False
+            dirty_rate_limit_flag = False
+            if 'cpu_rate_limit' in data and data['cpu_rate_limit'] > 0:
+                cpu_rate_limit_flag = True
+
+            if 'dirty_rate_limit' in data and data['dirty_rate_limit'] > 0:
+                dirty_rate_limit_flag = True
+
+            if cpu_rate_limit_flag or dirty_rate_limit_flag:
+                sql += "\n-- Following query will be executed in a " \
+                       "separate transaction\n"
+                sql += render_template(
+                    "/".join([self.template_path, 'update.sql']),
+                    data=data, conn=self.conn
+                )
 
         return sql, data['name'] if 'name' in data else old_data['name']
 
@@ -598,7 +660,9 @@ class ResourceGroupView(NodeView):
             sid: Server ID
             rg_id: Resource Group ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), rgid=rg_id)
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']), rgid=rg_id
+        )
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
@@ -610,10 +674,16 @@ class ResourceGroupView(NodeView):
         # Making copy of output for future use
         old_data = dict(res['rows'][0])
 
-        sql = render_template("/".join([self.template_path, 'create.sql']), display_comments=True,
-                              rgname=old_data['name'], conn=self.conn)
+        sql = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            display_comments=True,
+            rgname=old_data['name'], conn=self.conn
+        )
         sql += "\n"
-        sql += render_template("/".join([self.template_path, 'update.sql']), data=old_data, conn=self.conn)
+        sql += render_template(
+            "/".join([self.template_path, 'update.sql']),
+            data=old_data, conn=self.conn
+        )
 
         return ajax_response(response=sql)
 

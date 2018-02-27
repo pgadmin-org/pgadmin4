@@ -38,7 +38,7 @@ class ResourceGroupsGetTestCase(BaseTestGenerator):
                               " and below."
                     self.skipTest(message)
         self.resource_group = "test_resource_group_get%s" % \
-                         str(uuid.uuid4())[1:8]
+                              str(uuid.uuid4())[1:8]
         self.resource_group_id = resource_groups_utils.create_resource_groups(
             self.server, self.resource_group)
 

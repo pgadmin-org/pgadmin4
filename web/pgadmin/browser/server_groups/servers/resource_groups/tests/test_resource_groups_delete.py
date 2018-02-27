@@ -34,8 +34,8 @@ class ResourceGroupsDeleteTestCase(BaseTestGenerator):
                 self.skipTest(message)
             else:
                 if server_response["data"]["version"] < 90400:
-                    message = "Resource groups are not supported by PPAS 9.3 " \
-                              "and below."
+                    message = "Resource groups are not supported by PPAS " \
+                              "9.3 and below."
                     self.skipTest(message)
         self.resource_group = "test_resource_group_delete%s" % \
                               str(uuid.uuid4())[1:8]

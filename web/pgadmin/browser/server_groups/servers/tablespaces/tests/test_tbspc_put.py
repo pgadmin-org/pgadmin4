@@ -50,11 +50,13 @@ class TableSpaceUpdateTestCase(BaseTestGenerator):
         data = {
             "description": "This is test description.",
             "table_space_id": self.tablespace_id
-            }
+        }
         put_response = self.tester.put(
-            self.url + str(utils.SERVER_GROUP) + '/' + str(self.server_id) + '/'
-            + str(self.tablespace_id), data=json.dumps(data),
-            follow_redirects=True)
+            self.url + str(utils.SERVER_GROUP) +
+            '/' + str(self.server_id) + '/' + str(self.tablespace_id),
+            data=json.dumps(data),
+            follow_redirects=True
+        )
         self.assertEquals(put_response.status_code, 200)
 
     def tearDown(self):

@@ -47,10 +47,10 @@ class TableSpaceAddTestCase(BaseTestGenerator):
             table_space_path, db_owner)
         self.tablespace_name = data['name']
         response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/'
-            + str(server_id) + '/',
+            self.url + str(utils.SERVER_GROUP) + '/' + str(server_id) + '/',
             data=json.dumps(data),
-            content_type='html/json')
+            content_type='html/json'
+        )
         self.assertEquals(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         tablespace_id = response_data['node']['_id']

@@ -36,9 +36,11 @@ class TableSpaceDeleteTestCase(BaseTestGenerator):
         self.server_id = parent_node_dict["server"][-1]["server_id"]
         self.tablespace_id = tablespace_utils.create_tablespace(
             self.server, self.tablespace_name)
-        tablespace_dict = {"tablespace_id": self.tablespace_id,
-                           "tablespace_name": self.tablespace_name,
-                           "server_id": self.server_id}
+        tablespace_dict = {
+            "tablespace_id": self.tablespace_id,
+            "tablespace_name": self.tablespace_name,
+            "server_id": self.server_id
+        }
         utils.write_node_info("tsid", tablespace_dict)
 
     def runTest(self):
@@ -48,10 +50,11 @@ class TableSpaceDeleteTestCase(BaseTestGenerator):
         if tablespace_count == 0:
             raise Exception("No tablespace(s) to delete!!!")
 
-        response = self.tester.delete(self.url + str(utils.SERVER_GROUP)
-                                      + '/' + str(self.server_id) + '/'
-                                      + str(self.tablespace_id),
-                                      follow_redirects=True)
+        response = self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) +
+            '/' + str(self.server_id) + '/' + str(self.tablespace_id),
+            follow_redirects=True
+        )
         self.assertEquals(response.status_code, 200)
         delete_response_data = json.loads(response.data.decode('utf-8'))
         self.assertEquals(delete_response_data['success'], 1)
@@ -65,4 +68,3 @@ class TableSpaceDeleteTestCase(BaseTestGenerator):
                                              self.server['port'],
                                              self.server['sslmode'])
         tablespace_utils.delete_tablespace(connection, self.tablespace_name)
-

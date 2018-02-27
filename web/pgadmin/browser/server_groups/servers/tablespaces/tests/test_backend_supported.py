@@ -37,6 +37,7 @@ class BackendSupportedTestCase(BaseTestGenerator):
              expected_result=False
          ))
     ]
+
     class LocalManager:
         def __init__(self, properties):
             self.sversion = properties['sversion']
