@@ -4,6 +4,7 @@ SELECT rel.oid, rel.relname AS name,
 FROM pg_class rel
     WHERE rel.relkind IN ('r','s','t') AND rel.relnamespace = {{ scid }}::oid
       AND rel.relname NOT IN (SELECT partitiontablename FROM pg_partitions)
+      AND rel.oid NOT IN (SELECT reloid from pg_exttable)
     {% if tid %}
       AND rel.oid = {{tid}}::OID
     {% endif %}

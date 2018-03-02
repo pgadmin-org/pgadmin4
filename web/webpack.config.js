@@ -147,11 +147,20 @@ module.exports = {
         },
       },
     }, {
+      test: /external_table.*\.js/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['es2015'],
+        },
+      },
+    }, {
       // Transforms the code in a way that it works in the webpack environment.
       // It uses imports-loader internally to load dependency. Its
       // configuration is specified in webpack.shim.js
       // Ref: https://www.npmjs.com/package/shim-loader
       test: /\.js/,
+      exclude: [/external_table/],
       loader: 'shim-loader',
       query: webpackShimConfig,
       include: path.join(__dirname, '/pgadmin/browser'),

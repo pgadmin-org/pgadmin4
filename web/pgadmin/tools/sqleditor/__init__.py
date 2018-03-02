@@ -438,6 +438,7 @@ def poll(trans_id):
                     conn.execute_void("ROLLBACK;")
 
             st, result = conn.async_fetchmany_2darray(ON_DEMAND_RECORD_COUNT)
+
             if st:
                 if 'primary_keys' in session_obj:
                     primary_keys = session_obj['primary_keys']

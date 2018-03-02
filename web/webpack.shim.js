@@ -120,6 +120,7 @@ var webpackShimConfig = {
   // Map module id to file path used in 'define(['baseurl', 'misc']). It is
   // used by webpack while creating bundle
   resolveAlias: {
+    'top': path.join(__dirname, './pgadmin'),
     'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
     'bundled_browser': path.join(__dirname, './pgadmin/static/bundle/browser'),
     'sources': path.join(__dirname, './pgadmin/static/js'),
@@ -213,6 +214,8 @@ var webpackShimConfig = {
     'pgadmin.node.catalog_object': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/static/js/catalog_object'),
     'pgadmin.dashboard': path.join(__dirname, './pgadmin/dashboard/static/js/dashboard'),
     'pgadmin.node.foreign_data_wrapper': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper'),
+    'pgadmin.node.external_table': path.join(__dirname, './pgadmin/static/js/browser/server_groups/servers/databases/external_tables/index'),
+    'pgadmin.node.external_tables': path.join(__dirname, './pgadmin/static/js/browser/server_groups/servers/databases/external_tables/index'),
     'pgadmin.node.foreign_key': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key'),
     'pgadmin.browser.server.variable': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/variable'),
     'pgadmin.tools.grant_wizard': path.join(__dirname, './pgadmin/tools/grant_wizard/static/js/grant_wizard'),
