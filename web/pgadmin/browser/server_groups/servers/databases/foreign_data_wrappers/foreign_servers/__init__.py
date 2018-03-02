@@ -33,19 +33,21 @@ class ForeignServerModule(CollectionNodeModule):
     """
     class ForeignServerModule(CollectionNodeModule)
 
-        A module class for foreign server node derived from CollectionNodeModule.
+        A module class for foreign server node derived from
+        CollectionNodeModule.
 
     Methods:
     -------
     * __init__(*args, **kwargs)
-      - Method is used to initialize the Foreign server module and it's base module.
+      - Method is used to initialize the Foreign server module and
+        it's base module.
 
     * get_nodes(gid, sid, did)
       - Method is used to generate the browser collection node.
 
     * script_load(self)
-      - Load the module script for foreign server, when any of the database node is
-        initialized.
+      - Load the module script for foreign server, when any of
+        the database node is initialized.
     """
 
     NODE_TYPE = 'foreign_server'
@@ -53,7 +55,8 @@ class ForeignServerModule(CollectionNodeModule):
 
     def __init__(self, *args, **kwargs):
         """
-        Method is used to initialize the Foreign server module and it's base module.
+        Method is used to initialize the Foreign server module and
+        it's base module.
 
         Args:
             *args:
@@ -80,7 +83,8 @@ class ForeignServerModule(CollectionNodeModule):
     @property
     def script_load(self):
         """
-        Load the module script for foreign server, when any of the foreign data wrapper node is initialized.
+        Load the module script for foreign server, when any of the
+        foreign data wrapper node is initialized.
 
         Returns: node type of the server module.
         """
@@ -102,9 +106,10 @@ class ForeignServerView(PGChildNodeView):
     """
     class ForeignServerView(PGChildNodeView)
 
-        A view class for foreign server node derived from PGChildNodeView. This class is
-        responsible for all the stuff related to view like updating foreign server
-        node, showing properties, showing sql in sql pane.
+        A view class for foreign server node derived from PGChildNodeView.
+        This class is responsible for all the stuff related to view like
+        updating foreign server node, showing properties,
+        showing sql in sql pane.
 
     Methods:
     -------
@@ -121,17 +126,21 @@ class ForeignServerView(PGChildNodeView):
         manager,conn & template_path properties to self
 
     * list(gid, sid, did, fid)
-      - This function is used to list all the foreign server nodes within that collection.
+      - This function is used to list all the foreign server nodes within
+        that collection.
 
     * nodes(gid, sid, did, fid)
-      - This function will used to create all the child node within that collection.
+      - This function will used to create all the child node within
+        that collection.
         Here it will create all the foreign server node.
 
     * properties(gid, sid, did, fid, fsid)
-      - This function will show the properties of the selected foreign server node
+      - This function will show the properties of the selected
+        foreign server node
 
     * update(gid, sid, did, fid, fsid)
-      - This function will update the data for the selected foreign server node
+      - This function will update the data for the selected
+        foreign server node
 
     * create(gid, sid, did, fid)
       - This function will create the new foreign server node
@@ -140,19 +149,23 @@ class ForeignServerView(PGChildNodeView):
       - This function will delete the selected foreign server node
 
     * msql(gid, sid, did, fid, fsid)
-      - This function is used to return modified SQL for the selected foreign server node
+      - This function is used to return modified SQL for the selected
+        foreign server node
 
     * get_sql(data, fid, fsid)
       - This function will generate sql from model data
 
     * sql(gid, sid, did, fid, fsid):
-      - This function will generate sql to show it in sql pane for the selected foreign server node.
+      - This function will generate sql to show it in sql pane for the
+        selected foreign server node.
 
     * dependents(gid, sid, did, fid, fsid):
-      - This function get the dependents and return ajax response for the foreign server node.
+      - This function get the dependents and return ajax response for the
+        foreign server node.
 
     * dependencies(self, gid, sid, did, fid, fsid):
-      - This function get the dependencies and return ajax response for the foreign server node.
+      - This function get the dependencies and return ajax response for the
+        foreign server node.
     """
 
     node_type = blueprint.node_type
@@ -226,7 +239,8 @@ class ForeignServerView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did, fid):
         """
-        This function is used to list all the foreign server nodes within that collection.
+        This function is used to list all the foreign server nodes
+        within that collection.
 
         Args:
             gid: Server Group ID
@@ -250,7 +264,8 @@ class ForeignServerView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did, fid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child node
+        within that collection.
         Here it will create all the foreign server node.
 
         Args:
@@ -320,7 +335,8 @@ class ForeignServerView(PGChildNodeView):
     @check_precondition
     def properties(self, gid, sid, did, fid, fsid):
         """
-        This function will show the properties of the selected foreign server node.
+        This function will show the properties of the selected
+        foreign server node.
 
         Args:
             gid: Server Group ID
@@ -347,7 +363,9 @@ class ForeignServerView(PGChildNodeView):
                 res['rows'][0]['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
             )
 
-        sql = render_template("/".join([self.template_path, 'acl.sql']), fsid=fsid)
+        sql = render_template("/".join([self.template_path, 'acl.sql']),
+                              fsid=fsid
+                              )
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
 
         if not status:
@@ -397,7 +415,8 @@ class ForeignServerView(PGChildNodeView):
             if 'fsrvacl' in data:
                 data['fsrvacl'] = parse_priv_to_db(data['fsrvacl'], ['U'])
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   fdwid=fid, conn=self.conn)
             status, res1 = self.conn.execute_dict(sql)
             if not status:
@@ -419,7 +438,8 @@ class ForeignServerView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   data=data, fdwdata=fdw_data,
                                   conn=self.conn)
             status, r_set = self.conn.execute_dict(sql)
@@ -440,7 +460,8 @@ class ForeignServerView(PGChildNodeView):
     @check_precondition
     def update(self, gid, sid, did, fid, fsid):
         """
-        This function will update the data for the selected foreign server node.
+        This function will update the data for the selected
+        foreign server node.
 
         Args:
             gid: Server Group ID
@@ -541,7 +562,8 @@ class ForeignServerView(PGChildNodeView):
     @check_precondition
     def msql(self, gid, sid, did, fid, fsid=None):
         """
-        This function is used to return modified SQL for the selected foreign server node.
+        This function is used to return modified SQL for the selected foreign
+        server node.
 
         Args:
             gid: Server Group ID
@@ -567,8 +589,7 @@ class ForeignServerView(PGChildNodeView):
 
             return make_json_response(
                 data=sql.strip('\n'),
-                status=200
-                )
+                status=200)
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -591,7 +612,8 @@ class ForeignServerView(PGChildNodeView):
         ]
 
         if fsid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   fsid=fsid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -609,11 +631,20 @@ class ForeignServerView(PGChildNodeView):
             for key in ['fsrvacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
+                        data[key]['added'] = parse_priv_to_db(
+                            data[key]['added'],
+                            ['U']
+                        )
                     if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
+                        data[key]['changed'] = parse_priv_to_db(
+                            data[key]['changed'],
+                            ['U']
+                        )
                     if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
+                        data[key]['deleted'] = parse_priv_to_db(
+                            data[key]['deleted'],
+                            ['U']
+                        )
 
             old_data = res['rows'][0]
             for arg in required_args:
@@ -622,22 +653,31 @@ class ForeignServerView(PGChildNodeView):
 
             is_valid_added_options = is_valid_changed_options = False
             if 'fsrvoptions' in data and 'added' in data['fsrvoptions']:
-                is_valid_added_options, data['fsrvoptions']['added'] = validate_options(
-                    data['fsrvoptions']['added'], 'fsrvoption', 'fsrvvalue'
-                )
-            if 'fsrvoptions' in data and 'changed' in data['fsrvoptions']:
-                is_valid_changed_options, data['fsrvoptions']['changed'] = validate_options(
-                    data['fsrvoptions']['changed'], 'fsrvoption', 'fsrvvalue'
-                )
+                is_valid_added_options, data['fsrvoptions']['added'] =\
+                    validate_options(
+                        data['fsrvoptions']['added'],
+                        'fsrvoption',
+                        'fsrvvalue')
 
-            sql = render_template("/".join([self.template_path, 'update.sql']),
-                                  data=data, o_data=old_data,
-                                  is_valid_added_options=is_valid_added_options,
-                                  is_valid_changed_options=is_valid_changed_options,
-                                  conn=self.conn)
+            if 'fsrvoptions' in data and 'changed' in data['fsrvoptions']:
+                is_valid_changed_options, data['fsrvoptions']['changed'] =\
+                    validate_options(
+                        data['fsrvoptions']['changed'],
+                        'fsrvoption',
+                        'fsrvvalue')
+
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data,
+                o_data=old_data,
+                is_valid_added_options=is_valid_added_options,
+                is_valid_changed_options=is_valid_changed_options,
+                conn=self.conn
+            )
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   fdwid=fid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -648,7 +688,6 @@ class ForeignServerView(PGChildNodeView):
             for key in ['fsrvacl']:
                 if key in data and data[key] is not None:
                     data[key] = parse_priv_to_db(data[key], ['U'])
-
 
             is_valid_options = False
             if 'fsrvoptions' in data:
@@ -663,11 +702,11 @@ class ForeignServerView(PGChildNodeView):
             sql += "\n"
         return sql, data['name']
 
-
     @check_precondition
     def sql(self, gid, sid, did, fid, fsid):
         """
-        This function will generate sql to show it in sql pane for the selected foreign server node.
+        This function will generate sql to show it in sql pane for the
+        selected foreign server node.
 
         Args:
             gid: Server Group ID
@@ -696,7 +735,8 @@ class ForeignServerView(PGChildNodeView):
             if len(res['rows'][0]['fsrvoptions']) > 0:
                 is_valid_options = True
 
-        sql = render_template("/".join([self.template_path, 'acl.sql']), fsid=fsid)
+        sql = render_template("/".join([self.template_path, 'acl.sql']),
+                              fsid=fsid)
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=fs_rv_acl_res)
@@ -710,7 +750,10 @@ class ForeignServerView(PGChildNodeView):
 
         # To format privileges
         if 'fsrvacl' in res['rows'][0]:
-            res['rows'][0]['fsrvacl'] = parse_priv_to_db(res['rows'][0]['fsrvacl'], ['U'])
+            res['rows'][0]['fsrvacl'] = parse_priv_to_db(
+                res['rows'][0]['fsrvacl'],
+                ['U']
+            )
 
         sql = render_template("/".join([self.template_path, 'properties.sql']),
                               fdwid=fid, conn=self.conn)
@@ -753,7 +796,8 @@ class ForeignServerView(PGChildNodeView):
         dependents_result = self.get_dependents(self.conn, fsid)
 
         # Fetching dependents of foreign servers
-        query = render_template("/".join([self.template_path, 'dependents.sql']),
+        query = render_template("/".join([self.template_path,
+                                          'dependents.sql']),
                                 fsid=fsid)
         status, result = self.conn.execute_dict(query)
         if not status:

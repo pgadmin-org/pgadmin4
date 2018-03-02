@@ -33,22 +33,25 @@ class UserMappingModule(CollectionNodeModule):
     """
     class UserMappingModule(CollectionNodeModule)
 
-        A module class for user mapping node derived from CollectionNodeModule.
+        A module class for user mapping node derived
+        from CollectionNodeModule.
 
     Methods:
     -------
     * __init__(*args, **kwargs)
-      - Method is used to initialize the user mapping module and it's base module.
+      - Method is used to initialize the user mapping module and
+        it's base module.
 
     * get_nodes(gid, sid, did, fid, fsid)
       - Method is used to generate the browser collection node.
 
     * node_inode()
-      - Method is overridden from its base class to make the node as leaf node.
+      - Method is overridden from its base class to make the node
+        as leaf node.
 
     * script_load(self)
-      - Load the module script for user mapping, when any of the foreign server node is
-        initialized.
+      - Load the module script for user mapping, when any of the
+        foreign server node is initialized.
     """
 
     NODE_TYPE = 'user_mapping'
@@ -56,7 +59,8 @@ class UserMappingModule(CollectionNodeModule):
 
     def __init__(self, *args, **kwargs):
         """
-        Method is used to initialize the User mapping module and it's base module.
+        Method is used to initialize the User mapping module and
+        it's base module.
 
         Args:
             *args:
@@ -94,7 +98,8 @@ class UserMappingModule(CollectionNodeModule):
     @property
     def script_load(self):
         """
-        Load the module script for user mapping, when any of the foreign server node is initialized.
+        Load the module script for user mapping, when any of the
+        foreign server node is initialized.
 
         Returns: node type of the server module.
         """
@@ -117,9 +122,10 @@ class UserMappingView(PGChildNodeView):
     """
     class UserMappingView(PGChildNodeView)
 
-        A view class for user mapping node derived from PGChildNodeView. This class is
-        responsible for all the stuff related to view like updating user mapping
-        node, showing properties, showing sql in sql pane.
+        A view class for user mapping node derived from PGChildNodeView.
+        This class is responsible for all the stuff related to view like
+        updating user mapping node, showing properties,
+        showing sql in sql pane.
 
     Methods:
     -------
@@ -136,17 +142,21 @@ class UserMappingView(PGChildNodeView):
         manager,conn & template_path properties to self
 
     * list(gid, sid, did, fid, fsid)
-      - This function is used to list all the user mapping nodes within that collection.
+      - This function is used to list all the user mapping nodes
+        within that collection.
 
     * nodes(gid, sid, did, fid, fsid)
-      - This function will used to create all the child node within that collection.
+      - This function will used to create all the child node
+        within that collection.
         Here it will create all the user mapping node.
 
     * properties(gid, sid, did, fid, fsid, umid)
-      - This function will show the properties of the selected user mapping node
+      - This function will show the properties of the selected
+        user mapping node
 
     * update(gid, sid, did, fid, fsid, umid)
-      - This function will update the data for the selected user mapping node
+      - This function will update the data for the selected
+        user mapping node
 
     * create(gid, sid, did, fid, fsid)
       - This function will create the new user mapping node
@@ -155,19 +165,23 @@ class UserMappingView(PGChildNodeView):
       - This function will delete the selected user mapping node
 
     * msql(gid, sid, did, fid, fsid, umid)
-      - This function is used to return modified SQL for the selected user mapping node
+      - This function is used to return modified SQL for the
+        selected user mapping node
 
     * get_sql(data, fid, fsid, umid)
       - This function will generate sql from model data
 
     * sql(gid, sid, did, fid, fsid, umid):
-      - This function will generate sql to show it in sql pane for the selected user mapping node.
+      - This function will generate sql to show it in sql pane for the
+        selected user mapping node.
 
     * dependents(gid, sid, did, fid, fsid, umid):
-      - This function get the dependents and return ajax response for the user mapping node.
+      - This function get the dependents and return ajax response for the
+        user mapping node.
 
     * dependencies(self, gid, sid, did, fid, fsid, umid):
-      - This function get the dependencies and return ajax response for the user mapping node.
+      - This function get the dependencies and return ajax response for the
+        user mapping node.
     """
 
     node_type = blueprint.node_type
@@ -242,7 +256,8 @@ class UserMappingView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did, fid, fsid):
         """
-        This function is used to list all the user mapping nodes within that collection.
+        This function is used to list all the user mapping nodes
+        within that collection.
 
         Args:
             gid: Server Group ID
@@ -252,7 +267,8 @@ class UserMappingView(PGChildNodeView):
             fsid: Foreign server ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        'properties.sql']),
                               fsid=fsid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
@@ -267,7 +283,8 @@ class UserMappingView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did, fid, fsid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child
+        node within that collection.
         Here it will create all the user mapping node.
 
         Args:
@@ -279,7 +296,8 @@ class UserMappingView(PGChildNodeView):
         """
 
         res = []
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        'properties.sql']),
                               fsid=fsid, conn=self.conn)
         status, r_set = self.conn.execute_2darray(sql)
 
@@ -313,7 +331,8 @@ class UserMappingView(PGChildNodeView):
             fsid: Foreign server ID
             umid: User mapping ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        'properties.sql']),
                               conn=self.conn, umid=umid)
         status, r_set = self.conn.execute_2darray(sql)
 
@@ -336,7 +355,8 @@ class UserMappingView(PGChildNodeView):
     @check_precondition
     def properties(self, gid, sid, did, fid, fsid, umid):
         """
-        This function will show the properties of the selected user mapping node.
+        This function will show the properties of the
+        selected user mapping node.
 
         Args:
             gid: Server Group ID
@@ -347,7 +367,8 @@ class UserMappingView(PGChildNodeView):
             umid: User mapping ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        'properties.sql']),
                               umid=umid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
@@ -400,7 +421,8 @@ class UserMappingView(PGChildNodeView):
                 )
 
         try:
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   fserid=fsid, conn=self.conn)
             status, res1 = self.conn.execute_dict(sql)
 
@@ -423,7 +445,8 @@ class UserMappingView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   fsid=fsid, data=data,
                                   conn=self.conn)
             status, r_set = self.conn.execute_dict(sql)
@@ -522,7 +545,8 @@ class UserMappingView(PGChildNodeView):
                     )
                 )
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   umid=umid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -566,7 +590,8 @@ class UserMappingView(PGChildNodeView):
     @check_precondition
     def msql(self, gid, sid, did, fid, fsid, umid=None):
         """
-        This function is used to return modified SQL for the selected user mapping node.
+        This function is used to return modified SQL for the
+        selected user mapping node.
 
         Args:
             gid: Server Group ID
@@ -593,8 +618,7 @@ class UserMappingView(PGChildNodeView):
 
             return make_json_response(
                 data=sql,
-                status=200
-                )
+                status=200)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -617,7 +641,8 @@ class UserMappingView(PGChildNodeView):
         ]
 
         if umid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   umid=umid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -634,7 +659,8 @@ class UserMappingView(PGChildNodeView):
                 )
             old_data = res['rows'][0]
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   fserid=fsid, conn=self.conn)
             status, res1 = self.conn.execute_dict(sql)
             if not status:
@@ -646,25 +672,35 @@ class UserMappingView(PGChildNodeView):
                 if arg not in data:
                     data[arg] = old_data[arg]
 
-            # Allow user to set the blank value in fdwvalue field in option model
+            # Allow user to set the blank value in fdwvalue
+            # field in option model
             is_valid_added_options = is_valid_changed_options = False
             if 'umoptions' in data and 'added' in data['umoptions']:
-                is_valid_added_options, data['umoptions']['added'] = validate_options(
-                    data['umoptions']['added'], 'umoption', 'umvalue'
-                )
+                is_valid_added_options, data['umoptions']['added'] =\
+                    validate_options(
+                        data['umoptions']['added'],
+                        'umoption',
+                        'umvalue')
             if 'umoptions' in data and 'changed' in data['umoptions']:
-                is_valid_changed_options, data['umoptions']['changed'] = validate_options(
-                    data['umoptions']['changed'], 'umoption', 'umvalue'
-                )
+                is_valid_changed_options, data['umoptions']['changed'] =\
+                    validate_options(
+                        data['umoptions']['changed'],
+                        'umoption',
+                        'umvalue')
 
-            sql = render_template("/".join([self.template_path, 'update.sql']),
-                                  data=data, o_data=old_data,
-                                  is_valid_added_options=is_valid_added_options,
-                                  is_valid_changed_options=is_valid_changed_options,
-                                  fdwdata=fdw_data, conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data,
+                o_data=old_data,
+                is_valid_added_options=is_valid_added_options,
+                is_valid_changed_options=is_valid_changed_options,
+                fdwdata=fdw_data,
+                conn=self.conn
+            )
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
                                   fserid=fsid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -687,7 +723,8 @@ class UserMappingView(PGChildNodeView):
     @check_precondition
     def sql(self, gid, sid, did, fid, fsid, umid):
         """
-        This function will generate sql to show it in sql pane for the selected user mapping node.
+        This function will generate sql to show it in sql pane for
+        the selected user mapping node.
 
         Args:
             gid: Server Group ID

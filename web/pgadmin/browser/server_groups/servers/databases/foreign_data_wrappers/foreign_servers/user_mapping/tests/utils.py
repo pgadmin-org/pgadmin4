@@ -39,7 +39,11 @@ def create_user_mapping(server, db_name, fsrv_name):
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
         query = "CREATE USER MAPPING FOR %s SERVER %s OPTIONS" \
-                " (user '%s', password '%s')" % (server['username'], fsrv_name, server['username'], server['db_password'])
+                " (user '%s', password '%s')" % (server['username'],
+                                                 fsrv_name,
+                                                 server['username'],
+                                                 server['db_password']
+                                                 )
         pg_cursor.execute(query)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()

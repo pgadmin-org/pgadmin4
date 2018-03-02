@@ -13,8 +13,8 @@ import uuid
 
 from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests \
-    import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+    tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator

@@ -21,11 +21,9 @@ from . import utils as fdw_utils
 
 class FDWDDeleteTestCase(BaseTestGenerator):
     """This class will delete foreign data wrappers under test database."""
-    scenarios = [
-            # Fetching default URL for foreign_data_wrapper node.
-            ('Check FDW Node',
-             dict(url='/browser/foreign_data_wrapper/obj/'))
-        ]
+    scenarios = [  # Fetching default URL for foreign_data_wrapper node.
+        ('Check FDW Node',
+         dict(url='/browser/foreign_data_wrapper/obj/'))]
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -51,11 +49,12 @@ class FDWDDeleteTestCase(BaseTestGenerator):
                                             self.fdw_name)
         if not fdw_response:
             raise Exception("Could not find FDW.")
-        delete_response = self.tester.delete(
-                            self.url + str(utils.SERVER_GROUP) + '/' +
-                            str(self.server_id) + '/' +
-                            str(self.db_id) + '/' + str(self.fdw_id),
-                            follow_redirects=True)
+        delete_response = self.tester.delete(self.url +
+                                             str(utils.SERVER_GROUP) +
+                                             '/' + str(self.server_id) + '/' +
+                                             str(self.db_id) +
+                                             '/' + str(self.fdw_id),
+                                             follow_redirects=True)
         self.assertEquals(delete_response.status_code, 200)
 
     def tearDown(self):

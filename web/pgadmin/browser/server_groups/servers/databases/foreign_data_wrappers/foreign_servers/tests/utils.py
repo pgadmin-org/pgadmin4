@@ -60,16 +60,16 @@ def create_fsrv(server, db_name, fsrv_name, fdw_name):
         print(exception, file=sys.stderr)
 
 
-def verify_fsrv(server, db_name , fsrv_name):
+def verify_fsrv(server, db_name, fsrv_name):
     """ This function will verify current foreign server."""
 
     try:
         connection = get_db_connection(db_name,
-                                             server['username'],
-                                             server['db_password'],
-                                             server['host'],
-                                             server['port'],
-                                             server['sslmode'])
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         pg_cursor.execute(

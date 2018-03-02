@@ -15,8 +15,8 @@ from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
     foreign_servers.tests import utils as fsrv_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests \
-    import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+    tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -70,8 +70,7 @@ class UserMappingGetTestCase(BaseTestGenerator):
             raise Exception("Could not find FSRV.")
         response = self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
                                    str(self.server_id) + '/' + str(
-            self.db_id) +
-                                   '/' + str(self.fdw_id) + '/' + str(
+            self.db_id) + '/' + str(self.fdw_id) + '/' + str(
             self.fsrv_id) + '/' + str(
             self.um_id), content_type='html/json')
         self.assertEquals(response.status_code, 200)

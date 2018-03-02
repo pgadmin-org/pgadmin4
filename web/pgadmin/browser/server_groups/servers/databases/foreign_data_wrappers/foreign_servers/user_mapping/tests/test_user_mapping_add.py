@@ -16,8 +16,8 @@ from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
     foreign_servers.tests import utils as fsrv_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests\
-    import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.\
+    foreign_data_wrappers.tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -68,8 +68,7 @@ class UserMappingAddTestCase(BaseTestGenerator):
         if not fsrv_response:
             raise Exception("Could not find FSRV.")
         db_user = self.server["username"]
-        data = {
-                "name": db_user,
+        data = {"name": db_user,
                 "um_options": [],
                 "umoptions": [
                     {
@@ -80,8 +79,7 @@ class UserMappingAddTestCase(BaseTestGenerator):
                         "umoption": "password",
                         "umvalue": self.server["db_password"]
                     }
-                ]
-            }
+                ]}
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' + str(

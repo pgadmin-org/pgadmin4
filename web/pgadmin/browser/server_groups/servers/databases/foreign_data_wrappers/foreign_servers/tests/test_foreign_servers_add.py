@@ -14,8 +14,8 @@ import uuid
 
 from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests \
-    import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+    tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -94,8 +94,9 @@ class ForeignServerAddTestCase(BaseTestGenerator):
         }
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) + '/'
-            + str(self.fdw_id) + '/', data=json.dumps(data),
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/' + str(self.fdw_id) + '/',
+            data=json.dumps(data),
             content_type='html/json')
         self.assertEquals(response.status_code, 200)
 

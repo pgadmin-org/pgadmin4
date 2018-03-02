@@ -13,8 +13,8 @@ import uuid
 
 from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests\
-    import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+    tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -62,8 +62,8 @@ class ForeignServerGetTestCase(BaseTestGenerator):
             raise Exception("Could not find FDW.")
         fsrv_response = self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) + '/'
-            + str(self.fdw_id) + '/' + str(self.fsrv_id),
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/' + str(self.fdw_id) + '/' + str(self.fsrv_id),
             content_type='html/json')
         self.assertEquals(fsrv_response.status_code, 200)
 

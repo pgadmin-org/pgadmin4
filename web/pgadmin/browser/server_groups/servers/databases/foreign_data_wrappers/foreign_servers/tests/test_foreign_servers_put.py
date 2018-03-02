@@ -14,8 +14,8 @@ import uuid
 
 from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests\
-    import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+    tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -65,10 +65,8 @@ class ForeignServerPutTestCase(BaseTestGenerator):
                                                self.fsrv_name)
         if not fsrv_response:
             raise Exception("Could not find FSRV.")
-        data = {
-                "description": "This is foreign server update comment",
-                "id": self.fsrv_id
-            }
+        data = {"description": "This is foreign server update comment",
+                "id": self.fsrv_id}
         put_response = self.tester.put(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' + str(self.db_id) +

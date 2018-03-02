@@ -16,8 +16,8 @@ from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
     foreign_servers.tests import utils as fsrv_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests \
-    import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+    tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -65,7 +65,8 @@ class UserMappingPutTestCase(BaseTestGenerator):
                                             self.fdw_name)
         if not fdw_response:
             raise Exception("Could not find FDW.")
-        fsrv_response = fsrv_utils.verify_fsrv(self.server, self.db_name,
+        fsrv_response = fsrv_utils.verify_fsrv(self.server,
+                                               self.db_name,
                                                self.fsrv_name)
         if not fsrv_response:
             raise Exception("Could not find FSRV.")
