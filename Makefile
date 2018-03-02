@@ -46,9 +46,6 @@ check-feature: install-node bundle
 check-js: install-node linter
 	cd web && yarn run karma start --single-run
 
-check-pep8:
-	pycodestyle --config=web/.pycodestyle ./web/pgadmin/
-
 # Include all clean sub-targets in clean
 clean: clean-appbundle clean-docker clean-dist clean-docs clean-pip clean-src
 
