@@ -1196,6 +1196,7 @@ define([
         canAddRow: data.canAddRow,
         canEdit: evalF(data.canEdit, data, this.model),
         canDelete: evalF(data.canDelete, data, this.model),
+        showError: data.showError || true,
       });
       // Show Backgrid Control
       var grid = (data.subnode == undefined) ? '' : this.showGridControl(data);
@@ -1224,9 +1225,11 @@ define([
 
       if (_.isEmpty(error)) return;
 
-      self.$el.addClass('subnode-error').append(
-        $('<div></div>').addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
-      );
+      if (self.field.get('showError')) {
+        self.$el.addClass('subnode-error').append(
+          $('<div></div>').addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
+        );
+      }
     },
     cleanup: function() {
       // Clean up existing grid if any (in case of re-render)
@@ -1238,8 +1241,10 @@ define([
       }
     },
     clearInvalid: function() {
-      this.$el.removeClass('subnode-error');
-      this.$el.find('.pgadmin-control-error-message').remove();
+      if (this.field.get('showError')) {
+        this.$el.removeClass('subnode-error');
+        this.$el.find('.pgadmin-control-error-message').remove();
+      }
       return this;
     },
     showGridControl: function(data) {
@@ -2391,6 +2396,7 @@ define([
               },
             }, this.defaults.options, this.field.get('options'), {
               'date': data.value,
+              'minDate': data.value,
             })
           );
         }

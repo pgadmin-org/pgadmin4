@@ -279,7 +279,7 @@ define('pgadmin.node.pga_schedule', [
           control: 'datetimepicker', cell: DatetimeCell,
           disabled: function() { return false; }, displayInUTC: false,
           displayFormat: 'YYYY-MM-DD HH:mm:ss Z', options: {
-            format: 'YYYY-MM-DD HH:mm:ss Z', useCurrent: false,
+            format: 'YYYY-MM-DD HH:mm:ss Z',
             minDate: moment().add(0, 'm'),
           }, cellHeaderClasses: 'width_percent_25',
           modelFormat: 'YYYY-MM-DD HH:mm:ss Z',
@@ -458,6 +458,9 @@ define('pgadmin.node.pga_schedule', [
           if (_.isUndefined(val) || _.isNull(val) ||
             String(val).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Please enter the start time.');
+            if (val == '') {
+              this.set('jscstart', undefined);
+            }
             this.errorModel.set('jscstart', msg);
             errMsg = errMsg || msg;
           } else {
@@ -471,6 +474,9 @@ define('pgadmin.node.pga_schedule', [
             // the user
             if (_.isUndefined(val) || _.isNull(val) ||
               String(val).replace(/^\s+|\s+$/g, '') == '') {
+              if (val == '') {
+                this.set('jscend', undefined);
+              }
               return;
             }
 

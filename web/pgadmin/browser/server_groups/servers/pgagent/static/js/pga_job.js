@@ -133,6 +133,7 @@ define('pgadmin.node.pga_job', [
           type: 'collection', mode: ['edit', 'create'],
           model: pgBrowser.Nodes['pga_jobstep'].model, canEdit: true,
           control: 'sub-node-collection', canAdd: true, canDelete: true,
+          showError: false,
           columns: [
             'jstname', 'jstenabled', 'jstkind', 'jstconntype', 'jstonerror',
           ],
@@ -141,6 +142,7 @@ define('pgadmin.node.pga_job', [
           type: 'collection', mode: ['edit', 'create'],
           control: 'sub-node-collection', canAdd: true, canDelete: true,
           canEdit: true, model: pgBrowser.Nodes['pga_schedule'].model,
+          showError: false,
           columns: ['jscname', 'jscenabled', 'jscstart', 'jscend'],
         }],
         validate: function() {
