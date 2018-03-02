@@ -50,23 +50,21 @@ class LanguagesAddTestCase(BaseTestGenerator):
             "lanval": "fmgr_c_validator",
             "name": "language_%s" % str(uuid.uuid4())[1:8],
             "seclabels": [],
-            "template_list":
-                [
-                    "plperl",
-                    "plperlu",
-                    "plpython2u",
-                    "plpython3u",
-                    "plpythonu",
-                    "pltcl",
-                    "pltclu"
-                ],
+            "template_list": [
+                "plperl",
+                "plperlu",
+                "plpython2u",
+                "plpython3u",
+                "plpythonu",
+                "pltcl",
+                "pltclu"
+            ],
             "trusted": "true"
-                }
+        }
 
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(
-                self.db_id) + '/',
+            str(self.server_id) + '/' + str(self.db_id) + '/',
             data=json.dumps(self.data),
             content_type='html/json')
 
@@ -76,7 +74,7 @@ class LanguagesAddTestCase(BaseTestGenerator):
         """This function delete added language and
         disconnect the test database."""
 
-        language_utils.delete_language(self.server, self.db_name,
-                                       self.data['name'])
+        language_utils.delete_language(
+            self.server, self.db_name, self.data['name']
+        )
         database_utils.disconnect_database(self, self.server_id, self.db_id)
-

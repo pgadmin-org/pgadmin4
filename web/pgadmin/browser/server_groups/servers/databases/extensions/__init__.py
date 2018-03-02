@@ -78,8 +78,8 @@ class ExtensionModule(CollectionNodeModule):
     @property
     def script_load(self):
         """
-        Load the module script for extension, when any of the database nodes are
-        initialized.
+        Load the module script for extension, when any of the database nodes
+        are initialized.
         """
         return databases.DatabaseModule.NODE_TYPE
 

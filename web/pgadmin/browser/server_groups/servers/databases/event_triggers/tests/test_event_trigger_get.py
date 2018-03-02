@@ -77,10 +77,11 @@ class EventTriggerGetTestCase(BaseTestGenerator):
         if not func_response:
             raise Exception("Could not find the trigger function.")
         response = self.tester.get(
-            self.url + str(utils.SERVER_GROUP) + '/'
-            + str(self.server_id) + '/' + str(self.db_id) + '/' +
-            str(self.event_trigger_id),
-            content_type='html/json')
+            self.url +
+            str(utils.SERVER_GROUP) + '/' + str(self.server_id) + '/' +
+            str(self.db_id) + '/' + str(self.event_trigger_id),
+            content_type='html/json'
+        )
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):

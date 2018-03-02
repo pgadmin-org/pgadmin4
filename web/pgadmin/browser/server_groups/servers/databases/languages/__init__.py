@@ -90,7 +90,8 @@ class LanguageModule(CollectionNodeModule):
     @property
     def script_load(self):
         """
-        Load the module script for language, when any of the database nodes are initialized.
+        Load the module script for language, when any of the database nodes
+        are initialized.
 
         Returns: node type of the server module.
         """
@@ -112,9 +113,9 @@ class LanguageView(PGChildNodeView):
     """
     class LanguageView(PGChildNodeView)
 
-        A view class for Language node derived from PGChildNodeView. This class is
-        responsible for all the stuff related to view like updating language
-        node, showing properties, showing sql in sql pane.
+        A view class for Language node derived from PGChildNodeView.
+        This class is responsible for all the stuff related to view like
+        updating language node, showing properties, showing sql in sql pane.
 
     Methods:
     -------
@@ -127,11 +128,12 @@ class LanguageView(PGChildNodeView):
         manager,conn & template_path properties to self
 
     * list()
-      - This function is used to list all the language nodes within that collection.
+      - This function is used to list all the language nodes within that
+      collection.
 
     * nodes()
-      - This function will used to create all the child node within that collection.
-        Here it will create all the language node.
+      - This function will used to create all the child node within that
+      collection. Here it will create all the language node.
 
     * properties(gid, sid, did, lid)
       - This function will show the properties of the selected language node
@@ -146,25 +148,30 @@ class LanguageView(PGChildNodeView):
       - This function will delete the selected language node
 
     * msql(gid, sid, did, lid)
-      - This function is used to return modified SQL for the selected language node
+      - This function is used to return modified SQL for the selected
+      language node
 
     * get_sql(data, lid)
       - This function will generate sql from model data
 
     * get_functions(gid, sid, did)
-      - This function returns the handler and inline functions for the selected language node
+      - This function returns the handler and inline functions for the
+      selected language node
 
     * get_templates(gid, sid, did)
       - This function returns language templates.
 
     * sql(gid, sid, did, lid):
-      - This function will generate sql to show it in sql pane for the selected language node.
+      - This function will generate sql to show it in sql pane for the
+      selected language node.
 
     * dependents(gid, sid, did, lid):
-      - This function get the dependents and return ajax response for the language node.
+      - This function get the dependents and return ajax response for the
+      language node.
 
     * dependencies(self, gid, sid, did, lid):
-      - This function get the dependencies and return ajax response for the language node.
+      - This function get the dependencies and return ajax response for the
+      language node.
     """
 
     node_type = blueprint.node_type
@@ -197,7 +204,8 @@ class LanguageView(PGChildNodeView):
     def _init_(self, **kwargs):
         """
         Method is used to initialize the LanguageView and its base view.
-        Initialize all the variables create/used dynamically like conn, template_path.
+        Initialize all the variables create/used dynamically like conn,
+        template_path.
 
         Args:
             **kwargs:
@@ -223,9 +231,11 @@ class LanguageView(PGChildNodeView):
             self.manager = self.driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
-            self.template_path = ("languages/sql/#gpdb#{0}#".format(self.manager.version)
-                                if self.manager.server_type == 'gpdb'
-                                else "languages/sql/#{0}#".format(self.manager.version))
+            self.template_path = (
+                "languages/sql/#gpdb#{0}#".format(self.manager.version) if
+                self.manager.server_type == 'gpdb' else
+                "languages/sql/#{0}#".format(self.manager.version)
+            )
 
             return f(*args, **kwargs)
 
@@ -234,7 +244,8 @@ class LanguageView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did):
         """
-        This function is used to list all the language nodes within that collection.
+        This function is used to list all the language nodes within that
+        collection.
 
         Args:
             gid: Server Group ID
@@ -254,8 +265,8 @@ class LanguageView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did):
         """
-        This function is used to create all the child nodes within the collection.
-        Here it will create all the language nodes.
+        This function is used to create all the child nodes within the
+        collection. Here it will create all the language nodes.
 
         Args:
             gid: Server Group ID
@@ -323,7 +334,10 @@ class LanguageView(PGChildNodeView):
             did: Database ID
             lid: Language ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), lid=lid)
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            lid=lid
+        )
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -334,7 +348,10 @@ class LanguageView(PGChildNodeView):
                 gettext("Could not find the language information.")
             )
 
-        sql = render_template("/".join([self.template_path, 'acl.sql']), lid=lid)
+        sql = render_template(
+            "/".join([self.template_path, 'acl.sql']),
+            lid=lid
+        )
         status, result = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -344,7 +361,13 @@ class LanguageView(PGChildNodeView):
             res['rows'][0]['lanacl'] = dict()
             res['rows'][0]['lanacl']['grantee'] = 'PUBLIC'
             res['rows'][0]['lanacl']['grantor'] = res['rows'][0]['lanowner']
-            res['rows'][0]['lanacl']['privileges'] = [{'privilege_type': 'U', 'privilege': True, 'with_grant': False}]
+            res['rows'][0]['lanacl']['privileges'] = [
+                {
+                    'privilege_type': 'U',
+                    'privilege': True,
+                    'with_grant': False
+                }
+            ]
         else:
             for row in result['rows']:
                 priv = parse_priv_from_db(row)
@@ -354,7 +377,8 @@ class LanguageView(PGChildNodeView):
                     res['rows'][0][row['deftype']] = [priv]
 
         seclabels = []
-        if 'seclabels' in res['rows'][0] and res['rows'][0]['seclabels'] is not None:
+        if 'seclabels' in res['rows'][0] and \
+                res['rows'][0]['seclabels'] is not None:
             import re
             for sec in res['rows'][0]['seclabels']:
                 sec = re.search(r'([^=]+)=(.*$)', sec)
@@ -443,8 +467,10 @@ class LanguageView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
-                                  lanname=data['name'], conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                lanname=data['name'], conn=self.conn
+            )
 
             status, r_set = self.conn.execute_dict(sql)
             if not status:
@@ -482,15 +508,20 @@ class LanguageView(PGChildNodeView):
 
         try:
             # Get name for language from lid
-            sql = render_template("/".join([self.template_path, 'delete.sql']), lid=lid, conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                lid=lid, conn=self.conn
+            )
             status, lname = self.conn.execute_scalar(sql)
 
             if not status:
                 return internal_server_error(errormsg=lname)
 
             # drop language
-            sql = render_template("/".join([self.template_path, 'delete.sql']), lname=lname,
-                                  cascade=cascade, conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                lname=lname, cascade=cascade, conn=self.conn
+            )
             status, res = self.conn.execute_scalar(sql)
 
             if not status:
@@ -513,7 +544,8 @@ class LanguageView(PGChildNodeView):
     @check_precondition
     def msql(self, gid, sid, did, lid=None):
         """
-        This function is used to return modified SQL for the selected language node.
+        This function is used to return modified SQL for the selected
+        language node.
 
         Args:
             gid: Server Group ID
@@ -538,7 +570,7 @@ class LanguageView(PGChildNodeView):
             return make_json_response(
                 data=sql,
                 status=200
-                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -555,7 +587,9 @@ class LanguageView(PGChildNodeView):
         ]
 
         if lid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), lid=lid)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']), lid=lid
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -568,19 +602,28 @@ class LanguageView(PGChildNodeView):
             for key in ['lanacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(data[key]['added'], ["U"])
+                        data[key]['added'] = parse_priv_to_db(
+                            data[key]['added'], ["U"]
+                        )
                     if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ["U"])
+                        data[key]['changed'] = parse_priv_to_db(
+                            data[key]['changed'], ["U"]
+                        )
                     if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ["U"])
+                        data[key]['deleted'] = parse_priv_to_db(
+                            data[key]['deleted'], ["U"]
+                        )
 
             old_data = res['rows'][0]
             for arg in required_args:
                 if arg not in data:
                     data[arg] = old_data[arg]
-            sql = render_template("/".join([self.template_path, 'update.sql']), data=data,
-                                  o_data=old_data, conn=self.conn)
-            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data, conn=self.conn
+            )
+            return sql.strip('\n'), data['name'] if 'name' in data \
+                else old_data['name']
         else:
 
             if 'lanacl' in data:
@@ -590,11 +633,11 @@ class LanguageView(PGChildNodeView):
                                   data=data, conn=self.conn)
             return sql.strip('\n'), data['name']
 
-
     @check_precondition
     def get_functions(self, gid, sid, did):
         """
-        This function returns the handler and inline functions for the selected language node.
+        This function returns the handler and inline functions for the
+        selected language node.
 
         Args:
             gid: Server Group ID
@@ -632,7 +675,8 @@ class LanguageView(PGChildNodeView):
     @check_precondition
     def sql(self, gid, sid, did, lid):
         """
-        This function will generate sql to show in the sql pane for the selected language node.
+        This function will generate sql to show in the sql pane for the
+        selected language node.
 
         Args:
             gid: Server Group ID
@@ -640,7 +684,10 @@ class LanguageView(PGChildNodeView):
             did: Database ID
             lid: Language ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), lid=lid)
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            lid=lid
+        )
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
@@ -653,7 +700,10 @@ class LanguageView(PGChildNodeView):
         # Making copy of output for future use
         old_data = dict(res['rows'][0])
 
-        sql = render_template("/".join([self.template_path, 'acl.sql']), lid=lid)
+        sql = render_template(
+            "/".join([self.template_path, 'acl.sql']),
+            lid=lid
+        )
         status, result = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -676,7 +726,10 @@ class LanguageView(PGChildNodeView):
                 })
 
         old_data['seclabels'] = seclabels
-        sql = render_template("/".join([self.template_path, 'sqlpane.sql']), data=old_data, conn=self.conn)
+        sql = render_template(
+            "/".join([self.template_path, 'sqlpane.sql']),
+            data=old_data, conn=self.conn
+        )
 
         return ajax_response(response=sql.strip('\n'))
 

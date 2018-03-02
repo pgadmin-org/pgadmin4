@@ -26,6 +26,7 @@ from pgadmin.utils import IS_PY2
 if not IS_PY2:
     unicode = str
 
+
 class CastModule(CollectionNodeModule):
     """
      class CastModule(CollectionNodeModule)
@@ -96,8 +97,9 @@ class CastView(PGChildNodeView):
     class CastView(PGChildNodeView)
 
         A view class for cast node derived from PGChildNodeView. This class is
-        responsible for all the stuff related to view like create/update/delete cast,
-        showing properties of cast node, showing sql in sql pane.
+        responsible for all the stuff related to view like
+        create/update/delete cast, showing properties of cast node,
+        showing sql in sql pane.
 
     Methods:
     -------
@@ -110,11 +112,12 @@ class CastView(PGChildNodeView):
         manager,conn & template_path properties to self
 
     * list()
-      - This function is used to list all the cast nodes within that collection.
+      - This function is used to list all the cast nodes within that
+      collection.
 
     * nodes()
-      - This function will used to create all the child node within that collection.
-        Here it will create all the cast nodes.
+      - This function will used to create all the child node within that
+      collection. Here it will create all the cast nodes.
 
     * properties(gid, sid, did, rg_id)
       - This function will show the properties of the selected cast node
@@ -135,14 +138,16 @@ class CastView(PGChildNodeView):
       - This function will generate sql from model data
 
     * sql(gid, sid, did, rg_id):
-      - This function will generate sql to show in sql pane for the selected cast node.
+      - This function will generate sql to show in sql pane for the selected
+      cast node.
 
     * get_type():
-      - This function will fetch all the types for source and target types select control.
+      - This function will fetch all the types for source and target types
+      select control.
 
     * get_functions():
-      - This function will fetch associated functions list depending on selected source
-        and target types while creating a new cast node.
+      - This function will fetch associated functions list depending on
+      selected source and target types while creating a new cast node.
     """
 
     node_type = blueprint.node_type
@@ -171,8 +176,14 @@ class CastView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'get_type': [{'get': 'get_src_and_trg_type'}, {'get': 'get_src_and_trg_type'}],
-        'get_functions': [{'post': 'get_functions'}, {'post': 'get_functions'}]
+        'get_type': [
+            {'get': 'get_src_and_trg_type'},
+            {'get': 'get_src_and_trg_type'}
+        ],
+        'get_functions': [
+            {'post': 'get_functions'},
+            {'post': 'get_functions'}
+        ]
     })
 
     def _init_(self, **kwargs):
@@ -192,7 +203,9 @@ class CastView(PGChildNodeView):
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+            self.manager = get_driver(
+                PG_DEFAULT_DRIVER
+            ).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set template path for the SQL scripts
             self.template_path = 'cast/sql/#{0}#'.format(self.manager.version)
@@ -225,7 +238,8 @@ class CastView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         for row in res['rows']:
-            row['castcontext'] = True if row['castcontext'] == 'IMPLICIT' else False
+            row['castcontext'] = True if row['castcontext'] == 'IMPLICIT' \
+                else False
 
         return ajax_response(
             response=res['rows'],
@@ -235,8 +249,8 @@ class CastView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did):
         """
-        This function will used to create all the child nodes within the collection.
-        Here it will create all the cast nodes.
+        This function will used to create all the child nodes within the
+        collection. Here it will create all the cast nodes.
         :param gid: group id
         :param sid: server id
         :param did: database id
@@ -366,17 +380,19 @@ class CastView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            # we need oid to to add object in tree at browser, below sql will gives the same
+            # we need oid to to add object in tree at browser, below sql will
+            # gives the same
             last_system_oid = 0 if self.blueprint.show_system_objects else \
                 (self.manager.db_info[did])['datlastsysoid'] \
                 if self.manager.db_info is not None and \
                 did in self.manager.db_info else 0
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
-                                  srctyp=data['srctyp'],
-                                  trgtyp=data['trgtyp'],
-                                  datlastsysoid=last_system_oid,
-                                  showsysobj=self.blueprint.show_system_objects
-                                  )
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                srctyp=data['srctyp'],
+                trgtyp=data['trgtyp'],
+                datlastsysoid=last_system_oid,
+                showsysobj=self.blueprint.show_system_objects
+            )
             status, cid = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=cid)
@@ -527,10 +543,12 @@ class CastView(PGChildNodeView):
                 (self.manager.db_info[did])['datlastsysoid'] \
                 if self.manager.db_info is not None and \
                 did in self.manager.db_info else 0
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
-                                  cid=cid,
-                                  datlastsysoid=last_system_oid,
-                                  showsysobj=self.blueprint.show_system_objects)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                cid=cid,
+                datlastsysoid=last_system_oid,
+                showsysobj=self.blueprint.show_system_objects
+            )
             status, res = self.conn.execute_dict(sql)
 
             if not status:
@@ -549,7 +567,10 @@ class CastView(PGChildNodeView):
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
             if 'srctyp' in data and 'trgtyp' in data:
-                sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
+                sql = render_template(
+                    "/".join([self.template_path, 'create.sql']),
+                    data=data, conn=self.conn
+                )
             else:
                 return u"-- definition incomplete", None
             return sql, data['srctyp'] + "->" + data["trgtyp"]
@@ -638,14 +659,14 @@ class CastView(PGChildNodeView):
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(
-                    _("Could not generate reversed engineered SQL for the cast.\n\n{0}").format(
-                        res
-                    )
+                    _("Could not generate reversed engineered SQL for the "
+                      "cast.\n\n{0}").format(res)
                 )
 
             if res is None:
                 return gone(
-                    _("Could not generate reversed engineered SQL for the cast node.\n")
+                    _("Could not generate reversed engineered SQL for the "
+                      "cast node.\n")
                 )
 
             return ajax_response(response=res)

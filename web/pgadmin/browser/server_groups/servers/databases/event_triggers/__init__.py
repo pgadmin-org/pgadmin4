@@ -30,7 +30,8 @@ class EventTriggerModule(CollectionNodeModule):
     """
     class EventTriggerModule(CollectionNodeModule)
 
-        A module class for Event trigger node derived from CollectionNodeModule.
+        A module class for Event trigger node derived from
+        CollectionNodeModule.
 
     Methods:
     -------
@@ -51,7 +52,8 @@ class EventTriggerModule(CollectionNodeModule):
 
     def __init__(self, *args, **kwargs):
         """
-        Method is used to initialize the EventTriggerModule and it's base module.
+        Method is used to initialize the EventTriggerModule and it's base
+        module.
 
         Args:
             *args:
@@ -184,9 +186,12 @@ class EventTriggerView(PGChildNodeView):
         @wraps(f)
         def wrap(*args, **kwargs):
 
-            # Here - args[0] will always hold self & kwargs will hold gid, sid, did
+            # Here - args[0] will always hold self & kwargs will hold gid,
+            # sid, did
             self = args[0]
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+            self.manager = get_driver(
+                PG_DEFAULT_DRIVER
+            ).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             self.template_path = 'event_triggers/sql/9.3_plus'
 
@@ -222,8 +227,8 @@ class EventTriggerView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did):
         """
-        This function is used to create all the child nodes within the collection.
-        Here it will create all the event trigger nodes.
+        This function is used to create all the child nodes within the
+        collection. Here it will create all the event trigger nodes.
 
         Args:
           gid: Server Group ID
@@ -318,7 +323,10 @@ class EventTriggerView(PGChildNodeView):
         Returns:
 
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), etid=etid, conn=self.conn)
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            etid=etid, conn=self.conn
+        )
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
@@ -374,18 +382,27 @@ class EventTriggerView(PGChildNodeView):
                 )
             )
         try:
-            sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data, conn=self.conn
+            )
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-            sql = render_template("/".join([self.template_path, 'grant.sql']), data=data, conn=self.conn)
+            sql = render_template(
+                "/".join([self.template_path, 'grant.sql']),
+                data=data, conn=self.conn
+            )
             sql = sql.strip('\n').strip(' ')
 
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'get_oid.sql']), data=data)
+            sql = render_template(
+                "/".join([self.template_path, 'get_oid.sql']),
+                data=data
+            )
             status, etid = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=etid)
@@ -431,7 +448,10 @@ class EventTriggerView(PGChildNodeView):
                 if not status:
                     return internal_server_error(errormsg=res)
 
-                sql = render_template("/".join([self.template_path, 'get_oid.sql']), data=data)
+                sql = render_template(
+                    "/".join([self.template_path, 'get_oid.sql']),
+                    data=data
+                )
                 status, etid = self.conn.execute_scalar(sql)
 
                 return jsonify(
@@ -478,7 +498,10 @@ class EventTriggerView(PGChildNodeView):
         else:
             cascade = False
         try:
-            sql = render_template("/".join([self.template_path, 'delete.sql']), etid=etid)
+            sql = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                etid=etid
+            )
             status, name = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=name)
@@ -495,7 +518,10 @@ class EventTriggerView(PGChildNodeView):
                     )
                 )
 
-            sql = render_template("/".join([self.template_path, 'delete.sql']), name=name, cascade=cascade)
+            sql = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                name=name, cascade=cascade
+            )
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -568,7 +594,10 @@ class EventTriggerView(PGChildNodeView):
         ]
 
         if etid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), etid=etid)
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                etid=etid
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -584,7 +613,10 @@ class EventTriggerView(PGChildNodeView):
             for arg in required_args:
                 if arg not in data:
                     data[arg] = old_data[arg]
-            sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data)
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data
+            )
         else:
             required_args = {
                 'name': 'Name',
@@ -605,16 +637,22 @@ class EventTriggerView(PGChildNodeView):
                         "Could not find the required parameter %s." % err
                     )
                 )
-            sql = render_template("/".join([self.template_path, 'create.sql']), data=data)
+            sql = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data
+            )
             sql += "\n"
-            sql += render_template("/".join([self.template_path, 'grant.sql']), data=data)
+            sql += render_template(
+                "/".join([self.template_path, 'grant.sql']),
+                data=data
+            )
         return sql
 
     @check_precondition
     def sql(self, gid, sid, did, etid):
         """
-        This function will generate sql to show in the sql pane for the selected
-        event trigger node.
+        This function will generate sql to show in the sql pane for the
+        selected event trigger node.
 
         Args:
           gid: Server Group ID
@@ -625,7 +663,10 @@ class EventTriggerView(PGChildNodeView):
         Returns:
 
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), etid=etid)
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            etid=etid
+        )
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
@@ -638,16 +679,27 @@ class EventTriggerView(PGChildNodeView):
         result = res['rows'][0]
         result = self._formatter(result)
 
-        sql = render_template("/".join([self.template_path, 'create.sql']), data=result, conn=self.conn)
+        sql = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=result, conn=self.conn
+        )
         sql += "\n\n"
-        sql += render_template("/".join([self.template_path, 'grant.sql']), data=result, conn=self.conn)
+        sql += render_template(
+            "/".join([self.template_path, 'grant.sql']),
+            data=result, conn=self.conn
+        )
 
-        db_sql = render_template("/".join([self.template_path, 'get_db.sql']), did=did)
+        db_sql = render_template(
+            "/".join([self.template_path, 'get_db.sql']),
+            did=did
+        )
         status, db_name = self.conn.execute_scalar(db_sql)
         if not status:
             return internal_server_error(errormsg=db_name)
 
-        sql_header = u"-- Event Trigger: {0} on database {1}\n\n-- ".format(result['name'], db_name)
+        sql_header = u"-- Event Trigger: {0} on database {1}\n\n-- ".format(
+            result['name'], db_name
+        )
 
         sql_header += render_template(
             "/".join([self.template_path, 'delete.sql']),
@@ -675,7 +727,9 @@ class EventTriggerView(PGChildNodeView):
 
         """
         res = [{'label': '', 'value': ''}]
-        sql = render_template("/".join([self.template_path, 'eventfunctions.sql']))
+        sql = render_template(
+            "/".join([self.template_path, 'eventfunctions.sql'])
+        )
         status, rest = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rest)

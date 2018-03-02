@@ -56,7 +56,8 @@ def create_cast(server, source_type, target_type):
         # Get 'oid' from newly created cast
         pg_cursor.execute(
             "SELECT ca.oid FROM pg_cast ca WHERE ca.castsource = "
-            "(SELECT t.oid FROM pg_type t WHERE format_type(t.oid, NULL)='%s') "
+            "(SELECT t.oid FROM pg_type t "
+            "WHERE format_type(t.oid, NULL)='%s') "
             "AND ca.casttarget = (SELECT t.oid FROM pg_type t WHERE "
             "format_type(t.oid, NULL) = '%s')" % (source_type, target_type))
         oid = pg_cursor.fetchone()
@@ -75,7 +76,8 @@ def verify_cast(connection, source_type, target_type):
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "SELECT * FROM pg_cast ca WHERE ca.castsource = "
-            "(SELECT t.oid FROM pg_type t WHERE format_type(t.oid, NULL)='%s') "
+            "(SELECT t.oid FROM pg_type t "
+            "WHERE format_type(t.oid, NULL)='%s') "
             "AND ca.casttarget = (SELECT t.oid FROM pg_type t WHERE "
             "format_type(t.oid, NULL) = '%s')" % (source_type, target_type))
         casts = pg_cursor.fetchall()
@@ -92,7 +94,8 @@ def drop_cast(connection, source_type, target_type):
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "SELECT * FROM pg_cast ca WHERE ca.castsource = "
-            "(SELECT t.oid FROM pg_type t WHERE format_type(t.oid, NULL)='%s') "
+            "(SELECT t.oid FROM pg_type t "
+            "WHERE format_type(t.oid, NULL)='%s') "
             "AND ca.casttarget = (SELECT t.oid FROM pg_type t WHERE "
             "format_type(t.oid, NULL) = '%s')" % (source_type, target_type))
         if pg_cursor.fetchall():
