@@ -100,7 +100,7 @@ CREATE TABLE public.defaults_{0}
         test_utils.create_database(self.server, "acceptance_test_db")
 
         # Create pre-requisite table
-        for k, v in { 1: 'id', 2:'"ID"' }.items():
+        for k, v in {1: 'id', 2: '"ID"'}.items():
             test_utils.create_table_with_query(
                 self.server,
                 "acceptance_test_db",
@@ -114,7 +114,7 @@ CREATE TABLE public.defaults_{0}
         self.page.add_server(self.server)
         self._tables_node_expandable()
         # iterate on both tables
-        for cnt in (1,2):
+        for cnt in (1, 2):
             self.page.select_tree_item('defaults_{0}'.format(str(cnt)))
             # Open Object -> View/Edit data
             self._view_data_grid()

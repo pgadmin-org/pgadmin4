@@ -65,7 +65,8 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
                 Keys.ALT
             ).perform()
 
-            print("Executing shortcut: " + self.new_shortcuts[s]['locator'] + "...", file=sys.stderr, end="")
+            print("Executing shortcut: " + self.new_shortcuts[s]['locator'] +
+                  "...", file=sys.stderr, end="")
 
             self.wait.until(
                 EC.presence_of_element_located(

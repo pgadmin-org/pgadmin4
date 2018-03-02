@@ -7,6 +7,8 @@
 #
 ##########################################################################
 
+import os
+import sys
 from collections import defaultdict
 from operator import attrgetter
 
@@ -152,9 +154,6 @@ class PgAdminModule(Blueprint):
 
         return res
 
-
-import os
-import sys
 
 IS_PY2 = (sys.version_info[0] == 2)
 IS_WIN = (os.name == 'nt')
@@ -316,4 +315,3 @@ SHORTCUT_FIELDS = [
         'label': gettext('Alt/Option')
     }
 ]
-

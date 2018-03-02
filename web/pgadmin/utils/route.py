@@ -9,16 +9,16 @@
 
 import traceback
 import sys
+from abc import ABCMeta, abstractmethod
+from importlib import import_module
+from werkzeug.utils import find_modules
+import config
+import six
+
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
-
-from abc import ABCMeta, abstractmethod
-from importlib import import_module
-from werkzeug.utils import find_modules
-
-import config
 
 
 class TestsGeneratorRegistry(ABCMeta):
@@ -74,9 +74,6 @@ class TestsGeneratorRegistry(ABCMeta):
                     import_module(module_name)
             except ImportError:
                 traceback.print_exc(file=sys.stderr)
-
-
-import six
 
 
 @six.add_metaclass(TestsGeneratorRegistry)

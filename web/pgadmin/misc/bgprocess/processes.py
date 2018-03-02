@@ -21,10 +21,6 @@ from subprocess import Popen
 
 from pgadmin.utils import IS_PY2, u, file_quote, fs_encoding
 
-if IS_PY2:
-    from StringIO import StringIO
-else:
-    from io import StringIO
 import pytz
 from dateutil import parser
 from flask import current_app
@@ -33,6 +29,10 @@ from flask_security import current_user
 
 import config
 from pgadmin.model import Process, db
+if IS_PY2:
+    from StringIO import StringIO
+else:
+    from io import StringIO
 
 
 def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):

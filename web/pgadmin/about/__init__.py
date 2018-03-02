@@ -8,7 +8,6 @@
 ##########################################################################
 
 """A blueprint module implementing the about box."""
-MODULE_NAME = 'about'
 
 import sys
 from flask import Response, render_template, __version__, url_for
@@ -17,6 +16,8 @@ from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
 import config
+
+MODULE_NAME = 'about'
 
 
 class AboutModule(PgAdminModule):
