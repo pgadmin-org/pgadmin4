@@ -2,10 +2,11 @@ define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
   'pgadmin.backgrid', 'pgadmin.backform', 'sources/../bundle/codemirror',
-  'pgadmin.tools.debugger.ui', 'sources/keyboard_shortcuts', 'wcdocker',
+  'pgadmin.tools.debugger.ui', 'sources/keyboard_shortcuts',
+  'pgadmin.tools.debugger.utils', 'wcdocker',
 ], function(
   gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  Backform, codemirror, debug_function_again, keyboardShortcuts
+  Backform, codemirror, debug_function_again, keyboardShortcuts, debuggerUtils
 ) {
 
   var CodeMirror = codemirror.default,
@@ -185,7 +186,6 @@ define([
                   'CodeMirror-activeline-background'
                 );
               }
-
               // Call function to create and update local variables ....
               self.GetStackInformation(trans_id);
               if (pgTools.DirectDebug.debug_type) {
@@ -345,7 +345,6 @@ define([
                         'wrap', 'CodeMirror-activeline-background'
                       );
                       self.active_line_no = (res.data.result[0].linenumber - 2);
-
                       // Update the stack, local variables and parameters information
                       self.GetStackInformation(trans_id);
 
@@ -1211,8 +1210,10 @@ define([
         });
 
         variable_grid.collection.on(
-          'backgrid:edited', () => {
-            pgTools.DirectDebug.editor.focus();
+          'backgrid:edited', (ch1, ch2, command) => {
+            debuggerUtils.setFocusToDebuggerEditor(
+              pgTools.DirectDebug.editor, command
+            );
           }
         );
 
@@ -1294,8 +1295,10 @@ define([
         });
 
         param_grid.collection.on(
-          'backgrid:edited', () => {
-            pgTools.DirectDebug.editor.focus();
+          'backgrid:edited', (ch1, ch2, command) => {
+            debuggerUtils.setFocusToDebuggerEditor(
+              pgTools.DirectDebug.editor, command
+            );
           }
         );
 
@@ -1371,7 +1374,6 @@ define([
                 (res.data.result[0].linenumber - 2), 'wrap',
                 'CodeMirror-activeline-background'
               );
-
               // Call function to create and update local variables ....
               self.GetLocalVariables(pgTools.DirectDebug.trans_id);
             }
