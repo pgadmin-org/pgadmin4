@@ -38,6 +38,8 @@ from pgadmin.utils.exception import ConnectionLost
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
     RegisterQueryToolPreferences
+from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
+    read_file_generator
 
 MODULE_NAME = 'sqleditor'
 
@@ -1360,16 +1362,7 @@ def load_file():
             errormsg=gettext("File type not supported")
         )
 
-    def gen():
-        with codecs.open(file_path, 'r', encoding=enc) as fileObj:
-            while True:
-                # 4MB chunk (4 * 1024 * 1024 Bytes)
-                data = fileObj.read(4194304)
-                if not data:
-                    break
-                yield data
-
-    return Response(gen(), mimetype='text/plain')
+    return Response(read_file_generator(file_path, enc), mimetype='text/plain')
 
 
 @blueprint.route('/save_file/', methods=["PUT", "POST"], endpoint='save_file')
