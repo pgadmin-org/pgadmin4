@@ -81,3 +81,8 @@
 .sql_textarea .CodeMirror-scroll {
   z-index: 0;
 }
+
+/* workaround for codemirrors 'readOnly' option which is set to true instead of 'noCursor' */
+.hide-cursor-workaround .CodeMirror-cursors {
+  display: none;
+}

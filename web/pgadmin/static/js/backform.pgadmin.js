@@ -2103,10 +2103,11 @@ define([
 
       // Disable editor
       if (isDisabled) {
-        self.sqlCtrl.setOption('readOnly', 'nocursor');
+        // set read only mode to true instead of 'nocursor', and hide cursor using a class so that copying is enabled
+        self.sqlCtrl.setOption('readOnly', true);
         var cm = self.sqlCtrl.getWrapperElement();
         if (cm) {
-          cm.className += ' cm_disabled';
+          cm.className += ' cm_disabled hide-cursor-workaround';
         }
       }
 

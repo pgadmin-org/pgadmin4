@@ -602,8 +602,3 @@ input.editor-checkbox:focus {
   font-size: 13px;
   line-height: 3em;
 }
-
-/* workaround for codemirrors 'readOnly' option which is set to true instead of 'noCursor' */
-.hide-cursor-workaround .CodeMirror-cursors {
-  display: none;
-}
