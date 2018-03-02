@@ -24,7 +24,7 @@ from regression.python_test_utils import test_utils as utils
 class ColumnAddTestCase(BaseTestGenerator):
     """This class will add new column under table node."""
     scenarios = [
-        ('Add table Node URL', dict(url='/browser/column/obj/'))
+        ('Add column Node URL', dict(url='/browser/column/obj/'))
     ]
 
     def setUp(self):

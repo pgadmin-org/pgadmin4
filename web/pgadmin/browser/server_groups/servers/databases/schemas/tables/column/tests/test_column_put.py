@@ -25,7 +25,7 @@ from . import utils as columns_utils
 class ColumnPutTestCase(BaseTestGenerator):
     """This class will update the column under table node."""
     scenarios = [
-        ('Put table Node URL', dict(url='/browser/column/obj/'))
+        ('Put column Node URL', dict(url='/browser/column/obj/'))
     ]
 
     def setUp(self):

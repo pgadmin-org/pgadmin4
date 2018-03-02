@@ -24,7 +24,7 @@ from . import utils as columns_utils
 class ColumnDeleteTestCase(BaseTestGenerator):
     """This class will delete column under table node."""
     scenarios = [
-        ('Delete table Node URL', dict(url='/browser/column/obj/'))
+        ('Delete column Node URL', dict(url='/browser/column/obj/'))
     ]
 
     def setUp(self):

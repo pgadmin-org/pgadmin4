@@ -15,7 +15,8 @@ import traceback
 from regression.python_test_utils import test_utils as utils
 
 
-def create_column(server, db_name, schema_name, table_name, col_name):
+def create_column(server, db_name, schema_name, table_name, col_name,
+                  col_data_type='char'):
     """
     This function creates a column under provided table.
     :param server: server details
@@ -28,6 +29,8 @@ def create_column(server, db_name, schema_name, table_name, col_name):
     :type table_name: str
     :param col_name: column name
     :type col_name: str
+    :param col_data_type: column data type
+    :type col_data_type: str
     :return table_id: table id
     :rtype: int
     """
@@ -41,8 +44,8 @@ def create_column(server, db_name, schema_name, table_name, col_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        query = "ALTER TABLE %s.%s ADD COLUMN %s char" % \
-                (schema_name, table_name, col_name)
+        query = "ALTER TABLE %s.%s ADD COLUMN %s %s" % \
+                (schema_name, table_name, col_name, col_data_type)
         pg_cursor.execute(query)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
