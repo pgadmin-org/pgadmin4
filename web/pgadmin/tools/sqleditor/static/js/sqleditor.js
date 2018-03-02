@@ -2019,12 +2019,12 @@ define('tools.querytool', [
           }
         }
         else {
-          // Disable codemirror by setting cursor to nocursor and background to dark.
+          // Disable codemirror by setting readOnly option to true, background to dark, and cursor, hidden.
           self.init_events();
-          self.gridView.query_tool_obj.setOption('readOnly', 'nocursor');
+          self.gridView.query_tool_obj.setOption('readOnly', true);
           var cm = self.gridView.query_tool_obj.getWrapperElement();
           if (cm) {
-            cm.className += ' bg-gray-1 opacity-5';
+            cm.className += ' bg-gray-1 opacity-5 hide-cursor-workaround';
           }
           self.disable_tool_buttons(true);
           self.execute_data_query();
