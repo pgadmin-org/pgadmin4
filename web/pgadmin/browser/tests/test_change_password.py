@@ -84,16 +84,28 @@ class ChangePasswordTestCase(BaseTestGenerator):
         # Check for 'valid_password' exists in self to test 'valid password'
         # test case
         if 'valid_password' in dir(self):
-            response = self.tester.post('/user_management/user/', data=dict(
-                email=self.username, newPassword=self.password,
-                confirmPassword=self.password, active=1, role="2"),
-                                        follow_redirects=True)
+            response = self.tester.post(
+                '/user_management/user/',
+                data=dict(
+                    email=self.username,
+                    newPassword=self.password,
+                    confirmPassword=self.password,
+                    active=1,
+                    role="2"
+                ),
+                follow_redirects=True
+            )
             user_id = json.loads(response.data.decode('utf-8'))['id']
             # Logout the Administrator before login normal user
             test_utils.logout_tester_account(self.tester)
-            response = self.tester.post('/login', data=dict(
-                email=self.username, password=self.password),
-                                        follow_redirects=True)
+            response = self.tester.post(
+                '/login',
+                data=dict(
+                    email=self.username,
+                    password=self.password
+                ),
+                follow_redirects=True
+            )
             self.assertEquals(response.status_code, 200)
             # test the 'change password' test case
             utils.change_password(self)
@@ -103,7 +115,8 @@ class ChangePasswordTestCase(BaseTestGenerator):
             test_utils.login_tester_account(self.tester)
             response = self.tester.delete(
                 '/user_management/user/' + str(user_id),
-                follow_redirects=True)
+                follow_redirects=True
+            )
             self.assertEquals(response.status_code, 200)
         else:
             utils.change_password(self)

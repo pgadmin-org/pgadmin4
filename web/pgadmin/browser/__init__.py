@@ -995,10 +995,13 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
             except Exception as e:
                 # Handle other exceptions.
                 logging.exception(str(e), exc_info=True)
-                flash(gettext(u'Error: {}\n'
-                              u'Your password has not been changed.'
-                              ).format(e),
-                      'danger')
+                flash(
+                    gettext(
+                        u'Error: {}\n'
+                        u'Your password has not been changed.'
+                    ).format(e),
+                    'danger'
+                )
                 has_error = True
 
             if request.json is None and not has_error:
@@ -1098,10 +1101,13 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
     # url_for('browser.forgot_password')
     # So hard code the url '/browser/reset_password' while passing as
     # parameter to slash_url_suffix function.
-    @blueprint.route('/reset_password' + slash_url_suffix(
-        '/browser/reset_password', '<token>'),
-                     methods=['GET', 'POST'],
-                     endpoint='reset_password')
+    @blueprint.route(
+        '/reset_password' + slash_url_suffix(
+            '/browser/reset_password', '<token>'
+        ),
+        methods=['GET', 'POST'],
+        endpoint='reset_password'
+    )
     @anonymous_user_required
     def reset_password(token):
         """View function that handles a reset password request."""

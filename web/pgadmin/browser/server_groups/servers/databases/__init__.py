@@ -86,6 +86,7 @@ class DatabaseModule(CollectionNodeModule):
         """
         return False
 
+
 blueprint = DatabaseModule(__name__)
 
 
@@ -105,20 +106,52 @@ class DatabaseView(PGChildNodeView):
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
             {'get': 'list', 'post': 'create'}
         ],
-        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
-        'get_databases': [{'get': 'get_databases'}, {'get': 'get_databases'}],
-        'sql': [{'get': 'sql'}],
-        'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
-        'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}],
-        'children': [{'get': 'children'}],
-        'connect': [{
-            'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
-        }],
-        'get_encodings': [{'get': 'get_encodings'}, {'get': 'get_encodings'}],
-        'get_ctypes': [{'get': 'get_ctypes'}, {'get': 'get_ctypes'}],
-        'vopts': [{}, {'get': 'variable_options'}]
+        'nodes': [
+            {'get': 'node'},
+            {'get': 'nodes'}
+        ],
+        'get_databases': [
+            {'get': 'get_databases'},
+            {'get': 'get_databases'}
+        ],
+        'sql': [
+            {'get': 'sql'}
+        ],
+        'msql': [
+            {'get': 'msql'},
+            {'get': 'msql'}
+        ],
+        'stats': [
+            {'get': 'statistics'},
+            {'get': 'statistics'}
+        ],
+        'dependency': [
+            {'get': 'dependencies'}
+        ],
+        'dependent': [
+            {'get': 'dependents'}
+        ],
+        'children': [
+            {'get': 'children'}
+        ],
+        'connect': [
+            {
+                'get': 'connect_status',
+                'post': 'connect',
+                'delete': 'disconnect'
+            }
+        ],
+        'get_encodings': [
+            {'get': 'get_encodings'},
+            {'get': 'get_encodings'}
+        ],
+        'get_ctypes': [
+            {'get': 'get_ctypes'},
+            {'get': 'get_ctypes'}
+        ],
+        'vopts': [
+            {}, {'get': 'variable_options'}
+        ]
     })
 
     def check_precondition(action=None):
@@ -132,7 +165,11 @@ class DatabaseView(PGChildNodeView):
             @wraps(f)
             def wrapped(self, *args, **kwargs):
 
-                self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+                self.manager = get_driver(
+                    PG_DEFAULT_DRIVER
+                ).connection_manager(
+                    kwargs['sid']
+                )
                 if self.manager is None:
                     return gone(errormsg="Could not find the server.")
 
@@ -152,7 +189,9 @@ class DatabaseView(PGChildNodeView):
                     self.conn = self.manager.connection()
 
                 # set template path for sql scripts
-                self.template_path = 'databases/sql/#{0}#'.format(self.manager.version)
+                self.template_path = 'databases/sql/#{0}#'.format(
+                    self.manager.version
+                )
 
                 return f(self, *args, **kwargs)
 
@@ -170,12 +209,16 @@ class DatabaseView(PGChildNodeView):
         db_disp_res = None
         params = None
         if self.manager and self.manager.db_res:
-            db_disp_res = ", ".join(['%s'] * len(self.manager.db_res.split(',')))
+            db_disp_res = ", ".join(
+                ['%s'] * len(self.manager.db_res.split(','))
+            )
             params = tuple(self.manager.db_res.split(','))
 
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            conn=self.conn, last_system_oid=last_system_oid, db_restrictions=db_disp_res
+            conn=self.conn,
+            last_system_oid=last_system_oid,
+            db_restrictions=db_disp_res
         )
         status, res = self.conn.execute_dict(SQL, params)
 
@@ -191,8 +234,8 @@ class DatabaseView(PGChildNodeView):
         res = []
         last_system_oid = 0 if self.blueprint.show_system_objects or \
             show_system_templates else (
-                (self.manager.db_info[self.manager.did])['datlastsysoid'] \
-                if self.manager.db_info is not None and \
+                (self.manager.db_info[self.manager.did])['datlastsysoid']
+                if self.manager.db_info is not None and
                 self.manager.did in self.manager.db_info else 0
             )
         server_node_res = self.manager
@@ -200,7 +243,9 @@ class DatabaseView(PGChildNodeView):
         db_disp_res = None
         params = None
         if server_node_res and server_node_res.db_res:
-            db_disp_res = ", ".join(['%s']*len(server_node_res.db_res.split(',')))
+            db_disp_res = ", ".join(
+                ['%s'] * len(server_node_res.db_res.split(','))
+            )
             params = tuple(server_node_res.db_res.split(','))
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
@@ -218,7 +263,7 @@ class DatabaseView(PGChildNodeView):
                 connected = True
                 canDrop = canDisConn = False
             else:
-                conn = self.manager.connection(dbname,did=row['did'])
+                conn = self.manager.connection(dbname, did=row['did'])
                 connected = conn.connected()
                 canDrop = canDisConn = True
 
@@ -281,8 +326,8 @@ class DatabaseView(PGChildNodeView):
                     row['did'],
                     sid,
                     row['name'],
-                    icon="icon-database-not-connected" if not connected \
-                        else "pg-icon-database",
+                    icon="icon-database-not-connected" if not connected
+                    else "pg-icon-database",
                     connected=connected,
                     spcname=row['spcname'],
                     allowConn=row['datallowconn'],
@@ -495,7 +540,8 @@ class DatabaseView(PGChildNodeView):
         if 'datacl' in data:
             data['datacl'] = parse_priv_to_db(data['datacl'], 'DATABASE')
 
-        # The below SQL will execute rest DMLs because we cannot execute CREATE with any other
+        # The below SQL will execute rest DMLs because we cannot execute
+        # CREATE with any other
         SQL = render_template(
             "/".join([self.template_path, 'grant.sql']),
             data=data, conn=self.conn
@@ -547,9 +593,8 @@ class DatabaseView(PGChildNodeView):
         status, errmsg = conn.connect()
         if not status:
             current_app.logger.error(
-                "Could not create database connection for offline updates\nErr: {0}".format(
-                    errmsg
-                )
+                "Could not create database connection for offline updates\n"
+                "Err: {0}".format(errmsg)
             )
             return internal_server_error(errmsg)
 
@@ -594,9 +639,8 @@ class DatabaseView(PGChildNodeView):
 
             if not status:
                 current_app.logger.error(
-                    "Could not connected to database(#{0}).\nError: {1}".format(
-                        did, errmsg
-                    )
+                    "Could not connected to database(#{0}).\n"
+                    "Error: {1}".format(did, errmsg)
                 )
                 return internal_server_error(errmsg)
 
@@ -783,9 +827,10 @@ class DatabaseView(PGChildNodeView):
                 )
 
         SQL_acl = render_template(
-                    "/".join([self.template_path, 'grant.sql']),
-                    data=data, conn=self.conn
-                )
+            "/".join([self.template_path, 'grant.sql']),
+            data=data,
+            conn=self.conn
+        )
 
         SQL = render_template(
             "/".join([self.template_path, 'create.sql']),
@@ -867,14 +912,21 @@ class DatabaseView(PGChildNodeView):
         db_disp_res = None
         params = None
         if self.manager and self.manager.db_res:
-            db_disp_res = ", ".join(['%s'] * len(self.manager.db_res.split(',')))
+            db_disp_res = ", ".join(
+                ['%s'] * len(self.manager.db_res.split(','))
+            )
             params = tuple(self.manager.db_res.split(','))
 
         conn = self.manager.connection()
-        status, res = conn.execute_dict(render_template(
-            "/".join([self.template_path, 'stats.sql']),
-            did=did, conn=conn, last_system_oid=last_system_oid, db_restrictions=db_disp_res
-            ),params
+        status, res = conn.execute_dict(
+            render_template(
+                "/".join([self.template_path, 'stats.sql']),
+                did=did,
+                conn=conn,
+                last_system_oid=last_system_oid,
+                db_restrictions=db_disp_res
+            ),
+            params
         )
 
         if not status:

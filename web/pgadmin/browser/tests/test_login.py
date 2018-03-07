@@ -82,10 +82,14 @@ class LoginTestCase(BaseTestGenerator):
 
     def runTest(self):
         """This function checks login functionality."""
-
-        response = self.tester.post('/login', data=dict(
-            email=self.email, password=self.password),
-                                    follow_redirects=True)
+        response = self.tester.post(
+            '/login',
+            data=dict(
+                email=self.email,
+                password=self.password
+            ),
+            follow_redirects=True
+        )
         self.assertTrue(self.respdata in response.data.decode('utf8'))
 
     @classmethod

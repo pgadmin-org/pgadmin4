@@ -7,12 +7,7 @@
 #
 ##########################################################################
 
-import json
-import uuid
-
 from pgadmin.utils.route import BaseTestGenerator
-from regression.python_test_utils import test_utils
-from regression.test_setup import config_data
 from pgadmin.browser.utils import is_version_in_range
 
 
@@ -24,30 +19,45 @@ class VersionInRangeTestCase(BaseTestGenerator):
     """
 
     scenarios = [
-        ('TestCase for Validating pgversion 8.23 and min_version is 91000, should not show', dict(
-            sversion=82300,
-            min_version=90100,
-            max_version=1000000000,
-            scenario=2
-        )),
-        ('TestCase for Validating pgversion 9.2 and should show by default', dict(
-            sversion=90200,
-            min_version=0,
-            max_version=1000000000,
-            scenario=1
-        )),
-        ('TestCase for Validating pgversion 9.2 and min/max are None, should show by default', dict(
-            sversion=90200,
-            min_version=None,
-            max_version=None,
-            scenario=1
-        )),
-        ('TestCase for Validating pgversion 9.6 and max is lower, should not show', dict(
-            sversion=90600,
-            min_version=None,
-            max_version=90400,
-            scenario=2
-        ))
+        (
+            'TestCase for Validating pgversion 8.23 and min_version is 91000, '
+            'should not show',
+            dict(
+                sversion=82300,
+                min_version=90100,
+                max_version=1000000000,
+                scenario=2
+            )
+        ),
+        (
+            'TestCase for Validating pgversion 9.2 and should show by default',
+            dict(
+                sversion=90200,
+                min_version=0,
+                max_version=1000000000,
+                scenario=1
+            )
+        ),
+        (
+            'TestCase for Validating pgversion 9.2 and min/max are None, '
+            'should show by default',
+            dict(
+                sversion=90200,
+                min_version=None,
+                max_version=None,
+                scenario=1
+            )
+        ),
+        (
+            'TestCase for Validating pgversion 9.6 and max is lower, should '
+            'not show',
+            dict(
+                sversion=90600,
+                min_version=None,
+                max_version=90400,
+                scenario=2
+            )
+        )
     ]
 
     @classmethod
@@ -62,7 +72,15 @@ class VersionInRangeTestCase(BaseTestGenerator):
             self.test_result_is_false()
 
     def test_result_is_true(self):
-        self.assertTrue(is_version_in_range(self.sversion, self.min_version, self.max_version))
+        self.assertTrue(
+            is_version_in_range(
+                self.sversion, self.min_version, self.max_version
+            )
+        )
 
     def test_result_is_false(self):
-        self.assertFalse(is_version_in_range(self.sversion, self.min_version, self.max_version))
+        self.assertFalse(
+            is_version_in_range(
+                self.sversion, self.min_version, self.max_version
+            )
+        )

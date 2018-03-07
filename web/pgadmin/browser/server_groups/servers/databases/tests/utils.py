@@ -17,81 +17,60 @@ DATABASE_CONNECT_URL = '/browser/database/connect/'
 
 
 def get_db_data(db_owner):
-    """
-    This function returns the database details in dict format
-    """
+    """This function returns the database details in dict format"""
     data = {
         "datconnlimit": -1,
         "datowner": db_owner,
-        "deffuncacl": [
-      {
-        "grantee": db_owner,
-        "grantor": db_owner,
-        "privileges": [
-          {
-            "privilege_type": "X",
-            "privilege": True,
-            "with_grant": False
-          }
-        ]
-      }
-    ],
-        "defseqacl": [
-      {
-        "grantee": db_owner,
-        "grantor": db_owner,
-        "privileges": [
-          {
-            "privilege_type": "r",
-            "privilege": True,
-            "with_grant": False
-          },
-          {
-            "privilege_type": "w",
-            "privilege": True,
-            "with_grant": False
-          },
-          {
-            "privilege_type": "U",
-            "privilege": True,
-            "with_grant": False
-          }
-        ]
-      }
-    ],
-        "deftblacl": [
-      {
-        "grantee": db_owner,
-        "grantor": db_owner,
-        "privileges": [
-          {
-            "privilege_type": "a",
-            "privilege": True,
-            "with_grant": True
-          },
-          {
-            "privilege_type": "r",
-            "privilege": True,
-            "with_grant": False
-          }
-        ]
-      }
-    ],
-        "deftypeacl": [
-      {
-        "grantee": db_owner,
-        "grantor": db_owner,
-        "privileges": [
-          {
-            "privilege_type": "U",
-            "privilege": True,
-            "with_grant": False
-          }
-        ]
-      }
-    ],
+        "deffuncacl": [{
+            "grantee": db_owner,
+            "grantor": db_owner,
+            "privileges": [{
+                "privilege_type": "X",
+                "privilege": True,
+                "with_grant": False
+            }]
+        }],
+        "defseqacl": [{
+            "grantee": db_owner,
+            "grantor": db_owner,
+            "privileges": [{
+                "privilege_type": "r",
+                "privilege": True,
+                "with_grant": False
+            }, {
+                "privilege_type": "w",
+                "privilege": True,
+                "with_grant": False
+            }, {
+                "privilege_type": "U",
+                "privilege": True,
+                "with_grant": False
+            }]
+        }],
+        "deftblacl": [{
+            "grantee": db_owner,
+            "grantor": db_owner,
+            "privileges": [{
+                "privilege_type": "a",
+                "privilege": True,
+                "with_grant": True
+            }, {
+                "privilege_type": "r",
+                "privilege": True,
+                "with_grant": False
+            }]
+        }],
+        "deftypeacl": [{
+            "grantee": db_owner,
+            "grantor": db_owner,
+            "privileges": [{
+                "privilege_type": "U",
+                "privilege": True,
+                "with_grant": False
+            }]
+        }],
         "encoding": "UTF8",
-        "name": "db_add_%s" % str(uuid.uuid4())[1:8],
+        "name": "db_add_%s" % str(uuid.uuid4())[1: 8],
         "privileges": [],
         "securities": [],
         "variables": []
@@ -105,7 +84,9 @@ def create_database(connection, db_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
+        pg_cursor.execute(
+            '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name
+        )
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         return pg_cursor
@@ -134,9 +115,15 @@ def connect_database(self, server_group, server_id, db_id):
     server_utils.connect_server(self, server_id)
 
     # Connect to database
-    db_con = self.tester.post('{0}{1}/{2}/{3}'.format(
-        DATABASE_CONNECT_URL, server_group, server_id, db_id),
-        follow_redirects=True)
+    db_con = self.tester.post(
+        '{0}{1}/{2}/{3}'.format(
+            DATABASE_CONNECT_URL,
+            server_group,
+            server_id,
+            db_id
+        ),
+        follow_redirects=True
+    )
     assert db_con.status_code == 200
     db_con = json.loads(db_con.data.decode('utf-8'))
     return db_con
@@ -144,7 +131,13 @@ def connect_database(self, server_group, server_id, db_id):
 
 def disconnect_database(self, server_id, db_id):
     """This function disconnect the db"""
-    db_con = self.tester.delete('{0}{1}/{2}/{3}'.format(
-        'browser/database/connect/', utils.SERVER_GROUP, server_id, db_id),
-        follow_redirects=True)
+    db_con = self.tester.delete(
+        '{0}{1}/{2}/{3}'.format(
+            'browser/database/connect/',
+            utils.SERVER_GROUP,
+            server_id,
+            db_id
+        ),
+        follow_redirects=True
+    )
     assert db_con.status_code == 200

@@ -76,7 +76,10 @@ def parse_variables_from_db(db_variables):
                     if var_value == 'false' or var_value == 'off':
                         var_value = False
 
-                    var_dict = {'name': var_name, 'value': var_value}
+                    var_dict = {
+                        'name': var_name,
+                        'value': var_value
+                    }
                     if 'user_name' in row:
                         var_dict['role'] = row['user_name']
                     if 'db_name' in row:
