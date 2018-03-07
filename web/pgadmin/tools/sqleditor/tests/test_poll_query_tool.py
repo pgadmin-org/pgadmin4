@@ -99,9 +99,11 @@ NOTICE:  Hello, world!
             self.assertEquals(response.status_code, 200)
             response_data = json.loads(response.data.decode('utf-8'))
 
-            # Check the returned messages
-            self.assertEquals(self.expected_message[cnt],
+            if self.expected_message[cnt] is not None:
+                # Check the returned messages
+                self.assertIn(self.expected_message[cnt],
                               response_data['data']['additional_messages'])
+
             # Check the output
             self.assertEquals(self.expected_result[cnt],
                               response_data['data']['result'][0][0])
