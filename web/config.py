@@ -357,6 +357,11 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 ON_DEMAND_RECORD_COUNT = 1000
 
 ##########################################################################
+# Allow users to display Gravatar image for their username in Server mode
+##########################################################################
+SHOW_GRAVATAR_IMAGE = True
+
+##########################################################################
 # Local config settings
 ##########################################################################
 

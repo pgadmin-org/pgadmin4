@@ -62,3 +62,7 @@ samp,
 .sql-editor-grid-container {
   font-family: 'Open Sans' !important;
 }
+
+.pg-login-icon {
+  font-size: 16px;
+}

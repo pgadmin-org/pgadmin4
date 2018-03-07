@@ -1,5 +1,13 @@
 {% extends "base.html" %}
+
+{% if config.SERVER_MODE and config.SHOW_GRAVATAR_IMAGE -%}
+{% import 'browser/macros/gravatar_icon.macro' as IMG with context %}
+{% elif config.SERVER_MODE %}
+{% import 'browser/macros/static_user_icon.macro' as IMG with context %}
+{% endif %}
+
 {% block title %}{{ config.APP_NAME }}{% endblock %}
+
 {% block init_script %}
 try {
 require(
@@ -66,9 +74,11 @@ require.onResourceLoad = function (context, map, depMaps) {
     }, 400)
   }
 };
+
+{% if config.SERVER_MODE %}
 window.onload = function(e){
  setTimeout(function() {
-   var gravatarImg = '<img src="{{ username | gravatar }}" width="18" height="18" alt="Gravatar image for {{ username }}"> {{ username }} <span class="caret"></span>';
+   var gravatarImg = {{ IMG.PREPARE_HTML()|safe }}
    //$('#navbar-menu .navbar-right > li > a').html(gravatarImg);
    var navbarRight = document.getElementById("navbar-menu").getElementsByClassName("navbar-right")[0];
    if (navbarRight) {
@@ -77,8 +87,9 @@ window.onload = function(e){
    }
  }, 1000);
 };
-
+{% endif %}
 {% endblock %}
+
 {% block body %}
 <style>
 #pg-spinner {

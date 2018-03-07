@@ -730,18 +730,18 @@ class BrowserPluginModule(PgAdminModule):
 @login_required
 def index():
     """Render and process the main browser window."""
-    # Get the Gravatar
-    Gravatar(
-        current_app,
-        size=100,
-        rating='g',
-        default='retro',
-        force_default=False,
-        use_ssl=True,
-        base_url=None
-    )
+    # Register Gravatar module with the app only if required
+    if config.SHOW_GRAVATAR_IMAGE:
+        Gravatar(
+            current_app,
+            size=100,
+            rating='g',
+            default='retro',
+            force_default=False,
+            use_ssl=True,
+            base_url=None
+        )
 
-    msg = None
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.
     if config.UPGRADE_CHECK_ENABLED:
@@ -761,7 +761,7 @@ def index():
             if response.getcode() == 200:
                 data = json.loads(response.read().decode('utf-8'))
                 current_app.logger.debug('Response data: %s' % data)
-        except Exception as e:
+        except Exception:
             current_app.logger.exception('Exception when checking for update')
 
         if data is not None:

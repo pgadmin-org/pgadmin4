@@ -62,13 +62,15 @@ class LoginTestCase(BaseTestGenerator):
         # This test case validates the valid/correct credentials and allow user
         # to login pgAdmin 4
         ('Valid_Credentials', dict(
-            email=(config_data['pgAdmin4_login_credentials']
-                   ['login_username']),
-            password=(config_data['pgAdmin4_login_credentials']
-                      ['login_password']),
-            respdata='Gravatar image for %s' %
-                     config_data['pgAdmin4_login_credentials']
-                     ['login_username']))
+            email=(config_data[
+                'pgAdmin4_login_credentials'
+            ]['login_username']),
+            password=(config_data[
+                'pgAdmin4_login_credentials'
+            ]['login_password']),
+            respdata='%s' % config_data['pgAdmin4_login_credentials']
+            ['login_username'])
+         )
     ]
 
     @classmethod
