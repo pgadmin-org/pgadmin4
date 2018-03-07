@@ -37,6 +37,7 @@ from .cursor import DictCursor
 from .typecast import register_global_typecasters, \
     register_string_typecasters, register_binary_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
+from collections import deque
 
 
 if sys.version_info < (3,):
@@ -110,7 +111,7 @@ class Connection(BaseConnection):
       - This method is used to wait for asynchronous connection. This is a
         blocking call.
 
-    * _wait_timeout(conn, time)
+    * _wait_timeout(conn)
       - This method is used to wait for asynchronous connection with timeout.
         This is a non blocking call.
 
@@ -310,6 +311,9 @@ class Connection(BaseConnection):
             )
             return False, msg
 
+        # Overwrite connection notice attr to support
+        # more than 50 notices at a time
+        pg_conn.notices = deque([], self.ASYNC_NOTICE_MAXLENGTH)
         self.conn = pg_conn
         self.wasConnected = True
         try:
@@ -1208,6 +1212,7 @@ Failed to reset the connection to the server due to following error:
             )
             return False, msg
 
+        pg_conn.notices = deque([], self.ASYNC_NOTICE_MAXLENGTH)
         self.conn = pg_conn
         self.__backend_pid = pg_conn.get_backend_pid()
 
@@ -1261,51 +1266,31 @@ Failed to reset the connection to the server due to following error:
 
         Args:
             conn: connection object
-            time: wait time
         """
-
-        state = conn.poll()
-        if state == psycopg2.extensions.POLL_OK:
-            return self.ASYNC_OK
-        elif state == psycopg2.extensions.POLL_WRITE:
-            # Wait for the given time and then check the return status
-            # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([], [conn.fileno()], [], 0)
-            if timeout_status == ([], [], []):
-                return self.ASYNC_WRITE_TIMEOUT
-
-            # poll again to check the state if it is still POLL_WRITE
-            # then return ASYNC_WRITE_TIMEOUT else return ASYNC_OK.
+        while 1:
             state = conn.poll()
-            if state == psycopg2.extensions.POLL_WRITE:
-                return self.ASYNC_WRITE_TIMEOUT
-            return self.ASYNC_OK
-        elif state == psycopg2.extensions.POLL_READ:
-            # Wait for the given time and then check the return status
-            # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([conn.fileno()], [], [], 0)
-            if timeout_status == ([], [], []):
-                return self.ASYNC_READ_TIMEOUT
-
-            # select.select timeout option works only if we provide
-            #  empty [] [] [] file descriptor in select.select() function
-            # and that also works only on UNIX based system, it do not support
-            # Windows Hence we have wrote our own pooling mechanism to read
-            # data fast each call conn.poll() reads chunks of data from
-            # connection object more we poll more we read data from connection
-            cnt = 0
-            while cnt < 1000:
-                # poll again to check the state if it is still POLL_READ
-                # then return ASYNC_READ_TIMEOUT else return ASYNC_OK.
-                state = conn.poll()
-                if state == psycopg2.extensions.POLL_OK:
-                    return self.ASYNC_OK
-                cnt += 1
-            return self.ASYNC_READ_TIMEOUT
-        else:
-            raise psycopg2.OperationalError(
-                "poll() returned %s from _wait_timeout function" % state
-            )
+            if state == psycopg2.extensions.POLL_OK:
+                return self.ASYNC_OK
+            elif state == psycopg2.extensions.POLL_WRITE:
+                # Wait for the given time and then check the return status
+                # If three empty lists are returned then the time-out is
+                # reached.
+                timeout_status = select.select([], [conn.fileno()], [],
+                                               self.ASYNC_TIMEOUT)
+                if timeout_status == ([], [], []):
+                    return self.ASYNC_WRITE_TIMEOUT
+            elif state == psycopg2.extensions.POLL_READ:
+                # Wait for the given time and then check the return status
+                # If three empty lists are returned then the time-out is
+                # reached.
+                timeout_status = select.select([conn.fileno()], [], [],
+                                               self.ASYNC_TIMEOUT)
+                if timeout_status == ([], [], []):
+                    return self.ASYNC_READ_TIMEOUT
+            else:
+                raise psycopg2.OperationalError(
+                    "poll() returned %s from _wait_timeout function" % state
+                )
 
     def poll(self, formatted_exception_msg=False, no_result=False):
         """
@@ -1347,8 +1332,8 @@ Failed to reset the connection to the server due to following error:
             is_error = True
 
         if self.conn.notices and self.__notices is not None:
-            while self.conn.notices:
-                self.__notices.append(self.conn.notices.pop(0)[:])
+            self.__notices.extend(self.conn.notices)
+            self.conn.notices.clear()
 
         # We also need to fetch notices before we return from function in case
         # of any Exception, To avoid code duplication we will return after

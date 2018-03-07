@@ -62,7 +62,9 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
             ).key_down(
                 key_combo[2]
             ).key_up(
-                Keys.ALT
+                key_combo[0]
+            ).key_up(
+                key_combo[1]
             ).perform()
 
             print("Executing shortcut: " + self.new_shortcuts[s]['locator'] +

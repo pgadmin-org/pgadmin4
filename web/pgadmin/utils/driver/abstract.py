@@ -168,6 +168,8 @@ class BaseConnection(object):
     ASYNC_WRITE_TIMEOUT = 3
     ASYNC_NOT_CONNECTED = 4
     ASYNC_EXECUTION_ABORTED = 5
+    ASYNC_TIMEOUT = 0.2
+    ASYNC_NOTICE_MAXLENGTH = 100000
 
     @abstractmethod
     def connect(self, **kwargs):
