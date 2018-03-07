@@ -13,7 +13,8 @@ import translations from 'translations';
 describe('translate', function () {
   describe('when there is no translation', function () {
     it('returns the original string', function () {
-      expect(gettext('something to be translated')).toEqual('something to be translated');
+      expect(gettext('something else to be translated')).toEqual('something' +
+        ' else to be translated');
     });
 
     describe('when there are substitutions', function () {
