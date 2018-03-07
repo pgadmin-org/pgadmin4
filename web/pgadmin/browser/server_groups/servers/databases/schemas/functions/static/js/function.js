@@ -92,7 +92,9 @@ define('pgadmin.node.function', [
       collection_type: 'coll-function',
       hasSQL: true,
       hasDepends: true,
-      hasStatistics: true,
+      hasStatistics: (treeInformation) => {
+        return treeInformation.server.server_type !== 'gpdb';
+      },
       hasScriptTypes: ['create', 'select'],
       parent_type: ['schema', 'catalog'],
       Init: function() {

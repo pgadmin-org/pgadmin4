@@ -1,8 +1,10 @@
 define('misc.statistics', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'backbone',
   'pgadmin.browser', 'pgadmin.backgrid', 'alertify', 'sources/size_prettify',
+  'sources/misc/statistics/statistics',
 ], function(
-  gettext, _, S, $, Backbone, pgBrowser, Backgrid, Alertify, sizePrettify
+  gettext, _, S, $, Backbone, pgBrowser, Backgrid, Alertify, sizePrettify,
+  statisticsHelper
 ) {
 
   if (pgBrowser.NodeStatistics)
@@ -208,7 +210,7 @@ define('misc.statistics', [
         // Cache the current IDs for next time
         $(panel[0]).data('node-prop', cache_flag);
 
-        if (node.hasStatistics) {
+        if (statisticsHelper.nodeHasStatistics(node, item)) {
           msg = '';
           var timer;
           // Set the url, fetch the data and update the collection
