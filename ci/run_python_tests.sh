@@ -26,6 +26,11 @@ fi
 $WORKSPACE/pgadmin-venv/bin/pip install -r requirements.txt || { echo 'ERROR: Failed to install the application requirements.' ; exit 1; }
 $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt || { echo 'ERROR: Failed to install the regression test requirements.' ; exit 1; }
 
+echo "Running PEP-8 checks..."
+echo
+
+make check-pep8
+
 echo "Running regression tests..."
 echo
 
