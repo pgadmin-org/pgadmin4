@@ -55,7 +55,7 @@ if not os.path.isfile(config.SQLITE_PATH):
         os.path.dirname(os.path.realpath(u(__file__, fs_encoding))),
         u'setup.py'
     )
-    exec (open(file_quote(setupfile), 'r').read())
+    exec(open(file_quote(setupfile), 'r').read())
 
 ##########################################################################
 # Server startup
