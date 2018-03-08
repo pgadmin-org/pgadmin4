@@ -529,6 +529,6 @@ class StartRunningQueryTest(BaseTestGenerator):
     def tearDown(self):
         #  Reset methods to the original state
         StartRunningQuery.is_rollback_statement_required = \
-            self.is_rollback_statement_required
+            staticmethod(self.is_rollback_statement_required)
         StartRunningQuery.is_rollback_statement_required = \
-            self.is_rollback_statement_required
+            staticmethod(self.is_rollback_statement_required)
