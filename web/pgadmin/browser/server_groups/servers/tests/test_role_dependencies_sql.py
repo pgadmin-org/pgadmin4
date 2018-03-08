@@ -6,14 +6,11 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-from pgadmin.browser.server_groups.servers.roles.tests.utils import create_role, delete_role
-from pgadmin.utils.route import BaseTestGenerator
 import os
 
+from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils
-from regression.python_test_utils.sql_template_test_base import SQLTemplateTestBase
 from regression.python_test_utils.template_helper import file_as_template
-from regression.python_test_utils.test_utils import create_database
 
 
 class TestRoleDependenciesSql(BaseTestGenerator):
@@ -45,7 +42,8 @@ class TestRoleDependenciesSql(BaseTestGenerator):
             return
 
         with test_utils.Database(self.server) as (connection, database_name):
-            test_utils.create_table(self.server_with_modified_user, database_name, "test_new_role_table")
+            test_utils.create_table(self.server_with_modified_user,
+                                    database_name, "test_new_role_table")
             cursor = connection.cursor()
             cursor.execute("SELECT pg_class.oid AS table_id "
                            "FROM pg_class "
@@ -65,9 +63,11 @@ class TestRoleDependenciesSql(BaseTestGenerator):
             connection.commit()
 
     def generate_sql(self, version):
-        template_file = self.get_template_file(version, "role_dependencies.sql")
+        template_file = self.get_template_file(version,
+                                               "role_dependencies.sql")
         template = file_as_template(template_file)
-        sql = template.render(where_clause="WHERE dep.objid=%s::oid" % self.table_id)
+        sql = template.render(
+            where_clause="WHERE dep.objid=%s::oid" % self.table_id)
 
         return sql
 
@@ -82,4 +82,5 @@ class TestRoleDependenciesSql(BaseTestGenerator):
 
     @staticmethod
     def get_template_file(version, filename):
-        return os.path.join(os.path.dirname(__file__), "..", "templates", "depends", "sql", version, filename)
+        return os.path.join(os.path.dirname(__file__), "..", "templates",
+                            "depends", "sql", version, filename)

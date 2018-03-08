@@ -29,10 +29,12 @@ def create_trigger_function(server, db_name, schema_name, func_name,
         r_type = "event_trigger"
         if server_version != 0:
             r_type = "trigger"
-        query = "CREATE FUNCTION "+schema_name+"."+func_name+"()" \
+        query = "CREATE FUNCTION " + schema_name + "." + func_name + \
+                "()" \
                 " RETURNS {0} LANGUAGE 'plpgsql' STABLE LEAKPROOF" \
                 " SECURITY DEFINER SET enable_sort=true AS $BODY$ BEGIN" \
-                " NULL; END; $BODY$".format(r_type)
+                " NULL; END; $BODY$".format(
+                    r_type)
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created function
@@ -47,7 +49,7 @@ def create_trigger_function(server, db_name, schema_name, func_name,
 
 
 def create_trigger_function_with_trigger(server, db_name, schema_name,
-                                               func_name):
+                                         func_name):
     """This function add the trigger function to schema"""
     try:
         connection = utils.get_db_connection(db_name,
@@ -57,7 +59,8 @@ def create_trigger_function_with_trigger(server, db_name, schema_name,
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        query = "CREATE FUNCTION "+schema_name+"."+func_name+"()" \
+        query = "CREATE FUNCTION " + schema_name + "." + func_name + \
+                "()" \
                 " RETURNS trigger LANGUAGE 'plpgsql' STABLE LEAKPROOF" \
                 " SECURITY DEFINER SET enable_sort=true AS $BODY$ BEGIN" \
                 " NULL; END; $BODY$"

@@ -14,4 +14,3 @@ class SynonymTestGenerator(BaseTestGenerator):
 
     def generate_tests(self):
         return
-

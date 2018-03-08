@@ -51,7 +51,7 @@ class TypesDeleteTestCase(BaseTestGenerator):
         type_response = types_utils.verify_type(self.server, self.db_name,
                                                 self.type_name)
         if not type_response:
-            raise  Exception("Could not find the type to delete.")
+            raise Exception("Could not find the type to delete.")
         response = self.tester.delete(
             "{0}{1}/{2}/{3}/{4}/{5}".format(self.url, utils.SERVER_GROUP,
                                             self.server_id, self.db_id,

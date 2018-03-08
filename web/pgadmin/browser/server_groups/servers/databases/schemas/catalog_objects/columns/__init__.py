@@ -11,18 +11,18 @@
 
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases as database
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils.ajax import gone
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.ajax import gone
 from pgadmin.utils.preferences import Preferences
-
-from config import PG_DEFAULT_DRIVER
 
 
 class CatalogObjectColumnsModule(CollectionNodeModule):
@@ -174,7 +174,8 @@ class CatalogObjectColumnsView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'catalog_object_column/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'catalog_object_column/sql/#{0}#'.format(
+                self.manager.version)
 
             return f(*args, **kwargs)
 
@@ -210,7 +211,8 @@ class CatalogObjectColumnsView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did, scid, coid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child node within that
+        collection.
         Here it will create all the column node.
 
         Args:
@@ -262,7 +264,8 @@ class CatalogObjectColumnsView(PGChildNodeView):
             JSON of selected column node
         """
         SQL = render_template("/".join([self.template_path,
-                              'properties.sql']), coid=coid, clid=clid)
+                                        'properties.sql']), coid=coid,
+                              clid=clid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -321,7 +324,8 @@ class CatalogObjectColumnsView(PGChildNodeView):
             elif dep_str == 'i':
                 dep_type = 'internal'
 
-            dependents_result.append({'type': 'sequence', 'name': ref_name, 'field': dep_type})
+            dependents_result.append(
+                {'type': 'sequence', 'name': ref_name, 'field': dep_type})
 
         return ajax_response(
             response=dependents_result,

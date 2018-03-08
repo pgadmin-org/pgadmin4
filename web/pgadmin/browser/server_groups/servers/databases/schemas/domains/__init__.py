@@ -9,23 +9,25 @@
 
 """Implements the Domain Node."""
 
-import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+import simplejson as json
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases as databases
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
 from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -209,7 +211,8 @@ class DomainView(PGChildNodeView, DataTypeReader):
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Could not find the required parameter (%s)." % arg
+                                "Could not find the required parameter (%s)." %
+                                arg
                             )
                         )
 
@@ -219,15 +222,19 @@ class DomainView(PGChildNodeView, DataTypeReader):
                     list_params = ['constraints', 'seclabels']
 
                 for key in req:
-                    if key in list_params and req[key] != '' \
-                            and req[key] is not None:
+                    if (
+                        key in list_params and req[key] != '' and
+                        req[key] is not None
+                    ):
                         # Coverts string into python list as expected.
                         data[key] = json.loads(req[key], encoding='utf-8')
                     elif key == 'typnotnull':
-                        data[key] = True if req[key] == 'true' or req[key] is \
-                                                                  True else \
-                            (False if req[key] == 'false' or req[key] is
-                                                             False else '')
+                        if req[key] == 'true' or req[key] is True:
+                            data[key] = True
+                        elif req[key] == 'false' or req[key] is False:
+                            data[key] = False
+                        else:
+                            data[key] = ''
                     else:
                         data[key] = req[key]
 
@@ -611,7 +618,7 @@ AND relkind != 'c'))"""
                 )
             )
 
-        name  = res['rows'][0]['name']
+        name = res['rows'][0]['name']
         basensp = res['rows'][0]['basensp']
 
         SQL = render_template("/".join([self.template_path,
@@ -659,7 +666,7 @@ AND relkind != 'c'))"""
         # Get Schema Id
         SQL = render_template("/".join([self.template_path,
                                         'get_oid.sql']),
-                                doid=doid)
+                              doid=doid)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -693,9 +700,9 @@ AND relkind != 'c'))"""
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the specified domain.")
-                )
+            return gone(
+                gettext("Could not find the specified domain.")
+            )
 
         data = res['rows'][0]
 
@@ -762,7 +769,7 @@ AND relkind != 'c'))"""
             return make_json_response(
                 data=SQL,
                 status=200
-                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -787,9 +794,9 @@ AND relkind != 'c'))"""
             if not status:
                 return False, internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                    return gone(
-                        gettext("Could not find the specified domain.")
-                    )
+                return gone(
+                    gettext("Could not find the specified domain.")
+                )
 
             old_data = res['rows'][0]
 
@@ -810,7 +817,8 @@ AND relkind != 'c'))"""
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data)
-            return SQL.strip('\n'), data['name'] if 'name' in data else old_data['name']
+            return SQL.strip('\n'), data['name'] if 'name' in data else \
+                old_data['name']
         else:
             SQL = render_template("/".join([self.template_path,
                                             'create.sql']),

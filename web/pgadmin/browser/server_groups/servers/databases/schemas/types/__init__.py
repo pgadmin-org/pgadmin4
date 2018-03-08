@@ -9,22 +9,24 @@
 
 """ Implements Type Node """
 
-import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as database
+import simplejson as json
 from flask import render_template, request, jsonify
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases as database
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule, DataTypeReader
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -203,9 +205,11 @@ class TypeView(PGChildNodeView, DataTypeReader):
         'get_stypes': [{'get': 'get_subtypes'}, {'get': 'get_subtypes'}],
         'get_subopclass': [{'get': 'get_subtype_opclass'},
                            {'get': 'get_subtype_opclass'}],
-        'get_stypediff': [{'get': 'get_subtype_diff'}, {'get': 'get_subtype_diff'}],
+        'get_stypediff': [{'get': 'get_subtype_diff'},
+                          {'get': 'get_subtype_diff'}],
         'get_canonical': [{'get': 'get_canonical'}, {'get': 'get_canonical'}],
-        'get_collations': [{'get': 'get_collations'}, {'get': 'get_collations'}],
+        'get_collations': [{'get': 'get_collations'},
+                           {'get': 'get_collations'}],
         'get_external_functions': [{'get': 'get_external_functions_list'},
                                    {'get': 'get_external_functions_list'}]
     })
@@ -221,14 +225,18 @@ class TypeView(PGChildNodeView, DataTypeReader):
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
 
             # We need datlastsysoid to check if current type is system type
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
+            self.datlastsysoid = 0
+            if (
+                self.manager.db_info is not None and
+                kwargs['did'] in self.manager.db_info
+            ):
+                self.datlastsysoid = self.manager.db_info[kwargs['did']][
+                    'datlastsysoid']
 
             # Declare allows acl on type
             self.acl = ['U']
@@ -243,12 +251,14 @@ class TypeView(PGChildNodeView, DataTypeReader):
             )
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
     def list(self, gid, sid, did, scid):
         """
-        This function is used to list all the type nodes within that collection.
+        This function is used to list all the type nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -261,10 +271,11 @@ class TypeView(PGChildNodeView, DataTypeReader):
             JSON of available type nodes
         """
 
-        SQL = render_template("/".join([self.template_path, 'properties.sql']),
-                              scid=scid,
-                              datlastsysoid=self.datlastsysoid,
-                              show_system_objects=self.blueprint.show_system_objects)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            scid=scid,
+            datlastsysoid=self.datlastsysoid,
+            show_system_objects=self.blueprint.show_system_objects)
 
         status, res = self.conn.execute_dict(SQL)
 
@@ -278,7 +289,8 @@ class TypeView(PGChildNodeView, DataTypeReader):
     @check_precondition
     def node(self, gid, sid, did, scid, tid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child node within that
+        collection.
         Here it will create all the type node.
 
         Args:
@@ -292,24 +304,26 @@ class TypeView(PGChildNodeView, DataTypeReader):
             JSON of available type child nodes
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
-                              scid=scid,
-                              tid=tid,
-                              show_system_objects=self.blueprint.show_system_objects)
+        SQL = render_template(
+            "/".join([self.template_path,
+                      'nodes.sql']),
+            scid=scid,
+            tid=tid,
+            show_system_objects=self.blueprint.show_system_objects)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(gettext("""Could not find the type in the database."""))
+            return gone(
+                gettext("""Could not find the type in the database."""))
 
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                scid,
-                rset['rows'][0]['name'],
-                icon="icon-%s" % self.node_type
-            )
+            rset['rows'][0]['oid'],
+            scid,
+            rset['rows'][0]['name'],
+            icon="icon-%s" % self.node_type
+        )
 
         return make_json_response(
             data=res,
@@ -319,7 +333,8 @@ class TypeView(PGChildNodeView, DataTypeReader):
     @check_precondition
     def nodes(self, gid, sid, did, scid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child node within that
+        collection.
         Here it will create all the type node.
 
         Args:
@@ -334,9 +349,10 @@ class TypeView(PGChildNodeView, DataTypeReader):
         """
 
         res = []
-        SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), scid=scid,
-                              show_system_objects=self.blueprint.show_system_objects)
+        SQL = render_template(
+            "/".join([self.template_path,
+                      'nodes.sql']), scid=scid,
+            show_system_objects=self.blueprint.show_system_objects)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -394,7 +410,8 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
     def additional_properties(self, copy_dict, tid):
         """
-        We will use this function to add additional properties according to type
+        We will use this function to add additional properties according to
+        type
 
         Returns:
             additional properties for type like range/composite/enum
@@ -403,7 +420,8 @@ class TypeView(PGChildNodeView, DataTypeReader):
         # Fetching type of type
         of_type = copy_dict['typtype']
         res = dict()
-        # If type is of Composite then we need to add members list in our output
+        # If type is of Composite then we need to add members list in our
+        # output
         if of_type == 'c':
             SQL = render_template("/".join([self.template_path,
                                             'additional_properties.sql']),
@@ -421,10 +439,14 @@ class TypeView(PGChildNodeView, DataTypeReader):
             for row in rset['rows']:
                 # We will fetch Full type name
 
-
                 typelist = ' '.join([row['attname'], row['fulltype']])
-                if not row['collname'] or (row['collname'] == 'default'
-                                           and row['collnspname'] == 'pg_catalog'):
+                if (
+                    not row['collname'] or
+                    (
+                        row['collname'] == 'default' and
+                        row['collnspname'] == 'pg_catalog'
+                    )
+                ):
                     full_collate = ''
                     collate = ''
                 else:
@@ -437,9 +459,11 @@ class TypeView(PGChildNodeView, DataTypeReader):
                 is_tlength = False
                 is_precision = False
                 if 'elemoid' in row:
-                    is_tlength, is_precision, typeval = self.get_length_precision(row['elemoid'])
+                    is_tlength, is_precision, typeval = \
+                        self.get_length_precision(row['elemoid'])
 
-                # Below logic will allow us to split length, precision from type name for grid
+                # Below logic will allow us to split length, precision from
+                # type name for grid
                 import re
                 t_len = None
                 t_prec = None
@@ -457,18 +481,19 @@ class TypeView(PGChildNodeView, DataTypeReader):
                         t_len = matchObj.group(1)
                         t_prec = None
 
-
                 type_name = DataTypeReader.parse_type_name(row['typname'])
 
                 row['type'] = self._cltype_formatter(type_name)
                 row['hasSqrBracket'] = self.hasSqrBracket
                 row = self.convert_length_precision_to_string(row)
                 composite_lst.append({
-                    'attnum': row['attnum'], 'member_name': row['attname'], 'type': type_name,
+                    'attnum': row['attnum'], 'member_name': row['attname'],
+                    'type': type_name,
                     'collation': full_collate, 'cltype': row['type'],
                     'tlength': t_len, 'precision': t_prec,
                     'is_tlength': is_tlength, 'is_precision': is_precision,
-                    'hasSqrBracket': row['hasSqrBracket'], 'fulltype': row['fulltype']})
+                    'hasSqrBracket': row['hasSqrBracket'],
+                    'fulltype': row['fulltype']})
 
             # Adding both results
             res['member_list'] = ', '.join(properties_list)
@@ -494,7 +519,8 @@ class TypeView(PGChildNodeView, DataTypeReader):
             res['enum_list'] = ', '.join(properties_list)
             res['enum'] = enum_list
 
-        # If type is of Range then we need to add collation,subtype etc in our output
+        # If type is of Range then we need to add collation,subtype etc in our
+        # output
         if of_type == 'r':
             SQL = render_template("/".join([self.template_path,
                                             'additional_properties.sql']),
@@ -535,18 +561,20 @@ class TypeView(PGChildNodeView, DataTypeReader):
             JSON of selected type node
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
-                              scid=scid, tid=tid,
-                              datlastsysoid=self.datlastsysoid,
-                              show_system_objects=self.blueprint.show_system_objects
-                              )
+        SQL = render_template(
+            "/".join([self.template_path,
+                      'properties.sql']),
+            scid=scid, tid=tid,
+            datlastsysoid=self.datlastsysoid,
+            show_system_objects=self.blueprint.show_system_objects
+        )
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the type in the database."""))
+            return gone(
+                gettext("""Could not find the type in the database."""))
 
         # Making copy of output for future use
         copy_dict = dict(res['rows'][0])
@@ -925,15 +953,18 @@ class TypeView(PGChildNodeView, DataTypeReader):
             # If type is external then check if input/output
             # conversion function is defined
             if data and data[arg] == 'b':
-                if 'typinput' not in data or \
-                                'typoutput' not in data or \
-                                data['typinput'] is None or \
-                                data['typoutput'] is None:
+                if (
+                    'typinput' not in data or
+                    'typoutput' not in data or
+                    data['typinput'] is None or
+                    data['typoutput'] is None
+                ):
                     return make_json_response(
                         status=410,
                         success=0,
                         errormsg=gettext(
-                            'External types require both input and output conversion functions.'
+                            'External types require both input and output '
+                            'conversion functions.'
                         )
                     )
 
@@ -946,8 +977,10 @@ class TypeView(PGChildNodeView, DataTypeReader):
         try:
             if 'composite' in data and len(data['composite']) > 0:
                 for each_type in data['composite']:
-                    each_type = self.convert_length_precision_to_string(each_type)
-                    each_type['cltype'] = self._cltype_formatter(each_type['type'])
+                    each_type = self.convert_length_precision_to_string(
+                        each_type)
+                    each_type['cltype'] = self._cltype_formatter(
+                        each_type['type'])
                     each_type['hasSqrBracket'] = self.hasSqrBracket
 
             SQL = render_template("/".join([self.template_path, 'create.sql']),
@@ -959,7 +992,8 @@ class TypeView(PGChildNodeView, DataTypeReader):
             if 'schema' in data:
                 # we need scid to update in browser tree
                 SQL = render_template("/".join([self.template_path,
-                                      'get_scid.sql']), schema=data['schema'])
+                                                'get_scid.sql']),
+                                      schema=data['schema'])
                 status, scid = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=scid)
@@ -1010,7 +1044,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                 return internal_server_error(errormsg=res)
 
             SQL = render_template("/".join([self.template_path,
-                                  'get_scid.sql']), tid=tid)
+                                            'get_scid.sql']), tid=tid)
 
             # Get updated schema oid
             status, scid = self.conn.execute_scalar(SQL)
@@ -1050,12 +1084,13 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
         try:
 
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  scid=scid, tid=tid,
-                                  datlastsysoid=self.datlastsysoid,
-                                  show_system_objects=self.blueprint.show_system_objects
-                                  )
+            SQL = render_template(
+                "/".join([self.template_path,
+                          'properties.sql']),
+                scid=scid, tid=tid,
+                datlastsysoid=self.datlastsysoid,
+                show_system_objects=self.blueprint.show_system_objects
+            )
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1168,27 +1203,33 @@ class TypeView(PGChildNodeView, DataTypeReader):
             for key in ['typacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
+                        data[key]['added'] = parse_priv_to_db(
+                            data[key]['added'], self.acl)
                     if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
+                        data[key]['changed'] = parse_priv_to_db(
+                            data[key]['changed'], self.acl)
                     if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
+                        data[key]['deleted'] = parse_priv_to_db(
+                            data[key]['deleted'], self.acl)
 
             if 'composite' in data and len(data['composite']) > 0:
                 for key in ['added', 'changed', 'deleted']:
                     if key in data['composite']:
                         for each_type in data['composite'][key]:
-                            each_type = self.convert_length_precision_to_string(each_type)
+                            each_type = self. \
+                                convert_length_precision_to_string(each_type)
                             if 'type' in each_type:
-                                each_type['cltype'] = self._cltype_formatter(each_type['type'])
+                                each_type['cltype'] = self._cltype_formatter(
+                                    each_type['type'])
                                 each_type['hasSqrBracket'] = self.hasSqrBracket
 
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  scid=scid, tid=tid,
-                                  datlastsysoid=self.datlastsysoid,
-                                  show_system_objects=self.blueprint.show_system_objects
-                                  )
+            SQL = render_template(
+                "/".join([self.template_path,
+                          'properties.sql']),
+                scid=scid, tid=tid,
+                datlastsysoid=self.datlastsysoid,
+                show_system_objects=self.blueprint.show_system_objects
+            )
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1249,10 +1290,12 @@ class TypeView(PGChildNodeView, DataTypeReader):
             # If type is external then check if input/output
             # conversion function is defined
             if data and data[arg] == 'b':
-                if 'typinput' not in data or \
-                                'typoutput' not in data or \
-                                data['typinput'] is None or \
-                                data['typoutput'] is None:
+                if (
+                    'typinput' not in data or
+                    'typoutput' not in data or
+                    data['typinput'] is None or
+                    data['typoutput'] is None
+                ):
                     return "-- definition incomplete"
 
             # Privileges
@@ -1263,8 +1306,10 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
             if 'composite' in data and len(data['composite']) > 0:
                 for each_type in data['composite']:
-                    each_type = self.convert_length_precision_to_string(each_type)
-                    each_type['cltype'] = self._cltype_formatter(each_type['type'])
+                    each_type = self.convert_length_precision_to_string(
+                        each_type)
+                    each_type['cltype'] = self._cltype_formatter(
+                        each_type['type'])
                     each_type['hasSqrBracket'] = self.hasSqrBracket
 
             SQL = render_template("/".join([self.template_path,
@@ -1285,12 +1330,13 @@ class TypeView(PGChildNodeView, DataTypeReader):
            scid: Schema ID
            tid: Type ID
         """
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
-                              scid=scid, tid=tid,
-                              datlastsysoid=self.datlastsysoid,
-                              show_system_objects=self.blueprint.show_system_objects
-                              )
+        SQL = render_template(
+            "/".join([self.template_path,
+                      'properties.sql']),
+            scid=scid, tid=tid,
+            datlastsysoid=self.datlastsysoid,
+            show_system_objects=self.blueprint.show_system_objects
+        )
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)

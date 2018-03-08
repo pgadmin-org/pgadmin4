@@ -20,7 +20,6 @@ if sys.version_info[0] >= 3:
 else:
     import __builtin__ as builtins
 
-
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
 root = os.path.dirname(os.path.realpath(__file__))
@@ -98,7 +97,6 @@ MODULE_BLACKLIST = ['test']
 # List of treeview browser nodes to skip when dynamically loading
 NODE_BLACKLIST = []
 
-
 ##########################################################################
 # Server settings
 ##########################################################################
@@ -170,7 +168,6 @@ else:
     else:
         DATA_DIR = os.path.realpath(os.path.expanduser(u'~/.pgadmin/'))
 
-
 ##########################################################################
 # Log settings
 ##########################################################################
@@ -199,7 +196,6 @@ if SERVER_MODE and not IS_WIN:
     LOG_FILE = '/var/log/pgadmin/pgadmin4.log'
 else:
     LOG_FILE = os.path.join(DATA_DIR, 'pgadmin4.log')
-
 
 ##########################################################################
 # Server Connection Driver Settings
@@ -309,7 +305,6 @@ UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 ##########################################################################
 STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
 
-
 ##########################################################################
 # Default locations for binary utilities (pg_dump, pg_restore etc)
 #
@@ -326,7 +321,7 @@ STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
 #
 ##########################################################################
 DEFAULT_BINARY_PATHS = {
-    "pg":   "",
+    "pg": "",
     "ppas": "",
     "gpdb": ""
 }
@@ -337,7 +332,6 @@ DEFAULT_BINARY_PATHS = {
 
 # The default path for SQLite database for testing
 TEST_SQLITE_PATH = os.path.join(DATA_DIR, 'test_pgadmin4.db')
-
 
 ##########################################################################
 # Allows flask application to response to the each request asynchronously

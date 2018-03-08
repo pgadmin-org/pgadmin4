@@ -9,7 +9,8 @@
 
 import os
 
-from regression.python_test_utils.sql_template_test_base import SQLTemplateTestBase
+from regression.python_test_utils.sql_template_test_base import \
+    SQLTemplateTestBase
 from regression.python_test_utils.template_helper import file_as_template
 
 
@@ -32,7 +33,8 @@ class TestDependentsSql(SQLTemplateTestBase):
     def generate_sql(self, version):
         template_file = self.get_template_file(version, "dependents.sql")
         template = file_as_template(template_file)
-        sql = template.render(where_clause="WHERE dep.objid=%s::oid" % self.table_id)
+        sql = template.render(
+            where_clause="WHERE dep.objid=%s::oid" % self.table_id)
 
         return sql
 
@@ -48,4 +50,5 @@ class TestDependentsSql(SQLTemplateTestBase):
 
     @staticmethod
     def get_template_file(version, filename):
-        return os.path.join(os.path.dirname(__file__), "..", "templates", "depends", "sql", version, filename)
+        return os.path.join(os.path.dirname(__file__), "..", "templates",
+                            "depends", "sql", version, filename)

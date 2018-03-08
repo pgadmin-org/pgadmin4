@@ -12,9 +12,9 @@ from __future__ import print_function
 import json
 import uuid
 
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
     foreign_servers.tests import utils as fsrv_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
     tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
@@ -71,14 +71,13 @@ class ForeignTableAddTestCase(BaseTestGenerator):
         data = {
             "acl": [],
             "basensp": self.schema_name,
-            "columns":
-                [
-                    {
-                        "attname": "ename",
-                        "datatype": "text",
-                        "coloptions": []
-                    }
-                ],
+            "columns": [
+                {
+                    "attname": "ename",
+                    "datatype": "text",
+                    "coloptions": []
+                }
+            ],
             "constraints": [],
             "ftoptions": [],
             "inherits": [],
@@ -92,8 +91,8 @@ class ForeignTableAddTestCase(BaseTestGenerator):
 
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) + '/'
-            + str(self.schema_id) + '/', data=json.dumps(data),
+            str(self.server_id) + '/' + str(self.db_id) + '/' +
+            str(self.schema_id) + '/', data=json.dumps(data),
             content_type='html/json')
 
         self.assertEquals(response.status_code, 200)

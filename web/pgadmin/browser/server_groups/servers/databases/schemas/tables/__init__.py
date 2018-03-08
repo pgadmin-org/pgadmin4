@@ -349,7 +349,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         if not status:
             return internal_server_error(errormsg=rset)
 
-
         for row in rset['rows']:
             if 'is_partitioned' in row and row['is_partitioned']:
                 icon = "icon-partition"

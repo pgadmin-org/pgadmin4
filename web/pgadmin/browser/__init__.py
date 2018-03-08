@@ -10,33 +10,33 @@
 import json
 import logging
 from abc import ABCMeta, abstractmethod, abstractproperty
-import six
-from socket import error as SOCKETErrorException
-from smtplib import SMTPConnectError, SMTPResponseException,\
+from smtplib import SMTPConnectError, SMTPResponseException, \
     SMTPServerDisconnected, SMTPDataError, SMTPHeloError, SMTPException, \
     SMTPAuthenticationError, SMTPSenderRefused, SMTPRecipientsRefused
+from socket import error as SOCKETErrorException
+
+import six
 from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, after_this_request, redirect
 from flask_babel import gettext
-from flask_login import current_user, login_required
-from flask_security.decorators import anonymous_user_required
 from flask_gravatar import Gravatar
+from flask_login import current_user, login_required
+from flask_security.changeable import change_user_password
+from flask_security.decorators import anonymous_user_required
+from flask_security.recoverable import reset_password_token_status, \
+    generate_reset_password_token, update_password
+from flask_security.signals import reset_password_instructions_sent
+from flask_security.utils import config_value, do_flash, get_url, \
+    get_message, slash_url_suffix, login_user, send_mail
+from flask_security.views import _security, _commit, _render_json, _ctx
+from werkzeug.datastructures import MultiDict
+
+import config
+from pgadmin import current_blueprint
 from pgadmin.settings import get_setting
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.preferences import Preferences
-from werkzeug.datastructures import MultiDict
-from flask_security.views import _security, _commit, _render_json, _ctx
-from flask_security.changeable import change_user_password
-from flask_security.recoverable import reset_password_token_status, \
-    generate_reset_password_token, update_password
-from flask_security.utils import config_value, do_flash, get_url, get_message,\
-    slash_url_suffix, login_user, send_mail
-from flask_security.signals import reset_password_instructions_sent
-
-
-import config
-from pgadmin import current_blueprint
 
 try:
     import urllib.request as urlreq
@@ -51,17 +51,19 @@ class BrowserModule(PgAdminModule):
 
     def get_own_stylesheets(self):
         stylesheets = []
+        context_menu_file = 'vendor/jQuery-contextMenu/' \
+                            'jquery.contextMenu.min.css'
+        wcdocker_file = 'vendor/wcDocker/wcDocker.min.css'
+        if current_app.debug:
+            context_menu_file = 'vendor/jQuery-contextMenu/' \
+                                'jquery.contextMenu.css'
+            wcdocker_file = 'vendor/wcDocker/wcDocker.css'
         # Add browser stylesheets
         for (endpoint, filename) in [
             ('static', 'vendor/codemirror/codemirror.css'),
             ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
-            ('static', 'vendor/jQuery-contextMenu/jquery.contextMenu.css'
-                       if current_app.debug
-                       else
-                       'vendor/jQuery-contextMenu/jquery.contextMenu.min.css'),
-            ('static', 'vendor/wcDocker/wcDocker.css'
-                       if current_app.debug
-                       else 'vendor/wcDocker/wcDocker.min.css'),
+            ('static', context_menu_file),
+            ('static', wcdocker_file),
             ('browser.static', 'css/browser.css'),
             ('browser.static', 'vendor/aciTree/css/aciTree.css')
         ]:
@@ -86,8 +88,8 @@ class BrowserModule(PgAdminModule):
             'path': url_for(
                 'static',
                 filename='vendor/jQuery-contextMenu/jquery.ui.position' if
-                    current_app.debug else
-                    'vendor/jQuery-contextMenu/jquery.ui.position.min'
+                current_app.debug else
+                'vendor/jQuery-contextMenu/jquery.ui.position.min'
             ),
             'deps': ['jquery'],
             'exports': 'jQuery.ui.position',
@@ -98,8 +100,8 @@ class BrowserModule(PgAdminModule):
             'path': url_for(
                 'static',
                 filename='vendor/jQuery-contextMenu/jquery.contextMenu' if
-                    current_app.debug else
-                    'vendor/jQuery-contextMenu/jquery.contextMenu.min'
+                current_app.debug else
+                'vendor/jQuery-contextMenu/jquery.contextMenu.min'
             ),
             'deps': ['jquery', 'jqueryui.position'],
             'exports': 'jQuery.contextMenu',
@@ -167,9 +169,10 @@ class BrowserModule(PgAdminModule):
         })
 
         for name, script in [
-                ['pgadmin.browser', 'js/browser'],
-                ['pgadmin.browser.endpoints', 'js/endpoints'],
-                ['pgadmin.browser.error', 'js/error']]:
+            ['pgadmin.browser', 'js/browser'],
+            ['pgadmin.browser.endpoints', 'js/endpoints'],
+            ['pgadmin.browser.error', 'js/error']
+        ]:
             scripts.append({
                 'name': name,
                 'path': url_for('browser.index') + script,
@@ -177,9 +180,10 @@ class BrowserModule(PgAdminModule):
             })
 
         for name, script in [
-                ['pgadmin.browser.node', 'js/node'],
-                ['pgadmin.browser.messages', 'js/messages'],
-                ['pgadmin.browser.collection', 'js/collection']]:
+            ['pgadmin.browser.node', 'js/node'],
+            ['pgadmin.browser.messages', 'js/messages'],
+            ['pgadmin.browser.collection', 'js/collection']
+        ]:
             scripts.append({
                 'name': name,
                 'path': url_for('browser.index') + script,
@@ -188,9 +192,10 @@ class BrowserModule(PgAdminModule):
             })
 
         for name, end in [
-                ['pgadmin.browser.menu', 'js/menu'],
-                ['pgadmin.browser.panel', 'js/panel'],
-                ['pgadmin.browser.frame', 'js/frame']]:
+            ['pgadmin.browser.menu', 'js/menu'],
+            ['pgadmin.browser.panel', 'js/panel'],
+            ['pgadmin.browser.frame', 'js/frame']
+        ]:
             scripts.append({
                 'name': name, 'path': url_for('browser.static', filename=end),
                 'preloaded': True})
@@ -582,7 +587,7 @@ class BrowserPluginModule(PgAdminModule):
         return scripts
 
     def generate_browser_node(
-            self, node_id, parent_id, label, icon, inode, node_type, **kwargs
+        self, node_id, parent_id, label, icon, inode, node_type, **kwargs
     ):
         """
         Helper function to create a browser node for this particular subnode.
@@ -950,6 +955,7 @@ def get_nodes():
 
     return make_json_response(data=nodes)
 
+
 # Only register route if SECURITY_CHANGEABLE is set to True
 # We can't access app context here so cannot
 # use app.config['SECURITY_CHANGEABLE']
@@ -1018,7 +1024,6 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
             config_value('CHANGE_PASSWORD_TEMPLATE'),
             change_password_form=form,
             **_ctx('change_password'))
-
 
 # Only register route if SECURITY_RECOVERABLE is set to True
 if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:

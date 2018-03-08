@@ -56,8 +56,8 @@ class SchemaDeleteTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to delete.")
 
-        response = self.tester.delete(self.url + str(utils.SERVER_GROUP)
-                                      + '/' + str(server_id) + '/' +
+        response = self.tester.delete(self.url + str(utils.SERVER_GROUP) +
+                                      '/' + str(server_id) + '/' +
                                       str(db_id) + '/' + str(schema_id),
                                       follow_redirects=True)
         self.assertEquals(response.status_code, 200)

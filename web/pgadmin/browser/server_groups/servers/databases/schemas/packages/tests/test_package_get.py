@@ -35,7 +35,7 @@ class PackageGetTestCase(BaseTestGenerator):
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
         self.db_name = parent_node_dict["database"][-1]["db_name"]
-        self.pkg_name= "pkg_%s" % str(uuid.uuid4())[1:8]
+        self.pkg_name = "pkg_%s" % str(uuid.uuid4())[1:8]
         self.proc_name = "proc_%s" % str(uuid.uuid4())[1:8]
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
@@ -70,11 +70,13 @@ class PackageGetTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema.")
 
-        response = self.tester.get(self.url
-                    + str(utils.SERVER_GROUP) + '/' +
-                    str(self.server_id) + '/' + str(self.db_id) + '/' +
-                    str(self.schema_id) + '/' + str(self.package_id),
-                    content_type='html/json')
+        response = self.tester.get(self.url +
+                                   str(utils.SERVER_GROUP) + '/' +
+                                   str(self.server_id) + '/' +
+                                   str(self.db_id) + '/' +
+                                   str(self.schema_id) + '/' +
+                                   str(self.package_id),
+                                   content_type='html/json')
 
         self.assertEquals(response.status_code, 200)
 

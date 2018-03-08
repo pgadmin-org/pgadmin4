@@ -9,7 +9,8 @@
 
 import sys
 
-from pgadmin.browser.server_groups.servers.databases.schemas.utils import DataTypeReader
+from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
+    DataTypeReader
 from pgadmin.utils.route import BaseTestGenerator
 
 if sys.version_info < (3, 3):
@@ -55,7 +56,8 @@ class DataTypeReaderTest(BaseTestGenerator):
              expected_sql_template_path='someplate/where/templates/are',
              expected_function_output=_default_expected_function_output
          )),
-        ('When no data_type_template_path is present in class, should create template path with version number',
+        ('When no data_type_template_path is present in class, '
+         'should create template path with version number',
          dict(
              manager=_default_manager,
              execute_return_values=_default_database_response,
@@ -81,7 +83,8 @@ class DataTypeReaderTest(BaseTestGenerator):
          ))
     ]
 
-    @patch('pgadmin.browser.server_groups.servers.databases.schemas.utils.render_template')
+    @patch('pgadmin.browser.server_groups.servers.databases.schemas.utils'
+           '.render_template')
     def runTest(self, template_mock):
         template_mock.return_value = 'Some SQL'
         connection = Mock()
@@ -101,7 +104,8 @@ class DataTypeReaderTest(BaseTestGenerator):
             reader.data_type_template_path = self.data_type_template_path
         except AttributeError:
             ''
-        result = reader.get_types(connection, self.sql_condition, self.add_serials, self.schema_oid)
+        result = reader.get_types(connection, self.sql_condition,
+                                  self.add_serials, self.schema_oid)
         self.assertEqual(result[1], self.expected_function_output)
         self.assertTrue(result[0])
 

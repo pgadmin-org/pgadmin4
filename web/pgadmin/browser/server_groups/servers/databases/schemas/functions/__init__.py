@@ -260,13 +260,14 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
                 for arg in self.required_args:
                     if (arg not in req or req[arg] == '') or \
-                            (arg == 'probin' and req['lanname'] == 'c'
-                             and (arg not in req or req[arg] == '')):
+                        (arg == 'probin' and req['lanname'] == 'c' and
+                         (arg not in req or req[arg] == '')):
                         return make_json_response(
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Could not find the required parameter (%s)." % arg
+                                "Could not find the required parameter (%s)." %
+                                arg
                             )
                         )
 
@@ -276,14 +277,16 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                                'seclabels', 'acl', 'args']
 
             for key in req:
-                if key in list_params and req[key] != '' \
-                        and req[key] is not None:
+                if (
+                    key in list_params and req[key] != '' and
+                    req[key] is not None
+                ):
                     # Coverts string into python list as expected.
                     data[key] = json.loads(req[key], encoding='utf-8')
                 elif (
-                                            key == 'proretset' or key == 'proisstrict' or
-                                        key == 'prosecdef' or key == 'proiswindow' or
-                                key == 'proleakproof'
+                    key == 'proretset' or key == 'proisstrict' or
+                    key == 'prosecdef' or key == 'proiswindow' or
+                    key == 'proleakproof'
                 ):
                     data[key] = True if (
                         req[key] == 'true' or req[key] is True) \
@@ -392,7 +395,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         if fnid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                     _("Could not find the specified %s.").format(self.node_type)
+                    _("Could not find the specified %s.").format(
+                        self.node_type)
                 )
 
             row = rset['rows'][0]
@@ -572,7 +576,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             proargnames[i] if len(proargnames) > i else '',
             proargdefaultvals[i] if len(proargdefaultvals) > i else ''
         )
-                   for i in range(len(proargtypes))]
+            for i in range(len(proargtypes))]
 
         proargs = {"proargs": ", ".join(proargs)}
 
@@ -654,9 +658,12 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             fnid: Function Id
         """
 
-        condition = "(typtype IN ('b', 'c', 'd', 'e', 'p', 'r') AND typname NOT IN ('any', 'trigger', 'language_handler', 'event_trigger'))"
+        condition = "(typtype IN ('b', 'c', 'd', 'e', 'p', 'r') AND " \
+                    "typname NOT IN ('any', 'trigger', 'language_handler', " \
+                    "'event_trigger'))"
         if self.blueprint.show_system_objects:
-            condition += " AND nspname NOT LIKE E'pg\\\\_toast%' AND nspname NOT LIKE E'pg\\\\_temp%'"
+            condition += " AND nspname NOT LIKE E'pg\\\\_toast%' AND " \
+                         "nspname NOT LIKE E'pg\\\\_temp%'"
 
         # Get Types
         status, types = self.get_types(self.conn, condition, False, scid)
@@ -697,7 +704,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 data=res,
                 status=200
             )
-        except:
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             current_app.logger.error(traceback.print_exception(
                 exc_type,
@@ -810,7 +817,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         try:
             # Fetch Name and Schema Name to delete the Function.
             SQL = render_template("/".join([self.sql_template_path,
-                                            'delete.sql']), scid=scid, fnid=fnid)
+                                            'delete.sql']), scid=scid,
+                                  fnid=fnid)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -941,13 +949,18 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             resp_data['args'] = resp_data['arguments']
 
         for a in args_list:
-            if (('argmode' in a and a['argmode'] != 'OUT' and
+            if (
+                (
+                    'argmode' in a and a['argmode'] != 'OUT' and
                     a['argmode'] is not None
-                 ) or 'argmode' not in a):
+                ) or 'argmode' not in a
+            ):
                 if 'argmode' in a:
                     args += a['argmode'] + " "
-                if 'argname' in a and a['argname'] != '' \
-                        and a['argname'] is not None:
+                if (
+                    'argname' in a and a['argname'] != '' and
+                    a['argname'] is not None
+                ):
                     args += self.qtIdent(
                         self.conn, a['argname']) + " "
                 if 'argtype' in a:
@@ -970,8 +983,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
             # Get Schema Name from its OID.
             if 'pronamespace' in resp_data:
-                resp_data['pronamespace'] = self._get_schema(resp_data[
-                    'pronamespace'])
+                resp_data['pronamespace'] = self._get_schema(
+                    resp_data['pronamespace'])
 
             SQL = render_template("/".join([self.sql_template_path,
                                             'get_definition.sql']
@@ -982,11 +995,11 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            name_with_default_args = self.qtIdent(self.conn,
-                                                  res['rows'][0]['nspname'],
-                                                  res['rows'][0][
-                                                      'proname']) + '(' + \
-                res['rows'][0]['func_args'] + ')'
+            name_with_default_args = self.qtIdent(
+                self.conn,
+                res['rows'][0]['nspname'],
+                res['rows'][0]['proname']
+            ) + '(' + res['rows'][0]['func_args'] + ')'
             # Add newline and tab before each argument to format
             name_with_default_args = name_with_default_args.replace(
                 ', ', ',\r\t').replace('(', '(\r\t')
@@ -996,13 +1009,14 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
 
                 # Check Revoke all for public
-                resp_data['revoke_all'] = self._set_revoke_all(resp_data['acl'])
+                resp_data['revoke_all'] = self._set_revoke_all(
+                    resp_data['acl'])
 
             # Generate sql for "SQL panel"
             # func_def is procedure signature with default arguments
             # query_for - To distinguish the type of call
             func_def = render_template("/".join([self.sql_template_path,
-                                                'create.sql']),
+                                                 'create.sql']),
                                        data=resp_data, query_type="create",
                                        func_def=name_with_default_args,
                                        query_for="sql_panel")
@@ -1011,15 +1025,17 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
             # Get Schema Name from its OID.
             if 'pronamespace' in resp_data:
-                resp_data['pronamespace'] = self._get_schema(resp_data[
-                    'pronamespace'])
+                resp_data['pronamespace'] = self._get_schema(
+                    resp_data['pronamespace']
+                )
 
             # Parse privilege data
             if 'acl' in resp_data:
                 resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
 
                 # Check Revoke all for public
-                resp_data['revoke_all'] = self._set_revoke_all(resp_data['acl'])
+                resp_data['revoke_all'] = self._set_revoke_all(
+                    resp_data['acl'])
 
             SQL = render_template("/".join([self.sql_template_path,
                                             'get_definition.sql']
@@ -1030,11 +1046,16 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            name_with_default_args = self.qtIdent(self.conn,
-                                                  res['rows'][0]['nspname'], res['rows'][0]['proname']) + '(' + res['rows'][0]['func_args'] + ')'
+            name_with_default_args = self.qtIdent(
+                self.conn,
+                res['rows'][0]['nspname'],
+                res['rows'][0]['proname']
+            ) + '(' + res['rows'][0]['func_args'] + ')'
             # Add newline and tab before each argument to format
-            name_with_default_args = name_with_default_args.replace(', ', ',\r\t').replace('(',
-                                                                      '(\r\t')
+            name_with_default_args = name_with_default_args.replace(
+                ', ',
+                ',\r\t'
+            ).replace('(', '(\r\t')
 
             # Generate sql for "SQL panel"
             # func_def is function signature with default arguments
@@ -1107,8 +1128,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
         # Get Schema Name from its OID.
         if 'pronamespace' in data:
-            data['pronamespace'] = self._get_schema(data[
-                                                        'pronamespace'])
+            data['pronamespace'] = self._get_schema(
+                data['pronamespace']
+            )
         if 'provolatile' in data:
             data['provolatile'] = vol_dict[data['provolatile']]
 
@@ -1127,14 +1149,16 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 )
 
             # Get Schema Name
-            old_data['pronamespace'] = self._get_schema(old_data[
-                                                            'pronamespace'])
+            old_data['pronamespace'] = self._get_schema(
+                old_data['pronamespace']
+            )
 
             if 'provolatile' in old_data:
                 old_data['provolatile'] = vol_dict[old_data['provolatile']]
 
             if 'proparallel' in old_data:
-                old_data['proparallel'] = parallel_dict[old_data['proparallel']]
+                old_data['proparallel'] = parallel_dict[
+                    old_data['proparallel']]
 
             # If any of the below argument is changed,
             # then CREATE OR REPLACE SQL statement should be called
@@ -1145,8 +1169,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
             data['change_func'] = False
             for arg in fun_change_args:
-                if arg == 'arguments' and arg in data and len(data[arg]) \
-                        > 0:
+                if arg == 'arguments' and arg in data and len(data[arg]) > 0:
                     data['change_func'] = True
                 elif arg in data:
                     data['change_func'] = True
@@ -1204,8 +1227,10 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
                 # Prepare final dict of new and old variables
                 for name, val in old_data['chngd_variables'].items():
-                    if name not in chngd_variables and name not in \
-                            del_variables:
+                    if (
+                        name not in chngd_variables and
+                        name not in del_variables
+                    ):
                         chngd_variables[name] = val
 
                 # Prepare dict in [{'name': var_name, 'value': var_val},..]
@@ -1243,15 +1268,19 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             elif 'args' in data and len(data['args']) > 0:
                 args_list = data['args']
             for a in args_list:
-                if (('argmode' in a and a['argmode'] != 'OUT' and
-                             a['argmode'] is not None
-                     ) or 'argmode' not in a):
+                if (
+                    (
+                        'argmode' in a and a['argmode'] != 'OUT' and
+                        a['argmode'] is not None
+                    ) or 'argmode' not in a
+                ):
                     if 'argmode' in a:
                         args += a['argmode'] + " "
-                    if 'argname' in a and a['argname'] != '' \
-                            and a['argname'] is not None:
-                        args += self.qtIdent(
-                            self.conn, a['argname']) + " "
+                    if (
+                        'argname' in a and a['argname'] != '' and
+                        a['argname'] is not None
+                    ):
+                        args += self.qtIdent(self.conn, a['argname']) + " "
                     if 'argtype' in a:
                         args += a['argtype']
                         args_without_name.append(a['argtype'])
@@ -1353,7 +1382,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         for p in privileges:
             if p['grantee'] == 'PUBLIC':
                 revoke_all = False
-                break;
+                break
 
         return revoke_all
 
@@ -1409,14 +1438,16 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
         # Fetch the function definition.
         SQL = render_template("/".join([self.sql_template_path,
-                              'get_definition.sql']), fnid=fnid, scid=scid)
+                                        'get_definition.sql']), fnid=fnid,
+                              scid=scid)
         status, res = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
-        name = self.qtIdent(self.conn, res['rows'][0]['nspname'],
-                            res['rows'][0]['proname']) + '(' + \
-            res['rows'][0]['func_with_identity_arguments'] + ')'
+        name = self.qtIdent(
+            self.conn, res['rows'][0]['nspname'],
+            res['rows'][0]['proname']
+        ) + '(' + res['rows'][0]['func_with_identity_arguments'] + ')'
 
         # Fetch only arguments
         argString = name[name.rfind('('):].strip('(').strip(')')
@@ -1498,7 +1529,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             # Get schema name
             status, schema_name = self.conn.execute_scalar(
                 render_template(
-                    'schema/pg/#{0}#/sql/get_name.sql'.format(self.manager.version),
+                    'schema/pg/#{0}#/sql/get_name.sql'.format(
+                        self.manager.version),
                     scid=scid
                 )
             )

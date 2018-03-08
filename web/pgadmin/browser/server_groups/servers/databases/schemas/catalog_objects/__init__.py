@@ -11,18 +11,18 @@
 
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases as database
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils.ajax import gone
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.ajax import gone
-
-from config import PG_DEFAULT_DRIVER
 
 
 class CatalogObjectModule(SchemaChildModule):
@@ -55,7 +55,8 @@ class CatalogObjectModule(SchemaChildModule):
 
     def __init__(self, *args, **kwargs):
         """
-        Method is used to initialize the CatalogObjectModule and it's base module.
+        Method is used to initialize the CatalogObjectModule and it's base
+        module.
 
         Args:
             *args:
@@ -188,7 +189,8 @@ class CatalogObjectView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did, scid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child node within that
+        collection.
         Here it will create all the catalog objects node.
 
         Args:
@@ -257,7 +259,8 @@ class CatalogObjectView(PGChildNodeView):
                 status=200
             )
 
-        return gone(errormsg=gettext("Could not find the specified catalog object."))
+        return gone(
+            errormsg=gettext("Could not find the specified catalog object."))
 
     @check_precondition
     def properties(self, gid, sid, did, scid, coid):
@@ -286,7 +289,8 @@ class CatalogObjectView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the specified catalog object."""))
+            return gone(
+                gettext("""Could not find the specified catalog object."""))
 
         return ajax_response(
             response=res['rows'][0],

@@ -24,21 +24,24 @@ class LoginTestCase(BaseTestGenerator):
     scenarios = [
         # This test case validates the invalid/incorrect password
         ('TestCase for Checking Invalid_Password', dict(
-            email=(config_data['pgAdmin4_login_credentials']
-                   ['login_username']),
+            email=(
+                config_data['pgAdmin4_login_credentials']
+                ['login_username']),
             password=str(uuid.uuid4())[4:8],
             respdata='Invalid password')),
 
         # This test case validates the empty password field
         ('Empty_Password', dict(
-            email=(config_data['pgAdmin4_login_credentials']
-                   ['login_username']), password='',
+            email=(
+                config_data['pgAdmin4_login_credentials']
+                ['login_username']), password='',
             respdata='Password not provided')),
 
         # This test case validates blank email field
         ('Empty_Email', dict(
-            email='', password=(config_data['pgAdmin4_login_credentials']
-                                ['login_password']),
+            email='', password=(
+                config_data['pgAdmin4_login_credentials']
+                ['login_password']),
             respdata='Email not provided')),
 
         # This test case validates empty email and password
@@ -49,8 +52,9 @@ class LoginTestCase(BaseTestGenerator):
         # This test case validates the invalid/incorrect email id
         ('Invalid_Email', dict(
             email=str(uuid.uuid4())[1:8] + '@xyz.com',
-            password=(config_data['pgAdmin4_login_credentials']
-                      ['login_password']),
+            password=(
+                config_data['pgAdmin4_login_credentials']
+                ['login_password']),
             respdata='Specified user does not exist')),
 
         # This test case validates invalid email and password
@@ -62,15 +66,15 @@ class LoginTestCase(BaseTestGenerator):
         # This test case validates the valid/correct credentials and allow user
         # to login pgAdmin 4
         ('Valid_Credentials', dict(
-            email=(config_data[
-                'pgAdmin4_login_credentials'
-            ]['login_username']),
-            password=(config_data[
-                'pgAdmin4_login_credentials'
-            ]['login_password']),
-            respdata='%s' % config_data['pgAdmin4_login_credentials']
-            ['login_username'])
-         )
+            email=(
+                config_data['pgAdmin4_login_credentials']
+                ['login_username']),
+            password=(
+                config_data['pgAdmin4_login_credentials']
+                ['login_password']),
+            respdata='Gravatar image for %s' %
+                     config_data['pgAdmin4_login_credentials']
+                     ['login_username']))
     ]
 
     @classmethod

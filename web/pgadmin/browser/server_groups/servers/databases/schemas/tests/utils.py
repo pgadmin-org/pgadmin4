@@ -26,24 +26,24 @@ def get_schema_config_data(db_user):
         "name": "test_schema_{0}".format(str(uuid.uuid4())[1:8]),
         "namespaceowner": db_user,
         "nspacl": [
-                      {
-                        "grantee": db_user,
-                        "grantor": db_user,
-                        "privileges":
-                        [
-                          {
+            {
+                "grantee": db_user,
+                "grantor": db_user,
+                "privileges":
+                    [
+                        {
                             "privilege_type": "C",
                             "privilege": True,
                             "with_grant": False
-                          },
-                          {
+                        },
+                        {
                             "privilege_type": "U",
                             "privilege": True,
                             "with_grant": False
-                          }
-                        ]
-                      }
-                    ],
+                        }
+                    ]
+            }
+        ],
         "seclabels": []
     }
     return data

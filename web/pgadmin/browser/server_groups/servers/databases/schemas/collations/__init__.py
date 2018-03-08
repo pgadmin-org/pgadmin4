@@ -9,21 +9,23 @@
 
 """ Implements Collation Node """
 
-import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as database
+import simplejson as json
 from flask import render_template, request, jsonify
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases as database
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -197,12 +199,14 @@ class CollationView(PGChildNodeView):
             )
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
     def list(self, gid, sid, did, scid):
         """
-        This function is used to list all the collation nodes within that collection.
+        This function is used to list all the collation nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -228,7 +232,8 @@ class CollationView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did, scid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child node within that
+        collection.
         Here it will create all the collation node.
 
         Args:
@@ -380,22 +385,28 @@ class CollationView(PGChildNodeView):
         missing_definition_flag = False
 
         for arg in definition_args:
-            if arg == 'locale' and \
-                    (arg not in data or data[arg] == ''):
+            if (
+                arg == 'locale' and
+                (arg not in data or data[arg] == '')
+            ):
                 if 'copy_collation' not in data and (
-                                'lc_collate' not in data and 'lc_type' not in data
+                    'lc_collate' not in data and 'lc_type' not in data
                 ):
                     missing_definition_flag = True
 
-            if arg == 'copy_collation' and \
-                    (arg not in data or data[arg] == ''):
+            if (
+                arg == 'copy_collation' and
+                (arg not in data or data[arg] == '')
+            ):
                 if 'locale' not in data and (
-                                'lc_collate' not in data and 'lc_type' not in data
+                    'lc_collate' not in data and 'lc_type' not in data
                 ):
                     missing_definition_flag = True
 
-            if (arg == 'lc_collate' or arg == 'lc_type') and \
-                    (arg not in data or data[arg] == ''):
+            if (
+                (arg == 'lc_collate' or arg == 'lc_type') and
+                (arg not in data or data[arg] == '')
+            ):
                 if 'copy_collation' not in data and 'locale' not in data:
                     missing_definition_flag = True
 
@@ -435,7 +446,8 @@ class CollationView(PGChildNodeView):
                 status=410,
                 success=0,
                 errormsg=gettext(
-                    "Definition incomplete. Please provide Locale OR Copy Collation OR LC_TYPE/LC_COLLATE."
+                    "Definition incomplete. Please provide Locale OR Copy "
+                    "Collation OR LC_TYPE/LC_COLLATE."
                 )
             )
 
@@ -603,7 +615,7 @@ class CollationView(PGChildNodeView):
             return make_json_response(
                 data=SQL,
                 status=200
-                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -620,7 +632,8 @@ class CollationView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
                 return gone(
-                    gettext("Could not find the collation object in the database.")
+                    gettext(
+                        "Could not find the collation object in the database.")
                 )
 
             old_data = res['rows'][0]
@@ -628,7 +641,8 @@ class CollationView(PGChildNodeView):
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data, conn=self.conn
             )
-            return SQL.strip('\n'), data['name'] if 'name' in data else old_data['name']
+            return SQL.strip('\n'), data['name'] if 'name' in data else \
+                old_data['name']
         else:
             required_args = [
                 'name'
@@ -649,7 +663,8 @@ class CollationView(PGChildNodeView):
     @check_precondition
     def sql(self, gid, sid, did, scid, coid):
         """
-        This function will generates reverse engineered sql for collation object
+        This function will generates reverse engineered sql for collation
+        object
 
          Args:
            gid: Server Group ID

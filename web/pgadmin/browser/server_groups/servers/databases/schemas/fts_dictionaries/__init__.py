@@ -9,20 +9,22 @@
 
 """Defines views for management of Fts Dictionary node"""
 
-import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+import simplejson as json
 from flask import render_template, make_response, current_app, request, jsonify
 from flask_babel import gettext as _
+
+import pgadmin.browser.server_groups.servers.databases as databases
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -122,7 +124,8 @@ class FtsDictionaryView(PGChildNodeView):
       - This function is used to list all the  nodes within that collection.
 
     * nodes()
-      - This function will be used to create all the child node within collection.
+      - This function will be used to create all the child node within
+      collection.
         Here it will create all the FTS Dictionary nodes.
 
     * node()
@@ -130,7 +133,8 @@ class FtsDictionaryView(PGChildNodeView):
         Here it will create the FTS Template node based on its oid
 
     * properties(gid, sid, did, scid, dcid)
-      - This function will show the properties of the selected FTS Dictionary node
+      - This function will show the properties of the selected FTS Dictionary
+      node
 
     * create(gid, sid, did, scid)
       - This function will create the new FTS Dictionary object
@@ -228,9 +232,11 @@ class FtsDictionaryView(PGChildNodeView):
             driver = get_driver(PG_DEFAULT_DRIVER)
             self.qtIdent = driver.qtIdent
             # Set the template path for the SQL scripts
-            self.template_path = 'fts_dictionary/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'fts_dictionary/sql/#{0}#'.format(
+                self.manager.version)
 
             return f(*args, **kwargs)
+
         return wrap
 
     def tokenize_options(self, option_value):
@@ -384,9 +390,9 @@ class FtsDictionaryView(PGChildNodeView):
         if res['rows'][0]['template_schema'] is not None:
             if res['rows'][0]['template_schema'] != "pg_catalog":
                 res['rows'][0]['template'] = self.qtIdent(
-                        self.conn, res['rows'][0]['template_schema'],
-                        res['rows'][0]['template']
-                    )
+                    self.conn, res['rows'][0]['template_schema'],
+                    res['rows'][0]['template']
+                )
 
         if res['rows'][0]['options'] is not None:
             res['rows'][0]['options'] = self.tokenize_options(
@@ -423,7 +429,8 @@ class FtsDictionaryView(PGChildNodeView):
                 return make_json_response(
                     status=410,
                     success=0,
-                    errormsg=_("Could not find the required parameter (%s)." % arg)
+                    errormsg=_(
+                        "Could not find the required parameter (%s)." % arg)
                 )
         # Fetch schema name from schema oid
         sql = render_template(
@@ -456,7 +463,7 @@ class FtsDictionaryView(PGChildNodeView):
             name=data['name'],
             scid=data['schema']
         )
-        status, dcid= self.conn.execute_scalar(sql)
+        status, dcid = self.conn.execute_scalar(sql)
         if not status:
             return internal_server_error(errormsg=dcid)
 
@@ -612,7 +619,7 @@ class FtsDictionaryView(PGChildNodeView):
         return make_json_response(
             data=SQL,
             status=200
-            )
+        )
 
     def get_sql(self, gid, sid, did, scid, data, dcid=None):
         """
@@ -681,7 +688,10 @@ class FtsDictionaryView(PGChildNodeView):
                 data=new_data, o_data=old_data
             )
             # Fetch sql query for modified data
-            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
+            if 'name' in data:
+                return sql.strip('\n'), data['name']
+
+            return sql.strip('\n'), old_data['name']
         else:
             # Fetch schema name from schema oid
             sql = render_template("/".join([self.template_path, 'schema.sql']),
@@ -695,9 +705,11 @@ class FtsDictionaryView(PGChildNodeView):
             new_data = data.copy()
             new_data['schema'] = schema
 
-            if 'template' in new_data and \
-                            'name' in new_data and \
-                            'schema' in new_data:
+            if (
+                'template' in new_data and
+                'name' in new_data and
+                'schema' in new_data
+            ):
                 sql = render_template("/".join([self.template_path,
                                                 'create.sql']),
                                       data=new_data,
@@ -803,7 +815,8 @@ class FtsDictionaryView(PGChildNodeView):
 
 -- DROP TEXT SEARCH DICTIONARY {0};
 
-""".format(self.qtIdent(self.conn, res['rows'][0]['schema'], res['rows'][0]['name']))
+""".format(self.qtIdent(self.conn, res['rows'][0]['schema'],
+                        res['rows'][0]['name']))
 
         sql = sql_header + sql
 

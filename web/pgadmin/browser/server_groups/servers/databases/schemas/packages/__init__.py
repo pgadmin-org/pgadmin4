@@ -9,23 +9,25 @@
 
 """Implements Package Node"""
 import re
-import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as database
+import simplejson as json
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext as _
+
+import pgadmin.browser.server_groups.servers.databases as database
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, \
     precondition_required, gone
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -148,7 +150,8 @@ class PackageView(PGChildNodeView):
                             "Connection to the server has been lost."
                         )
                     )
-                self.template_path = 'package/ppas/#{0}#'.format(self.manager.version)
+                self.template_path = 'package/ppas/#{0}#'.format(
+                    self.manager.version)
 
                 SQL = render_template(
                     "/".join([self.template_path, 'get_schema.sql']),
@@ -171,7 +174,8 @@ class PackageView(PGChildNodeView):
     @check_precondition(action='list')
     def list(self, gid, sid, did, scid):
         """
-        This function is used to list all the package nodes within the collection.
+        This function is used to list all the package nodes within the
+        collection.
 
         Args:
           gid: Server Group ID
@@ -182,7 +186,8 @@ class PackageView(PGChildNodeView):
         Returns:
 
         """
-        SQL = render_template("/".join([self.template_path, 'properties.sql']), scid=scid)
+        SQL = render_template("/".join([self.template_path, 'properties.sql']),
+                              scid=scid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -195,7 +200,8 @@ class PackageView(PGChildNodeView):
     @check_precondition(action='nodes')
     def nodes(self, gid, sid, did, scid, pkgid=None):
         """
-        This function is used to create all the child nodes within the collection.
+        This function is used to create all the child nodes within the
+        collection.
         Here it will create all the package nodes.
 
         Args:
@@ -220,7 +226,7 @@ class PackageView(PGChildNodeView):
         if pkgid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                     errormsg=_("Could not find the package.")
+                    errormsg=_("Could not find the package.")
                 )
 
             row = rset['rows'][0]
@@ -305,7 +311,8 @@ class PackageView(PGChildNodeView):
         Returns:
 
         """
-        SQL = render_template("/".join([self.template_path, 'properties.sql']), scid=scid, pkgid=pkgid)
+        SQL = render_template("/".join([self.template_path, 'properties.sql']),
+                              scid=scid, pkgid=pkgid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -316,8 +323,10 @@ class PackageView(PGChildNodeView):
                 errormsg=_("Could not find the package in the database.")
             )
 
-        res['rows'][0]['pkgheadsrc'] = self.get_inner(res['rows'][0]['pkgheadsrc'])
-        res['rows'][0]['pkgbodysrc'] = self.get_inner(res['rows'][0]['pkgbodysrc'])
+        res['rows'][0]['pkgheadsrc'] = self.get_inner(
+            res['rows'][0]['pkgheadsrc'])
+        res['rows'][0]['pkgbodysrc'] = self.get_inner(
+            res['rows'][0]['pkgbodysrc'])
 
         SQL = render_template("/".join([self.template_path, 'acl.sql']),
                               scid=scid,
@@ -425,7 +434,9 @@ class PackageView(PGChildNodeView):
             cascade = False
 
         try:
-            SQL = render_template("/".join([self.template_path, 'properties.sql']), scid=scid, pkgid=pkgid)
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']), scid=scid,
+                pkgid=pkgid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -571,7 +582,9 @@ class PackageView(PGChildNodeView):
 
         if pkgid is not None:
             data['schema'] = self.schema
-            SQL = render_template("/".join([self.template_path, 'properties.sql']), scid=scid, pkgid=pkgid)
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']), scid=scid,
+                pkgid=pkgid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -580,8 +593,10 @@ class PackageView(PGChildNodeView):
                     errormsg=_("Could not find the package in the database.")
                 )
 
-            res['rows'][0]['pkgheadsrc'] = self.get_inner(res['rows'][0]['pkgheadsrc'])
-            res['rows'][0]['pkgbodysrc'] = self.get_inner(res['rows'][0]['pkgbodysrc'])
+            res['rows'][0]['pkgheadsrc'] = self.get_inner(
+                res['rows'][0]['pkgheadsrc'])
+            res['rows'][0]['pkgbodysrc'] = self.get_inner(
+                res['rows'][0]['pkgbodysrc'])
 
             SQL = render_template("/".join([self.template_path, 'acl.sql']),
                                   scid=scid,
@@ -603,11 +618,14 @@ class PackageView(PGChildNodeView):
             for key in ['pkgacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
+                        data[key]['added'] = parse_priv_to_db(
+                            data[key]['added'], self.acl)
                     if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
+                        data[key]['changed'] = parse_priv_to_db(
+                            data[key]['changed'], self.acl)
                     if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
+                        data[key]['deleted'] = parse_priv_to_db(
+                            data[key]['deleted'], self.acl)
 
             # If name is not present with in update data then copy it
             # from old data
@@ -623,7 +641,8 @@ class PackageView(PGChildNodeView):
             if 'pkgacl' in data:
                 data['pkgacl'] = parse_priv_to_db(data['pkgacl'], self.acl)
 
-            SQL = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
+            SQL = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, conn=self.conn)
 
             return SQL, data['name']
 
@@ -640,7 +659,9 @@ class PackageView(PGChildNodeView):
             pkgid: Package ID
         """
         try:
-            SQL = render_template("/".join([self.template_path, 'properties.sql']), scid=scid, pkgid=pkgid)
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']), scid=scid,
+                pkgid=pkgid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -649,8 +670,10 @@ class PackageView(PGChildNodeView):
                     errormsg=_("Could not find the package in the database.")
                 )
 
-            res['rows'][0]['pkgheadsrc'] = self.get_inner(res['rows'][0]['pkgheadsrc'])
-            res['rows'][0]['pkgbodysrc'] = self.get_inner(res['rows'][0]['pkgbodysrc'])
+            res['rows'][0]['pkgheadsrc'] = self.get_inner(
+                res['rows'][0]['pkgheadsrc'])
+            res['rows'][0]['pkgbodysrc'] = self.get_inner(
+                res['rows'][0]['pkgbodysrc'])
 
             SQL = render_template("/".join([self.template_path, 'acl.sql']),
                                   scid=scid,
@@ -686,7 +709,7 @@ class PackageView(PGChildNodeView):
             return ajax_response(response=sql)
 
         except Exception as e:
-                return internal_server_error(errormsg=str(e))
+            return internal_server_error(errormsg=str(e))
 
     @check_precondition(action="dependents")
     def dependents(self, gid, sid, did, scid, pkgid):
@@ -744,5 +767,6 @@ class PackageView(PGChildNodeView):
             return sql[start:].strip("\n")
 
         return sql[start:end].strip("\n")
+
 
 PackageView.register_node_view(blueprint)

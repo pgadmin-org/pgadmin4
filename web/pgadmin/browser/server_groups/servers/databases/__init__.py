@@ -9,25 +9,25 @@
 
 """Implements the Database Node"""
 
-import simplejson as json
 import re
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+import simplejson as json
 from flask import render_template, current_app, request, jsonify
 from flask_babel import gettext as _
+
+import pgadmin.browser.server_groups.servers as servers
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db, parse_variables_from_db
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils.ajax import gone
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, unauthorized
-from pgadmin.utils.ajax import gone
 from pgadmin.utils.driver import get_driver
-
-from config import PG_DEFAULT_DRIVER
 
 
 class DatabaseModule(CollectionNodeModule):
@@ -201,10 +201,7 @@ class DatabaseView(PGChildNodeView):
 
     @check_precondition(action="list")
     def list(self, gid, sid):
-        last_system_oid = 0 if self.blueprint.show_system_objects else \
-            (self.manager.db_info[self.manager.did])['datlastsysoid'] \
-            if self.manager.db_info is not None and \
-            self.manager.did in self.manager.db_info else 0
+        last_system_oid = self.retrieve_last_system_oid()
 
         db_disp_res = None
         params = None
@@ -230,14 +227,21 @@ class DatabaseView(PGChildNodeView):
             status=200
         )
 
+    def retrieve_last_system_oid(self):
+        last_system_oid = 0
+        if self.blueprint.show_system_objects:
+            last_system_oid = 0
+        elif (
+            self.manager.db_info is not None and
+            self.manager.did in self.manager.db_info
+        ):
+            last_system_oid = (self.manager.db_info[self.manager.did])[
+                'datlastsysoid']
+        return last_system_oid
+
     def get_nodes(self, gid, sid, show_system_templates=False):
         res = []
-        last_system_oid = 0 if self.blueprint.show_system_objects or \
-            show_system_templates else (
-                (self.manager.db_info[self.manager.did])['datlastsysoid']
-                if self.manager.db_info is not None and
-                self.manager.did in self.manager.db_info else 0
-            )
+        last_system_oid = self.retrieve_last_system_oid()
         server_node_res = self.manager
 
         db_disp_res = None
@@ -321,13 +325,15 @@ class DatabaseView(PGChildNodeView):
             else:
                 conn = self.manager.connection(row['name'])
                 connected = conn.connected()
+            icon_css_class = "pg-icon-database"
+            if not connected:
+                icon_css_class = "icon-database-not-connected"
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
                     row['did'],
                     sid,
                     row['name'],
-                    icon="icon-database-not-connected" if not connected
-                    else "pg-icon-database",
+                    icon=icon_css_class,
                     connected=connected,
                     spcname=row['spcname'],
                     allowConn=row['datallowconn'],
@@ -580,7 +586,7 @@ class DatabaseView(PGChildNodeView):
             )
         )
 
-    @check_precondition(action="update")
+    @check_precondition(action='update')
     def update(self, gid, sid, did):
         """Update the database."""
 
@@ -589,7 +595,7 @@ class DatabaseView(PGChildNodeView):
         )
 
         # Generic connection for offline updates
-        conn = self.manager.connection(conn_id="db_offline_update")
+        conn = self.manager.connection(conn_id='db_offline_update')
         status, errmsg = conn.connect()
         if not status:
             current_app.logger.error(
@@ -611,7 +617,7 @@ class DatabaseView(PGChildNodeView):
 
             if len(rset['rows']) == 0:
                 return gone(
-                    _("Could not find the database on the server.")
+                    _('Could not find the database on the server.')
                 )
 
             data['old_name'] = (rset['rows'][0])['name']
@@ -639,8 +645,8 @@ class DatabaseView(PGChildNodeView):
 
             if not status:
                 current_app.logger.error(
-                    "Could not connected to database(#{0}).\n"
-                    "Error: {1}".format(did, errmsg)
+                    'Could not connected to database(#{0}).\n'
+                    'Error: {1}'.format(did, errmsg)
                 )
                 return internal_server_error(errmsg)
 
@@ -904,10 +910,7 @@ class DatabaseView(PGChildNodeView):
         otherwise it will return statistics for all the databases in that
         server.
         """
-        last_system_oid = 0 if self.blueprint.show_system_objects else \
-            (self.manager.db_info[self.manager.did])['datlastsysoid'] \
-            if self.manager.db_info is not None and \
-            self.manager.did in self.manager.db_info else 0
+        last_system_oid = self.retrieve_last_system_oid()
 
         db_disp_res = None
         params = None
@@ -918,14 +921,12 @@ class DatabaseView(PGChildNodeView):
             params = tuple(self.manager.db_res.split(','))
 
         conn = self.manager.connection()
-        status, res = conn.execute_dict(
-            render_template(
-                "/".join([self.template_path, 'stats.sql']),
-                did=did,
-                conn=conn,
-                last_system_oid=last_system_oid,
-                db_restrictions=db_disp_res
-            ),
+        status, res = conn.execute_dict(render_template(
+            "/".join([self.template_path, 'stats.sql']),
+            did=did,
+            conn=conn,
+            last_system_oid=last_system_oid,
+            db_restrictions=db_disp_res),
             params
         )
 
@@ -1022,7 +1023,7 @@ class DatabaseView(PGChildNodeView):
             sid: Server ID
             did: Database ID
         """
-        dependents_result = self.get_dependents(self.conn, did) if\
+        dependents_result = self.get_dependents(self.conn, did) if \
             self.conn.connected() else []
         return ajax_response(
             response=dependents_result,
@@ -1040,7 +1041,7 @@ class DatabaseView(PGChildNodeView):
             sid: Server ID
             did: Database ID
         """
-        dependencies_result = self.get_dependencies(self.conn, did) if\
+        dependencies_result = self.get_dependencies(self.conn, did) if \
             self.conn.connected() else []
         return ajax_response(
             response=dependencies_result,

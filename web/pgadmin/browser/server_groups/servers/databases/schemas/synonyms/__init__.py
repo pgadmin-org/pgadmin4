@@ -24,6 +24,7 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -203,7 +204,8 @@ class SynonymView(PGChildNodeView):
                 )
 
             # we will set template path for sql scripts
-            self.template_path = 'synonym/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'synonym/sql/#{0}#'.format(
+                self.manager.version)
 
             return f(*args, **kwargs)
 
@@ -212,7 +214,8 @@ class SynonymView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did, scid):
         """
-        This function is used to list all the synonym nodes within that collection.
+        This function is used to list all the synonym nodes within that
+        collection.
 
         Args:
             gid: Server group ID
@@ -238,7 +241,8 @@ class SynonymView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, did, scid):
         """
-        This function will used to create all the child node within that collection.
+        This function will used to create all the child node within that
+        collection.
         Here it will create all the synonym node.
 
         Args:
@@ -335,19 +339,23 @@ class SynonymView(PGChildNodeView):
                 data[k] = v
 
         is_valid_request = True
-        if 'trgTyp' not in data or data['trgTyp'] is None or \
-            data['trgTyp'].strip() == '':
+        if (
+            'trgTyp' not in data or data['trgTyp'] is None or
+            data['trgTyp'].strip() == ''
+        ):
             is_valid_request = False
 
-        if 'trgSchema' not in data or data['trgSchema'] is None or \
-            data['trgSchema'].strip() == '':
+        if (
+            'trgSchema' not in data or data['trgSchema'] is None or
+            data['trgSchema'].strip() == ''
+        ):
             is_valid_request = False
 
         if is_valid_request:
             sql = render_template("/".join([self.template_path,
                                             'get_objects.sql']),
-                                trgTyp=data['trgTyp'],
-                                trgSchema=data['trgSchema'])
+                                  trgTyp=data['trgTyp'],
+                                  trgSchema=data['trgSchema'])
             status, rset = self.conn.execute_dict(sql)
 
             if not status:
@@ -642,7 +650,7 @@ class SynonymView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) > 0:
-           data = res['rows'][0]
+            data = res['rows'][0]
         else:
             return gone(
                 gettext('The specified synonym could not be found.')

@@ -31,8 +31,8 @@ def create_fts_configuration(server, db_name, schema_name, fts_conf_name):
                                        server['sslmode'])
         pg_cursor = connection.cursor()
 
-        query = "CREATE TEXT SEARCH CONFIGURATION " + schema_name + "." + fts_conf_name + \
-                "(PARSER=default)"
+        query = "CREATE TEXT SEARCH CONFIGURATION " + schema_name + "." + \
+                fts_conf_name + "(PARSER=default)"
 
         pg_cursor.execute(query)
         connection.commit()

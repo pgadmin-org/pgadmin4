@@ -30,17 +30,20 @@ def create_fts_template(server, db_name, schema_name, fts_temp_name):
                                        server['sslmode'])
         pg_cursor = connection.cursor()
 
-        query = "DROP TEXT SEARCH TEMPLATE IF EXISTS " + schema_name + "." + fts_temp_name
+        query = "DROP TEXT SEARCH TEMPLATE IF EXISTS " + schema_name + "." + \
+                fts_temp_name
         pg_cursor.execute(query)
 
-        query = "CREATE TEXT SEARCH TEMPLATE " + schema_name + "." + fts_temp_name + \
+        query = "CREATE TEXT SEARCH TEMPLATE " + schema_name + "." + \
+                fts_temp_name + \
                 "(INIT=dispell_init, LEXIZE=dispell_lexize)"
         pg_cursor.execute(query)
         connection.commit()
 
         # Get 'oid' from newly created template
         pg_cursor.execute("select oid from pg_catalog.pg_ts_template where "
-                          "tmplname = '%s' order by oid ASC limit 1" % fts_temp_name)
+                          "tmplname = '%s' order by oid ASC limit 1" %
+                          fts_temp_name)
 
         oid = pg_cursor.fetchone()
         fts_temp_id = ''

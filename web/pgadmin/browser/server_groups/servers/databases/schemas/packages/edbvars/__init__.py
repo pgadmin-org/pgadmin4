@@ -9,12 +9,14 @@
 
 """Implements Edb Functions/Edb Procedures Node."""
 
-import copy
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases.schemas.packages as packages
 from flask import render_template, make_response
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases.schemas \
+    .packages as packages
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     DataTypeReader
@@ -23,8 +25,6 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, gone
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
-
-from config import PG_DEFAULT_DRIVER
 
 
 class EdbVarModule(CollectionNodeModule):
@@ -99,6 +99,7 @@ class EdbVarModule(CollectionNodeModule):
         """
         return False
 
+
 blueprint = EdbVarModule(__name__)
 
 
@@ -106,7 +107,8 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
     """
     class EdbFuncView(PGChildNodeView, DataTypeReader)
 
-    This class inherits PGChildNodeView and DataTypeReader to get the different routes for
+    This class inherits PGChildNodeView and DataTypeReader to get the different
+    routes for
     the module.
 
     The class is responsible to Create, Read, Update and Delete operations for
@@ -315,9 +317,10 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
             pkgid: Package Id
             varid: variable Id
         """
-        SQL = render_template("/".join([self.sql_template_path, 'properties.sql']),
-                              varid=varid,
-                              pkgid=pkgid)
+        SQL = render_template(
+            "/".join([self.sql_template_path, 'properties.sql']),
+            varid=varid,
+            pkgid=pkgid)
 
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -334,5 +337,6 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
         sql += u"{} {};".format(var['name'], var['datatype'])
 
         return ajax_response(response=sql)
+
 
 EdbVarView.register_node_view(blueprint)

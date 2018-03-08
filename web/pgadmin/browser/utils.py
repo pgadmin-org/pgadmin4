@@ -13,11 +13,11 @@ from abc import abstractmethod
 
 import flask
 from flask import render_template, current_app
-from flask_babel import gettext
 from flask.views import View, MethodViewType, with_metaclass
-from pgadmin.utils.ajax import make_json_response, precondition_required
+from flask_babel import gettext
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import make_json_response, precondition_required
 
 
 def is_version_in_range(sversion, min_ver, max_ver):
@@ -64,18 +64,19 @@ class PGChildModule(object):
                 return False
         sversion = getattr(manager, 'sversion', None)
 
-        if (sversion is None or not isinstance(sversion, int)):
+        if sversion is None or not isinstance(sversion, int):
             return False
 
         assert (self.server_type is None or isinstance(self.server_type, list))
 
         if self.server_type is None or manager.server_type in self.server_type:
-            return is_version_in_range(sversion, self.min_gpdbver
-                                       if manager.server_type == 'gpdb'
-                                       else self.min_ver,
-                                       self.max_gpdbver
-                                       if manager.server_type == 'gpdb'
-                                       else self.max_ver)
+            min_server_version = self.min_ver
+            max_server_version = self.max_ver
+            if manager.server_type == 'gpdb':
+                min_server_version = self.min_gpdbver
+                max_server_version = self.max_gpdbver
+            return is_version_in_range(sversion, min_server_version,
+                                       max_server_version)
 
         return False
 
@@ -205,35 +206,38 @@ class NodeView(with_metaclass(MethodViewType, View)):
         return has_args, has_id and has_args
 
     def dispatch_request(self, *args, **kwargs):
-        meth = flask.request.method.lower()
-        if meth == 'head':
-            meth = 'get'
+        http_method = flask.request.method.lower()
+        if http_method == 'head':
+            http_method = 'get'
 
         assert self.cmd in self.operations, \
-            "Unimplemented command ({0}) for {1}".format(
+            'Unimplemented command ({0}) for {1}'.format(
                 self.cmd,
                 str(self.__class__.__name__)
             )
 
         has_args, has_id = self.check_args(**kwargs)
 
-        assert (self.cmd in self.operations and
-                (has_id and len(self.operations[self.cmd]) > 0 and
-                 meth in self.operations[self.cmd][0]) or
-                (not has_id and len(self.operations[self.cmd]) > 1 and
-                 meth in self.operations[self.cmd][1]) or
-                (len(self.operations[self.cmd]) > 2 and
-                 meth in self.operations[self.cmd][2])), \
-            "Unimplemented method ({0}) for command ({1}), which {2} an id"\
-            .format(
-                meth, self.cmd,
-                'requires' if has_id else 'does not require'
-            )
-
-        meth = self.operations[self.cmd][0][meth] if has_id else \
-            self.operations[self.cmd][1][meth] \
-            if has_args and meth in self.operations[self.cmd][1] \
-            else self.operations[self.cmd][2][meth]
+        assert (
+            self.cmd in self.operations and
+            (has_id and len(self.operations[self.cmd]) > 0 and
+             http_method in self.operations[self.cmd][0]) or
+            (not has_id and len(self.operations[self.cmd]) > 1 and
+             http_method in self.operations[self.cmd][1]) or
+            (len(self.operations[self.cmd]) > 2 and
+             http_method in self.operations[self.cmd][2])
+        ), \
+            'Unimplemented method ({0}) for command ({1}), which {2} ' \
+            'an id'.format(http_method,
+                           self.cmd,
+                           'requires' if has_id else 'does not require')
+        meth = None
+        if has_id:
+            meth = self.operations[self.cmd][0][http_method]
+        elif has_args and http_method in self.operations[self.cmd][1]:
+            meth = self.operations[self.cmd][1][http_method]
+        else:
+            meth = self.operations[self.cmd][2][http_method]
 
         method = getattr(self, meth, None)
 
@@ -242,7 +246,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
                 status=406,
                 success=0,
                 errormsg=gettext(
-                    "Unimplemented method ({0}) for this url ({1})".format(
+                    'Unimplemented method ({0}) for this url ({1})'.format(
                         meth, flask.request.path)
                 )
             )
@@ -335,8 +339,10 @@ class PGChildNodeView(NodeView):
         nodes = []
         for module in self.blueprint.submodules:
             if isinstance(module, PGChildModule):
-                if manager is not None and \
-                        module.BackendSupported(manager, **kwargs):
+                if (
+                    manager is not None and
+                    module.BackendSupported(manager, **kwargs)
+                ):
                     nodes.extend(module.get_nodes(**kwargs))
             else:
                 nodes.extend(module.get_nodes(**kwargs))

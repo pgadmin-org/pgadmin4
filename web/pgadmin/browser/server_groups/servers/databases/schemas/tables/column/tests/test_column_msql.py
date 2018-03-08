@@ -167,16 +167,19 @@ class ColumnMsqlTestCase(BaseTestGenerator):
         if not expected_precision and hasattr(self, 'old_precision'):
             expected_precision = self.old_precision
 
-        self.assertEquals(response_data['data'],
-                          self.expected_res.format(
-                              **dict([('schema', self.schema_name),
-                                      ('table', self.table_name),
-                                      ('column', self.column_name),
-                                      ('len', expected_len),
-                                      ('precision', expected_precision)
-                                      ]
-                                     )
-                          ))
+        self.assertEquals(
+            response_data['data'],
+            self.expected_res.format(
+                **dict(
+                    [('schema', self.schema_name),
+                     ('table', self.table_name),
+                     ('column', self.column_name),
+                     ('len', expected_len),
+                     ('precision', expected_precision)
+                     ]
+                )
+            )
+        )
 
     def tearDown(self):
         # Disconnect the database

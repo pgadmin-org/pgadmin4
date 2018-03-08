@@ -28,11 +28,10 @@ class ViewsDeleteTestCase(BaseTestGenerator):
                  "SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER" \
                  " TO %s"
     scenarios = [
-        ('Delete view under schema node', dict(url='/browser/view/obj/',
-                                               view_name=
-                                               "test_view_delete_%s" %
-                                               (str(uuid.uuid4())[1:8]),
-                                               sql_query=view_sql)),
+        ('Delete view under schema node', dict(
+            url='/browser/view/obj/',
+            view_name="test_view_delete_%s" % (str(uuid.uuid4())[1:8]),
+            sql_query=view_sql)),
         ('Delete materialized view under schema node',
          dict(url='/browser/mview/obj/',
               view_name="test_mview_delete_%s" % (str(uuid.uuid4())[1:8]),

@@ -75,12 +75,13 @@ class TriggerFuncPutTestCase(BaseTestGenerator):
             "id": trigger_func_id
         }
 
-        put_response = self.tester.put(self.url + str(utils.SERVER_GROUP) +
-                                       '/' + str(server_id) + '/' + str(db_id)
-                                       + '/' + str(self.schema_id) + '/' +
-                                       str(trigger_func_id),
-                                       data=json.dumps(data),
-                                       follow_redirects=True)
+        put_response = self.tester.put(
+            self.url + str(utils.SERVER_GROUP) +
+            '/' + str(server_id) + '/' + str(db_id) + '/' +
+            str(self.schema_id) + '/' +
+            str(trigger_func_id),
+            data=json.dumps(data),
+            follow_redirects=True)
         self.assertEquals(put_response.status_code, 200)
         # Disconnect the database
         database_utils.disconnect_database(self, server_id, db_id)

@@ -53,7 +53,8 @@ class ForeignTablePutTestCase(BaseTestGenerator):
                                               self.fsrv_name, self.fdw_name)
         self.ft_id = ft_utils.create_foreign_table(self.server, self.db_name,
                                                    self.schema_name,
-                                                   self.fsrv_name, self.ft_name)
+                                                   self.fsrv_name,
+                                                   self.ft_name)
 
     def runTest(self):
         """This function will update foreign table under test database."""

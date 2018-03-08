@@ -13,9 +13,12 @@ import copy
 import re
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases.schemas.packages as packages
 from flask import render_template, make_response
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases\
+    .schemas.packages as packages
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     DataTypeReader
@@ -25,8 +28,6 @@ from pgadmin.utils.ajax import make_json_response, \
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
-
-from config import PG_DEFAULT_DRIVER
 
 
 class EdbFuncModule(CollectionNodeModule):
@@ -125,8 +126,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
     """
     class EdbFuncView(PGChildNodeView, DataTypeReader)
 
-    This class inherits PGChildNodeView and DataTypeReader to get the different routes for
-    the module.
+    This class inherits PGChildNodeView and DataTypeReader to get the different
+    routes for the module.
 
     The class is responsible to Create, Read, Update and Delete operations for
     the Functions.
@@ -461,7 +462,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
             proargnames[i] if len(proargnames) > i else '',
             proargdefaultvals[i] if len(proargdefaultvals) > i else ''
         )
-                   for i in range(len(proargtypes))]
+            for i in range(len(proargtypes))]
 
         proargs = {"proargs": ", ".join(proargs)}
 
@@ -529,9 +530,10 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
             scid: Schema Id
             fnid: Function Id
         """
-        SQL = render_template("/".join([self.sql_template_path, 'get_body.sql']),
-                              scid=scid,
-                              pkgid=pkgid)
+        SQL = render_template(
+            "/".join([self.sql_template_path, 'get_body.sql']),
+            scid=scid,
+            pkgid=pkgid)
 
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -619,6 +621,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
             return sql[start:].strip("\n")
 
         return sql[start:end].strip("\n")
+
 
 EdbFuncView.register_node_view(blueprint)
 
@@ -708,6 +711,7 @@ class EdbProcModule(CollectionNodeModule):
         module.
         """
         return False
+
 
 procedure_blueprint = EdbProcModule(__name__)
 

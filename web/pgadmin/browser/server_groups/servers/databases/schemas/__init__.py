@@ -7,13 +7,15 @@
 #
 ##########################################################################
 
-import simplejson as json
 import re
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers as servers
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule, PGChildModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
@@ -21,8 +23,6 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone, bad_request
 from pgadmin.utils.driver import get_driver
-
-from config import PG_DEFAULT_DRIVER
 
 """
     This module is responsible for generating two nodes
@@ -283,7 +283,8 @@ class SchemaView(PGChildNodeView):
                                 data[aclcol][modifier], allowedacl['acl']
                             )
                 else:
-                    data[aclcol] = parse_priv_to_db(data[aclcol], allowedacl['acl'])
+                    data[aclcol] = parse_priv_to_db(data[aclcol],
+                                                    allowedacl['acl'])
 
         return acls
 
@@ -366,7 +367,8 @@ class SchemaView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did):
         """
-        This function is used to list all the schema nodes within the collection.
+        This function is used to list all the schema nodes within the
+        collection.
 
         Args:
             gid: Server group ID
@@ -491,13 +493,13 @@ It may have been removed by another user.
         for row in rset['rows']:
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
-                        row['oid'],
-                        did,
-                        row['name'],
-                        icon=icon,
-                        can_create=row['can_create'],
-                        has_usage=row['has_usage']
-                    ),
+                    row['oid'],
+                    did,
+                    row['name'],
+                    icon=icon,
+                    can_create=row['can_create'],
+                    has_usage=row['has_usage']
+                ),
                 status=200
             )
 
@@ -528,9 +530,10 @@ It may have been removed by another user.
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the schema in the database. It may have been removed by another user."
-                ))
+            return gone(gettext(
+                "Could not find the schema in the database. "
+                "It may have been removed by another user."
+            ))
 
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
@@ -801,7 +804,9 @@ It may have been removed by another user.
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the schema in the database. It may have been removed by another user."""))
+            return gone(gettext(
+                'Could not find the schema in the database.'
+                ' It may have been removed by another user.'))
 
         data = res['rows'][0]
         data = self._formatter(data, scid)
@@ -892,10 +897,12 @@ It may have been removed by another user.
         nodes = []
         for module in self.blueprint.submodules:
             if isinstance(module, PGChildModule):
-                if self.manager is not None and \
-                        module.BackendSupported(
-                            self.manager, **backend_support_keywords
-                        ):
+                if (
+                    self.manager is not None and
+                    module.BackendSupported(
+                        self.manager, **backend_support_keywords
+                    )
+                ):
                     nodes.extend(module.get_nodes(**kwargs))
             else:
                 nodes.extend(module.get_nodes(**kwargs))
@@ -1006,6 +1013,7 @@ It may have been removed by another user.
         SQL = sql_header + SQL
 
         return ajax_response(response=SQL.strip("\n"))
+
 
 SchemaView.register_node_view(schema_blueprint)
 CatalogView.register_node_view(catalog_blueprint)

@@ -12,6 +12,7 @@
 import json
 
 from flask import render_template
+
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import internal_server_error
 
@@ -43,23 +44,30 @@ class SchemaChildModule(CollectionNodeModule):
 
     def BackendSupported(self, manager, **kwargs):
         return (
-                   (
-                       kwargs['is_catalog'] and ((
-                                                     self.CATALOG_DB_SUPPORTED and kwargs['db_support']
-                                                 ) or (
-                                                     not self.CATALOG_DB_SUPPORTED and
-                                                     not kwargs['db_support'] and
-                                                     (
-                                                         self.SUPPORTED_SCHEMAS is None or (
-                                                             kwargs['schema_name'] in self.SUPPORTED_SCHEMAS
-                                                         )
-                                                     )
-                                                 ))
-                   ) or (
-                       not kwargs['is_catalog'] and self.CATALOG_DB_SUPPORTED
-                   )
-               ) and CollectionNodeModule.BackendSupported(
-            self, manager, **kwargs
+            (
+                (
+                    kwargs['is_catalog'] and
+                    (
+                        (
+                            self.CATALOG_DB_SUPPORTED and
+                            kwargs['db_support']
+                        ) or (
+                            not self.CATALOG_DB_SUPPORTED and
+                            not kwargs[
+                                'db_support'] and
+                            (
+                                self.SUPPORTED_SCHEMAS is None or
+                                kwargs[
+                                    'schema_name'] in self.SUPPORTED_SCHEMAS
+                            )
+                        )
+                    )
+                ) or
+                (
+                    not kwargs['is_catalog'] and self.CATALOG_DB_SUPPORTED
+                )
+            ) and
+            CollectionNodeModule.BackendSupported(self, manager, **kwargs)
         )
 
     @property
@@ -83,7 +91,7 @@ class DataTypeReader:
       - Returns data-types on the basis of the condition provided.
     """
 
-    def get_types(self, conn, condition, add_serials=False, schema_oid = ''):
+    def get_types(self, conn, condition, add_serials=False, schema_oid=''):
         """
         Returns data-types including calculation for Length and Precision.
 
@@ -106,7 +114,7 @@ class DataTypeReader:
                     '#{0}#'.format(self.manager.version)
                 )
             SQL = render_template(
-                "/".join([self.data_type_template_path,'get_types.sql']),
+                "/".join([self.data_type_template_path, 'get_types.sql']),
                 condition=condition,
                 add_serials=add_serials,
                 schema_oid=schema_oid
@@ -125,7 +133,8 @@ class DataTypeReader:
 
                 # Check if the type will have length and precision or not
                 if row['elemoid']:
-                    length, precision, typeval = self.get_length_precision(row['elemoid'])
+                    length, precision, typeval = self.get_length_precision(
+                        row['elemoid'])
 
                 if length:
                     min_val = 0 if typeval == 'D' else 1
@@ -167,11 +176,16 @@ class DataTypeReader:
                                    1015, 'varchar[]', 'character varying[]'):
                 typeval = 'L'
             elif elemoid_or_name in (1083, 'time', 'time without time zone',
-                                     1114, 'timestamp', 'timestamp without time zone',
-                                     1115, 'timestamp[]', 'timestamp without time zone[]',
-                                     1183, 'time[]', 'time without time zone[]',
-                                     1184, 'timestamptz', 'timestamp with time zone',
-                                     1185, 'timestamptz[]', 'timestamp with time zone[]',
+                                     1114, 'timestamp',
+                                     'timestamp without time zone',
+                                     1115, 'timestamp[]',
+                                     'timestamp without time zone[]',
+                                     1183, 'time[]',
+                                     'time without time zone[]',
+                                     1184, 'timestamptz',
+                                     'timestamp with time zone',
+                                     1185, 'timestamptz[]',
+                                     'timestamp with time zone[]',
                                      1186, 'interval',
                                      1187, 'interval[]', 'interval[]',
                                      1266, 'timetz', 'time with time zone',
@@ -205,8 +219,8 @@ class DataTypeReader:
         array = ''
         length = ''
 
-        # Above 7.4, format_type also sends the schema name if it's not included
-        # in the search_path, so we need to skip it in the typname
+        # Above 7.4, format_type also sends the schema name if it's not
+        # included in the search_path, so we need to skip it in the typname
         if typname.find(schema + '".') >= 0:
             name = typname[len(schema) + 3]
         elif typname.find(schema + '.') >= 0:
@@ -235,22 +249,24 @@ class DataTypeReader:
         if typmod != -1:
             length = '('
             if name == 'numeric':
-                _len = (typmod - 4) >> 16;
-                _prec = (typmod - 4) & 0xffff;
+                _len = (typmod - 4) >> 16
+                _prec = (typmod - 4) & 0xffff
                 length += str(_len)
                 if _prec is not None:
                     length += ',' + str(_prec)
-            elif name == 'time' or \
-                            name == 'timetz' or \
-                            name == 'time without time zone' or \
-                            name == 'time with time zone' or \
-                            name == 'timestamp' or \
-                            name == 'timestamptz' or \
-                            name == 'timestamp without time zone' or \
-                            name == 'timestamp with time zone' or \
-                            name == 'bit' or \
-                            name == 'bit varying' or \
-                            name == 'varbit':
+            elif (
+                name == 'time' or
+                name == 'timetz' or
+                name == 'time without time zone' or
+                name == 'time with time zone' or
+                name == 'timestamp' or
+                name == 'timestamptz' or
+                name == 'timestamp without time zone' or
+                name == 'timestamp with time zone' or
+                name == 'bit' or
+                name == 'bit varying' or
+                name == 'varbit'
+            ):
                 _prec = 0
                 _len = typmod
                 length += str(_len)
@@ -567,7 +583,8 @@ class VacuumSettings:
         elif type is 'toast':
             for row in res['rows']:
                 row_old_name = row['name']
-                row_name = 'toast_{0}'.format(vacuum_fields[type][row_old_name][0])
+                row_name = 'toast_{0}'.format(
+                    vacuum_fields[type][row_old_name][0])
                 row['name'] = vacuum_fields[type][row_old_name][0]
                 row['label'] = vacuum_fields[type][row_old_name][1]
                 row['column_type'] = vacuum_fields[type][row_old_name][2]

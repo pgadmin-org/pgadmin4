@@ -9,20 +9,22 @@
 
 """Defines views for management of Fts Configuration node"""
 
-import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+import simplejson as json
 from flask import render_template, make_response, current_app, request, jsonify
 from flask_babel import gettext as _
+
+import pgadmin.browser.server_groups.servers.databases as databases
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -32,7 +34,8 @@ class FtsConfigurationModule(SchemaChildModule):
     """
      class FtsConfigurationModule(SchemaChildModule)
 
-        A module class for FTS Configuration node derived from SchemaChildModule.
+        A module class for FTS Configuration node derived from
+        SchemaChildModule.
 
     Methods:
     -------
@@ -102,7 +105,8 @@ class FtsConfigurationView(PGChildNodeView):
     Methods:
     -------
     * __init__(**kwargs)
-      - Method is used to initialize the FtsConfigurationView and it's base view.
+      - Method is used to initialize the FtsConfigurationView and it's base
+      view.
 
     * module_js()
       - This property defines (if javascript) exists for this node.
@@ -117,7 +121,8 @@ class FtsConfigurationView(PGChildNodeView):
       - This function is used to list all the  nodes within that collection.
 
     * nodes()
-      - This function will be used to create all the child node within collection.
+      - This function will be used to create all the child node within
+      collection.
         Here it will create all the FTS Configuration nodes.
 
     * node()
@@ -125,13 +130,15 @@ class FtsConfigurationView(PGChildNodeView):
         Here it will create the FTS Template node based on its oid
 
     * properties(gid, sid, did, scid, cfgid)
-      - This function will show the properties of the selected FTS Configuration node
+      - This function will show the properties of the selected
+      FTS Configuration node
 
     * create(gid, sid, did, scid)
       - This function will create the new FTS Configuration object
 
     * update(gid, sid, did, scid, cfgid)
-      - This function will update the data for the selected FTS Configuration node
+      - This function will update the data for the selected
+      FTS Configuration node
 
     * delete(self, gid, sid, did, scid, cfgid):
       - This function will drop the FTS Configuration object
@@ -149,7 +156,8 @@ class FtsConfigurationView(PGChildNodeView):
       - This function will fetch all ftp parsers from the same schema
 
     * copyConfig():
-      - This function will fetch all existed fts configurations from same schema
+      - This function will fetch all existed fts configurations from same
+      schema
 
     * tokens():
       - This function will fetch all tokens from fts parser related to node
@@ -234,9 +242,11 @@ class FtsConfigurationView(PGChildNodeView):
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
-            self.template_path = 'fts_configuration/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'fts_configuration/sql/#{0}#'.format(
+                self.manager.version)
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -363,7 +373,9 @@ class FtsConfigurationView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the FTS Configuration node in the database node.")
+                _(
+                    "Could not find the FTS Configuration node in the "
+                    "database node.")
             )
 
         # In edit mode fetch token/dictionary list also
@@ -614,7 +626,7 @@ class FtsConfigurationView(PGChildNodeView):
         return make_json_response(
             data=SQL,
             status=200
-            )
+        )
 
     def get_sql(self, gid, sid, did, scid, data, cfgid=None):
         """
@@ -675,7 +687,10 @@ class FtsConfigurationView(PGChildNodeView):
                 data=new_data, o_data=old_data
             )
             # Fetch sql query for modified data
-            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
+            if 'name' in data:
+                return sql.strip('\n'), data['name']
+
+            return sql.strip('\n'), old_data['name']
         else:
             # Fetch schema name from schema oid
             sql = render_template(
@@ -691,8 +706,10 @@ class FtsConfigurationView(PGChildNodeView):
             new_data = data.copy()
             new_data['schema'] = schema
 
-            if 'name' in new_data and \
-                            'schema' in new_data:
+            if (
+                'name' in new_data and
+                'schema' in new_data
+            ):
                 sql = render_template("/".join([self.template_path,
                                                 'create.sql']),
                                       data=new_data,
@@ -862,16 +879,16 @@ class FtsConfigurationView(PGChildNodeView):
             if not status:
                 return internal_server_error(
                     _(
-                        "Could not generate reversed engineered query for the FTS Configuration.\n{0}"
-                    ).format(
-                        res
-                    )
+                        "Could not generate reversed engineered query for the "
+                        "FTS Configuration.\n{0}"
+                    ).format(res)
                 )
 
             if res is None:
                 return gone(
                     _(
-                        "Could not generate reversed engineered query for FTS Configuration node.")
+                        "Could not generate reversed engineered query for "
+                        "FTS Configuration node.")
                 )
 
             return ajax_response(response=res)

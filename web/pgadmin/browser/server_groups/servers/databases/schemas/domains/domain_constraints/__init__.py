@@ -9,19 +9,20 @@
 
 """Implements the Domain Constraint Module."""
 
-import simplejson as json
 from functools import wraps
+
+import simplejson as json
+from flask import render_template, request, jsonify
+from flask_babel import gettext
 
 import pgadmin.browser.server_groups.servers.databases.schemas.domains \
     as domains
-from flask import render_template, request, jsonify
-from flask_babel import gettext
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
 
 
 class DomainConstraintModule(CollectionNodeModule):
@@ -211,7 +212,8 @@ class DomainConstraintView(PGChildNodeView):
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Could not find the required parameter (%s)." % arg
+                                "Could not find the required parameter (%s)." %
+                                arg
                             )
                         )
 
@@ -247,9 +249,11 @@ class DomainConstraintView(PGChildNodeView):
             self.qtIdent = driver.qtIdent
 
             # Set the template path for the SQL scripts
-            self.template_path = 'domain_constraints/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'domain_constraints/sql/#{0}#'.format(
+                self.manager.version)
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -383,7 +387,7 @@ class DomainConstraintView(PGChildNodeView):
         if len(res['rows']) == 0:
             return gone(gettext(
                 "Could not find the specified domain constraint."
-                )
+            )
             )
 
         data = res['rows'][0]
@@ -585,7 +589,7 @@ class DomainConstraintView(PGChildNodeView):
         if len(res['rows']) == 0:
             return gone(gettext(
                 "Could not find the specified domain constraint."
-                )
+            )
             )
 
         data = res['rows'][0]
@@ -657,7 +661,7 @@ class DomainConstraintView(PGChildNodeView):
                 if len(res['rows']) == 0:
                     return False, gone(gettext(
                         "Could not find the specified domain constraint."
-                        )
+                    )
                     )
 
                 old_data = res['rows'][0]
@@ -672,7 +676,10 @@ class DomainConstraintView(PGChildNodeView):
                 SQL = render_template("/".join([self.template_path,
                                                 'create.sql']),
                                       data=data, domain=domain, schema=schema)
-            return True, SQL.strip('\n'), data['name'] if 'name' in data else old_data['name']
+            if 'name' in data:
+                return True, SQL.strip('\n'), data['name']
+            else:
+                return True, SQL.strip('\n'), old_data['name']
         except Exception as e:
             return False, internal_server_error(errormsg=str(e)), None
 

@@ -14,4 +14,3 @@ class CollationTestGenerator(BaseTestGenerator):
 
     def generate_tests(self):
         return
-

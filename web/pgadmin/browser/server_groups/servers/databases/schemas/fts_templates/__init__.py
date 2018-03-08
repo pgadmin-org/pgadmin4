@@ -9,19 +9,22 @@
 
 """Defines views for management of Fts Template node"""
 
-import simplejson as json
 from functools import wraps
 
+import simplejson as json
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
+
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases import DatabaseModule
-from pgadmin.browser.server_groups.servers.databases.schemas.utils import SchemaChildModule
+from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
+    SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -36,7 +39,8 @@ class FtsTemplateModule(SchemaChildModule):
     Methods:
     -------
     * __init__(*args, **kwargs)
-      - Method is used to initialize the FtsTemplateModule and it's base module.
+      - Method is used to initialize the FtsTemplateModule and it's base
+      module.
 
     * get_nodes(gid, sid, did, scid)
       - Method is used to generate the browser collection node.
@@ -90,10 +94,11 @@ class FtsTemplateView(PGChildNodeView):
     """
     class FtsTemplateView(PGChildNodeView)
 
-        A view class for FTS Tempalte node derived from PGChildNodeView. This class is
-        responsible for all the stuff related to view like create/update/delete
-        responsible for all the stuff related to view like create/update/delete
-        FTS template, showing properties of node, showing sql in sql pane.
+        A view class for FTS Tempalte node derived from PGChildNodeView. This
+        class is responsible for all the stuff related to view like
+        create/update/delete responsible for all the stuff related to view
+        like create/update/delete FTS template, showing properties of node,
+        showing sql in sql pane.
 
     Methods:
     -------
@@ -113,11 +118,13 @@ class FtsTemplateView(PGChildNodeView):
       - This function is used to list all the  nodes within that collection.
 
     * nodes()
-      - This function will used to create all the child node within that collection.
+      - This function will used to create all the child node within that
+      collection.
         Here it will create all the FTS Template nodes.
 
     * properties(gid, sid, did, scid, tid)
-      - This function will show the properties of the selected FTS Template node
+      - This function will show the properties of the selected FTS Template
+      node
 
     * create(gid, sid, did, scid)
       - This function will create the new FTS Template object
@@ -129,22 +136,27 @@ class FtsTemplateView(PGChildNodeView):
       - This function will drop the FTS Template object
 
     * msql(gid, sid, did, scid, tid)
-      - This function is used to return modified SQL for the selected FTS Template node
+      - This function is used to return modified SQL for the selected FTS
+      Template node
 
     * get_sql(data, tid)
       - This function will generate sql from model data
 
     * sql(gid, sid, did, scid,  tid):
-      - This function will generate sql to show it in sql pane for the selected FTS Template node.
+      - This function will generate sql to show it in sql pane for the selected
+      FTS Template node.
 
     * get_type():
-      - This function will fetch all the types for source and target types select control.
+      - This function will fetch all the types for source and target types
+      select control.
 
     * dependents(gid, sid, did, scid, tid):
-      - This function get the dependents and return ajax response for the Fts Tempalte node.
+      - This function get the dependents and return ajax response for the
+      Fts Template node.
 
     * dependencies(self, gid, sid, did, scid, tid):
-      - This function get the dependencies and return ajax response for the FTS Tempalte node.
+      - This function get the dependencies and return ajax response for the
+      FTS Template node.
 
     """
 
@@ -212,9 +224,11 @@ class FtsTemplateView(PGChildNodeView):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'fts_template/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'fts_template/sql/#{0}#'.format(
+                self.manager.version)
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -502,7 +516,7 @@ class FtsTemplateView(PGChildNodeView):
         return make_json_response(
             data=SQL,
             status=200
-            )
+        )
 
     def get_sql(self, gid, sid, did, scid, data, tid=None):
         """
@@ -533,7 +547,8 @@ class FtsTemplateView(PGChildNodeView):
             old_data = res['rows'][0]
 
             # If user has changed the schema then fetch new schema directly
-            # using its oid otherwise fetch old schema name using fts template oid
+            # using its oid otherwise fetch old schema name using
+            # fts template oid
             sql = render_template(
                 "/".join([self.template_path, 'schema.sql']),
                 data=data)
@@ -564,7 +579,9 @@ class FtsTemplateView(PGChildNodeView):
                 data=new_data, o_data=old_data
             )
             # Fetch sql query for modified data
-            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
+            if 'name' in data:
+                return sql.strip('\n'), data['name']
+            return sql.strip('\n'), old_data['name']
         else:
             # Fetch schema name from schema oid
             sql = render_template("/".join([self.template_path, 'schema.sql']),
@@ -578,9 +595,11 @@ class FtsTemplateView(PGChildNodeView):
             new_data = data.copy()
             new_data['schema'] = schema
 
-            if 'tmpllexize' in new_data and \
-                            'name' in new_data and \
-                            'schema' in new_data:
+            if (
+                'tmpllexize' in new_data and
+                'name' in new_data and
+                'schema' in new_data
+            ):
                 sql = render_template("/".join([self.template_path,
                                                 'create.sql']),
                                       data=new_data,
@@ -667,15 +686,15 @@ class FtsTemplateView(PGChildNodeView):
         if not status:
             return internal_server_error(
                 gettext(
-                    "Could not generate reversed engineered query for the FTS Template.\n{0}").format(
-                    res
-                )
+                    "Could not generate reversed engineered query for the "
+                    "FTS Template.\n{0}").format(res)
             )
 
         if res is None:
             return gone(
                 gettext(
-                    "Could not generate reversed engineered query for FTS Template node.")
+                    "Could not generate reversed engineered query for "
+                    "FTS Template node.")
             )
 
         return ajax_response(response=res)

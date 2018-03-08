@@ -18,23 +18,20 @@ from importlib import import_module
 from flask import Flask, abort, request, current_app, session, url_for
 from flask_babel import Babel, gettext
 from flask_login import user_logged_in, user_logged_out
-from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_mail import Mail
+from flask_paranoid import Paranoid
+from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_security.utils import login_user
 from werkzeug.datastructures import ImmutableDict
-from flask_paranoid import Paranoid
-
-from pgadmin.utils import PgAdminModule, driver
-from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
-from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
 
-from pgadmin.utils.preferences import Preferences
-
 from pgadmin.model import db, Role, Server, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-
+from pgadmin.utils import PgAdminModule, driver
+from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.session import create_session_interface, pga_unauthorised
+from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
 
 # If script is running under python3, it will not have the xrange function
 # defined
@@ -169,7 +166,6 @@ current_blueprint = LocalProxy(_find_blueprint)
 
 
 def create_app(app_name=None):
-
     # Configuration settings
     import config
     if not app_name:
@@ -217,8 +213,10 @@ def create_app(app_name=None):
     logger.setLevel(logging.INFO)
 
     # Set SQLITE_PATH to TEST_SQLITE_PATH while running test cases
-    if "PGADMIN_TESTING_MODE" in os. environ and \
-            os.environ["PGADMIN_TESTING_MODE"] == "1":
+    if (
+        'PGADMIN_TESTING_MODE' in os.environ and
+        os.environ['PGADMIN_TESTING_MODE'] == '1'
+    ):
         config.SQLITE_PATH = config.TEST_SQLITE_PATH
 
     # Ensure the various working directories exist
@@ -291,7 +289,7 @@ def create_app(app_name=None):
     # Setup authentication
     ##########################################################################
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = u'sqlite:///{0}?timeout={1}'\
+    app.config['SQLALCHEMY_DATABASE_URI'] = u'sqlite:///{0}?timeout={1}' \
         .format(config.SQLITE_PATH.replace(u'\\', u'/'),
                 getattr(config, 'SQLITE_TIMEOUT', 500)
                 )
@@ -406,6 +404,7 @@ def create_app(app_name=None):
             servergroup_id = servergroup.id
 
         '''Add a server to the config database'''
+
         def add_server(user_id, servergroup_id, name, superuser, port,
                        discovery_id, comment):
             # Create a server object if needed, and store it.
@@ -503,8 +502,10 @@ def create_app(app_name=None):
 
             # Loop the sections, and get the data from any that are PG or PPAS
             for section in sections:
-                if section.startswith('PostgreSQL/') \
-                        or section.startswith('EnterpriseDB/'):
+                if (
+                    section.startswith('PostgreSQL/') or
+                    section.startswith('EnterpriseDB/')
+                ):
                     svr_name = registry.get(section, 'Description')
                     svr_superuser = registry.get(section, 'Superuser')
                     svr_port = registry.getint(section, 'Port')
@@ -516,9 +517,9 @@ def create_app(app_name=None):
                         data_directory = data_directory.decode('utf-8')
                     svr_comment = gettext(u"Auto-detected %s installation "
                                           u"with the data directory at %s" % (
-                                                description,
-                                                data_directory
-                                            )
+                                              description,
+                                              data_directory
+                                          )
                                           )
                     add_server(user_id, servergroup_id, svr_name,
                                svr_superuser, svr_port, svr_discovery_id,
@@ -552,7 +553,7 @@ def create_app(app_name=None):
         if not config.SERVER_MODE and app.PGADMIN_KEY != '':
             if (
                 ('key' not in request.args or
-                    request.args['key'] != app.PGADMIN_KEY) and
+                 request.args['key'] != app.PGADMIN_KEY) and
                 request.cookies.get('PGADMIN_KEY') != app.PGADMIN_KEY and
                 request.endpoint != 'help.static'
             ):

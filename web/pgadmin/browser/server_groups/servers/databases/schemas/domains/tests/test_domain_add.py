@@ -67,8 +67,8 @@ class DomainAddTestCase(BaseTestGenerator):
         }
         # Call POST API to add domain
         response = self.tester.post(self.url + str(utils.SERVER_GROUP) + '/' +
-                                    str(self.server_id) + '/' + str(
-            self.db_id) +
+                                    str(self.server_id) + '/' +
+                                    str(self.db_id) +
                                     '/' + str(schema_id) + '/',
                                     data=json.dumps(data),
                                     content_type='html/json')

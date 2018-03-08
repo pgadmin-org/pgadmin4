@@ -37,8 +37,8 @@ def create_domain(server, db_name, schema_name, schema_id, domain_name):
                                              server['host'],
                                              server['port'])
         pg_cursor = connection.cursor()
-        query = 'CREATE DOMAIN '+schema_name+'.'+domain_name+' AS' \
-                ' character(10) COLLATE pg_catalog."POSIX" DEFAULT 1'
+        query = 'CREATE DOMAIN ' + schema_name + '.' + domain_name + \
+                ' AS character(10) COLLATE pg_catalog."POSIX" DEFAULT 1'
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created domain

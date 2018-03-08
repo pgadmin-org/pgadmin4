@@ -28,11 +28,10 @@ class ViewsGetTestCase(BaseTestGenerator):
                  "SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER" \
                  " TO %s"
     scenarios = [
-        ('Get view under schema node', dict(url='/browser/view/obj/',
-                                            view_name=
-                                            "test_view_get_%s" %
-                                            (str(uuid.uuid4())[1:8]),
-                                            sql_query=view_sql)),
+        ('Get view under schema node', dict(
+            url='/browser/view/obj/',
+            view_name="test_view_get_%s" % (str(uuid.uuid4())[1:8]),
+            sql_query=view_sql)),
         ('Get materialized view under schema node',
          dict(url='/browser/mview/obj/',
               view_name="test_mview_get_%s" % (str(uuid.uuid4())[1:8]),

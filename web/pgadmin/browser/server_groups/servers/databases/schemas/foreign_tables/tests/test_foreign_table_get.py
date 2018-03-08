@@ -11,9 +11,9 @@ from __future__ import print_function
 
 import uuid
 
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
     foreign_servers.tests import utils as fsrv_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
     tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
@@ -52,7 +52,8 @@ class ForeignTableGetTestCase(BaseTestGenerator):
                                               self.fsrv_name, self.fdw_name)
         self.ft_id = ft_utils.create_foreign_table(self.server, self.db_name,
                                                    self.schema_name,
-                                                   self.fsrv_name, self.ft_name)
+                                                   self.fsrv_name,
+                                                   self.ft_name)
 
     def runTest(self):
         """This function will fetch foreign table under test database."""

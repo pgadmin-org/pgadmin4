@@ -102,8 +102,9 @@ class TriggerFuncAddTestCase(BaseTestGenerator):
                 schema_id = data['pronamespace']
             response = self.tester.post(
                 self.url + str(utils.SERVER_GROUP) + '/' +
-                str(server_id) + '/' + str(db_id) + '/' + str(schema_id)
-                + '/', data=json.dumps(data), content_type='html/json')
+                str(server_id) + '/' + str(db_id) + '/' + str(schema_id) +
+                '/', data=json.dumps(data), content_type='html/json'
+            )
 
             self.assertEquals(response.status_code, 200)
         # Disconnect the database

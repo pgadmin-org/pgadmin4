@@ -11,19 +11,20 @@
 
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
 import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases as databases
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, parse_rule_definition, VacuumSettings
+from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
+    parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response, bad_request, gone
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db,\
-    parse_priv_to_db
-from config import PG_DEFAULT_DRIVER
 
 """
     This module is responsible for generating two nodes
@@ -171,10 +172,13 @@ def check_precondition(f):
             kwargs['sid']
         )
         self.conn = self.manager.connection(did=kwargs['did'])
-        self.datlastsysoid = self.manager.db_info[
-            kwargs['did']
-        ]['datlastsysoid'] if self.manager.db_info is not None and \
-            kwargs['did'] in self.manager.db_info else 0
+        self.datlastsysoid = 0
+        if (
+            self.manager.db_info is not None and
+            kwargs['did'] in self.manager.db_info
+        ):
+            self.datlastsysoid = self.manager.db_info[kwargs['did']][
+                'datlastsysoid']
 
         # Set template path for sql scripts
         if self.manager.server_type == 'gpdb':
@@ -185,7 +189,8 @@ def check_precondition(f):
             _temp = self.pg_template_path(self.manager.version)
         self.template_path = self.template_initial + '/' + _temp
 
-        self.column_template_path = 'column/sql/#{0}#'.format(self.manager.version)
+        self.column_template_path = 'column/sql/#{0}#'.format(
+            self.manager.version)
 
         return f(*args, **kwargs)
 
@@ -355,11 +360,11 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             return gone(gettext("""Could not find the view."""))
 
         res = self.blueprint.generate_browser_node(
-                rset['rows'][0]['oid'],
-                scid,
-                rset['rows'][0]['name'],
-                icon="icon-view"
-            )
+            rset['rows'][0]['oid'],
+            scid,
+            rset['rows'][0]['name'],
+            icon="icon-view"
+        )
 
         return make_json_response(
             data=res,
@@ -763,7 +768,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         self.index_temp_path = 'index'
         SQL = render_template("/".join([self.index_temp_path,
-                                        'sql/#{0}#/column_details.sql'.format(self.manager.version)]), idx=idx)
+                                        'sql/#{0}#/column_details.sql'.format(
+                                            self.manager.version)]), idx=idx)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -880,7 +886,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         SQL_data = ''
         SQL = render_template("/".join(
-            [self.trigger_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
+            [self.trigger_temp_path,
+             'sql/#{0}#/properties.sql'.format(self.manager.version)]),
             tid=vid)
 
         status, data = self.conn.execute_dict(SQL)
@@ -889,7 +896,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         for trigger in data['rows']:
             SQL = render_template("/".join(
-                [self.trigger_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
+                [self.trigger_temp_path,
+                 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
                 tid=vid,
                 trid=trigger['oid']
             )
@@ -917,27 +925,33 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             res_rows['schema'] = self.view_schema
 
             # Get trigger function with its schema name
-            SQL = render_template("/".join([self.trigger_temp_path,
-                                            'sql/#{0}#/get_triggerfunctions.sql'.format(self.manager.version)]),
-                                  tgfoid=res_rows['tgfoid'],
-                                  show_system_objects=self.blueprint.show_system_objects)
+            SQL = render_template("/".join([
+                self.trigger_temp_path,
+                'sql/#{0}#/get_triggerfunctions.sql'.format(
+                    self.manager.version)]),
+                tgfoid=res_rows['tgfoid'],
+                show_system_objects=self.blueprint.show_system_objects)
 
             status, result = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=result)
 
-            # Update the trigger function which we have fetched with schema name
-            if 'rows' in result and len(result['rows']) > 0 and \
-                            'tfunctions' in result['rows'][0]:
+            # Update the trigger function which we have fetched with schemaname
+            if (
+                'rows' in result and len(result['rows']) > 0 and
+                'tfunctions' in result['rows'][0]
+            ):
                 res_rows['tfunction'] = result['rows'][0]['tfunctions']
 
             # Format arguments
             if len(res_rows['custom_tgargs']) > 1:
-                formatted_args = ["{0}".format(arg) for arg in res_rows['custom_tgargs']]
+                formatted_args = ["{0}".format(arg) for arg in
+                                  res_rows['custom_tgargs']]
                 res_rows['tgargs'] = ', '.join(formatted_args)
 
             SQL = render_template("/".join(
-                [self.trigger_temp_path, 'sql/#{0}#/create.sql'.format(self.manager.version)]),
+                [self.trigger_temp_path,
+                 'sql/#{0}#/create.sql'.format(self.manager.version)]),
                 data=res_rows, display_comments=True)
             SQL_data += '\n'
             SQL_data += SQL
@@ -954,7 +968,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         self.index_temp_path = 'index'
         SQL_data = ''
         SQL = render_template("/".join(
-            [self.index_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
+            [self.index_temp_path,
+             'sql/#{0}#/properties.sql'.format(self.manager.version)]),
             did=did,
             tid=vid)
         status, data = self.conn.execute_dict(SQL)
@@ -964,7 +979,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         for index in data['rows']:
             res = []
             SQL = render_template("/".join(
-                [self.index_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
+                [self.index_temp_path,
+                 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
                 idx=index['oid'],
                 did=did,
                 tid=vid
@@ -980,7 +996,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             data = self.get_index_column_details(index['oid'], data)
 
             SQL = render_template("/".join(
-                [self.index_temp_path, 'sql/#{0}#/create.sql'.format(self.manager.version)]),
+                [self.index_temp_path,
+                 'sql/#{0}#/create.sql'.format(self.manager.version)]),
                 data=data, display_comments=True)
             SQL_data += '\n'
             SQL_data += SQL
@@ -1335,7 +1352,8 @@ class MViewNode(ViewNode, VacuumSettings):
                 return None, internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
                 return None, gone(
-                    gettext("Could not find the materialized view on the server.")
+                    gettext(
+                        "Could not find the materialized view on the server.")
                 )
 
             old_data = res['rows'][0]
@@ -1360,18 +1378,26 @@ class MViewNode(ViewNode, VacuumSettings):
                                     data['vacuum_data']['reset'].append(item)
                             else:
                                 if (old_data[item['name']] is None or
-                                        (float(old_data[item['name']]) != float(item['value']))):
+                                    (float(old_data[item['name']]) != float(
+                                        item['value']))):
                                     data['vacuum_data']['changed'].append(item)
 
-            if ('autovacuum_enabled' in data and
-                        old_data['autovacuum_enabled'] is not None):
-                if (data['autovacuum_enabled'] !=
-                        old_data['autovacuum_enabled']):
+            if (
+                'autovacuum_enabled' in data and
+                old_data['autovacuum_enabled'] is not None
+            ):
+                if (
+                    data['autovacuum_enabled'] !=
+                    old_data['autovacuum_enabled']
+                ):
                     data['vacuum_data']['changed'].append(
                         {'name': 'autovacuum_enabled',
                          'value': data['autovacuum_enabled']})
-            elif ('autovacuum_enabled' in data and 'autovacuum_custom' in data and
-                          old_data['autovacuum_enabled'] is None and data['autovacuum_custom']):
+            elif (
+                'autovacuum_enabled' in data and
+                'autovacuum_custom' in data and
+                old_data['autovacuum_enabled'] is None and data[
+                    'autovacuum_custom']):
                 data['vacuum_data']['changed'].append(
                     {'name': 'autovacuum_enabled',
                      'value': data['autovacuum_enabled']})
@@ -1388,18 +1414,27 @@ class MViewNode(ViewNode, VacuumSettings):
                                     data['vacuum_data']['reset'].append(item)
                             else:
                                 if (old_data[toast_key] is None or
-                                        (float(old_data[toast_key]) != float(item['value']))):
+                                    (float(old_data[toast_key]) != float(
+                                        item['value']))):
                                     data['vacuum_data']['changed'].append(item)
 
-            if ('toast_autovacuum_enabled' in data and
-                        old_data['toast_autovacuum_enabled'] is not None):
-                if (data['toast_autovacuum_enabled'] !=
-                        old_data['toast_autovacuum_enabled']):
+            if (
+                'toast_autovacuum_enabled' in data and
+                old_data['toast_autovacuum_enabled'] is not None
+            ):
+                if (
+                    data['toast_autovacuum_enabled'] !=
+                    old_data['toast_autovacuum_enabled']
+                ):
                     data['vacuum_data']['changed'].append(
                         {'name': 'toast.autovacuum_enabled',
                          'value': data['toast_autovacuum_enabled']})
-            elif ('toast_autovacuum_enabled' in data and 'toast_autovacuum' in data and
-                          old_data['toast_autovacuum_enabled'] is None and data['toast_autovacuum']):
+            elif (
+                'toast_autovacuum_enabled' in data and
+                'toast_autovacuum' in data and
+                old_data['toast_autovacuum_enabled'] is None and
+                data['toast_autovacuum']
+            ):
                 data['vacuum_data']['changed'].append(
                     {'name': 'toast.autovacuum_enabled',
                      'value': data['toast_autovacuum_enabled']})
@@ -1475,14 +1510,17 @@ class MViewNode(ViewNode, VacuumSettings):
 
             # add vacuum_toast dict to vacuum_data only if
             # table & toast's custom autovacuum is enabled
-            data['vacuum_data'] = (vacuum_table if (
+            data['vacuum_data'] = []
+            if (
                 'autovacuum_custom' in data and
                 data['autovacuum_custom'] is True
-            ) else []) + (
-                                      vacuum_toast if (
-                                          'toast_autovacuum' in data and
-                                          data['toast_autovacuum'] is True
-                                      ) else [])
+            ):
+                data['vacuum_data'] = vacuum_table
+            if (
+                'toast_autovacuum' in data and
+                data['toast_autovacuum'] is True
+            ):
+                data['vacuum_data'] += vacuum_toast
 
             acls = []
             try:
@@ -1545,15 +1583,19 @@ class MViewNode(ViewNode, VacuumSettings):
 
         # merge vacuum lists into one
         vacuum_table = [item for item in result['vacuum_table']
-                        if 'value' in item.keys() and item['value'] is not None]
+                        if
+                        'value' in item.keys() and item['value'] is not None]
         vacuum_toast = [
             {'name': 'toast.' + item['name'], 'value': item['value']}
-            for item in result['vacuum_toast'] if 'value' in item.keys() and item['value'] is not None]
+            for item in result['vacuum_toast'] if
+            'value' in item.keys() and item['value'] is not None]
 
         # add vacuum_toast dict to vacuum_data only if
         # toast's autovacuum is enabled
-        if ('toast_autovacuum_enabled' in result and
-                    result['toast_autovacuum_enabled'] is True):
+        if (
+            'toast_autovacuum_enabled' in result and
+            result['toast_autovacuum_enabled'] is True
+        ):
             result['vacuum_data'] = vacuum_table + vacuum_toast
         else:
             result['vacuum_data'] = vacuum_table

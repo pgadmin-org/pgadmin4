@@ -42,6 +42,7 @@ if config.DEBUG:
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
+
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
 ##########################################################################
@@ -54,7 +55,7 @@ if not os.path.isfile(config.SQLITE_PATH):
         os.path.dirname(os.path.realpath(u(__file__, fs_encoding))),
         u'setup.py'
     )
-    exec(open(file_quote(setupfile), 'r').read())
+    exec (open(file_quote(setupfile), 'r').read())
 
 ##########################################################################
 # Server startup
@@ -137,6 +138,7 @@ if __name__ == '__main__':
         #
         # Setting PYTHONHOME launch them properly.
         from pgadmin.utils import IS_WIN
+
         if IS_WIN:
             os.environ['PYTHONHOME'] = sys.prefix
 
@@ -150,8 +152,8 @@ if __name__ == '__main__':
             host=config.DEFAULT_SERVER,
             port=server_port,
             use_reloader=(
-                (not PGADMIN_RUNTIME) and app.debug
-                and os.environ.get("WERKZEUG_RUN_MAIN") is not None
+                (not PGADMIN_RUNTIME) and app.debug and
+                os.environ.get("WERKZEUG_RUN_MAIN") is not None
             ),
             threaded=config.THREADED_MODE
         )

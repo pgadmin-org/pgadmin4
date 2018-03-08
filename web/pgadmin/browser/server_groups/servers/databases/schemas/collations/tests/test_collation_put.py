@@ -69,8 +69,9 @@ class CollationPutTestCase(BaseTestGenerator):
             "id": collation_id
         }
         put_response = self.tester.put(self.url + str(utils.SERVER_GROUP) +
-                                       '/' + str(server_id) + '/' + str(db_id)
-                                       + '/' + str(schema_id) + '/' +
+                                       '/' + str(server_id) + '/' +
+                                       str(db_id) + '/' + str(schema_id) +
+                                       '/' +
                                        str(collation_id),
                                        data=json.dumps(data),
                                        follow_redirects=True)

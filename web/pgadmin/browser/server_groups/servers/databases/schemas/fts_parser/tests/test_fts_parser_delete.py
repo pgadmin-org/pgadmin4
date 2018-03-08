@@ -61,9 +61,10 @@ class FtsParserDeleteTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema.")
 
-        parser_response = fts_parser_utils.verify_fts_parser(self.server,
-                                                             self.db_name,
-                                                             self.fts_parser_name)
+        parser_response = fts_parser_utils.verify_fts_parser(
+            self.server,
+            self.db_name,
+            self.fts_parser_name)
 
         if not parser_response:
             raise Exception("Could not find the FTS parser.")

@@ -62,10 +62,11 @@ class TriggerFuncDeleteTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to add the collation.")
         trigger_func_id = self.function_info[0]
         response = self.tester.delete(
-            self.url + str(utils.SERVER_GROUP) + '/'
-            + str(server_id) + '/' + str(db_id) + '/' +
+            self.url + str(utils.SERVER_GROUP) + '/' + str(server_id) + '/' +
+            str(db_id) + '/' +
             str(self.schema_id) + '/' + str(trigger_func_id),
-            content_type='html/json')
+            content_type='html/json'
+        )
         self.assertEquals(response.status_code, 200)
         # Disconnect the database
         database_utils.disconnect_database(self, server_id, db_id)

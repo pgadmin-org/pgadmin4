@@ -48,8 +48,8 @@ def create_foreign_table(server, db_name, schema_name, fsrv_name,
         # Get 'oid' from newly created foreign table
         pg_cursor.execute(
             "SELECT ftrelid FROM pg_foreign_table WHERE ftserver = "
-            "(SELECT oid FROM pg_foreign_server WHERE srvname = '%s') ORDER BY "
-            "ftrelid ASC limit 1" % fsrv_name)
+            "(SELECT oid FROM pg_foreign_server WHERE srvname = '%s') "
+            "ORDER BY ftrelid ASC limit 1" % fsrv_name)
 
         oid = pg_cursor.fetchone()
         ft_id = ''
@@ -74,8 +74,8 @@ def verify_foreign_table(server, db_name, fsrv_name):
 
         pg_cursor.execute(
             "SELECT ftrelid FROM pg_foreign_table WHERE ftserver = "
-            "(SELECT oid FROM pg_foreign_server WHERE srvname = '%s') ORDER BY "
-            "ftrelid ASC limit 1" % fsrv_name)
+            "(SELECT oid FROM pg_foreign_server WHERE srvname = '%s') "
+            "ORDER BY ftrelid ASC limit 1" % fsrv_name)
         fts = pg_cursor.fetchone()
         connection.close()
         return fts

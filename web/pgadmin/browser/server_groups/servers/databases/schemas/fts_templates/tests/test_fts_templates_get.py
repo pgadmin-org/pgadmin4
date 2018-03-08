@@ -26,7 +26,9 @@ class FtsTemplateGetTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for FTS template node.
-        ('Fetch FTS templates Node URL', dict(url='/browser/fts_template/obj/'))
+        ('Fetch FTS templates Node URL', dict(
+            url='/browser/fts_template/obj/')
+         )
     ]
 
     def setUp(self):

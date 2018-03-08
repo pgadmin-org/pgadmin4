@@ -63,8 +63,8 @@ class TriggerFuncGetTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to add the collation.")
         trigger_func_id = self.function_info[0]
         response = self.tester.get(
-            self.url + str(utils.SERVER_GROUP) + '/'
-            + str(server_id) + '/' + str(db_id) + '/' +
+            self.url + str(utils.SERVER_GROUP) + '/' + str(server_id) + '/' +
+            str(db_id) + '/' +
             str(self.schema_id) + '/' + str(trigger_func_id),
             content_type='html/json')
         self.assertEquals(response.status_code, 200)

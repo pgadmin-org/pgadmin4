@@ -9,19 +9,22 @@
 
 """Defines views for management of FTS Parser node"""
 
-import simplejson as json
 from functools import wraps
 
+import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext as _
+
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases import DatabaseModule
-from pgadmin.browser.server_groups.servers.databases.schemas.utils import SchemaChildModule
+from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
+    SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -192,11 +195,15 @@ class FtsParserView(PGChildNodeView):
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
-        'start_functions': [{'get': 'start_functions'}, {'get': 'start_functions'}],
-        'token_functions': [{'get': 'token_functions'}, {'get': 'token_functions'}],
+        'start_functions': [{'get': 'start_functions'},
+                            {'get': 'start_functions'}],
+        'token_functions': [{'get': 'token_functions'},
+                            {'get': 'token_functions'}],
         'end_functions': [{'get': 'end_functions'}, {'get': 'end_functions'}],
-        'lextype_functions': [{'get': 'lextype_functions'}, {'get': 'lextype_functions'}],
-        'headline_functions': [{'get': 'headline_functions'}, {'get': 'headline_functions'}],
+        'lextype_functions': [{'get': 'lextype_functions'},
+                              {'get': 'lextype_functions'}],
+        'headline_functions': [{'get': 'headline_functions'},
+                               {'get': 'headline_functions'}],
     })
 
     def _init_(self, **kwargs):
@@ -227,9 +234,11 @@ class FtsParserView(PGChildNodeView):
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
-            self.template_path = 'fts_parser/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'fts_parser/sql/#{0}#'.format(
+                self.manager.version)
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -310,7 +319,8 @@ class FtsParserView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(_("Could not find the FTS Parser node in the database node."))
+            return gone(
+                _("Could not find the FTS Parser node in the database node."))
 
         return ajax_response(
             response=res['rows'][0],
@@ -442,7 +452,6 @@ class FtsParserView(PGChildNodeView):
             )
         )
 
-
     @check_precondition
     def delete(self, gid, sid, did, scid, pid):
         """
@@ -534,7 +543,7 @@ class FtsParserView(PGChildNodeView):
         return make_json_response(
             data=SQL,
             status=200
-            )
+        )
 
     def get_sql(self, gid, sid, did, scid, data, pid=None):
         """
@@ -597,7 +606,9 @@ class FtsParserView(PGChildNodeView):
                 o_data=old_data
             )
             # Fetch sql query for modified data
-            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
+            if 'name' in data:
+                return sql.strip('\n'), data['name']
+            return sql.strip('\n'), old_data['name']
         else:
             # Fetch schema name from schema oid
             sql = render_template(
@@ -613,12 +624,14 @@ class FtsParserView(PGChildNodeView):
             new_data = data.copy()
             new_data['schema'] = schema
 
-            if 'prsstart' in new_data and \
-                            'prstoken' in new_data and \
-                            'prsend' in new_data and \
-                            'prslextype' in new_data and \
-                            'name' in new_data and \
-                            'schema' in new_data:
+            if (
+                'prsstart' in new_data and
+                'prstoken' in new_data and
+                'prsend' in new_data and
+                'prslextype' in new_data and
+                'name' in new_data and
+                'schema' in new_data
+            ):
                 sql = render_template(
                     "/".join([self.template_path, 'create.sql']),
                     data=new_data,
@@ -784,14 +797,16 @@ class FtsParserView(PGChildNodeView):
             if not status:
                 return internal_server_error(
                     _(
-                        "Could not generate reversed engineered query for the FTS Parser.\n{0}"
+                        "Could not generate reversed engineered query for the "
+                        "FTS Parser.\n{0}"
                     ).format(res)
                 )
 
             if res is None:
                 return gone(
                     _(
-                        "Could not generate reversed engineered query for FTS Parser node"
+                        "Could not generate reversed engineered query for "
+                        "FTS Parser node"
                     )
                 )
 

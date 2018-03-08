@@ -26,34 +26,39 @@ class ChangePasswordTestCase(BaseTestGenerator):
     scenarios = [
         # This testcase validates invalid confirmation password
         ('TestCase for Validating Incorrect_New_Password', dict(
-            password=(config_data['pgAdmin4_login_credentials']
-                      ['login_password']),
-            new_password=(config_data['pgAdmin4_login_credentials']
-                          ['new_password']),
+            password=(
+                config_data['pgAdmin4_login_credentials']
+                ['login_password']),
+            new_password=(
+                config_data['pgAdmin4_login_credentials']
+                ['new_password']),
             new_password_confirm=str(uuid.uuid4())[4:8],
             respdata='Passwords do not match')),
 
         # This testcase validates if confirmation password is less than
         # minimum length
         ('TestCase for Validating New_Password_Less_Than_Min_Length',
-         dict(password=(config_data['pgAdmin4_login_credentials']
-                        ['login_password']),
-              new_password=str(uuid.uuid4())[4:8],
-              new_password_confirm=str(uuid.uuid4())[4:8],
-              respdata='Password must be at least 6 characters')),
+         dict(password=(
+             config_data['pgAdmin4_login_credentials']
+             ['login_password']),
+             new_password=str(uuid.uuid4())[4:8],
+             new_password_confirm=str(uuid.uuid4())[4:8],
+             respdata='Password must be at least 6 characters')),
 
         # This testcase validates if both password fields are left blank
         ('TestCase for Validating Empty_New_Password', dict(
-            password=(config_data['pgAdmin4_login_credentials']
-                      ['login_password']),
+            password=(
+                config_data['pgAdmin4_login_credentials']
+                ['login_password']),
             new_password='', new_password_confirm='',
             respdata='Password not provided')),
 
         # This testcase validates if current entered password is incorrect
         ('TestCase for Validating Incorrect_Current_Password', dict(
             password=str(uuid.uuid4())[4:8],
-            new_password=(config_data['pgAdmin4_login_credentials']
-                          ['new_password']),
+            new_password=(
+                config_data['pgAdmin4_login_credentials']
+                ['new_password']),
             new_password_confirm=(
                 config_data['pgAdmin4_login_credentials']
                 ['new_password']),
@@ -62,12 +67,15 @@ class ChangePasswordTestCase(BaseTestGenerator):
         # This test case checks for valid password
         ('TestCase for Changing Valid_Password', dict(
             valid_password='reassigning_password',
-            username=(config_data['pgAdmin4_test_user_credentials']
-                      ['login_username']),
-            password=(config_data['pgAdmin4_test_user_credentials']
-                      ['login_password']),
-            new_password=(config_data['pgAdmin4_test_user_credentials']
-                          ['new_password']),
+            username=(
+                config_data['pgAdmin4_test_user_credentials']
+                ['login_username']),
+            password=(
+                config_data['pgAdmin4_test_user_credentials']
+                ['login_password']),
+            new_password=(
+                config_data['pgAdmin4_test_user_credentials']
+                ['new_password']),
             new_password_confirm=(
                 config_data['pgAdmin4_test_user_credentials']
                 ['new_password']),

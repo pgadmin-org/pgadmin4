@@ -72,8 +72,8 @@ class SynonymAddTestCase(BaseTestGenerator):
         }
 
         response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' + str(self.server_id)
-            + '/' + str(self.db_id) + '/' + str(self.schema_id) + '/',
+            self.url + str(utils.SERVER_GROUP) + '/' + str(self.server_id) +
+            '/' + str(self.db_id) + '/' + str(self.schema_id) + '/',
             data=json.dumps(data), content_type='html/json')
         self.assertEquals(response.status_code, 200)
 

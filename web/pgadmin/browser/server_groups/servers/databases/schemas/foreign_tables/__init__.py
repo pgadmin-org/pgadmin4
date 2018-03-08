@@ -9,15 +9,17 @@
 
 """Implements the Foreign Table Module."""
 
-import simplejson as json
 import sys
 import traceback
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+import simplejson as json
 from flask import render_template, make_response, request, jsonify, \
     current_app
 from flask_babel import gettext
+
+import pgadmin.browser.server_groups.servers.databases as databases
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
 from pgadmin.browser.server_groups.servers.databases.utils import \
@@ -25,12 +27,12 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -252,7 +254,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Could not find the required parameter (%s)." % arg
+                                "Could not find the required parameter (%s)." %
+                                arg
                             )
                         )
 
@@ -265,12 +268,14 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                     list_params = ['inherits']
 
                 for key in req:
-                    if key in list_params and req[key] != '' \
-                            and req[key] is not None:
+                    if (
+                        key in list_params and req[key] != '' and
+                        req[key] is not None
+                    ):
                         # Coverts string into python list as expected.
-                        data[key] = [] if \
-                            type(req[key]) == list and len(req[key]) == 0 else \
-                            json.loads(req[key], encoding='utf-8')
+                        data[key] = []
+                        if type(req[key]) != list or len(req[key]) != 0:
+                            data[key] = json.loads(req[key], encoding='utf-8')
 
                         if key == 'inherits':
                             # Convert Table ids from unicode/string to int
@@ -352,6 +357,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             )
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -442,8 +448,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             )
 
         return gone(gettext(
-                    'Could not find the specified foreign table.'
-                    ))
+            'Could not find the specified foreign table.'
+        ))
 
     @check_precondition
     def properties(self, gid, sid, did, scid, foid):
@@ -458,7 +464,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             foid: Foreign Table Id
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
-        if data == False:
+        if data is False:
             return gone(
                 gettext("Could not find the foreign table on the server.")
             )
@@ -579,7 +585,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         res = []
         try:
             SQL = render_template("/".join(
-                [self.template_path,'get_tables.sql']),
+                [self.template_path, 'get_tables.sql']),
                 foid=foid, server_type=self.manager.server_type,
                 show_sys_objects=self.blueprint.show_system_objects)
             status, rset = self.conn.execute_dict(SQL)
@@ -591,7 +597,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                 status=200
             )
 
-        except:
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             current_app.logger.error(
                 traceback.print_exception(exc_type,
@@ -634,7 +640,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                     data=res['rows'],
                     status=200
                 )
-        except:
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             current_app.logger.error(traceback.print_exception(
                 exc_type,
@@ -722,7 +728,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         try:
             # Fetch Name and Schema Name to delete the foreign table.
             SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']), scid=scid, foid=foid)
+                                            'delete.sql']), scid=scid,
+                                  foid=foid)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -738,7 +745,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                     )
                 )
 
-            name =  res['rows'][0]['name']
+            name = res['rows'][0]['name']
             basensp = res['rows'][0]['basensp']
 
             SQL = render_template("/".join([self.template_path,
@@ -823,14 +830,14 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             foid: Foreign Table Id
         """
         data = self._fetch_properties(gid, sid, did, scid, foid, inherits=True)
-        if data == False:
+        if data is False:
             return gone(
                 gettext("Could not find the foreign table on the server.")
             )
 
         col_data = []
         for c in data['columns']:
-            if (not 'inheritedfrom' in c) or (c['inheritedfrom'] is None):
+            if ('inheritedfrom' not in c) or (c['inheritedfrom'] is None):
                 col_data.append(c)
 
         data['columns'] = col_data
@@ -878,7 +885,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             return make_json_response(
                 data=SQL,
                 status=200
-                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -896,7 +903,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         if foid is not None:
             old_data = self._fetch_properties(gid, sid, did, scid, foid,
                                               inherits=True)
-            if old_data == False:
+            if old_data is False:
                 return gone(
                     gettext("Could not find the foreign table on the server.")
                 )
@@ -920,7 +927,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
                 # Parse Column Options
                 for c in data['columns']['changed']:
-                    old_col_options = c['attfdwoptions'] if ('attfdwoptions' in c and c['attfdwoptions']) else []
+                    old_col_options = c['attfdwoptions'] = []
+                    if 'attfdwoptions' in c and c['attfdwoptions']:
+                        old_col_options = c['attfdwoptions']
+
                     old_col_frmt_options = {}
 
                     for o in old_col_options:
@@ -933,8 +943,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
                     if 'coloptions' in c and len(c['coloptions']) > 0:
                         for o in c['coloptions']:
-                            if o['option'] in old_col_frmt_options and \
-                                            o['value'] != old_col_frmt_options[o['option']]:
+                            if (
+                                o['option'] in old_col_frmt_options and
+                                o['value'] != old_col_frmt_options[o['option']]
+                            ):
                                 c['coloptions_updated']['changed'].append(o)
                             elif o['option'] not in old_col_frmt_options:
                                 c['coloptions_updated']['added'].append(o)
@@ -942,7 +954,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                                 del old_col_frmt_options[o['option']]
 
                     for o in old_col_frmt_options:
-                        c['coloptions_updated']['deleted'].append({'option': o})
+                        c['coloptions_updated']['deleted'].append(
+                            {'option': o})
 
             # Parse Privileges
             if 'acl' in data and 'added' in data['acl']:
@@ -971,7 +984,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             SQL = render_template("/".join([self.template_path,
                                             'create.sql']), data=data)
             return SQL, data['name']
-
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, foid):
@@ -1096,13 +1108,13 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         # So, we need to separate it as Length: 1, Precision: 1
         for c in cols['rows']:
             if c['fulltype'] != '' and c['fulltype'].find("(") > 0:
-                substr = c['fulltype'][c['fulltype'].find("(") + 1:c['fulltype'].find(")")]
+                substr = self.extract_type_length_precision(c)
                 typlen = substr.split(",")
                 if len(typlen) > 1:
-                    c['typlen'] = int(typlen[0]) if typlen[0].isdigit() else typlen[0]
-                    c['precision'] = int(typlen[1]) if typlen[1].isdigit() else typlen[1]
+                    c['typlen'] = self.convert_typlen_to_int(typlen)
+                    c['precision'] = self.convert_precision_to_int(typlen)
                 else:
-                    c['typlen'] = int(typlen[0]) if typlen[0].isdigit() else typlen[0]
+                    c['typlen'] = self.convert_typlen_to_int(typlen)
                     c['precision'] = None
 
             # Get formatted Column Options
@@ -1132,6 +1144,29 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                     data['inherits'] = res['rows'][0]['inherits']
 
         return data
+
+    @staticmethod
+    def convert_precision_to_int(typlen):
+        return int(typlen[1]) if typlen[1].isdigit() else \
+            typlen[1]
+
+    @staticmethod
+    def convert_typlen_to_int(typlen):
+        return int(typlen[0]) if typlen[0].isdigit() else \
+            typlen[0]
+
+    def extract_type_length_precision(self, column):
+        full_type = column['fulltype']
+        return full_type[self.type_start_position(column):
+                         self.type_end_position(column)]
+
+    @staticmethod
+    def type_end_position(column):
+        return column['fulltype'].find(")")
+
+    @staticmethod
+    def type_start_position(column):
+        return column['fulltype'].find("(") + 1
 
     def _format_proacl_from_db(self, proacl):
         """
@@ -1200,7 +1235,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             SELECT Script sql for the object
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
-        if data == False:
+        if data is False:
             return gone(
                 gettext("Could not find the foreign table on the server.")
             )
@@ -1237,7 +1272,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             INSERT Script sql for the object
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
-        if data == False:
+        if data is False:
             return gone(
                 gettext("Could not find the foreign table on the server.")
             )
@@ -1279,7 +1314,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             UPDATE Script sql for the object
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
-        if data == False:
+        if data is False:
             return gone(
                 gettext("Could not find the foreign table on the server.")
             )
@@ -1324,7 +1359,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             DELETE Script sql for the object
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
-        if data == False:
+        if data is False:
             return gone(
                 gettext("Could not find the foreign table on the server.")
             )
