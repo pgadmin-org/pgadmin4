@@ -402,6 +402,12 @@ class StartRunningQueryTest(BaseTestGenerator):
         blueprint_mock = MagicMock(
             info_notifier_timeout=MagicMock(get=lambda: 5))
 
+        # Save value for the later use
+        self.is_begin_required_for_sql_query = \
+            StartRunningQuery.is_begin_required_for_sql_query
+        self.is_rollback_statement_required = \
+            StartRunningQuery.is_rollback_statement_required
+
         if self.is_begin_required:
             StartRunningQuery.is_begin_required_for_sql_query = MagicMock(
                 return_value=True
@@ -519,3 +525,10 @@ class StartRunningQueryTest(BaseTestGenerator):
             self.connection.execute_void.assert_called_with('ROLLBACK;')
         elif not self.is_begin_required:
             self.connection.execute_void.assert_not_called()
+
+    def tearDown(self):
+        #  Reset methods to the original state
+        StartRunningQuery.is_rollback_statement_required = \
+            self.is_rollback_statement_required
+        StartRunningQuery.is_rollback_statement_required = \
+            self.is_rollback_statement_required
