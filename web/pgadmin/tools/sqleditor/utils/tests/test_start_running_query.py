@@ -8,8 +8,8 @@
 ##########################################################################
 import sys
 
-from flask import Response
 import simplejson as json
+from flask import Response
 
 from pgadmin.tools.sqleditor.utils.start_running_query import StartRunningQuery
 from pgadmin.utils.exception import ConnectionLost
@@ -385,8 +385,14 @@ class StartRunningQueryTest(BaseTestGenerator):
            '.internal_server_error')
     @patch('pgadmin.tools.sqleditor.utils.start_running_query'
            '.update_session_grid_transaction')
-    def runTest(self, update_session_grid_transaction_mock,
-                internal_server_error_mock, get_driver_mock, pickle_mock,
+    @patch('pgadmin.tools.sqleditor.utils.start_running_query'
+           '.StartRunningQuery.is_begin_required_for_sql_query')
+    @patch('pgadmin.tools.sqleditor.utils.start_running_query'
+           '.StartRunningQuery.is_rollback_statement_required')
+    def runTest(self, is_rollback_statement_required_stub,
+                is_begin_required_for_sql_query_stub,
+                update_session_grid_transaction_stub,
+                internal_server_error_mock, get_driver_stub, pickle_stub,
                 make_json_response_mock,
                 apply_explain_plan_wrapper_if_needed_mock):
         """Check correct function is called to handle to run query."""
@@ -398,41 +404,27 @@ class StartRunningQueryTest(BaseTestGenerator):
         make_json_response_mock.return_value = expected_response
         if self.expect_internal_server_error_called_with is not None:
             internal_server_error_mock.return_value = expected_response
-        pickle_mock.loads.return_value = self.pickle_load_return
+        pickle_stub.loads.return_value = self.pickle_load_return
         blueprint_mock = MagicMock(
             info_notifier_timeout=MagicMock(get=lambda: 5))
 
-        # Save value for the later use
-        self.is_begin_required_for_sql_query = \
-            StartRunningQuery.is_begin_required_for_sql_query
-        self.is_rollback_statement_required = \
-            StartRunningQuery.is_rollback_statement_required
-
         if self.is_begin_required:
-            StartRunningQuery.is_begin_required_for_sql_query = MagicMock(
-                return_value=True
-            )
+            is_begin_required_for_sql_query_stub.return_value = True
         else:
-            StartRunningQuery.is_begin_required_for_sql_query = MagicMock(
-                return_value=False
-            )
+            is_begin_required_for_sql_query_stub.return_value = False
         if self.is_rollback_required:
-            StartRunningQuery.is_rollback_statement_required = MagicMock(
-                return_value=True
-            )
+            is_rollback_statement_required_stub.return_value = True
         else:
-            StartRunningQuery.is_rollback_statement_required = MagicMock(
-                return_value=False
-            )
+            is_rollback_statement_required_stub.return_value = False
 
         apply_explain_plan_wrapper_if_needed_mock.return_value = \
             self.apply_explain_plan_wrapper_if_needed_return_value
 
         manager = self.__create_manager()
         if self.get_driver_exception:
-            get_driver_mock.side_effect = get_driver_exception
+            get_driver_stub.side_effect = get_driver_exception
         else:
-            get_driver_mock.return_value = MagicMock(
+            get_driver_stub.return_value = MagicMock(
                 connection_manager=lambda session_id: manager)
 
         try:
@@ -525,10 +517,3 @@ class StartRunningQueryTest(BaseTestGenerator):
             self.connection.execute_void.assert_called_with('ROLLBACK;')
         elif not self.is_begin_required:
             self.connection.execute_void.assert_not_called()
-
-    def tearDown(self):
-        #  Reset methods to the original state
-        StartRunningQuery.is_rollback_statement_required = \
-            staticmethod(self.is_rollback_statement_required)
-        StartRunningQuery.is_rollback_statement_required = \
-            staticmethod(self.is_rollback_statement_required)
