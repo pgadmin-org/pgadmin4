@@ -364,20 +364,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         data['attlen'] = None
         data['attprecision'] = None
 
-        import re
-
-        # If we have length & precision both
-        if length and precision:
-            matchObj = re.search(r'(\d+),(\d+)', fulltype)
-            if matchObj:
-                data['attlen'] = matchObj.group(1)
-                data['attprecision'] = matchObj.group(2)
-        elif length:
-            # If we have length only
-            matchObj = re.search(r'(\d+)', fulltype)
-            if matchObj:
-                data['attlen'] = matchObj.group(1)
-                data['attprecision'] = None
+        self.set_length_precision(
+            length, precision, fulltype, data
+        )
 
         # We need to fetch inherited tables for each table
         SQL = render_template("/".join([self.template_path,

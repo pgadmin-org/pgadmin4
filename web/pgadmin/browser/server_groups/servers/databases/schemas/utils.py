@@ -8,7 +8,7 @@
 ##########################################################################
 
 """Schema collection node helper class"""
-
+import re
 import json
 
 from flask import render_template
@@ -335,6 +335,56 @@ class DataTypeReader:
             type_name += "[]"
 
         return type_name
+
+    @classmethod
+    def set_length_precision(cls, length, precision, fulltype, data,
+                             old_data=None):
+        """
+        Parse length & precision from datatype and then assign it to datatype
+        according to client format
+
+        Args:
+            length: Boolean flag for length
+            precision: Boolean flag for precision
+            fulltype: Type name with length & precision
+            data: New values
+            old_data: Old values
+        """
+        # If we have length & precision both
+
+        if length and precision:
+            match_obj = re.search(r'(\d+),(\d+)', fulltype)
+            if match_obj:
+                attribute_length = DataTypeReader.get_valid_length_value(
+                    data.get('attlen', None))
+                data['attlen'] = attribute_length or match_obj.group(1)
+                attribute_precision = DataTypeReader.get_valid_length_value(
+                    data.get('attprecision', None))
+                data['attprecision'] = attribute_precision or match_obj.group(
+                    2)
+        elif length:
+            # If we have length only
+            match_obj = re.search(r'(\d+)', fulltype)
+            if match_obj:
+                attribute_length = DataTypeReader.get_valid_length_value(
+                    data.get('attlen', None))
+                data['attlen'] = attribute_length or match_obj.group(1)
+                data['attprecision'] = None
+        else:
+            # Use the old values to avoid unnecessary
+            if old_data:
+                if 'attlen' in old_data:
+                    if old_data['attlen'] != '-1':
+                        data['attlen'] = old_data.get('attlen', None)
+                    if 'attprecision' in old_data:
+                        if old_data['attprecision'] != '-1':
+                            data['attprecision'] = old_data.get(
+                                'attprecision', None
+                            )
+
+    @classmethod
+    def get_valid_length_value(cls, val):
+        return val if val and int(val) != -1 else None
 
 
 def trigger_definition(data):
