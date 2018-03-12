@@ -478,7 +478,8 @@ class ServerNode(PGChildNodeView):
             'sslcrl': 'sslcrl',
             'sslcompression': 'sslcompression',
             'bgcolor': 'bgcolor',
-            'fgcolor': 'fgcolor'
+            'fgcolor': 'fgcolor',
+            'service': 'service'
         }
 
         disp_lbl = {
@@ -515,7 +516,7 @@ class ServerNode(PGChildNodeView):
         if connected:
             for arg in (
                     'host', 'hostaddr', 'port', 'db', 'username', 'sslmode',
-                    'role'
+                    'role', 'service'
             ):
                 if arg in data:
                     return forbidden(
@@ -663,7 +664,8 @@ class ServerNode(PGChildNodeView):
                 'sslrootcert': server.sslrootcert if is_ssl else None,
                 'sslcrl': server.sslcrl if is_ssl else None,
                 'sslcompression': True if is_ssl and server.sslcompression
-                else False
+                else False,
+                'service': server.service if server.service else None
             }
         )
 
@@ -672,18 +674,22 @@ class ServerNode(PGChildNodeView):
         """Add a server node to the settings database"""
         required_args = [
             u'name',
-            u'host',
             u'port',
-            u'db',
-            u'username',
             u'sslmode',
-            u'role'
+            u'username'
         ]
 
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
 
+        # Some fields can be provided with service file so they are optional
+        if 'service' in data and not data['service']:
+            required_args.extend([
+                u'host',
+                u'db',
+                u'role'
+            ])
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -711,29 +717,26 @@ class ServerNode(PGChildNodeView):
         try:
             server = Server(
                 user_id=current_user.id,
-                servergroup_id=data[u'gid'] if u'gid' in data else gid,
-                name=data[u'name'],
-                host=data[u'host'],
-                hostaddr=data[u'hostaddr'] if u'hostaddr' in data else None,
-                port=data[u'port'],
-                maintenance_db=data[u'db'],
-                username=data[u'username'],
-                ssl_mode=data[u'sslmode'],
-                comment=data[u'comment'] if u'comment' in data else None,
-                role=data[u'role'] if u'role' in data else None,
+                servergroup_id=data.get('gid', gid),
+                name=data.get('name'),
+                host=data.get('host', None),
+                hostaddr=data.get('hostaddr', None),
+                port=data.get('port'),
+                maintenance_db=data.get('db', None),
+                username=data.get('username'),
+                ssl_mode=data.get('sslmode'),
+                comment=data.get('comment', None),
+                role=data.get('role', None),
                 db_res=','.join(data[u'db_res'])
-                if u'db_res' in data
-                else None,
-                sslcert=data['sslcert'] if is_ssl else None,
-                sslkey=data['sslkey'] if is_ssl else None,
-                sslrootcert=data['sslrootcert'] if is_ssl else None,
-                sslcrl=data['sslcrl'] if is_ssl else None,
+                if u'db_res' in data else None,
+                sslcert=data.get('sslcert', None),
+                sslkey=data.get('sslkey', None),
+                sslrootcert=data.get('sslrootcert', None),
+                sslcrl=data.get('sslcrl', None),
                 sslcompression=1 if is_ssl and data['sslcompression'] else 0,
-                bgcolor=data['bgcolor'] if u'bgcolor' in data
-                else None,
-                fgcolor=data['fgcolor'] if u'fgcolor' in data
-                else None
-
+                bgcolor=data.get('bgcolor', None),
+                fgcolor=data.get('fgcolor', None),
+                service=data.get('service', None)
             )
             db.session.add(server)
             db.session.commit()
@@ -930,7 +933,7 @@ class ServerNode(PGChildNodeView):
         if 'password' not in data:
             conn_passwd = getattr(conn, 'password', None)
             if conn_passwd is None and server.password is None and \
-                    server.passfile is None:
+                    server.passfile is None and server.service is None:
                 # Return the password template in case password is not
                 # provided, or password has not been saved earlier.
                 return make_json_response(

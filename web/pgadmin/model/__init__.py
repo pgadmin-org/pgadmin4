@@ -107,13 +107,13 @@ class Server(db.Model):
         nullable=False
     )
     name = db.Column(db.String(128), nullable=False)
-    host = db.Column(db.String(128), nullable=False)
+    host = db.Column(db.String(128), nullable=True)
     hostaddr = db.Column(db.String(128), nullable=True)
     port = db.Column(
         db.Integer(),
         db.CheckConstraint('port >= 1024 AND port <= 65534'),
         nullable=False)
-    maintenance_db = db.Column(db.String(64), nullable=False)
+    maintenance_db = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
     password = db.Column(db.String(64), nullable=True)
     role = db.Column(db.String(64), nullable=True)
@@ -144,6 +144,7 @@ class Server(db.Model):
     )
     bgcolor = db.Column(db.Text(10), nullable=True)
     fgcolor = db.Column(db.Text(10), nullable=True)
+    service = db.Column(db.Text(), nullable=True)
 
 
 class ModulePreference(db.Model):

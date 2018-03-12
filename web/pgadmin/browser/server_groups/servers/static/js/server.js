@@ -665,6 +665,7 @@ define('pgadmin.node.server', [
           sslkey: undefined,
           sslrootcert: undefined,
           sslcrl: undefined,
+          service: undefined,
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -841,11 +842,17 @@ define('pgadmin.node.server', [
             var passfile = m.get('passfile');
             return !_.isUndefined(passfile) && !_.isNull(passfile);
           },
+        },{
+          id: 'service', label: gettext('Service'), type: 'text',
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+          group: gettext('Connection'),
         }],
         validate: function() {
           var err = {},
             errmsg,
             self = this;
+
+          var service_id = this.get('service');
 
           var check_for_empty = function(id, msg) {
             var v = self.get(id);
@@ -903,26 +910,41 @@ define('pgadmin.node.server', [
           }
           check_for_empty('name', gettext('Name must be specified.'));
 
-          if (check_for_empty(
-            'host', gettext('Either Host name or Host address must be specified.')
-          ) && check_for_empty('hostaddr', gettext('Either Host name or Host address must be specified.'))){
-            errmsg = errmsg || gettext('Either Host name or Host address must be specified');
+          // If no service id then only check
+          if (
+              _.isUndefined(service_id) || _.isNull(service_id) ||
+              String(service_id).replace(/^\s+|\s+$/g, '') == ''
+            ) {
+            if (check_for_empty(
+              'host', gettext('Either Host name, Address or Service must be specified.')
+            ) && check_for_empty('hostaddr', gettext('Either Host name, Address or Service must be specified.'))){
+              errmsg = errmsg || gettext('Either Host name, Address or Service must be specified.');
+            } else {
+              errmsg = undefined;
+              delete err['host'];
+              delete err['hostaddr'];
+            }
+
+            check_for_empty(
+              'db', gettext('Maintenance database must be specified.')
+            );
+            check_for_valid_ip(
+              'hostaddr', gettext('Host address must be valid IPv4 or IPv6 address.')
+            );
+            check_for_valid_ip(
+              'hostaddr', gettext('Host address must be valid IPv4 or IPv6 address.')
+            );
           } else {
-            errmsg = undefined;
-            delete err['host'];
-            delete err['hostaddr'];
+            _.each(['host', 'hostaddr', 'db'], (item) => {
+              self.errorModel.unset(item);
+            });
           }
 
-          check_for_empty(
-            'db', gettext('Maintenance database must be specified.')
-          );
           check_for_empty(
             'username', gettext('Username must be specified.')
           );
           check_for_empty('port', gettext('Port must be specified.'));
-          check_for_valid_ip(
-            'hostaddr', gettext('Host address must be valid IPv4 or IPv6 address.')
-          );
+
           this.errorModel.set(err);
 
           if (_.size(err)) {

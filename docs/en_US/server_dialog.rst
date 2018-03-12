@@ -32,6 +32,7 @@ Use the fields in the *Connection* tab to configure a connection:
 * Use the *Password* field to provide a password that will be supplied when authenticating with the server.
 * Check the box next to *Save password?* to instruct pgAdmin to save the password for future use.
 * Use the *Role* field to specify the name of a role that has privileges that will be conveyed to the client after authentication with the server. This selection allows you to connect as one role, and then assume the permissions of this specified role after the connection is established. Note that the connecting role must be a member of the role specified.
+* Use the *Service* field to specify the service name. For more information, see `Section 33.16 of the Postgres documentation <https://www.postgresql.org/docs/10/static/libpq-pgservice.html>`_.
 
 Click the *SSL* tab to continue.
 
