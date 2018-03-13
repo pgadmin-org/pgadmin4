@@ -27,6 +27,7 @@ class ForeignTableDeleteTestCase(BaseTestGenerator):
     """
     This class will delete foreign table under database node.
     """
+    skip_on_database = ['gpdb']
 
     scenarios = [
         # Fetching default URL for foreign table node.
@@ -36,6 +37,7 @@ class ForeignTableDeleteTestCase(BaseTestGenerator):
     def setUp(self):
         """ This function will create foreign data wrapper, foreign server
         and foreign table. """
+        super(ForeignTableDeleteTestCase, self).setUp()
 
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']

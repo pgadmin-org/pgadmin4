@@ -14,7 +14,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.utils import server_utils as server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
@@ -22,6 +22,7 @@ from regression.python_test_utils import test_utils as utils
 
 class TriggerFuncAddTestCase(BaseTestGenerator):
     """ This class will add new trigger function under schema node. """
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for trigger function node.
         ('Fetch Trigger Function Node URL', dict(
@@ -30,6 +31,7 @@ class TriggerFuncAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will add trigger function under schema node. """
+        super(TriggerFuncAddTestCase, self).runTest()
         db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         server_id = schema_info["server_id"]

@@ -1748,20 +1748,39 @@ class BaseTableView(PGChildNodeView):
                             old_data['atttypmod']
                         )
 
+                        def get_type_attr(key, data):
+                            """Utility function"""
+                            if key in data:
+                                return data[key]
+                            return None
+
                         # If the column data type has not changed then fetch
                         # old length and precision
                         if 'elemoid' in old_data and 'cltype' not in c:
                             length, precision, typeval = \
                                 self.get_length_precision(old_data['elemoid'])
-                            # Set proper values for old data
-                            self.set_length_precision(
-                                length, precision, fulltype, old_data
-                            )
 
-                            # Set proper values for in new data
-                            self.set_length_precision(
-                                length, precision, fulltype, c, old_data
-                            )
+                            # If we have length & precision both
+                            if length and precision:
+                                matchObj = re.search(r'(\d+),(\d+)', fulltype)
+                                if matchObj:
+                                    c['attlen'] = get_type_attr(
+                                        'attlen', c
+                                    ) or matchObj.group(1)
+                                    c['attprecision'] = get_type_attr(
+                                        'attprecision', c
+                                    ) or matchObj.group(2)
+                            elif length:
+                                # If we have length only
+                                matchObj = re.search(r'(\d+)', fulltype)
+                                if matchObj:
+                                    c['attlen'] = get_type_attr(
+                                        'attlen', c
+                                    ) or matchObj.group(1)
+                                    c['attprecision'] = None
+                            else:
+                                c['attlen'] = None
+                                c['attprecision'] = None
 
                         if 'cltype' in c:
                             typename = c['cltype']

@@ -26,11 +26,13 @@ from . import utils as triggers_utils
 
 class TriggersUpdateTestCase(BaseTestGenerator):
     """This class will update trigger under table node."""
+    skip_on_database = ['gpdb']
     scenarios = [
         ('Put trigger Node URL', dict(url='/browser/trigger/obj/'))
     ]
 
     def setUp(self):
+        super(TriggersUpdateTestCase, self).setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]

@@ -21,11 +21,13 @@ from . import utils as language_utils
 
 
 class LanguagesAddTestCase(BaseTestGenerator):
+    skip_on_database = ['gpdb']
     scenarios = [
         ('Language add test case', dict(url='/browser/language/obj/'))
     ]
 
     def setUp(self):
+        super(LanguagesAddTestCase, self).setUp()
         self.server_data = parent_node_dict["database"][-1]
         self.server_id = self.server_data["server_id"]
         self.db_id = self.server_data['db_id']

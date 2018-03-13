@@ -27,6 +27,7 @@ from regression.python_test_utils import test_utils as utils
 
 class UserMappingAddTestCase(BaseTestGenerator):
     """This class will add user mapping under foreign server node."""
+    skip_on_database = ['gpdb']
 
     scenarios = [
         # Fetching default URL for user mapping node.
@@ -35,6 +36,7 @@ class UserMappingAddTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
+        super(UserMappingAddTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

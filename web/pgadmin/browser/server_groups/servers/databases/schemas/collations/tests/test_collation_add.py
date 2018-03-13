@@ -21,12 +21,14 @@ from regression.python_test_utils import test_utils as utils
 
 class CollationAddTestCase(BaseTestGenerator):
     """ This class will add new collation under schema node. """
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for collation node.
         ('Default Node URL', dict(url='/browser/collation/obj/'))
     ]
 
     def setUp(self):
+        super(CollationAddTestCase, self).setUp()
         self.database_info = parent_node_dict["database"][-1]
         self.db_name = self.database_info["db_name"]
         # Change the db name, so that schema will create in newly created db

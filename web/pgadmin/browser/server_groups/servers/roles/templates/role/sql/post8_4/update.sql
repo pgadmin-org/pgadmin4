@@ -30,9 +30,7 @@ ALTER {% if rolCanLogin %}USER{% else %}ROLE{% endif %} {{ conn|qtIdent(rolname)
 	INHERIT{% else %}
 	NOINHERIT{% endif %}{% endif %}{% if 'rolreplication' in data %}
 
-{% if data.rolreplication %}
-	REPLICATION{% else %}
-	NOREPLICATION{% endif %}{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
+{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
 
 	CONNECTION LIMIT {{ data.rolconnlimit }}
 {% endif %}{% if 'rolvaliduntil' in data %}
@@ -87,7 +85,8 @@ GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(rolname) }}
 {% if 'added' in variables and variables.added|length > 0 %}
 
 {% for var in variables.added %}
-{{ VARIABLE.APPLY(conn, var.database, rolname, var.name, var.value) }}
+ALTER ROLE {{ self.conn|qtIdent(data.rolname) }}
+    SET {{ conn|qtIdent(var.name) }} TO {{ var.value }};
 {% endfor %}{% endif %}
 {% if 'changed' in variables and variables.changed|length > 0 %}
 

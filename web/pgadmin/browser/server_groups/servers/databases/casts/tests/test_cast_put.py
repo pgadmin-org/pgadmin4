@@ -21,6 +21,7 @@ from . import utils as cast_utils
 
 class CastsPutTestCase(BaseTestGenerator):
     """ This class will fetch the cast node added under database node. """
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for cast node.
         ('Check Cast Node', dict(url='/browser/cast/obj/'))
@@ -28,6 +29,7 @@ class CastsPutTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create cast."""
+        super(CastsPutTestCase, self).setUp()
         self.default_db = self.server["db"]
         self.database_info = parent_node_dict['database'][-1]
         self.db_name = self.database_info['db_name']

@@ -21,12 +21,14 @@ from . import utils as sequence_utils
 
 class SequenceDeleteTestCase(BaseTestGenerator):
     """This class will delete added sequence under schema node."""
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for sequence node.
         ('Fetch sequence Node URL', dict(url='/browser/sequence/obj/'))
     ]
 
     def setUp(self):
+        super(SequenceDeleteTestCase, self).setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]

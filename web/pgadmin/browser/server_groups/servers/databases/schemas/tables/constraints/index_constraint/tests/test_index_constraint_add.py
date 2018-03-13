@@ -24,6 +24,7 @@ from regression.python_test_utils import test_utils as utils
 class IndexConstraintAddTestCase(BaseTestGenerator):
     """This class will add index constraint(primary key or unique key) to
     table column"""
+    skip_on_database = ['gpdb']
     primary_key_name = "test_primarykey_add_%s" % \
                        (str(uuid.uuid4())[1:8])
     primary_key_data = {"name": primary_key_name,

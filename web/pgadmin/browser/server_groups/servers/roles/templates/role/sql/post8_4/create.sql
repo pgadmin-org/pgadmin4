@@ -20,11 +20,7 @@ CREATE {% if data.rolcanlogin %}USER{% else %}ROLE{% endif %} {{ conn|qtIdent(da
 
 	INHERIT{% else %}
 
-	NOINHERIT{% endif %}{% if data.rolreplication %}
-
-	REPLICATION{% else %}
-
-	NOREPLICATION{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
+	NOINHERIT{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
 
 	CONNECTION LIMIT {{ data.rolconnlimit }}{% endif %}{% if data.rolvaliduntil and data.rolvaliduntil is not none %}
 
@@ -42,7 +38,8 @@ GRANT {{ conn|qtIdent(data.admins)|join(', ') }} TO {{ conn|qtIdent(data.rolname
 
 {% for var in data.variables %}
 
-{{ VARIABLE.APPLY(conn, var.database, data.rolname, var.name, var.value) }}
+ALTER ROLE {{ self.conn|qtIdent(data.rolname) }}
+    SET {{ conn|qtIdent(var.name) }} TO {{ var.value }};
 {% endfor %}{% endif %}{% if data.description %}
 
 COMMENT ON ROLE {{ conn|qtIdent(data.rolname) }} IS {{ data.description|qtLiteral }};

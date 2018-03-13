@@ -11,10 +11,9 @@ from __future__ import print_function
 
 import json
 
-from regression.python_test_utils import test_utils as utils
-
 SERVER_URL = '/browser/server/obj/'
 SERVER_CONNECT_URL = '/browser/server/connect/'
+DUMMY_SERVER_GROUP = 10000
 
 
 def connect_server(self, server_id):
@@ -25,7 +24,7 @@ def connect_server(self, server_id):
     :param server_id: server id
     :type server_id: str
     """
-    response = self.tester.post(SERVER_CONNECT_URL + str(utils.SERVER_GROUP) +
+    response = self.tester.post(SERVER_CONNECT_URL + str(DUMMY_SERVER_GROUP) +
                                 '/' + str(server_id),
                                 data=dict(password=self.server['db_password']),
                                 follow_redirects=True)

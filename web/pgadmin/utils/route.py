@@ -7,13 +7,14 @@
 #
 ##############################################################
 
-import traceback
 import sys
+import traceback
 from abc import ABCMeta, abstractmethod
 from importlib import import_module
-from werkzeug.utils import find_modules
-import config
+
 import six
+from werkzeug.utils import find_modules
+from pgadmin.utils import server_utils
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -67,9 +68,9 @@ class TestsGeneratorRegistry(ABCMeta):
         for module_name in all_modules:
             try:
                 if "tests." in str(module_name) and not any(
-                        str(module_name).startswith(
-                            'pgadmin.' + str(exclude_pkg)
-                        ) for exclude_pkg in exclude_pkgs
+                    str(module_name).startswith(
+                        'pgadmin.' + str(exclude_pkg)
+                    ) for exclude_pkg in exclude_pkgs
                 ):
                     import_module(module_name)
             except ImportError:
@@ -79,6 +80,15 @@ class TestsGeneratorRegistry(ABCMeta):
 @six.add_metaclass(TestsGeneratorRegistry)
 class BaseTestGenerator(unittest.TestCase):
     # Defining abstract method which will override by individual testcase.
+
+    def setUp(self):
+        super(BaseTestGenerator, self).setUp()
+        self.server_id = self.server_information["server_id"]
+        server_con = server_utils.connect_server(self, self.server_id)
+        if hasattr(self, 'skip_on_database'):
+            if 'data' in server_con and 'type' in server_con['data']:
+                if server_con['data']['type'] in self.skip_on_database:
+                    self.skipTest('cannot run in: %s' % self.server['db_type'])
 
     @classmethod
     def setTestServer(cls, server):
@@ -100,3 +110,7 @@ class BaseTestGenerator(unittest.TestCase):
     @classmethod
     def setDriver(cls, driver):
         cls.driver = driver
+
+    @classmethod
+    def setServerInformation(cls, server_information):
+        cls.server_information = server_information

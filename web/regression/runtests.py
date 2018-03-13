@@ -120,10 +120,11 @@ unit_test.runner.TextTestResult.addSuccess = test_utils.add_success
 scenarios.apply_scenario = test_utils.apply_scenario
 
 
-def get_suite(module_list, test_server, test_app_client):
+def get_suite(module_list, test_server, test_app_client, server_information):
     """
      This function add the tests to test suite and return modified test suite
       variable.
+    :param server_information:
     :param module_list: test module list
     :type module_list: list
     :param test_server: server details
@@ -148,6 +149,7 @@ def get_suite(module_list, test_server, test_app_client):
         obj.setTestClient(test_app_client)
         obj.setTestServer(test_server)
         obj.setDriver(driver)
+        obj.setServerInformation(server_information)
         scenario = scenarios.generate_scenarios(obj)
         pgadmin_suite.addTests(scenario)
 
@@ -344,9 +346,12 @@ if __name__ == '__main__':
             print("\n=============Running the test cases for '%s'============="
                   % server['name'], file=sys.stderr)
             # Create test server
-            test_utils.create_parent_server_node(server)
+            server_information = test_utils.create_parent_server_node(server)
 
-            suite = get_suite(test_module_list, server, test_client)
+            suite = get_suite(test_module_list,
+                              server,
+                              test_client,
+                              server_information)
             tests = unit_test.TextTestRunner(stream=sys.stderr,
                                              descriptions=True,
                                              verbosity=2).run(suite)

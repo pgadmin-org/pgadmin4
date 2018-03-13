@@ -25,11 +25,13 @@ from regression.python_test_utils import test_utils as utils
 
 class TriggersAddTestCase(BaseTestGenerator):
     """This class will add new trigger under table node."""
+    skip_on_database = ['gpdb']
     scenarios = [
         ('Add trigger Node URL', dict(url='/browser/trigger/obj/'))
     ]
 
     def setUp(self):
+        super(TriggersAddTestCase, self).setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]

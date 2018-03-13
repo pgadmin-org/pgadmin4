@@ -28,6 +28,7 @@ from . import utils as um_utils
 
 class UserMappingPutTestCase(BaseTestGenerator):
     """This class will update user mapping under foreign server node."""
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for user mapping node.
         ('Check user mapping Node', dict(url='/browser/user_mapping/obj/'))
@@ -35,6 +36,7 @@ class UserMappingPutTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
+        super(UserMappingPutTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

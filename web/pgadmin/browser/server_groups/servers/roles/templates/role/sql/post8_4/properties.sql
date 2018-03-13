@@ -11,6 +11,6 @@ SELECT
 FROM
 	pg_roles r
 {% if rid %}
-WHERE r.oid = {{ rid|qtIdent }}::OID
+WHERE r.oid = {{ rid }}::OID
 {% endif %}
 ORDER BY r.rolcanlogin, r.rolname

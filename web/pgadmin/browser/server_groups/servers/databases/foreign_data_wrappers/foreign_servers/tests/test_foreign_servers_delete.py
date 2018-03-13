@@ -25,6 +25,7 @@ from . import utils as fsrv_utils
 
 class ForeignServerDeleteTestCase(BaseTestGenerator):
     """This class will add foreign server under FDW node."""
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for foreign server node.
         ('Check FSRV Node', dict(url='/browser/foreign_server/obj/'))
@@ -32,6 +33,7 @@ class ForeignServerDeleteTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
+        super(ForeignServerDeleteTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

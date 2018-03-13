@@ -51,7 +51,6 @@ class DomainAddTestCase(BaseTestGenerator):
         data = {
             "basensp": schema_name,
             "basetype": "character",
-            "collname": "pg_catalog.\"POSIX\"",
             "constraints": [{
                 "conname": "num",
                 "convalidated": True

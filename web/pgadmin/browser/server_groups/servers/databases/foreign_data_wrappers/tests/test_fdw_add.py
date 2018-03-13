@@ -21,6 +21,8 @@ from . import utils as fdw_utils
 
 class FDWDAddTestCase(BaseTestGenerator):
     """ This class will add foreign data wrappers under database node. """
+    skip_on_database = ['gpdb']
+
     scenarios = [
         # Fetching default URL for foreign_data_wrapper node.
         ('Check FDW Node',
@@ -29,6 +31,8 @@ class FDWDAddTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create extension."""
+        super(FDWDAddTestCase, self).setUp()
+
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

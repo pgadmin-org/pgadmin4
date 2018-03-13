@@ -464,17 +464,22 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
                 # Below logic will allow us to split length, precision from
                 # type name for grid
-                data = {
-                    'attlen': None,
-                    'attprecision': None
-                }
+                import re
+                t_len = None
+                t_prec = None
 
-                self.set_length_precision(
-                    is_tlength, is_precision, row['fulltype'], data
-                )
-
-                t_len = data['attlen']
-                t_prec = data['attprecision']
+                # If we have length & precision both
+                if is_tlength and is_precision:
+                    matchObj = re.search(r'(\d+),(\d+)', row['fulltype'])
+                    if matchObj:
+                        t_len = matchObj.group(1)
+                        t_prec = matchObj.group(2)
+                elif is_tlength:
+                    # If we have length only
+                    matchObj = re.search(r'(\d+)', row['fulltype'])
+                    if matchObj:
+                        t_len = matchObj.group(1)
+                        t_prec = None
 
                 type_name = DataTypeReader.parse_type_name(row['typname'])
 

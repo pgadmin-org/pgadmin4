@@ -46,7 +46,7 @@ def login_tester_account(tester):
     :return: None
     """
     if os.environ['PGADMIN_SETUP_EMAIL'] and \
-            os.environ['PGADMIN_SETUP_PASSWORD']:
+       os.environ['PGADMIN_SETUP_PASSWORD']:
         email = os.environ['PGADMIN_SETUP_EMAIL']
         password = os.environ['PGADMIN_SETUP_PASSWORD']
         tester.post('/login', data=dict(email=email, password=password),
@@ -88,6 +88,8 @@ def get_config_data():
                 "sslmode": srv['sslmode'],
                 "tablespace_path": srv.get('tablespace_path', None)
             }
+            if 'db_type' in srv:
+                data['db_type'] = srv['db_type']
             server_data.append(data)
     return server_data
 
@@ -220,9 +222,11 @@ def create_table_with_query(server, db_name, query):
         traceback.print_exc(file=sys.stderr)
 
 
-def create_constraint(
-        server, db_name, table_name,
-        constraint_type="unique", constraint_name="test_unique"):
+def create_constraint(server,
+                      db_name,
+                      table_name,
+                      constraint_type="unique",
+                      constraint_name="test_unique"):
     try:
         connection = get_db_connection(
             db_name,
@@ -275,8 +279,7 @@ def create_debug_function(server, db_name, function_name="test_func"):
                 RETURN 'Hello, pgAdmin4';
               END;
             $function$;
-            ''' % (function_name)
-        )
+            ''' % function_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 
@@ -299,8 +302,7 @@ def drop_debug_function(server, db_name, function_name="test_func"):
         pg_cursor = connection.cursor()
         pg_cursor.execute('''
             DROP FUNCTION public."%s"();
-            ''' % (function_name)
-        )
+            ''' % function_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 
@@ -357,8 +359,7 @@ def drop_role(server, db_name, role_name="test_role"):
         pg_cursor = connection.cursor()
         pg_cursor.execute('''
             DROP USER "%s"
-            ''' % (role_name)
-        )
+            ''' % role_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 
@@ -459,12 +460,11 @@ def add_db_to_parent_node_dict(srv_id, db_id, test_db_name):
 
 def add_schema_to_parent_node_dict(srv_id, db_id, schema_id, schema_name):
     """ This function stores the schema details into parent dict """
-    regression.parent_node_dict["schema"].append({
-        "server_id": srv_id,
-        "db_id": db_id,
-        "schema_id": schema_id,
-        "schema_name": schema_name
-    })
+    server_information = {"server_id": srv_id, "db_id": db_id,
+                          "schema_id": schema_id,
+                          "schema_name": schema_name}
+    regression.parent_node_dict["schema"].append(server_information)
+    return server_information
 
 
 def create_parent_server_node(server_info):
@@ -492,7 +492,7 @@ def create_parent_server_node(server_info):
     )
 
     schema = regression.schema_utils.create_schema(connection, schema_name)
-    add_schema_to_parent_node_dict(
+    return add_schema_to_parent_node_dict(
         srv_id, db_id, schema[0], schema[1]
     )
 
@@ -770,7 +770,7 @@ def get_timezone_without_dst(connection):
     """
 
     timezone_no_dst_sql = """SELECT EXTRACT(
-        TIMEZONE FROM '2017-01-01 00:00:00'::timestamp with time zone);"""
+        TIMEZONE FROM '2017-01-01 00:00:00'::TIMESTAMP WITH TIME ZONE);"""
 
     pg_cursor = connection.cursor()
 

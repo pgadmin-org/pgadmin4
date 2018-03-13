@@ -25,6 +25,7 @@ from . import utils as index_constraint_utils
 class IndexConstraintUpdateTestCase(BaseTestGenerator):
     """This class will update index constraint(primary key or unique key) of
     table column"""
+    skip_on_database = ['gpdb']
     primary_key_name = "test_primarykey_put_%s" % \
                        (str(uuid.uuid4())[1:8])
     unique_key_name = "test_uniquekey_put_%s" % \

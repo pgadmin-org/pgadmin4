@@ -5,12 +5,12 @@ SELECT
     array_agg(b.is_grantable) AS grantable
 FROM
     (SELECT
-        (d).grantee AS grantee, (d).grantor AS grantor,
-        (d).is_grantable AS is_grantable,
-        CASE (d).privilege_type
+        (a).grantee AS grantee, (a).grantor AS grantor,
+        (a).is_grantable AS is_grantable,
+        CASE (a).privilege_type
         WHEN 'CREATE' THEN 'C'
         WHEN 'USAGE' THEN 'U'
-        ELSE 'UNKNOWN - ' || (d).privilege_type
+        ELSE 'UNKNOWN - ' || (a).privilege_type
         END AS privilege_type
     FROM
         (

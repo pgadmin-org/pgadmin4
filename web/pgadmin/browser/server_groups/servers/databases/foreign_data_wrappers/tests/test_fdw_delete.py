@@ -21,12 +21,14 @@ from . import utils as fdw_utils
 
 class FDWDDeleteTestCase(BaseTestGenerator):
     """This class will delete foreign data wrappers under test database."""
+    skip_on_database = ['gpdb']
     scenarios = [  # Fetching default URL for foreign_data_wrapper node.
         ('Check FDW Node',
          dict(url='/browser/foreign_data_wrapper/obj/'))]
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
+        super(FDWDDeleteTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

@@ -10,7 +10,7 @@
 import json
 import uuid
 
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.utils import server_utils as server_utils
 from regression.python_test_utils import test_utils as utils
 
 DATABASE_CONNECT_URL = '/browser/database/connect/'

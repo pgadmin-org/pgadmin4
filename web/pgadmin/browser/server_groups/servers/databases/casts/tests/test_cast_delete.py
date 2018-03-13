@@ -19,12 +19,14 @@ from . import utils as cast_utils
 
 class CastsDeleteTestCase(BaseTestGenerator):
     """ This class will delete the cast node added under database node. """
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for cast node.
         ('Check Cast Node', dict(url='/browser/cast/obj/'))
     ]
 
     def setUp(self):
+        super(CastsDeleteTestCase, self).setUp()
         self.default_db = self.server["db"]
         self.database_info = parent_node_dict['database'][-1]
         self.db_name = self.database_info['db_name']

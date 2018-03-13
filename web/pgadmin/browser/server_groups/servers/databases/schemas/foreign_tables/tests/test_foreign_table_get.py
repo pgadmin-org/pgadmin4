@@ -27,6 +27,8 @@ class ForeignTableGetTestCase(BaseTestGenerator):
     """
     This class will fetch foreign table under database node.
     """
+    skip_on_database = ['gpdb']
+
     scenarios = [
         # Fetching default URL for foreign server node.
         ('Check foreign table Node', dict(url='/browser/foreign_table/obj/'))
@@ -35,6 +37,7 @@ class ForeignTableGetTestCase(BaseTestGenerator):
     def setUp(self):
         """ This function will create foreign data wrapper, foreign server
         and foreign table. """
+        super(ForeignTableGetTestCase, self).setUp()
 
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']

@@ -18,6 +18,7 @@ from . import utils as extension_utils
 
 
 class ExtensionsDeleteTestCase(BaseTestGenerator):
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for extension node.
         ('Check Extension Node', dict(url='/browser/extension/obj/'))
@@ -25,6 +26,7 @@ class ExtensionsDeleteTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create extension."""
+        super(ExtensionsDeleteTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

@@ -15,8 +15,7 @@ import traceback
 from regression.python_test_utils import test_utils as utils
 
 
-def create_table(server, db_name, schema_name, table_name,
-                 custom_column_sql=None):
+def create_table(server, db_name, schema_name, table_name):
     """
     This function creates a table under provided schema.
     :param server: server details
@@ -40,13 +39,9 @@ def create_table(server, db_name, schema_name, table_name,
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        if custom_column_sql:
-            query = "CREATE TABLE %s.%s(%s)" % \
-                    (schema_name, table_name, custom_column_sql)
-        else:
-            query = "CREATE TABLE %s.%s(id serial UNIQUE NOT NULL, " \
-                    "name text, location text)" % \
-                    (schema_name, table_name)
+        query = "CREATE TABLE %s.%s(id serial UNIQUE NOT NULL, name text," \
+                " location text)" %\
+                (schema_name, table_name)
         pg_cursor.execute(query)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()

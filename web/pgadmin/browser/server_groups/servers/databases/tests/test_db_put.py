@@ -50,6 +50,8 @@ class DatabasesUpdateTestCase(BaseTestGenerator):
                     follow_redirects=True)
                 self.assertEquals(response.status_code, 200)
             except Exception as exception:
+                from traceback import print_exc
+                print_exc()
                 raise Exception("Error while updating database details. %s" %
                                 exception)
             finally:

@@ -24,12 +24,14 @@ from . import utils as chk_constraint_utils
 
 class CheckConstraintPutTestCase(BaseTestGenerator):
     """This class will update check constraint to existing table"""
+    skip_on_database = ['gpdb']
     scenarios = [
         ('Update check constraint to table',
          dict(url='/browser/check_constraint/obj/'))
     ]
 
     def setUp(self):
+        super(CheckConstraintPutTestCase, self).setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]

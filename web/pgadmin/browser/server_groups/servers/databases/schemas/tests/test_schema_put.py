@@ -20,12 +20,14 @@ from . import utils as schema_utils
 
 class SchemaPutTestCase(BaseTestGenerator):
     """ This class will update the schema under database node. """
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for extension node.
         ('Check Schema Node URL', dict(url='/browser/schema/obj/'))
     ]
 
     def setUp(self):
+        super(SchemaPutTestCase, self).setUp()
         self.database_info = parent_node_dict["database"][-1]
         self.db_name = self.database_info["db_name"]
         # Change the db name, so that schema will create in newly created db

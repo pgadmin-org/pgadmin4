@@ -9,7 +9,7 @@
 
 import uuid
 
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.utils import server_utils as server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils

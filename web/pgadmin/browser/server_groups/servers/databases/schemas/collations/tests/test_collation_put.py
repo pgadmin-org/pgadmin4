@@ -22,12 +22,14 @@ from . import utils as collation_utils
 
 class CollationPutTestCase(BaseTestGenerator):
     """ This class will update added collation under schema node. """
+    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for collation node.
         ('Fetch collation Node URL', dict(url='/browser/collation/obj/'))
     ]
 
     def setUp(self):
+        super(CollationPutTestCase, self).setUp()
         self.schema_info = parent_node_dict["schema"][-1]
         self.schema_name = self.schema_info["schema_name"]
         self.db_name = parent_node_dict["database"][-1]["db_name"]

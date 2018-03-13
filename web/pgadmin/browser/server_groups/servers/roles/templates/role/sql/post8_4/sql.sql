@@ -66,7 +66,6 @@ UNION ALL
 FROM
 	(SELECT
 		'ALTER ROLE ' || pg_catalog.quote_ident(pg_get_userbyid(%(rid)s::OID)) ||
-		' IN DATABASE ' || pg_catalog.quote_ident(datname) ||
 		' SET ' || param|| ' TO ' ||
 		CASE
 		WHEN param IN ('search_path', 'temp_tablespaces') THEN value

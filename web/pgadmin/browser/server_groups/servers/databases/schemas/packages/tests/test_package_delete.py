@@ -13,7 +13,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.utils import server_utils as server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
@@ -22,6 +22,7 @@ from . import utils as package_utils
 
 class PackageDeleteTestCase(BaseTestGenerator):
     """ This class will delete new package under test schema. """
+    skip_on_database = ['gpdb']
 
     scenarios = [
         # Fetching default URL for package node.
@@ -30,7 +31,7 @@ class PackageDeleteTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-
+        super(PackageDeleteTestCase, self).setUp()
         schema_info = parent_node_dict["schema"][-1]
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
