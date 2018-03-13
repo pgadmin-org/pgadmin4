@@ -2,10 +2,13 @@ define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.server.supported_servers', 'pgadmin.user_management.current_user',
-  'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.browser.server.privilege',
+  'pgadmin.alertifyjs', 'pgadmin.backform',
+  'sources/browser/server_groups/servers/model_validation',
+  'pgadmin.browser.server.privilege',
 ], function(
   gettext, url_for, $, _, Backbone, S, pgAdmin, pgBrowser,
-  supported_servers, current_user, Alertify, Backform
+  supported_servers, current_user, Alertify, Backform,
+  modelValidation
 ) {
 
   if (!pgBrowser.Nodes['server']) {
@@ -848,110 +851,8 @@ define('pgadmin.node.server', [
           group: gettext('Connection'),
         }],
         validate: function() {
-          var err = {},
-            errmsg,
-            self = this;
-
-          var service_id = this.get('service');
-
-          var check_for_empty = function(id, msg) {
-            var v = self.get(id);
-            if (
-              _.isUndefined(v) || v === null || String(v).replace(/^\s+|\s+$/g, '') == ''
-            ) {
-              err[id] = msg;
-              errmsg = errmsg || msg;
-              return true;
-            } else {
-              self.errorModel.unset(id);
-              return false;
-            }
-          };
-          var check_for_valid_ipv6 = function(val){
-            // Regular expression for validating IPv6 address formats
-            var exps = ['^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|',
-              '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|',
-              '2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|',
-              '(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|',
-              ':((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|',
-              '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|',
-              '2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|',
-              '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|',
-              '[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|',
-              '((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|',
-              '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|',
-              '1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|',
-              '((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$'];
-
-            var exp = new RegExp(exps.join(''));
-            return exp.test(val.trim());
-          };
-          var check_for_valid_ip = function(id, msg) {
-            var v4exps = '(^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)';
-            var v4exp = new RegExp(v4exps);
-            var v = self.get(id);
-            if (
-              v && !(v4exp.test(v.trim()))
-            ) {
-              if(!check_for_valid_ipv6(v)){
-                err[id] = msg;
-                errmsg = msg;
-              }
-            } else {
-              self.errorModel.unset(id);
-            }
-          };
-
-          if (!self.isNew() && 'id' in self.sessAttrs) {
-            err['id'] = gettext('The ID cannot be changed.');
-            errmsg = err['id'];
-          } else {
-            self.errorModel.unset('id');
-          }
-          check_for_empty('name', gettext('Name must be specified.'));
-
-          // If no service id then only check
-          if (
-              _.isUndefined(service_id) || _.isNull(service_id) ||
-              String(service_id).replace(/^\s+|\s+$/g, '') == ''
-            ) {
-            if (check_for_empty(
-              'host', gettext('Either Host name, Address or Service must be specified.')
-            ) && check_for_empty('hostaddr', gettext('Either Host name, Address or Service must be specified.'))){
-              errmsg = errmsg || gettext('Either Host name, Address or Service must be specified.');
-            } else {
-              errmsg = undefined;
-              delete err['host'];
-              delete err['hostaddr'];
-            }
-
-            check_for_empty(
-              'db', gettext('Maintenance database must be specified.')
-            );
-            check_for_valid_ip(
-              'hostaddr', gettext('Host address must be valid IPv4 or IPv6 address.')
-            );
-            check_for_valid_ip(
-              'hostaddr', gettext('Host address must be valid IPv4 or IPv6 address.')
-            );
-          } else {
-            _.each(['host', 'hostaddr', 'db'], (item) => {
-              self.errorModel.unset(item);
-            });
-          }
-
-          check_for_empty(
-            'username', gettext('Username must be specified.')
-          );
-          check_for_empty('port', gettext('Port must be specified.'));
-
-          this.errorModel.set(err);
-
-          if (_.size(err)) {
-            return errmsg;
-          }
-
-          return null;
+          const validateModel = new modelValidation.ModelValidation(this);
+          return validateModel.validate();
         },
         isConnected: function(model) {
           return model.get('connected');
