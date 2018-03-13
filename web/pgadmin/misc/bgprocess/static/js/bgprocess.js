@@ -248,7 +248,7 @@ define('misc.bgprocess', [
           if (!self.notifier) {
             var header = $('<div></div>', {
                 class: 'h5 pg-bg-notify-header',
-              }).append($('<span></span>').text(self.desc)),
+              }).append($('<span></span>').text(_.unescape(self.desc))),
               content = $('<div class="pg-bg-bgprocess row"></div>').append(
                 header
               ).append(
@@ -366,7 +366,7 @@ define('misc.bgprocess', [
             self.logs[0].scrollTop = self.logs[0].scrollHeight;
           });
           // set bgprocess detailed description
-          $header.find('.bg-detailed-desc').html(self.detailed_desc);
+          $header.find('.bg-detailed-desc').html(_.unescape(self.detailed_desc));
         }
 
         // set bgprocess start time

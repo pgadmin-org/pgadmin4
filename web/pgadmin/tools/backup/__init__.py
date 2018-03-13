@@ -97,11 +97,9 @@ class BackupMessage(IProcessDesc):
 
         def cmdArg(x):
             if x:
-                # x = html.safe_str(x)
                 x = x.replace('\\', '\\\\')
                 x = x.replace('"', '\\"')
                 x = x.replace('""', '\\"')
-
                 return ' "' + x + '"'
             return ''
 
@@ -110,6 +108,7 @@ class BackupMessage(IProcessDesc):
                 self.cmd += ' ' + arg
             else:
                 self.cmd += cmdArg(arg)
+
 
     @property
     def message(self):
@@ -189,7 +188,7 @@ class BackupMessage(IProcessDesc):
         res += '</div><div class="h5">'
         res += _("Running command:")
         res += '</b><br><span class="pg-bg-cmd enable-selection">'
-        res += html.safe_str(self.cmd)
+        res += html.safe_str(cmd + self.cmd)
         res += '</span></div>'
 
         return res

@@ -78,10 +78,20 @@ class BatchProcess(object):
                 _("Could not find a process with the specified ID.")
             )
 
+        try:
+            tmp_desc = loads(p.desc.encode('latin-1')) if \
+                IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
+        except UnicodeDecodeError:
+            tmp_desc = loads(p.desc.encode('utf-8')) if \
+                IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
+        except Exception as e:
+            tmp_desc = loads(p.desc.encode('utf-8', 'ignore')) if \
+                IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
+
         # ID
         self.id = _id
         # Description
-        self.desc = loads(p.desc)
+        self.desc = tmp_desc
         # Status Acknowledged time
         self.atime = p.acknowledge
         # Command
@@ -171,6 +181,16 @@ class BatchProcess(object):
             csv_writer.writerow(_args)
 
         args_val = args_csv_io.getvalue().strip(str('\r\n'))
+        tmp_desc = dumps(self.desc)
+        try:
+            tmp_desc =tmp_desc.decode('utf-8') if\
+                IS_PY2 and hasattr(tmp_desc, 'decode') else tmp_desc
+        except UnicodeDecodeError:
+            tmp_desc = tmp_desc.decode('latin-1') if \
+                IS_PY2 and hasattr(tmp_desc, 'decode') else tmp_desc
+        except Exception:
+            tmp_desc = tmp_desc.decode('utf-8', 'ignore') if \
+                IS_PY2 and hasattr(tmp_desc, 'decode') else tmp_desc
 
         j = Process(
             pid=int(id),
@@ -178,7 +198,7 @@ class BatchProcess(object):
             arguments=args_val.decode('utf-8', 'replace')
             if IS_PY2 and hasattr(args_val, 'decode') else args_val,
             logdir=log_dir,
-            desc=dumps(self.desc),
+            desc=tmp_desc,
             user_id=current_user.id
         )
         db.session.add(j)
@@ -534,7 +554,17 @@ class BatchProcess(object):
             etime = parser.parse(p.end_time or get_current_time())
 
             execution_time = (etime - stime).total_seconds()
-            desc = loads(p.desc)
+            desc = ""
+            try:
+                desc = loads(p.desc.encode('latin-1')) if \
+                    IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
+            except UnicodeDecodeError:
+                desc = loads(p.desc.encode('utf-8')) if \
+                    IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
+            except Exception:
+                desc = loads(p.desc.encode('utf-8', 'ignore')) if \
+                    IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
+
             details = desc
 
             if isinstance(desc, IProcessDesc):
