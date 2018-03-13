@@ -117,20 +117,26 @@ class FakeApp(Flask):
         self.jinja_env.filters['qtTypeIdent'] = driver.qtTypeIdent
         self.jinja_loader = ChoiceLoader([
             FileSystemLoader(
-                os.path.dirname(
-                    os.path.realpath(__file__)) + '/../templates/'
+                os.path.join(os.path.dirname(
+                    os.path.realpath(__file__)
+                ), os.pardir, 'templates')
             ),
             FileSystemLoader(
-                os.path.dirname(
-                    os.path.realpath(__file__)) + '/../../templates/'
+                os.path.join(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    ), os.pardir, os.pardir, 'templates')
             ),
             FileSystemLoader(
-                os.path.dirname(
-                    os.path.realpath(__file__)) + '/../../types/templates/'
+                os.path.join(os.path.dirname(
+                    os.path.realpath(__file__)),
+                    os.pardir, os.pardir, 'types', 'templates')
             ),
             FileSystemLoader(
-                os.path.dirname(
-                    os.path.realpath(__file__)) + '/../../../../templates/'
+                os.path.join(os.path.dirname(
+                    os.path.realpath(__file__)),
+                    os.pardir, os.pardir, os.pardir, os.pardir,
+                    'templates')
             ),
         ]
         )

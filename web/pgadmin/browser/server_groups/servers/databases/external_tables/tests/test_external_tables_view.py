@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import os
 import sys
 
 from pgadmin.browser.server_groups.servers.databases.external_tables import \
@@ -68,7 +69,9 @@ class TestExternalTablesView(BaseTestGenerator):
              connection=MagicMock(execute_2darray=MagicMock()),
              execute_2darray_return_value=(True, dict(rows=[])),
 
-             expect_render_template_called_with='sql/#gpdb#80323#/list.sql',
+             expect_render_template_called_with=os.path.join('sql',
+                                                             '#gpdb#80323#',
+                                                             'list.sql'),
              expected_make_json_response_called_with=dict(
                  data=[],
                  status=200
@@ -90,7 +93,9 @@ class TestExternalTablesView(BaseTestGenerator):
              connection=MagicMock(execute_2darray=MagicMock()),
              execute_2darray_return_value=(False, 'Some error message'),
 
-             expect_render_template_called_with='sql/#gpdb#80323#/list.sql',
+             expect_render_template_called_with=os.path.join('sql',
+                                                             '#gpdb#80323#',
+                                                             'list.sql'),
              expected_internal_server_error_called_with=dict(
                  errormsg='Some error message'
              ),
@@ -122,7 +127,9 @@ class TestExternalTablesView(BaseTestGenerator):
                  ]
              )),
 
-             expect_render_template_called_with='sql/#gpdb#80323#/list.sql',
+             expect_render_template_called_with=os.path.join('sql',
+                                                             '#gpdb#80323#',
+                                                             'list.sql'),
              expected_make_json_response_called_with=dict(
                  data=[
                      {
@@ -167,7 +174,9 @@ class TestExternalTablesView(BaseTestGenerator):
              execute_2darray_return_value=(False, 'Some error message'),
 
              expect_render_template_called_with=dict(
-                 template_name_or_list='sql/#gpdb#80323#/node.sql',
+                 template_name_or_list=os.path.join('sql',
+                                                    '#gpdb#80323#',
+                                                    'node.sql'),
                  external_table_id=11
              ),
              expected_internal_server_error_called_with=dict(
@@ -192,7 +201,9 @@ class TestExternalTablesView(BaseTestGenerator):
              execute_2darray_return_value=(True, dict(rows=[])),
 
              expect_render_template_called_with=dict(
-                 template_name_or_list='sql/#gpdb#80323#/node.sql',
+                 template_name_or_list=os.path.join('sql',
+                                                    '#gpdb#80323#',
+                                                    'node.sql'),
                  external_table_id=11
              ),
              expected_make_json_response_called_with=dict(
@@ -229,7 +240,9 @@ class TestExternalTablesView(BaseTestGenerator):
              )),
 
              expect_render_template_called_with=dict(
-                 template_name_or_list='sql/#gpdb#80323#/node.sql',
+                 template_name_or_list=os.path.join('sql',
+                                                    '#gpdb#80323#',
+                                                    'node.sql'),
                  external_table_id=11
              ),
              expected_make_json_response_called_with=dict(
@@ -283,8 +296,11 @@ class TestExternalTablesView(BaseTestGenerator):
              )),
 
              expect_render_template_called_with=dict(
-                 template_name_or_list='sql/#gpdb#80323#/'
-                                       'get_table_information.sql',
+                 template_name_or_list=os.path.join(
+                     'sql',
+                     '#gpdb#80323#',
+                     'get_table_information.sql'
+                 ),
                  table_oid=11
              ),
              expected_make_response_called_with=dict(

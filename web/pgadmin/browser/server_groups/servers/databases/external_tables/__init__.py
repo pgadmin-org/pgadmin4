@@ -133,7 +133,7 @@ class ExternalTablesView(PGChildNodeView):
                 did=kwargs['database_id']
             )
             self.sql_template_path = compile_template_path(
-                'sql/',
+                'sql',
                 self.manager.server_type,
                 self.manager.sversion
             )
