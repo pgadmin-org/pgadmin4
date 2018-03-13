@@ -109,7 +109,6 @@ class BackupMessage(IProcessDesc):
             else:
                 self.cmd += cmdArg(arg)
 
-
     @property
     def message(self):
         # Fetch the server details like hostname, port, roles etc

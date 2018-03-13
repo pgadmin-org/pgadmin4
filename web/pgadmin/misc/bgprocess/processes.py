@@ -183,7 +183,7 @@ class BatchProcess(object):
         args_val = args_csv_io.getvalue().strip(str('\r\n'))
         tmp_desc = dumps(self.desc)
         try:
-            tmp_desc =tmp_desc.decode('utf-8') if\
+            tmp_desc = tmp_desc.decode('utf-8') if \
                 IS_PY2 and hasattr(tmp_desc, 'decode') else tmp_desc
         except UnicodeDecodeError:
             tmp_desc = tmp_desc.decode('latin-1') if \
