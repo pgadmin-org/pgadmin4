@@ -99,6 +99,6 @@ export class ModelValidation {
   }
 
   static isEmptyString(string) {
-    return _.isUndefined(string) || _.isNull(string) || string.trim() === '';
+    return _.isUndefined(string) || _.isNull(string) || String(string).trim() === '';
   }
 }

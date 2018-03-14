@@ -31,7 +31,7 @@ describe('Server#ModelValidation', () => {
         model.isNew.and.returnValue(true);
         model.allValues['name'] = 'some name';
         model.allValues['username'] = 'some username';
-        model.allValues['port'] = 'some port';
+        model.allValues['port'] = 12345;
       });
 
       describe('No service id', () => {
