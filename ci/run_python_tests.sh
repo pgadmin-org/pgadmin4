@@ -29,7 +29,7 @@ $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt || { 
 echo "Running PEP-8 checks..."
 echo
 
-make check-pep8
+make check-pep8 || { echo 'ERROR: Error detected when running the Python PEP-8 checks.' ; exit 1; }
 
 echo "Running regression tests..."
 echo
