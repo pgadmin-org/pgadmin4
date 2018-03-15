@@ -329,6 +329,7 @@ def create_restore_job(sid):
             cmd=utility, args=args
         )
         manager.export_password_env(p.id)
+        p.set_env_variables(server)
         p.start()
         jid = p.id
     except Exception as e:

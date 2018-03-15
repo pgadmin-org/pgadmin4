@@ -307,13 +307,13 @@ def create_import_export_job(sid):
         )
         manager.export_password_env(p.id)
 
-        def export_pg_env(env):
-            env['PGHOST'] = server.host
-            env['PGPORT'] = str(server.port)
-            env['PGUSER'] = server.username
-            env['PGDATABASE'] = data['database']
-
-        p.start(export_pg_env)
+        env = dict()
+        env['PGHOST'] = server.host
+        env['PGPORT'] = str(server.port)
+        env['PGUSER'] = server.username
+        env['PGDATABASE'] = data['database']
+        p.set_env_variables(server, env=env)
+        p.start()
         jid = p.id
     except Exception as e:
         current_app.logger.exception(e)

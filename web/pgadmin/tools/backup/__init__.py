@@ -300,6 +300,7 @@ def create_backup_job(sid):
         '--database',
         server.maintenance_db
     ]
+
     if 'role' in data and data['role']:
         args.append('--role')
         args.append(data['role'])
@@ -323,6 +324,7 @@ def create_backup_job(sid):
             cmd=utility, args=args
         )
         manager.export_password_env(p.id)
+        p.set_env_variables(server)
         p.start()
         jid = p.id
     except Exception as e:
@@ -486,6 +488,7 @@ def create_backup_objects_job(sid):
             cmd=utility, args=args
         )
         manager.export_password_env(p.id)
+        p.set_env_variables(server)
         p.start()
         jid = p.id
     except Exception as e:

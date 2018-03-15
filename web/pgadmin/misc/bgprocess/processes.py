@@ -19,7 +19,8 @@ from datetime import datetime
 from pickle import dumps, loads
 from subprocess import Popen
 
-from pgadmin.utils import IS_PY2, u, file_quote, fs_encoding
+from pgadmin.utils import IS_PY2, u, file_quote, fs_encoding, \
+    get_complete_file_path
 
 import pytz
 from dateutil import parser
@@ -62,6 +63,7 @@ class BatchProcess(object):
         self.id = self.desc = self.cmd = self.args = self.log_dir = \
             self.stdout = self.stderr = self.stime = self.etime = \
             self.ecode = None
+        self.env = dict()
 
         if 'id' in kwargs:
             self._retrieve_process(kwargs['id'])
@@ -329,6 +331,9 @@ class BatchProcess(object):
         env['PROCID'] = self.id
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
+
+        if self.env:
+            env.update(self.env)
 
         if cb is not None:
             cb(env)
@@ -622,3 +627,18 @@ class BatchProcess(object):
             p.acknowledge = get_current_time()
 
         db.session.commit()
+
+    def set_env_variables(self, server, **kwargs):
+        """Set environment variables"""
+        if server and server.sslcert is not None and \
+                server.sslkey is not None and \
+                server.sslrootcert is not None:
+            # SSL environment variables
+            self.env['PGSSLMODE'] = server.ssl_mode
+            self.env['PGSSLCERT'] = get_complete_file_path(server.sslcert)
+            self.env['PGSSLKEY'] = get_complete_file_path(server.sslkey)
+            self.env['PGSSLROOTCERT'] = \
+                get_complete_file_path(server.sslrootcert)
+
+        if 'env' in kwargs:
+            self.env.update(kwargs['env'])
