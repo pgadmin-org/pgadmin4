@@ -6,4 +6,4 @@ show-source = False
 show-pep8 = False
 count = True
 format = pylint
-exclude = migrations,node_modules
+exclude = migrations,node_modules,config_local.py,config_distro.py
