@@ -21,6 +21,7 @@ from pgadmin.utils.ajax import success_return, \
     make_response as ajax_response, internal_server_error
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.paths import get_cookie_path
 
 MODULE_NAME = 'preferences'
 
@@ -199,6 +200,8 @@ def save(pid):
         language = user_languages.get() or language
 
     setattr(session, 'PGADMIN_LANGUAGE', language)
-    response.set_cookie("PGADMIN_LANGUAGE", language)
+    response.set_cookie("PGADMIN_LANGUAGE", value=language,
+                        path=get_cookie_path(),
+                        domain=request.host)
 
     return response

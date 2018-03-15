@@ -27,6 +27,7 @@ from uuid import uuid4
 from flask import current_app, request, flash, redirect
 from flask_login import login_url
 from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.paths import get_cookie_path
 
 try:
     from cPickle import dump, load
@@ -291,7 +292,8 @@ class ManagedSessionInterface(SessionInterface):
         response.set_cookie(
             app.session_cookie_name,
             '%s!%s' % (session.sid, session.hmac_digest),
-            expires=cookie_exp, httponly=True, domain=domain
+            expires=cookie_exp, httponly=True, domain=domain,
+            path=get_cookie_path()
         )
 
 
