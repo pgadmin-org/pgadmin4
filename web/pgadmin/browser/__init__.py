@@ -37,7 +37,6 @@ from pgadmin.settings import get_setting
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.paths import get_cookie_path
 
 try:
     import urllib.request as urlreq
@@ -799,8 +798,7 @@ def index():
     if user_languages:
         language = user_languages.get() or 'en'
 
-    response.set_cookie("PGADMIN_LANGUAGE", value=language,
-                        path=get_cookie_path(), domain=request.host)
+    response.set_cookie("PGADMIN_LANGUAGE", language)
 
     return response
 

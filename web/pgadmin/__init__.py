@@ -32,7 +32,6 @@ from pgadmin.utils import PgAdminModule, driver
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
-from pgadmin.utils.paths import get_cookie_path
 
 # If script is running under python3, it will not have the xrange function
 # defined
@@ -577,8 +576,7 @@ def create_app(app_name=None):
     @app.after_request
     def after_request(response):
         if 'key' in request.args:
-            response.set_cookie('PGADMIN_KEY', value=request.args['key'],
-                                path=get_cookie_path(), domain=request.host)
+            response.set_cookie('PGADMIN_KEY', value=request.args['key'])
 
         return response
 
