@@ -84,6 +84,7 @@ LANGUAGES = {
     'en': 'English',
     'zh': 'Chinese (Simplified)',
     'de': 'German',
+    'fr': 'French',
     'ja': 'Japanese',
     'pl': 'Polish',
     'ru': 'Russian'
