@@ -328,3 +328,14 @@ void Server::run()
     fclose(cp);
 }
 
+void Server::shutdown(QUrl url)
+{
+    bool shotdown = shutdownServer(url);
+    if (!shotdown)
+        setError(tr("Failed to shutdown application server thread."));
+
+    QThread::quit();
+    QThread::wait();
+    while(!this->isFinished()){}
+}
+

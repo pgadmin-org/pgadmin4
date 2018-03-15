@@ -239,6 +239,7 @@ int main(int argc, char * argv[])
             exit(1);
         }
 
+        QObject::connect(server, SIGNAL(finished()), server, SLOT(deleteLater()));
         server->start();
 
         // This is a hack to give the server a chance to start and potentially fail. As
@@ -336,6 +337,8 @@ int main(int argc, char * argv[])
 
     // Go!
     trayicon->setAppServerUrl(appServerUrl);
+    // Enable the shutdown server menu as server started successfully.
+    trayicon->enableShutdownMenu();
 
     QString cmd = settings.value("BrowserCommand").toString();
 
@@ -354,6 +357,8 @@ int main(int argc, char * argv[])
             exit(1);
         }
     }
+
+    QObject::connect(trayicon, SIGNAL(shutdownSignal(QUrl)), server, SLOT(shutdown(QUrl)));
 
     splash->finish(NULL);
 
@@ -434,4 +439,45 @@ unsigned long sdbm(unsigned char *str)
         hash = c + (hash << 6) + (hash << 16) - hash;
 
     return hash;
+}
+
+// Shutdown the application server
+bool shutdownServer(QUrl url)
+{
+    QNetworkAccessManager manager;
+    QEventLoop loop;
+    QNetworkReply *reply;
+    QVariant redirectUrl;
+
+    url.setPath("/misc/shutdown");
+
+    do
+    {
+        reply = manager.get(QNetworkRequest(url));
+
+        QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        loop.exec();
+
+        redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+        url = redirectUrl.toUrl();
+
+        if (!redirectUrl.isNull())
+            delete reply;
+
+    } while (!redirectUrl.isNull());
+
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        return false;
+    }
+
+    QString response = reply->readAll();
+
+    if (response != "SHUTDOWN")
+    {
+        qDebug() << "Failed to connect, server response: " << response;
+        return false;
+    }
+
+    return true;
 }

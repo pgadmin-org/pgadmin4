@@ -10,7 +10,7 @@
 """A blueprint module providing utility functions for the application."""
 
 import pgadmin.utils.driver as driver
-from flask import url_for, render_template, Response
+from flask import url_for, render_template, Response, request
 from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
@@ -116,3 +116,17 @@ def explain_js():
         status=200,
         mimetype="application/javascript"
     )
+
+##########################################################################
+# A special URL used to shutdown the server
+##########################################################################
+@blueprint.route("/shutdown", methods=('get', 'post'))
+def shutdown():
+    if config.SERVER_MODE is not True:
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            raise RuntimeError('Not running with the Werkzeug Server')
+        func()
+        return 'SHUTDOWN'
+    else:
+        return ''

@@ -31,6 +31,7 @@ public:
 
     bool Init();
     void setAppServerUrl(QString appServerUrl);
+    void enableShutdownMenu();
 
 private:
     void createTrayIcon();
@@ -56,6 +57,9 @@ private slots:
     void onConfig();
     void onLog();
     void onQuit();
+
+signals:
+    void shutdownSignal(QUrl);
 };
 
 #endif // TRAYICON_H

@@ -29,6 +29,9 @@ public:
     bool Init();
     QString getError() { return m_error; }
 
+public slots:
+    void shutdown(QUrl url);
+
 protected:
     void run();
 

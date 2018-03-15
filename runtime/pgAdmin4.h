@@ -39,5 +39,6 @@ bool PingServer(QUrl url);
 void delay(int milliseconds);
 void cleanup();
 unsigned long sdbm(unsigned char *str);
+bool shutdownServer(QUrl url);
 
 #endif // PGADMIN4_H

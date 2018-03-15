@@ -148,6 +148,7 @@ void TrayIcon::createActions()
     connect(m_logAction, SIGNAL(triggered()), this, SLOT(onLog()));
 
     m_quitAction = new QAction(tr("&Shutdown server"), this);
+    m_quitAction->setEnabled(false);
     connect(m_quitAction, SIGNAL(triggered()), this, SLOT(onQuit()));
 }
 
@@ -239,6 +240,16 @@ void TrayIcon::onQuit()
 {
     if (QMessageBox::Yes == QMessageBox::question(this, tr("Shutdown server?"), QString(tr("Are you sure you want to shutdown the %1 server?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
     {
+        // Emit the signal to shutdown the python server.
+        emit shutdownSignal(m_appServerUrl);
         exit(0);
+    }
+}
+
+void TrayIcon::enableShutdownMenu()
+{
+    if (m_quitAction != NULL)
+    {
+        m_quitAction->setEnabled(true);
     }
 }
