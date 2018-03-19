@@ -252,6 +252,7 @@ SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
 
 SESSION_COOKIE_NAME = 'pga4_session'
 
+SESSION_COOKIE_DOMAIN = DEFAULT_SERVER
 ##########################################################################
 # Mail server settings
 ##########################################################################
@@ -355,6 +356,12 @@ ON_DEMAND_RECORD_COUNT = 1000
 # Allow users to display Gravatar image for their username in Server mode
 ##########################################################################
 SHOW_GRAVATAR_IMAGE = True
+
+##########################################################################
+# Set cookie path
+##########################################################################
+COOKIE_DEFAULT_PATH = '/'
+COOKIE_DEFAULT_DOMAIN = DEFAULT_SERVER
 
 ##########################################################################
 # Local config settings

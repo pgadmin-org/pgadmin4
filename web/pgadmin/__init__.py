@@ -345,7 +345,8 @@ def create_app(app_name=None):
     app.config.update(dict({
         'CSRF_SESSION_KEY': config.CSRF_SESSION_KEY,
         'SECRET_KEY': config.SECRET_KEY,
-        'SECURITY_PASSWORD_SALT': config.SECURITY_PASSWORD_SALT
+        'SECURITY_PASSWORD_SALT': config.SECURITY_PASSWORD_SALT,
+        'SESSION_COOKIE_DOMAIN': config.SESSION_COOKIE_DOMAIN
     }))
 
     security.init_app(app, user_datastore)
@@ -576,7 +577,12 @@ def create_app(app_name=None):
     @app.after_request
     def after_request(response):
         if 'key' in request.args:
-            response.set_cookie('PGADMIN_KEY', value=request.args['key'])
+            domain = dict()
+            if config.COOKIE_DEFAULT_DOMAIN != 'localhost':
+                domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
+            response.set_cookie('PGADMIN_KEY', value=request.args['key'],
+                                path=config.COOKIE_DEFAULT_PATH,
+                                **domain)
 
         return response
 

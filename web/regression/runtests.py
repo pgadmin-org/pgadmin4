@@ -107,6 +107,7 @@ config.CONSOLE_LOG_LEVEL = WARNING
 app = create_app()
 app.config['WTF_CSRF_ENABLED'] = False
 app.PGADMIN_KEY = ''
+app.config.update({'SESSION_COOKIE_DOMAIN': None})
 test_client = app.test_client()
 driver = None
 app_starter = None

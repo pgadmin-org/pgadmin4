@@ -11,6 +11,7 @@
 
 import os
 
+from flask import url_for
 from flask_security import current_user, login_required
 
 
@@ -75,3 +76,13 @@ def init_app(app):
             'The user does not have permission to read and write to the '
             'specified storage directory.'
         )
+
+
+def get_cookie_path():
+    cookie_root_path = '/'
+    pgadmin_root_path = url_for('browser.index')
+    if pgadmin_root_path != '/browser/':
+        cookie_root_path = pgadmin_root_path.replace(
+            '/browser/', ''
+        )
+    return cookie_root_path

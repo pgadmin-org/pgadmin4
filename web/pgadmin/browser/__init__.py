@@ -798,7 +798,13 @@ def index():
     if user_languages:
         language = user_languages.get() or 'en'
 
-    response.set_cookie("PGADMIN_LANGUAGE", language)
+    domain = dict()
+    if config.COOKIE_DEFAULT_DOMAIN != 'localhost':
+        domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
+
+    response.set_cookie("PGADMIN_LANGUAGE", value=language,
+                        path=config.COOKIE_DEFAULT_PATH,
+                        **domain)
 
     return response
 

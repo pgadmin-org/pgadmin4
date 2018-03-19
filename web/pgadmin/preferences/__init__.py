@@ -12,6 +12,7 @@ Implements the routes for creating Preferences/Options Dialog on the client
 side and for getting/setting preferences.
 """
 
+import config
 import simplejson as json
 from flask import render_template, url_for, Response, request, session
 from flask_babel import gettext
@@ -198,7 +199,13 @@ def save(pid):
     if user_languages:
         language = user_languages.get() or language
 
+    domain = dict()
+    if config.COOKIE_DEFAULT_DOMAIN != 'localhost':
+        domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
+
     setattr(session, 'PGADMIN_LANGUAGE', language)
-    response.set_cookie("PGADMIN_LANGUAGE", language)
+    response.set_cookie("PGADMIN_LANGUAGE", value=language,
+                        path=config.COOKIE_DEFAULT_PATH,
+                        **domain)
 
     return response
