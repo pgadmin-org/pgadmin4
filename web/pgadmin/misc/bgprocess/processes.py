@@ -630,15 +630,20 @@ class BatchProcess(object):
 
     def set_env_variables(self, server, **kwargs):
         """Set environment variables"""
-        if server and server.sslcert is not None and \
-                server.sslkey is not None and \
-                server.sslrootcert is not None:
-            # SSL environment variables
-            self.env['PGSSLMODE'] = server.ssl_mode
-            self.env['PGSSLCERT'] = get_complete_file_path(server.sslcert)
-            self.env['PGSSLKEY'] = get_complete_file_path(server.sslkey)
-            self.env['PGSSLROOTCERT'] = \
-                get_complete_file_path(server.sslrootcert)
+        if server:
+            # Set SSL related ENV variables
+            if server.sslcert and server.sslkey and server.sslrootcert:
+                # SSL environment variables
+                self.env['PGSSLMODE'] = server.ssl_mode
+                self.env['PGSSLCERT'] = get_complete_file_path(server.sslcert)
+                self.env['PGSSLKEY'] = get_complete_file_path(server.sslkey)
+                self.env['PGSSLROOTCERT'] = get_complete_file_path(
+                    server.sslrootcert
+                )
+
+            # Set service name related ENV variable
+            if server.service:
+                self.env['PGSERVICE'] = server.service
 
         if 'env' in kwargs:
             self.env.update(kwargs['env'])
