@@ -34,38 +34,16 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
-        self._connects_to_server()
+        self.page.add_server(self.server)
         self._role_node_expandable()
         self._check_role_membership_control()
 
     def after(self):
+        self.page.remove_server(self.server)
         test_utils.drop_role(self.server, "postgres",
                              "test_role")
         test_utils.drop_role(self.server, "postgres",
                              "<h1>test</h1>")
-        self.page.remove_server(self.server)
-
-    def _connects_to_server(self):
-        self.page.find_by_xpath(
-            "//*[@class='aciTreeText' and .='Servers']").click()
-        self.page.driver.find_element_by_link_text("Object").click()
-        ActionChains(
-            self.page.driver
-        ).move_to_element(
-            self.page.driver.find_element_by_link_text("Create")
-        ).perform()
-        self.page.find_by_partial_link_text("Server...").click()
-
-        server_config = self.server
-        self.page.fill_input_by_field_name("name", server_config['name'])
-        self.page.find_by_partial_link_text("Connection").click()
-        self.page.fill_input_by_field_name("host", server_config['host'])
-        self.page.fill_input_by_field_name("port", server_config['port'])
-        self.page.fill_input_by_field_name(
-            "username", server_config['username'])
-        self.page.fill_input_by_field_name(
-            "password", server_config['db_password'])
-        self.page.find_by_xpath("//button[contains(.,'Save')]").click()
 
     def _role_node_expandable(self):
         self.page.toggle_open_server(self.server['name'])

@@ -43,9 +43,9 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         self._debug_function()
 
     def after(self):
+        self.page.remove_server(self.server)
         test_utils.drop_debug_function(self.server, "postgres",
                                        "a_test_function")
-        self.page.remove_server(self.server)
 
     def _function_node_expandable(self):
         self.page.toggle_open_server(self.server['name'])
