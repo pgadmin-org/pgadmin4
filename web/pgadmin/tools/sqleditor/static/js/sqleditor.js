@@ -2946,7 +2946,7 @@ define('tools.querytool', [
       },
 
       // Set panel title.
-      setTitle: function(title) {
+      setTitle: function(title, unsafe) {
         var self = this;
 
         if (self.is_new_browser_tab) {
@@ -2954,7 +2954,10 @@ define('tools.querytool', [
         } else {
           _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
             if (p.isVisible()) {
-              p.title(decodeURIComponent(title));
+              if(unsafe) {
+                title = _.escape(title);
+              }
+              p.title(title);
             }
           });
         }
@@ -3022,7 +3025,7 @@ define('tools.querytool', [
           success: function(res) {
             self.gridView.query_tool_obj.setValue(res);
             self.gridView.current_file = e;
-            self.setTitle(self.gridView.current_file.split('\\').pop().split('/').pop());
+            self.setTitle(self.gridView.current_file.split('\\').pop().split('/').pop(), true);
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             // hide cursor
             $busy_icon_div.removeClass('show_progress');
@@ -3073,7 +3076,7 @@ define('tools.querytool', [
             if (res.data.status) {
               alertify.success(gettext('File saved successfully.'));
               self.gridView.current_file = e;
-              self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''));
+              self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''), true);
               // disable save button on file save
               $('#btn-save').prop('disabled', true);
               $('#btn-file-menu-save').css('display', 'none');
@@ -3114,7 +3117,7 @@ define('tools.querytool', [
 
           if (self.gridView.current_file) {
             var title = self.gridView.current_file.replace(/^.*[\\\/]/g, '') + ' *';
-            self.setTitle(title);
+            self.setTitle(title, true);
           } else {
             if (self.is_new_browser_tab) {
               title = window.document.title + ' *';
@@ -3122,7 +3125,7 @@ define('tools.querytool', [
               // Find the title of the visible panel
               _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
                 if (p.isVisible()) {
-                  self.gridView.panel_title = p._title;
+                  self.gridView.panel_title = $(p._title).text();
                 }
               });
 

@@ -92,21 +92,22 @@ class PgadminPage:
         else:
             assert False, "'Tools -> Query Tool' menu did not enable."
 
-    def close_query_tool(self):
+    def close_query_tool(self, name="Query", prompt=True):
         self.driver.switch_to.default_content()
         tab = self.find_by_xpath(
             "//*[contains(@class,'wcPanelTab') and "
-            "contains(.,'" + "Query" + "')]")
+            "contains(.,'" + name + "')]")
         ActionChains(self.driver).context_click(tab).perform()
         self.find_by_xpath(
             "//li[contains(@class, 'context-menu-item')]/span[contains(text(),"
             " 'Remove Panel')]").click()
-        self.driver.switch_to.frame(
-            self.driver.find_elements_by_tag_name("iframe")[0])
-        time.sleep(.5)
-        self.click_element(self.find_by_xpath(
-            '//button[contains(@class, "ajs-button") and '
-            'contains(.,"Don\'t save")]'))
+        if prompt:
+            self.driver.switch_to.frame(
+                self.driver.find_elements_by_tag_name("iframe")[0])
+            time.sleep(.5)
+            self.click_element(self.find_by_xpath(
+                '//button[contains(@class, "ajs-button") and '
+                'contains(.,"Don\'t save")]'))
         self.driver.switch_to.default_content()
 
     def close_data_grid(self):

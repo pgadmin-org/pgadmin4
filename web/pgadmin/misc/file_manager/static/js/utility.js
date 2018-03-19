@@ -533,9 +533,9 @@ define([
               if (fm_filename.length > 15) {
                 fm_filename = (data[key]).Filename.substr(0, 10) + '...';
               }
+              fm_filename = _.escape(fm_filename);
 
-              var file_name_original = encodeURI((data[key]).Filename);
-              var file_path_orig = encodeURI((data[key]).Path);
+              var file_path_orig = _.escape((data[key]).Path);
 
               result += '<li class="' + cap_classes +
                 '"><div class="clip"><span data-alt="' +
@@ -550,7 +550,7 @@ define([
               } else {
                 result +=
                   '<p><input type="text" class="fm_file_rename" />' +
-                  '<span class="less_text" title="' + file_name_original + '">' + fm_filename +
+                  '<span class="less_text" title="' + fm_filename + '">' + fm_filename +
                   '</span></p>';
               }
               if (props.Width && props.Width != '') {
@@ -584,7 +584,7 @@ define([
             Object.keys(data).sort(function keyOrder(x, y) {
               return pgAdmin.natural_sort(x.toLowerCase(), y.toLowerCase());
             }).forEach(function(key) {
-              var path = encodeURI((data[key]).Path),
+              var path = _.escape((data[key]).Path),
                 props = (data[key]).Properties,
                 cap_classes = '',
                 cap, class_type;
@@ -606,13 +606,13 @@ define([
                 class_type = 'fa fa-file-text tbl_file';
               }
 
-              var file_name_original = encodeURI((data[key]).Filename);
               result += '<tr class="' + cap_classes + '">';
 
               var fm_filename = (data[key]).Filename;
               if (fm_filename.length > 48) {
                 fm_filename = (data[key]).Filename.substr(0, 48) + '...';
               }
+              fm_filename = _.escape(fm_filename);
 
               result += '<td title="' + path + '" class="' + class_type + '">';
               if ((data[key]).Protected == 1) {
@@ -624,7 +624,7 @@ define([
                   fm_filename + '</span></td>';
               } else {
                 result += '<p><input type="text" class="fm_file_rename"/><span class="less_text" title="' +
-                  file_name_original + '">' + fm_filename + '</span></p></td>';
+                  fm_filename + '">' + fm_filename + '</span></p></td>';
               }
               if (props.Size && props.Size != '') {
                 result += '<td><span title="' + props.Size + '">' +
@@ -1628,7 +1628,7 @@ define([
             foldername = fname;
             // Add _ variable in URL for avoiding the caching
             $.getJSON(
-              pgAdmin.FileUtils.fileConnector + '?_=' + Date.now() + 'mode=addfolder&path=' + $('.currentpath').val() + '&name=' + foldername,
+              pgAdmin.FileUtils.fileConnector + '?_=' + Date.now() + '&mode=addfolder&path=' + $('.currentpath').val() + '&name=' + foldername,
               function(resp) {
                 var result = resp.data.result;
                 if (result.Code === 1) {
