@@ -20,6 +20,9 @@ describe('Server#ModelValidation', () => {
         get: function (key) {
           return this.allValues[key];
         },
+        set: function (key, value) {
+          this.key = value;
+        },
         sessAttrs: {},
       };
       model.isNew = jasmine.createSpy('isNew');
@@ -51,6 +54,20 @@ describe('Server#ModelValidation', () => {
           expect(model.errorModel.set).toHaveBeenCalledWith({});
         });
       });
+
+      describe('Service id present', () => {
+        it('sets empty service name which should throw an error', () => {
+          model.allValues['service'] = '';
+          expect(modelValidation.validate()).toBe('Either Host name, Address or Service must be specified.');
+          expect(model.errorModel.set).toHaveBeenCalledWith({
+            host: 'Either Host name, Address or Service must be specified.',
+            hostaddr: 'Either Host name, Address or Service must be specified.',
+            db: 'Maintenance database must be specified.'
+          });
+        });
+      });
+
+
     });
 
     describe('When no parameters are valid', () => {

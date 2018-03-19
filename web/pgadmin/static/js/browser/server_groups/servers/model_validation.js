@@ -31,6 +31,8 @@ export class ModelValidation {
     this.checkForEmpty('name', gettext('Name must be specified.'));
 
     if (ModelValidation.isEmptyString(serviceId)) {
+      // Do not sent empty string
+      this.setNullValueForEmptyString('service');
       this.checkHostAndHostAddress();
 
       this.checkForEmpty('db', gettext('Maintenance database must be specified.'));
@@ -50,8 +52,20 @@ export class ModelValidation {
     return null;
   }
 
+  setNullValueForEmptyString(field) {
+    let val = this.model.get(field);
+    if (_.isUndefined(val) || _.isNull(val))
+      return;
+
+    // To avoid passing empty string to connection parameter
+    if(String(val).trim() === '') {
+      this.model.set(field, null);
+    }
+  }
+
   clearHostAddressAndDbErrors() {
     _.each(['host', 'hostaddr', 'db'], (item) => {
+      this.setNullValueForEmptyString(item);
       this.model.errorModel.unset(item);
     });
   }

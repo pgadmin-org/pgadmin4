@@ -500,7 +500,7 @@ class ServerNode(PGChildNodeView):
         if 'db_res' in data:
             data['db_res'] = ','.join(data['db_res'])
 
-        if 'hostaddr' in data and data['hostaddr'] != '':
+        if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '':
             if not self.pat4.match(data['hostaddr']):
                 if not self.pat6.match(data['hostaddr']):
                     return make_json_response(
@@ -700,7 +700,7 @@ class ServerNode(PGChildNodeView):
                     )
                 )
 
-        if 'hostaddr' in data and data['hostaddr'] != '':
+        if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '':
             if not self.pat4.match(data['hostaddr']):
                 if not self.pat6.match(data['hostaddr']):
                     return make_json_response(
