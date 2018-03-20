@@ -148,7 +148,6 @@ if __name__ == '__main__':
     # Reference:
     # https://github.com/pallets/werkzeug/issues/220#issuecomment-11176538
     try:
-
         app.run(
             host=config.DEFAULT_SERVER,
             port=server_port,
@@ -158,8 +157,7 @@ if __name__ == '__main__':
             ),
             threaded=config.THREADED_MODE
         )
-        from pgadmin.utils.paths import get_cookie_path
 
-        config.COOKIE_DEFAULT_PATH = get_cookie_path()
+
     except IOError:
         app.logger.error("Error starting the app server: %s", sys.exc_info())

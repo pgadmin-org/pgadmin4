@@ -541,6 +541,15 @@ def create_app(app_name=None):
         app.logger.info('Registering blueprint module: %s' % module)
         app.register_blueprint(module)
 
+
+    #########################################################################
+    # Set cookie path
+    #########################################################################
+    @app.before_first_request
+    def before_first_request():
+        from pgadmin.utils.paths import get_cookie_path
+        config.COOKIE_DEFAULT_PATH = get_cookie_path()
+
     ##########################################################################
     # Handle the desktop login
     ##########################################################################
