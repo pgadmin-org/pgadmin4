@@ -12,8 +12,11 @@ Features
 
 | `Feature #2895 <https://redmine.postgresql.org/issues/2895>`_ - Add keyboard navigation options for the main browser windows
 | `Feature #2896 <https://redmine.postgresql.org/issues/2896>`_ - Add keyboard navigation in Query tool module via Tab/Shift-Tab key
+| `Feature #2897 <https://redmine.postgresql.org/issues/2897>`_ - Support keyboard navigation in the debugger
 | `Feature #2898 <https://redmine.postgresql.org/issues/2898>`_ - Support tab navigation in dialogs
 | `Feature #2899 <https://redmine.postgresql.org/issues/2899>`_ - Add configurable shortcut keys for various common options in the main window
+| `Feature #2901 <https://redmine.postgresql.org/issues/2901>`_ - Configurable shortcuts in the Debugger
+| `Feature #2904 <https://redmine.postgresql.org/issues/2904>`_ - Ensure clickable images/buttons have appropriate tooltips for screen readers
 | `Feature #2950 <https://redmine.postgresql.org/issues/2950>`_ - Add a marker (/*pga4dash*/) to the dashboard queries to allow them to be more easily filtered from server logs
 | `Feature #2951 <https://redmine.postgresql.org/issues/2951>`_ - Allow dashboard tables and charts to be enabled/disabled
 | `Feature #3004 <https://redmine.postgresql.org/issues/3004>`_ - Support server and database statistics on Greenplum
@@ -23,10 +26,11 @@ Features
 | `Feature #3097 <https://redmine.postgresql.org/issues/3097>`_ - Support EXPLAIN on Greenplum
 | `Feature #3098 <https://redmine.postgresql.org/issues/3098>`_ - Unvendorize REACT so no longer required in our source tree
 | `Feature #3107 <https://redmine.postgresql.org/issues/3107>`_ - Hide tablespace node on GPDB
-| `Feature #3140 <https://redmine.postgresql.org/issues/3140>`_ - Add support for pg_service.conf files in connection properties
+| `Feature #3140 <https://redmine.postgresql.org/issues/3140>`_ - Add support for connecting using pg_service.conf files
 | `Feature #3168 <https://redmine.postgresql.org/issues/3168>`_ - Support for external tables in GPDB
 | `Feature #3182 <https://redmine.postgresql.org/issues/3182>`_ - Update Jasmine to v3
 | `Feature #3184 <https://redmine.postgresql.org/issues/3184>`_ - Add a French translation
+| `Feature #3195 <https://redmine.postgresql.org/issues/3195>`_ - Pass the service name to external processes
 
 | `In addition, various changes were made for PEP8 compliance`
 
@@ -84,17 +88,23 @@ Bug fixes
 | `Bug #3073 <https://redmine.postgresql.org/issues/3073>`_ - Ensure the pgAgent job start/end time grid fields synchronise with the subnode control and validate correctly
 | `Bug #3075 <https://redmine.postgresql.org/issues/3075>`_ - Runtime issue causing Select, Update, and Insert script generation for a table fails to load
 | `Bug #3077 <https://redmine.postgresql.org/issues/3077>`_ - Remove dependency on standards_conforming_strings being enabled
+| `Bug #3079 <https://redmine.postgresql.org/issues/3079>`_ - Fix handling of tie/datetime array types when adding columns to a table
 | `Bug #3080 <https://redmine.postgresql.org/issues/3080>`_ - Fix alignment issues in keyboard shortcut options
 | `Bug #3081 <https://redmine.postgresql.org/issues/3081>`_ - Add missing reverse-engineered SQL header and drop statement for sequences
+| `Bug #3094 <https://redmine.postgresql.org/issues/3094>`_ - Ensure all messages are retrieved from the server in the Query Tool
 | `Bug #3099 <https://redmine.postgresql.org/issues/3099>`_ - Fix creation of tables and columns in GPDB
 | `Bug #3105 <https://redmine.postgresql.org/issues/3105>`_ - Ensure we can properly update rows with upper-case primary key columns
 | `Bug #3135 <https://redmine.postgresql.org/issues/3135>`_ - Insert rows correctly when a table has OIDs and a Primary Key in uppercase
+| `Bug #3122 <https://redmine.postgresql.org/issues/3122>`_ - Ensure SSL options are pushed down to external tools like pg_dump
+| `Bug #3129 <https://redmine.postgresql.org/issues/3129>`_ - Handle opening of non-UTF8 compatible files
 | `Bug #3137 <https://redmine.postgresql.org/issues/3137>`_ - Allow copying of SQL from the dashboard tables
 | `Bug #3138 <https://redmine.postgresql.org/issues/3138>`_ - Fix tablespace tests for Python 3.x
 | `Bug #3150 <https://redmine.postgresql.org/issues/3150>`_ - Fix function reserve SQL for GPDB
 | `Bug #3157 <https://redmine.postgresql.org/issues/3157>`_ - Fix unicode handling in the external process tools and show the complete command in the process viewer
+| `Bug #3171 <https://redmine.postgresql.org/issues/3171>`_ - Runtime issue causing inability to scroll in File Selector with trackpad on OSX
 | `Bug #3176 <https://redmine.postgresql.org/issues/3176>`_ - Disable function statistics on Greenplum
 | `Bug #3190 <https://redmine.postgresql.org/issues/3190>`_ - Skip tests where appropriate on GPDB
-| `Bug #3196 <https://redmine.postgresql.org/issues/3196>`_ - Fix an XSS issue in the File Manager
-| `Bug #3197 <https://redmine.postgresql.org/issues/3197>`_ - Set the cookie domain and path appropriately
+| `Bug #3196 <https://redmine.postgresql.org/issues/3196>`_ - Ensure the file manager properly escapes file & directory names
+| `Bug #3197 <https://redmine.postgresql.org/issues/3197>`_ - Appropriately set the cookie path
+| `Bug #3200 <https://redmine.postgresql.org/issues/3200>`_ - Ensure the host parameter is correctly pickup up from the service file
 | `Bug #3219 <https://redmine.postgresql.org/issues/3219>`_ - Update required ChromeDriver version for current versions of Chrome
