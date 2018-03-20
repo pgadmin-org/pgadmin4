@@ -158,6 +158,5 @@ if __name__ == '__main__':
             threaded=config.THREADED_MODE
         )
 
-
     except IOError:
         app.logger.error("Error starting the app server: %s", sys.exc_info())

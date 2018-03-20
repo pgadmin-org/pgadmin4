@@ -541,7 +541,6 @@ def create_app(app_name=None):
         app.logger.info('Registering blueprint module: %s' % module)
         app.register_blueprint(module)
 
-
     #########################################################################
     # Set cookie path
     #########################################################################
