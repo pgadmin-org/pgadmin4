@@ -13,13 +13,11 @@ module.exports = function (config) {
       'karma-jasmine-html-reporter',
     ],
     files: [
-      {pattern: 'pgadmin/static/**/*.js', included: false},
-      {pattern: 'pgadmin/static/vendor/**/*.js', included: false},
-      {pattern: 'pgadmin/browser/static/js/**/*.js', included: false},
-      {pattern: 'pgadmin/browser/static/server_groups/servers/databases/schemas/tables/static/js/*.js', included: false},
-      'regression/javascript/**/*.jsx',
-      'regression/javascript/**/*.js',
       'pgadmin/static/bundle/slickgrid.js',
+      {pattern: 'pgadmin/static/**/*.js', included: false, watched: true},
+      {pattern: 'pgadmin/browser/static/js/**/*.js', included: false, watched: true},
+      'regression/javascript/**/*.jsx',
+      {pattern: 'regression/javascript/**/*.js', watched: true},
     ],
 
     // list of files to exclude
@@ -53,6 +51,7 @@ module.exports = function (config) {
 
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
+    usePolling: true,
 
 
     // start these browsers
