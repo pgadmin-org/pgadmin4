@@ -14,6 +14,7 @@
 
 #include <QTime>
 
+#include <stdio.h>
 
 LogWindow::LogWindow(QWidget *parent, QString logFile) :
     QDialog(parent),
