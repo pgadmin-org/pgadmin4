@@ -17,6 +17,7 @@
 // QT headers
 #include <QDebug>
 #include <QDir>
+#include <QFile>
 #include <QMessageBox>
 
 // App headers
@@ -217,6 +218,7 @@ Server::Server(quint16 port, QString key, QString logFileName)
     int fd = fileno(log);
     PyObject *err = PyFile_FromFd(fd, NULL, (char *)"w", -1, NULL, NULL, NULL, 0);
 #endif
+    QFile(m_logFileName).setPermissions(QFile::ReadOwner|QFile::WriteOwner);
     PyObject_SetAttrString(sys, "stderr", err);
 }
 

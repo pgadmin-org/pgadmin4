@@ -331,6 +331,7 @@ int main(int argc, char * argv[])
     // Stash the URL for any duplicate processes to open
     if (addrFile.open(QIODevice::WriteOnly))
     {
+        addrFile.setPermissions(QFile::ReadOwner|QFile::WriteOwner);
         QTextStream out(&addrFile);
         out << appServerUrl << endl;
     }
