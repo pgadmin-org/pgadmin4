@@ -1847,13 +1847,21 @@ define('tools.querytool', [
       },
 
       handle_connection_lost: function(create_transaction, xhr) {
-        var self= this;
-        if (xhr.responseJSON.data && !xhr.responseJSON.data.conn_id) {
+        /* If responseJSON is undefined then it could be object of
+         * axios(Promise HTTP) response, so we should check accordingly.
+         */
+        if (xhr.responseJSON !== undefined &&
+            xhr.responseJSON.data && !xhr.responseJSON.data.conn_id) {
           // if conn_id is null then this is maintenance db.
           // so attempt connection connect without prompt.
-          self.init_connection(create_transaction);
+          this.init_connection(create_transaction);
+        } else if (xhr.data !== undefined &&
+          xhr.data.data && !xhr.data.data.conn_id) {
+          // if conn_id is null then this is maintenance db.
+          // so attempt connection connect without prompt.
+          this.init_connection(create_transaction);
         } else {
-          self.warn_before_continue();
+          this.warn_before_continue();
         }
       },
       warn_before_continue: function() {
@@ -3730,7 +3738,7 @@ define('tools.querytool', [
 
       // This function will fetch the sql query from the text box
       // and execute the query.
-      execute: function(explain_prefix) {
+      execute: function(explain_prefix, shouldReconnect=false) {
         var self = this,
           sql = '';
 
@@ -3747,7 +3755,7 @@ define('tools.querytool', [
           sql = self.gridView.query_tool_obj.getValue();
 
         const executeQuery = new ExecuteQuery.ExecuteQuery(this, pgAdmin.Browser.UserManagement);
-        executeQuery.execute(sql, explain_prefix);
+        executeQuery.execute(sql, explain_prefix, shouldReconnect);
       },
 
       /* This function is used to highlight the error line and

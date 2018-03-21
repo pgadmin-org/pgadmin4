@@ -42,11 +42,16 @@ describe('ExecuteQuery', () => {
       '_init_polling_flags',
       'save_state',
       'init_transaction',
+      'handle_connection_lost',
     ]);
     sqlEditorMock.transId = 123;
     sqlEditorMock.rows_affected = 1000;
     executeQuery = new subject.ExecuteQuery(sqlEditorMock, userManagementMock);
     isNewTransactionRequiredMock = spyOn(transaction, 'is_new_transaction_required');
+  });
+
+  afterEach(() => {
+    networkMock.restore();
   });
 
   describe('#poll', () => {
@@ -60,9 +65,6 @@ describe('ExecuteQuery', () => {
 
       cancelButtonSpy = spyOn($.fn, 'prop');
       executeQuery.delayedPoll = jasmine.createSpy('ExecuteQuery.delayedPoll');
-    });
-
-    afterEach(() => {
     });
 
     context('when SQLEditor is the query tool', () => {
@@ -569,8 +571,7 @@ describe('ExecuteQuery', () => {
 
           describe('when cannot reach the Python Server', () => {
             beforeEach(() => {
-              response = {readyState: 0};
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(401, response);
+              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(404, undefined);
 
               executeQuery.poll();
             });
@@ -972,8 +973,7 @@ describe('ExecuteQuery', () => {
 
           describe('when cannot reach the Python Server', () => {
             beforeEach(() => {
-              response = {readyState: 0};
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(401, response);
+              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(404, undefined);
 
               executeQuery.poll();
             });
@@ -1143,9 +1143,9 @@ describe('ExecuteQuery', () => {
       describe('when HTTP return 200', () => {
         describe('when backend informs that query started successfully', () => {
           beforeEach(() => {
-            networkMock.onAny('/sqleditor/query_tool/start/123').reply(200, response);
+            networkMock.onPost('/sqleditor/query_tool/start/123?connect=1').reply(200, response);
             pollSpy = spyOn(executeQuery, 'delayedPoll');
-            executeQuery.execute('some sql query', '');
+            executeQuery.execute('some sql query', '', true);
           });
 
           it('should changes the loading message to "Waiting for the query execution to complete"', (done) => {
@@ -1310,10 +1310,7 @@ describe('ExecuteQuery', () => {
 
       describe('when cannot reach the Python Server', () => {
         beforeEach(() => {
-          response = {
-            readyState: 0,
-          };
-          networkMock.onAny('/sqleditor/query_tool/start/123').reply(500, response);
+          networkMock.onAny('/sqleditor/query_tool/start/123').reply(500, undefined);
 
 
           executeQuery.execute('some sql query', '');
@@ -1657,7 +1654,32 @@ describe('ExecuteQuery', () => {
             }, 0);
           });
         });
+        describe('when connection to database is lost', () => {
+          beforeEach(() => {
+            isNewTransactionRequiredMock.and.returnValue(false);
+            response.info = 'CONNECTION_LOST';
+            networkMock.onAny('/sqleditor/query_tool/start/123').reply(503, response);
+
+            executeQuery.execute('some sql query', '');
+          });
+
+          it('saves state', () => {
+            setTimeout(() => {
+              expect(sqlEditorMock.save_state).toHaveBeenCalledWith(
+                'execute',
+                ['']
+              );
+            }, 0);
+          });
+
+          it('calls handle_connection_lost', () => {
+            setTimeout(() => {
+              expect(sqlEditorMock.handle_connection_lost).toHaveBeenCalled();
+            }, 0);
+          });
+        });
       });
+
     });
   });
 

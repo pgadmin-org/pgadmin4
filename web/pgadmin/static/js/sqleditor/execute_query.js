@@ -52,7 +52,7 @@ class ExecuteQuery {
       }, self.sqlServerObject.POLL_FALLBACK_TIME());
   }
 
-  execute(sqlStatement, explainPlan) {
+  execute(sqlStatement, explainPlan, connect) {
     // If it is an empty query, do nothing.
     if (sqlStatement.length <= 0) return;
 
@@ -63,11 +63,8 @@ class ExecuteQuery {
     const sqlStatementWithAnalyze = ExecuteQuery.prepareAnalyzeSql(sqlStatement, explainPlan);
 
     self.initializeExecutionOnSqlEditor(sqlStatementWithAnalyze);
-
     service.post(
-      url_for('sqleditor.query_tool_start', {
-        'trans_id': self.sqlServerObject.transId,
-      }),
+      this.generateURLReconnectionFlag(connect),
       JSON.stringify(sqlStatementWithAnalyze),
       {headers: {'Content-Type': 'application/json'}})
       .then(function (result) {
@@ -90,9 +87,20 @@ class ExecuteQuery {
           self.sqlServerObject._highlight_error(httpMessageData.data.result);
         }
       }).catch(function (error) {
-        self.onExecuteHTTPError(error.response.data);
+        self.onExecuteHTTPError(error);
       }
     );
+  }
+
+  generateURLReconnectionFlag(shouldReconnect) {
+    let url = url_for('sqleditor.query_tool_start', {
+      'trans_id': this.sqlServerObject.transId,
+    });
+
+    if (shouldReconnect) {
+      url += '?connect=1';
+    }
+    return url;
   }
 
   poll() {
@@ -129,18 +137,21 @@ class ExecuteQuery {
       }
     ).catch(
       error => {
-        const errorData = error.response.data;
         // Enable/Disable query tool button only if is_query_tool is true.
         self.sqlServerObject.resetQueryHistoryObject(self.sqlServerObject);
+
         self.loadingScreen.hide();
         if (self.sqlServerObject.is_query_tool) {
           self.enableSQLEditorButtons();
         }
 
-        if (ExecuteQuery.wasConnectionLostToServer(errorData)) {
+        if (ExecuteQuery.wasConnectionLostToPythonServer(error.response)) {
           self.handleConnectionToServerLost();
           return;
         }
+
+        const errorData = error.response.data;
+
         if (self.userManagement.is_pga_login_required(errorData)) {
           return self.userManagement.pga_login();
         }
@@ -159,7 +170,7 @@ class ExecuteQuery {
     $('#btn-flash').prop('disabled', true);
 
     this.sqlServerObject.query_start_time = new Date();
-    if(typeof sqlStatement === 'object') {
+    if (typeof sqlStatement === 'object') {
       this.sqlServerObject.query = sqlStatement['sql'];
     } else {
       this.sqlServerObject.query = sqlStatement;
@@ -182,37 +193,34 @@ class ExecuteQuery {
     this.loadingScreen.hide();
     this.enableSQLEditorButtons();
 
-    if (ExecuteQuery.wasConnectionLostToServer(httpMessage)) {
+    if (ExecuteQuery.wasConnectionLostToPythonServer(httpMessage.response)) {
       this.handleConnectionToServerLost();
       return;
     }
 
-    if (this.userManagement.is_pga_login_required(httpMessage)) {
+    if (this.userManagement.is_pga_login_required(httpMessage.response)) {
       this.sqlServerObject.save_state('execute', [this.explainPlan]);
       this.userManagement.pga_login();
     }
 
-    if (transaction.is_new_transaction_required(httpMessage)) {
+    if (transaction.is_new_transaction_required(httpMessage.response)) {
       this.sqlServerObject.save_state('execute', [this.explainPlan]);
       this.sqlServerObject.init_transaction();
     }
 
-    let msg = httpMessage.errormsg;
-    if (httpMessage.responseJSON !== undefined) {
-      if (httpMessage.responseJSON.errormsg !== undefined) {
-        msg = httpMessage.responseJSON.errormsg;
-      }
-
-      if (httpMessage.status === 503 && httpMessage.responseJSON.info !== undefined &&
-        httpMessage.responseJSON.info === 'CONNECTION_LOST') {
-        setTimeout(function () {
-          this.sqlServerObject.save_state('execute', [this.explainPlan]);
-          this.sqlServerObject.handle_connection_lost(false, httpMessage);
-        });
-      }
+    if (this.wasDatabaseConnectionLost(httpMessage)) {
+      this.sqlServerObject.save_state('execute', [this.explainPlan]);
+      this.sqlServerObject.handle_connection_lost(false, httpMessage);
     }
 
+    let msg = httpMessage.response.data.errormsg;
     this.sqlServerObject.update_msg_history(false, msg);
+  }
+
+  wasDatabaseConnectionLost(httpMessage) {
+    return httpMessage.response.status === 503 &&
+      httpMessage.response.data.info !== undefined &&
+      httpMessage.response.data.info === 'CONNECTION_LOST';
   }
 
   removeGridViewMarker() {
@@ -236,8 +244,8 @@ class ExecuteQuery {
     $('#btn-cancel-query').prop('disabled', false);
   }
 
-  static wasConnectionLostToServer(errorMessage) {
-    return errorMessage.readyState === 0;
+  static wasConnectionLostToPythonServer(httpResponse) {
+    return _.isUndefined(httpResponse) || _.isUndefined(httpResponse.data);
   }
 
   handleConnectionToServerLost() {

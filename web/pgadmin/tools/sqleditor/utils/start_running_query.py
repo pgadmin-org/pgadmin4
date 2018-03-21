@@ -36,7 +36,7 @@ class StartRunningQuery:
         self.connection_id = str(random.randint(1, 9999999))
         self.logger = logger
 
-    def execute(self, sql, trans_id, http_session):
+    def execute(self, sql, trans_id, http_session, connect=False):
         session_obj = StartRunningQuery.retrieve_session_information(
             http_session,
             trans_id
@@ -68,7 +68,7 @@ class StartRunningQuery:
                 return internal_server_error(errormsg=str(e))
 
             # Connect to the Server if not connected.
-            if not conn.connected():
+            if connect and not conn.connected():
                 status, msg = conn.connect()
                 if not status:
                     self.logger.error(msg)
@@ -108,39 +108,34 @@ class StartRunningQuery:
             self.connection_id = conn_id
 
     def __execute_query(self, conn, session_obj, sql, trans_id, trans_obj):
-        if conn.connected():
-            # on successful connection set the connection id to the
-            # transaction object
-            trans_obj.set_connection_id(self.connection_id)
+        # on successful connection set the connection id to the
+        # transaction object
+        trans_obj.set_connection_id(self.connection_id)
 
-            StartRunningQuery.save_transaction_in_session(session_obj,
-                                                          trans_id, trans_obj)
+        StartRunningQuery.save_transaction_in_session(session_obj,
+                                                      trans_id, trans_obj)
 
-            # If auto commit is False and transaction status is Idle
-            # then call is_begin_not_required() function to check BEGIN
-            # is required or not.
+        # If auto commit is False and transaction status is Idle
+        # then call is_begin_not_required() function to check BEGIN
+        # is required or not.
 
-            if StartRunningQuery.is_begin_required_for_sql_query(trans_obj,
-                                                                 conn, sql):
-                conn.execute_void("BEGIN;")
+        if StartRunningQuery.is_begin_required_for_sql_query(trans_obj,
+                                                             conn, sql):
+            conn.execute_void("BEGIN;")
 
-            # Execute sql asynchronously with params is None
-            # and formatted_error is True.
-            try:
-                status, result = conn.execute_async(sql)
-            except ConnectionLost:
-                raise
+        # Execute sql asynchronously with params is None
+        # and formatted_error is True.
+        try:
+            status, result = conn.execute_async(sql)
+        except ConnectionLost:
+            raise
 
-            # If the transaction aborted for some reason and
-            # Auto RollBack is True then issue a rollback to cleanup.
-            if StartRunningQuery.is_rollback_statement_required(trans_obj,
-                                                                conn):
-                conn.execute_void("ROLLBACK;")
-        else:
-            status = False
-            result = gettext(
-                'Not connected to server or connection with the server has '
-                'been closed.')
+        # If the transaction aborted for some reason and
+        # Auto RollBack is True then issue a rollback to cleanup.
+        if StartRunningQuery.is_rollback_statement_required(trans_obj,
+                                                            conn):
+            conn.execute_void("ROLLBACK;")
+
         return result, status
 
     @staticmethod

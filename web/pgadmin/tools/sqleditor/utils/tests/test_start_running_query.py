@@ -21,6 +21,7 @@ else:
     from unittest.mock import patch, MagicMock
 
 get_driver_exception = Exception('get_driver exception')
+get_connection_lost_exception = Exception('Unable to connect to server')
 
 
 class StartRunningQueryTest(BaseTestGenerator):
@@ -38,6 +39,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              ),
              pickle_load_return=None,
              get_driver_exception=False,
+             get_connection_lost_exception=False,
              manager_connection_exception=None,
 
              is_connected_to_server=False,
@@ -67,6 +69,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              ),
              pickle_load_return=None,
              get_driver_exception=False,
+             get_connection_lost_exception=False,
              manager_connection_exception=None,
 
              is_connected_to_server=False,
@@ -97,6 +100,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              ),
              pickle_load_return=None,
              get_driver_exception=False,
+             get_connection_lost_exception=False,
              manager_connection_exception=None,
 
              is_connected_to_server=False,
@@ -131,6 +135,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              pickle_load_return=MagicMock(conn_id=1,
                                           update_fetched_row_cnt=MagicMock()),
              get_driver_exception=True,
+             get_connection_lost_exception=False,
              manager_connection_exception=None,
 
              is_connected_to_server=False,
@@ -161,6 +166,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                  update_fetched_row_cnt=MagicMock()
              ),
              get_driver_exception=False,
+             get_connection_lost_exception=False,
              manager_connection_exception=ConnectionLost('1', '2', '3'),
 
              is_connected_to_server=False,
@@ -188,6 +194,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                  update_fetched_row_cnt=MagicMock()
              ),
              get_driver_exception=False,
+             get_connection_lost_exception=True,
              manager_connection_exception=None,
 
              is_connected_to_server=False,
@@ -202,7 +209,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              expect_internal_server_error_called_with=dict(
                  errormsg='Unable to connect to server'
              ),
-             expected_logger_error='Unable to connect to server',
+             expected_logger_error=get_connection_lost_exception,
              expect_execute_void_called_with='some sql',
          )),
         ('When server is connected and start query async request, '
@@ -223,6 +230,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                  can_filter=lambda: True
              ),
              get_driver_exception=False,
+             get_connection_lost_exception=False,
              manager_connection_exception=None,
 
              is_connected_to_server=True,
@@ -265,6 +273,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                  can_filter=lambda: True
              ),
              get_driver_exception=False,
+             get_connection_lost_exception=False,
              manager_connection_exception=None,
 
              is_connected_to_server=True,
@@ -307,6 +316,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                  can_filter=lambda: True
              ),
              get_driver_exception=False,
+             get_connection_lost_exception=False,
              manager_connection_exception=None,
 
              is_connected_to_server=True,
@@ -349,6 +359,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                  can_filter=lambda: True
              ),
              get_driver_exception=False,
+             get_connection_lost_exception=False,
              manager_connection_exception=None,
 
              is_connected_to_server=True,
@@ -431,6 +442,8 @@ class StartRunningQueryTest(BaseTestGenerator):
         manager = self.__create_manager()
         if self.get_driver_exception:
             get_driver_mock.side_effect = get_driver_exception
+        elif self.get_connection_lost_exception:
+            get_driver_mock.side_effect = get_connection_lost_exception
         else:
             get_driver_mock.return_value = MagicMock(
                 connection_manager=lambda session_id: manager)

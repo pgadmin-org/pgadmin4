@@ -19,6 +19,7 @@ from flask_babel import gettext
 from pgadmin.utils.crypto import decrypt
 from .connection import Connection
 from pgadmin.model import Server
+from pgadmin.utils.exception import ConnectionLost
 
 
 class ServerManager(object):

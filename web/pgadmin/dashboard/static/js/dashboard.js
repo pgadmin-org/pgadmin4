@@ -444,18 +444,25 @@ define('pgadmin.dashboard', [
             pgAdmin.Dashboard.render_chart(container, data, dataset, sid, did, url, options, counter, refresh);
           },
           error: function(xhr) {
-            var err = $.parseJSON(xhr.responseText),
-              msg = err.errormsg,
-              cls;
-            // If we get a 428, it means the server isn't connected
-            if (xhr.status == 428) {
-              if (_.isUndefined(msg) || _.isNull(msg)) {
-                msg = gettext('Please connect to the selected server to view the graph.');
-              }
-              cls = 'info';
+            let err = '';
+            let msg = '';
+            let cls = 'info';
+
+            if (xhr.readyState === 0) {
+              msg = gettext('Not connected to the server or the connection to the server has been closed.');
             } else {
-              msg = gettext('An error occurred whilst rendering the graph.');
-              cls = 'danger';
+              err = JSON.parse(xhr.responseText);
+              msg = err.errormsg;
+
+              // If we get a 428, it means the server isn't connected
+              if (xhr.status === 428) {
+                if (_.isUndefined(msg) || _.isNull(msg)) {
+                  msg = gettext('Please connect to the selected server to view the graph.');
+                }
+              } else {
+                msg = gettext('An error occurred whilst rendering the graph.');
+                cls = 'danger';
+              }
             }
 
             $(container).addClass('graph-error');
@@ -576,18 +583,25 @@ define('pgadmin.dashboard', [
           filter.search();
         },
         error: function(model, xhr) {
-          var err = $.parseJSON(xhr.responseText),
-            msg = err.errormsg,
-            cls;
-          // If we get a 428, it means the server isn't connected
-          if (xhr.status == 428) {
-            if (_.isUndefined(msg) || _.isNull(msg)) {
-              msg = gettext('Please connect to the selected server to view the table.');
-            }
-            cls = 'info';
+          let err = '';
+          let msg = '';
+          let cls = 'info';
+
+          if (xhr.readyState === 0) {
+            msg = gettext('Not connected to the server or the connection to the server has been closed.');
           } else {
-            msg = gettext('An error occurred whilst rendering the table.');
-            cls = 'danger';
+            err = JSON.parse(xhr.responseText);
+            msg = err.errormsg;
+
+            // If we get a 428, it means the server isn't connected
+            if (xhr.status === 428) {
+              if (_.isUndefined(msg) || _.isNull(msg)) {
+                msg = gettext('Please connect to the selected server to view the table.');
+              }
+            } else {
+              msg = gettext('An error occurred whilst rendering the table.');
+              cls = 'danger';
+            }
           }
 
           // Replace the content with the error, if not already present. Always update the message

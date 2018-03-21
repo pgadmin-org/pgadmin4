@@ -130,9 +130,18 @@ define([
     },
 
     is_pga_login_required(xhr) {
-      return xhr.status == 401 && xhr.responseJSON &&
+      /* If responseJSON is undefined then it could be object of
+       * axios(Promise HTTP) response, so we should check accordingly.
+       */
+      if (xhr.responseJSON === undefined && xhr.data !== undefined) {
+        return xhr.status === 401 && xhr.data &&
+                  xhr.data.info &&
+                  xhr.data.info === 'PGADMIN_LOGIN_REQUIRED';
+      }
+
+      return xhr.status === 401 && xhr.responseJSON &&
                 xhr.responseJSON.info &&
-                xhr.responseJSON.info == 'PGADMIN_LOGIN_REQUIRED';
+                xhr.responseJSON.info === 'PGADMIN_LOGIN_REQUIRED';
     },
 
     // Callback to draw pgAdmin4 login dialog.

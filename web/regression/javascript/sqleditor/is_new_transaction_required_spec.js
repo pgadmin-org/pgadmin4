@@ -19,7 +19,7 @@ describe('#is_new_transaction_required', () => {
   });
 
   describe('when status is 404', () => {
-    describe('when responseJSON is not present', () => {
+    describe('when data is not present', () => {
       it('should return false', () => {
         expect(is_new_transaction_required({
           status: 404,
@@ -27,22 +27,22 @@ describe('#is_new_transaction_required', () => {
       });
     });
 
-    describe('when responseJSON is present', () => {
-      describe('when info is not present inside responseJSON', () => {
+    describe('when data is present', () => {
+      describe('when info is not present inside data', () => {
         it('should return false', () => {
           expect(is_new_transaction_required({
             status: 404,
-            responseJSON: {},
+            data: {},
           })).toBeFalsy();
         });
       });
 
-      describe('when info is present inside responseJSON', () => {
+      describe('when info is present inside data', () => {
         describe('when info value is not "DATAGRID_TRANSACTION_REQUIRED"', () => {
           it('should return false', () => {
             expect(is_new_transaction_required({
               status: 404,
-              responseJSON: {
+              data: {
                 info: 'some information',
               },
             })).toBe(false);
@@ -53,7 +53,7 @@ describe('#is_new_transaction_required', () => {
           it('should return false', () => {
             expect(is_new_transaction_required({
               status: 404,
-              responseJSON: {
+              data: {
                 info: 'DATAGRID_TRANSACTION_REQUIRED',
               },
             })).toBe(true);
