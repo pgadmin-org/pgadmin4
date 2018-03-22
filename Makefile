@@ -14,7 +14,7 @@ SHELL = /bin/sh
 #########################################################################
 
 # Include only platform-independent builds in all
-all: docs pip src runtime-release
+all: docs pip src runtime
 
 appbundle: docs
 	./pkg/mac/build.sh
