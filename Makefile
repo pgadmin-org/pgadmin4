@@ -14,7 +14,7 @@ SHELL = /bin/sh
 #########################################################################
 
 # Include only platform-independent builds in all
-all: docs pip src
+all: docs pip src runtime-release
 
 appbundle: docs
 	./pkg/mac/build.sh
@@ -46,8 +46,17 @@ check-feature: install-node bundle
 check-js: install-node linter
 	cd web && yarn run karma start --single-run
 
+runtime-debug:
+	cd runtime && qmake CONFIG+=debug && make
+
+runtime:
+	cd runtime && qmake CONFIG+=release && make
+
 # Include all clean sub-targets in clean
-clean: clean-appbundle clean-docker clean-dist clean-docs clean-pip clean-src
+clean: clean-appbundle clean-docker clean-dist clean-docs clean-pip clean-src clean-runtime
+
+clean-runtime:
+	cd runtime && make clean
 
 clean-appbundle:
 	rm -rf mac-build/
