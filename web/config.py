@@ -252,7 +252,6 @@ SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
 
 SESSION_COOKIE_NAME = 'pga4_session'
 
-SESSION_COOKIE_DOMAIN = DEFAULT_SERVER
 ##########################################################################
 # Mail server settings
 ##########################################################################
@@ -361,7 +360,8 @@ SHOW_GRAVATAR_IMAGE = True
 # Set cookie path
 ##########################################################################
 COOKIE_DEFAULT_PATH = '/'
-COOKIE_DEFAULT_DOMAIN = DEFAULT_SERVER
+COOKIE_DEFAULT_DOMAIN = None
+SESSION_COOKIE_DOMAIN = None
 
 ##########################################################################
 # Local config settings

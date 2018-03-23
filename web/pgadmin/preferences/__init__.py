@@ -200,7 +200,8 @@ def save(pid):
         language = user_languages.get() or language
 
     domain = dict()
-    if config.COOKIE_DEFAULT_DOMAIN != 'localhost':
+    if config.COOKIE_DEFAULT_DOMAIN and\
+            config.COOKIE_DEFAULT_DOMAIN != 'localhost':
         domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
 
     setattr(session, 'PGADMIN_LANGUAGE', language)
