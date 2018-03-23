@@ -269,7 +269,7 @@ iframe {
 
 .control-label {
     margin: 0px;
-    padding: 5px;
+    padding: 5px 25px 5px 5px;
     display: inline-block;
     vertical-align: middle;
 }

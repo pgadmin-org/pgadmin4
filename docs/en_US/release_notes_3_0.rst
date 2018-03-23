@@ -109,3 +109,4 @@ Bug fixes
 | `Bug #3197 <https://redmine.postgresql.org/issues/3197>`_ - Appropriately set the cookie path
 | `Bug #3200 <https://redmine.postgresql.org/issues/3200>`_ - Ensure the host parameter is correctly pickup up from the service file
 | `Bug #3219 <https://redmine.postgresql.org/issues/3219>`_ - Update required ChromeDriver version for current versions of Chrome
+| `Bug #3226 <https://redmine.postgresql.org/issues/3226>`_ - Move the field error indicators in front of the affected fields so they don't obscure spinners or drop downs etc.
