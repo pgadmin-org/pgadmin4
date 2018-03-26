@@ -92,6 +92,7 @@ Bug fixes
 | `Bug #3079 <https://redmine.postgresql.org/issues/3079>`_ - Fix handling of tie/datetime array types when adding columns to a table
 | `Bug #3080 <https://redmine.postgresql.org/issues/3080>`_ - Fix alignment issues in keyboard shortcut options
 | `Bug #3081 <https://redmine.postgresql.org/issues/3081>`_ - Add missing reverse-engineered SQL header and drop statement for sequences
+| `Bug #3090 <https://redmine.postgresql.org/issues/3090>`_ - Ensure message severity is decoded when necessary by the driver
 | `Bug #3094 <https://redmine.postgresql.org/issues/3094>`_ - Ensure all messages are retrieved from the server in the Query Tool
 | `Bug #3099 <https://redmine.postgresql.org/issues/3099>`_ - Fix creation of tables and columns in GPDB
 | `Bug #3105 <https://redmine.postgresql.org/issues/3105>`_ - Ensure we can properly update rows with upper-case primary key columns

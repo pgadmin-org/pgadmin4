@@ -1580,7 +1580,7 @@ Failed to reset the connection to the server due to following error:
         if exception_obj.diag.severity is not None \
                 and exception_obj.diag.message_primary is not None:
             ex_diag_message = u"{0}:  {1}".format(
-                exception_obj.diag.severity,
+                self.decode_to_utf8(exception_obj.diag.severity),
                 self.decode_to_utf8(exception_obj.diag.message_primary)
             )
             # If both errors are different then only append it
