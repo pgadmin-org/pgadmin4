@@ -77,7 +77,7 @@ class IndexesModule(CollectionNodeModule):
 
             # In case of partitioned table return false.
             if 'tid' in kwargs and manager.version >= 100000:
-                return backend_supported(self, manager, **kwargs)
+                return not backend_supported(self, manager, **kwargs)
 
             if 'vid' not in kwargs:
                 return True

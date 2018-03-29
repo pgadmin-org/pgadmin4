@@ -105,6 +105,7 @@ Bug fixes
 | `Bug #3157 <https://redmine.postgresql.org/issues/3157>`_ - Fix unicode handling in the external process tools and show the complete command in the process viewer
 | `Bug #3171 <https://redmine.postgresql.org/issues/3171>`_ - Runtime issue causing inability to scroll in File Selector with trackpad on OSX
 | `Bug #3176 <https://redmine.postgresql.org/issues/3176>`_ - Disable function statistics on Greenplum
+| `Bug #3180 <https://redmine.postgresql.org/issues/3180>`_ - Ensure Indexes are displayed on PG 10 tables
 | `Bug #3190 <https://redmine.postgresql.org/issues/3190>`_ - Skip tests where appropriate on GPDB
 | `Bug #3196 <https://redmine.postgresql.org/issues/3196>`_ - Ensure the file manager properly escapes file & directory names
 | `Bug #3197 <https://redmine.postgresql.org/issues/3197>`_ - Appropriately set the cookie path
