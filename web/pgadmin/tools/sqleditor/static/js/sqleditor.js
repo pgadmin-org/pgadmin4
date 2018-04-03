@@ -20,6 +20,8 @@ define('tools.querytool', [
   'sources/keyboard_shortcuts',
   'sources/sqleditor/query_tool_actions',
   'pgadmin.datagrid',
+  'sources/sqleditor/calculate_query_run_time',
+  'sources/sqleditor/call_render_after_poll',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
   'backgrid.sizeable.columns',
@@ -32,7 +34,8 @@ define('tools.querytool', [
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, transaction,
   HistoryBundle, queryHistory, React, ReactDOM,
-  keyboardShortcuts, queryToolActions, Datagrid) {
+  keyboardShortcuts, queryToolActions, Datagrid,
+  calculateQueryRunTime, callRenderAfterPoll) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -2224,37 +2227,8 @@ define('tools.querytool', [
       // This is a wrapper to call_render function
       // We need this because we have separated columns route & result route
       // We need to combine both result here in wrapper before rendering grid
-      call_render_after_poll: function(res) {
-        var self = this;
-        self.query_end_time = new Date();
-        self.rows_affected = res.rows_affected;
-        self.has_more_rows = res.has_more_rows;
-
-        /* If no column information is available it means query
-           runs successfully with no result to display. In this
-           case no need to call render function.
-           */
-        if (res.colinfo != null)
-          self._render(res);
-        else {
-          // Show message in message and history tab in case of query tool
-          self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
-          var msg = S(gettext('Query returned successfully in %s.')).sprintf(self.total_time).value();
-          res.result += '\n\n' + msg;
-          self.update_msg_history(true, res.result, false);
-          // Display the notifier if the timeout is set to >= 0
-          if (self.info_notifier_timeout >= 0) {
-            alertify.success(msg, self.info_notifier_timeout);
-          }
-        }
-
-        // Enable/Disable query tool button only if is_query_tool is true.
-        if (self.is_query_tool) {
-          self.disable_tool_buttons(false);
-          $('#btn-cancel-query').prop('disabled', true);
-        }
-        is_query_running = false;
-        self.trigger('pgadmin-sqleditor:loading-icon:hide');
+      call_render_after_poll: function(queryResult) {
+        callRenderAfterPoll.callRenderAfterPoll(this,alertify,queryResult);
       },
 
 
@@ -2329,7 +2303,10 @@ define('tools.querytool', [
             );
 
             // Show message in message and history tab in case of query tool
-            self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
+            self.total_time = calculateQueryRunTime.calculateQueryRunTime(
+              self.query_start_time,
+              self.query_end_time
+            );
             var msg1 = S(gettext('Successfully run. Total query runtime: %s.')).sprintf(self.total_time).value();
             var msg2 = S(gettext('%s rows affected.')).sprintf(self.rows_affected).value();
 
@@ -2568,25 +2545,6 @@ define('tools.querytool', [
             'message': msg,
           });
         }
-      },
-
-      // This function will return the total query execution Time.
-      get_query_run_time: function(start_time, end_time) {
-        // Calculate the difference in milliseconds
-        var difference_ms, miliseconds;
-        difference_ms = miliseconds = end_time.getTime() - start_time.getTime();
-        //take out milliseconds
-        difference_ms = difference_ms / 1000;
-        var seconds = Math.floor(difference_ms % 60);
-        difference_ms = difference_ms / 60;
-        var minutes = Math.floor(difference_ms % 60);
-
-        if (minutes > 0)
-          return minutes + ' min';
-        else if (seconds > 0) {
-          return seconds + ' secs';
-        } else
-          return miliseconds + ' msec';
       },
 
       /* This function is used to check whether cell
