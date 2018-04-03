@@ -1,7 +1,7 @@
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
-  'sources/check_node_visibility', 'pgadmin.browser.utils', 'wcdocker',
+  'sources/check_node_visibility', 'sources/modify_animation', 'pgadmin.browser.utils', 'wcdocker',
   'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
   'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel',
@@ -11,7 +11,7 @@ define('pgadmin.browser', [
   'pgadmin.browser.keyboard',
 ], function(
   gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
-  codemirror, checkNodeVisibility
+  codemirror, checkNodeVisibility, modifyAnimation
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
@@ -81,6 +81,8 @@ define('pgadmin.browser', [
         view: {
           duration: 75,
         },
+        animateRoot: true,
+        unanimated: false,
       });
 
       b.tree = $('#tree').aciTree('api');
@@ -686,6 +688,8 @@ define('pgadmin.browser', [
         success: function(res) {
           self.preferences_cache = res;
           pgBrowser.keyboardNavigation.init();
+          modifyAnimation.modify_acitree_animation(self);
+          modifyAnimation.modify_alertify_animation(self);
         },
         error: function(xhr) {
           try {
@@ -1951,7 +1955,6 @@ define('pgadmin.browser', [
       brace_matching: pgBrowser.utils.braceMatching,
       indent_with_tabs: pgBrowser.utils.is_indent_with_tabs,
     },
-
   });
 
     /* Remove paste event mapping from CodeMirror's emacsy KeyMap binding

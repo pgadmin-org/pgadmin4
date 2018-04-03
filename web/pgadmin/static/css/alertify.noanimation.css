@@ -1,0 +1,41 @@
+.alertify .ajs-dimmer,
+.alertify .ajs-modal,
+.alertify-notifier,
+.alertify-notifier .ajs-message.ajs-visible,
+.alertify-notifier .ajs-message,
+.alertify-notifier.ajs-center .ajs-message.ajs-visible,
+.alertify-notifier.ajs-center .ajs-message
+{
+  -moz-transition: none;
+  -webkit-transition: none;
+  -o-transition: none;
+  transition: none;
+  -webkit-transform: none;
+  transform: none;
+}
+
+.alertify.ajs-zoom.ajs-in:not(.ajs-hidden) .ajs-dialog {
+  -webkit-animation-name: ajs-zoomIn;
+  animation-name: ajs-zoomIn;
+}
+.alertify.ajs-zoom.ajs-out.ajs-hidden .ajs-dialog {
+  -webkit-animation-name: ajs-zoomOut;
+  animation-name: ajs-zoomOut;
+}
+
+@-webkit-keyframes ajs-zoomIn {
+  -webkit-transform: none;
+  transform: none;
+}
+@keyframes ajs-zoomIn {
+  -webkit-transform: none;
+  transform: none;
+}
+@-webkit-keyframes ajs-zoomOut {
+  -webkit-transform: none;
+  transform: none;
+}
+@keyframes ajs-zoomeOut {
+  -webkit-transform: none;
+  transform: none;
+}

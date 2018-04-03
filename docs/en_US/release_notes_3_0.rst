@@ -11,6 +11,7 @@ Features
 ********
 
 | `Feature #1305 <https://redmine.postgresql.org/issues/1305>`_ - Enable building of the runtime from the top level Makefile
+| `Feature #1978 <https://redmine.postgresql.org/issues/1978>`_ - Add the ability to enable/disable UI animations
 | `Feature #2895 <https://redmine.postgresql.org/issues/2895>`_ - Add keyboard navigation options for the main browser windows
 | `Feature #2896 <https://redmine.postgresql.org/issues/2896>`_ - Add keyboard navigation in Query tool module via Tab/Shift-Tab key
 | `Feature #2897 <https://redmine.postgresql.org/issues/2897>`_ - Support keyboard navigation in the debugger
@@ -112,3 +113,4 @@ Bug fixes
 | `Bug #3200 <https://redmine.postgresql.org/issues/3200>`_ - Ensure the host parameter is correctly pickup up from the service file
 | `Bug #3219 <https://redmine.postgresql.org/issues/3219>`_ - Update required ChromeDriver version for current versions of Chrome
 | `Bug #3226 <https://redmine.postgresql.org/issues/3226>`_ - Move the field error indicators in front of the affected fields so they don't obscure spinners or drop downs etc.
+| `Bug #3244 <https://redmine.postgresql.org/issues/3244>`_ - Show more granular timing info in the query tool history panel

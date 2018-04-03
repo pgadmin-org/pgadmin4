@@ -216,6 +216,19 @@ class BrowserModule(PgAdminModule):
             gettext("Show system objects?"), 'boolean', False,
             category_label=gettext('Display')
         )
+
+        self.preference.register(
+            'display', 'enable_acitree_animation',
+            gettext("Enable browser tree animation?"), 'boolean', True,
+            category_label=gettext('Display')
+        )
+
+        self.preference.register(
+            'display', 'enable_alertify_animation',
+            gettext("Enable dialogue/notification animation?"), 'boolean',
+            True, category_label=gettext('Display')
+        )
+
         self.table_row_count_threshold = self.preference.register(
             'properties', 'table_row_count_threshold',
             gettext("Count rows if estimated less than"), 'integer', 2000,

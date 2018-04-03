@@ -18,7 +18,11 @@ Use preferences found in the *Browser* node of the tree control to personalize y
 
 Use the fields on the *Display* panel to specify general display preferences:
 
-* When the *Show system objects* switch is set to *True*, the client will display system objects such as system schemas (for example, *pg_temp*) or system columns (for example,  *xmin* or *ctid*) in the tree control.
+* When the *Show system objects?* switch is set to *True*, the client will display system objects such as system schemas (for example, *pg_temp*) or system columns (for example,  *xmin* or *ctid*) in the tree control.
+
+* When the *Enable browser tree animation?* switch is set to *True*, the client will display the animated tree control otherwise it will be unanimated.
+
+* When the *Enable dialogue/notification animation?* switch is set to *True*, the client will display the animated dialogues/notifications otherwise it will be unanimated.
 
 Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the main window navigation:
 

@@ -1,9 +1,10 @@
 define('pgadmin.preferences', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.backform',
-  'pgadmin.browser',
+  'pgadmin.browser', 'sources/modify_animation',
 ], function(
-  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, Backform, pgBrowser
+  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, Backform, pgBrowser,
+  modifyAnimation
 ) {
   // This defines the Preference/Options Dialog for pgAdmin IV.
 
@@ -379,7 +380,14 @@ define('pgadmin.preferences', [
               ajax: {
                 url: url_for('preferences.index'),
               },
+              animateRoot: true,
+              unanimated: false,
+              show: {duration: 75},
+              hide: {duration: 75},
+              view: {duration: 75},
             });
+
+            modifyAnimation.modify_acitree_animation(pgBrowser, jTree.aciTree('api'));
 
             this.show();
           },

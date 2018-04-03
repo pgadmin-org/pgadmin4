@@ -20,6 +20,7 @@ define('tools.querytool', [
   'sources/keyboard_shortcuts',
   'sources/sqleditor/query_tool_actions',
   'pgadmin.datagrid',
+  'sources/modify_animation',
   'sources/sqleditor/calculate_query_run_time',
   'sources/sqleditor/call_render_after_poll',
   'sources/../bundle/slickgrid',
@@ -34,7 +35,7 @@ define('tools.querytool', [
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, transaction,
   HistoryBundle, queryHistory, React, ReactDOM,
-  keyboardShortcuts, queryToolActions, Datagrid,
+  keyboardShortcuts, queryToolActions, Datagrid, modifyAnimation,
   calculateQueryRunTime, callRenderAfterPoll) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
@@ -4292,6 +4293,8 @@ define('tools.querytool', [
   pgAdmin.SqlEditor = {
     // This function is used to create and return the object of grid controller.
     create: function(container) {
+      var browser = (!_.isNull(window.opener)) ? window.opener.pgAdmin.Browser:window.parent.pgAdmin.Browser;
+      modifyAnimation.modify_alertify_animation(browser);
       return new SqlEditorController(container);
     },
     jquery: $,
