@@ -91,7 +91,8 @@ setup(
             "Flask-Script",
             "psycopg2==2.7.3.2",
             "pycrypto==2.6.1",
-            "python-dateutil==2.5.0"
+            "python-dateutil==2.5.0",
+            "SQLAlchemy==1.0.14"
         ],
         ":python_version<='2.7'": [
             "backports.csv", "importlib"
@@ -100,7 +101,8 @@ setup(
             "Flask-HTMLmin",
             "psycopg2>=2.7.3.2",
             "pycryptodome",
-            "python-dateutil>=2.7.1"
+            "python-dateutil>=2.7.1",
+            "SQLAlchemy>=1.2.5"
         ]
     },
 
