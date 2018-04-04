@@ -129,7 +129,7 @@ define([
       alertify.ChangePassword(title, url).resizeTo('75%', '70%');
     },
 
-    is_pga_login_required(xhr) {
+    isPgaLoginRequired(xhr) {
       /* If responseJSON is undefined then it could be object of
        * axios(Promise HTTP) response, so we should check accordingly.
        */
@@ -145,7 +145,7 @@ define([
     },
 
     // Callback to draw pgAdmin4 login dialog.
-    pga_login: function(url) {
+    pgaLogin: function(url) {
       var title = gettext('pgAdmin 4 login');
       url = url || url_for('security.login');
       if(!alertify.PgaLogin) {

@@ -11,7 +11,7 @@ import gettext from '../gettext';
 import $ from 'jquery';
 import url_for from '../url_for';
 import axios from 'axios';
-import * as transaction from './is_new_transaction_required';
+import * as httpErrorHandler from './query_tool_http_error_handler';
 
 class LoadingScreen {
   constructor(sqlEditor) {
@@ -152,8 +152,8 @@ class ExecuteQuery {
 
         const errorData = error.response.data;
 
-        if (self.userManagement.is_pga_login_required(errorData)) {
-          return self.userManagement.pga_login();
+        if (self.userManagement.isPgaLoginRequired(errorData)) {
+          return self.userManagement.pgaLogin();
         }
 
         let msg = ExecuteQuery.extractErrorMessage(errorData);
@@ -198,18 +198,18 @@ class ExecuteQuery {
       return;
     }
 
-    if (this.userManagement.is_pga_login_required(httpMessage.response)) {
-      this.sqlServerObject.save_state('execute', [this.explainPlan]);
-      this.userManagement.pga_login();
+    if (this.userManagement.isPgaLoginRequired(httpMessage.response)) {
+      this.sqlServerObject.saveState('execute', [this.explainPlan]);
+      this.userManagement.pgaLogin();
     }
 
-    if (transaction.is_new_transaction_required(httpMessage.response)) {
-      this.sqlServerObject.save_state('execute', [this.explainPlan]);
-      this.sqlServerObject.init_transaction();
+    if (httpErrorHandler.httpResponseRequiresNewTransaction(httpMessage.response)) {
+      this.sqlServerObject.saveState('execute', [this.explainPlan]);
+      this.sqlServerObject.initTransaction();
     }
 
     if (this.wasDatabaseConnectionLost(httpMessage)) {
-      this.sqlServerObject.save_state('execute', [this.explainPlan]);
+      this.sqlServerObject.saveState('execute', [this.explainPlan]);
       this.sqlServerObject.handle_connection_lost(false, httpMessage);
     }
 

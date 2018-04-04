@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 import * as subject from 'sources/sqleditor/execute_query';
-import * as transaction from 'sources/sqleditor/is_new_transaction_required';
+import * as httpErrorHandler from 'sources/sqleditor/query_tool_http_error_handler';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import $ from 'jquery';
@@ -27,8 +27,8 @@ describe('ExecuteQuery', () => {
     networkMock = new MockAdapter(axios);
     jasmine.addMatchers({jQuerytoHaveBeenCalledWith: jQuerytoHaveBeenCalledWith});
     userManagementMock = jasmine.createSpyObj('UserManagement', [
-      'is_pga_login_required',
-      'pga_login',
+      'isPgaLoginRequired',
+      'pgaLogin',
     ]);
 
     sqlEditorMock = jasmine.createSpyObj('SqlEditor', [
@@ -40,14 +40,14 @@ describe('ExecuteQuery', () => {
       'update_msg_history',
       '_highlight_error',
       '_init_polling_flags',
-      'save_state',
-      'init_transaction',
+      'saveState',
+      'initTransaction',
       'handle_connection_lost',
     ]);
     sqlEditorMock.transId = 123;
     sqlEditorMock.rows_affected = 1000;
     executeQuery = new subject.ExecuteQuery(sqlEditorMock, userManagementMock);
-    isNewTransactionRequiredMock = spyOn(transaction, 'is_new_transaction_required');
+    isNewTransactionRequiredMock = spyOn(httpErrorHandler, 'httpResponseRequiresNewTransaction');
   });
 
   afterEach(() => {
@@ -272,7 +272,7 @@ describe('ExecuteQuery', () => {
           describe('when JSON response is available', () => {
             describe('when login is not required', () => {
               beforeEach(() => {
-                userManagementMock.is_pga_login_required.and.returnValue(false);
+                userManagementMock.isPgaLoginRequired.and.returnValue(false);
                 response = {responseJSON: errorMessageJson};
                 networkMock.onGet('/sqleditor/query_tool/poll/123').reply(401, response);
 
@@ -336,7 +336,7 @@ describe('ExecuteQuery', () => {
               it('should not login is displayed', (done) => {
                 setTimeout(
                   () => {
-                    expect(userManagementMock.pga_login).not
+                    expect(userManagementMock.pgaLogin).not
                       .toHaveBeenCalled();
                     done();
                   }, 0);
@@ -345,7 +345,7 @@ describe('ExecuteQuery', () => {
 
             describe('when login is required', () => {
               beforeEach(() => {
-                userManagementMock.is_pga_login_required.and.returnValue(true);
+                userManagementMock.isPgaLoginRequired.and.returnValue(true);
                 response = {responseJSON: errorMessageJson};
                 networkMock.onGet('/sqleditor/query_tool/poll/123').reply(401, response);
 
@@ -409,7 +409,7 @@ describe('ExecuteQuery', () => {
               it('should login is displayed', (done) => {
                 setTimeout(
                   () => {
-                    expect(userManagementMock.pga_login)
+                    expect(userManagementMock.pgaLogin)
                       .toHaveBeenCalled();
                     done();
                   }, 0);
@@ -420,7 +420,7 @@ describe('ExecuteQuery', () => {
           describe('when no JSON response is available', () => {
             describe('when login is not required', () => {
               beforeEach(() => {
-                userManagementMock.is_pga_login_required.and.returnValue(false);
+                userManagementMock.isPgaLoginRequired.and.returnValue(false);
                 response = {
                   errormsg: errorMessageText,
                 };
@@ -486,7 +486,7 @@ describe('ExecuteQuery', () => {
               it('should login is not displayed', (done) => {
                 setTimeout(
                   () => {
-                    expect(userManagementMock.pga_login).not
+                    expect(userManagementMock.pgaLogin).not
                       .toHaveBeenCalled();
                     done();
                   }, 0);
@@ -495,7 +495,7 @@ describe('ExecuteQuery', () => {
 
             describe('when login is required', () => {
               beforeEach(() => {
-                userManagementMock.is_pga_login_required.and.returnValue(true);
+                userManagementMock.isPgaLoginRequired.and.returnValue(true);
                 response = {
                   errormsg: errorMessageText,
                 };
@@ -561,7 +561,7 @@ describe('ExecuteQuery', () => {
               it('should login is displayed', (done) => {
                 setTimeout(
                   () => {
-                    expect(userManagementMock.pga_login)
+                    expect(userManagementMock.pgaLogin)
                       .toHaveBeenCalled();
                     done();
                   }, 0);
@@ -633,7 +633,7 @@ describe('ExecuteQuery', () => {
             it('should login is not displayed', (done) => {
               setTimeout(
                 () => {
-                  expect(userManagementMock.pga_login).not
+                  expect(userManagementMock.pgaLogin).not
                     .toHaveBeenCalled();
                   done();
                 }, 0);
@@ -1366,7 +1366,7 @@ describe('ExecuteQuery', () => {
       describe('when error is returned by the server', () => {
         describe('when login is not required', () => {
           beforeEach(() => {
-            userManagementMock.is_pga_login_required.and.returnValue(false);
+            userManagementMock.isPgaLoginRequired.and.returnValue(false);
             response.errormsg = 'some error message';
             networkMock.onAny('/sqleditor/query_tool/start/123').reply(500, response);
 
@@ -1422,19 +1422,19 @@ describe('ExecuteQuery', () => {
 
           it('should not save the state', () => {
             setTimeout(() => {
-              expect(sqlEditorMock.save_state).not.toHaveBeenCalled();
+              expect(sqlEditorMock.saveState).not.toHaveBeenCalled();
             }, 0);
           });
 
           it('should not display pga login', () => {
             setTimeout(() => {
-              expect(userManagementMock.pga_login).not.toHaveBeenCalled();
+              expect(userManagementMock.pgaLogin).not.toHaveBeenCalled();
             }, 0);
           });
         });
         describe('when login is required', () => {
           beforeEach(() => {
-            userManagementMock.is_pga_login_required.and.returnValue(true);
+            userManagementMock.isPgaLoginRequired.and.returnValue(true);
             response.errormsg = 'some error message';
             networkMock.onAny('/sqleditor/query_tool/start/123').reply(500, response);
 
@@ -1490,7 +1490,7 @@ describe('ExecuteQuery', () => {
 
           it('should save the state', () => {
             setTimeout(() => {
-              expect(sqlEditorMock.save_state).toHaveBeenCalledWith(
+              expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
                 'execute',
                 ['']
               );
@@ -1499,7 +1499,7 @@ describe('ExecuteQuery', () => {
 
           it('should display pga login', () => {
             setTimeout(() => {
-              expect(userManagementMock.pga_login).toHaveBeenCalled();
+              expect(userManagementMock.pgaLogin).toHaveBeenCalled();
             }, 0);
           });
         });
@@ -1561,19 +1561,19 @@ describe('ExecuteQuery', () => {
 
           it('should not save the state', () => {
             setTimeout(() => {
-              expect(sqlEditorMock.save_state).not.toHaveBeenCalled();
+              expect(sqlEditorMock.saveState).not.toHaveBeenCalled();
             }, 0);
           });
 
           it('should not display pga login', () => {
             setTimeout(() => {
-              expect(userManagementMock.pga_login).not.toHaveBeenCalled();
+              expect(userManagementMock.pgaLogin).not.toHaveBeenCalled();
             }, 0);
           });
 
           it('should not initialize a new transaction', () => {
             setTimeout(() => {
-              expect(sqlEditorMock.init_transaction).not.toHaveBeenCalled();
+              expect(sqlEditorMock.initTransaction).not.toHaveBeenCalled();
             }, 0);
           });
         });
@@ -1635,7 +1635,7 @@ describe('ExecuteQuery', () => {
 
           it('should save the state', () => {
             setTimeout(() => {
-              expect(sqlEditorMock.save_state).toHaveBeenCalledWith(
+              expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
                 'execute',
                 ['']
               );
@@ -1644,13 +1644,13 @@ describe('ExecuteQuery', () => {
 
           it('should not display pga login', () => {
             setTimeout(() => {
-              expect(userManagementMock.pga_login).not.toHaveBeenCalled();
+              expect(userManagementMock.pgaLogin).not.toHaveBeenCalled();
             }, 0);
           });
 
           it('should initialize a new transaction', () => {
             setTimeout(() => {
-              expect(sqlEditorMock.init_transaction).toHaveBeenCalled();
+              expect(sqlEditorMock.initTransaction).toHaveBeenCalled();
             }, 0);
           });
         });
@@ -1665,7 +1665,7 @@ describe('ExecuteQuery', () => {
 
           it('saves state', () => {
             setTimeout(() => {
-              expect(sqlEditorMock.save_state).toHaveBeenCalledWith(
+              expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
                 'execute',
                 ['']
               );
