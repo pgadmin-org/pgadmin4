@@ -87,14 +87,20 @@ setup(
     extras_require={
         # ...
         ":python_version<'2.7'": [
-            "ordereddict", "Flask-Script",
-            "psycopg2==2.7.3.2", "pycrypto==2.6.1"
+            "ordereddict",
+            "Flask-Script",
+            "psycopg2==2.7.3.2",
+            "pycrypto==2.6.1",
+            "python-dateutil==2.5.0"
         ],
         ":python_version<='2.7'": [
             "backports.csv", "importlib"
         ],
         ":python_version>='2.7'": [
-            "Flask-HTMLmin", "psycopg2>=2.7.3.2", "pycryptodome"
+            "Flask-HTMLmin",
+            "psycopg2>=2.7.3.2",
+            "pycryptodome",
+            "python-dateutil>=2.7.1"
         ]
     },
 
