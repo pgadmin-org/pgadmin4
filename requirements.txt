@@ -12,7 +12,6 @@ Flask-Login==0.3.2
 Flask-Mail==0.9.1
 Flask-Migrate==2.1.1
 Flask-Principal==0.4.0
-Flask-Security==3.0.0
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
 html5lib==1.0.1
@@ -53,7 +52,6 @@ pycrypto==2.6.1;                python_version < '2.7'
 Flask-Script==2.0.5;            python_version < '2.7'
 ordereddict;                    python_version < '2.7'
 python-dateutil==2.5.0;         python_version < '2.7'
-SQLAlchemy==1.0.14;             python_version < '2.7'
 SQLAlchemy==1.0.14;             python_version < '2.7'
 Flask-Security==1.7.5;          python_version < '2.7'
 Flask-BabelEx==0.9.3;           python_version < '2.7'
