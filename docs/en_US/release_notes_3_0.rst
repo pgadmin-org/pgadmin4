@@ -33,6 +33,7 @@ Features
 | `Feature #3182 <https://redmine.postgresql.org/issues/3182>`_ - Update Jasmine to v3
 | `Feature #3184 <https://redmine.postgresql.org/issues/3184>`_ - Add a French translation
 | `Feature #3195 <https://redmine.postgresql.org/issues/3195>`_ - Pass the service name to external processes
+| `Feature #3246 <https://redmine.postgresql.org/issues/3246>`_ - Update container build to use Alpine Linux and Gunicorn instead of CentOS/Apache
 
 | `In addition, various changes were made for PEP8 compliance`
 

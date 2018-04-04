@@ -7,58 +7,63 @@
 #
 #########################################################################
 
-# Get the basics out of the way
-FROM centos:latest
+# First of all, build frontend with NodeJS in a separate builder container
+# Node-6 with ABI v48 is supported by all needed C++ packages
+FROM node:6 AS node-builder
 
-LABEL name="pgAdmin 4" \
-    vendor="The pgAdmin Development Team" \
-    license="PostgreSQL"
+COPY ./pgadmin4/web/ /pgadmin4/web/
+WORKDIR /pgadmin4/web
 
-# We only need the web/ directory, and a few other things
-COPY web /var/www/pgadmin
-COPY requirements.txt /var/www/pgadmin
+RUN yarn install --cache-folder ./ycache --verbose && \
+    yarn run bundle && \
+    rm -rf ./ycache ./pgadmin/static/js/generated/.cache
 
-# Install everything we need. Use easy_install to get pip, to avoid setting up EPEL
-RUN yum install -y python-setuptools python-devel httpd mod_wsgi mod_ssl gcc
-RUN easy_install pip
-RUN pip install j2cli
+# Build Sphinx documentation in separate container
+FROM python:3.6-alpine3.7 as docs-builder
 
-# Now install the Python runtime dependencies
-RUN pip install -r /var/www/pgadmin/requirements.txt
+# Install only dependencies absolutely required for documentation building
+RUN apk add --no-cache make
+RUN pip install --no-cache-dir \
+    sphinx flask_security flask_paranoid python-dateutil flask_sqlalchemy \
+    flask_gravatar simplejson
 
-# Create required directories for config
+COPY ./pgadmin4/ /pgadmin4
 
+RUN LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 make -C /pgadmin4/docs/en_US -f Makefile.sphinx html
 
-# Create required directories for running
-RUN mkdir -p /var/log/pgadmin
-RUN chown -R apache /var/log/pgadmin
-RUN mkdir -p /var/lib/pgadmin
-RUN chown -R apache /var/lib/pgadmin
-RUN mkdir -p /certs
-RUN chown -R apache /certs
-RUN chmod 700 /certs
+# Then install backend, copy static files and set up entrypoint
+# Need alpine3.7 to get pg_dump and friends in postgresql-client package
+FROM python:3.6-alpine3.7
 
-# Push logs to the container's output streams
-RUN ln -sf /proc/self/fd/1 /var/log/httpd/access_log && \
-    ln -sf /proc/self/fd/1 /var/log/httpd/ssl_access_log && \
-    ln -sf /proc/self/fd/2 /var/log/httpd/error_log && \
-    ln -sf /proc/self/fd/2 /var/log/httpd/ssl_error_log
+RUN pip --no-cache-dir install gunicorn
+RUN apk add --no-cache postgresql-client postgresql-libs
 
-# Apache config time
-RUN mkdir -p /templates
-COPY pgadmin4.conf.j2 /templates/
-COPY entry.sh /
+WORKDIR /pgadmin4
+ENV PYTHONPATH=/pgadmin4
 
-# Finally, remove packages we only needed for building
-RUN yum -y remove gcc cpp glibc-devel glibc-headers kernel-headers libgomp libmpc mpfr
+# Install build-dependencies, build & install C extensions and purge deps in one RUN step
+# so that deps do not increase the size of resulting image by remaining in layers
+COPY ./pgadmin4/requirements.txt /pgadmin4
+RUN set -ex && \
+    apk add --no-cache --virtual build-deps build-base postgresql-dev && \
+    pip install --no-cache-dir -r requirements.txt && \
+    apk del --no-cache build-deps
 
-# Default config options
-ENV PGADMIN_DEFAULT_EMAIL container@pgadmin.org
-ENV PGADMIN_DEFAULT_PASSWORD Conta1ner
-ENV PGADMIN_ENABLE_TLS False
-ENV PGADMIN_SERVER_NAME pgadmin4
+COPY --from=node-builder /pgadmin4/web/pgadmin/static/js/generated/ /pgadmin4/pgadmin/static/js/generated/
+COPY --from=docs-builder /pgadmin4/docs/en_US/_build/html/ /pgadmin4/docs/
 
+COPY ./pgadmin4/web /pgadmin4
+COPY ./run_pgadmin.py /pgadmin4
+COPY ./config_distro.py /pgadmin4
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Precompile and optimize python code to save time and space on startup
+RUN python -O -m compileall /pgadmin4
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+VOLUME /var/lib/pgadmin
 EXPOSE 80 443
 
-# Start the service
-ENTRYPOINT ["/bin/bash", "/entry.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

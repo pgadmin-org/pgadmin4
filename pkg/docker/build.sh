@@ -41,57 +41,19 @@ if [ -d docker-build ]; then
     rm -rf docker-build
 fi
 
-mkdir docker-build
-
-# Create the output directory if not present
-if [ ! -d dist ]; then
-    mkdir dist
-fi
+mkdir -p docker-build/pgadmin4
 
 # Build the clean tree
-for FILE in `git ls-files web`
-do
-    echo Adding $FILE
-    # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents
-    tar cf - $FILE | (cd docker-build; tar xf -)
-done
-
-pushd web
-    yarn install
-    yarn run bundle
-
-    rm -rf pgadmin/static/js/generated/.cache
-
-    for FILE in `ls -d pgadmin/static/js/generated/*`
-    do
-        echo Adding $FILE
-        tar cf - $FILE | (cd ../docker-build/web; tar xf -)
-    done
-popd
-
-# Build the docs
-if [ -d docs/en_US/_build/html ]; then
-    rm -rf docs/en_US/_build/html
-fi
-
-LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 make -C docs/en_US -f Makefile.sphinx html
-
-mkdir docker-build/web/docs
-cp -R docs/en_US/_build/html/* docker-build/web/docs/
-
-# Configure pgAdmin
-echo "HELP_PATH = '../../docs/'" >> docker-build/web/config_distro.py
-echo "DEFAULT_BINARY_PATHS = {" >> docker-build/web/config_distro.py
-echo "    'pg':   ''," >> docker-build/web/config_distro.py
-echo "    'ppas': ''," >> docker-build/web/config_distro.py
-echo "    'gpdb': ''" >> docker-build/web/config_distro.py
-echo "}" >> docker-build/web/config_distro.py
+echo Copying source tree...
+git archive HEAD -- docs web requirements.txt | tar xvf - -C docker-build/pgadmin4
 
 # Copy the Docker specific assets into place
-cp pkg/docker/Dockerfile docker-build/
-cp pkg/docker/entry.sh docker-build/
-cp pkg/docker/pgadmin4.conf.j2 docker-build/
-cp requirements.txt docker-build/
+cp pkg/docker/Dockerfile \
+    pkg/docker/entrypoint.sh \
+    pkg/docker/config_distro.py \
+    pkg/docker/run_pgadmin.py \
+    pkg/docker/.dockerignore \
+    docker-build/
 
 # Build the container
 docker build docker-build -t $CONTAINER_NAME \
