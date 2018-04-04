@@ -12,7 +12,7 @@ from functools import wraps
 import json
 
 from flask import render_template, request, jsonify
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 
 from config import PG_DEFAULT_DRIVER
 

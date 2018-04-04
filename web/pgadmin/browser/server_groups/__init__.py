@@ -14,7 +14,7 @@ from abc import ABCMeta, abstractmethod
 
 import six
 from flask import request, jsonify
-from flask_babel import gettext
+from flask_babelex import gettext
 from flask_security import current_user, login_required
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import NodeView

@@ -13,7 +13,7 @@ import re
 import simplejson as json
 import pgadmin.browser.server_groups.servers.databases.schemas as schema
 from flask import render_template, request
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader, VacuumSettings
 from pgadmin.utils.ajax import internal_server_error, \

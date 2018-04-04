@@ -14,7 +14,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases.schemas as schemas
 from flask import render_template, make_response, request, jsonify
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     parse_rule_definition

@@ -9,7 +9,7 @@
 
 """A blueprint module implementing the pgAdmin help system."""
 from flask import url_for
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem, Panel
 from pgadmin.utils.preferences import Preferences

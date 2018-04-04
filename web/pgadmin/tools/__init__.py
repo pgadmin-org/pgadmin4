@@ -11,7 +11,7 @@
 
 from flask import render_template, Response
 from flask import url_for
-from flask_babel import get_translations, gettext
+from flask_babelex import Domain, gettext
 
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
@@ -64,9 +64,11 @@ def translations():
     """Return a js file that will handle translations so Flask interpolation
     can be isolated
     """
+    domain = Domain()
+    translations = domain.get_translations()
     template = render_template(
         "js/translations.js",
-        translations=get_translations()._catalog
+        translations=translations._catalog
     )
     return Response(
         response=template,

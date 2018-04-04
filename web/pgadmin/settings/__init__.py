@@ -12,7 +12,7 @@
 import traceback
 
 from flask import Response, request, render_template, url_for
-from flask_babel import gettext
+from flask_babelex import gettext
 from flask_login import current_user
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule

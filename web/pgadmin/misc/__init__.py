@@ -11,7 +11,7 @@
 
 import pgadmin.utils.driver as driver
 from flask import url_for, render_template, Response, request
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
 

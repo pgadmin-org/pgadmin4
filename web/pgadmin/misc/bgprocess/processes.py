@@ -25,7 +25,7 @@ from pgadmin.utils import IS_PY2, u, file_quote, fs_encoding, \
 import pytz
 from dateutil import parser
 from flask import current_app
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 from flask_security import current_user
 
 import config

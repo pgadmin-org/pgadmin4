@@ -9,7 +9,7 @@
 
 from werkzeug.exceptions import HTTPException
 from werkzeug.http import HTTP_STATUS_CODES
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 from flask import request
 
 from pgadmin.utils.ajax import service_unavailable

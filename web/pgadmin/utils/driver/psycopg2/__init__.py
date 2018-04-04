@@ -15,7 +15,7 @@ object.
 """
 import datetime
 from flask import session
-from flask_babel import gettext
+from flask_babelex import gettext
 import psycopg2
 from psycopg2.extensions import adapt
 

@@ -11,7 +11,7 @@ import os
 import sys
 
 from flask import render_template
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 from pgadmin.utils.preferences import Preferences
 
 import config

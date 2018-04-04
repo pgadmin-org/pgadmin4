@@ -16,7 +16,7 @@ from collections import defaultdict
 from importlib import import_module
 
 from flask import Flask, abort, request, current_app, session, url_for
-from flask_babel import Babel, gettext
+from flask_babelex import Babel, gettext
 from flask_login import user_logged_in, user_logged_out
 from flask_mail import Mail
 from flask_paranoid import Paranoid

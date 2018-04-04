@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.types import ServerType
 
 

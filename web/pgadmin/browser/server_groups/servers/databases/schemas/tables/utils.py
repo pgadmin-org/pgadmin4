@@ -13,7 +13,7 @@ import re
 from functools import wraps
 import simplejson as json
 from flask import render_template, jsonify, request
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \

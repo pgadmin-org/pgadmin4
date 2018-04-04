@@ -14,7 +14,7 @@ import os
 import datetime
 from flask import current_app, session
 from flask_security import current_user
-from flask_babel import gettext
+from flask_babelex import gettext
 
 from pgadmin.utils.crypto import decrypt
 from .connection import Connection

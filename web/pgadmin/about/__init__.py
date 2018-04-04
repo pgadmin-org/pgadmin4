@@ -11,7 +11,7 @@
 
 import sys
 from flask import Response, render_template, __version__, url_for
-from flask_babel import gettext
+from flask_babelex import gettext
 from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem

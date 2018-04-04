@@ -14,7 +14,7 @@ import re
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify, url_for
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule, DataTypeReader, VacuumSettings
 from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db

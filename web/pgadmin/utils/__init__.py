@@ -13,7 +13,7 @@ from collections import defaultdict
 from operator import attrgetter
 
 from flask import Blueprint, current_app
-from flask_babel import gettext
+from flask_babelex import gettext
 
 from .paths import get_storage_directory
 from .preferences import Preferences

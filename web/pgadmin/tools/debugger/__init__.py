@@ -16,7 +16,7 @@ import random
 
 from flask import url_for, Response, render_template, request, session, \
     current_app
-from flask_babel import gettext
+from flask_babelex import gettext
 from flask_security import login_required
 from werkzeug.useragents import UserAgent
 

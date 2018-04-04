@@ -14,7 +14,7 @@ import decimal
 
 import simplejson as json
 from flask import Response
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 
 
 class DataTypeJSONEncoder(json.JSONEncoder):

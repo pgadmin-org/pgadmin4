@@ -87,10 +87,15 @@ setup(
     extras_require={
         # ...
         ":python_version<'2.7'": [
-            "ordereddict", "Flask-Script", "psycopg2==2.7.3.2"
+            "ordereddict", "Flask-Script",
+            "psycopg2==2.7.3.2", "pycrypto==2.6.1"
         ],
-        ":python_version<='2.7'": ["backports.csv", "importlib"],
-        ":python_version>='2.7'": ["Flask-HTMLmin", "psycopg2>=2.7.3.2"]
+        ":python_version<='2.7'": [
+            "backports.csv", "importlib"
+        ],
+        ":python_version>='2.7'": [
+            "Flask-HTMLmin", "psycopg2>=2.7.3.2", "pycryptodome"
+        ]
     },
 
     # Specify data files to be included. For Python 2.6 include them in MANIFEST.in

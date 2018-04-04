@@ -13,7 +13,7 @@ import pickle
 import random
 
 from flask import Response
-from flask_babel import gettext
+from flask_babelex import gettext
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \

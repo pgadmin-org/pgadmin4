@@ -19,7 +19,7 @@ from functools import wraps
 import pgadmin.browser.server_groups.servers.databases as databases
 from flask import render_template, make_response, request, jsonify, \
     current_app
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
 from pgadmin.browser.server_groups.servers.databases.utils import \

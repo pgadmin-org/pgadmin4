@@ -355,9 +355,9 @@ aws4@^1.2.1, aws4@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.6.0.tgz#83ef5ca860b2b32e4a0deedee8c771b9db57471e"
 
-axios-mock-adapter@^1.11.0:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/axios-mock-adapter/-/axios-mock-adapter-1.11.0.tgz#96e4bb2702cf6900f2ae5f9bdbef6e5dc86669e2"
+axios-mock-adapter@^1.14.1:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/axios-mock-adapter/-/axios-mock-adapter-1.14.1.tgz#c8e0ee1134955267538d566d7ae068be20467158"
   dependencies:
     deep-equal "^1.0.1"
 
@@ -367,11 +367,11 @@ axios@^0.15.3:
   dependencies:
     follow-redirects "1.0.0"
 
-axios@^0.16.1:
-  version "0.16.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.16.2.tgz#ba4f92f17167dfbab40983785454b9ac149c3c6d"
+axios@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.0.tgz#32d53e4851efdc0a11993b6cd000789d70c05102"
   dependencies:
-    follow-redirects "^1.2.3"
+    follow-redirects "^1.3.0"
     is-buffer "^1.1.5"
 
 babel-code-frame@^6.16.0, babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
@@ -1058,11 +1058,17 @@ babylon@^6.11.0, babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-backbone@1.1.2, "backbone@1.1.2 || 1.2.3 || ~1.3.2":
+"backbone@1.1.2 || 1.2.3 || ~1.3.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.1.2.tgz#c2c04c66bf87268fb82c177acebeff7d37ba6f2d"
   dependencies:
     underscore ">=1.5.0"
+
+backbone@1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.3.3.tgz#4cc80ea7cb1631ac474889ce40f2f8bc683b2999"
+  dependencies:
+    underscore ">=1.8.3"
 
 backbone@~1.2.3:
   version "1.2.3"
@@ -1146,9 +1152,9 @@ bignumber.js@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-2.4.0.tgz#838a992da9f9d737e0f4b2db0be62bb09dd0c5e8"
 
-bignumber.js@^4.0.2:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-4.1.0.tgz#db6f14067c140bd46624815a7916c92d9b6c24b1"
+bignumber.js@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-6.0.0.tgz#bbfa047644609a5af093e9cbd83b0461fa3f6002"
 
 bin-build@^2.0.0:
   version "2.2.0"
@@ -1285,11 +1291,9 @@ bootstrap-datepicker@^1.7.0:
   dependencies:
     jquery ">=1.7.1 <4.0.0"
 
-bootstrap-switch@3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/bootstrap-switch/-/bootstrap-switch-3.3.2.tgz#79ddb49fadc308fb731e257f95957af48996eea7"
-  dependencies:
-    jquery ">=1.9.0"
+bootstrap-switch@3.3.4:
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/bootstrap-switch/-/bootstrap-switch-3.3.4.tgz#70e0aeb2a877c0dc766991de108e2170fc29a2ff"
 
 bootstrap@^3.3, bootstrap@^3.3.7:
   version "3.3.7"
@@ -2235,7 +2239,7 @@ dateformat@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-2.2.0.tgz#4065e2013cf9fb916ddfd82efb506ad4c6769062"
 
-debug@2, debug@2.6.9, debug@^2.1.1, debug@^2.2.0, debug@^2.4.5, debug@^2.6.8, debug@~2.6.4, debug@~2.6.6:
+debug@2, debug@2.6.9, debug@^2.1.1, debug@^2.2.0, debug@^2.6.8, debug@~2.6.4, debug@~2.6.6:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
   dependencies:
@@ -3260,11 +3264,11 @@ follow-redirects@1.0.0:
   dependencies:
     debug "^2.2.0"
 
-follow-redirects@^1.2.3:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.2.4.tgz#355e8f4d16876b43f577b0d5ce2668b9723214ea"
+follow-redirects@^1.3.0:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.4.1.tgz#d8120f4518190f55aac65bb6fc7b85fcd666d6aa"
   dependencies:
-    debug "^2.4.5"
+    debug "^3.1.0"
 
 font-awesome@4.6.3:
   version "4.6.3"
@@ -4558,9 +4562,9 @@ jquery-contextmenu@1.6.7:
   dependencies:
     jquery ">=1.7.0"
 
-jquery-contextmenu@^2.5.0:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/jquery-contextmenu/-/jquery-contextmenu-2.6.2.tgz#83c7ba45c67c814cc4095b19551fd12e5d71da7e"
+jquery-contextmenu@^2.6.4:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/jquery-contextmenu/-/jquery-contextmenu-2.6.4.tgz#f48e56c436b1becb6935e5dd0def02e39d4e129e"
 
 jquery-mousewheel@~3.1.13:
   version "3.1.13"
@@ -4574,9 +4578,13 @@ jquery@1.11.1:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-1.11.1.tgz#b6ec928590112ebed69e1e49cbfd0025ccd60ddb"
 
-jquery@1.11.2, jquery@>=1.7.0, "jquery@>=1.7.1 <4.0.0", jquery@>=1.8.0, jquery@>=1.9.0, "jquery@^1.8.3 || ^2.0 || ^3.0":
+jquery@>=1.7.0, "jquery@>=1.7.1 <4.0.0", jquery@>=1.8.0, "jquery@^1.8.3 || ^2.0 || ^3.0":
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-1.11.2.tgz#30ab26857211c37caa83da0f6903155fe49bb72d"
+
+jquery@^1.11.2:
+  version "1.12.4"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-1.12.4.tgz#01e1dfba290fe73deba77ceeacb0f9ba2fec9e0c"
 
 js-base64@^2.1.8, js-base64@^2.1.9:
   version "2.3.2"
@@ -7115,9 +7123,9 @@ seek-bzip@^1.0.3:
   dependencies:
     commander "~2.8.1"
 
-select2@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/select2/-/select2-4.0.3.tgz#207733fe91eacb9cb1a13f12463401f472449e0f"
+select2@^4.0.6-rc.1:
+  version "4.0.6-rc.1"
+  resolved "https://registry.yarnpkg.com/select2/-/select2-4.0.6-rc.1.tgz#aa6c3038a7f0f2e91ffade38f0a21c15e1813276"
   dependencies:
     almond "~0.3.1"
     jquery-mousewheel "~3.1.13"
@@ -7259,9 +7267,9 @@ slice-ansi@^1.0.0:
   dependencies:
     is-fullwidth-code-point "^2.0.0"
 
-"slickgrid@git+https://github.com/6pac/SlickGrid.git#2.3.7":
-  version "2.3.4"
-  resolved "git+https://github.com/6pac/SlickGrid.git#8ff68140bd5be132d2913640b4b1f2512219d075"
+"slickgrid@git+https://github.com/6pac/SlickGrid.git#2.3.16":
+  version "2.3.16"
+  resolved "git+https://github.com/6pac/SlickGrid.git#4f8c6f498d0b82391fdf382beb8ef114ed7408e7"
   dependencies:
     jquery ">=1.8.0"
     jquery-ui ">=1.8.0"
@@ -7958,7 +7966,7 @@ underscore.string@^3.3.4:
     sprintf-js "^1.0.3"
     util-deprecate "^1.0.2"
 
-underscore@>=1.5.0, underscore@>=1.7.0, underscore@^1.8.0, underscore@^1.8.3:
+underscore@>=1.5.0, underscore@>=1.7.0, underscore@>=1.8.3, underscore@^1.8.0, underscore@^1.8.3:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
 

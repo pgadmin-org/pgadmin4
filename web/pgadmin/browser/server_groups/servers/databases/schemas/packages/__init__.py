@@ -13,7 +13,7 @@ from functools import wraps
 
 import simplejson as json
 from flask import render_template, make_response, request, jsonify
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 
 import pgadmin.browser.server_groups.servers.databases as database
 from config import PG_DEFAULT_DRIVER

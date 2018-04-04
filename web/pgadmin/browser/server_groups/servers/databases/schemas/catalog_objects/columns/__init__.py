@@ -12,7 +12,7 @@
 from functools import wraps
 
 from flask import render_template
-from flask_babel import gettext
+from flask_babelex import gettext
 
 import pgadmin.browser.server_groups.servers.databases as database
 from config import PG_DEFAULT_DRIVER

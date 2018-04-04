@@ -13,7 +13,7 @@ from functools import wraps
 from pgadmin.utils.driver import get_driver
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error

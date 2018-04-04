@@ -14,7 +14,7 @@ import re
 from functools import wraps
 
 from flask import render_template, make_response
-from flask_babel import gettext
+from flask_babelex import gettext
 
 import pgadmin.browser.server_groups.servers.databases\
     .schemas.packages as packages

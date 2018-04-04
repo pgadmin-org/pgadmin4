@@ -14,7 +14,7 @@ from abc import abstractmethod
 import flask
 from flask import render_template, current_app
 from flask.views import View, MethodViewType, with_metaclass
-from flask_babel import gettext
+from flask_babelex import gettext
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import make_json_response, precondition_required

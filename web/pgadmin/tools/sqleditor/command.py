@@ -16,7 +16,7 @@ except ImportError:
     from ordereddict import OrderedDict
 import six
 from flask import render_template
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.utils.ajax import forbidden
 from pgadmin.utils.driver import get_driver
 

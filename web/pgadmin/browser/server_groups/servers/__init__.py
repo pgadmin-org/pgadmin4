@@ -12,7 +12,7 @@ import re
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for
-from flask_babel import gettext
+from flask_babelex import gettext
 from flask_security import current_user, login_required
 from pgadmin.browser.server_groups.servers.types import ServerType
 from pgadmin.browser.utils import PGChildNodeView

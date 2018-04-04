@@ -8,7 +8,7 @@
 ##########################################################################
 
 """Register preferences for query tool"""
-from flask_babel import gettext
+from flask_babelex import gettext
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields, \
     ACCESSKEY_FIELDS as accesskey_fields
 from pgadmin.utils.preferences import Preferences

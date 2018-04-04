@@ -16,7 +16,7 @@ import random
 import simplejson as json
 from flask import Response, url_for, render_template, session, request, \
     current_app
-from flask_babel import gettext
+from flask_babelex import gettext
 from flask_security import login_required
 
 from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT

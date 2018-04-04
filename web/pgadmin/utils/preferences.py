@@ -17,7 +17,7 @@ import simplejson as json
 
 import dateutil.parser as dateutil_parser
 from flask import current_app
-from flask_babel import gettext
+from flask_babelex import gettext
 from flask_security import current_user
 
 from pgadmin.model import db, Preferences as PrefTable, \

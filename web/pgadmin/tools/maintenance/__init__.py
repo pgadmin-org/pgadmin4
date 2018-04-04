@@ -12,7 +12,7 @@
 import simplejson as json
 
 from flask import url_for, Response, render_template, request, current_app
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 from flask_security import login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, html

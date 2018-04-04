@@ -20,7 +20,7 @@ from collections import deque
 import simplejson as json
 import psycopg2
 from flask import g, current_app
-from flask_babel import gettext
+from flask_babelex import gettext
 from flask_security import current_user
 from pgadmin.utils.crypto import decrypt
 from psycopg2.extensions import adapt, encodings

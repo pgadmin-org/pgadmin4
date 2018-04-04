@@ -14,7 +14,7 @@ import re
 
 from flask import render_template, request, \
     url_for, Response, abort, current_app
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 from flask_security import login_required, roles_required, current_user
 from flask_security.utils import encrypt_password
 

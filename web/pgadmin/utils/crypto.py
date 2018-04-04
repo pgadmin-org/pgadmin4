@@ -28,11 +28,11 @@ def encrypt(plaintext, key):
     """
 
     iv = Random.new().read(AES.block_size)
-    cipher = AES.new(pad(key), AES.MODE_CFB, iv)
+    key = pad(key).encode('utf-8')
+    cipher = AES.new(key, AES.MODE_CFB, iv)
     # If user has entered non ascii password (Python2)
     # we have to encode it first
-    if hasattr(str, 'decode'):
-        plaintext = plaintext.encode('utf-8')
+    plaintext = plaintext.encode('utf-8')
     encrypted = base64.b64encode(iv + cipher.encrypt(plaintext))
 
     return encrypted
@@ -51,32 +51,33 @@ def decrypt(ciphertext, key):
 
     ciphertext = base64.b64decode(ciphertext)
     iv = ciphertext[:AES.block_size]
-    cipher = AES.new(pad(key), AES.MODE_CFB, iv)
+    key = pad(key).encode('utf-8')
+    cipher = AES.new(key, AES.MODE_CFB, iv)
     decrypted = cipher.decrypt(ciphertext[AES.block_size:])
 
     return decrypted
 
 
-def pad(str):
+def pad(key):
     """Add padding to the key."""
 
     global padding_string
-    str_len = len(str)
+    str_len = len(key)
 
     # Key must be maximum 32 bytes long, so take first 32 bytes
     if str_len > 32:
-        return str[:32]
+        return key[:32]
 
     # If key size id 16, 24 or 32 bytes then padding not require
     if str_len == 16 or str_len == 24 or str_len == 32:
-        return str
+        return key
 
     # Convert bytes to string (python3)
     if not hasattr(str, 'decode'):
         padding_string = padding_string.decode()
 
     # Add padding to make key 32 bytes long
-    return str + ((32 - len(str) % 32) * padding_string)
+    return key + ((32 - str_len % 32) * padding_string)
 
 
 def pqencryptpassword(password, user):
