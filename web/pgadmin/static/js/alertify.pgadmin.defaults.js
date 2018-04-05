@@ -5,6 +5,7 @@ define([
   alertify.defaults.theme.ok = 'btn btn-primary';
   alertify.defaults.theme.cancel = 'btn btn-danger';
   alertify.defaults.theme.input = 'form-control';
+  alertify.defaults.closable = false;
   alertify.pgIframeDialog || alertify.dialog('pgIframeDialog', function() {
     var iframe;
     return {

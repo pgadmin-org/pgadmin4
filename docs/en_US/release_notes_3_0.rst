@@ -115,3 +115,4 @@ Bug fixes
 | `Bug #3219 <https://redmine.postgresql.org/issues/3219>`_ - Update required ChromeDriver version for current versions of Chrome
 | `Bug #3226 <https://redmine.postgresql.org/issues/3226>`_ - Move the field error indicators in front of the affected fields so they don't obscure spinners or drop downs etc.
 | `Bug #3244 <https://redmine.postgresql.org/issues/3244>`_ - Show more granular timing info in the query tool history panel
+| `Bug #3248 <https://redmine.postgresql.org/issues/3248>`_ - Ensure Alertify dialogues are modal to prevent them being closed by mis-click
