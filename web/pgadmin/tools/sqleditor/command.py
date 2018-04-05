@@ -141,6 +141,10 @@ class SQLFilter(object):
       - This method removes the filter applied.
     * validate_filter(row_filter)
       - This method validates the given filter.
+    * get_data_sorting()
+      - This method returns columns for data sorting
+    * set_data_sorting()
+      - This method saves columns for data sorting
     """
 
     def __init__(self, **kwargs):
@@ -160,8 +164,8 @@ class SQLFilter(object):
         self.sid = kwargs['sid']
         self.did = kwargs['did']
         self.obj_id = kwargs['obj_id']
-        self.__row_filter = kwargs['sql_filter'] if 'sql_filter' in kwargs \
-            else None
+        self.__row_filter = kwargs.get('sql_filter', None)
+        self.__dara_sorting = kwargs.get('data_sorting', None)
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
         conn = manager.connection(did=self.did)
@@ -210,20 +214,41 @@ class SQLFilter(object):
 
         return status, msg
 
+    def get_data_sorting(self):
+        """
+        This function returns the filter.
+        """
+        if self.__dara_sorting and len(self.__dara_sorting) > 0:
+            return self.__dara_sorting
+        return None
+
+    def set_data_sorting(self, data_filter):
+        """
+        This function validates the filter and set the
+        given filter to member variable.
+        """
+        self.__dara_sorting = data_filter['data_sorting']
+
     def is_filter_applied(self):
         """
         This function returns True if filter is applied else False.
         """
+        is_filter_applied = True
         if self.__row_filter is None or self.__row_filter == '':
-            return False
+            is_filter_applied = False
 
-        return True
+        if not is_filter_applied:
+            if self.__dara_sorting and len(self.__dara_sorting) > 0:
+                is_filter_applied = True
+
+        return is_filter_applied
 
     def remove_filter(self):
         """
         This function remove the filter by setting value to None.
         """
         self.__row_filter = None
+        self.__dara_sorting = None
 
     def append_filter(self, row_filter):
         """
@@ -325,12 +350,57 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
         self.cmd_type = kwargs['cmd_type'] if 'cmd_type' in kwargs else None
         self.limit = -1
 
-        if self.cmd_type == VIEW_FIRST_100_ROWS or \
-                self.cmd_type == VIEW_LAST_100_ROWS:
+        if self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_LAST_100_ROWS):
             self.limit = 100
 
     def get_primary_keys(self, *args, **kwargs):
         return None, None
+
+    def get_all_columns_with_order(self, default_conn):
+        """
+        Responsible for fetching columns from given object
+
+        Args:
+            default_conn: Connection object
+
+        Returns:
+            all_sorted_columns: Columns which are already sorted which will
+                         be used to populate the Grid in the dialog
+            all_columns: List of all the column for given object which will
+                         be used to fill columns options
+        """
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        if default_conn is None:
+            manager = driver.connection_manager(self.sid)
+            conn = manager.connection(did=self.did, conn_id=self.conn_id)
+        else:
+            conn = default_conn
+
+        all_sorted_columns = []
+        data_sorting = self.get_data_sorting()
+        all_columns = []
+        if conn.connected():
+            # Fetch the rest of the column names
+            query = render_template(
+                "/".join([self.sql_path, 'get_columns.sql']),
+                obj_id=self.obj_id
+            )
+            status, result = conn.execute_dict(query)
+            if not status:
+                raise Exception(result)
+
+            for row in result['rows']:
+                all_columns.append(row['attname'])
+        else:
+            raise Exception(
+                gettext('Not connected to server or connection with the '
+                        'server has been closed.')
+            )
+        # If user has custom data sorting then pass as it as it is
+        if data_sorting and len(data_sorting) > 0:
+            all_sorted_columns = data_sorting
+
+        return all_sorted_columns, all_columns
 
     def save(self, changed_data, default_conn=None):
         return forbidden(
@@ -350,6 +420,17 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
             limit: limit to be set for SQL.
         """
         self.limit = limit
+
+    def get_pk_order(self):
+        """
+        This function gets the order required for primary keys
+        """
+        if self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_ALL_ROWS):
+            return 'asc'
+        elif self.cmd_type == VIEW_LAST_100_ROWS:
+            return 'desc'
+        else:
+            return None
 
 
 class TableCommand(GridCommand):
@@ -385,6 +466,7 @@ class TableCommand(GridCommand):
         has_oids = self.has_oids(default_conn)
 
         sql_filter = self.get_filter()
+        data_sorting = self.get_data_sorting()
 
         if sql_filter is None:
             sql = render_template(
@@ -392,7 +474,8 @@ class TableCommand(GridCommand):
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, pk_names=pk_names,
                 cmd_type=self.cmd_type, limit=self.limit,
-                primary_keys=primary_keys, has_oids=has_oids
+                primary_keys=primary_keys, has_oids=has_oids,
+                data_sorting=data_sorting
             )
         else:
             sql = render_template(
@@ -401,7 +484,7 @@ class TableCommand(GridCommand):
                 nsp_name=self.nsp_name, pk_names=pk_names,
                 cmd_type=self.cmd_type, sql_filter=sql_filter,
                 limit=self.limit, primary_keys=primary_keys,
-                has_oids=has_oids
+                has_oids=has_oids, data_sorting=data_sorting
             )
 
         return sql
@@ -446,6 +529,73 @@ class TableCommand(GridCommand):
             )
 
         return pk_names, primary_keys
+
+    def get_all_columns_with_order(self, default_conn=None):
+        """
+        It is overridden method specially for Table because we all have to
+        fetch primary keys and rest of the columns both.
+
+        Args:
+            default_conn: Connection object
+
+        Returns:
+            all_sorted_columns: Sorted columns for the Grid
+            all_columns: List of columns for the select2 options
+        """
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        if default_conn is None:
+            manager = driver.connection_manager(self.sid)
+            conn = manager.connection(did=self.did, conn_id=self.conn_id)
+        else:
+            conn = default_conn
+
+        all_sorted_columns = []
+        data_sorting = self.get_data_sorting()
+        all_columns = []
+        if conn.connected():
+
+            # Fetch the primary key column names
+            query = render_template(
+                "/".join([self.sql_path, 'primary_keys.sql']),
+                obj_id=self.obj_id
+            )
+
+            status, result = conn.execute_dict(query)
+            if not status:
+                raise Exception(result)
+
+            for row in result['rows']:
+                all_columns.append(row['attname'])
+                all_sorted_columns.append(
+                    {
+                        'name': row['attname'],
+                        'order': self.get_pk_order()
+                    }
+                )
+
+            # Fetch the rest of the column names
+            query = render_template(
+                "/".join([self.sql_path, 'get_columns.sql']),
+                obj_id=self.obj_id
+            )
+            status, result = conn.execute_dict(query)
+            if not status:
+                raise Exception(result)
+
+            for row in result['rows']:
+                # Only append if not already present in the list
+                if row['attname'] not in all_columns:
+                    all_columns.append(row['attname'])
+        else:
+            raise Exception(
+                gettext('Not connected to server or connection with the '
+                        'server has been closed.')
+            )
+        # If user has custom data sorting then pass as it as it is
+        if data_sorting and len(data_sorting) > 0:
+            all_sorted_columns = data_sorting
+
+        return all_sorted_columns, all_columns
 
     def can_edit(self):
         return True
@@ -771,20 +921,22 @@ class ViewCommand(GridCommand):
         to fetch the data for the specified view
         """
         sql_filter = self.get_filter()
+        data_sorting = self.get_data_sorting()
 
         if sql_filter is None:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                limit=self.limit
+                limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                sql_filter=sql_filter, limit=self.limit
+                sql_filter=sql_filter, limit=self.limit,
+                data_sorting=data_sorting
             )
 
         return sql
@@ -832,20 +984,22 @@ class ForeignTableCommand(GridCommand):
         to fetch the data for the specified foreign table
         """
         sql_filter = self.get_filter()
+        data_sorting = self.get_data_sorting()
 
         if sql_filter is None:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                limit=self.limit
+                limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                sql_filter=sql_filter, limit=self.limit
+                sql_filter=sql_filter, limit=self.limit,
+                data_sorting=data_sorting
             )
 
         return sql
@@ -883,20 +1037,22 @@ class CatalogCommand(GridCommand):
         to fetch the data for the specified catalog object
         """
         sql_filter = self.get_filter()
+        data_sorting = self.get_data_sorting()
 
         if sql_filter is None:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                limit=self.limit
+                limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, cmd_type=self.cmd_type,
-                sql_filter=sql_filter, limit=self.limit
+                sql_filter=sql_filter, limit=self.limit,
+                data_sorting=data_sorting
             )
 
         return sql
@@ -927,6 +1083,9 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         self.auto_commit = True
 
     def get_sql(self, default_conn=None):
+        return None
+
+    def get_all_columns_with_order(self, default_conn=None):
         return None
 
     def can_edit(self):

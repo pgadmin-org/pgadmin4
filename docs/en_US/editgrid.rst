@@ -95,6 +95,29 @@ To delete a row, press the *Delete* toolbar button.  A popup will open, asking y
 
 To commit the changes to the server, select the *Save* toolbar button.  Modifications to a row are written to the server automatically when you select a different row.
 
+**Sort/Filter options dialog**
 
+You can access *Sort/Filter options dialog* by clicking on Sort/Filter button. This allows you to specify an SQL Filter to limit the data displayed and data sorting options in the edit grid window:
 
+.. image:: images/editgrid_filter_dialog.png
+    :alt: Edit grid filter dialog window
+
+* Use *SQL Filter* to provide SQL filtering criteria. These will be added to the "WHERE" clause of the query used to retrieve the data. For example, you might enter:
+
+.. code-block:: sql
+
+    id > 25 AND created > '2018-01-01'
+
+* Use *Data Sorting* to sort the data in the output grid
+
+To add new column(s) in data sorting grid, click on the [+] icon.
+
+* Use the drop-down *Column* to select the column you want to sort.
+* Use the drop-down *Order* to select the sort order for the column.
+
+To delete a row from the grid, click the trash icon.
+
+* Click the *Help* button (?) to access online help.
+* Click the *Ok* button to save work.
+* Click the *Close* button to discard current changes and close the dialog.
 

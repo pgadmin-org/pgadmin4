@@ -602,3 +602,26 @@ input.editor-checkbox:focus {
   font-size: 13px;
   line-height: 3em;
 }
+
+/* For Filter status bar */
+.data_sorting_dialog .pg-prop-status-bar {
+  position: absolute;
+  bottom: 37px;
+  z-index: 5;
+}
+
+.data_sorting_dialog .CodeMirror-gutter-wrapper {
+  left: -30px !important;
+}
+
+.data_sorting_dialog .CodeMirror-gutters {
+  left: 0px !important;
+}
+
+.data_sorting_dialog .custom_height_css_class {
+  height: 100px;
+}
+
+.data_sorting_dialog .data_sorting {
+  padding: 10px 0px;
+}

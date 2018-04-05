@@ -79,7 +79,7 @@
                     </li>
                     <li>
                         <a id="btn-find-menu-find-next" href="#" tabindex="0">
-                            <span> {{ _('Find next') }}{% if client_platform == 'macos' -%}
+                            <span> {{ _('Find Next') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+G)') }}
                             {% else %}
                                  {{ _(' (Ctrl+G)') }}{%- endif %}</span>
@@ -87,7 +87,7 @@
                     </li>
                     <li>
                         <a id="btn-find-menu-find-previous" href="#" tabindex="0">
-                            <span> {{ _('Find previous') }}{% if client_platform == 'macos' -%}
+                            <span> {{ _('Find Previous') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+Shift+G)') }}
                             {% else %}
                                  {{ _(' (Ctrl+Shift+G)') }}{%- endif %}</span>
@@ -95,7 +95,7 @@
                     </li>
                     <li>
                         <a id="btn-find-menu-find-persistent" href="#" tabindex="0">
-                            <span>{{ _('Persistent find') }}</span>
+                            <span>{{ _('Persistent Find') }}</span>
                         </a>
                     </li>
                     <li class="divider"></li>
@@ -109,7 +109,7 @@
                     </li>
                     <li>
                         <a id="btn-find-menu-replace-all" href="#" tabindex="0">
-                            <span>{{ _('Replace all') }}</span>
+                            <span>{{ _('Replace All') }}</span>
                         </a>
                     </li>
                     <li class="divider"></li>
@@ -194,10 +194,10 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li>
-                        <a id="btn-filter-menu" href="#" tabindex="0">{{ _('Filter') }}</a>
-                        <a id="btn-remove-filter" href="#" tabindex="0">{{ _('Remove Filter') }}</a>
-                        <a id="btn-include-filter" href="#" tabindex="0">{{ _('By Selection') }}</a>
-                        <a id="btn-exclude-filter" href="#" tabindex="0">{{ _('Exclude Selection') }}</a>
+                        <a id="btn-filter-menu" href="#" tabindex="0">{{ _('Sort/Filter') }}</a>
+                        <a id="btn-include-filter" href="#" tabindex="0">{{ _('Filter by Selection') }}</a>
+                        <a id="btn-exclude-filter" href="#" tabindex="0">{{ _('Exclude by Selection') }}</a>
+                        <a id="btn-remove-filter" href="#" tabindex="0">{{ _('Remove Sort/Filter') }}</a>
                     </li>
                 </ul>
             </div>
@@ -340,23 +340,6 @@
             {% endif %}
             <div class="editor-title"
                  style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% else %}{{ bgcolor or '#2C76B4' }}{% endif %}; color: {{ fgcolor or 'white' }};"></div>
-        </div>
-
-        <div id="filter" class="filter-container hidden">
-            <div class="filter-title">Filter</div>
-            <div class="sql-textarea">
-                <textarea id="sql_filter" rows="5"></textarea>
-            </div>
-            <div class="btn-group">
-                <button id="btn-cancel" type="button" class="btn btn-danger" title="{{ _('Cancel') }}" tabindex="0">
-                    <i class="fa fa-times" aria-hidden="true"></i> {{ _('Cancel') }}
-                </button>
-            </div>
-            <div class="btn-group">
-                <button id="btn-apply" type="button" class="btn btn-primary" title="{{ _('Apply') }}" tabindex="0">
-                    <i class="fa fa-check" aria-hidden="true"></i> {{ _('Apply') }}
-                </button>
-            </div>
         </div>
         <div id="editor-panel" tabindex="0"></div>
         <iframe id="download-csv" style="display:none"></iframe>

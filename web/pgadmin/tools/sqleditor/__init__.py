@@ -40,6 +40,7 @@ from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
     RegisterQueryToolPreferences
 from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
     read_file_generator
+from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 
 MODULE_NAME = 'sqleditor'
 
@@ -92,8 +93,6 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.fetch',
             'sqleditor.fetch_all',
             'sqleditor.save',
-            'sqleditor.get_filter',
-            'sqleditor.apply_filter',
             'sqleditor.inclusive_filter',
             'sqleditor.exclusive_filter',
             'sqleditor.remove_filter',
@@ -106,7 +105,9 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.load_file',
             'sqleditor.save_file',
             'sqleditor.query_tool_download',
-            'sqleditor.connection_status'
+            'sqleditor.connection_status',
+            'sqleditor.get_filter_data',
+            'sqleditor.set_filter_data'
         ]
 
     def register_preferences(self):
@@ -781,80 +782,6 @@ def save(trans_id):
             '_rowid': _rowid
         }
     )
-
-
-@blueprint.route(
-    '/filter/get/<int:trans_id>',
-    methods=["GET"], endpoint='get_filter'
-)
-@login_required
-def get_filter(trans_id):
-    """
-    This method is used to get the existing filter.
-
-    Args:
-        trans_id: unique transaction id
-    """
-
-    # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = \
-        check_transaction_status(trans_id)
-
-    if error_msg == gettext('Transaction ID not found in the session.'):
-        return make_json_response(success=0, errormsg=error_msg,
-                                  info='DATAGRID_TRANSACTION_REQUIRED',
-                                  status=404)
-    if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
-
-        res = trans_obj.get_filter()
-    else:
-        status = False
-        res = error_msg
-
-    return make_json_response(data={'status': status, 'result': res})
-
-
-@blueprint.route(
-    '/filter/apply/<int:trans_id>',
-    methods=["PUT", "POST"], endpoint='apply_filter'
-)
-@login_required
-def apply_filter(trans_id):
-    """
-    This method is used to apply the filter.
-
-    Args:
-        trans_id: unique transaction id
-    """
-    if request.data:
-        filter_sql = json.loads(request.data, encoding='utf-8')
-    else:
-        filter_sql = request.args or request.form
-
-    # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = \
-        check_transaction_status(trans_id)
-
-    if error_msg == gettext('Transaction ID not found in the session.'):
-        return make_json_response(success=0, errormsg=error_msg,
-                                  info='DATAGRID_TRANSACTION_REQUIRED',
-                                  status=404)
-
-    if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
-
-        status, res = trans_obj.set_filter(filter_sql)
-
-        # As we changed the transaction object we need to
-        # restore it and update the session variable.
-        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
-        update_session_grid_transaction(trans_id, session_obj)
-    else:
-        status = False
-        res = error_msg
-
-    return make_json_response(data={'status': status, 'result': res})
 
 
 @blueprint.route(
@@ -1561,3 +1488,37 @@ def query_tool_status(trans_id):
         return internal_server_error(
             errormsg=gettext("Transaction status check failed.")
         )
+
+
+@blueprint.route(
+    '/filter_dialog/<int:trans_id>',
+    methods=["GET"], endpoint='get_filter_data'
+)
+@login_required
+def get_filter_data(trans_id):
+    """
+    This method is used to get all the columns for data sorting dialog.
+
+    Args:
+        trans_id: unique transaction id
+    """
+    return FilterDialog.get(*check_transaction_status(trans_id))
+
+
+@blueprint.route(
+    '/filter_dialog/<int:trans_id>',
+    methods=["PUT"], endpoint='set_filter_data'
+)
+@login_required
+def set_filter_data(trans_id):
+    """
+    This method is used to update the columns for data sorting dialog.
+
+    Args:
+        trans_id: unique transaction id
+    """
+    return FilterDialog.save(
+        *check_transaction_status(trans_id),
+        request=request,
+        trans_id=trans_id
+    )

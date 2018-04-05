@@ -10,7 +10,7 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
-| `Feature #1305 <https://redmine.postgresql.org/issues/1305>`_ - Enable building of the runtime from the top level Makefile
+| `Feature #1894 <https://redmine.postgresql.org/issues/1894>`_ - Allow sorting when viewing/editing data
 | `Feature #1978 <https://redmine.postgresql.org/issues/1978>`_ - Add the ability to enable/disable UI animations
 | `Feature #2895 <https://redmine.postgresql.org/issues/2895>`_ - Add keyboard navigation options for the main browser windows
 | `Feature #2896 <https://redmine.postgresql.org/issues/2896>`_ - Add keyboard navigation in Query tool module via Tab/Shift-Tab key

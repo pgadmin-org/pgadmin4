@@ -14,6 +14,7 @@ define('tools.querytool', [
   'sources/sqleditor_utils',
   'sources/sqleditor/execute_query',
   'sources/sqleditor/query_tool_http_error_handler',
+  'sources/sqleditor/filter_dialog',
   'sources/history/index.js',
   'sources/../jsx/history/query_history',
   'react', 'react-dom',
@@ -33,7 +34,7 @@ define('tools.querytool', [
 ], function(
   babelPollyfill, gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-  XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler,
+  XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   HistoryBundle, queryHistory, React, ReactDOM,
   keyboardShortcuts, queryToolActions, Datagrid, modifyAnimation,
   calculateQueryRunTime, callRenderAfterPoll) {
@@ -112,39 +113,13 @@ define('tools.querytool', [
 
     // This function is used to render the template.
     render: function() {
-      var self = this,
-        filter = self.$el.find('#sql_filter');
+      var self = this;
 
       $('.editor-title').text(_.unescape(self.editor_title));
       self.checkConnectionStatus();
 
       // Fetch and assign the shortcuts to current instance
       self.keyboardShortcutConfig = queryToolActions.getKeyboardShortcuts(self);
-
-      self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
-        tabindex: '0',
-        lineNumbers: true,
-        mode: self.handler.server_type === 'gpdb' ? 'text/x-gpsql' : 'text/x-pgsql',
-        foldOptions: {
-          widget: '\u2026',
-        },
-        foldGutter: {
-          rangeFinder: CodeMirror.fold.combine(
-            CodeMirror.pgadminBeginRangeFinder,
-            CodeMirror.pgadminIfRangeFinder,
-            CodeMirror.pgadminLoopRangeFinder,
-            CodeMirror.pgadminCaseRangeFinder
-          ),
-        },
-        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-        extraKeys: pgBrowser.editor_shortcut_keys,
-        indentWithTabs: pgAdmin.Browser.editor_options.indent_with_tabs,
-        indentUnit: pgAdmin.Browser.editor_options.tabSize,
-        tabSize: pgAdmin.Browser.editor_options.tabSize,
-        lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
-        autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
-        matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
-      });
 
       // Updates connection status flag
       self.gain_focus = function() {
@@ -2141,11 +2116,11 @@ define('tools.querytool', [
               if (self.can_filter && res.data.filter_applied) {
                 $('#btn-filter').removeClass('btn-default');
                 $('#btn-filter-dropdown').removeClass('btn-default');
-                $('#btn-filter').addClass('btn-warning');
-                $('#btn-filter-dropdown').addClass('btn-warning');
+                $('#btn-filter').addClass('btn-primary');
+                $('#btn-filter-dropdown').addClass('btn-primary');
               } else {
-                $('#btn-filter').removeClass('btn-warning');
-                $('#btn-filter-dropdown').removeClass('btn-warning');
+                $('#btn-filter').removeClass('btn-primary');
+                $('#btn-filter-dropdown').removeClass('btn-primary');
                 $('#btn-filter').addClass('btn-default');
                 $('#btn-filter-dropdown').addClass('btn-default');
               }
@@ -3044,50 +3019,8 @@ define('tools.querytool', [
 
       // This function will show the filter in the text area.
       _show_filter: function() {
-        var self = this;
-
-        self.trigger(
-          'pgadmin-sqleditor:loading-icon:show',
-          gettext('Loading the existing filter options...')
-        );
-        $.ajax({
-          url: url_for('sqleditor.get_filter', {
-            'trans_id': self.transId,
-          }),
-          method: 'GET',
-          success: function(res) {
-            self.trigger('pgadmin-sqleditor:loading-icon:hide');
-            if (res.data.status) {
-              $('#filter').removeClass('hidden');
-              $('#editor-panel').addClass('sql-editor-busy-fetching');
-              self.gridView.filter_obj.refresh();
-
-              if (res.data.result == null)
-                self.gridView.filter_obj.setValue('');
-              else
-                self.gridView.filter_obj.setValue(res.data.result);
-              // Set focus on filter area
-              self.gridView.filter_obj.focus();
-            } else {
-              setTimeout(
-                function() {
-                  alertify.alert(gettext('Get Filter Error'), res.data.result);
-                }, 10
-              );
-            }
-          },
-          error: function(e) {
-            self.trigger('pgadmin-sqleditor:loading-icon:hide');
-            let msg = httpErrorHandler.handleQueryToolAjaxError(
-              pgAdmin, self, e, '_show_filter', [], true
-            );
-            setTimeout(
-              function() {
-                alertify.alert(gettext('Get Filter Error'), msg);
-              }, 10
-            );
-          },
-        });
+        let self = this;
+        FilterHandler.dialog(self);
       },
 
       // This function will include the filter by selection.
