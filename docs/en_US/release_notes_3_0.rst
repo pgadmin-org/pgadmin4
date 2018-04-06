@@ -88,6 +88,7 @@ Bug fixes
 | `Bug #3060 <https://redmine.postgresql.org/issues/3060>`_ - Fix quoting of function names in RE-SQL
 | `Bug #3066 <https://redmine.postgresql.org/issues/3066>`_ - Ensure column names on indexes on views are properly quoted in RE-SQL
 | `Bug #3067 <https://redmine.postgresql.org/issues/3067>`_ - Prevent the filter dialog CodeMirror from overflowing onto the button bar of the dialog
+| `Bug #3072 <https://redmine.postgresql.org/issues/3072>`_ - Add a (configurable) limit to the number of pgAgent job history rows displayed on the statistics tab
 | `Bug #3073 <https://redmine.postgresql.org/issues/3073>`_ - Ensure the pgAgent job start/end time grid fields synchronise with the subnode control and validate correctly
 | `Bug #3075 <https://redmine.postgresql.org/issues/3075>`_ - Runtime issue causing Select, Update, and Insert script generation for a table fails to load
 | `Bug #3077 <https://redmine.postgresql.org/issues/3077>`_ - Remove dependency on standards_conforming_strings being enabled

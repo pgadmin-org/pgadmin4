@@ -19,6 +19,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, gone, \
     make_response as ajax_response, internal_server_error
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.preferences import Preferences
 
 from config import PG_DEFAULT_DRIVER
 
@@ -570,10 +571,16 @@ SELECT EXISTS(
         otherwise it will return statistics for all the databases in that
         server.
         """
+        pref = Preferences.module('browser')
+        rows_threshold = pref.preference(
+            'pgagent_row_threshold'
+        )
+
         status, res = self.conn.execute_dict(
             render_template(
                 "/".join([self.template_path, 'stats.sql']),
-                jid=jid, jstid=jstid, conn=self.conn
+                jid=jid, jstid=jstid, conn=self.conn,
+                rows_threshold=rows_threshold.get()
             )
         )
 

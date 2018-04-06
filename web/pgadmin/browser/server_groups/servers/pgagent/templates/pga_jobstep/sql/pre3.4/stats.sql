@@ -10,4 +10,5 @@ FROM
     pgagent.pga_jobsteplog
 WHERE
     jsljstid = {{ jstid|qtLiteral }}::integer
-ORDER BY jslid DESC;
+ORDER BY jslid DESC
+LIMIT {{ rows_threshold }};

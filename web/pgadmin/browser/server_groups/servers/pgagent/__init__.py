@@ -22,6 +22,7 @@ from pgadmin.browser.server_groups import servers
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone, success_return
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.preferences import Preferences
 
 
 class JobModule(CollectionNodeModule):
@@ -415,10 +416,16 @@ SELECT EXISTS(
         otherwise it will return statistics for all the databases in that
         server.
         """
+        pref = Preferences.module('browser')
+        rows_threshold = pref.preference(
+            'pgagent_row_threshold'
+        )
+
         status, res = self.conn.execute_dict(
             render_template(
                 "/".join([self.template_path, 'stats.sql']),
-                jid=jid, conn=self.conn
+                jid=jid, conn=self.conn,
+                rows_threshold=rows_threshold.get()
             )
         )
 

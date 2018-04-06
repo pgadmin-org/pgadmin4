@@ -45,6 +45,8 @@ Use fields on the *Properties* panel to specify browser properties:
 
 * Include a value in the *Count rows if estimated less than* field to perform a SELECT count(*) if the estimated number of rows in a table (as read from the table statistics) is below the specified limit.  After performing the SELECT count(*), pgAdmin will display the row count.  The default is 2000.
 
+* Provide a value in the *Maximum job history rows* field to limit the number of rows to show on the statistics tab for pgAgent jobs.  The default is 250.
+
 **The Dashboards Node**
 
 Expand the *Dashboards* node to specify your dashboard display preferences.
