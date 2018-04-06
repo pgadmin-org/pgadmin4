@@ -9,6 +9,9 @@ review process for any patches submitted for inclusion in pgAdmin.
 
 * Ensure all code follows the pgAdmin :doc:`coding_standards`.
 
+* Ensure all code has unit test coverage and API/feature test coverage where
+  appropriate.
+
 * Copyright years must be correct and properly formatted (to make it easy to make
   bulk updates every year). The start date should always be 2013, and the end year
   the current year, e.g.

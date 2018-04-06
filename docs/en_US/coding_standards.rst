@@ -106,6 +106,9 @@ Note the use of a descriptive function name, using the underscore character to
 separate words in all lower case, and short but descriptive lower case variable
 names.
 
+.. note:: From version 3.0 onwards, new or refactored code should be written using
+     ES6 features and conventions.
+
 C++
 ---
 
