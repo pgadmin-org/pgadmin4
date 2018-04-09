@@ -13,4 +13,5 @@ pgAdmin4.pro.user*
 qrc_pgAdmin4.cpp
 ui_BrowserWindow.h
 ui_ConfigWindow.h
+ui_LogWindow.h
 object_script.*
