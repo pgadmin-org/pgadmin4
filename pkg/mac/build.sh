@@ -87,7 +87,7 @@ _create_python_virtualenv() {
     cd $BUILDROOT
     test -d $VIRTUALENV || virtualenv -p $PYTHON $VIRTUALENV || exit 1
     source $VIRTUALENV/bin/activate
-    $PIP install --no-cache-dir --no-binary :all: -r $SOURCEDIR/requirements.txt || { echo PIP install failed. Please resolve the issue and rerun the script; exit 1; }
+    $PIP install --no-cache-dir --no-binary psycopg2 -r $SOURCEDIR/requirements.txt || { echo PIP install failed. Please resolve the issue and rerun the script; exit 1; }
 
     # Figure out some paths for use when completing the venv
     # Use "python" here as we want the venv path
