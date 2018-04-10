@@ -28,11 +28,11 @@ def encrypt(plaintext, key):
     """
 
     iv = Random.new().read(AES.block_size)
-    key = pad(key).encode('utf-8')
-    cipher = AES.new(key, AES.MODE_CFB, iv)
+    cipher = AES.new(pad(key), AES.MODE_CFB, iv)
     # If user has entered non ascii password (Python2)
     # we have to encode it first
-    plaintext = plaintext.encode('utf-8')
+    if hasattr(str, 'decode'):
+        plaintext = plaintext.encode('utf-8')
     encrypted = base64.b64encode(iv + cipher.encrypt(plaintext))
 
     return encrypted
@@ -51,8 +51,7 @@ def decrypt(ciphertext, key):
 
     ciphertext = base64.b64decode(ciphertext)
     iv = ciphertext[:AES.block_size]
-    key = pad(key).encode('utf-8')
-    cipher = AES.new(key, AES.MODE_CFB, iv)
+    cipher = AES.new(pad(key), AES.MODE_CFB, iv)
     decrypted = cipher.decrypt(ciphertext[AES.block_size:])
 
     return decrypted
