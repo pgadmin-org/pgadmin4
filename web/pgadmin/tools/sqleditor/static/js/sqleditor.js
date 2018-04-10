@@ -1727,6 +1727,9 @@ define('tools.querytool', [
         var self = this;
         this.container = container;
         this.state = {};
+        // Disable animation first
+        modifyAnimation.modifyAlertifyAnimation();
+
         if (!alertify.dlgGetServerPass) {
           alertify.dialog('dlgGetServerPass', function factory() {
             return {
@@ -3833,8 +3836,6 @@ define('tools.querytool', [
   pgAdmin.SqlEditor = {
     // This function is used to create and return the object of grid controller.
     create: function(container) {
-      var browser = (!_.isNull(window.opener)) ? window.opener.pgAdmin.Browser:window.parent.pgAdmin.Browser;
-      modifyAnimation.modify_alertify_animation(browser);
       return new SqlEditorController(container);
     },
     jquery: $,

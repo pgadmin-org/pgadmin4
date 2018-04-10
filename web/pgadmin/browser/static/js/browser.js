@@ -688,8 +688,8 @@ define('pgadmin.browser', [
         success: function(res) {
           self.preferences_cache = res;
           pgBrowser.keyboardNavigation.init();
-          modifyAnimation.modify_acitree_animation(self);
-          modifyAnimation.modify_alertify_animation(self);
+          modifyAnimation.modifyAcitreeAnimation(self);
+          modifyAnimation.modifyAlertifyAnimation(self);
         },
         error: function(xhr) {
           try {

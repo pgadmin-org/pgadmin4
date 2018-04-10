@@ -10,13 +10,24 @@
 import $ from 'jquery';
 import _ from 'underscore';
 
-function modify_acitree_animation(pgBrowser, tree) {
+function getBrowserInstance() {
+  if (!_.isUndefined(window.opener) && !_.isNull(window.opener)) {
+    return window.opener.pgAdmin.Browser;
+  } else {
+    return window.parent.pgAdmin.Browser;
+  }
+}
+
+function modifyAcitreeAnimation(pgBrowser, tree) {
+  let enableAcitreeAnimation = pgBrowser.get_preference(
+    'browser', 'enable_acitree_animation'
+  ).value;
+
   if (_.isUndefined(tree)) {
     tree = pgBrowser.tree;
   }
-  var enable_acitree_animation = pgBrowser.get_preference('browser',
-    'enable_acitree_animation').value;
-  if(enable_acitree_animation == true) {
+
+  if(enableAcitreeAnimation) {
     tree.options({
       animateRoot: true,
       unanimated: false,
@@ -35,23 +46,33 @@ function modify_acitree_animation(pgBrowser, tree) {
   }
 }
 
-function modify_alertify_animation(pgBrowser) {
-  var enable_alertify_animation = pgBrowser.get_preference('browser',
-    'enable_alertify_animation').value;
-  if(enable_alertify_animation == true) {
-    $(document).find('link#alertify-no-animation').attr('disabled', 'disabled');
-    _.each(document.getElementsByTagName('iframe'), function(frame){
-      $(frame.contentDocument).find('link#alertify-no-animation').attr('disabled', 'disabled');
+function modifyAlertifyAnimation(pgBrowser) {
+  if(_.isUndefined(pgBrowser) || _.isNull(pgBrowser)) {
+    pgBrowser = getBrowserInstance();
+  }
+
+  let enableAcitreeAnimation = pgBrowser.get_preference(
+    'browser', 'enable_alertify_animation'
+  ).value;
+
+  if(enableAcitreeAnimation) {
+    $(document).find('link#alertify-no-animation')
+               .attr('disabled', 'disabled');
+    _.each(document.getElementsByTagName('iframe'), function(frame) {
+      $(frame.contentDocument).find('link#alertify-no-animation')
+                              .attr('disabled', 'disabled');
     });
   } else {
-    $(document).find('link#alertify-no-animation').removeAttr('disabled', 'disabled');
-    _.each(document.getElementsByTagName('iframe'), function(frame){
-      $(frame.contentDocument).find('link#alertify-no-animation').removeAttr('disabled', 'disabled');
+    $(document).find('link#alertify-no-animation')
+               .removeAttr('disabled', 'disabled');
+    _.each(document.getElementsByTagName('iframe'), function(frame) {
+      $(frame.contentDocument).find('link#alertify-no-animation')
+                              .removeAttr('disabled', 'disabled');
     });
   }
 }
 
 module.exports = {
-  modify_acitree_animation : modify_acitree_animation,
-  modify_alertify_animation: modify_alertify_animation,
+  modifyAcitreeAnimation : modifyAcitreeAnimation,
+  modifyAlertifyAnimation: modifyAlertifyAnimation,
 };
