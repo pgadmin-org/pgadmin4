@@ -53,7 +53,7 @@ runtime:
 	cd runtime && qmake CONFIG+=release && make
 
 # Include all clean sub-targets in clean
-clean: clean-appbundle clean-docker clean-dist clean-docs clean-pip clean-src clean-runtime
+clean: clean-appbundle clean-docker clean-dist clean-docs clean-node clean-pip clean-src clean-runtime
 
 clean-runtime:
 	cd runtime && make clean
@@ -69,6 +69,9 @@ clean-dist:
 
 clean-docs:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx clean
+
+clean-node:
+	rm -rf web/node-modules/
 
 clean-pip:
 	rm -rf pip-build/
