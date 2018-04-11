@@ -40,3 +40,4 @@ web/regression/test_config.json
 node_modules/
 web/pgAdmin/static/js/generated
 web/pgadmin/static/js/generated
+web/yarn-error.log
