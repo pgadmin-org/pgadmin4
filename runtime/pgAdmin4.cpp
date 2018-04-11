@@ -72,8 +72,7 @@ int main(int argc, char * argv[])
     unsigned long exeHash = sdbm((unsigned char *)argv[0]);
 
     // Create the address file, that will be used to store the appserver URL for this instance
-    addrFileName = homeDir + QString("/.%1.%2.addr").arg(PGA_APP_NAME).arg(exeHash);
-    addrFileName.remove(" ");
+    addrFileName = homeDir + (QString("/.%1.%2.addr").arg(PGA_APP_NAME).arg(exeHash)).remove(" ");
     QFile addrFile(addrFileName);
 
     // Create a system-wide semaphore keyed by app name, exe hash and the username
@@ -204,8 +203,7 @@ int main(int argc, char * argv[])
     key = key.mid(1, key.length() - 2);
 
     // Generate the filename for the log
-    logFileName = homeDir + QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash);
-    logFileName.remove(" ");
+    logFileName = homeDir + (QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash)).remove(" ");
 
     // Start the tray service
     TrayIcon *trayicon = new TrayIcon(logFileName);
