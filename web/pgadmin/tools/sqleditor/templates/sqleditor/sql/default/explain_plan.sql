@@ -1,17 +1,10 @@
-EXPLAIN (
-{% if format %}
+EXPLAIN ({% if format -%}
   FORMAT {{ format.upper() }},
-{% endif %}
-{% if analyze is defined %}
-  ANALYZE {{ analyze }},
-{% endif %}
-{% if verbose is defined %}
+{%- endif %}{% if analyze is defined -%}
+  ANALYZE {{ analyze }},{%- endif %}{% if verbose is defined -%}
   VERBOSE {{ verbose }},
-{% endif %}
-{% if costs is defined %}
+{%- endif %}{% if costs is defined -%}
   COSTS {{ costs }},
-{% endif %}
-{% if buffers is defined %}
+{%- endif %}{% if buffers is defined -%}
   BUFFERS {{ buffers }}
-{% endif %}
-) {{ sql }}
+{%- endif %}) {{ sql }}

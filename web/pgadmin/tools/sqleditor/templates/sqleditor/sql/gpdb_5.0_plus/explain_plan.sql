@@ -1,5 +1,1 @@
-EXPLAIN
-{% if analyze %}
- ANALYZE
-{% endif %}
- {{ sql }}
+EXPLAIN {% if analyze %}ANALYZE {% endif %}{{ sql }}

@@ -35,8 +35,8 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                 ),
                 sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(  FORMAT XML,  ANALYZE True,  '
-                                      'VERBOSE True,  COSTS False,  '
+                                      '(FORMAT XML,ANALYZE True,'
+                                      'VERBOSE True,COSTS False,'
                                       'BUFFERS True) SELECT * FROM places'
             )
         ),
@@ -54,7 +54,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                 ),
                 sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(  FORMAT JSON,  BUFFERS True) '
+                                      '(FORMAT JSON,BUFFERS True) '
                                       'SELECT * FROM places'
             )
         ),
@@ -73,7 +73,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                 ),
                 sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(  FORMAT JSON,  TIMING False,  '
+                                      '(FORMAT JSON,TIMING False,'
                                       'BUFFERS True) SELECT * FROM places'
             )
         ),
@@ -93,8 +93,8 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                 ),
                 sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(  FORMAT YAML,  TIMING False,  '
-                                      'SUMMARY True,  BUFFERS True) '
+                                      '(FORMAT YAML,TIMING False,'
+                                      'SUMMARY True,BUFFERS True) '
                                       'SELECT * FROM places'
             )
         ),
