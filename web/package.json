@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "acitree": "git+https://github.com/imsurinder90/jquery-aciTree.git#rc.7",
-    "alertifyjs": "^1.7.1",
+    "alertifyjs": "1.7.1",
     "axios": "^0.18.0",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
     "babel-polyfill": "^6.23.0",
