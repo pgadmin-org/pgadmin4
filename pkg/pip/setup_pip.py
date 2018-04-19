@@ -103,7 +103,7 @@ setup(
         ":python_version>='2.7'": [
             "Flask-HTMLmin",
             "psycopg2>=2.7.3.2",
-            "pycryptodome",
+            "pycrypto==2.6.1",
             "python-dateutil>=2.7.1",
             "SQLAlchemy>=1.2.5",
             "Flask-Security>=3.0.0"
