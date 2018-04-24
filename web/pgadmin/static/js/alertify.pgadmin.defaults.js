@@ -21,9 +21,10 @@ define([
       setup: function() {
         return {
           options: {
-            //disable both padding and overflow control.
+            // Disable both padding and overflow control.
             padding: !1,
             overflow: !1,
+            closable: true,
           },
         };
       },
@@ -127,13 +128,15 @@ define([
             return;
           }
         } catch (e) {
-          alertify.alert().show().set('message', e.message).set('title', 'Error');
+          alertify.alert().show().set('message', e.message).set(
+            'title', 'Error'
+          ).set('closable', true);
         }
       }
     }
     alertify.alert().show().set(
       'message', msg.replace(new RegExp(/\r?\n/, 'g'), '<br />')
-    ).set('title', promptmsg);
+    ).set('title', promptmsg).set('closable', true);
   };
 
   var alertifyDialogResized = function(stop) {

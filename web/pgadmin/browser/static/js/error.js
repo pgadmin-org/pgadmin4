@@ -37,7 +37,7 @@ function(gettext, _, alertify, pgAdmin) {
       alertify.alert(
         title,
         text
-      );
+      ).set('closable', true);
     },
   });
 

@@ -286,10 +286,12 @@ define('pgadmin.datagrid', [
                 return {
                   buttons:[{
                     text: gettext('OK'),
+                    key: 13,
                     className: 'btn btn-primary',
                   },
                   {
                     text: gettext('Cancel'),
+                    key: 27,
                     className: 'btn btn-danger',
                   },
                   ],

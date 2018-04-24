@@ -1749,6 +1749,7 @@ define('tools.querytool', [
                     },
                     {
                       text: gettext('Cancel'),
+                      key: 27,
                       className: 'btn btn-danger',
                     },
                   ],

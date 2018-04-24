@@ -420,10 +420,10 @@ define('pgadmin.node.server', [
                   return {
                     buttons: [{
                       text: gettext('Ok'), key: 13, className: 'btn btn-primary',
-                      attrs:{name:'submit'},
+                      attrs: {name:'submit'},
                     },{
-                      text: gettext('Cancel'), key: 27, className: 'btn btn-danger',
-                      attrs:{name:'cancel'},
+                      text: gettext('Cancel'), key: 27,
+                      className: 'btn btn-danger', attrs: {name: 'cancel'},
                     }],
                     // Set options for dialog
                     options: {
@@ -1046,6 +1046,7 @@ define('pgadmin.node.server', [
                   text: gettext('OK'), key: 13, className: 'btn btn-primary',
                 },{
                   text: gettext('Cancel'), className: 'btn btn-danger',
+                  key: 27,
                 }],
                 focus: {element: '#password', select: true},
                 options: {
