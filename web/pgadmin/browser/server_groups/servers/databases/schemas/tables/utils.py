@@ -22,6 +22,7 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils import IS_PY2
+from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 
@@ -106,38 +107,36 @@ class BaseTableView(PGChildNodeView):
             ver = self.manager.version
             server_type = self.manager.server_type
             # Set the template path for the SQL scripts
-            self.table_template_path = 'table/sql/' + (
-                '#{0}#{1}#'.format(server_type, ver)
-                if server_type == 'gpdb' else
-                '#{0}#'.format(ver)
-            )
-            self.data_type_template_path = 'datatype/sql/' + (
-                '#{0}#{1}#'.format(server_type, ver) if
-                server_type == 'gpdb' else'#{0}#'.format(ver)
-            )
+            self.table_template_path = compile_template_path('table/sql',
+                                                             server_type, ver)
+            self.data_type_template_path = compile_template_path(
+                'datatype/sql',
+                server_type, ver)
             self.partition_template_path = \
                 'partition/sql/{0}/#{0}#{1}#'.format(server_type, ver)
 
             # Template for Column ,check constraint and exclusion
             # constraint node
             self.column_template_path = 'column/sql/#{0}#'.format(ver)
-            self.check_constraint_template_path = \
-                'check_constraint/sql/#{0}#'.format(ver)
-            self.exclusion_constraint_template_path = \
-                'exclusion_constraint/sql/#{0}#'.format(ver)
+            self.check_constraint_template_path = compile_template_path(
+                'check_constraint/sql', server_type, ver)
+            self.exclusion_constraint_template_path = compile_template_path(
+                'exclusion_constraint/sql', server_type, ver)
 
             # Template for PK & Unique constraint node
             self.index_constraint_template_path = 'index_constraint/sql'
 
             # Template for foreign key constraint node
-            self.foreign_key_template_path = \
-                'foreign_key/sql/#{0}#'.format(ver)
+            self.foreign_key_template_path = compile_template_path(
+                'foreign_key/sql', server_type, ver)
 
             # Template for index node
-            self.index_template_path = 'index/sql/#{0}#'.format(ver)
+            self.index_template_path = compile_template_path(
+                'index/sql', server_type, ver)
 
             # Template for trigger node
-            self.trigger_template_path = 'trigger/sql/#{0}#'.format(ver)
+            self.trigger_template_path = compile_template_path(
+                'trigger/sql', server_type, ver)
 
             # Template for rules node
             self.rules_template_path = 'rules/sql'

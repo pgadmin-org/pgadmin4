@@ -10,11 +10,7 @@ from pgadmin.utils.compile_template_name import compile_template_name
 from pgadmin.utils.route import BaseTestGenerator
 
 
-class StartRunningQueryTest(BaseTestGenerator):
-    """
-    Check that the apply_explain_plan_weapper_if_needed method works as
-    intended
-    """
+class TestCompileTemplateName(BaseTestGenerator):
     scenarios = [
         (
             'When server is Postgres and version is 10, it returns the path '

@@ -6,7 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import os
 
 
 def compile_template_name(
