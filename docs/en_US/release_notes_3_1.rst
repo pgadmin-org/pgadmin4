@@ -18,3 +18,4 @@ Bug fixes
 | `Bug #3257 <https://redmine.postgresql.org/issues/3257>`_ - Catch errors when trying to EXPLAIN an invalid query
 | `Bug #3290 <https://redmine.postgresql.org/issues/3290>`_ - Close button added to the alertify message box, which pops up in case of backend error
 | `Bug #3306 <https://redmine.postgresql.org/issues/3306>`_ - Fixed display SQL of table with index for GreenPlum database
+| `Bug #3308 <https://redmine.postgresql.org/issues/3308>`_ - Fixed issue where icon for Partitioned tables was the same as Non Partitioned tables for GreenPlum database

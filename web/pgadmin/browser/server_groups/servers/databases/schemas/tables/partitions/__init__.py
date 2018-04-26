@@ -308,7 +308,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
                 row['oid'],
                 tid,
                 row['name'],
-                icon="icon-partition",
+                icon=self.get_icon_css_class({}),
                 tigger_count=row['triggercount'],
                 has_enable_triggers=row['has_enable_triggers'],
                 is_partitioned=row['is_partitioned'],

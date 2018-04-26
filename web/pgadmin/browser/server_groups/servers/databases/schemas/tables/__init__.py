@@ -303,21 +303,17 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         if len(rset['rows']) == 0:
                 return gone(gettext("Could not find the table."))
 
-        if 'is_partitioned' in rset['rows'][0] and \
-                rset['rows'][0]['is_partitioned']:
-            icon = "icon-partition"
-        else:
-            icon = "icon-table"
+        table_information = rset['rows'][0]
+        icon = self.get_icon_css_class(table_information)
 
         res = self.blueprint.generate_browser_node(
-            rset['rows'][0]['oid'],
+            table_information['oid'],
             scid,
-            rset['rows'][0]['name'],
+            table_information['name'],
             icon=icon,
-            tigger_count=rset['rows'][0]['triggercount'],
-            has_enable_triggers=rset['rows'][0]['has_enable_triggers'],
-            is_partitioned=rset['rows'][0]['is_partitioned'] if
-            'is_partitioned' in rset['rows'][0] else False
+            tigger_count=table_information['triggercount'],
+            has_enable_triggers=table_information['has_enable_triggers'],
+            is_partitioned=self.is_table_partitioned(table_information)
         )
 
         return make_json_response(
@@ -350,10 +346,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
-            if 'is_partitioned' in row and row['is_partitioned']:
-                icon = "icon-partition"
-            else:
-                icon = "icon-table"
+            icon = self.get_icon_css_class(row)
 
             res.append(
                 self.blueprint.generate_browser_node(
@@ -363,8 +356,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
                     icon=icon,
                     tigger_count=row['triggercount'],
                     has_enable_triggers=row['has_enable_triggers'],
-                    is_partitioned=row['is_partitioned'] if
-                    'is_partitioned' in row else False,
+                    is_partitioned=self.is_table_partitioned(row),
                     rows_cnt=0
                 ))
 
@@ -968,13 +960,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
 
         try:
             partitions_sql = ''
-            partitioned = False
-            if 'is_partitioned' in data and data['is_partitioned']:
+            if self.is_table_partitioned(data):
                 data['relkind'] = 'p'
                 # create partition scheme
                 data['partition_scheme'] = self.get_partition_scheme(data)
                 partitions_sql = self.get_partitions_sql(data)
-                partitioned = True
 
             SQL = render_template(
                 "/".join([self.table_template_path, 'create.sql']),
@@ -1021,8 +1011,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
                     tid,
                     scid,
                     data['name'],
-                    icon="icon-partition" if partitioned else "icon-table",
-                    is_partitioned=partitioned
+                    icon=self.get_icon_css_class(data),
+                    is_partitioned=self.is_table_partitioned(data)
                 )
             )
         except Exception as e:

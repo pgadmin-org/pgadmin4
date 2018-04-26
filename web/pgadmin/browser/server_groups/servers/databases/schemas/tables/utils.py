@@ -14,6 +14,9 @@ from functools import wraps
 import simplejson as json
 from flask import render_template, jsonify, request
 from flask_babelex import gettext
+
+from pgadmin.browser.server_groups.servers.databases.schemas\
+    .tables.base_partition_table import BasePartitionTable
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
@@ -27,7 +30,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 
 
-class BaseTableView(PGChildNodeView):
+class BaseTableView(PGChildNodeView, BasePartitionTable):
     """
     This class is base class for tables and partitioned tables.
 
@@ -2067,13 +2070,7 @@ class BaseTableView(PGChildNodeView):
                     partitions_oid['created'] = created
                     partitions_oid['attached'] = attached
 
-            if self.node_type == 'partition':
-                icon = "icon-partition"
-            elif 'is_partitioned' in res['rows'][0] and \
-                    res['rows'][0]['is_partitioned']:
-                icon = "icon-partition"
-            else:
-                icon = "icon-table"
+            icon = self.get_icon_css_class(res['rows'][0])
 
             if 'relkind' in res['rows'][0] and \
                     res['rows'][0]['relkind'] == 'p':
