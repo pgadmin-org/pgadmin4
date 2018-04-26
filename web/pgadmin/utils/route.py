@@ -88,7 +88,8 @@ class BaseTestGenerator(unittest.TestCase):
         if hasattr(self, 'skip_on_database'):
             if 'data' in server_con and 'type' in server_con['data']:
                 if server_con['data']['type'] in self.skip_on_database:
-                    self.skipTest('cannot run in: %s' % self.server['db_type'])
+                    self.skipTest('cannot run in: %s' %
+                                  server_con['data']['type'])
 
     @classmethod
     def setTestServer(cls, server):
