@@ -121,7 +121,8 @@ void TrayIcon::createTrayIcon()
 
     if (!m_trayIcon)
         m_trayIcon = new QSystemTrayIcon(this);
-        m_trayIcon->setContextMenu(m_trayIconMenu);
+
+    m_trayIcon->setContextMenu(m_trayIconMenu);
 
     // Setup the icon itself. For convenience, we'll also use it for the dialogue.
 #ifdef Q_OS_MAC
