@@ -40,7 +40,7 @@ check-pep8:
 check-python:
 	cd web && python regression/runtests.py --exclude feature_tests
 
-check-feature: install-node bundle
+check-featfind re: install-node bundle
 	cd web && python regression/runtests.py --pkg feature_tests
 
 check-js: install-node linter
@@ -54,6 +54,10 @@ runtime:
 
 # Include all clean sub-targets in clean
 clean: clean-appbundle clean-docker clean-dist clean-docs clean-node clean-pip clean-src clean-runtime
+	rm -rf web/pgadmin/static/js/generated/*
+	rm -rf web/pgadmin/static/js/generated/.cache
+	rm -rf web/pgadmin/static/css/generated/*
+	rm -rf web/pgadmin/static/css/generated/.cache
 
 clean-runtime:
 	cd runtime && make clean
