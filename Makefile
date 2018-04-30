@@ -40,7 +40,7 @@ check-pep8:
 check-python:
 	cd web && python regression/runtests.py --exclude feature_tests
 
-check-featfind re: install-node bundle
+check-feature: install-node bundle
 	cd web && python regression/runtests.py --pkg feature_tests
 
 check-js: install-node linter
