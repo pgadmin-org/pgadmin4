@@ -62,7 +62,7 @@ describe('Server#ModelValidation', () => {
           expect(model.errorModel.set).toHaveBeenCalledWith({
             host: 'Either Host name, Address or Service must be specified.',
             hostaddr: 'Either Host name, Address or Service must be specified.',
-            db: 'Maintenance database must be specified.'
+            db: 'Maintenance database must be specified.',
           });
         });
       });
@@ -81,7 +81,7 @@ describe('Server#ModelValidation', () => {
             hostaddr: 'Either Host name, Address or Service must be specified.',
             db: 'Maintenance database must be specified.',
             username: 'Username must be specified.',
-            port: 'Port must be specified.'
+            port: 'Port must be specified.',
           });
         });
       });
@@ -96,7 +96,7 @@ describe('Server#ModelValidation', () => {
             hostaddr: 'Host address must be valid IPv4 or IPv6 address.',
             db: 'Maintenance database must be specified.',
             username: 'Username must be specified.',
-            port: 'Port must be specified.'
+            port: 'Port must be specified.',
           });
         });
       });
@@ -109,7 +109,7 @@ describe('Server#ModelValidation', () => {
           expect(model.errorModel.set).toHaveBeenCalledWith({
             name: 'Name must be specified.',
             username: 'Username must be specified.',
-            port: 'Port must be specified.'
+            port: 'Port must be specified.',
           });
         });
       });

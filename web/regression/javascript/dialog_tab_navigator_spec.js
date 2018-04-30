@@ -10,11 +10,11 @@ import dialogTabNavigator from 'sources/dialog_tab_navigator';
 import $ from 'jquery';
 import 'bootstrap';
 
-  describe('dialogTabNavigator', function () {
-    let dialog, tabNavigator, backward_shortcut, forward_shortcut;
+describe('dialogTabNavigator', function () {
+  let dialog, tabNavigator, backward_shortcut, forward_shortcut;
 
-    beforeEach(() => {
-      let dialogHtml =$('<div tabindex="1" class="backform-tab" role="tabpanel">'+
+  beforeEach(() => {
+    let dialogHtml =$('<div tabindex="1" class="backform-tab" role="tabpanel">'+
         '   <ul class="nav nav-tabs" role="tablist">'+
         '      <li role="presentation" class="active">'+
         '         <a data-toggle="tab" tabindex="-1" data-tab-index="1" href="#1" aria-controls="1"> General</a>'+
@@ -52,64 +52,64 @@ import 'bootstrap';
         '   </ul>'+
         '</div>');
 
-        dialog = {};
+    dialog = {};
 
-        dialog.el = dialogHtml[0];
-        dialog.$el = dialogHtml;
+    dialog.el = dialogHtml[0];
+    dialog.$el = dialogHtml;
 
-        backward_shortcut = {
-          'alt': false,
-          'shift': true,
-          'control': true,
-          'key': {'key_code': 91, 'char': '['}
-        };
+    backward_shortcut = {
+      'alt': false,
+      'shift': true,
+      'control': true,
+      'key': {'key_code': 91, 'char': '['},
+    };
 
-        forward_shortcut = {
-          'alt': false,
-          'shift': true,
-          'control': true,
-          'key': {'key_code': 93, 'char': ']'}
-        };
+    forward_shortcut = {
+      'alt': false,
+      'shift': true,
+      'control': true,
+      'key': {'key_code': 93, 'char': ']'},
+    };
 
-        tabNavigator = new dialogTabNavigator.dialogTabNavigator(
+    tabNavigator = new dialogTabNavigator.dialogTabNavigator(
           dialog, backward_shortcut, forward_shortcut);
+  });
+
+  describe('navigate', function () {
+
+    beforeEach(() => {
+      spyOn(tabNavigator, 'navigateBackward').and.callThrough();
+
+      spyOn(tabNavigator, 'navigateForward').and.callThrough();
     });
 
-    describe('navigate', function () {
+    it('navigate backward', function () {
+      tabNavigator.onKeyboardEvent({}, 'shift+ctrl+[');
 
-      beforeEach(() => {
-        spyOn(tabNavigator, 'navigateBackward').and.callThrough();
+      expect(tabNavigator.navigateBackward).toHaveBeenCalled();
 
-        spyOn(tabNavigator, 'navigateForward').and.callThrough();
-      });
+      expect(tabNavigator.navigateForward).not.toHaveBeenCalled();
 
-      it('navigate backward', function () {
-          tabNavigator.onKeyboardEvent({}, 'shift+ctrl+[');
+    });
 
-          expect(tabNavigator.navigateBackward).toHaveBeenCalled();
+    it('navigate forward', function () {
+      tabNavigator.onKeyboardEvent({}, 'shift+ctrl+]');
 
-          expect(tabNavigator.navigateForward).not.toHaveBeenCalled();
+      expect(tabNavigator.navigateForward).toHaveBeenCalled();
 
-      });
+      expect(tabNavigator.navigateBackward).not.toHaveBeenCalled();
 
-      it('navigate forward', function () {
-          tabNavigator.onKeyboardEvent({}, 'shift+ctrl+]');
+    });
 
-          expect(tabNavigator.navigateForward).toHaveBeenCalled();
+    it('should not navigate', function () {
+      tabNavigator.onKeyboardEvent({}, 'shift+ctrl+a');
 
-          expect(tabNavigator.navigateBackward).not.toHaveBeenCalled();
+      expect(tabNavigator.navigateForward).not.toHaveBeenCalled();
 
-      });
-
-      it('should not navigate', function () {
-          tabNavigator.onKeyboardEvent({}, 'shift+ctrl+a');
-
-          expect(tabNavigator.navigateForward).not.toHaveBeenCalled();
-
-          expect(tabNavigator.navigateBackward).not.toHaveBeenCalled();
-
-      });
+      expect(tabNavigator.navigateBackward).not.toHaveBeenCalled();
 
     });
 
   });
+
+});

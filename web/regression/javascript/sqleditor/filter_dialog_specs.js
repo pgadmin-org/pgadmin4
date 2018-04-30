@@ -7,18 +7,17 @@
 //
 //////////////////////////////////////////////////////////////////////////
 import filterDialog from 'sources/sqleditor/filter_dialog';
-import filterDialogModel from 'sources/sqleditor/filter_dialog_model';
+// import filterDialogModel from 'sources/sqleditor/filter_dialog_model';
 
 describe('filterDialog', () => {
-  let sqlEditorController;
-  sqlEditorController = jasmine.createSpy('sqlEditorController')
+  jasmine.createSpy('sqlEditorController');
   describe('filterDialog', () => {
     describe('when using filter dialog', () => {
       beforeEach(() => {
         spyOn(filterDialog, 'dialog');
       });
 
-      it("it should be defined as function", function() {
+      it('it should be defined as function', function() {
         expect(filterDialog.dialog).toBeDefined();
       });
 

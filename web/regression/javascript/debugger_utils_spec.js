@@ -16,12 +16,12 @@ describe('debuggerUtils', function () {
   let tab_key = {
     which: 9,
     keyCode: 9,
-  }
+  };
 
   let enter_key = {
     which: 13,
     keyCode: 13,
-  }
+  };
 
   describe('debuggerUtils', function () {
     it('returns undefined if no command is passed', function () {
@@ -31,7 +31,7 @@ describe('debuggerUtils', function () {
 
   describe('debuggerUtils', function () {
     it('should call focus on editor', function () {
-      setFocusToDebuggerEditor(editor, enter_key)
+      setFocusToDebuggerEditor(editor, enter_key);
       expect(editor.focus).toHaveBeenCalled();
     });
   });

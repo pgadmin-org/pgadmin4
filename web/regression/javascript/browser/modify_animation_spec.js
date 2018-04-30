@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
-import $ from 'jquery'
-import modifyAnimation from 'sources/modify_animation'
+import $ from 'jquery';
+import modifyAnimation from 'sources/modify_animation';
 
 
 describe('modifyAnimation', function () {
@@ -16,12 +16,12 @@ describe('modifyAnimation', function () {
   let dummyElement;
 
   beforeEach(() => {
-    pgBrowser = jasmine.createSpyObj('pgBrowser', ['get_preference', 'tree'])
+    pgBrowser = jasmine.createSpyObj('pgBrowser', ['get_preference', 'tree']);
     pgBrowser.tree = jasmine.createSpyObj('tree', ['options']);
     pgBrowser.tree.options.and.returnValue({
-          show: {},
-          hide: {},
-          view: {},
+      show: {},
+      hide: {},
+      view: {},
     });
     dummyElement = document.createElement('link');
     spyOn($.fn, 'find').and.returnValue($(dummyElement));

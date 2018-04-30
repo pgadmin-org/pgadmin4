@@ -9,7 +9,7 @@
 
 import {
   httpResponseRequiresNewTransaction,
-  handleQueryToolAjaxError
+  handleQueryToolAjaxError,
 } from '../../../pgadmin/static/js/sqleditor/query_tool_http_error_handler';
 
 describe('#httpResponseRequiresNewTransaction', () => {
@@ -71,29 +71,29 @@ describe('#httpResponseRequiresNewTransaction', () => {
 describe('#handleQueryToolAjaxError', () => {
   let sqlEditorHandler,
     exceptionSpy, stateToSave,
-    stateParameters, checkTransaction, UserManagementMock,
+    stateParameters, checkTransaction,
     pgBrowserMock;
 
-    beforeEach(() => {
-      stateToSave = 'testState';
-      stateParameters = [];
-      checkTransaction = false;
-      sqlEditorHandler = jasmine.createSpyObj(
+  beforeEach(() => {
+    stateToSave = 'testState';
+    stateParameters = [];
+    checkTransaction = false;
+    sqlEditorHandler = jasmine.createSpyObj(
         'handler', ['initTransaction', 'saveState', 'handle_connection_lost']
       );
-      exceptionSpy = {
-        readyState: 0,
-        status: 404,
-        data: {
-          info: 'CONNECTION_LOST',
-        },
-      };
-      pgBrowserMock = {
-        'Browser': {
-          'UserManagement': jasmine.createSpyObj('UserManagement', ['isPgaLoginRequired', 'pgaLogin'])
-        }
-      };
-    });
+    exceptionSpy = {
+      readyState: 0,
+      status: 404,
+      data: {
+        info: 'CONNECTION_LOST',
+      },
+    };
+    pgBrowserMock = {
+      'Browser': {
+        'UserManagement': jasmine.createSpyObj('UserManagement', ['isPgaLoginRequired', 'pgaLogin']),
+      },
+    };
+  });
 
   describe('when ready state is 0', () => {
     it('should return connection', () => {
@@ -149,7 +149,7 @@ describe('#handleQueryToolAjaxError', () => {
       exceptionSpy.readyState = 1;
       exceptionSpy.status = 503;
       exceptionSpy.responseJSON = {
-        'info': 'CONNECTION_LOST'
+        'info': 'CONNECTION_LOST',
       };
       pgBrowserMock.Browser.UserManagement.isPgaLoginRequired.and.returnValue(false);
       checkTransaction = false;

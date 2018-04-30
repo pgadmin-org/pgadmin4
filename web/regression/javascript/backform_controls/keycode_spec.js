@@ -18,8 +18,8 @@ define([
         'key': {
           'key_code': 65,
           'char': 'A',
-          }
-        });
+        },
+      });
 
       field = new Backform.Field({
         id: 'key',

@@ -35,48 +35,48 @@ describe('the keyboard shortcuts', () => {
         shift: false,
         control: false,
         key: {
-          key_code: F5_KEY
-        }
+          key_code: F5_KEY,
+        },
       },
       explain: {
         alt: false,
         shift: false,
         control: false,
         key: {
-          key_code: F7_KEY
-        }
+          key_code: F7_KEY,
+        },
       },
       explain_analyze: {
         alt: false,
         shift: true,
         control: false,
         key: {
-          key_code: F7_KEY
-        }
+          key_code: F7_KEY,
+        },
       },
       download_csv: {
         alt: false,
         shift: false,
         control: false,
         key: {
-          key_code: F8_KEY
-        }
+          key_code: F8_KEY,
+        },
       },
       move_next: {
         alt: false,
         shift: false,
         control: false,
         key: {
-          key_code: null
-        }
+          key_code: null,
+        },
       },
       move_previous: {
         alt: false,
         shift: false,
         control: false,
         key: {
-          key_code: null
-        }
+          key_code: null,
+        },
       },
     };
 

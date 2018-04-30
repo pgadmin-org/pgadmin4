@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-import {nodeHasStatistics} from "../../../../pgadmin/static/js/misc/statistics/statistics";
+import {nodeHasStatistics} from '../../../../pgadmin/static/js/misc/statistics/statistics';
 
 describe('#nodeHasStatistics', () => {
   describe('when node hasStatistics is not a function', () => {

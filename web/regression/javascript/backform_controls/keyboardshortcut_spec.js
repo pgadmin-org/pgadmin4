@@ -12,16 +12,16 @@ define([
   'pgadmin.backform',
 ], function ($, Backbone, Backform) {
   describe('KeyboardshortcutControl', function () {
-    let field, innerFields, control, model, event;
+    let field, innerFields, control, model;
 
     beforeEach(() => {
 
       innerFields = [
         {'name': 'key', 'type': 'keyCode', 'label': 'Key'},
         {'name': 'alt_option', 'type': 'checkbox',
-         'label': 'Alt/Option'},
+          'label': 'Alt/Option'},
         {'name': 'control', 'type': 'checkbox',
-         'label': 'Ctrl'},
+          'label': 'Ctrl'},
         {'name': 'shift', 'type': 'checkbox', 'label': 'Shift'},
       ];
 
@@ -91,7 +91,7 @@ define([
             'key': {
               'key_code': 65,
               'char': 'A',
-            }
+            },
           })
         );
 
@@ -128,7 +128,7 @@ define([
 
         model.set(field.get('name'),
           $.extend(true, val, {
-            'control': false
+            'control': false,
           })
         );
 
@@ -165,7 +165,7 @@ define([
 
         model.set(field.get('name'),
           $.extend(true, val, {
-            'shift': true
+            'shift': true,
           })
         );
 
@@ -202,7 +202,7 @@ define([
 
         model.set(field.get('name'),
           $.extend(true, val, {
-            'alt_option': false
+            'alt_option': false,
           })
         );
 
@@ -387,14 +387,14 @@ define([
           // this should change
           expect(control.$el.find('input:checkbox[name="alt_option"]')[0].checked).toBeFalsy();
           expect(model.get(field.get('name'))).toEqual({
-          'control': true,
-          'shift': false,
-          'alt_option': false,
-          'key': {
-            'key_code': 73,
-            'char': 'I',
-          },
-        });
+            'control': true,
+            'shift': false,
+            'alt_option': false,
+            'key': {
+              'key_code': 73,
+              'char': 'I',
+            },
+          });
 
           // below three should not change.
           expect(control.$el.find('input:checkbox[name="shift"]')[0].checked).toBeFalsy();

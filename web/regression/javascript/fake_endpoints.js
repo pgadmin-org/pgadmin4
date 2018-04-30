@@ -11,6 +11,6 @@ define(function () {
   return {
     'static': '/base/pgadmin/static/<path:filename>',
     'sqleditor.poll': '/sqleditor/query_tool/poll/<path:trans_id>',
-    'sqleditor.query_tool_start': '/sqleditor/query_tool/start/<path:trans_id>'
+    'sqleditor.query_tool_start': '/sqleditor/query_tool/start/<path:trans_id>',
   };
 });
