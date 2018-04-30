@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 /* eslint no-console:off */
+/* eslint no-undef:off */
 'use strict';
 
 const debug = (process.argv.indexOf('--debug') > -1),
@@ -18,9 +19,9 @@ if (debug) {
   require('debug').enable('eslint:*,-eslint:code-path');
 }
 
-const fs = require('fs'),
-  path = require('path'),
-  read = (dir) =>
+const fs = require('fs');
+const path = require('path');
+const read = (dir) =>
   fs.readdirSync(dir)
   .reduce((files, file) =>
     fs.statSync(path.join(dir, file)).isDirectory() ?
@@ -38,6 +39,6 @@ process.exitCode = eslint_cli.execute(
   file_argv > -1 ? argv : argv.concat(
     read(path.join(__dirname, 'pgadmin'))
   ).concat(
-    'regression/javascript/**/*.jsx regression/javascript/**/*.js *.js'
+    ['regression/javascript/**/*.jsx','regression/javascript/**/*.js','*.js']
   )
 );
