@@ -21,6 +21,7 @@ import traceback
 import json
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 if sys.version_info < (2, 7):
     import unittest2 as unit_test
@@ -180,7 +181,13 @@ def get_test_modules(arguments):
         exclude_pkgs += arguments['exclude'].split(',')
 
     if 'feature_tests' not in exclude_pkgs:
-        driver = webdriver.Chrome()
+        options = Options()
+        if test_setup.config_data:
+            if 'headless_chrome' in test_setup.config_data:
+                if test_setup.config_data['headless_chrome']:
+                    options.add_argument("--headless")
+        options.add_argument("--window-size=1280x1024")
+        driver = webdriver.Chrome(chrome_options=options)
         app_starter = AppStarter(driver, config)
         app_starter.start_app()
 
