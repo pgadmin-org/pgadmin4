@@ -12,7 +12,7 @@ export function parseShortcutValue(obj) {
   if (obj.alt) { shortcut += 'alt+'; }
   if (obj.shift) { shortcut += 'shift+'; }
   if (obj.control) { shortcut += 'ctrl+'; }
-  shortcut += String.fromCharCode(obj.key.key_code).toLowerCase();
+  shortcut += obj.key.char.toLowerCase();
   return shortcut;
 }
 

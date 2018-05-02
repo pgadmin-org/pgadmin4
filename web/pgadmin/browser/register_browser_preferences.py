@@ -291,3 +291,18 @@ def register_browser_preferences(self):
         category_label=gettext('Keyboard shortcuts'),
         fields=fields
     )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'sub_menu_refresh',
+        gettext('Refresh browser tree'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': False,
+            'key': {'key_code': 116, 'char': 'F5'}
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=fields
+    )
