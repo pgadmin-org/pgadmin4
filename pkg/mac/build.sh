@@ -95,11 +95,11 @@ _create_python_virtualenv() {
     export DIR_PYMODULES_PATH=`dirname $PYMODULES_PATH`
     
     # Use $PYTHON here as we want the system path
-    export PYSYSLIB_PATH=`$PYTHON -c "import sys; print '%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor)"`
+    export PYSYSLIB_PATH=`$PYTHON -c "import sys; print('%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))"`
     
     # Symlink in the rest of the Python libs. This is required because the runtime
     # will clear PYTHONHOME for safety, which has the side-effect of preventing
-    # it from finding modules that are note explicitly included in the venv
+    # it from finding modules that are not explicitly included in the venv
     cd $DIR_PYMODULES_PATH
     
     # Files
@@ -130,7 +130,9 @@ _create_python_virtualenv() {
     fi
 
     # Fix the backports module which will have no __init__.py file
-    touch $BUILDROOT/$VIRTUALENV/lib/python/site-packages/backports/__init__.py
+    if [ "$PYTHON_VERSION" -lt "30" ]; then
+        touch $BUILDROOT/$VIRTUALENV/lib/python/site-packages/backports/__init__.py
+    fi
 }
 
 _build_runtime() {
