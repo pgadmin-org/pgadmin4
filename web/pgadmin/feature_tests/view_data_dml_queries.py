@@ -17,7 +17,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 try:
@@ -316,10 +315,20 @@ CREATE TABLE public.defaults_{0}
         result_row = self.page.find_by_xpath(xpath)
 
         # List of row values in an array
-        cells = [el.text for el in result_row.find_elements_by_tag_name('div')]
         for idx in range(1, len(config_data.keys()) + 1):
             # after copy & paste row, the first cell of row 1 and
             # row 2(being primary keys) won't match
             # see if cell values matched to actual value
+            element = result_row.find_element_by_class_name("r" + str(idx))
+            self.page.driver.execute_script("arguments[0].scrollIntoView()",
+                                            element)
+
             if (idx != 1 and not is_new_row) or is_new_row:
-                self.assertEquals(cells[idx], config_data[str(idx)][1])
+                self.assertEquals(element.text, config_data[str(idx)][1])
+
+        # scroll browser back to the left
+        # to reset position so other assertions can succeed
+        for idx in range(len(config_data.keys()), 1, -1):
+            element = result_row.find_element_by_class_name("r" + str(idx))
+            self.page.driver.execute_script("arguments[0].scrollIntoView()",
+                                            element)
