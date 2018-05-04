@@ -617,7 +617,8 @@ def utils():
             editor_insert_pair_brackets=insert_pair_brackets,
             editor_indent_with_tabs=editor_indent_with_tabs,
             app_name=config.APP_NAME,
-            pg_libpq_version=pg_libpq_version
+            pg_libpq_version=pg_libpq_version,
+            support_ssh_tunnel=config.SUPPORT_SSH_TUNNEL
         ),
         200, {'Content-Type': 'application/x-javascript'})
 

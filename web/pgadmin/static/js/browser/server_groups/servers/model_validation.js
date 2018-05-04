@@ -43,6 +43,15 @@ export class ModelValidation {
     this.checkForEmpty('username', gettext('Username must be specified.'));
     this.checkForEmpty('port', gettext('Port must be specified.'));
 
+    if (this.model.get('use_ssh_tunnel')) {
+      this.checkForEmpty('tunnel_host', gettext('SSH Tunnel host must be specified.'));
+      this.checkForEmpty('tunnel_port', gettext('SSH Tunnel port must be specified.'));
+      this.checkForEmpty('tunnel_username', gettext('SSH Tunnel username must be specified.'));
+      if (this.model.get('tunnel_authentication')) {
+        this.checkForEmpty('tunnel_identity_file', gettext('SSH Tunnel identity file must be specified.'));
+      }
+    }
+
     this.model.errorModel.set(this.err);
 
     if (_.size(this.err)) {

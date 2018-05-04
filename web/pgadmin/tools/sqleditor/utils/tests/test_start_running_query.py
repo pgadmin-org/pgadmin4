@@ -12,7 +12,7 @@ from flask import Response
 import simplejson as json
 
 from pgadmin.tools.sqleditor.utils.start_running_query import StartRunningQuery
-from pgadmin.utils.exception import ConnectionLost
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.route import BaseTestGenerator
 
 if sys.version_info < (3, 3):
@@ -168,6 +168,35 @@ class StartRunningQueryTest(BaseTestGenerator):
              get_driver_exception=False,
              get_connection_lost_exception=False,
              manager_connection_exception=ConnectionLost('1', '2', '3'),
+
+             is_connected_to_server=False,
+             connection_connect_return=None,
+             execute_async_return_value=None,
+             is_begin_required=False,
+             is_rollback_required=False,
+             apply_explain_plan_wrapper_if_needed_return_value='some sql',
+
+             expect_make_json_response_to_have_been_called_with=None,
+             expect_internal_server_error_called_with=None,
+             expected_logger_error=None,
+             expect_execute_void_called_with='some sql',
+         )),
+        ('When SSHTunnelConnectionLost happens while retrieving the '
+         'database connection, '
+         'it returns an error',
+         dict(
+             function_parameters=dict(
+                 sql=dict(sql='some sql', explain_plan=None),
+                 trans_id=123,
+                 http_session=dict(gridData={'123': dict(command_obj='')})
+             ),
+             pickle_load_return=MagicMock(
+                 conn_id=1,
+                 update_fetched_row_cnt=MagicMock()
+             ),
+             get_driver_exception=False,
+             get_connection_lost_exception=False,
+             manager_connection_exception=SSHTunnelConnectionLost('1.1.1.1'),
 
              is_connected_to_server=False,
              connection_connect_return=None,

@@ -378,3 +378,13 @@ try:
     from config_local import *
 except ImportError:
     pass
+
+##########################################################################
+# SSH Tunneling supports only for Python 2.7 and 3.4+
+##########################################################################
+SUPPORT_SSH_TUNNEL = False
+if (
+    (sys.version_info[0] == 2 and sys.version_info[1] >= 7) or
+    (sys.version_info[0] == 3 and sys.version_info[1] >= 4)
+):
+    SUPPORT_SSH_TUNNEL = True

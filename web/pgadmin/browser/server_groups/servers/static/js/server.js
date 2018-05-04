@@ -669,6 +669,13 @@ define('pgadmin.node.server', [
           sslrootcert: undefined,
           sslcrl: undefined,
           service: undefined,
+          use_ssh_tunnel: 0,
+          tunnel_host: undefined,
+          tunnel_port: 22,
+          tunnel_username: undefined,
+          tunnel_identity_file: undefined,
+          tunnel_password: undefined,
+          tunnel_authentication: 0,
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -695,8 +702,7 @@ define('pgadmin.node.server', [
         },{
           id: 'connected', label: gettext('Connected?'), type: 'switch',
           mode: ['properties'], group: gettext('Connection'), 'options': {
-            'onText':  gettext('True'), 'offText':  gettext('False'), 'onColor':  'success',
-            'offColor': 'danger', 'size': 'small',
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'small',
           },
         },{
           id: 'version', label: gettext('Version'), type: 'text', group: null,
@@ -729,17 +735,35 @@ define('pgadmin.node.server', [
         },{
           id: 'password', label: gettext('Password'), type: 'password',
           group: gettext('Connection'), control: 'input', mode: ['create'], deps: ['connect_now'],
-          visible: function(m) {
-            return m.get('connect_now') && m.isNew();
+          visible: function(model) {
+            return model.get('connect_now') && model.isNew();
           },
         },{
           id: 'save_password', controlLabel: gettext('Save password?'),
           type: 'checkbox', group: gettext('Connection'), mode: ['create'],
-          deps: ['connect_now'], visible: function(m) {
-            return m.get('connect_now') && m.isNew();
+          deps: ['connect_now', 'use_ssh_tunnel'], visible: function(model) {
+            return model.get('connect_now') && model.isNew();
           },
-          disabled: function() {
-            return !current_user.allow_save_password;
+          disabled: function(model) {
+            if (!current_user.allow_save_password)
+              return true;
+
+            if (model.get('use_ssh_tunnel')) {
+              if (model.get('save_password')) {
+                Alertify.alert(
+                  gettext('Stored Password'),
+                  gettext('Database passwords cannot be stored when using SSH tunnelling. The \'Save password\' option has been turned off.')
+                );
+              }
+
+              setTimeout(function() {
+                model.set('save_password', false);
+              }, 10);
+
+              return true;
+            }
+
+            return false;
           },
         },{
           id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
@@ -782,51 +806,114 @@ define('pgadmin.node.server', [
         },{
           id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
           mode: ['edit', 'create'], group: gettext('SSL'),
-          'options': { 'onText':   gettext('True'), 'offText':  gettext('False'),
-            'onColor':  'success', 'offColor': 'danger', 'size': 'small'},
+          'options': {'size': 'small'},
           deps: ['sslmode'], disabled: 'isSSL',
         },{
           id: 'sslcert', label: gettext('Client certificate'), type: 'text',
           group: gettext('SSL'), mode: ['properties'],
           deps: ['sslmode'],
-          visible: function(m) {
-            var sslcert = m.get('sslcert');
+          visible: function(model) {
+            var sslcert = model.get('sslcert');
             return !_.isUndefined(sslcert) && !_.isNull(sslcert);
           },
         },{
           id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
           group: gettext('SSL'), mode: ['properties'],
           deps: ['sslmode'],
-          visible: function(m) {
-            var sslkey = m.get('sslkey');
+          visible: function(model) {
+            var sslkey = model.get('sslkey');
             return !_.isUndefined(sslkey) && !_.isNull(sslkey);
           },
         },{
           id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
           group: gettext('SSL'), mode: ['properties'],
           deps: ['sslmode'],
-          visible: function(m) {
-            var sslrootcert = m.get('sslrootcert');
+          visible: function(model) {
+            var sslrootcert = model.get('sslrootcert');
             return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
           },
         },{
           id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
           group: gettext('SSL'), mode: ['properties'],
           deps: ['sslmode'],
-          visible: function(m) {
-            var sslcrl = m.get('sslcrl');
+          visible: function(model) {
+            var sslcrl = model.get('sslcrl');
             return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
           },
         },{
           id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
           mode: ['properties'], group: gettext('SSL'),
-          'options': { 'onText':  gettext('True'), 'offText':  gettext('False'),
-            'onColor':  'success', 'offColor': 'danger', 'size': 'small'},
-          deps: ['sslmode'], visible: function(m) {
-            var sslmode = m.get('sslmode');
+          'options': {'size': 'small'},
+          deps: ['sslmode'], visible: function(model) {
+            var sslmode = model.get('sslmode');
             return _.indexOf(SSL_MODES, sslmode) != -1;
           },
         },{
+          id: 'use_ssh_tunnel', label: gettext('Use SSH tunneling'), type: 'switch',
+          mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
+          'options': {'size': 'small'},
+          disabled: function(model) {
+            if (!pgAdmin.Browser.utils.support_ssh_tunnel) {
+              setTimeout(function() {
+                model.set('use_ssh_tunnel', 0);
+              }, 10);
+
+              return true;
+            }
+
+            return model.get('connected');
+          },
+        },{
+          id: 'tunnel_host', label: gettext('Tunnel host'), type: 'text', group: gettext('SSH Tunnel'),
+          mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
+          disabled: function(model) {
+            return !model.get('use_ssh_tunnel');
+          },
+        },{
+          id: 'tunnel_port', label: gettext('Tunnel port'), type: 'int', group: gettext('SSH Tunnel'),
+          mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'], max: 65535,
+          disabled: function(model) {
+            return !model.get('use_ssh_tunnel');
+          },
+        },{
+          id: 'tunnel_username', label: gettext('Username'), type: 'text', group: gettext('SSH Tunnel'),
+          mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
+          disabled: function(model) {
+            return !model.get('use_ssh_tunnel');
+          },
+        },{
+          id: 'tunnel_authentication', label: gettext('Authentication'), type: 'switch',
+          mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
+          'options': {'onText':  gettext('Identity file'),
+            'offText':  gettext('Password'), 'size': 'small'},
+          deps: ['use_ssh_tunnel'],
+          disabled: function(model) {
+            return !model.get('use_ssh_tunnel');
+          },
+        }, {
+          id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'text',
+          group: gettext('SSH Tunnel'), mode: ['edit', 'create'],
+          control: Backform.FileControl, dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['tunnel_authentication', 'use_ssh_tunnel'],
+          disabled: function(model) {
+            if (!model.get('tunnel_authentication') || !model.get('use_ssh_tunnel')) {
+              setTimeout(function() {
+                model.set('tunnel_identity_file', '');
+              }, 10);
+            }
+            return !model.get('tunnel_authentication');
+          },
+        },{
+          id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'text',
+          group: gettext('SSH Tunnel'), mode: ['properties'],
+        },{
+          id: 'tunnel_password', label: gettext('Password'), type: 'password',
+          group: gettext('SSH Tunnel'), control: 'input', mode: ['create'],
+          deps: ['use_ssh_tunnel'],
+          disabled: function(model) {
+            return !model.get('use_ssh_tunnel');
+          },
+        }, {
           id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
         },{
@@ -841,8 +928,8 @@ define('pgadmin.node.server', [
         },{
           id: 'passfile', label: gettext('Password file'), type: 'text',
           group: gettext('Advanced'), mode: ['properties'],
-          visible: function(m) {
-            var passfile = m.get('passfile');
+          visible: function(model) {
+            var passfile = model.get('passfile');
             return !_.isUndefined(passfile) && !_.isNull(passfile);
           },
         },{

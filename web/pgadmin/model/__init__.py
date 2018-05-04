@@ -145,6 +145,24 @@ class Server(db.Model):
     bgcolor = db.Column(db.Text(10), nullable=True)
     fgcolor = db.Column(db.Text(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)
+    use_ssh_tunnel = db.Column(
+        db.Integer(),
+        db.CheckConstraint('use_ssh_tunnel >= 0 AND use_ssh_tunnel <= 1'),
+        nullable=False
+    )
+    tunnel_host = db.Column(db.String(128), nullable=True)
+    tunnel_port = db.Column(
+        db.Integer(),
+        db.CheckConstraint('port <= 65534'),
+        nullable=True)
+    tunnel_username = db.Column(db.String(64), nullable=True)
+    tunnel_authentication = db.Column(
+        db.Integer(),
+        db.CheckConstraint('tunnel_authentication >= 0 AND '
+                           'tunnel_authentication <= 1'),
+        nullable=False
+    )
+    tunnel_identity_file = db.Column(db.String(64), nullable=True)
 
 
 class ModulePreference(db.Model):

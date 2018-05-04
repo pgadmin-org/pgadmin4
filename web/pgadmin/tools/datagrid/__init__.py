@@ -27,7 +27,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.preferences import Preferences
 from pgadmin.model import Server
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.exception import ConnectionLost
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
     get_query_tool_keyboard_shortcuts, get_text_representation_of_shortcut
 
@@ -135,7 +135,7 @@ def initialize_datagrid(cmd_type, obj_type, sgid, sid, did, obj_id):
                                   auto_reconnect=False,
                                   use_binary_placeholder=True,
                                   array_to_string=True)
-    except ConnectionLost as e:
+    except (ConnectionLost, SSHTunnelConnectionLost) as e:
         raise
     except Exception as e:
         app.logger.error(e)
@@ -363,7 +363,7 @@ def initialize_query_tool(sgid, sid, did=None):
                                   array_to_string=True)
         if connect:
             conn.connect()
-    except ConnectionLost as e:
+    except (ConnectionLost, SSHTunnelConnectionLost) as e:
         raise
     except Exception as e:
         app.logger.error(e)

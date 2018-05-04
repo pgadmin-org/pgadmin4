@@ -67,7 +67,52 @@ describe('Server#ModelValidation', () => {
         });
       });
 
-
+      describe('SSH Tunnel parameters', () => {
+        beforeEach(() => {
+          model.isNew.and.returnValue(true);
+          model.allValues['name'] = 'some name';
+          model.allValues['username'] = 'some username';
+          model.allValues['port'] = 12345;
+          model.allValues['host'] = 'some host';
+          model.allValues['db'] = 'some db';
+          model.allValues['hostaddr'] = '1.1.1.1';
+          model.allValues['use_ssh_tunnel'] = 1;
+        });
+        it('sets the "SSH Tunnel host must be specified." error', () => {
+          model.allValues['tunnel_port'] = 22;
+          model.allValues['tunnel_username'] = 'user1';
+          expect(modelValidation.validate()).toBe('SSH Tunnel host must be specified.');
+          expect(model.errorModel.set).toHaveBeenCalledWith({
+            tunnel_host:'SSH Tunnel host must be specified.',
+          });
+        });
+        it('sets the "SSH Tunnel port must be specified." error', () => {
+          model.allValues['tunnel_host'] = 'host';
+          model.allValues['tunnel_username'] = 'user1';
+          expect(modelValidation.validate()).toBe('SSH Tunnel port must be specified.');
+          expect(model.errorModel.set).toHaveBeenCalledWith({
+            tunnel_port:'SSH Tunnel port must be specified.',
+          });
+        });
+        it('sets the "SSH Tunnel username be specified." error', () => {
+          model.allValues['tunnel_host'] = 'host';
+          model.allValues['tunnel_port'] = 22;
+          expect(modelValidation.validate()).toBe('SSH Tunnel username must be specified.');
+          expect(model.errorModel.set).toHaveBeenCalledWith({
+            tunnel_username:'SSH Tunnel username must be specified.',
+          });
+        });
+        it('sets the "SSH Tunnel identity file be specified." error', () => {
+          model.allValues['tunnel_host'] = 'host';
+          model.allValues['tunnel_port'] = 22;
+          model.allValues['tunnel_username'] = 'user1';
+          model.allValues['tunnel_authentication'] = 1;
+          expect(modelValidation.validate()).toBe('SSH Tunnel identity file must be specified.');
+          expect(model.errorModel.set).toHaveBeenCalledWith({
+            tunnel_identity_file:'SSH Tunnel identity file must be specified.',
+          });
+        });
+      });
     });
 
     describe('When no parameters are valid', () => {

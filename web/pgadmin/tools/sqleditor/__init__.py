@@ -34,7 +34,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error, unauthorized
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import MenuItem
-from pgadmin.utils.exception import ConnectionLost
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
     RegisterQueryToolPreferences
@@ -166,7 +166,7 @@ def check_transaction_status(trans_id):
             use_binary_placeholder=True,
             array_to_string=True
         )
-    except ConnectionLost as e:
+    except (ConnectionLost, SSHTunnelConnectionLost) as e:
         raise
     except Exception as e:
         current_app.logger.error(e)
@@ -212,7 +212,7 @@ def start_view_data(trans_id):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
             trans_obj.sid)
         default_conn = manager.connection(did=trans_obj.did)
-    except ConnectionLost as e:
+    except (ConnectionLost, SSHTunnelConnectionLost) as e:
         raise
     except Exception as e:
         current_app.logger.error(e)
@@ -261,7 +261,7 @@ def start_view_data(trans_id):
         # Execute sql asynchronously
         try:
             status, result = conn.execute_async(sql)
-        except ConnectionLost as e:
+        except (ConnectionLost, SSHTunnelConnectionLost) as e:
             raise
     else:
         status = False

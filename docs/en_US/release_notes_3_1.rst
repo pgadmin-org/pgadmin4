@@ -10,6 +10,7 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
+| `Bug #1447 <https://redmine.postgresql.org/issues/1447>`_ - Add support for SSH tunneled connections
 
 Bug fixes
 *********

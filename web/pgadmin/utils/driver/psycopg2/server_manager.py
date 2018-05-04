@@ -12,14 +12,19 @@ Implementation of ServerManager
 """
 import os
 import datetime
+import config
 from flask import current_app, session
 from flask_security import current_user
 from flask_babelex import gettext
 
+from pgadmin.utils import get_complete_file_path
 from pgadmin.utils.crypto import decrypt
 from .connection import Connection
-from pgadmin.model import Server
-from pgadmin.utils.exception import ConnectionLost
+from pgadmin.model import Server, User
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
+
+if config.SUPPORT_SSH_TUNNEL:
+    from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
 
 
 class ServerManager(object):
@@ -32,6 +37,9 @@ class ServerManager(object):
 
     def __init__(self, server):
         self.connections = dict()
+        self.local_bind_host = '127.0.0.1'
+        self.local_bind_port = None
+        self.tunnel_object = None
 
         self.update(server)
 
@@ -66,6 +74,20 @@ class ServerManager(object):
         self.sslcrl = server.sslcrl
         self.sslcompression = True if server.sslcompression else False
         self.service = server.service
+        if config.SUPPORT_SSH_TUNNEL:
+            self.use_ssh_tunnel = server.use_ssh_tunnel
+            self.tunnel_host = server.tunnel_host
+            self.tunnel_port = server.tunnel_port
+            self.tunnel_username = server.tunnel_username
+            self.tunnel_authentication = server.tunnel_authentication
+            self.tunnel_identity_file = server.tunnel_identity_file
+        else:
+            self.use_ssh_tunnel = 0
+            self.tunnel_host = None
+            self.tunnel_port = 22
+            self.tunnel_username = None
+            self.tunnel_authentication = None
+            self.tunnel_identity_file = None
 
         for con in self.connections:
             self.connections[con]._release()
@@ -167,7 +189,11 @@ WHERE db.oid = {0}""".format(did))
                             ))
 
         if database is None:
-            raise ConnectionLost(self.sid, None, None)
+            # Check SSH Tunnel is alive or not.
+            if self.use_ssh_tunnel == 1:
+                self.check_ssh_tunnel_alive()
+            else:
+                raise ConnectionLost(self.sid, None, None)
 
         my_id = (u'CONN:{0}'.format(conn_id)) if conn_id is not None else \
             (u'DB:{0}'.format(database))
@@ -247,6 +273,9 @@ WHERE db.oid = {0}""".format(did))
                     self.connections.pop(conn_info['conn_id'])
 
     def release(self, database=None, conn_id=None, did=None):
+        # Stop the SSH tunnel if created.
+        self.stop_ssh_tunnel()
+
         if did is not None:
             if did in self.db_info and 'datname' in self.db_info[did]:
                 database = self.db_info[did]['datname']
@@ -332,3 +361,73 @@ WHERE db.oid = {0}""".format(did))
                 self.password, current_user.password
             ).decode()
             os.environ[str(env)] = password
+
+    def create_ssh_tunnel(self, tunnel_password):
+        """
+        This method is used to create ssh tunnel and update the IP Address and
+        IP Address and port to localhost and the local bind port return by the
+        SSHTunnelForwarder class.
+        :return: True if tunnel is successfully created else error message.
+        """
+        # Fetch Logged in User Details.
+        user = User.query.filter_by(id=current_user.id).first()
+        if user is None:
+            return False, gettext("Unauthorized request.")
+
+        try:
+            tunnel_password = decrypt(tunnel_password, user.password)
+            # Handling of non ascii password (Python2)
+            if hasattr(str, 'decode'):
+                tunnel_password = \
+                    tunnel_password.decode('utf-8').encode('utf-8')
+            # password is in bytes, for python3 we need it in string
+            elif isinstance(tunnel_password, bytes):
+                tunnel_password = tunnel_password.decode()
+
+        except Exception as e:
+            current_app.logger.exception(e)
+            return False, "Failed to decrypt the SSH tunnel " \
+                          "password.\nError: {0}".format(str(e))
+
+        try:
+            # If authentication method is 1 then it uses identity file
+            # and password
+            if self.tunnel_authentication == 1:
+                self.tunnel_object = SSHTunnelForwarder(
+                    self.tunnel_host,
+                    ssh_username=self.tunnel_username,
+                    ssh_pkey=get_complete_file_path(self.tunnel_identity_file),
+                    ssh_private_key_password=tunnel_password,
+                    remote_bind_address=(self.host, self.port)
+                )
+            else:
+                self.tunnel_object = SSHTunnelForwarder(
+                    self.tunnel_host,
+                    ssh_username=self.tunnel_username,
+                    ssh_password=tunnel_password,
+                    remote_bind_address=(self.host, self.port)
+                )
+
+            self.tunnel_object.start()
+        except BaseSSHTunnelForwarderError as e:
+            current_app.logger.exception(e)
+            return False, "Failed to create the SSH tunnel." \
+                          "\nError: {0}".format(str(e))
+
+        # Update the port to communicate locally
+        self.local_bind_port = self.tunnel_object.local_bind_port
+
+        return True, None
+
+    def check_ssh_tunnel_alive(self):
+        # Check SSH Tunnel is alive or not. if it is not then
+        # raise the ConnectionLost exception.
+        if self.tunnel_object is None or not self.tunnel_object.is_active:
+            raise SSHTunnelConnectionLost(self.tunnel_host)
+
+    def stop_ssh_tunnel(self):
+        # Stop the SSH tunnel if created.
+        if self.tunnel_object and self.tunnel_object.is_active:
+            self.tunnel_object.stop()
+            self.local_bind_port = None
+            self.tunnel_object = None

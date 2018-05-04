@@ -53,6 +53,28 @@ If pgAdmin is installed in Server mode (the default mode), you can use the platf
 
 *WARNING:* In Server mode, certificates, private keys, and the revocation list are stored in the per-user file storage area on the server, which is owned by the user account under which the pgAdmin server process is run. This means that administrators of the server may be able to access those files; appropriate caution should be taken before choosing to use this feature.
 
+Click the *SSH Tunnel* tab to continue.
+
+.. image:: images/server_ssh_tunnel.png
+    :alt: Server dialog ssh tunnel tab
+
+Use the fields in the *SSH Tunnel* tab to configure SSH Tunneling:
+
+You can use the "SSH Tunnel" tab to connect pgAdmin (through an intermediary
+proxy host) to a server that resides on a network to which the client may
+not be able to connect directly.
+
+*  Set "Use SSH tunneling" to *Yes* to specify that pgAdmin should use an SSH tunnel when connecting to the specified server.
+*  Specify the name or IP address of the SSH host (through which client connections will be forwarded) in the *Tunnel host* field.
+*  Specify the port of the SSH host (through which client connections will be forwarded) in the *Tunnel port* field.
+*  Specify the name of a user with login privileges for the SSH host in the *Username* field.
+*  Specify the type of authentication that will be used when connecting to the SSH host in the *Authentication* field.
+
+   *  Select the *Password* option to specify that pgAdmin will use a password for authentication to the SSH host. This is the default.
+   *  Select the *Identity file* to specify that pgAdmin will use a private key file when connecting.
+* If the SSH host is expecting a private key file for authentication, use the *Identity file* field to specify the location of the key file.
+* If the SSH host is expecting a password, use the *Password/Passphrase* field to specify the password, or if an identity file is being used, the passphrase.
+
 Click the *Advanced* tab to continue.
 
 .. image:: images/server_advanced.png

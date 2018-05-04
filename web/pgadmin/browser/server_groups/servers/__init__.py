@@ -479,7 +479,13 @@ class ServerNode(PGChildNodeView):
             'sslcompression': 'sslcompression',
             'bgcolor': 'bgcolor',
             'fgcolor': 'fgcolor',
-            'service': 'service'
+            'service': 'service',
+            'use_ssh_tunnel': 'use_ssh_tunnel',
+            'tunnel_host': 'tunnel_host',
+            'tunnel_port': 'tunnel_port',
+            'tunnel_username': 'tunnel_username',
+            'tunnel_authentication': 'tunnel_authentication',
+            'tunnel_identity_file': 'tunnel_identity_file',
         }
 
         disp_lbl = {
@@ -665,7 +671,19 @@ class ServerNode(PGChildNodeView):
                 'sslcrl': server.sslcrl if is_ssl else None,
                 'sslcompression': True if is_ssl and server.sslcompression
                 else False,
-                'service': server.service if server.service else None
+                'service': server.service if server.service else None,
+                'use_ssh_tunnel': server.use_ssh_tunnel
+                if server.use_ssh_tunnel else 0,
+                'tunnel_host': server.tunnel_host if server.tunnel_host
+                else None,
+                'tunnel_port': server.tunnel_port if server.tunnel_port
+                else 22,
+                'tunnel_username': server.tunnel_username
+                if server.tunnel_username else None,
+                'tunnel_identity_file': server.tunnel_identity_file
+                if server.tunnel_identity_file else None,
+                'tunnel_authentication': server.tunnel_authentication
+                if server.tunnel_authentication else 0
             }
         )
 
@@ -736,7 +754,13 @@ class ServerNode(PGChildNodeView):
                 sslcompression=1 if is_ssl and data['sslcompression'] else 0,
                 bgcolor=data.get('bgcolor', None),
                 fgcolor=data.get('fgcolor', None),
-                service=data.get('service', None)
+                service=data.get('service', None),
+                use_ssh_tunnel=data.get('use_ssh_tunnel', 0),
+                tunnel_host=data.get('tunnel_host', None),
+                tunnel_port=data.get('tunnel_port', 22),
+                tunnel_username=data.get('tunnel_username', None),
+                tunnel_authentication=data.get('tunnel_authentication', 0),
+                tunnel_identity_file=data.get('tunnel_identity_file', None)
             )
             db.session.add(server)
             db.session.commit()
@@ -754,6 +778,7 @@ class ServerNode(PGChildNodeView):
                 have_password = False
                 password = None
                 passfile = None
+                tunnel_password = None
                 if 'password' in data and data["password"] != '':
                     # login with password
                     have_password = True
@@ -764,9 +789,15 @@ class ServerNode(PGChildNodeView):
                     setattr(server, 'passfile', passfile)
                     db.session.commit()
 
+                if 'tunnel_password' in data and data["tunnel_password"] != '':
+                    tunnel_password = data['tunnel_password']
+                    tunnel_password = \
+                        encrypt(tunnel_password, current_user.password)
+
                 status, errmsg = conn.connect(
                     password=password,
                     passfile=passfile,
+                    tunnel_password=tunnel_password,
                     server_types=ServerType.types()
                 )
                 if hasattr(str, 'decode') and errmsg is not None:
@@ -877,10 +908,11 @@ class ServerNode(PGChildNodeView):
         res = conn.connected()
 
         if res:
-            from pgadmin.utils.exception import ConnectionLost
+            from pgadmin.utils.exception import ConnectionLost, \
+                SSHTunnelConnectionLost
             try:
                 conn.execute_scalar('SELECT 1')
-            except ConnectionLost:
+            except (ConnectionLost, SSHTunnelConnectionLost):
                 res = False
 
         return make_json_response(data={'connected': res})
@@ -924,11 +956,29 @@ class ServerNode(PGChildNodeView):
 
         password = None
         passfile = None
+        tunnel_password = None
         save_password = False
 
         # Connect the Server
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
+
+        # If server using SSH Tunnel
+        if server.use_ssh_tunnel:
+            if 'tunnel_password' not in data:
+                return self.get_response_for_password(server, 428)
+            else:
+                tunnel_password = data['tunnel_password'] if 'tunnel_password'\
+                                                             in data else None
+                # Encrypt the password before saving with user's login
+                # password key.
+                try:
+                    tunnel_password = encrypt(tunnel_password, user.password) \
+                        if tunnel_password is not None else \
+                        server.tunnel_password
+                except Exception as e:
+                    current_app.logger.exception(e)
+                    return internal_server_error(errormsg=e.message)
 
         if 'password' not in data:
             conn_passwd = getattr(conn, 'password', None)
@@ -936,16 +986,7 @@ class ServerNode(PGChildNodeView):
                     server.passfile is None and server.service is None:
                 # Return the password template in case password is not
                 # provided, or password has not been saved earlier.
-                return make_json_response(
-                    success=0,
-                    status=428,
-                    result=render_template(
-                        'servers/password.html',
-                        server_label=server.name,
-                        username=server.username,
-                        _=gettext
-                    )
-                )
+                return self.get_response_for_password(server, 428)
             elif server.passfile and server.passfile != '':
                 passfile = server.passfile
             else:
@@ -969,22 +1010,13 @@ class ServerNode(PGChildNodeView):
             status, errmsg = conn.connect(
                 password=password,
                 passfile=passfile,
+                tunnel_password=tunnel_password,
                 server_types=ServerType.types()
             )
         except Exception as e:
             current_app.logger.exception(e)
-
-            return make_json_response(
-                success=0,
-                status=401,
-                result=render_template(
-                    'servers/password.html',
-                    server_label=server.name,
-                    username=server.username,
-                    errmsg=getattr(e, 'message', str(e)),
-                    _=gettext
-                )
-            )
+            return self.get_response_for_password(
+                server, 401, getattr(e, 'message', str(e)))
 
         if not status:
             if hasattr(str, 'decode'):
@@ -995,17 +1027,7 @@ class ServerNode(PGChildNodeView):
                 .format(server.id, server.name, errmsg)
             )
 
-            return make_json_response(
-                success=0,
-                status=401,
-                result=render_template(
-                    'servers/password.html',
-                    server_label=server.name,
-                    username=server.username,
-                    errmsg=errmsg,
-                    _=gettext
-                )
-            )
+            return self.get_response_for_password(server, 401, errmsg)
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
@@ -1375,6 +1397,35 @@ class ServerNode(PGChildNodeView):
                 'Cannot able to fetch pgpass status'
             )
             return internal_server_error(errormsg=str(e))
+
+    def get_response_for_password(self, server, status, errmsg=None):
+        if server.use_ssh_tunnel:
+            return make_json_response(
+                success=0,
+                status=status,
+                result=render_template(
+                    'servers/tunnel_password.html',
+                    server_label=server.name,
+                    username=server.username,
+                    tunnel_username=server.tunnel_username,
+                    tunnel_host=server.tunnel_host,
+                    tunnel_identity_file=server.tunnel_identity_file,
+                    errmsg=errmsg,
+                    _=gettext
+                )
+            )
+        else:
+            return make_json_response(
+                success=0,
+                status=status,
+                result=render_template(
+                    'servers/password.html',
+                    server_label=server.name,
+                    username=server.username,
+                    errmsg=errmsg,
+                    _=gettext
+                )
+            )
 
 
 ServerNode.register_node_view(blueprint)
