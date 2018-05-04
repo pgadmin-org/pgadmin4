@@ -42,8 +42,6 @@ QString addrFileName;
 
 int main(int argc, char * argv[])
 {
-    QSettings settings;
-
     /*
      * Before starting main application, need to set 'QT_X11_NO_MITSHM=1'
      * to make the runtime work with IBM PPC machine.
@@ -108,6 +106,7 @@ int main(int argc, char * argv[])
     }
     sema.release();
 
+    QSettings settings;
     if (is_running){
         addrFile.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&addrFile);
