@@ -139,6 +139,45 @@ define([
     ).set('title', promptmsg).set('closable', true);
   };
 
+  alertify.pgRespErrorNotify = (xhr, error, prefixMsg='') => {
+    var contentType = xhr.getResponseHeader('Content-Type');
+    try {
+      if (xhr.status === 0) {
+        error = gettext('Connection to the server has been lost.');
+      } else {
+        if(contentType){
+          if(contentType.indexOf('application/json') >= 0) {
+            var resp = JSON.parse(xhr.responseText);
+            error = _.escape(resp.result) || _.escape(resp.errormsg) || gettext('Unknown error');
+          }
+        }
+        if (contentType.indexOf('text/html') >= 0) {
+          var alertMessage = '\
+                <div class="media font-red-3 text-14">\
+                  <div class="media-body media-middle">\
+                    <div class="alert-text">' + gettext('INTERNAL SERVER ERROR') + '</div><br/>\
+                    <div class="alert-text">' + gettext('Click for details.') + '</div>\
+                  </div>\
+                </div>';
+
+          alertify.notify(
+            alertMessage, 'error', 0, () => {
+              alertify.pgIframeDialog()
+                .show()
+                .set({frameless: false})
+                .set('pg_msg', xhr.responseText);
+            }
+          );
+          return;
+        }
+      }
+    }
+    catch(e){
+      error = e.message;
+    }
+    alertify.error(prefixMsg +' '+error);
+  };
+
   var alertifyDialogResized = function(stop) {
     var self = this;
 

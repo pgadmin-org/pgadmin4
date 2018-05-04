@@ -665,15 +665,8 @@ define('pgadmin.node.foreign_key', [
                 setTimeout(function() {t.select(i);}, 100);
               }
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  Alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             },
           });

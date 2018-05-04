@@ -130,15 +130,8 @@ define('pgadmin.node.trigger', [
                 }, 10);
               }
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             },
           });
@@ -175,15 +168,8 @@ define('pgadmin.node.trigger', [
                 }, 10);
               }
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              alertify.pgRespErrorNotify(xhr, error, gettext('Disable trigger failed'));
               t.unload(i);
             },
           });

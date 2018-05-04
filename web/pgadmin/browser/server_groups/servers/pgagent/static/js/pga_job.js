@@ -175,24 +175,8 @@ define('pgadmin.node.pga_job', [
           // 'pgagent.pga_job' table updated with current time to run the job
           // now.
           success: function() { t.unload(i); },
-          error: function(xhr) {
-            var error_msg = gettext('Unable to run pgagent job.');
-            if (xhr.readyState == 0) {
-              alertify.error(
-                gettext('Not connected to the server or the connection to the server has been closed.')
-              );
-            }
-            else {
-              if (_.isUndefined(xhr.responseText)) {
-                alertify.error(error_msg);
-              }
-              else {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  alertify.error(err.errormsg);
-                }
-              }
-            }
+          error: function(xhr, status, error) {
+            alertify.pgRespErrorNotify(xhr, error);
             t.unload(i);
           },
         });

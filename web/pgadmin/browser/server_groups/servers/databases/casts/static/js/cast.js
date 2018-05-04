@@ -209,15 +209,8 @@ define('pgadmin.node.cast', [
                 },
 
                  // On failure show error appropriate error message to user
-                error: function(xhr) {
-                  try {
-                    var err = $.parseJSON(xhr.responseText);
-                    if (err.success == 0) {
-                      alertify.error(err.errormsg);
-                    }
-                  } catch (e) {
-                    // Do nothing
-                  }
+                error: function(xhr, status, error) {
+                  alertify.pgRespErrorNotify(xhr, error);
                 },
               });
             }

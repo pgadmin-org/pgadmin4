@@ -300,9 +300,8 @@ define('pgadmin.node.mview', [
               );
             }
           },
-          error: function(e) {
-            var errmsg = $.parseJSON(e.responseText);
-            Alertify.alert(gettext('Error refreshing view'), errmsg.errormsg);
+          error: function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error, gettext('Error refreshing view'));
           },
         });
 

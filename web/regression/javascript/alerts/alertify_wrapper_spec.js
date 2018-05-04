@@ -7,6 +7,9 @@
 //
 //////////////////////////////////////////////////////////////////////////
 import alertify from 'pgadmin.alertifyjs';
+import * as $ from 'jquery';
+import gettext from 'sources/gettext';
+
 
 describe('alertify_wrapper', function () {
   describe('success', function () {
@@ -32,6 +35,83 @@ describe('alertify_wrapper', function () {
 
       expect(calledWithMessage).toContain('bad, very bad');
       expect(calledWithMessage).toContain('class="fa fa-exclamation-triangle"');
+    });
+  });
+
+  describe('pgRespErrorNotify', () => {
+    it('calls error notifier which alertifies response error for ajax calls', () => {
+
+      $.ajax({
+        url: 'http://some/dummy/url',
+        dataType: 'json',
+        error: function(xhr, status, error) {
+
+          spyOn(alertify, 'orig_error').and.callThrough();
+          spyOn(alertify, 'notify').and.callThrough();
+
+          /*When connection lost*/
+          xhr.status = 0;
+          alertify.pgRespErrorNotify(xhr, error);
+          expect(alertify.orig_error).toHaveBeenCalled();
+          expect(alertify.orig_error.calls.mostRecent().args[0]).toContain(
+            gettext('Connection to the server has been lost.')
+          );
+
+
+          /*When some exception occurs at back end*/
+          xhr.status = 4;
+          var orig_getResponseHeader = xhr.getResponseHeader;
+
+          /*Exception handled by back end*/
+          xhr.getResponseHeader = (header) => {
+            if(header === 'Content-Type') {
+              return 'application/json';
+            }
+            else {
+              return orig_getResponseHeader(header);
+            }
+
+          };
+          xhr.responseText = '{"errormsg":"Exception XYZ"}';
+          alertify.pgRespErrorNotify(xhr, error);
+          expect(alertify.orig_error).toHaveBeenCalled();
+          expect(alertify.orig_error.calls.mostRecent().args[0]).toContain(
+            gettext('Exception XYZ')
+          );
+
+          /*Exception not handled by back end*/
+          xhr.getResponseHeader = (header) => {
+            if(header === 'Content-Type') {
+              return 'text/html';
+            }
+            else {
+              return orig_getResponseHeader(header);
+            }
+          };
+          xhr.responseText = '<p>Some Exception Occurred</p>';
+          alertify.pgRespErrorNotify(xhr, error);
+          expect(alertify.notify).toHaveBeenCalled();
+          expect(alertify.notify.calls.mostRecent().args[0]).toContain(
+            gettext('INTERNAL SERVER ERROR')
+          );
+
+          /*With prefixMsg*/
+          xhr.getResponseHeader = (header) => {
+            if(header === 'Content-Type') {
+              return 'application/json';
+            }
+            else {
+              return orig_getResponseHeader(header);
+            }
+          };
+          xhr.responseText = '{"errormsg":"Exception XYZ"}';
+          alertify.pgRespErrorNotify(xhr, error, gettext('Some prefix message'));
+          expect(alertify.orig_error).toHaveBeenCalled();
+          expect(alertify.orig_error.calls.mostRecent().args[0]).toContain(
+            gettext('Some prefix message')
+          );
+        },
+      });
     });
   });
 });

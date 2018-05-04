@@ -691,13 +691,8 @@ define('pgadmin.browser', [
           modifyAnimation.modifyAcitreeAnimation(self);
           modifyAnimation.modifyAlertifyAnimation(self);
         },
-        error: function(xhr) {
-          try {
-            var err = $.parseJSON(xhr.responseText);
-            Alertify.alert(gettext('Preference loading failed.'),
-              err.errormsg
-            );
-          } catch (e) { console.warn(e.stack || e); }
+        error: function(xhr, status, error) {
+          Alertify.pgRespErrorNotify(xhr, error);
         },
       });
     },
@@ -1826,13 +1821,8 @@ define('pgadmin.browser', [
               }
               fetchNodeInfo(_callback);
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  Alertify.error(err.errormsg);
-                }
-              } catch (e) { console.warn(e.stack || e); }
+            error: function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
               fetchNodeInfo(_callback);
             },
           });

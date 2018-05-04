@@ -174,15 +174,8 @@ function(
                 }, 10);
               }
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  Alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             },
           });
@@ -233,15 +226,8 @@ function(
                       }, 10);
                     }
                   },
-                  error: function(xhr) {
-                    try {
-                      var err = $.parseJSON(xhr.responseText);
-                      if (err.success == 0) {
-                        Alertify.error(err.errormsg);
-                      }
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
+                  error: function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   },
                 });
@@ -283,15 +269,8 @@ function(
                       }, 10);
                     }
                   },
-                  error: function(xhr) {
-                    try {
-                      var err = $.parseJSON(xhr.responseText);
-                      if (err.success == 0) {
-                        Alertify.error(err.errormsg);
-                      }
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
+                  error: function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   },
                 });
@@ -335,15 +314,8 @@ function(
                       }
                     }
                   },
-                  error: function(xhr) {
-                    try {
-                      var err = $.parseJSON(xhr.responseText);
-                      if (err.success == 0) {
-                        Alertify.error(err.errormsg);
-                      }
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
+                  error: function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                   },
                 });
               }
@@ -941,9 +913,8 @@ function(
                       );
                     }
                   },
-                  error: function(e) {
-                    var errmsg = $.parseJSON(e.responseText);
-                    Alertify.alert(gettext('Error fetching tables to be attached'), errmsg.errormsg);
+                  error: function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error, gettext('Error fetching tables to be attached'));
                   },
                 });
               }

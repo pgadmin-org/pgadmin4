@@ -217,15 +217,8 @@ define('pgadmin.node.server', [
                   t.unload(i);
                 }
               },
-              error: function(xhr) {
-                try {
-                  var err = $.parseJSON(xhr.responseText);
-                  if (err.success == 0) {
-                    Alertify.error(err.errormsg);
-                  }
-                } catch (e) {
-                  console.warn(e.stack || e);
-                }
+              error: function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
                 t.unload(i);
               },
             });
@@ -299,15 +292,8 @@ define('pgadmin.node.server', [
                     Alertify.error(res.data.result);
                   }
                 },
-                error: function(xhr) {
-                  try {
-                    var err = $.parseJSON(xhr.responseText);
-                    if (err.success == 0) {
-                      Alertify.error(err.errormsg);
-                    }
-                  } catch (e) {
-                    console.warn(e.stack || e);
-                  }
+                error: function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
                   t.unload(i);
                 },
               });
@@ -342,15 +328,8 @@ define('pgadmin.node.server', [
                   success: function(res) {
                     Alertify.success(res.data.result, 10);
                   },
-                  error: function(xhr) {
-                    try {
-                      var err = $.parseJSON(xhr.responseText);
-                      if (err.success == 0) {
-                        Alertify.error(err.errormsg, 10);
-                      }
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
+                  error: function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   },
                 });
@@ -520,15 +499,8 @@ define('pgadmin.node.server', [
                           Alertify.error(res.errormsg);
                         }
                       },
-                      error: function(xhr) {
-                        try {
-                          var err = $.parseJSON(xhr.responseText);
-                          if (err.success == 0) {
-                            Alertify.error(err.errormsg);
-                          }
-                        } catch (e) {
-                          console.warn(e.stack || e);
-                        }
+                      error: function(xhr, status, error) {
+                        Alertify.pgRespErrorNotify(xhr, error);
                       },
                     });
                   }
@@ -547,15 +519,8 @@ define('pgadmin.node.server', [
               }
               Alertify.changeServerPassword(d).resizeTo('40%','52%');
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  Alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
             },
           });
 
@@ -590,15 +555,8 @@ define('pgadmin.node.server', [
                 }, 10);
               }
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  Alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             },
           });
@@ -632,15 +590,8 @@ define('pgadmin.node.server', [
                 }, 10);
               }
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  Alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             },
           });

@@ -153,15 +153,8 @@ define('pgadmin.node.table', [
                 }, 10);
               }
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  Alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             },
           });
@@ -212,15 +205,8 @@ define('pgadmin.node.table', [
                       }, 10);
                     }
                   },
-                  error: function(xhr) {
-                    try {
-                      var err = $.parseJSON(xhr.responseText);
-                      if (err.success == 0) {
-                        Alertify.error(err.errormsg);
-                      }
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
+                  error: function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   },
                 });
@@ -262,15 +248,8 @@ define('pgadmin.node.table', [
                       }, 10);
                     }
                   },
-                  error: function(xhr) {
-                    try {
-                      var err = $.parseJSON(xhr.responseText);
-                      if (err.success == 0) {
-                        Alertify.error(err.errormsg);
-                      }
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
+                  error: function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   },
                 });
@@ -302,15 +281,8 @@ define('pgadmin.node.table', [
                 t.select(i);
               }, 10);
             },
-            error: function(xhr) {
-              try {
-                var err = $.parseJSON(xhr.responseText);
-                if (err.success == 0) {
-                  Alertify.error(err.errormsg);
-                }
-              } catch (e) {
-                console.warn(e.stack || e);
-              }
+            error: function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             },
           });
@@ -1047,9 +1019,8 @@ define('pgadmin.node.table', [
                       );
                     }
                   },
-                  error: function(e) {
-                    var errmsg = $.parseJSON(e.responseText);
-                    Alertify.alert(gettext('Error fetching tables to be attached'), errmsg.errormsg);
+                  error: function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                   },
                 });
               }
