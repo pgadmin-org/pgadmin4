@@ -284,6 +284,18 @@ define([
       if (!d)
         return;
 
+      var node = d && pgBrowser.Nodes[d._type],
+        treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+
+      if (treeInfo.database._label.indexOf('=') >= 0) {
+        Alertify.alert(
+          gettext('Maintenance error'),
+          gettext('Maintenance job creation failed. '+
+          'Databases with = symbols in the name cannot be maintained using this utility.')
+        );
+        return;
+      }
+
       if (!Alertify.MaintenanceDialog) {
         Alertify.dialog('MaintenanceDialog', function factory() {
 

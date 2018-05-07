@@ -451,6 +451,17 @@ commonUtils
       if (!node)
         return;
 
+      var treeInfo = node.getTreeNodeHierarchy.apply(node, [item]);
+
+      if (treeInfo.database._label.indexOf('=') >= 0) {
+        alertify.alert(
+          gettext('Restore error'),
+          gettext('Restore job creation failed. '+
+          'Databases with = symbols in the name cannot be restored using this utility.')
+        );
+        return;
+      }
+
       title = title.sprintf(node.label, data.label).value();
 
       if (!alertify.pg_restore) {

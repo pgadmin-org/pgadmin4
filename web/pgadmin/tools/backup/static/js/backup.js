@@ -835,6 +835,17 @@ commonUtils
       if (!node)
         return;
 
+      var treeInfo = node.getTreeNodeHierarchy.apply(node, [item]);
+
+      if (treeInfo.database._label.indexOf('=') >= 0) {
+        alertify.alert(
+          gettext('Backup error'),
+          gettext('Backup job creation failed. '+
+          'Databases with = symbols in the name cannot be backed up using this utility.')
+        );
+        return;
+      }
+
       title = title.sprintf(node.label, data.label).value();
 
       if (!alertify.backup_objects) {
