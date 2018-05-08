@@ -42,8 +42,6 @@ QString addrFileName;
 
 int main(int argc, char * argv[])
 {
-    QSettings settings;
-
     /*
      * Before starting main application, need to set 'QT_X11_NO_MITSHM=1'
      * to make the runtime work with IBM PPC machine.
@@ -107,6 +105,8 @@ int main(int argc, char * argv[])
         is_running = false;
     }
     sema.release();
+
+    QSettings settings;
 
     if (is_running){
         addrFile.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -258,7 +258,6 @@ int main(int argc, char * argv[])
             QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
 
             // Allow the user to tweak the Python Path if needed
-            QSettings settings;
             bool ok;
 
             ConfigWindow *dlg = new ConfigWindow();
