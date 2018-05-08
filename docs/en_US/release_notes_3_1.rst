@@ -15,15 +15,15 @@ Features
 Bug fixes
 *********
 
+| `Bug #1220 <https://redmine.postgresql.org/issues/1220>`_ - Backup and Restore should not be started if database name contains "=" symbol
+| `Bug #1221 <https://redmine.postgresql.org/issues/1221>`_ - Maintenance should not be started if database name contains "=" symbol
 | `Bug #3179 <https://redmine.postgresql.org/issues/3179>`_ - Fix an error generating SQL for trigger functions
 | `Bug #3257 <https://redmine.postgresql.org/issues/3257>`_ - Catch errors when trying to EXPLAIN an invalid query
+| `Bug #3284 <https://redmine.postgresql.org/issues/3284>`_ - F5 key should work to refresh Browser tree
 | `Bug #3290 <https://redmine.postgresql.org/issues/3290>`_ - Close button added to the alertify message box, which pops up in case of backend error
 | `Bug #3306 <https://redmine.postgresql.org/issues/3306>`_ - Fixed display SQL of table with index for Greenplum database
 | `Bug #3308 <https://redmine.postgresql.org/issues/3308>`_ - Fixed issue where icon for Partitioned tables was the same as Non Partitioned tables for Greenplum database
+| `Bug #3310 <https://redmine.postgresql.org/issues/3310>`_ - Fixed layout of the alertify error message in the query tool
 | `Bug #3238 <https://redmine.postgresql.org/issues/3238>`_ - Standardise the error handling for parsing of JSON response messages from the server.
 | `Bug #3324 <https://redmine.postgresql.org/issues/3324>`_ - Fix the template loader to work reliably under Windows (fixing external tables under Greenplum)
 | `Bug #3333 <https://redmine.postgresql.org/issues/3333>`_ - Ensure the runtime core application is setup before trying to access any settings.
-| `Bug #1220 <https://redmine.postgresql.org/issues/1220>`_ - Backup, Maintenance and Restore should not be started if database name contains "=" symbol
-| `Bug #1221 <https://redmine.postgresql.org/issues/1221>`_ - Backup, Maintenance and Restore should not be started if database name contains "=" symbol
-| `Bug #3310 <https://redmine.postgresql.org/issues/3310>`_ - Fixed layout of the alertify error message in the query tool
-| `Bug #3284 <https://redmine.postgresql.org/issues/3284>`_ - F5 key should work to refresh Browser tree
