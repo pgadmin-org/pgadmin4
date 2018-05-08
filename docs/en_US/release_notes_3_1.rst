@@ -23,3 +23,7 @@ Bug fixes
 | `Bug #3238 <https://redmine.postgresql.org/issues/3238>`_ - Standardise the error handling for parsing of JSON response messages from the server.
 | `Bug #3324 <https://redmine.postgresql.org/issues/3324>`_ - Fix the template loader to work reliably under Windows (fixing external tables under Greenplum)
 | `Bug #3333 <https://redmine.postgresql.org/issues/3333>`_ - Ensure the runtime core application is setup before trying to access any settings.
+| `Bug #1220 <https://redmine.postgresql.org/issues/1220>`_ - Backup, Maintenance and Restore should not be started if database name contains "=" symbol
+| `Bug #1221 <https://redmine.postgresql.org/issues/1221>`_ - Backup, Maintenance and Restore should not be started if database name contains "=" symbol
+| `Bug #3310 <https://redmine.postgresql.org/issues/3310>`_ - Fixed layout of the alertify error message in the query tool
+| `Bug #3284 <https://redmine.postgresql.org/issues/3284>`_ - F5 key should work to refresh Browser tree
