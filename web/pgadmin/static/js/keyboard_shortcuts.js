@@ -11,7 +11,11 @@ import $ from 'jquery';
 
 const PERIOD_KEY = 190,
   FWD_SLASH_KEY = 191,
-  ESC_KEY = 27;
+  ESC_KEY = 27,
+  LEFT_KEY = 37,
+  UP_KEY = 38,
+  RIGHT_KEY = 39,
+  DOWN_KEY = 40;
 
 function isMac() {
   return window.navigator.platform.search('Mac') != -1;
@@ -171,7 +175,53 @@ function keyboardShortcutsQueryTool(
   } else if(this.validateShortcutKeys(previousPanelKeys, event)) {
     this._stopEventPropagation(event);
     panel_id = this.getInnerPanel(sqlEditorController.container, 'left');
+  } else if(keyCode === UP_KEY || keyCode === DOWN_KEY) {
+    /*Apply only for dropdown*/
+    if($(event.target).closest('.dropdown-menu').length > 0) {
+      this._stopEventPropagation(event);
+      let currLi = $(event.target).closest('li');
+      /*close all the submenus on movement*/
+      $(event.target).closest('.dropdown-menu').find('.open').removeClass('open');
+
+      /*do not focus on divider*/
+      let isDivider = true;
+      while(isDivider) {
+        if(keyCode === UP_KEY) {
+          currLi = currLi.prev();
+        }
+        else if(keyCode === DOWN_KEY){
+          currLi = currLi.next();
+        }
+        if(!currLi.hasClass('divider')) {
+          isDivider = false;
+        }
+      }
+      currLi.find('a:first').focus();
+    }
+  } else if(keyCode === LEFT_KEY || keyCode === RIGHT_KEY) {
+    /*Apply only for dropdown*/
+    if($(event.target).closest('.dropdown-menu').length > 0) {
+      this._stopEventPropagation(event);
+      let currLi = $(event.target).closest('li');
+
+      if(keyCode === RIGHT_KEY) {
+        /*open submenu if any*/
+        if(currLi.hasClass('dropdown-submenu')){
+          currLi.addClass('open');
+          currLi = currLi.find('.dropdown-menu li:first-child');
+        }
+      } else if(keyCode === LEFT_KEY) {
+        /*close submenu*/
+        let currLiMenu = currLi.closest('.dropdown-menu');
+        if(currLiMenu.closest('.dropdown-submenu').length > 0) {
+          currLiMenu.closest('.dropdown-submenu').removeClass('open');
+          currLi = currLiMenu.closest('.dropdown-submenu');
+        }
+      }
+      currLi.find('a:first').focus();
+    }
   }
+
 
   return panel_id;
 }

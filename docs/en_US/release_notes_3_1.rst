@@ -21,6 +21,7 @@ Bug fixes
 | `Bug #3257 <https://redmine.postgresql.org/issues/3257>`_ - Catch errors when trying to EXPLAIN an invalid query
 | `Bug #3284 <https://redmine.postgresql.org/issues/3284>`_ - F5 key should work to refresh Browser tree
 | `Bug #3290 <https://redmine.postgresql.org/issues/3290>`_ - Close button added to the alertify message box, which pops up in case of backend error
+| `Bug #3298 <https://redmine.postgresql.org/issues/3298>`_ - Fixed query tool keyboard issue where arrow keys were not behaving as expected for execute options dropdown
 | `Bug #3306 <https://redmine.postgresql.org/issues/3306>`_ - Fixed display SQL of table with index for Greenplum database
 | `Bug #3308 <https://redmine.postgresql.org/issues/3308>`_ - Fixed issue where icon for Partitioned tables was the same as Non Partitioned tables for Greenplum database
 | `Bug #3310 <https://redmine.postgresql.org/issues/3310>`_ - Fixed layout of the alertify error message in the query tool

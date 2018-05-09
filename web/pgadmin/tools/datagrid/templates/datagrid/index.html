@@ -154,21 +154,29 @@
                         <a id="btn-indent-code" href="#" tabindex="0">
                             <span> {{ _('Indent Selection (Tab)') }} </span>
                         </a>
+                    </li>
+                    <li>
                         <a id="btn-unindent-code" href="#" tabindex="0">
                             <span> {{ _('Unindent Selection (Shift+Tab)') }} </span>
                         </a>
+                    </li>
+                    <li>
                         <a id="btn-comment-line" href="#" tabindex="0">
                             <span> {{ _('Inline Comment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+/)') }}
                             {% else %}
                                  {{ _(' (Ctrl+/)') }}{%- endif %}</span>
                         </a>
+                    </li>
+                    <li>
                         <a id="btn-uncomment-line" href="#" tabindex="0">
                             <span> {{ _('Inline Uncomment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+.)') }}
                             {% else %}
                                  {{ _(' (Ctrl+.)') }}{%- endif %}</span>
                         </a>
+                    </li>
+                    <li>
                         <a id="btn-toggle-comment-block" href="#" tabindex="0">
                             <span> {{ _('Block Comment/Uncomment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Shift+Cmd+/)') }}
@@ -307,6 +315,8 @@
                         <a id="btn-clear" href="#" tabindex="0">
                             <span> {{ _('Clear Query Window') }} </span>
                         </a>
+                    </li>
+                    <li>
                         <a id="btn-clear-history" href="#" tabindex="0">
                             <span> {{ _('Clear History') }} </span>
                         </a>
