@@ -362,6 +362,7 @@ SHOW_GRAVATAR_IMAGE = True
 COOKIE_DEFAULT_PATH = '/'
 COOKIE_DEFAULT_DOMAIN = None
 SESSION_COOKIE_DOMAIN = None
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 ##########################################################################
 # Local config settings
