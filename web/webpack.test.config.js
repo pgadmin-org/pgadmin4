@@ -59,7 +59,7 @@ module.exports = {
     alias: {
       'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
       'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
-      'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.2'),
+      'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.3.0'),
       'jquery.ui': path.join(__dirname, './node_modules/slickgrid/lib/jquery-ui-1.11.3'),
       'spectrum': path.join(__dirname, './node_modules/spectrum-colorpicker/spectrum'),
       'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
