@@ -136,7 +136,7 @@ var webpackShimConfig = {
     'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker'),
     'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
     'moment': path.join(__dirname, './node_modules/moment/moment'),
-    'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.2'),
+    'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.3.0'),
     'jquery.ui': path.join(__dirname, './node_modules/slickgrid/lib/jquery-ui-1.11.3'),
     'flotr2': path.join(__dirname, './node_modules/flotr2/flotr2.amd'),
     'bean': path.join(__dirname, './node_modules/flotr2/lib/bean'),
