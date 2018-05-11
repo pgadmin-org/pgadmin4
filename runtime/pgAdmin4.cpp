@@ -237,7 +237,6 @@ int main(int argc, char * argv[])
             exit(1);
         }
 
-        QObject::connect(server, SIGNAL(finished()), server, SLOT(deleteLater()));
         server->start();
 
         // This is a hack to give the server a chance to start and potentially fail. As
@@ -290,6 +289,8 @@ int main(int argc, char * argv[])
             done = true;
     }
 
+    // Ensure the server gets cleaned up later
+    QObject::connect(server, SIGNAL(finished()), server, SLOT(deleteLater()));
 
     // Generate the app server URL
     QString appServerUrl = QString("http://127.0.0.1:%1/?key=%2").arg(port).arg(key);
