@@ -31,13 +31,13 @@ module.exports = {
         test: /\.css$/,
         use: [ 'style-loader', 'raw-loader' ],
       }, {
-        test: /.*slickgrid\/slick\.(?!core)*/,
+        test: /.*slickgrid[\\\/]+slick\.(?!core)*/,
         loader: 'imports-loader?' +
         'jquery.ui' +
         ',jquery.event.drag' +
         ',slickgrid',
       }, {
-        test: /.*slickgrid\.plugins\/slick\.cellrangeselector/,
+        test: /.*slickgrid\.plugins[\\\/]+slick\.cellrangeselector/,
         loader: 'imports-loader?' +
         'jquery.ui' +
         ',jquery.event.drag' +
@@ -45,7 +45,7 @@ module.exports = {
         '!exports-loader?' +
         'Slick.CellRangeSelector',
       }, {
-        test: /.*slickgrid\/slick\.core.*/,
+        test: /.*slickgrid[\\\/]+slick\.core.*/,
         loader: 'imports-loader?' +
         'jquery.ui' +
         ',jquery.event.drag' +
