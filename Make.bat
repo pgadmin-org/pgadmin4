@@ -389,8 +389,8 @@ REM Main function Ends
 
 :err_handle_visualstudio_dist
     ECHO %VCREDIST% does not exist
-    ECHO Please Install Microsoft Visual studio and SET the VCDIST enviroment Variable.
-    ECHO SET "VCDIST=<PATH>"
+    ECHO Please Install Microsoft Visual studio and SET the VCREDIST enviroment Variable.
+    ECHO SET "VCREDIST=<PATH>"
     exit /B 1
     GOTO EXIT
 
