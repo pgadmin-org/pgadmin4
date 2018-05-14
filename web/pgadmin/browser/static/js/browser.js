@@ -1,4 +1,5 @@
 define('pgadmin.browser', [
+  'sources/tree/tree',
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
   'sources/check_node_visibility', 'sources/modify_animation', 'pgadmin.browser.utils', 'wcdocker',
@@ -10,6 +11,7 @@ define('pgadmin.browser', [
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
   'pgadmin.browser.keyboard',
 ], function(
+  tree,
   gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
   codemirror, checkNodeVisibility, modifyAnimation
 ) {
@@ -86,6 +88,7 @@ define('pgadmin.browser', [
       });
 
       b.tree = $('#tree').aciTree('api');
+      b.treeMenu.register($('#tree'));
     };
 
   // Extend the browser class attributes
@@ -100,6 +103,7 @@ define('pgadmin.browser', [
     editor:null,
     // Left hand browser tree
     tree:null,
+    treeMenu: new tree.Tree(),
     // list of script to be loaded, when a certain type of node is loaded
     // It will be used to register extensions, tools, child node scripts,
     // etc.
