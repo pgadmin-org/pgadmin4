@@ -61,16 +61,14 @@ DATABASE_ID = 123
 _ = MagicMock(side_effect=lambda x: x)
 
 
-class TestExplainPlanTemplates(BaseTestGenerator):
+class TestDashboardTemplates(BaseTestGenerator):
     scenarios = [
         # Server dashboard
         (
             'Dashboard, when returning the html page with graphs and '
             'server activity related html elements for server dashboard',
             dict(
-                template_path=os.path.join(
-                    'dashboard', 'server_dashboard.html'
-                ),
+                template_path='dashboard/server_dashboard.html',
                 input_parameters=dict(
                     sid=SERVER_ID,
                     did=None,
@@ -90,9 +88,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'Dashboard, when returning the html page with only graphs '
             'related html elements for server dashboard',
             dict(
-                template_path=os.path.join(
-                    'dashboard', 'server_dashboard.html'
-                ),
+                template_path='dashboard/server_dashboard.html',
                 input_parameters=dict(
                     sid=SERVER_ID,
                     did=None,
@@ -113,9 +109,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'Dashboard, when returning the html page with only server '
             'activity related html elements for server dashboard',
             dict(
-                template_path=os.path.join(
-                    'dashboard', 'server_dashboard.html'
-                ),
+                template_path='dashboard/server_dashboard.html',
                 input_parameters=dict(
                     sid=SERVER_ID,
                     did=None,
@@ -137,9 +131,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'graphs nor server activity related html elements for server '
             'dashboard',
             dict(
-                template_path=os.path.join(
-                    'dashboard', 'server_dashboard.html'
-                ),
+                template_path='dashboard/server_dashboard.html',
                 input_parameters=dict(
                     sid=SERVER_ID,
                     did=None,
@@ -160,9 +152,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'Dashboard, when returning the html page with graphs and '
             'database activity related html elements for database dashboard',
             dict(
-                template_path=os.path.join(
-                    'dashboard', 'database_dashboard.html'
-                ),
+                template_path='dashboard/database_dashboard.html',
                 input_parameters=dict(
                     sid=SERVER_ID,
                     did=DATABASE_ID,
@@ -182,9 +172,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'Dashboard, when returning the html page with only '
             'graphs related html elements for database dashboard',
             dict(
-                template_path=os.path.join(
-                    'dashboard', 'database_dashboard.html'
-                ),
+                template_path='dashboard/database_dashboard.html',
                 input_parameters=dict(
                     sid=SERVER_ID,
                     did=DATABASE_ID,
@@ -205,9 +193,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'Dashboard, when returning the html page with only '
             'database activity related html elements for database dashboard',
             dict(
-                template_path=os.path.join(
-                    'dashboard', 'database_dashboard.html'
-                ),
+                template_path='dashboard/database_dashboard.html',
                 input_parameters=dict(
                     sid=SERVER_ID,
                     did=DATABASE_ID,
@@ -229,9 +215,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             'graphs nor database activity related html elements for database '
             'dashboard',
             dict(
-                template_path=os.path.join(
-                    'dashboard', 'database_dashboard.html'
-                ),
+                template_path='dashboard/database_dashboard.html',
                 input_parameters=dict(
                     sid=SERVER_ID,
                     did=DATABASE_ID,

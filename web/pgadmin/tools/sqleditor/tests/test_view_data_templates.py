@@ -35,10 +35,7 @@ class TestViewDataTemplates(BaseTestGenerator):
         (
             'When inserting and selecting table data with only PK',
             dict(
-                insert_template_path=os.path.join('sqleditor',
-                                                  'sql',
-                                                  'default',
-                                                  'insert.sql'),
+                insert_template_path='sqleditor/sql/default/insert.sql',
                 insert_parameters=dict(
                     data_to_be_saved=data_to_be_saved,
                     primary_keys=None,
@@ -54,10 +51,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                                              ' (%(id)s::integer, '
                                              '%(text)s::text)'
                                              ' returning id;',
-                select_template_path=os.path.join('sqleditor',
-                                                  'sql',
-                                                  'default',
-                                                  'select.sql'),
+                select_template_path='sqleditor/sql/default/select.sql',
                 select_parameters=dict(
                     object_name='test_table',
                     nsp_name='test_schema',
@@ -71,10 +65,7 @@ class TestViewDataTemplates(BaseTestGenerator):
         (
             'When inserting and selecting table data with multiple PK',
             dict(
-                insert_template_path=os.path.join('sqleditor',
-                                                  'sql',
-                                                  'default',
-                                                  'insert.sql'),
+                insert_template_path='sqleditor/sql/default/insert.sql',
                 insert_parameters=dict(
                     data_to_be_saved=data_to_be_saved,
                     primary_keys=None,
@@ -90,10 +81,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                                              ' VALUES (%(id)s::integer,'
                                              ' %(text)s::text)'
                                              ' returning id, text;',
-                select_template_path=os.path.join('sqleditor',
-                                                  'sql',
-                                                  'default',
-                                                  'select.sql'),
+                select_template_path='sqleditor/sql/default/select.sql',
                 select_parameters=dict(
                     object_name='test_table',
                     nsp_name='test_schema',
@@ -109,10 +97,7 @@ class TestViewDataTemplates(BaseTestGenerator):
         (
             'When inserting and selecting table data with PK and OID',
             dict(
-                insert_template_path=os.path.join('sqleditor',
-                                                  'sql',
-                                                  'default',
-                                                  'insert.sql'),
+                insert_template_path='sqleditor/sql/default/insert.sql',
                 insert_parameters=dict(
                     data_to_be_saved=data_to_be_saved,
                     primary_keys=None,
@@ -128,10 +113,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                                              ' (%(id)s::integer, '
                                              '%(text)s::text) '
                                              'returning oid;',
-                select_template_path=os.path.join('sqleditor',
-                                                  'sql',
-                                                  'default',
-                                                  'select.sql'),
+                select_template_path='sqleditor/sql/default/select.sql',
                 select_parameters=dict(
                     object_name='test_table',
                     nsp_name='test_schema',
@@ -145,10 +127,7 @@ class TestViewDataTemplates(BaseTestGenerator):
         (
             'When inserting and selecting table data with only OID',
             dict(
-                insert_template_path=os.path.join('sqleditor',
-                                                  'sql',
-                                                  'default',
-                                                  'insert.sql'),
+                insert_template_path='sqleditor/sql/default/insert.sql',
                 insert_parameters=dict(
                     data_to_be_saved=data_to_be_saved,
                     primary_keys=None,
@@ -164,10 +143,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                                              ' (%(id)s::integer,'
                                              ' %(text)s::text)'
                                              ' returning oid;',
-                select_template_path=os.path.join('sqleditor',
-                                                  'sql',
-                                                  'default',
-                                                  'select.sql'),
+                select_template_path='sqleditor/sql/default/select.sql',
                 select_parameters=dict(
                     object_name='test_table',
                     nsp_name='test_schema',

@@ -20,7 +20,7 @@ else:
     from unittest.mock import MagicMock, patch
 
 
-class TestExternalTablesView(BaseTestGenerator):
+class TestProperties(BaseTestGenerator):
     scenarios = [
         ('#properties When retrieving the properties of a external table '
          'and the table exists, '
