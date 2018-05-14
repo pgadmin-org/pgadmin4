@@ -61,6 +61,7 @@ REM Main function Ends
     IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27"
     IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\SysWOW64\python27.dll"
     IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.9.1\mingw53_32"
+    IF "%MAKE%" == ""          SET "MAKE=mingw32-make.exe"
     IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\10"
     IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files (x86)\Inno Setup 5"
     IF "%YARNDIR%" == ""       SET "YARNDIR=C:\Program Files\Yarn"
@@ -100,6 +101,7 @@ REM Main function Ends
     ECHO ****************************************************************
     ECHO Target mode = x86
     ECHO INNOTOOL    = %INNOTOOL%
+    ECHO MAKE        = %MAKE%
     ECHO VCDIR       = %VCDIR%
     ECHO VCDIST      = %VCREDIST%
     ECHO SIGNTOOL    = %SIGNTOOL%
@@ -224,7 +226,7 @@ REM Main function Ends
     CALL "%QMAKE%" "DEFINES+=PGADMIN4_USE_WEBKIT"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    CALL mingw32-make.exe clean
+    CALL %MAKE% clean
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
     CALL mingw32-make.exe
