@@ -185,6 +185,8 @@ CREATE TABLE public.defaults_{0}
             (By.XPATH, xpath)), CheckForViewDataTest.TIMEOUT_STRING
         )
         cell_el = self.page.find_by_xpath(xpath)
+        self.page.driver.execute_script("arguments[0].scrollIntoView()",
+                                        cell_el)
         ActionChains(self.driver).move_to_element(cell_el).double_click(
             cell_el
         ).perform()

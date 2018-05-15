@@ -46,7 +46,7 @@ General Information
   - 'pgAdmin4/web/pgadmin/browser/server_groups/tests/' shows an example of
      tree traversal of the pgAdmin modules and how the test folder is required
      for each individual module.
-	
+
   - 'pgadmin/browser/server_groups/servers/tests/' directory will have separate
      file for each test-case:
 
@@ -126,6 +126,15 @@ Python Tests:
   chromedriver need to be installed; get chromedriver from
   https://sites.google.com/a/chromium.org/chromedriver/downloads or a
   package manager and make sure it is in the PATH
+
+- For feature tests to run on Firefox, geckodriver need to be installed;
+  - Get geckodriver from https://github.com/mozilla/geckodriver/releases.
+  - Extract the binary and run chmod +x geckodriver.
+  - Copy geckodriver into /usr/local/bin or make sure path of the
+    geckodriver must be specified in the PATH.
+  - Set the "default_browser" parameter in test_config file or pass the command
+    line option --default_browser. Supported browsers are "Chrome" and
+    "Firefox".
 
 - The test framework is modular and pluggable and dynamically locates tests
   for modules which are discovered at runtime. All test cases are found

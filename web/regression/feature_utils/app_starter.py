@@ -12,6 +12,7 @@ import signal
 import random
 
 import time
+from selenium.common.exceptions import WebDriverException
 
 
 class AppStarter:
@@ -41,10 +42,26 @@ class AppStarter:
             env=env
         )
 
-        self.driver.get(
-            "http://" + self.app_config.DEFAULT_SERVER + ":" +
-            random_server_port
-        )
+        def launch_browser(retry_count):
+            try:
+                self.driver.get(
+                    "http://" + self.app_config.DEFAULT_SERVER + ":" +
+                    random_server_port
+                )
+
+            except WebDriverException as e:
+                # In case of WebDriverException sleep for 1 second and retry
+                # again. Retry 10 times and if still app will not start then
+                # raise exception.
+                time.sleep(1)
+                if retry_count < 60:
+                    retry_count = retry_count + 1
+                    launch_browser(retry_count)
+                else:
+                    raise Exception('Unable to start python server even after '
+                                    'retrying 60 times.')
+
+        launch_browser(0)
 
     def stop_app(self):
         """ This function stop the started app by killing process """

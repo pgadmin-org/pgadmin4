@@ -60,6 +60,8 @@ class PgadminPage:
         self.fill_input_by_field_name("port", server_config['port'])
         self.fill_input_by_field_name("username", server_config['username'])
         self.fill_input_by_field_name("password", server_config['db_password'])
+        # Required sleep to avoid "fe_sendauth" password error.
+        time.sleep(0.5)
         self.find_by_xpath("//button[contains(.,'Save')]").click()
 
         self.find_by_xpath(
@@ -317,6 +319,14 @@ class PgadminPage:
                 return False
 
         self._wait_for("app to start", page_shows_app, self.app_start_timeout)
+
+    def wait_for_element_to_reload(self, element_selector):
+        WebDriverWait(self.driver, 20) \
+            .until(EC.staleness_of(element_selector(self.driver)))
+        WebDriverWait(self.driver, 20) \
+            .until_not(EC.staleness_of(element_selector(self.driver)))
+
+        return element_selector(self.driver)
 
     def _wait_for(self, waiting_for_message, condition_met_function,
                   timeout=None):

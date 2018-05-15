@@ -1,5 +1,6 @@
 {
   "headless_chrome": false,
+  "default_browser": "Chrome",
   "pgAdmin4_login_credentials": {
     "new_password": "NEWPASSWORD",
     "login_password": "PASSWORD",

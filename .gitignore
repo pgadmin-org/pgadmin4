@@ -36,6 +36,7 @@ runtime/pgAdmin4_resource.rc
 runtime/release/
 runtime/ui_BrowserWindow.h
 web/config_local.py
+web/geckodriver.log
 web/regression/test_config.json
 node_modules/
 web/pgAdmin/static/js/generated

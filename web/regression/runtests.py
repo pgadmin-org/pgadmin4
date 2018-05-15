@@ -22,6 +22,7 @@ import json
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 if sys.version_info < (2, 7):
     import unittest2 as unit_test
@@ -181,13 +182,40 @@ def get_test_modules(arguments):
         exclude_pkgs += arguments['exclude'].split(',')
 
     if 'feature_tests' not in exclude_pkgs:
-        options = Options()
-        if test_setup.config_data:
-            if 'headless_chrome' in test_setup.config_data:
-                if test_setup.config_data['headless_chrome']:
-                    options.add_argument("--headless")
-        options.add_argument("--window-size=1280x1024")
-        driver = webdriver.Chrome(chrome_options=options)
+        default_browser = 'chrome'
+
+        # Check default browser provided through command line. If provided
+        # then use that browser as default browser else check for the setting
+        # provided in test_config.json file.
+        if (
+            'default_browser' in arguments and
+            arguments['default_browser'] is not None
+        ):
+            default_browser = arguments['default_browser'].lower()
+        elif (
+            test_setup.config_data and
+            "default_browser" in test_setup.config_data
+        ):
+            default_browser = test_setup.config_data['default_browser'].lower()
+
+        if default_browser == 'firefox':
+            cap = DesiredCapabilities.FIREFOX
+            cap['requireWindowFocus'] = True
+            cap['enablePersistentHover'] = False
+            profile = webdriver.FirefoxProfile()
+            profile.set_preference("dom.disable_beforeunload", True)
+            driver = webdriver.Firefox(capabilities=cap,
+                                       firefox_profile=profile)
+            driver.implicitly_wait(1)
+        else:
+            options = Options()
+            if test_setup.config_data:
+                if 'headless_chrome' in test_setup.config_data:
+                    if test_setup.config_data['headless_chrome']:
+                        options.add_argument("--headless")
+            options.add_argument("--window-size=1280x1024")
+            driver = webdriver.Chrome(chrome_options=options)
+
         app_starter = AppStarter(driver, config)
         app_starter.start_app()
 
@@ -228,6 +256,10 @@ def add_arguments():
         '--exclude',
         help='Skips execution of the test cases of particular package and '
              'sub-packages'
+    )
+    parser.add_argument(
+        '--default_browser',
+        help='Executes the feature test in specific browser'
     )
     arg = parser.parse_args()
 
@@ -341,7 +373,12 @@ if __name__ == '__main__':
     sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
     args = vars(add_arguments())
     # Get test module list
-    test_module_list = get_test_modules(args)
+    try:
+        test_module_list = get_test_modules(args)
+    except Exception as e:
+        print(str(e))
+        sys.exit(1)
+
     # Login the test client
     test_utils.login_tester_account(test_client)
 

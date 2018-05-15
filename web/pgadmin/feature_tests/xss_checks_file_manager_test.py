@@ -8,6 +8,7 @@
 ##########################################################################
 
 import os
+import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -98,7 +99,18 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.find_by_id("file-input-path").send_keys(
             Keys.RETURN
         )
-        contents = self.page.find_by_id("contents").get_attribute('innerHTML')
+
+        if self.page.driver.capabilities['browserName'] == 'firefox':
+            table = self.page.wait_for_element_to_reload(
+                lambda driver:
+                driver.find_element_by_css_selector("table#contents")
+            )
+        else:
+            table = self.page.driver \
+                .find_element_by_css_selector("table#contents")
+
+        contents = table.get_attribute('innerHTML')
+
         self.page.click_modal('Cancel')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self._check_escaped_characters(

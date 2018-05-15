@@ -200,7 +200,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         ActionChains(self.page.driver).key_down(
             Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
-        self.assertEqual('"cool info"', pyperclip.paste())
+        self.assertIn('"cool info"', pyperclip.paste())
 
     def after(self):
         self.page.close_query_tool()
