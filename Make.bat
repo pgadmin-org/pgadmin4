@@ -124,8 +124,6 @@ REM Main function Ends
     IF NOT EXIST "%PYTHON_HOME%"       GOTO err_handle_python
     IF NOT EXIST "%PYTHON_DLL%"        GOTO err_handle_python
     IF NOT EXIST "%PGDIR%"             GOTO err_handle_pg
-    IF NOT EXIST "%YARNDIR%"           GOTO err_handle_yarn
-    IF NOT EXIST "%NODEJSDIR%"         GOTO err_handle_nodejs
 
     REM get Python version ex. 2.7.1 will get as 27
     FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
@@ -134,7 +132,7 @@ REM Main function Ends
 
     IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" GOTO err_handle_pythonvirtualenv
 
-    SET PATH=%PGDIR%;%PGDIR%\bin;%QTDIR%\..\..\Tools\mingw530_32\bin;%NODEJSDIR%;%YARNDIR%\bin;%PATH%;
+    SET PATH=%PGDIR%;%PGDIR%\bin;%QTDIR%\..\..\Tools\mingw530_32\bin;%PATH%;
     GOTO:eof
 
 :CREATE_VIRTUAL_ENV
@@ -412,20 +410,6 @@ REM Main function Ends
     ECHO %QTDIR% does not exist.
     ECHO Please Install QT SDK and SET the QTDIR enviroment variable.
     ECHO SET "QTDIR=<PATH>"
-    exit /B 1
-    GOTO EXIT
-
-:err_handle_yarn
-    ECHO %YARNDIR% does not exist.
-	ECHO Please Install YARN and SET the YARNDIR enviroment variable.
-	ECHO SET "YARNDIR=<YARN PATH>"
-    exit /B 1
-    GOTO EXIT
-
-:err_handle_nodejs
-    ECHO %NODEJSDIR% does not exist.
-	ECHO Please Install NodeJs and SET the NODEJSDIR enviroment variable.
-	ECHO SET "NODEJSDIR=<NODEJS PATH>"
     exit /B 1
     GOTO EXIT
 
