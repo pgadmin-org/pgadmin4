@@ -66,7 +66,7 @@ REM Main function Ends
     IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files (x86)\Inno Setup 5"
     IF "%YARNDIR%" == ""       SET "YARNDIR=C:\Program Files\Yarn"
     IF "%NODEJSDIR%" == ""     SET "NODEJSDIR=C:\Program Files\nodejs"
-    IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC"
+    IF "%VCINSTALLDIR%" == ""  SET "VCINSTALLDIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC"
     IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x86.exe"
     IF "%SIGNTOOL%" == ""      SET "SIGNTOOL=C:\Program Files\Microsoft SDKs\Windows\v7.1A\Bin\signtool.exe"
     SET "VCREDISTNAME=vcredist_x86.exe"
@@ -78,7 +78,7 @@ REM Main function Ends
     SET "QMAKE=%QTDIR%\bin\qmake.exe"
     SET "VIRTUALENV=venv"
     SET "TARGETINSTALLER=%WD%\dist"
-    SET "VCREDIST=%VCDIR%\redist\1033\%VCREDISTNAME%"
+    SET "VCREDIST=%VCINSTALLDIR%\redist\1033\%VCREDISTNAME%"
 
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')    DO SET APP_RELEASE=%%a
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\config.py')   DO SET APP_REVISION_VERSION=%%a
@@ -102,7 +102,7 @@ REM Main function Ends
     ECHO Target mode = x86
     ECHO INNOTOOL    = %INNOTOOL%
     ECHO MAKE        = %MAKE%
-    ECHO VCDIR       = %VCDIR%
+    ECHO VCINSTALLDIR= %VCINSTALLDIR%
     ECHO VCDIST      = %VCREDIST%
     ECHO SIGNTOOL    = %SIGNTOOL%
     ECHO QTDIR       = %QTDIR%
@@ -117,7 +117,7 @@ REM Main function Ends
 
     REM Check IF path SET in enviroments really exist or not ?
     IF NOT EXIST "%INNOTOOL%"          GOTO err_handle_inno
-    IF NOT EXIST "%VCDIR%"             GOTO err_handle_visualstudio
+    IF NOT EXIST "%VCINSTALLDIR%"      GOTO err_handle_visualstudio
     IF NOT EXIST "%VCREDIST%"          GOTO err_handle_visualstudio_dist
     IF NOT EXIST "%QTDIR%"             GOTO err_handle_qt
     IF NOT EXIST "%QMAKE%"             GOTO err_handle_qt
@@ -383,9 +383,9 @@ REM Main function Ends
     GOTO EXIT
 
 :err_handle_visualstudio
-    ECHO %VCDIR% does not exist
-    ECHO Please Install Microsoft Visual studio and SET the VCDIR enviroment Variable.
-    ECHO SET "VCDIR=<PATH>"
+    ECHO %INSTALL% does not exist
+    ECHO Please Install Microsoft Visual studio and SET the VCINSTALLDIR enviroment Variable.
+    ECHO SET "VCINSTALLDIR=<PATH>"
     exit /B 1
     GOTO EXIT
 
