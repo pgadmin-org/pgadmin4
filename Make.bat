@@ -75,9 +75,9 @@ REM Main function Ends
     SET "VIRTUALENV=venv"
     SET "TARGETINSTALLER=%WD%\dist"
 
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')    DO SET APP_RELEASE=%%a
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\config.py')   DO SET APP_REVISION_VERSION=%%a
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_SUFFIX =" %WD%\web\config.py')     DO SET APP_SUFFIX_VERSION=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')    DO SET APP_MAJOR=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\config.py')   DO SET APP_MINOR=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_SUFFIX =" %WD%\web\config.py')     DO SET APP_VERSION_SUFFIX=%%a
     REM remove single quote from the string
     SET APP_SUFFIX_VERSION=%APP_SUFFIX_VERSION:'=%
     SET APP_NAME=""
@@ -101,34 +101,35 @@ REM Main function Ends
     ECHO ****************************************************************
     ECHO                        S U M M A R Y
     ECHO ****************************************************************
-    ECHO Build path:                    %PGBUILDPATH%
-    ECHO Output directory:              %TARGETINSTALLER%
-    ECHO Installer name:                %INSTALLERNAME%
+    ECHO Build path:                %PGBUILDPATH%
+    ECHO Output directory:          %TARGETINSTALLER%
+    ECHO Installer name:            %INSTALLERNAME%
     ECHO.
-    ECHO Python home:                   %PYTHON_HOME%
-    ECHO Python DLL:                    %PYTHON_DLL%
-    ECHO Python version:                %PYTHON_VERSION%
-    ECHO Python major version:          %PYTHON_MAJOR%
-    ECHO Python minor version:          %PYTHON_MINOR%
-    ECHO Virtual environment:           %VIRTUALENV%
+    ECHO Python home:               %PYTHON_HOME%
+    ECHO Python DLL:                %PYTHON_DLL%
+    ECHO Python version:            %PYTHON_VERSION%
+    ECHO Python major version:      %PYTHON_MAJOR%
+    ECHO Python minor version:      %PYTHON_MINOR%
+    ECHO Virtual environment:       %VIRTUALENV%
     ECHO.
-    ECHO Qt home:                       %QTDIR%
-    ECHO qmake executable:              %QMAKE%
-    ECHO Qt version:                    %QT_VERSION%
+    ECHO Qt home:                   %QTDIR%
+    ECHO qmake executable:          %QMAKE%
+    ECHO Qt version:                %QT_VERSION%
     ECHO.
-    ECHO PostgreSQL home:               %PGDIR%
+    ECHO PostgreSQL home:           %PGDIR%
     ECHO.
-    ECHO VC++ redistributable:          %VCREDIST%
-    ECHO VC++ redistributable filename: %VCREDISTNAME%
+    ECHO VC++ redistributable:      %VCREDIST%
+    ECHO VC++ redistributable file: %VCREDISTNAME%
     ECHO.
-    ECHO innotool executable:           %INNOTOOL%
-    ECHO signtool executable:           %SIGNTOOL%
+    ECHO innotool executable:       %INNOTOOL%
+    ECHO signtool executable:       %SIGNTOOL%
     ECHO.
-    ECHO App major version:             %APP_MAJOR%
-    ECHO App minor version:             %APP_MINOR%
-    ECHO App version:                   %APP_VERSION%
-    ECHO App version suffix:            %APP_VERSION_SUFFIX%
-    ECHO Application name:              %APP_NAME%
+    ECHO App major version:         %APP_MAJOR%
+    ECHO App minor version:         %APP_MINOR%
+    ECHO App version:               %APP_VERSION%
+    ECHO App version suffix:        %APP_VERSION_SUFFIX%
+    ECHO App short name:            %APP_SHORTNAME%
+    ECHO App name:                  %APP_NAME%
     ECHO ****************************************************************
 
     REM Check IF path SET in environment really exist or not ?
