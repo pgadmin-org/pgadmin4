@@ -132,7 +132,7 @@ REM Main function Ends
 
     IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" GOTO err_handle_pythonvirtualenv
 
-    SET PATH=%PGDIR%;%PGDIR%\bin;%QTDIR%\..\..\Tools\mingw530_32\bin;%PATH%;
+    SET PATH=%PGDIR%\bin;%PATH%;
     GOTO:eof
 
 :CREATE_VIRTUAL_ENV
