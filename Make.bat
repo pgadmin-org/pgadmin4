@@ -221,7 +221,7 @@ REM Main function Ends
     CD "%WD%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    CALL "%QMAKE%" "DEFINES+=PGADMIN4_USE_WEBKIT"
+    CALL "%QMAKE%"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
     CALL %MAKE% clean
