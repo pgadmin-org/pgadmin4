@@ -72,23 +72,22 @@ REM Main function Ends
 
     REM Set additional variables we need
     SET "QMAKE=%QTDIR%\bin\qmake.exe"
+    FOR /F "tokens=4,5 delims=. " %%a IN ('%QMAKE% -v ^| findstr /B /C:"Using Qt version "') DO SET QT_VERSION=%%a.%%b
     SET "VIRTUALENV=venv"
-    SET "TARGETINSTALLER=%WD%\dist"
+    
+    SET "TARGET_DIR=%WD%\dist"
 
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')    DO SET APP_MAJOR=%%a
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\config.py')   DO SET APP_MINOR=%%a
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_SUFFIX =" %WD%\web\config.py')     DO SET APP_VERSION_SUFFIX=%%a
     REM remove single quote from the string
-    SET APP_SUFFIX_VERSION=%APP_SUFFIX_VERSION:'=%
+    SET APP_VERSION_SUFFIX=%APP_VERSION_SUFFIX:'=%
     SET APP_NAME=""
     FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py')   DO SET APP_NAME=%%a
     FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "print('%APP_NAME%'.lower().replace(' ', ''))"') DO SET APP_SHORTNAME=%%G
-    FOR /F "tokens=4,5 delims=. " %%a IN ('%QMAKE% -v ^| findstr /B /C:"Using Qt version "') DO SET QT_VERSION=%%a.%%b
-
+    SET APP_VERSION=%APP_MAJOR%.%APP_MINOR%
     SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%APP_VERSION_SUFFIX%-%ARCHITECTURE%.exe
     IF "%APP_VERSION_SUFFIX%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%ARCHITECTURE%.exe
-
-    SET PGADMIN4_APP_VERSION=%APP_MAJOR%.%APP_MINOR%
 
     REM get Python version ex. 2.7.1 will get as 27
     FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
@@ -102,7 +101,7 @@ REM Main function Ends
     ECHO                        S U M M A R Y
     ECHO ****************************************************************
     ECHO Build path:                %PGBUILDPATH%
-    ECHO Output directory:          %TARGETINSTALLER%
+    ECHO Output directory:          %TARGET_DIR%
     ECHO Installer name:            %INSTALLERNAME%
     ECHO.
     ECHO Python home:               %PYTHON_HOME%
@@ -327,7 +326,7 @@ REM Main function Ends
 
 :CREATE_INSTALLER
     ECHO Preparing for creation of windows installer...
-    IF NOT EXIST "%TARGETINSTALLER%" MKDIR "%TARGETINSTALLER%"
+    IF NOT EXIST "%TARGET_DIR%" MKDIR "%TARGET_DIR%"
 
     copy "%WD%\pkg\win32\Resources\pgAdmin4.ico" "%PGBUILDPATH%"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
@@ -354,10 +353,10 @@ REM Main function Ends
     CALL "%INNOTOOL%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    MOVE "%WD%\pkg\win32\Output\Setup.exe" "%TARGETINSTALLER%\%INSTALLERNAME%"
+    MOVE "%WD%\pkg\win32\Output\Setup.exe" "%TARGET_DIR%\%INSTALLERNAME%"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    ECHO "Location - %TARGETINSTALLER%\%INSTALLERNAME%"
+    ECHO "Location - %TARGET_DIR%\%INSTALLERNAME%"
     ECHO Installer generated successfully.
 
     CD %WD%
@@ -365,7 +364,7 @@ REM Main function Ends
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...
-    "%SIGNTOOL%" sign  /t http://timestamp.verisign.com/scripts/timstamp.dll "%TARGETINSTALLER%\%INSTALLERNAME%"
+    "%SIGNTOOL%" sign  /t http://timestamp.verisign.com/scripts/timstamp.dll "%TARGET_DIR%\%INSTALLERNAME%"
     IF %ERRORLEVEL% NEQ 0 (
         ECHO
         ECHO ************************************************************
