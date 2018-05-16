@@ -214,8 +214,8 @@ REM Main function Ends
     ECHO Removing Sphinx
     pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
 
-    ECHO Fixing backports.csv - adding missing __init__.py
-    type nul >> "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\backports\__init__.py"
+    ECHO Fixing backports.csv for Python 2 by adding missing __init__.py
+    IF %PYTHON_MAJOR% == 2 type nul >> "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\backports\__init__.py"
 
     ECHO Assembling runtime environment...
     CD "%WD%\runtime"
@@ -396,11 +396,8 @@ REM Main function Ends
 
 
 :err_handle_python
-    ECHO %PYTHON_HOME% does not exist, or
-    ECHO PYTHON_VERSION is not SET, or
-    ECHO %PYTHON_DLL% does not exist.
+    ECHO %PYTHON_HOME% does not exist, or %PYTHON_DLL% does not exist.
     ECHO Please install Python and SET the PYTHON_HOME enviroment Variable.
-    ECHO SET "PYTHON_VERSION=<VERSION NUMBER>"
     ECHO SET "PYTHON_HOME=<PATH>"
     ECHO SET "PYTHON_DLL=<PATH>"
     exit /B 1
