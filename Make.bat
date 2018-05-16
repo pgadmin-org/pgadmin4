@@ -85,11 +85,10 @@ REM Main function Ends
     FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "print('%APP_NAME%'.lower().replace(' ', ''))"') DO SET APP_SHORTNAME=%%G
     FOR /F "tokens=4,5 delims=. " %%a IN ('%QMAKE% -v ^| findstr /B /C:"Using Qt version "') DO SET QT_VERSION=%%a.%%b
 
-    SET INSTALLERNAME=%APP_SHORTNAME%-%APP_RELEASE%.%APP_REVISION_VERSION%-%APP_SUFFIX_VERSION%-%ARCHITECTURE%.exe
-    IF "%APP_SUFFIX_VERSION%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_RELEASE%.%APP_REVISION_VERSION%-%ARCHITECTURE%.exe
+    SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%APP_VERSION_SUFFIX%-%ARCHITECTURE%.exe
+    IF "%APP_VERSION_SUFFIX%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%ARCHITECTURE%.exe
 
-    SET PGADMIN4_VERSION=v%APP_RELEASE%
-    SET PGADMIN4_APP_VERSION=%APP_RELEASE%.%APP_REVISION_VERSION%
+    SET PGADMIN4_APP_VERSION=%APP_MAJOR%.%APP_MINOR%
 
     REM get Python version ex. 2.7.1 will get as 27
     FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
@@ -125,13 +124,11 @@ REM Main function Ends
     ECHO innotool executable:           %INNOTOOL%
     ECHO signtool executable:           %SIGNTOOL%
     ECHO.
-    ECHO App release version:           %APP_RELEASE%
-    ECHO App revision version:          %APP_REVISION_VERSION%
-    ECHO App version suffix:            %APP_SUFFIX_VERSION%
+    ECHO App major version:             %APP_MAJOR%
+    ECHO App minor version:             %APP_MINOR%
+    ECHO App version:                   %APP_VERSION%
+    ECHO App version suffix:            %APP_VERSION_SUFFIX%
     ECHO Application name:              %APP_NAME%
-    ECHO.
-    ECHO pgAdmin 4 version:             %PGADMIN4_VERSION%
-    ECHO pgAdmin 4 app version:         %PGADMIN4_APP_VERSION%
     ECHO ****************************************************************
 
     REM Check IF path SET in environment really exist or not ?
@@ -339,8 +336,8 @@ REM Main function Ends
     CD win32
 
     "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in" "-o" "%WD%\pkg\win32\installer.iss.in_stage1" "-s" MYAPP_NAME -r """%APP_NAME%"""
-    "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage1" "-o" "%WD%\pkg\win32\installer.iss.in_stage2" "-s" MYAPP_FULLVERSION -r """%PGADMIN4_APP_VERSION%"""
-    "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage2" "-o" "%WD%\pkg\win32\installer.iss.in_stage3" "-s" MYAPP_VERSION -r """%PGADMIN4_VERSION%"""
+    "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage1" "-o" "%WD%\pkg\win32\installer.iss.in_stage2" "-s" MYAPP_FULLVERSION -r """%APP_VERSION%"""
+    "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage2" "-o" "%WD%\pkg\win32\installer.iss.in_stage3" "-s" MYAPP_VERSION -r """v%APP_MAJOR%"""
 
     set ARCMODE=
     IF "%ARCHITECTURE%"=="amd64" (
