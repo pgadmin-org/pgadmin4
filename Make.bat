@@ -64,21 +64,16 @@ REM Main function Ends
     IF "%MAKE%" == ""          SET "MAKE=mingw32-make.exe"
     IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\10"
     IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files (x86)\Inno Setup 5"
-    IF "%YARNDIR%" == ""       SET "YARNDIR=C:\Program Files\Yarn"
-    IF "%NODEJSDIR%" == ""     SET "NODEJSDIR=C:\Program Files\nodejs"
-    IF "%VCINSTALLDIR%" == ""  SET "VCINSTALLDIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC"
     IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x86.exe"
     IF "%SIGNTOOL%" == ""      SET "SIGNTOOL=C:\Program Files\Microsoft SDKs\Windows\v7.1A\Bin\signtool.exe"
-    SET "VCREDISTNAME=vcredist_x86.exe"
 
-    GOTO:eof
+    REM Set VCREDISTNAME (the filename)
+    for /f "delims=" %%i in ("%VCREDIST%") do set "VCREDISTNAME=%%~nxi"
 
-:VALIDATE_ENVIRONMENT
-    REM SET the variables IF not available in windows environment
+    REM Set additional variables we need
     SET "QMAKE=%QTDIR%\bin\qmake.exe"
     SET "VIRTUALENV=venv"
     SET "TARGETINSTALLER=%WD%\dist"
-    SET "VCREDIST=%VCINSTALLDIR%\redist\1033\%VCREDISTNAME%"
 
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')    DO SET APP_RELEASE=%%a
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\config.py')   DO SET APP_REVISION_VERSION=%%a
@@ -89,46 +84,64 @@ REM Main function Ends
     FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py')   DO SET APP_NAME=%%a
     FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "print('%APP_NAME%'.lower().replace(' ', ''))"') DO SET APP_SHORTNAME=%%G
     FOR /F "tokens=4,5 delims=. " %%a IN ('%QMAKE% -v ^| findstr /B /C:"Using Qt version "') DO SET QT_VERSION=%%a.%%b
-    
+
     SET INSTALLERNAME=%APP_SHORTNAME%-%APP_RELEASE%.%APP_REVISION_VERSION%-%APP_SUFFIX_VERSION%-%ARCHITECTURE%.exe
     IF "%APP_SUFFIX_VERSION%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_RELEASE%.%APP_REVISION_VERSION%-%ARCHITECTURE%.exe
 
     SET PGADMIN4_VERSION=v%APP_RELEASE%
     SET PGADMIN4_APP_VERSION=%APP_RELEASE%.%APP_REVISION_VERSION%
 
+    REM get Python version ex. 2.7.1 will get as 27
+    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
+    FOR /f "tokens=2 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MINOR=%%G
+    SET "PYTHON_VERSION=%PYTHON_MAJOR%%PYTHON_MINOR%"
+
+    GOTO:eof
+
+:VALIDATE_ENVIRONMENT
     ECHO ****************************************************************
     ECHO                        S U M M A R Y
     ECHO ****************************************************************
-    ECHO Target mode = x86
-    ECHO INNOTOOL    = %INNOTOOL%
-    ECHO MAKE        = %MAKE%
-    ECHO VCINSTALLDIR= %VCINSTALLDIR%
-    ECHO VCDIST      = %VCREDIST%
-    ECHO SIGNTOOL    = %SIGNTOOL%
-    ECHO QTDIR       = %QTDIR%
-    ECHO QMAKE       = %QMAKE%
-    ECHO QT_VERSION  = %QT_VERSION%
-    ECHO YARNDIR     = %YARNDIR%
-    ECHO NODEJSDIR   = %NODEJSDIR%
-    ECHO PYTHON_HOME = %PYTHON_HOME%
-    ECHO PYTHON_DLL  = %PYTHON_DLL%
-    ECHO PGDIR       = %PGDIR%
+    ECHO Build path:                    %PGBUILDPATH%
+    ECHO Output directory:              %TARGETINSTALLER%
+    ECHO Installer name:                %INSTALLERNAME%
+    ECHO.
+    ECHO Python home:                   %PYTHON_HOME%
+    ECHO Python DLL:                    %PYTHON_DLL%
+    ECHO Python version:                %PYTHON_VERSION%
+    ECHO Python major version:          %PYTHON_MAJOR%
+    ECHO Python minor version:          %PYTHON_MINOR%
+    ECHO Virtual environment:           %VIRTUALENV%
+    ECHO.
+    ECHO Qt home:                       %QTDIR%
+    ECHO qmake executable:              %QMAKE%
+    ECHO Qt version:                    %QT_VERSION%
+    ECHO.
+    ECHO PostgreSQL home:               %PGDIR%
+    ECHO.
+    ECHO VC++ redistributable:          %VCREDIST%
+    ECHO VC++ redistributable filename: %VCREDISTNAME%
+    ECHO.
+    ECHO innotool executable:           %INNOTOOL%
+    ECHO signtool executable:           %SIGNTOOL%
+    ECHO.
+    ECHO App release version:           %APP_RELEASE%
+    ECHO App revision version:          %APP_REVISION_VERSION%
+    ECHO App version suffix:            %APP_SUFFIX_VERSION%
+    ECHO Application name:              %APP_NAME%
+    ECHO.
+    ECHO pgAdmin 4 version:             %PGADMIN4_VERSION%
+    ECHO pgAdmin 4 app version:         %PGADMIN4_APP_VERSION%
     ECHO ****************************************************************
 
-    REM Check IF path SET in enviroments really exist or not ?
+    REM Check IF path SET in environment really exist or not ?
     IF NOT EXIST "%INNOTOOL%"          GOTO err_handle_inno
-    IF NOT EXIST "%VCINSTALLDIR%"      GOTO err_handle_visualstudio
-    IF NOT EXIST "%VCREDIST%"          GOTO err_handle_visualstudio_dist
+    IF NOT EXIST "%VCREDIST%"          GOTO err_handle_vcredist
     IF NOT EXIST "%QTDIR%"             GOTO err_handle_qt
     IF NOT EXIST "%QMAKE%"             GOTO err_handle_qt
     IF NOT EXIST "%PYTHON_HOME%"       GOTO err_handle_python
     IF NOT EXIST "%PYTHON_DLL%"        GOTO err_handle_python
     IF NOT EXIST "%PGDIR%"             GOTO err_handle_pg
-
-    REM get Python version ex. 2.7.1 will get as 27
-    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
-    FOR /f "tokens=2 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MINOR=%%G
-    SET "PYTHON_VERSION=%PYTHON_MAJOR%%PYTHON_MINOR%"
 
     IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" GOTO err_handle_pythonvirtualenv
 
@@ -214,8 +227,10 @@ REM Main function Ends
     ECHO Removing Sphinx
     pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
 
-    ECHO Fixing backports.csv for Python 2 by adding missing __init__.py
-    IF %PYTHON_MAJOR% == 2 type nul >> "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\backports\__init__.py"
+    IF %PYTHON_MAJOR% == 2 (
+        ECHO Fixing backports.csv for Python 2 by adding missing __init__.py
+        type nul >> "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\backports\__init__.py"
+    )
 
     ECHO Assembling runtime environment...
     CD "%WD%\runtime"
@@ -380,20 +395,12 @@ REM Main function Ends
     exit /B 1
     GOTO EXIT
 
-:err_handle_visualstudio
-    ECHO %INSTALL% does not exist
-    ECHO Please Install Microsoft Visual studio and SET the VCINSTALLDIR enviroment Variable.
-    ECHO SET "VCINSTALLDIR=<PATH>"
-    exit /B 1
-    GOTO EXIT
-
-:err_handle_visualstudio_dist
+:err_handle_vcredist
     ECHO %VCREDIST% does not exist
     ECHO Please Install Microsoft Visual studio and SET the VCREDIST enviroment Variable.
     ECHO SET "VCREDIST=<PATH>"
     exit /B 1
     GOTO EXIT
-
 
 :err_handle_python
     ECHO %PYTHON_HOME% does not exist, or %PYTHON_DLL% does not exist.
