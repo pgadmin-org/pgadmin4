@@ -847,12 +847,12 @@ define('pgadmin.node.server', [
           control: Backform.FileControl, dialog_type: 'select_file', supp_types: ['*'],
           deps: ['tunnel_authentication', 'use_ssh_tunnel'],
           disabled: function(model) {
-            if (!model.get('tunnel_authentication') || !model.get('use_ssh_tunnel')) {
+            if (!model.get('tunnel_authentication')) {
               setTimeout(function() {
                 model.set('tunnel_identity_file', '');
               }, 10);
             }
-            return !model.get('tunnel_authentication');
+            return !model.get('tunnel_authentication') || !model.get('use_ssh_tunnel');
           },
         },{
           id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'text',
