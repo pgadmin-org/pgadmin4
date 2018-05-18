@@ -676,7 +676,7 @@ define('pgadmin.node.server', [
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
         },{
           id: 'port', label: gettext('Port'), type: 'int', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65535,
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1, max: 65535,
         },{
           id: 'db', label: gettext('Maintenance database'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
