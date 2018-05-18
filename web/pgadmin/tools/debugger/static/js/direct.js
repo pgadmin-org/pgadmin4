@@ -1850,8 +1850,13 @@ define([
         self.docker.off(wcDocker.EVENT.LOADED);
         // Register the callback when user set/clear the breakpoint on gutter area.
         self.editor.on('gutterClick', self.onBreakPoint.bind(self), self);
-        // Set focus to the debugger container
-        self.$container.focus();
+        /* Set focus to the debugger container
+         * Focus does not work in firefox without tabindex attr
+         * so, setting focus to parent of $container which is #container
+         */
+        if(self.docker.$container){
+          self.docker.$container.parent().focus();
+        }
       };
 
       self.docker.startLoading(gettext('Loading...'));
