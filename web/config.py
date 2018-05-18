@@ -389,6 +389,5 @@ except ImportError:
 # setting is False in local config then we should not check the Python version.
 if (SUPPORT_SSH_TUNNEL is True and
     ((sys.version_info[0] == 2 and sys.version_info[1] < 7) or
-    (sys.version_info[0] == 3 and sys.version_info[1] < 4))
-):
+     (sys.version_info[0] == 3 and sys.version_info[1] < 4))):
     SUPPORT_SSH_TUNNEL = False
