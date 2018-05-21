@@ -125,49 +125,49 @@ REM Main build sequence Ends
 
     ECHO Checking the environment...
     IF NOT EXIST "%INNOTOOL%" (
-        ECHO %INNOTOOL% does not exist
+        ECHO !INNOTOOL! does not exist
         ECHO Please install Innotool and set the INNOTOOL environment variable.
         EXIT /B 1
     )
 
     IF NOT EXIST "%VCREDIST%" (
-        ECHO %VCREDIST% does not exist
+        ECHO !VCREDIST! does not exist
         ECHO Please install Microsoft Visual studio and set the VCREDIST environment variable.
         EXIT /B 1
     )
 
     IF NOT EXIST "%QTDIR%" (
-        ECHO %QTDIR% does not exist.
+        ECHO !QTDIR! does not exist.
         ECHO Please install Qt and set the QTDIR environment variable.
         EXIT /B 1
     )
 
     IF NOT EXIST "%QMAKE%" (
-        ECHO %QMAKE% does not exist.
+        ECHO !QMAKE! does not exist.
         ECHO Please install Qt and set the QTDIR environment variable.
         EXIT /B 1
     )
 
     IF NOT EXIST "%PYTHON_HOME%" (
-        ECHO %PYTHON_HOME% does not exist.
+        ECHO !PYTHON_HOME! does not exist.
         ECHO Please install Python and set the PYTHON_HOME environment variable.
         EXIT /B 1
     )
 
     IF NOT EXIST "%PYTHON_DLL%" (
-        ECHO %PYTHON_DLL% does not exist.
+        ECHO !PYTHON_DLL! does not exist.
         ECHO Please install Python and set the PYTHON_DLL environment variable.
         EXIT /B 1
     )
 
     IF NOT EXIST "%PGDIR%" (
-        ECHO %PGDIR% does not exist.
+        ECHO !PGDIR! does not exist.
         ECHO Please install PostgreSQL and set the PGDIR environment variable.
         EXIT /B 1
     )
 
     IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" (
-        ECHO %PYTHON_HOME%\Scripts\virtualenv.exe does not exist.
+        ECHO !PYTHON_HOME!\Scripts\virtualenv.exe does not exist.
         ECHO Please install the virtualenv package in Python.
         EXIT /B 1
     )
