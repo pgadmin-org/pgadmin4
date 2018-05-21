@@ -193,7 +193,7 @@ REM Main build sequence Ends
     pip install sphinx || EXIT /B %ERRORLEVEL%
 
     ECHO Deactivating Virtual Enviroment - %PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate...
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate"
+    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate" || EXIT /B %ERRORLEVEL%
 
     CD %WD%
     EXIT /B 0
@@ -205,10 +205,10 @@ REM Main build sequence Ends
     CD "%WD%\web"
 
     ECHO Installing javascript dependencies...
-    CALL yarn install || EXIT /B %ERRORLEVEL%
+    yarn install || EXIT /B %ERRORLEVEL%
 
     ECHO Bundling javascript...
-    CALL yarn run bundle || EXIT /B %ERRORLEVEL%
+    yarn run bundle || EXIT /B %ERRORLEVEL%
 
     ECHO Removing webpack caches...
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
@@ -237,7 +237,7 @@ REM Main build sequence Ends
     ECHO } >> "%PGBUILDPATH%\web\config_distro.py"
 
     ECHO Activating Virtual Enviroment -  %PGBUILDPATH%\%VIRTUALENV%\Scripts\activate...
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate"
+    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B %ERRORLEVEL%
 
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"
@@ -257,14 +257,13 @@ REM Main build sequence Ends
     CD "%WD%\runtime"
 
     ECHO Running qmake...
-    CALL "%QMAKE%" || EXIT /B %ERRORLEVEL%
+    "%QMAKE%" || EXIT /B %ERRORLEVEL%
 
     ECHO Cleaning the build directory...
-    CALL %MAKE% clean || EXIT /B %ERRORLEVEL%
+    %MAKE% clean || EXIT /B %ERRORLEVEL%
 
     ECHO Running make...
-    CALL mingw32-make.exe || EXIT /B %ERRORLEVEL%
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    %MAKE% || EXIT /B %ERRORLEVEL%
 
     ECHO Staging pgAdmin4.exe...
     COPY "%WD%\runtime\release\pgAdmin4.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
@@ -346,7 +345,7 @@ REM Main build sequence Ends
     DEL /s "%WD%\pkg\win32\installer.iss.in_stage*" > nul
 
     ECHO Creating windows installer using INNO tool...
-    CALL "%INNOTOOL%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss" || EXIT /B %ERRORLEVEL%
+    "%INNOTOOL%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss" || EXIT /B %ERRORLEVEL%
 
     ECHO Renaming installer...
     MOVE "%WD%\pkg\win32\Output\Setup.exe" "%TARGET_DIR%\%INSTALLERNAME%" > nul || EXIT /B %ERRORLEVEL%
