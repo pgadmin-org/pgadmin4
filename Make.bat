@@ -205,10 +205,10 @@ REM Main build sequence Ends
     CD "%WD%\web"
 
     ECHO Installing javascript dependencies...
-    yarn install || EXIT /B %ERRORLEVEL%
+    CALL yarn install || EXIT /B %ERRORLEVEL%
 
     ECHO Bundling javascript...
-    yarn run bundle || EXIT /B %ERRORLEVEL%
+    CALL yarn run bundle || EXIT /B %ERRORLEVEL%
 
     ECHO Removing webpack caches...
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
