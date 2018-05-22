@@ -22,14 +22,14 @@ IF "%ARCHITECTURE%"=="clean" (
 
 REM Main build sequence
 CALL :SET_ENVIRONMENT
-CALL :VALIDATE_ENVIRONMENT || EXIT /B %ERRORLEVEL%
-CALL :CLEAN || EXIT /B %ERRORLEVEL%
-CALL :CREATE_VIRTUAL_ENV || EXIT /B %ERRORLEVEL%
-CALL :CREATE_RUNTIME_ENV || EXIT /B %ERRORLEVEL%
-CALL :CREATE_PYTHON_ENV || EXIT /B %ERRORLEVEL%
-CALL :CLEANUP_ENV || EXIT /B %ERRORLEVEL%
-CALL :CREATE_INSTALLER || EXIT /B %ERRORLEVEL%
-CALL :SIGN_INSTALLER || EXIT /B %ERRORLEVEL%
+CALL :VALIDATE_ENVIRONMENT || EXIT /B 1
+CALL :CLEAN || EXIT /B 1
+CALL :CREATE_VIRTUAL_ENV || EXIT /B 1
+CALL :CREATE_RUNTIME_ENV || EXIT /B 1
+CALL :CREATE_PYTHON_ENV || EXIT /B 1
+CALL :CLEANUP_ENV || EXIT /B 1
+CALL :CREATE_INSTALLER || EXIT /B 1
+CALL :SIGN_INSTALLER || EXIT /B 1
 
 EXIT /B %ERRORLEVEL%
 REM Main build sequence Ends
@@ -37,13 +37,13 @@ REM Main build sequence Ends
 
 :CLEAN
     ECHO Removing build directory...
-    IF EXIST "%PGBUILDPATH%" RD "%PGBUILDPATH%" /S /Q > nul || EXIT /B %ERRORLEVEL%
+    IF EXIST "%PGBUILDPATH%" RD "%PGBUILDPATH%" /S /Q > nul || EXIT /B 1
 
     ECHO Removing temp build directory...
-    IF EXIST "%WD%\pkg\win32\Output" rd "%WD%\pkg\win32\Output" /S /Q > nul || EXIT /B %ERRORLEVEL%
+    IF EXIST "%WD%\pkg\win32\Output" rd "%WD%\pkg\win32\Output" /S /Q > nul || EXIT /B 1
 
     ECHO Removing installer configuration script...
-    IF EXIST DEL /q "%WD%\pkg\win32\installer.iss" > nul || EXIT /B %ERRORLEVEL%
+    IF EXIST DEL /q "%WD%\pkg\win32\installer.iss" > nul || EXIT /B 1
 
     EXIT /B 0
 
@@ -185,15 +185,15 @@ REM Main build sequence Ends
     "%PYTHON_HOME%\Scripts\virtualenv.exe" "%VIRTUALENV%"
 
     ECHO Activating virtual environment -  %PGBUILDPATH%\%VIRTUALENV%...
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B %ERRORLEVEL%
+    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B 1
     SET PATH=%PGDIR%\bin;%PATH%
 
     ECHO Installing dependencies...
-    pip install -r "%WD%\requirements.txt" || EXIT /B %ERRORLEVEL%
-    pip install sphinx || EXIT /B %ERRORLEVEL%
+    pip install -r "%WD%\requirements.txt" || EXIT /B 1
+    pip install sphinx || EXIT /B 1
 
     ECHO Deactivating Virtual Enviroment - %PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate...
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate" || EXIT /B %ERRORLEVEL%
+    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate" || EXIT /B 1
 
     CD %WD%
     EXIT /B 0
@@ -205,16 +205,16 @@ REM Main build sequence Ends
     CD "%WD%\web"
 
     ECHO Installing javascript dependencies...
-    CALL yarn install || EXIT /B %ERRORLEVEL%
+    CALL yarn install || EXIT /B 1
 
     ECHO Bundling javascript...
-    CALL yarn run bundle || EXIT /B %ERRORLEVEL%
+    CALL yarn run bundle || EXIT /B 1
 
     ECHO Removing webpack caches...
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
 
     ECHO Copying web directory...
-    XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul || EXIT /B %ERRORLEVEL%
+    XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul || EXIT /B 1
 
     ECHO Cleaning up unnecessary .pyc and .pyo files...
     FOR /R "%PGBUILDPATH%\web" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
@@ -237,13 +237,13 @@ REM Main build sequence Ends
     ECHO } >> "%PGBUILDPATH%\web\config_distro.py"
 
     ECHO Activating Virtual Enviroment -  %PGBUILDPATH%\%VIRTUALENV%\Scripts\activate...
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B %ERRORLEVEL%
+    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B 1
 
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"
     CD "%WD%\docs\en_US"
-    "%PGBUILDPATH%\%VIRTUALENV%\Scripts\python.exe" build_code_snippet.py || EXIT /B %ERRORLEVEL%
-    "%PGBUILDPATH%\%VIRTUALENV%\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%PGBUILDPATH%\docs\en_US\html" || EXIT /B %ERRORLEVEL%
+    "%PGBUILDPATH%\%VIRTUALENV%\Scripts\python.exe" build_code_snippet.py || EXIT /B 1
+    "%PGBUILDPATH%\%VIRTUALENV%\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%PGBUILDPATH%\docs\en_US\html" || EXIT /B 1
 
     ECHO Removing Sphinx
     pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
@@ -257,45 +257,45 @@ REM Main build sequence Ends
     CD "%WD%\runtime"
 
     ECHO Running qmake...
-    "%QMAKE%" || EXIT /B %ERRORLEVEL%
+    "%QMAKE%" || EXIT /B 1
 
     ECHO Cleaning the build directory...
-    %MAKE% clean || EXIT /B %ERRORLEVEL%
+    %MAKE% clean || EXIT /B 1
 
     ECHO Running make...
-    %MAKE% || EXIT /B %ERRORLEVEL%
+    %MAKE% || EXIT /B 1
 
     ECHO Staging pgAdmin4.exe...
-    COPY "%WD%\runtime\release\pgAdmin4.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
+    COPY "%WD%\runtime\release\pgAdmin4.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
 
     ECHO Staging Qt components...
-    COPY "%QTDIR%\bin\Qt5Core.dll"   "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%QTDIR%\bin\Qt5Gui.dll"    "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%QTDIR%\bin\Qt5Widgets.dll" "%PGBUILDPATH%\runtime" > nul  || EXIT /B %ERRORLEVEL%
-    COPY "%QTDIR%\bin\Qt5Network.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%QTDIR%\bin\libgcc_s_dw2-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%QTDIR%\bin\libstdc++-6.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    MKDIR "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%QTDIR%\plugins\platforms\qwindows.dll" "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B %ERRORLEVEL%
+    COPY "%QTDIR%\bin\Qt5Core.dll"   "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%QTDIR%\bin\Qt5Gui.dll"    "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%QTDIR%\bin\Qt5Widgets.dll" "%PGBUILDPATH%\runtime" > nul  || EXIT /B 1
+    COPY "%QTDIR%\bin\Qt5Network.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%QTDIR%\bin\libgcc_s_dw2-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%QTDIR%\bin\libstdc++-6.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    MKDIR "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B 1
+    COPY "%QTDIR%\plugins\platforms\qwindows.dll" "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B 1
     ECHO [Paths] > "%PGBUILDPATH%\runtime\qt.conf"
     ECHO Plugins=plugins >> "%PGBUILDPATH%\runtime\qt.conf"
 
     ECHO Staging PostgreSQL components...
-    COPY "%PGDIR%\bin\libpq.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%PGDIR%\bin\ssleay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%PGDIR%\bin\libeay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%PGDIR%\bin\libintl-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%PGDIR%\bin\libiconv-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%PGDIR%\bin\zlib1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%PGDIR%\bin\pg_dump.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%PGDIR%\bin\pg_dumpall.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%L%
-    COPY "%PGDIR%\bin\pg_restore.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY "%PGDIR%\bin\psql.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
+    COPY "%PGDIR%\bin\libpq.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGDIR%\bin\ssleay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGDIR%\bin\libeay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGDIR%\bin\libintl-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGDIR%\bin\libiconv-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGDIR%\bin\zlib1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGDIR%\bin\pg_dump.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGDIR%\bin\pg_dumpall.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1L%
+    COPY "%PGDIR%\bin\pg_restore.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGDIR%\bin\psql.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
 
     ECHO Staging VC++ runtime...
-    MKDIR "%PGBUILDPATH%\installer" || EXIT /B %ERRORLEVEL%
-    copy "%VCREDIST%" "%PGBUILDPATH%\installer" > nul || EXIT /B %ERRORLEVEL%
+    MKDIR "%PGBUILDPATH%\installer" || EXIT /B 1
+    copy "%VCREDIST%" "%PGBUILDPATH%\installer" > nul || EXIT /B 1
 
     CD %WD%
     EXIT /B 0
@@ -303,12 +303,12 @@ REM Main build sequence Ends
 
 :CREATE_PYTHON_ENV
     ECHO Staging Python...
-    COPY %PYTHON_DLL% "%PGBUILDPATH%\runtime"  > nul || EXIT /B %ERRORLEVEL%
-    COPY %PYTHON_HOME%\python.exe "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
-    COPY %PYTHON_HOME%\pythonw.exe "%PGBUILDPATH%\runtime" > nul || EXIT /B %ERRORLEVEL%
+    COPY %PYTHON_DLL% "%PGBUILDPATH%\runtime"  > nul || EXIT /B 1
+    COPY %PYTHON_HOME%\python.exe "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY %PYTHON_HOME%\pythonw.exe "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
 
-    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\DLLs" "%PGBUILDPATH%\%VIRTUALENV%\DLLs" > nul || EXIT /B %ERRORLEVEL%
-    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\Lib" "%PGBUILDPATH%\%VIRTUALENV%\Lib" > nul || EXIT /B %ERRORLEVEL%
+    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\DLLs" "%PGBUILDPATH%\%VIRTUALENV%\DLLs" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\Lib" "%PGBUILDPATH%\%VIRTUALENV%\Lib" > nul || EXIT /B 1
 
     ECHO Cleaning up unnecessary .pyc and .pyo files...
     FOR /R "%PGBUILDPATH%\%VIRTUALENV%" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
@@ -325,7 +325,7 @@ REM Main build sequence Ends
     IF NOT EXIST "%TARGET_DIR%" MKDIR "%TARGET_DIR%"
 
     ECHO Copying icon file...
-    COPY "%WD%\pkg\win32\Resources\pgAdmin4.ico" "%PGBUILDPATH%" > nul || EXIT /B %ERRORLEVEL%
+    COPY "%WD%\pkg\win32\Resources\pgAdmin4.ico" "%PGBUILDPATH%" > nul || EXIT /B 1
 
     CD "%WD%\pkg\win32"
 
@@ -345,10 +345,10 @@ REM Main build sequence Ends
     DEL /s "%WD%\pkg\win32\installer.iss.in_stage*" > nul
 
     ECHO Creating windows installer using INNO tool...
-    "%INNOTOOL%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss" || EXIT /B %ERRORLEVEL%
+    "%INNOTOOL%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss" || EXIT /B 1
 
     ECHO Renaming installer...
-    MOVE "%WD%\pkg\win32\Output\Setup.exe" "%TARGET_DIR%\%INSTALLERNAME%" > nul || EXIT /B %ERRORLEVEL%
+    MOVE "%WD%\pkg\win32\Output\Setup.exe" "%TARGET_DIR%\%INSTALLERNAME%" > nul || EXIT /B 1
 
     ECHO Location - %TARGET_DIR%\%INSTALLERNAME%
     ECHO Installer generated successfully.
