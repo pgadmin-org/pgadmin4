@@ -188,8 +188,8 @@ REM Main build sequence Ends
     CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B 1
 
     ECHO Installing dependencies...
-    pip install -r "%WD%\requirements.txt" || EXIT /B 1
-    pip install sphinx || EXIT /B 1
+    CALL pip install -r "%WD%\requirements.txt" || EXIT /B 1
+    CALL pip install sphinx || EXIT /B 1
 
     CD %WD%
     EXIT /B 0
@@ -235,11 +235,11 @@ REM Main build sequence Ends
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"
     CD "%WD%\docs\en_US"
-    "%PGBUILDPATH%\%VIRTUALENV%\Scripts\python.exe" build_code_snippet.py || EXIT /B 1
-    "%PGBUILDPATH%\%VIRTUALENV%\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%PGBUILDPATH%\docs\en_US\html" || EXIT /B 1
+    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\python.exe" build_code_snippet.py || EXIT /B 1
+    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%PGBUILDPATH%\docs\en_US\html" || EXIT /B 1
 
     ECHO Removing Sphinx
-    pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
+    CALL pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
 
     IF %PYTHON_MAJOR% == 2 (
         ECHO Fixing backports.csv for Python 2 by adding missing __init__.py
@@ -250,13 +250,13 @@ REM Main build sequence Ends
     CD "%WD%\runtime"
 
     ECHO Running qmake...
-    "%QMAKE%" || EXIT /B 1
+    CALL "%QMAKE%" || EXIT /B 1
 
     ECHO Cleaning the build directory...
-    %MAKE% clean || EXIT /B 1
+    CALL %MAKE% clean || EXIT /B 1
 
     ECHO Running make...
-    %MAKE% || EXIT /B 1
+    CALL %MAKE% || EXIT /B 1
 
     ECHO Staging pgAdmin4.exe...
     COPY "%WD%\runtime\release\pgAdmin4.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
