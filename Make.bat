@@ -172,7 +172,7 @@ REM Main build sequence Ends
         EXIT /B 1
     )
 
-    SET PATH=%PGDIR%\bin;%PATH%;
+    SET "PATH=%PGDIR%\bin;%PATH%"
 
     EXIT /B 0
 
@@ -186,14 +186,10 @@ REM Main build sequence Ends
 
     ECHO Activating virtual environment -  %PGBUILDPATH%\%VIRTUALENV%...
     CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B 1
-    SET PATH=%PGDIR%\bin;%PATH%
 
     ECHO Installing dependencies...
     pip install -r "%WD%\requirements.txt" || EXIT /B 1
     pip install sphinx || EXIT /B 1
-
-    ECHO Deactivating Virtual Enviroment - %PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate...
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate" || EXIT /B 1
 
     CD %WD%
     EXIT /B 0
@@ -235,9 +231,6 @@ REM Main build sequence Ends
     ECHO     'pg':   '$DIR/../runtime', >> "%PGBUILDPATH%\web\config_distro.py"
     ECHO     'ppas': '' >> "%PGBUILDPATH%\web\config_distro.py"
     ECHO } >> "%PGBUILDPATH%\web\config_distro.py"
-
-    ECHO Activating Virtual Enviroment -  %PGBUILDPATH%\%VIRTUALENV%\Scripts\activate...
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B 1
 
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"
