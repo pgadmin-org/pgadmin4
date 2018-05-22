@@ -289,11 +289,11 @@ REM Main build sequence Ends
 
     ECHO Staging VC++ runtime...
     MKDIR "%PGBUILDPATH%\installer" || EXIT /B 1
-    copy "%VCREDIST%" "%PGBUILDPATH%\installer" > nul || EXIT /B 1
+    COPY "%VCREDIST%" "%PGBUILDPATH%\installer" > nul || EXIT /B 1
 
     CD %WD%
     EXIT /B 0
-
+    
 
 :CREATE_PYTHON_ENV
     ECHO Staging Python...
@@ -328,7 +328,7 @@ REM Main build sequence Ends
     "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage1" "-o" "%WD%\pkg\win32\installer.iss.in_stage2" "-s" MYAPP_FULLVERSION -r """%APP_VERSION%"""
     "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage2" "-o" "%WD%\pkg\win32\installer.iss.in_stage3" "-s" MYAPP_VERSION -r """v%APP_MAJOR%"""
 
-    set ARCMODE=
+    SET ARCMODE=
     IF "%ARCHITECTURE%"=="amd64" (
         set ARCMODE="x64"
     )
@@ -363,6 +363,7 @@ REM Main build sequence Ends
     )
 
     EXIT /B 0
+
 
 :CLEANUP_ENV
     ECHO Cleaning the build environment...
