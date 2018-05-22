@@ -266,9 +266,9 @@ REM Main build sequence Ends
     COPY "%QTDIR%\bin\Qt5Gui.dll"    "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     COPY "%QTDIR%\bin\Qt5Widgets.dll" "%PGBUILDPATH%\runtime" > nul  || EXIT /B 1
     COPY "%QTDIR%\bin\Qt5Network.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%QTDIR%\bin\libgcc_s_dw2-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%QTDIR%\bin\libstdc++-6.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%QTDIR%\bin\libgcc_s_dw2-1.dll" COPY "%QTDIR%\bin\libgcc_s_dw2-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%QTDIR%\bin\libstdc++-6.dll" COPY "%QTDIR%\bin\libstdc++-6.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%QTDIR%\bin\libwinpthread-1.dll" COPY "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     MKDIR "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B 1
     COPY "%QTDIR%\plugins\platforms\qwindows.dll" "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B 1
     ECHO [Paths] > "%PGBUILDPATH%\runtime\qt.conf"
@@ -278,9 +278,10 @@ REM Main build sequence Ends
     COPY "%PGDIR%\bin\libpq.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     COPY "%PGDIR%\bin\ssleay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     COPY "%PGDIR%\bin\libeay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%PGDIR%\bin\libintl-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%PGDIR%\bin\libiconv-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%PGDIR%\bin\zlib1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%PGDIR%\bin\libintl-*.dll" COPY "%PGDIR%\bin\libintl-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%PGDIR%\bin\libiconv-*.dll" COPY "%PGDIR%\bin\libiconv-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%PGDIR%\bin\zlib.dll" COPY "%PGDIR%\bin\zlib.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%PGDIR%\bin\zlib1.dll" COPY "%PGDIR%\bin\zlib1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     COPY "%PGDIR%\bin\pg_dump.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     COPY "%PGDIR%\bin\pg_dumpall.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1L%
     COPY "%PGDIR%\bin\pg_restore.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
