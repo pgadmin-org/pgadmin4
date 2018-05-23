@@ -245,6 +245,12 @@ REM Main build sequence Ends
         ECHO Fixing backports.csv for Python 2 by adding missing __init__.py
         type nul >> "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\backports\__init__.py"
     )
+    
+    IF %PYTHON_MAJOR% == 3 (
+        ECHO Fixing PyCrypto module for Python 3...
+        CALL "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\Crypto\Random\OSRNG\nt.py" "-o" "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\Crypto\Random\OSRNG\nt.py.new" "-s" "import winrandom" -r "from . import winrandom"
+        MOVE /Y "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\Crypto\Random\OSRNG\nt.py.new" "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\Crypto\Random\OSRNG\nt.py"
+    )
 
     ECHO Assembling runtime environment...
     CD "%WD%\runtime"
