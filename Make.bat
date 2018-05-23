@@ -355,7 +355,7 @@ REM Main build sequence Ends
     ECHO Attempting to sign the installer...
     CALL "%SIGNTOOL%" sign  /t http://timestamp.verisign.com/scripts/timstamp.dll "%TARGET_DIR%\%INSTALLERNAME%"
     IF %ERRORLEVEL% NEQ 0 (
-        ECHO
+        ECHO.
         ECHO ************************************************************
         ECHO * Failed to sign the installer
         ECHO ************************************************************
