@@ -180,6 +180,11 @@ REM Main build sequence Ends
 :CREATE_VIRTUAL_ENV
     ECHO Creating virtual environment...
     IF NOT EXIST "%PGBUILDPATH%"  MKDIR "%PGBUILDPATH%"
+    
+    REM If we're using VC++, and this is Python 3.6+, we need a hack for PyCrypto
+    IF "%MAKE%" == "nmake" (
+        IF %PYTHON_VERSION% >= 36 SET CL=-FI"%VCINSTALLDIR%\INCLUDE\stdint.h"
+    )
 
     CD "%PGBUILDPATH%"
     "%PYTHON_HOME%\Scripts\virtualenv.exe" "%VIRTUALENV%"
@@ -190,6 +195,12 @@ REM Main build sequence Ends
     ECHO Installing dependencies...
     CALL pip install -r "%WD%\requirements.txt" || EXIT /B 1
     CALL pip install sphinx || EXIT /B 1
+
+    REM If we're using VC++, and this is Python 3.6+, we need to remove the hack
+    REM above or it will break qmake. Sigh.
+    IF "%MAKE%" == "nmake" (
+        IF %PYTHON_VERSION% >= 36 SET CL=
+    )
 
     CD %WD%
     EXIT /B 0
