@@ -183,7 +183,7 @@ REM Main build sequence Ends
     
     REM If we're using VC++, and this is Python 3.6+, we need a hack for PyCrypto
     IF "%MAKE%" == "nmake" (
-        IF %PYTHON_VERSION% >= 36 SET CL=-FI"%VCINSTALLDIR%\INCLUDE\stdint.h"
+        IF %PYTHON_VERSION% GEQ 36 SET CL=-FI"%VCINSTALLDIR%\INCLUDE\stdint.h"
     )
 
     CD "%PGBUILDPATH%"
@@ -199,7 +199,7 @@ REM Main build sequence Ends
     REM If we're using VC++, and this is Python 3.6+, we need to remove the hack
     REM above or it will break qmake. Sigh.
     IF "%MAKE%" == "nmake" (
-        IF %PYTHON_VERSION% >= 36 SET CL=
+        IF %PYTHON_VERSION% GEQ 36 SET CL=
     )
 
     CD %WD%
