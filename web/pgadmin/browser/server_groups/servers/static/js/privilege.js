@@ -381,10 +381,10 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
               'header': true,
             }));
         }
-        self.$el.find('input[type=checkbox]').first().focus();
+        self.$el.find('input[type=checkbox]').first().trigger('focus');
         // Since blur event does not bubble we need to explicitly call parent's blur event.
         $(self.$el.find('input[type=checkbox]')).on('blur',function() {
-          self.$el.blur();
+          self.$el.trigger('blur');
         });
 
         // Make row visible in when entering in edit mode.

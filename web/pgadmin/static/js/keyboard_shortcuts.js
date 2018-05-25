@@ -84,7 +84,7 @@ function keyboardShortcutsDebugger($el, event, user_defined_shortcuts) {
     if(panel_content.length) {
       $input = $(panel_content).find('td.editable:first');
       if($input.length)
-        $input.click();
+        $input.trigger('click');
     }
   } else if(this.validateShortcutKeys(next_panel_keys, event)) {
     this._stopEventPropagation(event);

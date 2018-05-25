@@ -734,7 +734,7 @@ define('pgadmin.browser.node', [
                 /* Error from the server */
                 if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
                   try {
-                    var data = $.parseJSON(jqx.responseText);
+                    var data = JSON.parse(jqx.responseText);
                     msg = data.errormsg;
                   } catch (e) {
                     console.warn(e.stack || e);
@@ -1140,7 +1140,7 @@ define('pgadmin.browser.node', [
               icon: 'fa fa-lg fa-pencil-square-o',
               disabled: !that.canEdit,
               register: function(btn) {
-                btn.click(function() {
+                btn.on('click',() => {
                   onEdit();
                 });
               },
@@ -1154,7 +1154,7 @@ define('pgadmin.browser.node', [
               icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
-                btn.click(function() {
+                btn.on('click',() => {
                   onSqlHelp();
                 });
               },
@@ -1359,7 +1359,7 @@ define('pgadmin.browser.node', [
               icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
-                btn.click(function() {
+                btn.on('click',() => {
                   onSqlHelp();
                 });
               },
@@ -1371,7 +1371,7 @@ define('pgadmin.browser.node', [
               icon: 'fa fa-lg fa-question',
               disabled: (that.dialogHelp == '') ? true : false,
               register: function(btn) {
-                btn.click(function() {
+                btn.on('click',() => {
                   onDialogHelp();
                 });
               },
@@ -1384,7 +1384,7 @@ define('pgadmin.browser.node', [
               disabled: true,
               register: function(btn) {
                 // Save the changes
-                btn.click(function() {
+                btn.on('click',() => {
                   onSave.call(this, view, btn);
                 });
               },
@@ -1396,7 +1396,7 @@ define('pgadmin.browser.node', [
               icon: 'fa fa-lg fa-close',
               disabled: false,
               register: function(btn) {
-                btn.click(function() {
+                btn.on('click',() => {
                   // Removing the action-mode
                   panel.$container.removeAttr('action-mode');
                   onCancelFunc.call(arguments);
@@ -1410,7 +1410,7 @@ define('pgadmin.browser.node', [
               icon: 'fa fa-lg fa-recycle',
               disabled: true,
               register: function(btn) {
-                btn.click(function() {
+                btn.on('click',() => {
                   setTimeout(function() {
                     editFunc.call();
                   }, 0);

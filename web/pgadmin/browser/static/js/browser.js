@@ -1609,7 +1609,7 @@ define('pgadmin.browser', [
                 jsonResp = (
                   contentType &&
                     contentType.indexOf('application/json') == 0 &&
-                    $.parseJSON(xhr.responseText)
+                    JSON.parse(xhr.responseText)
                 ) || {};
 
               if (xhr.status == 410 && jsonResp.success == 0) {

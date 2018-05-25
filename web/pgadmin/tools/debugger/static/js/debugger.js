@@ -295,7 +295,7 @@ define([
         },
         error: function(xhr) {
           try {
-            var err = $.parseJSON(xhr.responseText);
+            var err = JSON.parse(xhr.responseText);
             if (err.success == 0) {
               Alertify.alert(gettext('Debugger Error'), err.errormsg);
             }
@@ -415,7 +415,7 @@ define([
         },
         error: function(xhr) {
           try {
-            var err = $.parseJSON(xhr.responseText);
+            var err = JSON.parse(xhr.responseText);
             if (err.success == 0) {
               Alertify.alert(gettext('Debugger Error'), err.errormsg);
             }
@@ -538,7 +538,7 @@ define([
         },
         error: function(xhr) {
           try {
-            var err = $.parseJSON(xhr.responseText);
+            var err = JSON.parse(xhr.responseText);
             if (err.success == 0) {
               Alertify.alert(gettext('Debugger Error'), err.errormsg);
             }

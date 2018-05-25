@@ -531,7 +531,7 @@ define([
             var grid_checkbox = $(grid.el).find('input:checkbox').first();
             if (grid_checkbox.length) {
               setTimeout(function() {
-                grid_checkbox.click();
+                grid_checkbox.trigger('click');
               }, 250);
             }
 

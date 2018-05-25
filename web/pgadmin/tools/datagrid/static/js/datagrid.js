@@ -473,7 +473,7 @@ define('pgadmin.datagrid', [
             }
 
             try {
-              var err = $.parseJSON(xhr.responseText);
+              var err = JSON.parse(xhr.responseText);
               alertify.alert(gettext('Query Tool Initialize Error'),
                 err.errormsg
               );

@@ -574,7 +574,7 @@ define('misc.file_manager', [
             $('.file_manager_ok').addClass('disabled');
             $('.replace_file, .fm_dimmer').show();
 
-            $yesBtn.click(function() {
+            $yesBtn.on('click',() => {
               $('.replace_file, .fm_dimmer').hide();
               $yesBtn.off();
               $noBtn.off();
@@ -586,7 +586,7 @@ define('misc.file_manager', [
               $('.file_manager_ok').removeClass('disabled');
             });
 
-            $noBtn.click(function() {
+            $noBtn.on('click',() => {
               $('.replace_file, .fm_dimmer').hide();
               $yesBtn.off();
               $noBtn.off();

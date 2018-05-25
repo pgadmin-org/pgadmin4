@@ -63,9 +63,9 @@ define('pgadmin.dashboard', [
       // This will refresh the grid
       var refresh_grid = function() {
         if (is_server_dashboard) {
-          $('#btn_server_activity_refresh').click();
+          $('#btn_server_activity_refresh').trigger('click');
         } else if (is_database_dashboard) {
-          $('#btn_database_activity_refresh').click();
+          $('#btn_database_activity_refresh').trigger('click');
         }
       };
 
@@ -139,7 +139,7 @@ define('pgadmin.dashboard', [
       );
       this.delegateEvents();
       if (this.grabFocus)
-        this.$el.focus();
+        this.$el.trigger('focus');
       return this;
     },
   });
@@ -969,7 +969,7 @@ define('pgadmin.dashboard', [
         });
 
         // Handle button clicks
-        $('button').click(function() {
+        $('button').on('click',() => {
           switch (this.id) {
           case 'btn_server_activity_refresh':
             pgAdmin.Dashboard.render_grid_data(div_server_activity);
@@ -1290,7 +1290,7 @@ define('pgadmin.dashboard', [
         });
 
         // Handle button clicks
-        $('button').click(function() {
+        $('button').on('click',() => {
           switch (this.id) {
           case 'btn_database_activity_refresh':
             pgAdmin.Dashboard.render_grid_data(div_database_activity);

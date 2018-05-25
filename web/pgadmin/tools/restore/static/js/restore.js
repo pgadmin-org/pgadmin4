@@ -686,7 +686,7 @@ commonUtils
                   },
                   error: function(xhr) {
                     try {
-                      var err = $.parseJSON(xhr.responseText);
+                      var err = JSON.parse(xhr.responseText);
                       alertify.alert(
                         gettext('Restore failed.'),
                         err.errormsg

@@ -755,7 +755,7 @@ commonUtils
                   },
                   error: function(xhr) {
                     try {
-                      var err = $.parseJSON(xhr.responseText);
+                      var err = JSON.parse(xhr.responseText);
                       alertify.alert(
                         gettext('Backup job failed.'),
                         err.errormsg
@@ -1041,7 +1041,7 @@ commonUtils
                   },
                   error: function(xhr) {
                     try {
-                      var err = $.parseJSON(xhr.responseText);
+                      var err = JSON.parse(xhr.responseText);
                       alertify.alert(
                         gettext('Backup job failed.'),
                         err.errormsg

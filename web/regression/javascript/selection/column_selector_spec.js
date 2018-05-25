@@ -273,7 +273,7 @@ describe('ColumnSelector', function () {
 
     describe('when the column is not selectable', function () {
       it('does not select the column', function () {
-        $(container.find('.slick-header-column:contains(some-non-selectable-column)')).click();
+        $(container.find('.slick-header-column:contains(some-non-selectable-column)')).trigger('click');
         var selectedRanges = cellSelectionModel.getSelectedRanges();
 
         expect(selectedRanges.length).toEqual(0);

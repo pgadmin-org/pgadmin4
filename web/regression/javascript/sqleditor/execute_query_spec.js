@@ -25,7 +25,7 @@ describe('ExecuteQuery', () => {
   const startTime = new Date(2018, 1, 29, 12, 15, 52);
   beforeEach(() => {
     networkMock = new MockAdapter(axios);
-    jasmine.addMatchers({jQuerytoHaveBeenCalledWith: jQuerytoHaveBeenCalledWith});
+    // jasmine.addMatchers({jQuerytoHaveBeenCalledWith: jQuerytoHaveBeenCalledWith});
     userManagementMock = jasmine.createSpyObj('UserManagement', [
       'isPgaLoginRequired',
       'pgaLogin',
@@ -1074,15 +1074,24 @@ describe('ExecuteQuery', () => {
 
     context('when the SQL statement is not empty', () => {
       let pollSpy;
-      let jqueryPropSpy;
 
       beforeEach(() => {
-        jqueryPropSpy = spyOn($.fn, 'prop');
         sqlEditorMock.gridView = {};
         sqlEditorMock.gridView.query_tool_obj = jasmine.createSpyObj(
           'QueryToolObject',
           ['removeLineClass']
         );
+
+        $('body').append(
+          '<div id="test-id">' +
+          '<button id="btn-flash" disabled></button>' +
+          '<button id="btn-cancel-query"></button>' +
+          '</div>'
+        );
+      });
+
+      afterEach(function () {
+        $('body').remove('#test-id');
       });
 
       describe('before the backend request', () => {
@@ -1108,15 +1117,15 @@ describe('ExecuteQuery', () => {
         });
 
         it('disables the run query button', () => {
-          const callToProp = findJQueryCallWithSelector(jqueryPropSpy, '#btn-flash');
+          let buttonFlash = $('#btn-flash');
 
-          expect(callToProp).jQuerytoHaveBeenCalledWith('disabled', true);
+          expect(buttonFlash.prop('disabled')).toEqual(true);
         });
 
         it('enable the cancel query button', () => {
-          const callToProp = findJQueryCallWithSelector(jqueryPropSpy, '#btn-cancel-query');
+          let buttonFlash = $('#btn-cancel-query');
 
-          expect(callToProp).jQuerytoHaveBeenCalledWith('disabled', false);
+          expect(buttonFlash.prop('disabled')).toEqual(false);
         });
 
         it('disable the query tool buttons', () => {
@@ -1235,9 +1244,9 @@ describe('ExecuteQuery', () => {
 
           it('disable the cancel query button', (done) => {
             setTimeout(() => {
-              const callToProp = findJQueryCallWithSelector(jqueryPropSpy, '#btn-cancel-query');
+              let buttonFlash = $('#btn-cancel-query');
 
-              expect(callToProp).jQuerytoHaveBeenCalledWith('disabled', true);
+              expect(buttonFlash.prop('disabled')).toEqual(true);
               done();
             }, 0);
           });
@@ -1355,9 +1364,9 @@ describe('ExecuteQuery', () => {
         it('should disable the cancel button', (done) => {
           setTimeout(
             () => {
-              const callToProp = findJQueryCallWithSelector(jqueryPropSpy, '#btn-cancel-query');
+              let buttonFlash = $('#btn-cancel-query');
 
-              expect(callToProp).jQuerytoHaveBeenCalledWith('disabled', true);
+              expect(buttonFlash.prop('disabled')).toEqual(true);
               done();
             }, 0);
         });
@@ -1413,9 +1422,9 @@ describe('ExecuteQuery', () => {
           it('should disable the cancel button', (done) => {
             setTimeout(
               () => {
-                const callToProp = findJQueryCallWithSelector(jqueryPropSpy, '#btn-cancel-query');
+                let buttonFlash = $('#btn-cancel-query');
 
-                expect(callToProp).jQuerytoHaveBeenCalledWith('disabled', true);
+                expect(buttonFlash.prop('disabled')).toEqual(true);
                 done();
               }, 0);
           });
@@ -1481,9 +1490,9 @@ describe('ExecuteQuery', () => {
           it('should disable the cancel button', (done) => {
             setTimeout(
               () => {
-                const callToProp = findJQueryCallWithSelector(jqueryPropSpy, '#btn-cancel-query');
+                let buttonFlash = $('#btn-cancel-query');
 
-                expect(callToProp).jQuerytoHaveBeenCalledWith('disabled', true);
+                expect(buttonFlash.prop('disabled')).toEqual(true);
                 done();
               }, 0);
           });
@@ -1552,9 +1561,9 @@ describe('ExecuteQuery', () => {
           it('should disable the cancel button', (done) => {
             setTimeout(
               () => {
-                const callToProp = findJQueryCallWithSelector(jqueryPropSpy, '#btn-cancel-query');
+                let buttonFlash = $('#btn-cancel-query');
 
-                expect(callToProp).jQuerytoHaveBeenCalledWith('disabled', true);
+                expect(buttonFlash.prop('disabled')).toEqual(true);
                 done();
               }, 0);
           });
@@ -1626,9 +1635,9 @@ describe('ExecuteQuery', () => {
           it('should disable the cancel button', (done) => {
             setTimeout(
               () => {
-                const callToProp = findJQueryCallWithSelector(jqueryPropSpy, '#btn-cancel-query');
+                let buttonFlash = $('#btn-cancel-query');
 
-                expect(callToProp).jQuerytoHaveBeenCalledWith('disabled', true);
+                expect(buttonFlash.prop('disabled')).toEqual(true);
                 done();
               }, 0);
           });
@@ -1682,43 +1691,5 @@ describe('ExecuteQuery', () => {
 
     });
   });
-
-  let findJQueryCallWithSelector = (jquerySpy, selector) => {
-    let result = undefined;
-
-    jquerySpy.calls.all().forEach((call) => {
-      if (call.object.selector === selector) {
-        result = call;
-      }
-    });
-    return result;
-  };
 });
-
-const jQuerytoHaveBeenCalledWith = function (util) {
-  return {
-    compare: function (actual) {
-      let result = {};
-      let expectedArgs = jasmine.util.argsToArray(arguments).slice(1);
-      if (actual.object === undefined || actual.object.selector === undefined) {
-        throw new Error('Expected a JQuery object, but got ' + jasmine.pp(actual) + '.');
-      }
-
-      result.pass = util.equals(actual.args, expectedArgs, '');
-      if (result.pass) {
-        result.message = 'larifo';
-      } else {
-        result.message =
-          'Expected jquery with selector "' +
-          actual.object.selector +
-          '" to have been called with ' +
-          jasmine.pp(expectedArgs) +
-          ' but was called with ' +
-          jasmine.pp(actual.args);
-      }
-
-      return result;
-    },
-  };
-};
 

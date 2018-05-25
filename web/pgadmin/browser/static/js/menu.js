@@ -95,10 +95,10 @@ define([
       element.find('i').addClass('font-white');
       element.find('i').removeClass('font-gray-4');
 
-      span.mouseover(function() {
+      span.on('mouseover',() => {
         element.addClass('bg-gray-5');
       });
-      span.mouseout(function() {
+      span.on('mouseout',() => {
         element.removeClass('bg-gray-5');
       });
     },

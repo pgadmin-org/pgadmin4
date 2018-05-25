@@ -96,7 +96,7 @@ define([
       if (contentType) {
         try {
           if (contentType.indexOf('application/json') == 0) {
-            var resp = $.parseJSON(msg);
+            var resp = JSON.parse(msg);
 
             if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
               onJSONResult && typeof(onJSONResult) == 'function') {
@@ -253,7 +253,7 @@ define([
     var contentType = xhr.getResponseHeader('Content-Type'),
       jsonResp = contentType &&
       contentType.indexOf('application/json') == 0 &&
-      $.parseJSON(xhr.responseText);
+      JSON.parse(xhr.responseText);
 
     if (
       jsonResp && (

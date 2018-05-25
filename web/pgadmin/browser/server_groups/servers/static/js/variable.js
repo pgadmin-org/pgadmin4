@@ -395,7 +395,7 @@ define([
 
           // Add button callback
           if (!(data.disabled || data.canAdd == false)) {
-            $gridBody.find('button.add').first().click(function(e) {
+            $gridBody.find('button.add').first().on('click',(e) => {
               e.preventDefault();
               var canAddRow = _.isFunction(data.canAddRow) ?
                 data.canAddRow.apply(self, [self.model]) : true;

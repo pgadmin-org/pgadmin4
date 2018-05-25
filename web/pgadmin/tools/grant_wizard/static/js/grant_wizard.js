@@ -218,7 +218,6 @@ define([
 
           // Generate wizard main container
           var $container = $('<div class=\'wizard_dlg\'></div>');
-
           return {
             main: function(title) {
               this.set('title', title);
@@ -442,7 +441,7 @@ define([
                     'did': encodeURI(did),
                   }
                 ),
-                dataType: 'jsonp',
+                dataType: 'json',
               });
 
             },

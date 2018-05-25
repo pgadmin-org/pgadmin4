@@ -812,12 +812,12 @@ define([
 
               userCollection.fetch();
 
-              this.$content.find('a.close-error').click(function() {
+              this.$content.find('a.close-error').on('click',() => {
                 $statusBar.find('.alert-text').empty();
                 $statusBar.css('visibility', 'hidden');
               });
 
-              this.$content.find('button.add').first().click(function(e) {
+              this.$content.find('button.add').first().on('click',(e) => {
                 e.preventDefault();
                 var canAddRow = true;
 

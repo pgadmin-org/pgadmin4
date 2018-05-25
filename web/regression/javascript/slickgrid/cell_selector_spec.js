@@ -54,7 +54,7 @@ describe('CellSelector', function () {
   describe('when the user clicks or tabs to a cell', function () {
     it('sets the selected range to that cell', function () {
       var row = 1, column = 0;
-      $(container.find('.slick-row .slick-cell.l' + column)[row]).click();
+      $(container.find('.slick-row .slick-cell.l' + column)[row]).trigger('click');
 
       var selectedRanges = cellSelectionModel.getSelectedRanges();
       expect(selectedRanges.length).toBe(1);
@@ -71,7 +71,7 @@ describe('CellSelector', function () {
       cellSelectionModel.setSelectedRanges(ranges);
 
       var row = 4, column = 1;
-      $(container.find('.slick-row .slick-cell.l' + column)[row]).click();
+      $(container.find('.slick-row .slick-cell.l' + column)[row]).trigger('click');
 
       expect(RangeSelectionHelper.isRangeSelected(cellSelectionModel.getSelectedRanges(), row2Range))
         .toBe(false);

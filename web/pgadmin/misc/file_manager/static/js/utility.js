@@ -133,13 +133,13 @@ define([
     if (!has_capability(data, 'delete') || pgAdmin.FileUtils.hideButtons()) {
       $('.file_manager').find('button.delete').hide();
     } else {
-      $('.file_manager').find('button.delete').click(function() {
+      $('.file_manager').find('button.delete').on('click',() => {
         // hide dimmer
         $('.fileinfo .delete_item, .fm_dimmer').show();
       });
 
       // take action based on pressed button yes or no
-      $('.fileinfo .delete_item button.btn_yes').unbind().on('click', function() {
+      $('.fileinfo .delete_item button.btn_yes').off().on('click', function() {
         var path;
         if ($('.fileinfo').data('view') == 'grid') {
           path = decodeURI($('.fileinfo').find('#contents li.selected .clip span').attr('data-alt'));
@@ -168,7 +168,7 @@ define([
     if (!has_capability(data, 'download') || pgAdmin.FileUtils.hideButtons()) {
       $('.file_manager').find('button.download').hide();
     } else {
-      $('.file_manager').find('button.download').unbind().click(function() {
+      $('.file_manager').find('button.download').off().on('click',() => {
         var path;
         if ($('.fileinfo').data('view') == 'grid') {
           path = $('.fileinfo li.selected').find('.clip span').attr('data-alt');
@@ -266,7 +266,7 @@ define([
                 data.Filename = newName;
 
                 // UnBind toolbar functions.
-                $('.fileinfo').find('button.rename, button.delete, button.download').unbind();
+                $('.fileinfo').find('button.rename, button.delete, button.download').off();
 
                 Alertify.success(lg.successful_rename);
               } else {
@@ -443,7 +443,7 @@ define([
     }
 
     // navigate to directory or path when clicked on breadcrumbs
-    $('.file_manager a.breadcrumbs').unbind().on('click', function() {
+    $('.file_manager a.breadcrumbs').off().on('click', function() {
       var curr_path = $(this).attr('data-path'),
         current_dir = $(this).html(),
         move_to = curr_path.substring(
@@ -669,7 +669,7 @@ define([
         $('.fileinfo .file_listing').html(result);
 
         // rename file/folder
-        $('.file_manager button.rename').unbind().on('click', function(e) {
+        $('.file_manager button.rename').off().on('click', function(e) {
 
           if ($('.fileinfo').data('view') == 'grid') {
             e.stopPropagation();
@@ -681,11 +681,11 @@ define([
               newvalue = decodeURI(orig_value);
             }
 
-            $this.find('input').toggle().val(newvalue).focus();
+            $this.find('input').toggle().val(newvalue).trigger('focus');
             $this.find('span').toggle();
 
             // Rename folder/file on pressing enter key
-            $('.file_manager').unbind().on('keyup', function(e) {
+            $('.file_manager').off().on('keyup', function(e) {
               if (e.keyCode == 13) {
                 e.stopPropagation();
                 $('.fileinfo #contents li.selected p').find(
@@ -705,11 +705,11 @@ define([
               newvalue = decodeURI(orig_value);
             }
 
-            $this.find('input').toggle().val(newvalue).focus();
+            $this.find('input').toggle().val(newvalue).trigger('focus');
             $this.find('span').toggle();
 
             // Rename folder/file on pressing enter key
-            $('.file_manager').unbind().on('keyup', function(e) {
+            $('.file_manager').off().on('keyup', function(e) {
               if (e.keyCode == 13) {
                 e.stopPropagation();
                 $('.fileinfo table#contents tr.selected td p').find(
@@ -866,12 +866,12 @@ define([
             } else {
               var is_valid_file = getFileInfo(path);
               if (is_valid_file && check_file_capability(e, data_cap, 'grid')) {
-                $('.file_manager_ok').click();
+                $('.file_manager_ok').trigger('click');
               }
             }
           });
 
-          $('.fileinfo').find('#contents li').click(function(e) {
+          $('.fileinfo').find('#contents li').on('click',(e) => {
             e.stopPropagation();
             var path = decodeURI($(this).find('.clip span').attr('data-alt')),
               is_protected = $(this).find(
@@ -976,7 +976,7 @@ define([
               if (
                 is_valid_file && check_file_capability(e, data_cap, 'table')
               ) {
-                $('.file_manager_ok').click();
+                $('.file_manager_ok').trigger('click');
               }
             }
           });
@@ -1131,7 +1131,7 @@ define([
         // If user have preference to show hidden files
         if (config.options.show_hidden_files) {
           setTimeout(function() {
-            $('#show_hidden').click();
+            $('#show_hidden').trigger('click');
           }, 10);
         }
         // handle show hidden files functionality
@@ -1199,7 +1199,7 @@ define([
       ).on(
         'click',
         function(e) {
-          $('#uploader .filemanager-btn-group').unbind().on(
+          $('#uploader .filemanager-btn-group').off().on(
             'click',
             function() {
               $('.fileinfo .delete_item, .fileinfo .replace_file, .fileinfo .fm_dimmer').hide();
@@ -1221,7 +1221,7 @@ define([
       });
 
       // re-render the home view
-      $('.file_manager .home').click(function() {
+      $('.file_manager .home').on('click',() => {
         var currentViewMode = $('.fileinfo').data('view');
         $('.fileinfo').data('view', currentViewMode);
         getFolderInfo('/');
@@ -1229,7 +1229,7 @@ define([
       });
 
       // Go one directory back
-      $('.file_manager .level-up').click(function() {
+      $('.file_manager .level-up').on('click',() => {
         var b = $('.currentpath').val();
         // Enable/Disable level up button
         enab_dis_level_up();
@@ -1253,7 +1253,7 @@ define([
       });
 
       // set buttons to switch between grid and list views.
-      $('.file_manager .grid').click(function() {
+      $('.file_manager .grid').on('click',() => {
         setViewButtonsFor('grid');
         $('.fileinfo').data('view', 'grid');
         enable_disable_btn();
@@ -1262,7 +1262,7 @@ define([
       });
 
       // Show list mode
-      $('.file_manager .list').click(function() {
+      $('.file_manager .list').on('click',() => {
         setViewButtonsFor('list');
         $('.fileinfo').data('view', 'list');
         enable_disable_btn();
@@ -1387,7 +1387,7 @@ define([
         $('.upload').remove();
         $('.create').before('<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn fa fa-upload upload" tabindex="6"><span></span></button> ');
 
-        $('#uploader .upload').unbind().click(function() {
+        $('#uploader .upload').off().on('click',() => {
           // we create prompt
           var msg = '<div id="dropzone-container">' +
             '<button class="fa fa-times dz_cross_btn" tabindex="7"></button>' +
@@ -1443,7 +1443,7 @@ define([
             acceptedFiles: acceptFiles,
             autoProcessQueue: true,
             init: function() {
-              $('.dz_cross_btn').unbind().on('click', function() {
+              $('.dz_cross_btn').off().on('click', function() {
                 $('.file_manager .upload_file').toggle();
               });
             },
@@ -1533,7 +1533,7 @@ define([
       $('.storage_dialog #uploader .input-path').attr('data-path', path);
 
       // create new folder
-      $('.create').unbind().click(function() {
+      $('.create').off().on('click',() => {
         var foldername = lg.new_folder;
         var $file_element,
           $file_element_list,

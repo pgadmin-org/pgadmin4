@@ -348,7 +348,7 @@ define([
       this.$el.html('<i class=\'fa fa-pencil-square-o\' title=\'' + _('Edit row') + '\'></i>');
       this.delegateEvents();
       if (this.grabFocus)
-        this.$el.focus();
+        this.$el.trigger('focus');
       return this;
     },
     exitEditMode: function() {
@@ -465,7 +465,7 @@ define([
 
     enterEditMode: function() {
       this.$el.addClass('editor');
-      $(this.$el.find('input')).focus();
+      $(this.$el.find('input')).trigger('focus');
     },
 
     exitEditMode: function() {
@@ -537,7 +537,7 @@ define([
               });
               self.model.trigger('backgrid:edited', self.model,
                 self.column, command);
-              gotoCell.focus();
+              gotoCell.trigger('focus');
             }
           }, 20);
         }

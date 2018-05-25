@@ -68,7 +68,7 @@ describe('GridSelector', function () {
 
   describe('when the cell for the select/deselect all is clicked', function () {
     it('selects the whole grid', function () {
-      container.find('[title=\'Select/Deselect All\']').parent().click();
+      container.find('[title=\'Select/Deselect All\']').parent().trigger('click');
 
       var selectedRanges = xCellSelectionModel.getSelectedRanges();
       expect(selectedRanges.length).toBe(1);
@@ -80,7 +80,7 @@ describe('GridSelector', function () {
     });
 
     it('adds selected class', function () {
-      container.find('[title=\'Select/Deselect All\']').parent().click();
+      container.find('[title=\'Select/Deselect All\']').parent().trigger('click');
 
       expect($(container.find('[data-id=\'select-all\']')).hasClass('selected')).toBeTruthy();
     });
@@ -89,7 +89,7 @@ describe('GridSelector', function () {
   describe('when the select all button in the corner gets selected', function () {
 
     it('selects all the cells', function () {
-      container.find('[title=\'Select/Deselect All\']').click();
+      container.find('[title=\'Select/Deselect All\']').trigger('click');
 
       var selectedRanges = xCellSelectionModel.getSelectedRanges();
       expect(selectedRanges.length).toBe(1);
@@ -102,11 +102,11 @@ describe('GridSelector', function () {
 
     describe('when the select all button in the corner gets deselected', function () {
       beforeEach(function () {
-        container.find('[title=\'Select/Deselect All\']').click();
+        container.find('[title=\'Select/Deselect All\']').trigger('click');
       });
 
       it('deselects all the cells', function () {
-        container.find('[title=\'Select/Deselect All\']').click();
+        container.find('[title=\'Select/Deselect All\']').trigger('click');
 
         var selectedRanges = xCellSelectionModel.getSelectedRanges();
         expect(selectedRanges.length).toBe(0);
@@ -115,11 +115,11 @@ describe('GridSelector', function () {
 
     describe('and then the underlying selection changes', function () {
       beforeEach(function () {
-        container.find('[title=\'Select/Deselect All\']').click();
+        container.find('[title=\'Select/Deselect All\']').trigger('click');
       });
 
       it('removes the selected class', function () {
-        container.find('[title=\'Select/Deselect All\']').parent().click();
+        container.find('[title=\'Select/Deselect All\']').parent().trigger('click');
 
         expect($(container.find('[data-id=\'select-all\']')).hasClass('selected')).toBeFalsy();
       });

@@ -142,18 +142,18 @@ _.extend(pgBrowser.keyboardNavigation, {
   bindMainMenuUpDown: function(event, combo) {
     // Handle Sub-menus
     if (combo === 'up' && $(event.target).parent().prev().prev('.dropdown-submenu').length > 0) {
-      $(event.target).parent().prev().prev('.dropdown-submenu').find('a:first').focus();
+      $(event.target).parent().prev().prev('.dropdown-submenu').find('a:first').trigger('focus');
     } else {
       if ($(event.target).parent().hasClass('dropdown-submenu')) {
         $(event.target).parent().parent().parent().find('a:first').dropdown('toggle');
-        $(event.target).parent().parent().children().eq(2).find('a:first').focus();
+        $(event.target).parent().parent().children().eq(2).find('a:first').trigger('focus');
       }
     }
   },
   bindLeftTree: function() {
     const tree = this.getTreeDetails();
 
-    $('#tree').focus();
+    $('#tree').trigger('focus');
     tree.t.focus(tree.i);
     tree.t.select(tree.i);
   },
@@ -219,7 +219,7 @@ _.extend(pgBrowser.keyboardNavigation, {
     const top = $(event.srcElement).find('.aciTreeEntry').position().top + 70;
 
     tree.t.blur(tree.i);
-    $('#tree').blur();
+    $('#tree').trigger('blur');
     // Call context menu and set position
     tree.i.children().contextMenu({x: left, y: top});
   },

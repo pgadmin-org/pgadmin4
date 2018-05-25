@@ -1081,7 +1081,7 @@ define([
 
       // Add button callback
       if (!(data.disabled || data.canAdd == false)) {
-        $dialog.find('button.add').first().click(function(e) {
+        $dialog.find('button.add').first().on('click',(e) => {
           e.preventDefault();
           var canAddRow = _.isFunction(data.canAddRow) ?
             data.canAddRow.apply(self, [self.model]) : true;
@@ -1361,7 +1361,7 @@ define([
       var $dialog = gridBody.append(subNodeGrid);
 
       // Add button callback
-      $dialog.find('button.add').click(function(e) {
+      $dialog.find('button.add').on('click',(e) => {
         e.preventDefault();
         var canAddRow = _.isFunction(data.canAddRow) ?
           data.canAddRow.apply(self, [self.model]) : true;
@@ -1379,7 +1379,7 @@ define([
           grid.insertRow({});
 
           var newRow = $(grid.body.rows[collection.length - 1].$el);
-          newRow.attr('class', 'new').click(function() {
+          newRow.attr('class', 'new').on('click',() => {
             $(this).attr('class', 'editable');
           });
           $(newRow).pgMakeVisible('backform-tab');
@@ -2367,7 +2367,7 @@ define([
                   if (widget) {
                     setTimeout(function() {
                       picker.toggle();
-                      self.$el.find('input').first().blur();
+                      self.$el.find('input').first().trigger('blur');
                     }, 10);
                   } else {
                     setTimeout(function() {
@@ -2380,7 +2380,7 @@ define([
                     // blur the input
                     setTimeout(
                       function() {
-                        self.$el.find('input').first().blur();
+                        self.$el.find('input').first().trigger('blur');
                       }, 10
                     );
                   }
@@ -2390,7 +2390,7 @@ define([
                     var picker = this;
                     setTimeout(function() {
                       picker.toggle();
-                      self.$el.find('input').first().blur();
+                      self.$el.find('input').first().trigger('blur');
                     }, 10);
                   }
                 },

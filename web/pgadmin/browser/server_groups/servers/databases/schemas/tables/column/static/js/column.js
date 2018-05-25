@@ -287,7 +287,7 @@ define('pgadmin.node.column', [
                   var command = new Backgrid.Command({key: 'Tab', keyCode: 9, which: 9});
                   self.model.trigger('backgrid:edited', self.model, self.column,
                                       command);
-                  next_cell.focus();
+                  next_cell.trigger('focus');
                 }
               }, 20);
             },

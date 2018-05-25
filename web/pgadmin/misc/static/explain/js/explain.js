@@ -576,7 +576,7 @@ define('pgadmin.misc.explain', [
 
       // Draw tooltip
       var image_data = this.toJSON();
-      image.mouseover(function() {
+      image.on('mouseover',() => {
 
         // Empty the tooltip content if it has any and add new data
         toolTipContainer.empty();
@@ -618,7 +618,7 @@ define('pgadmin.misc.explain', [
       });
 
       // Remove tooltip when mouse is out from node's area
-      image.mouseout(function() {
+      image.on('mouseout',() => {
         toolTipContainer.empty();
         toolTipContainer.css({
           'opacity': '0',
@@ -851,7 +851,7 @@ define('pgadmin.misc.explain', [
             'height': h * curr_zoom_factor,
           });
           planDiv.data('zoom-factor', curr_zoom_factor);
-          zoomInBtn.blur();
+          zoomInBtn.trigger('blur');
         });
 
         zoomOutBtn.on('click', function() {
@@ -867,7 +867,7 @@ define('pgadmin.misc.explain', [
             'height': h * curr_zoom_factor,
           });
           planDiv.data('zoom-factor', curr_zoom_factor);
-          zoomOutBtn.blur();
+          zoomOutBtn.trigger('blur');
         });
 
         zoomToNormal.on('click', function() {
@@ -883,7 +883,7 @@ define('pgadmin.misc.explain', [
             'height': h * curr_zoom_factor,
           });
           planDiv.data('zoom-factor', curr_zoom_factor);
-          zoomToNormal.blur();
+          zoomToNormal.trigger('blur');
         });
       });
 

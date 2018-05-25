@@ -549,7 +549,7 @@ Backform, commonUtils
                   },
                   error: function(xhr) {
                     try {
-                      var err = $.parseJSON(xhr.responseText);
+                      var err = JSON.parse(xhr.responseText);
                       Alertify.alert(
                         gettext('Import/export job failed.'),
                         err.errormsg

@@ -5,7 +5,7 @@ Library             Version        Licence      URL
 =======             =======        =======      ===
 QT                  4.6.2+         LGPL v2.1/3  http://www.qt.io/
 Bootstrap           3.3.4          MIT          http://getbootstrap.com/
-jQuery              1.11.1         MIT          http://jquery.com/
+jQuery              3.3.1          MIT          http://jquery.com/
 Modernizr           2.6.2          MIT/BSD      http://modernizr.com/
 AlertifyJS          1.7.1          MIT          http://alertifyjs.com/ *** Do not update - changed to GPL3 in 1.8.0 ***
 CodeMirror          5.14.2         MIT          http://codemirror.net/
