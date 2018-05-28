@@ -634,6 +634,17 @@ class DatabaseView(PGChildNodeView):
             if SQL and SQL != "":
                 status, msg = conn.execute_scalar(SQL)
                 if not status:
+                    # In case of error from server while rename it,
+                    # reconnect to the database with old name again.
+                    self.conn = self.manager.connection(
+                        database=data['old_name'], auto_reconnect=True
+                    )
+                    status, errmsg = self.conn.connect()
+                    if not status:
+                        current_app.logger.error(
+                            'Could not reconnected to database(#{0}).\n'
+                            'Error: {1}'.format(did, errmsg)
+                        )
                     return internal_server_error(errormsg=msg)
 
         # Make connection for database again
