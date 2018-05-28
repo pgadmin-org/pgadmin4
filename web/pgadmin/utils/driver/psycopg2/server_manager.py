@@ -273,8 +273,10 @@ WHERE db.oid = {0}""".format(did))
                     self.connections.pop(conn_info['conn_id'])
 
     def release(self, database=None, conn_id=None, did=None):
-        # Stop the SSH tunnel if created.
-        self.stop_ssh_tunnel()
+        # Stop the SSH tunnel if release() function calls without
+        # any parameter.
+        if database is None and conn_id is None and did is None:
+            self.stop_ssh_tunnel()
 
         if did is not None:
             if did in self.db_info and 'datname' in self.db_info[did]:
