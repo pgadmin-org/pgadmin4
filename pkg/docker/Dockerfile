@@ -15,7 +15,7 @@ COPY ./pgadmin4/web/ /pgadmin4/web/
 WORKDIR /pgadmin4/web
 
 RUN yarn install --emoji false --cache-folder ./ycache --verbose && \
-    yarn run bundle && \
+    yarn run bundle --emoji false && \
     rm -rf ./ycache ./pgadmin/static/js/generated/.cache
 
 # Build Sphinx documentation in separate container
