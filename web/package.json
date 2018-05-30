@@ -92,15 +92,15 @@
   },
   "scripts": {
     "linter": "yarn eslint --emoji false --no-eslintrc -c .eslintrc.js --ext .js --ext .jsx .",
-    "webpacker": "yarn run webpack --emoji false --config webpack.config.js --progress",
-    "webpacker:watch": "yarn run webpack --emoji false --config webpack.config.js --progress --watch",
-    "bundle:watch": "yarn run linter --emoji false && yarn run webpacker:watch --emoji false",
-    "bundle:dev": "yarn run linter --emoji false && yarn run webpacker --emoji false",
-    "bundle": "cross-env NODE_ENV=production yarn run bundle:dev --emoji false",
-    "test:karma-once": "yarn run linter --emoji false && yarn run karma start --single-run --emoji false",
-    "test:karma": "yarn run linter --emoji false  && yarn run karma start --emoji false",
-    "test:feature": "yarn run bundle --emoji false && python regression/runtests.py --pkg feature_tests",
-    "test": "yarn run test:karma-once --emoji false && yarn run bundle --emoji false && python regression/runtests.py",
+    "webpacker": "yarn run --emoji false webpack --config webpack.config.js --progress",
+    "webpacker:watch": "yarn run --emoji false webpack --config webpack.config.js --progress --watch",
+    "bundle:watch": "yarn run --emoji false linter && yarn run --emoji false webpacker:watch",
+    "bundle:dev": "yarn run --emoji false linter && yarn run --emoji false webpacker",
+    "bundle": "cross-env NODE_ENV=production yarn run --emoji false bundle:dev",
+    "test:karma-once": "yarn run --emoji false linter && yarn run --emoji false karma start --single-run",
+    "test:karma": "yarn run --emoji false linter && yarn run --emoji false karma start",
+    "test:feature": "yarn run --emoji false bundle && python regression/runtests.py --pkg feature_tests",
+    "test": "yarn run --emoji false test:karma-once && yarn run bundle && python regression/runtests.py",
     "pep8": "pycodestyle --config=.pycodestyle ."
   }
 }
