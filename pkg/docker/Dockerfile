@@ -14,8 +14,8 @@ FROM node:6 AS node-builder
 COPY ./pgadmin4/web/ /pgadmin4/web/
 WORKDIR /pgadmin4/web
 
-RUN yarn install --cache-folder ./ycache --verbose && \
-    yarn run bundle && \
+RUN yarn install --emoji false --cache-folder ./ycache --verbose && \
+    yarn run --emoji false bundle && \
     rm -rf ./ycache ./pgadmin/static/js/generated/.cache
 
 # Build Sphinx documentation in separate container
