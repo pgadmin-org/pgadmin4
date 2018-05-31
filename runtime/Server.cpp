@@ -321,9 +321,7 @@ void Server::run()
     wchar_t* n_argv[] = { wcAppName };
     PySys_SetArgv(1, n_argv);
 
-    int fd = fileno(cp);
-    PyObject* PyFileObject = PyFile_FromFd(fd, m_appfile_utf8.data(), (char *)"r", -1, NULL, NULL,NULL,1);
-    if (PyRun_SimpleFile(fdopen(PyObject_AsFileDescriptor(PyFileObject),"r"), m_appfile_utf8.data()) != 0)
+    if (PyRun_SimpleFile(cp, m_appfile_utf8.data()) != 0)
         setError(tr("Failed to launch the application server, server thread exiting."));
 #endif
 
