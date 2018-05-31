@@ -93,8 +93,15 @@ class RestoreMessage(IProcessDesc):
             id=self.sid, user_id=current_user.id
         ).first()
 
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(self.sid)
+
+        host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
+        port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
+
         return _("Restoring backup on the server '{0}'...").format(
-            "{0} ({1}:{2})".format(s.name, s.host, s.port),
+            "{0} ({1}:{2})".format(s.name, host, port),
         )
 
     def details(self, cmd, args):
@@ -103,13 +110,20 @@ class RestoreMessage(IProcessDesc):
             id=self.sid, user_id=current_user.id
         ).first()
 
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(self.sid)
+
+        host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
+        port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
+
         res = '<div class="h5">'
 
         res += html.safe_str(
             _(
                 "Restoring backup on the server '{0}'..."
             ).format(
-                "{0} ({1}:{2})".format(s.name, s.host, s.port)
+                "{0} ({1}:{2})".format(s.name, host, port)
             )
         )
 
@@ -276,7 +290,11 @@ def create_restore_job(sid):
             return False
 
         args.extend([
-            '--host', server.host, '--port', str(server.port),
+            '--host',
+            manager.local_bind_host if manager.use_ssh_tunnel else server.host,
+            '--port',
+            str(manager.local_bind_port) if manager.use_ssh_tunnel
+            else str(server.port),
             '--username', server.username, '--no-password'
         ])
 

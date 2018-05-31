@@ -224,7 +224,11 @@ def create_maintenance_job(sid, did):
     )
 
     args = [
-        '--host', server.host, '--port', str(server.port),
+        '--host',
+        manager.local_bind_host if manager.use_ssh_tunnel else server.host,
+        '--port',
+        str(manager.local_bind_port) if manager.use_ssh_tunnel
+        else str(server.port),
         '--username', server.username, '--dbname',
         data['database'],
         '--command', query

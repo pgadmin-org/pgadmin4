@@ -116,13 +116,20 @@ class BackupMessage(IProcessDesc):
             id=self.sid, user_id=current_user.id
         ).first()
 
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(self.sid)
+
+        host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
+        port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
+
         if self.backup_type == BACKUP.OBJECT:
             return _(
                 "Backing up an object on the server '{0}' "
                 "from database '{1}'..."
             ).format(
                 "{0} ({1}:{2})".format(
-                    s.name, s.host, s.port
+                    s.name, host, port
                 ),
                 self.database
             )
@@ -130,13 +137,13 @@ class BackupMessage(IProcessDesc):
             return _("Backing up the global objects on "
                      "the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
-                    s.name, s.host, s.port
+                    s.name, host, port
                 )
             )
         elif self.backup_type == BACKUP.SERVER:
             return _("Backing up the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
-                    s.name, s.host, s.port
+                    s.name, host, port
                 )
             )
         else:
@@ -149,6 +156,13 @@ class BackupMessage(IProcessDesc):
             id=self.sid, user_id=current_user.id
         ).first()
 
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(self.sid)
+
+        host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
+        port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
+
         res = '<div class="h5">'
 
         if self.backup_type == BACKUP.OBJECT:
@@ -158,8 +172,8 @@ class BackupMessage(IProcessDesc):
             ).format(
                 "{0} ({1}:{2})".format(
                     html.safe_str(s.name),
-                    html.safe_str(s.host),
-                    html.safe_str(s.port),
+                    html.safe_str(host),
+                    html.safe_str(port),
                 ),
                 html.safe_str(self.database)
             )
@@ -168,16 +182,16 @@ class BackupMessage(IProcessDesc):
                      "the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
                     html.safe_str(s.name),
-                    html.safe_str(s.host),
-                    html.safe_str(s.port)
+                    html.safe_str(host),
+                    html.safe_str(port)
                 )
             )
         elif self.backup_type == BACKUP.SERVER:
             res += _("Backing up the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
                     html.safe_str(s.name),
-                    html.safe_str(s.host),
-                    html.safe_str(s.port)
+                    html.safe_str(host),
+                    html.safe_str(port)
                 )
             )
         else:
@@ -291,9 +305,10 @@ def create_backup_job(sid):
         '--file',
         backup_file,
         '--host',
-        server.host,
+        manager.local_bind_host if manager.use_ssh_tunnel else server.host,
         '--port',
-        str(server.port),
+        str(manager.local_bind_port) if manager.use_ssh_tunnel
+        else str(server.port),
         '--username',
         server.username,
         '--no-password',
@@ -400,9 +415,10 @@ def create_backup_objects_job(sid):
         '--file',
         backup_file,
         '--host',
-        server.host,
+        manager.local_bind_host if manager.use_ssh_tunnel else server.host,
         '--port',
-        str(server.port),
+        str(manager.local_bind_port) if manager.use_ssh_tunnel
+        else str(server.port),
         '--username',
         server.username,
         '--no-password'
