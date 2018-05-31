@@ -1,16 +1,26 @@
 // Karma configuration
 const webpackConfig = require('./webpack.test.config.js');
 const isDocker = require('is-docker')();
+const webpack = require('webpack');
 
 module.exports = function (config) {
   config.set({
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'source-map-support'],
     reporters: ['progress', 'kjhtml'],
     plugins: [
       'karma-webpack',
       'karma-chrome-launcher',
       'karma-jasmine',
       'karma-jasmine-html-reporter',
+      'karma-source-map-support',
+      'karma-sourcemap-loader',
+      new webpack.SourceMapDevToolPlugin({
+        /*
+         * filename: null, // if no value is provided the sourcemap is inlined
+         */
+        filename: '[name].js.map',
+        test: /\.jsx?$/i, // process .js and .jsx files only
+      }),
     ],
     files: [
       'pgadmin/static/bundle/slickgrid.js',
@@ -29,9 +39,10 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'regression/javascript/**/*.js': ['webpack'],
-      'regression/javascript/**/*.jsx': ['webpack'],
-      'pgadmin/static/bundle/slickgrid.js': ['webpack'],
+      'pgadmin/**/js/**/*.js[x]?': ['sourcemap'],
+      'regression/javascript/**/*.js': ['webpack', 'sourcemap'],
+      'regression/javascript/**/*.jsx': ['webpack', 'sourcemap'],
+      'pgadmin/static/bundle/slickgrid.js': ['webpack', 'sourcemap'],
     },
 
     webpack: webpackConfig,

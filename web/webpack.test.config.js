@@ -7,6 +7,7 @@ const nodeModulesDir = path.resolve(__dirname, 'node_modules');
 const regressionDir = path.resolve(__dirname, 'regression');
 
 module.exports = {
+  devtool: 'inline-source-map',
   plugins: [
     new webpack.ProvidePlugin({
       jQuery: 'jquery',
