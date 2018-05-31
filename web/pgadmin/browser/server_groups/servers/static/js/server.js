@@ -847,9 +847,10 @@ define('pgadmin.node.server', [
           control: Backform.FileControl, dialog_type: 'select_file', supp_types: ['*'],
           deps: ['tunnel_authentication', 'use_ssh_tunnel'],
           disabled: function(model) {
-            if (!model.get('tunnel_authentication')) {
+            let file = model.get('tunnel_identity_file');
+            if (!model.get('tunnel_authentication') && file) {
               setTimeout(function() {
-                model.set('tunnel_identity_file', '');
+                model.set('tunnel_identity_file', null);
               }, 10);
             }
             return !model.get('tunnel_authentication') || !model.get('use_ssh_tunnel');
