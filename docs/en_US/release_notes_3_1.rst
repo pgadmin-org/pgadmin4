@@ -34,4 +34,3 @@ Bug fixes
 | `Bug #3333 <https://redmine.postgresql.org/issues/3333>`_ - Ensure the runtime core application is setup before trying to access any settings
 | `Bug #3342 <https://redmine.postgresql.org/issues/3342>`_ - Set SESSION_COOKIE_SAMESITE='Lax' per Flask recommendation to prevents sending cookies with CSRF-prone requests from external sites, such as submitting a form
 | `Bug #3353 <https://redmine.postgresql.org/issues/3353>`_ - Handle errors properly if they occur when renaming a database
-| `Bug #3357 <https://redmine.postgresql.org/issues/3357>`_ - Fix dropping of databases over SSH tunneled connections
