@@ -45,7 +45,7 @@ ENV PYTHONPATH=/pgadmin4
 # so that deps do not increase the size of resulting image by remaining in layers
 COPY ./pgadmin4/requirements.txt /pgadmin4
 RUN set -ex && \
-    apk add --no-cache --virtual build-deps build-base postgresql-dev libffi-devel && \
+    apk add --no-cache --virtual build-deps build-base postgresql-dev libffi-dev && \
     pip install --no-cache-dir -r requirements.txt && \
     apk del --no-cache build-deps
 
