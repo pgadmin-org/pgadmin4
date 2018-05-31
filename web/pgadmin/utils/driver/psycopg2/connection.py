@@ -16,6 +16,7 @@ object.
 import random
 import select
 import sys
+import datetime
 from collections import deque
 import simplejson as json
 import psycopg2
@@ -136,6 +137,13 @@ class Connection(BaseConnection):
         formatted error message if flag is set to true else return
         normal error message.
 
+    * check_notifies(required_polling)
+      - Check for the notify messages by polling the connection or after
+        execute is there in notifies.
+
+    * get_notifies()
+      - This function will returns list of notifies received from database
+        server.
     """
 
     def __init__(self, manager, conn_id, db, auto_reconnect=True, async=0,
@@ -155,6 +163,7 @@ class Connection(BaseConnection):
         self.execution_aborted = False
         self.row_count = 0
         self.__notices = None
+        self.__notifies = None
         self.password = None
         # This flag indicates the connection status (connected/disconnected).
         self.wasConnected = False
@@ -891,6 +900,7 @@ WHERE
 
         try:
             self.__notices = []
+            self.__notifies = []
             self.execution_aborted = False
             cur.execute(query, params)
             res = self._wait_timeout(cur.connection)
@@ -907,6 +917,9 @@ WHERE
                     query_id=query_id
                 )
             )
+
+            # Check for the asynchronous notifies.
+            self.check_notifies()
 
             if self.is_disconnected(pe):
                 raise ConnectionLost(
@@ -1366,6 +1379,9 @@ Failed to reset the connection to the server due to following error:
             self.__notices.extend(self.conn.notices)
             self.conn.notices.clear()
 
+        # Check for the asynchronous notifies.
+        self.check_notifies()
+
         # We also need to fetch notices before we return from function in case
         # of any Exception, To avoid code duplication we will return after
         # fetching the notices in case of any Exception
@@ -1542,6 +1558,21 @@ Failed to reset the connection to the server due to following error:
         resp = []
         while self.__notices:
             resp.append(self.__notices.pop(0))
+
+        for notify in self.__notifies:
+            if notify.payload is not None and notify.payload is not '':
+                notify_msg = gettext(
+                    "Asynchronous notification \"{0}\" with payload \"{1}\" "
+                    "received from server process with PID {2}\n"
+                ).format(notify.channel, notify.payload, notify.pid)
+
+            else:
+                notify_msg = gettext(
+                    "Asynchronous notification \"{0}\" received from "
+                    "server process with PID {1}\n"
+                ).format(notify.channel, notify.pid)
+            resp.append(notify_msg)
+
         return resp
 
     def decode_to_utf8(self, value):
@@ -1711,3 +1742,34 @@ Failed to reset the connection to the server due to following error:
 
             return False
         return True
+
+    def check_notifies(self, required_polling=False):
+        """
+        Check for the notify messages by polling the connection or after
+        execute is there in notifies.
+        """
+        if self.conn and required_polling:
+            self.conn.poll()
+
+        if self.conn and hasattr(self.conn, 'notifies') and \
+                len(self.conn.notifies) > 0:
+            self.__notifies.extend(self.conn.notifies)
+            self.conn.notifies = []
+        else:
+            self.__notifies = []
+
+    def get_notifies(self):
+        """
+        This function will returns list of notifies received from database
+        server.
+        """
+        notifies = None
+        # Convert list of Notify objects into list of Dict.
+        if self.__notifies is not None and len(self.__notifies) > 0:
+            notifies = [{'recorded_time': str(datetime.datetime.now()),
+                         'channel': notify.channel,
+                         'payload': notify.payload,
+                         'pid': notify.pid
+                         } for notify in self.__notifies
+                        ]
+        return notifies

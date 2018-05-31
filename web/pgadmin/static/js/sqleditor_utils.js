@@ -72,6 +72,9 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
               $el.data('panel-visible') !== 'visible' ) {
           return;
         }
+
+        let sqleditor_obj = target;
+
         // Start polling..
         $.ajax({
           url: url,
@@ -81,6 +84,9 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
               var status = res.data.status,
                 msg = res.data.message,
                 is_status_changed = false;
+
+              // Raise notify messages comes from database server.
+              sqleditor_obj.update_notifications(res.data.notifies);
 
               // Inject CSS as required
               switch(status) {

@@ -117,7 +117,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                             'not found.',
                      can_edit=False,
                      can_filter=False,
-                     info_notifier_timeout=5
+                     info_notifier_timeout=5,
+                     notifies=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -276,7 +277,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5
+                     info_notifier_timeout=5,
+                     notifies=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -319,7 +321,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5
+                     info_notifier_timeout=5,
+                     notifies=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -362,7 +365,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5
+                     info_notifier_timeout=5,
+                     notifies=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -406,7 +410,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5
+                     info_notifier_timeout=5,
+                     notifies=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -511,8 +516,10 @@ class StartRunningQueryTest(BaseTestGenerator):
             connect=MagicMock(),
             execute_async=MagicMock(),
             execute_void=MagicMock(),
+            get_notifies=MagicMock(),
         )
         self.connection.connect.return_value = self.connection_connect_return
+        self.connection.get_notifies.return_value = None
         self.connection.execute_async.return_value = \
             self.execute_async_return_value
         if self.manager_connection_exception is None:

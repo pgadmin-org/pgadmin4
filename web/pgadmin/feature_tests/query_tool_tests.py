@@ -10,6 +10,9 @@
 from __future__ import print_function
 import time
 import sys
+
+from selenium.common.exceptions import StaleElementReferenceException
+
 import config
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
@@ -55,7 +58,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # explain query with verbose and cost
         print("Explain query with verbose and cost... ",
               file=sys.stderr, end="")
-        if self._test_explain_plan_feature():
+        if self._supported_server_version():
             self._query_tool_explain_with_verbose_and_cost()
             print("OK.", file=sys.stderr)
             self._clear_query_tool()
@@ -65,7 +68,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # explain analyze query with buffers and timing
         print("Explain analyze query with buffers and timing... ",
               file=sys.stderr, end="")
-        if self._test_explain_plan_feature():
+        if self._supported_server_version():
             self._query_tool_explain_analyze_with_buffers_and_timing()
             print("OK.", file=sys.stderr)
             self._clear_query_tool()
@@ -94,6 +97,11 @@ class QueryToolFeatureTest(BaseFeatureTest):
         print("Cancel query... ", file=sys.stderr, end="")
         self._query_tool_cancel_query()
         print("OK.", file=sys.stderr)
+        self._clear_query_tool()
+
+        # Notify Statements.
+        print("Capture Notify Statements... ", file=sys.stderr, end="")
+        self._query_tool_notify_statements()
         self._clear_query_tool()
 
     def after(self):
@@ -144,8 +152,8 @@ class QueryToolFeatureTest(BaseFeatureTest):
         self.page.click_element(
             self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
         )
-        ActionChains(self.driver)\
-            .move_to_element(self.page.find_by_xpath("//*[@id='btn-clear']"))\
+        ActionChains(self.driver) \
+            .move_to_element(self.page.find_by_xpath("//*[@id='btn-clear']")) \
             .perform()
         self.page.click_element(
             self.page.find_by_xpath("//*[@id='btn-clear']")
@@ -579,7 +587,7 @@ SELECT 1, pg_sleep(300)"""
         # have 'auto-rollback fa fa-check visibility-hidden' classes
 
         if 'auto-rollback fa fa-check' == str(
-                auto_rollback_check.get_attribute('class')):
+           auto_rollback_check.get_attribute('class')):
             auto_rollback_btn.click()
 
         auto_commit_btn = self.page.find_by_id("btn-auto-commit")
@@ -592,7 +600,7 @@ SELECT 1, pg_sleep(300)"""
         # have 'auto-commit fa fa-check visibility-hidden' classes
 
         if 'auto-commit fa fa-check visibility-hidden' == str(
-                auto_commit_check.get_attribute('class')):
+           auto_commit_check.get_attribute('class')):
             auto_commit_btn.click()
 
         self.page.find_by_id("btn-flash").click()
@@ -605,7 +613,7 @@ SELECT 1, pg_sleep(300)"""
             'contains(string(), "canceling statement due to user request")]'
         )
 
-    def _test_explain_plan_feature(self):
+    def _supported_server_version(self):
         connection = test_utils.get_db_connection(
             self.server['db'],
             self.server['username'],
@@ -615,3 +623,58 @@ SELECT 1, pg_sleep(300)"""
             self.server['sslmode']
         )
         return connection.server_version > 90100
+
+    def _query_tool_notify_statements(self):
+        wait = WebDriverWait(self.page.driver, 60)
+
+        print("\n\tListen on an event... ", file=sys.stderr, end="")
+        self.page.fill_codemirror_area_with("LISTEN foo;")
+        self.page.find_by_id("btn-flash").click()
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.click_tab('Messages')
+
+        wait.until(EC.text_to_be_present_in_element(
+            (By.CSS_SELECTOR, ".sql-editor-message"), "LISTEN")
+        )
+        print("OK.", file=sys.stderr)
+        self._clear_query_tool()
+
+        print("\tNotify event without data... ", file=sys.stderr, end="")
+        self.page.fill_codemirror_area_with("NOTIFY foo;")
+        self.page.find_by_id("btn-flash").click()
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.click_tab('Notifications')
+        wait.until(EC.text_to_be_present_in_element(
+            (By.CSS_SELECTOR, "td.channel"), "foo")
+        )
+        print("OK.", file=sys.stderr)
+        self._clear_query_tool()
+
+        print("\tNotify event with data... ", file=sys.stderr, end="")
+        if self._supported_server_version():
+            self.page.fill_codemirror_area_with("SELECT pg_notify('foo', "
+                                                "'Hello')")
+            self.page.find_by_id("btn-flash").click()
+            self.page.wait_for_query_tool_loading_indicator_to_disappear()
+            self.page.click_tab('Notifications')
+            wait.until(WaitForAnyElementWithText(
+                (By.CSS_SELECTOR, 'td.payload'), "Hello"))
+            print("OK.", file=sys.stderr)
+        else:
+            print("Skipped.", file=sys.stderr)
+
+
+class WaitForAnyElementWithText(object):
+    def __init__(self, locator, text):
+        self.locator = locator
+        self.text = text
+
+    def __call__(self, driver):
+        try:
+            elements = EC._find_elements(driver, self.locator)
+            for elem in elements:
+                if self.text in elem.text:
+                    return True
+            return False
+        except StaleElementReferenceException:
+            return False

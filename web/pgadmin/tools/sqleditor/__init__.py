@@ -543,10 +543,12 @@ def poll(trans_id):
     # There may be additional messages even if result is present
     # eg: Function can provide result as well as RAISE messages
     additional_messages = None
+    notifies = None
     if status == 'Success':
         messages = conn.messages()
         if messages:
             additional_messages = ''.join(messages)
+        notifies = conn.get_notifies()
 
     # Procedure/Function output may comes in the form of Notices from the
     # database server, so we need to append those outputs with the
@@ -564,6 +566,7 @@ def poll(trans_id):
             'rows_fetched_from': rows_fetched_from,
             'rows_fetched_to': rows_fetched_to,
             'additional_messages': additional_messages,
+            'notifies': notifies,
             'has_more_rows': has_more_rows,
             'colinfo': columns_info,
             'primary_keys': primary_keys,
@@ -1476,12 +1479,18 @@ def query_tool_status(trans_id):
 
     if conn and trans_obj and session_obj:
         status = conn.transaction_status()
+
+        # Check for the asynchronous notifies statements.
+        conn.check_notifies(True)
+        notifies = conn.get_notifies()
+
         return make_json_response(
             data={
                 'status': status,
                 'message': gettext(
-                    CONNECTION_STATUS_MESSAGE_MAPPING.get(status)
-                )
+                    CONNECTION_STATUS_MESSAGE_MAPPING.get(status),
+                ),
+                'notifies': notifies
             }
         )
     else:

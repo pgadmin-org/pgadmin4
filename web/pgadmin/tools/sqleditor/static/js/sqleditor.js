@@ -20,6 +20,7 @@ define('tools.querytool', [
   'react', 'react-dom',
   'sources/keyboard_shortcuts',
   'sources/sqleditor/query_tool_actions',
+  'sources/sqleditor/query_tool_notifications',
   'pgadmin.datagrid',
   'sources/modify_animation',
   'sources/sqleditor/calculate_query_run_time',
@@ -36,8 +37,8 @@ define('tools.querytool', [
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   HistoryBundle, queryHistory, React, ReactDOM,
-  keyboardShortcuts, queryToolActions, Datagrid, modifyAnimation,
-  calculateQueryRunTime, callRenderAfterPoll) {
+  keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
+  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -242,19 +243,32 @@ define('tools.querytool', [
         content: '<div id ="history_grid" class="sql-editor-history-container" tabindex: "0"></div>',
       });
 
+      var notifications = new pgAdmin.Browser.Panel({
+        name: 'notifications',
+        title: gettext('Notifications'),
+        width: '100%',
+        height: '100%',
+        isCloseable: false,
+        isPrivate: true,
+        content: '<div id ="notification_grid" class="sql-editor-notifications" tabindex: "0"></div>',
+      });
+
       // Load all the created panels
       data_output.load(main_docker);
       explain.load(main_docker);
       messages.load(main_docker);
       history.load(main_docker);
+      notifications.load(main_docker);
 
       // Add all the panels to the docker
       self.data_output_panel = main_docker.addPanel('data_output', wcDocker.DOCK.BOTTOM, sql_panel_obj);
       self.explain_panel = main_docker.addPanel('explain', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.messages_panel = main_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, self.data_output_panel);
+      self.notifications_panel = main_docker.addPanel('notifications', wcDocker.DOCK.STACKED, self.data_output_panel);
 
       self.render_history_grid();
+      queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
 
       if (!self.handler.is_new_browser_tab) {
         // Listen on the panel closed event and notify user to save modifications.
@@ -3831,6 +3845,12 @@ define('tools.querytool', [
             window.top.pgAdmin.Browser.docker.removePanel(panel);
           }
         });
+      },
+      /* This function is used to raise notify messages and update
+       * the notification grid.
+       */
+      update_notifications: function (notifications) {
+        queryToolNotifications.updateNotifications(notifications);
       },
     });
 

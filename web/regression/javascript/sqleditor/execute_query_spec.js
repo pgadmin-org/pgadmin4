@@ -43,6 +43,7 @@ describe('ExecuteQuery', () => {
       'saveState',
       'initTransaction',
       'handle_connection_lost',
+      'update_notifications',
     ]);
     sqlEditorMock.transId = 123;
     sqlEditorMock.rows_affected = 1000;
@@ -76,7 +77,7 @@ describe('ExecuteQuery', () => {
         describe('when query was successful', () => {
           beforeEach(() => {
             response = {
-              data: {status: 'Success'},
+              data: {status: 'Success', notifies: [{'pid': 100}]},
             };
             networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
 
@@ -97,7 +98,15 @@ describe('ExecuteQuery', () => {
           it('should render the results', (done) => {
             setTimeout(() => {
               expect(sqlEditorMock.call_render_after_poll)
-                .toHaveBeenCalledWith({status: 'Success'});
+                .toHaveBeenCalledWith({status: 'Success', notifies: [{'pid': 100}]});
+              done();
+            }, 0);
+          });
+
+          it('should update the notification panel', (done) => {
+            setTimeout(() => {
+              expect(sqlEditorMock.update_notifications)
+                .toHaveBeenCalledWith([{'pid': 100}]);
               done();
             }, 0);
           });

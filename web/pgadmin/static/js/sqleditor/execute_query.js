@@ -82,6 +82,8 @@ class ExecuteQuery {
           self.loadingScreen.hide();
           self.enableSQLEditorButtons();
           self.sqlServerObject.update_msg_history(false, httpMessageData.data.result);
+          if ('notifies' in httpMessageData.data)
+            self.sqlServerObject.update_notifications(httpMessageData.data.notifies);
 
           // Highlight the error in the sql panel
           self.sqlServerObject._highlight_error(httpMessageData.data.result);
@@ -116,6 +118,8 @@ class ExecuteQuery {
           self.loadingScreen.setMessage('Loading data from the database server and rendering...');
 
           self.sqlServerObject.call_render_after_poll(httpMessage.data.data);
+          if ('notifies' in httpMessage.data.data)
+            self.sqlServerObject.update_notifications(httpMessage.data.data.notifies);
         } else if (ExecuteQuery.isQueryStillRunning(httpMessage)) {
           // If status is Busy then poll the result by recursive call to the poll function
           this.delayedPoll();

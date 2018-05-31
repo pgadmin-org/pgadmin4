@@ -11,6 +11,7 @@ Features
 ********
 
 | `Bug #1447 <https://redmine.postgresql.org/issues/1447>`_ - Add support for SSH tunneled connections
+| `Bug #3204 <https://redmine.postgresql.org/issues/3204>`_ - Add support for LISTEN/NOTIFY in the query tool
 
 Bug fixes
 *********

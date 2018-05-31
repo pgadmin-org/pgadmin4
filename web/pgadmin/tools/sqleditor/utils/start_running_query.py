@@ -47,6 +47,7 @@ class StartRunningQuery:
         transaction_object = pickle.loads(session_obj['command_obj'])
         can_edit = False
         can_filter = False
+        notifies = None
         if transaction_object is not None and session_obj is not None:
             # set fetched row count to 0 as we are executing query again.
             transaction_object.update_fetched_row_cnt(0)
@@ -88,6 +89,8 @@ class StartRunningQuery:
             can_edit = transaction_object.can_edit()
             can_filter = transaction_object.can_filter()
 
+            # Get the notifies
+            notifies = conn.get_notifies()
         else:
             status = False
             result = gettext(
@@ -97,7 +100,8 @@ class StartRunningQuery:
                 'status': status, 'result': result,
                 'can_edit': can_edit, 'can_filter': can_filter,
                 'info_notifier_timeout':
-                    self.blueprint_object.info_notifier_timeout.get()
+                    self.blueprint_object.info_notifier_timeout.get(),
+                'notifies': notifies
             }
         )
 
