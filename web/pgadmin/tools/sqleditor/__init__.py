@@ -1480,19 +1480,24 @@ def query_tool_status(trans_id):
     if conn and trans_obj and session_obj:
         status = conn.transaction_status()
 
-        # Check for the asynchronous notifies statements.
-        conn.check_notifies(True)
-        notifies = conn.get_notifies()
+        if status is not None:
+            # Check for the asynchronous notifies statements.
+            conn.check_notifies(True)
+            notifies = conn.get_notifies()
 
-        return make_json_response(
-            data={
-                'status': status,
-                'message': gettext(
-                    CONNECTION_STATUS_MESSAGE_MAPPING.get(status),
-                ),
-                'notifies': notifies
-            }
-        )
+            return make_json_response(
+                data={
+                    'status': status,
+                    'message': gettext(
+                        CONNECTION_STATUS_MESSAGE_MAPPING.get(status),
+                    ),
+                    'notifies': notifies
+                }
+            )
+        else:
+            return internal_server_error(
+                errormsg=gettext("Transaction status check failed.")
+            )
     else:
         return internal_server_error(
             errormsg=gettext("Transaction status check failed.")
