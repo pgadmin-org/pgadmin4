@@ -1,8 +1,12 @@
 define('pgadmin.node.mview', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, Alertify, pgBrowser, Backform) {
+  'pgadmin.backform', 'pgadmin.node.schema.dir/child',
+  'pgadmin.browser.server.privilege',
+], function(
+  gettext, url_for, $, _, pgAdmin, Alertify, pgBrowser, Backform,
+  schemaChild
+) {
 
   /**
     Create and add a view collection into nodes
@@ -33,19 +37,16 @@ define('pgadmin.node.mview', [
     view option in the context menu
    */
   if (!pgBrowser.Nodes['mview']) {
-    pgBrowser.Nodes['mview'] = pgBrowser.Node.extend({
-      parent_type: ['schema', 'catalog'],
+    pgBrowser.Nodes['mview'] = schemaChild.SchemaChildNode.extend({
       type: 'mview',
       sqlAlterHelp: 'sql-altermaterializedview.html',
       sqlCreateHelp: 'sql-creatematerializedview.html',
       dialogHelp: url_for('help.static', {'filename': 'materialized_view_dialog.html'}),
       label: gettext('Materialized View'),
-      hasSQL:  true,
+      hasSQL: true,
       hasDepends: true,
       hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-mview',
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
-      canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       Init: function() {
 
         // Avoid mulitple registration of menus
@@ -236,43 +237,6 @@ define('pgadmin.node.mview', [
 
       }),
 
-      /**
-        Show or hide create view menu option on parent node
-        and hide for system view in catalogs.
-       */
-      canCreate: function(itemData, item, data) {
-
-        // If check is false then, we will allow create menu
-        if (data && data.check === false)
-          return true;
-
-        var t = pgBrowser.tree, i = item, d = itemData;
-
-        // To iterate over tree to check parent node
-        while (i) {
-
-          // If it is schema then allow user to create view
-          if (_.indexOf(['schema'], d._type) > -1)
-            return true;
-
-          if ('coll-mview' == d._type) {
-
-            // Check if we are not child of view
-            var prev_i = t.hasParent(i) ? t.parent(i) : null,
-              prev_d = prev_i ? t.itemData(prev_i) : null;
-            if( prev_d._type == 'catalog') {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-
-        // by default we do not want to allow create menu
-        return true;
-      },
       refresh_mview: function(args) {
         var input = args || {},
           obj = this,

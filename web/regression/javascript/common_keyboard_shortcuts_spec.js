@@ -11,10 +11,6 @@ import keyboardShortcuts from 'sources/keyboard_shortcuts';
 
 describe('the keyboard shortcuts', () => {
   const F1_KEY = 112;
-  // const EDIT_KEY = 71;  // Key: G -> Grid values
-  // const LEFT_ARROW_KEY = 37;
-  // const RIGHT_ARROW_KEY = 39;
-  // const MOVE_NEXT = 'right';
 
   let debuggerElementSpy, event, debuggerUserShortcutSpy;
   debuggerUserShortcutSpy = jasmine.createSpyObj(

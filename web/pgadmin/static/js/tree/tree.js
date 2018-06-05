@@ -59,17 +59,20 @@ export class TreeNode {
     tree.aciTreeApi.unload(this.domNode);
   }
 
-  anyParent(condition) {
+  /*
+   * Find the ancestor with matches this condition
+   */
+  ancestorNode(condition) {
     let node = this;
 
     while (node.hasParent()) {
       node = node.parent();
       if (condition(node)) {
-        return true;
+        return node;
       }
     }
 
-    return false;
+    return null;
   }
 
   /**
@@ -81,7 +84,10 @@ export class TreeNode {
       return true;
     }
 
-    return this.anyParent(condition);
+    return this.ancestorNode(condition) !== null;
+  }
+  anyParent(condition) {
+    return this.ancestorNode(condition) !== null;
   }
 }
 
@@ -209,4 +215,8 @@ function findInTree(rootNode, path) {
       return null;
     }
   })(rootNode);
+}
+
+export function isValidTreeNodeData(treeNodeData) {
+  return !_.isUndefined(treeNodeData) && !_.isNull(treeNodeData);
 }

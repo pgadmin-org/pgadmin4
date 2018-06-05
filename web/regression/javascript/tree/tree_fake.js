@@ -10,6 +10,32 @@
 import {Tree} from '../../../pgadmin/static/js/tree/tree';
 
 export class TreeFake extends Tree {
+  static build(structure) {
+    let tree = new TreeFake();
+    let rootNode = tree.rootNode;
+
+    if (structure.children !== undefined) {
+      structure.children.forEach((child) => {
+        TreeFake.recursivelyAddNodes(tree, child, rootNode);
+      });
+    }
+
+    return tree;
+  }
+
+  static recursivelyAddNodes(tree, newNode, parent) {
+    let id = newNode.id;
+    let data = newNode.data ? newNode.data : {};
+    let domNode = newNode.domNode ? newNode.domNode : [{id: id}];
+    tree.addNewNode(id, data, domNode, tree.translateTreeNodeIdFromACITree([parent]));
+
+    if (newNode.children !== undefined) {
+      newNode.children.forEach((child) => {
+        TreeFake.recursivelyAddNodes(tree, child, newNode);
+      });
+    }
+  }
+
   constructor() {
     super();
     this.aciTreeToOurTreeTranslator = {};
@@ -45,7 +71,7 @@ export class TreeFake extends Tree {
   }
 
   translateTreeNodeIdFromACITree(aciTreeNode) {
-    if(aciTreeNode === undefined || aciTreeNode[0] === undefined) {
+    if (aciTreeNode === undefined || aciTreeNode[0] === undefined) {
       return null;
     }
     return this.aciTreeToOurTreeTranslator[aciTreeNode[0].id];

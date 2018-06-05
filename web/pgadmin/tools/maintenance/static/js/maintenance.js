@@ -2,11 +2,14 @@ define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
   'backgrid', 'backform', 'sources/utils',
+  'tools/maintenance/static/js/menu_utils',
+  'sources/nodes/supported_database_node',
   'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node.ui',
 ], function(
   gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  Backform, commonUtils
+  Backform, commonUtils,
+  menuUtils, supportedNodes
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -168,36 +171,6 @@ define([
 
       this.initialized = true;
 
-      var maintenance_supported_nodes = [
-        'database', 'table', 'primary_key',
-        'unique_constraint', 'index', 'partition',
-      ];
-
-      /**
-       Enable/disable Maintenance menu in tools based on node selected.
-       Maintenance menu will be enabled only when user select table and database node.
-      */
-      var menu_enabled = function(itemData, item) {
-        var t = pgBrowser.tree,
-          i = item,
-          d = itemData;
-        var parent_item = t.hasParent(i) ? t.parent(i) : null,
-          parent_data = parent_item ? t.itemData(parent_item) : null;
-        if (!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
-          if (_.indexOf(maintenance_supported_nodes, d._type) !== -1 &&
-            parent_data._type != 'catalog') {
-            if (d._type == 'database' && d.allowConn)
-              return true;
-            else if (d._type != 'database')
-              return true;
-            else
-              return false;
-          } else
-            return false;
-        } else
-          return false;
-      };
-
       var menus = [{
         name: 'maintenance',
         module: this,
@@ -206,21 +179,25 @@ define([
         priority: 10,
         label: gettext('Maintenance...'),
         icon: 'fa fa-wrench',
-        enable: menu_enabled,
+        enable: supportedNodes.enabled.bind(
+          null, pgBrowser.treeMenu, menuUtils.maintenanceSupportedNodes
+        ),
       }];
 
       // Add supported menus into the menus list
-      for (var idx = 0; idx < maintenance_supported_nodes.length; idx++) {
+      for (var idx = 0; idx < menuUtils.maintenanceSupportedNodes.length; idx++) {
         menus.push({
-          name: 'maintenance_context_' + maintenance_supported_nodes[idx],
-          node: maintenance_supported_nodes[idx],
+          name: 'maintenance_context_' + menuUtils.maintenanceSupportedNodes[idx],
+          node: menuUtils.maintenanceSupportedNodes[idx],
           module: this,
           applies: ['context'],
           callback: 'callback_maintenance',
           priority: 10,
           label: gettext('Maintenance...'),
           icon: 'fa fa-wrench',
-          enable: menu_enabled,
+          enable: supportedNodes.enabled.bind(
+            null, pgBrowser.treeMenu, menuUtils.maintenanceSupportedNodes
+          ),
         });
       }
       pgBrowser.add_menus(menus);

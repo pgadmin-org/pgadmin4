@@ -81,6 +81,8 @@ module.exports = {
       'pgadmin.alertifyjs': sourcesDir + '/js/alertify.pgadmin.defaults',
       'pgadmin.backgrid': sourcesDir + '/js/backgrid.pgadmin',
       'pgadmin.backform': sourcesDir + '/js/backform.pgadmin',
+      'pgbrowser': path.resolve(__dirname, 'regression/javascript/fake_browser'),
+      'pgadmin.schema.dir': path.resolve(__dirname, 'pgadmin/browser/server_groups/servers/databases/schemas/static/js'),
     },
   },
 };

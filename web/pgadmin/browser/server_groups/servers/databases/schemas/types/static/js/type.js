@@ -1,8 +1,12 @@
 define('pgadmin.node.type', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.backgrid', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, Backgrid) {
+  'pgadmin.backgrid', 'pgadmin.node.schema.dir/child',
+  'pgadmin.browser.collection',
+], function(
+  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, Backgrid,
+  schemaChild
+) {
 
   if (!pgBrowser.Nodes['coll-type']) {
     pgBrowser.Nodes['coll-type'] =
@@ -245,7 +249,7 @@ define('pgadmin.node.type', [
   });
 
   if (!pgBrowser.Nodes['type']) {
-    pgBrowser.Nodes['type'] = pgBrowser.Node.extend({
+    pgBrowser.Nodes['type'] = schemaChild.SchemaChildNode.extend({
       type: 'type',
       sqlAlterHelp: 'sql-altertype.html',
       sqlCreateHelp: 'sql-createtype.html',
@@ -254,7 +258,6 @@ define('pgadmin.node.type', [
       collection_type: 'coll-type',
       hasSQL: true,
       hasDepends: true,
-      parent_type: ['schema', 'catalog'],
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
@@ -284,8 +287,6 @@ define('pgadmin.node.type', [
         ]);
 
       },
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
-      canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       ext_funcs: undefined,
       model: pgBrowser.Node.Model.extend({
         defaults: {
@@ -911,34 +912,6 @@ define('pgadmin.node.type', [
           return result;
         },
       }),
-      canCreate: function(itemData, item, data) {
-        //If check is false then , we will allow create menu
-        if (data && data.check == false)
-          return true;
-
-        var t = pgBrowser.tree, i = item, d = itemData;
-        // To iterate over tree to check parent node
-        while (i) {
-          // If it is schema then allow user to create table
-          if (_.indexOf(['schema'], d._type) > -1)
-            return true;
-
-          if ('coll-type' == d._type) {
-            //Check if we are not child of catalog
-            var prev_i = t.hasParent(i) ? t.parent(i) : null,
-              prev_d = prev_i ? t.itemData(prev_i) : null;
-            if( prev_d._type == 'catalog') {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-        // by default we do not want to allow create menu
-        return true;
-      },
     });
   }
   return pgBrowser.Nodes['type'];

@@ -16,7 +16,6 @@ define('pgadmin.node.rule', [
         node: 'rule',
         label: gettext('Rules'),
         type: 'coll-rule',
-        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
         columns: ['name', 'owner', 'comment'],
       });
   }
@@ -35,7 +34,6 @@ define('pgadmin.node.rule', [
    */
   if (!pgBrowser.Nodes['rule']) {
     pgAdmin.Browser.Nodes['rule'] = pgBrowser.Node.extend({
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       parent_type: ['table','view', 'partition'],
       type: 'rule',
       sqlAlterHelp: 'sql-alterrule.html',

@@ -8,7 +8,6 @@ define('pgadmin.node.check_constraint', [
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraint']) {
     pgAdmin.Browser.Nodes['check_constraint'] = pgBrowser.Node.extend({
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       type: 'check_constraint',
       label: gettext('Check'),
       collection_type: 'coll-constraints',

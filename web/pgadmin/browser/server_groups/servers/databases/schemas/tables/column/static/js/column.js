@@ -88,7 +88,6 @@ define('pgadmin.node.column', [
 
   if (!pgBrowser.Nodes['column']) {
     pgBrowser.Nodes['column'] = pgBrowser.Node.extend({
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       parent_type: ['table', 'view', 'mview'],
       collection_type: ['coll-table', 'coll-view', 'coll-mview'],
       type: 'column',
@@ -97,27 +96,24 @@ define('pgadmin.node.column', [
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-altertable.html',
       dialogHelp: url_for('help.static', {'filename': 'column_dialog.html'}),
-      canDrop: function(itemData, item, data){
-        if (pgBrowser.Nodes['schema'].canChildDrop.apply(this, [itemData, item, data])) {
-          var t = pgBrowser.tree, i = item, d = itemData, parents = [];
-          // To iterate over tree to check parent node
-          while (i) {
-            parents.push(d._type);
-            i = t.hasParent(i) ? t.parent(i) : null;
-            d = i ? t.itemData(i) : null;
-          }
+      canDrop: function(itemData, item){
+        let node = pgBrowser.treeMenu.findNodeByDomElement(item);
 
-          // Check if menu is allowed ?
-          if(_.indexOf(parents, 'catalog') > -1 ||
-             _.indexOf(parents, 'view') > -1 ||
-             _.indexOf(parents, 'mview') > -1) {
-            return false;
-          } else if(_.indexOf(parents, 'table') > -1) {
-            return true;
-          }
-        } else {
+        if (!node)
           return false;
-        }
+
+        // Only a column of a table can be droped, and only when it is not of
+        // catalog.
+        return node.anyParent(
+          (parentNode) => (
+            parentNode.getData()._type === 'table' &&
+              !parentNode.anyParent(
+                (grandParentNode) => (
+                  grandParentNode.getData()._type === 'catalog'
+                )
+              )
+          )
+        );
       },
       hasDepends: true,
       hasStatistics: true,

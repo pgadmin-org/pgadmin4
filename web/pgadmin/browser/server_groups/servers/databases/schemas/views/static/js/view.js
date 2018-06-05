@@ -1,9 +1,12 @@
 define('pgadmin.node.view', [
-  'sources/gettext',
-  'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
-  'pgadmin.browser', 'pgadmin.backform', 'pgadmin.browser.server.privilege',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'pgadmin.node.schema.dir/child', 'pgadmin.browser.server.privilege',
   'pgadmin.node.rule',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
+], function(
+  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild
+) {
+
 
   /**
     Create and add a view collection into nodes
@@ -28,14 +31,9 @@ define('pgadmin.node.view', [
     under which this node to display
     @param {variable} type - Type of Node
     @param {variable} hasSQL - To show SQL tab
-    @param {variable} canDrop - Adds drop view option
-    in the context menu
-    @param {variable} canDropCascade - Adds drop Cascade
-    view option in the context menu
    */
   if (!pgBrowser.Nodes['view']) {
-    pgBrowser.Nodes['view'] = pgBrowser.Node.extend({
-      parent_type: ['schema', 'catalog'],
+    pgBrowser.Nodes['view'] = schemaChild.SchemaChildNode.extend({
       type: 'view',
       sqlAlterHelp: 'sql-alterview.html',
       sqlCreateHelp: 'sql-createview.html',
@@ -45,8 +43,6 @@ define('pgadmin.node.view', [
       hasDepends: true,
       hasScriptTypes: ['create', 'select', 'insert'],
       collection_type: 'coll-view',
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
-      canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       Init: function() {
 
         // Avoid mulitple registration of menus
@@ -197,45 +193,6 @@ define('pgadmin.node.view', [
           return false;
         },
       }),
-
-      /**
-        Show or hide create view menu option on parent node
-        and hide for system view in catalogs.
-        */
-      canCreate: function(itemData, item, data) {
-
-        // If check is false then, we will allow create menu
-        if (data && data.check == false)
-          return true;
-
-        var t = pgBrowser.tree, i = item, d = itemData;
-
-        // To iterate over tree to check parent node
-        while (i) {
-
-          // If it is schema then allow user to create view
-          if (_.indexOf(['schema'], d._type) > -1)
-            return true;
-
-          if ('coll-view' == d._type) {
-
-            // Check if we are not child of view
-            var prev_i = t.hasParent(i) ? t.parent(i) : null,
-              prev_d = prev_i ? t.itemData(prev_i) : null;
-            if( prev_d._type == 'catalog') {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-
-        // by default we do not want to allow create menu
-        return true;
-
-      },
     });
   }
 

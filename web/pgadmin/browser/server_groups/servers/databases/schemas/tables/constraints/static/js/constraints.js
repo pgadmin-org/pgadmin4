@@ -12,14 +12,12 @@ define('pgadmin.node.constraints', [
         node: 'constraints',
         label: gettext('Constraints'),
         type: 'coll-constraints',
-        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
         columns: ['name', 'comment'],
       });
   }
 
   if (!pgBrowser.Nodes['constraints']) {
     pgAdmin.Browser.Nodes['constraints'] = pgBrowser.Node.extend({
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       type: 'constraints',
       label: gettext('Constraints'),
       collection_type: 'coll-constraints',

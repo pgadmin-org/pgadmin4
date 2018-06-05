@@ -1,10 +1,12 @@
 define('pgadmin.node.index', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'backbone', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
-  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.collection',
+  'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection',
 ], function(
   gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Alertify, Backform,
-  Backgrid
+  Backgrid, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-index']) {
@@ -13,7 +15,6 @@ define('pgadmin.node.index', [
         node: 'index',
         label: gettext('Indexes'),
         type: 'coll-index',
-        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
         sqlAlterHelp: 'sql-alterindex.html',
         sqlCreateHelp: 'sql-createindex.html',
         dialogHelp: url_for('help.static', {'filename': 'index_dialog.html'}),
@@ -215,7 +216,6 @@ define('pgadmin.node.index', [
 
   if (!pgBrowser.Nodes['index']) {
     pgAdmin.Browser.Nodes['index'] = pgBrowser.Node.extend({
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       parent_type: ['table', 'view', 'mview', 'partition'],
       collection_type: ['coll-table', 'coll-view'],
       sqlAlterHelp: 'sql-alterindex.html',
@@ -266,8 +266,8 @@ define('pgadmin.node.index', [
         },
         ]);
       },
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
-      canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
+      canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+      canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
 

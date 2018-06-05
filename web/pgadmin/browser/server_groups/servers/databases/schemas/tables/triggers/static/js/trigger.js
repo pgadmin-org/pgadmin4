@@ -1,8 +1,13 @@
 define('pgadmin.node.trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'backform', 'pgadmin.alertifyjs',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'pgadmin.backform', 'pgadmin.alertifyjs',
+  'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
+], function(
+  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify,
+  SchemaChildTreeNode
+) {
 
   Backform.CustomSwitchControl = Backform.SwitchControl.extend({
     template: _.template([
@@ -29,14 +34,12 @@ define('pgadmin.node.trigger', [
         node: 'trigger',
         label: gettext('Triggers'),
         type: 'coll-trigger',
-        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
         columns: ['name', 'description'],
       });
   }
 
   if (!pgBrowser.Nodes['trigger']) {
     pgAdmin.Browser.Nodes['trigger'] = pgBrowser.Node.extend({
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       parent_type: ['table', 'view', 'partition'],
       collection_type: ['coll-table', 'coll-view'],
       type: 'trigger',
@@ -175,8 +178,8 @@ define('pgadmin.node.trigger', [
           });
         },
       },
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
-      canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
+      canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+      canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
           name: undefined,
@@ -618,50 +621,16 @@ define('pgadmin.node.trigger', [
           return flag;
         },
       }),
-      // Below function will enable right click menu for creating column
-      canCreate: function(itemData, item, data) {
-        // If check is false then , we will allow create menu
-        if (data && data.check == false)
-          return true;
-
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [];
-        // To iterate over tree to check parent node
-        while (i) {
-          // If it is schema then allow user to c reate table
-          if (_.indexOf(['schema'], d._type) > -1)
-            return true;
-          parents.push(d._type);
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-        // If node is under catalog then do not allow 'create' menu
-        if (_.indexOf(parents, 'catalog') > -1) {
-          return false;
-        } else {
-          return true;
-        }
-      },
+      canCreate: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       // Check to whether trigger is disable ?
       canCreate_with_trigger_enable: function(itemData, item, data) {
-        if(this.canCreate.apply(this, [itemData, item, data])) {
-          // We are here means we can create menu, now let's check condition
-          if(itemData.icon === 'icon-trigger-bad') {
-            return true;
-          } else {
-            return false;
-          }
-        }
+        return itemData.icon === 'icon-trigger-bad' &&
+          this.canCreate.apply(this, [itemData, item, data]);
       },
       // Check to whether trigger is enable ?
       canCreate_with_trigger_disable: function(itemData, item, data) {
-        if(this.canCreate.apply(this, [itemData, item, data])) {
-          // We are here means we can create menu, now let's check condition
-          if(itemData.icon === 'icon-trigger') {
-            return true;
-          } else {
-            return false;
-          }
-        }
+        return itemData.icon === 'icon-trigger' &&
+          this.canCreate.apply(this, [itemData, item, data]);
       },
     });
   }

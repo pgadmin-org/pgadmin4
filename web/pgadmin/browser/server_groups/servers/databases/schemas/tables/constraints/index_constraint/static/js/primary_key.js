@@ -20,7 +20,6 @@ define('pgadmin.node.primary_key', [
       parent_type: ['table','partition'],
       canDrop: true,
       canDropCascade: true,
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)

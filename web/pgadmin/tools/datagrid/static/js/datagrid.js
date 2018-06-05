@@ -1,10 +1,14 @@
 define('pgadmin.datagrid', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'bundled_codemirror',
-  'sources/sqleditor_utils', 'backbone', 'wcdocker',
+  'sources/sqleditor_utils', 'backbone',
+  'tools/datagrid/static/js/show_data',
+  'tools/datagrid/static/js/get_panel_title',
+  'tools/datagrid/static/js/show_query_tool',
+  'wcdocker',
 ], function(
   gettext, url_for, $, _, alertify, pgAdmin, codemirror, sqlEditorUtils,
-  Backbone
+  Backbone, showData, panelTitle, showQueryTool
 ) {
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
@@ -161,55 +165,7 @@ define('pgadmin.datagrid', [
 
       // This is a callback function to show data when user click on menu item.
       show_data_grid: function(data, i) {
-        var self = this,
-          d = pgAdmin.Browser.tree.itemData(i);
-        if (d === undefined) {
-          alertify.alert(
-            gettext('Data Grid Error'),
-            gettext('No object selected.')
-          );
-          return;
-        }
-
-        // Get the parent data from the tree node hierarchy.
-        var node = pgBrowser.Nodes[d._type],
-          parentData = node.getTreeNodeHierarchy(i);
-
-        // If server, database or schema is undefined then return from the function.
-        if (parentData.server === undefined || parentData.database === undefined) {
-          return;
-        }
-        // If schema, view, catalog object all are undefined then return from the function.
-        if (parentData.schema === undefined && parentData.view === undefined &&
-             parentData.catalog === undefined) {
-          return;
-        }
-
-        var nsp_name = '';
-
-        if (parentData.schema != undefined) {
-          nsp_name = parentData.schema.label;
-        }
-        else if (parentData.view != undefined) {
-          nsp_name = parentData.view.label;
-        }
-        else if (parentData.catalog != undefined) {
-          nsp_name = parentData.catalog.label;
-        }
-        var url_params = {
-          'cmd_type': data.mnuid,
-          'obj_type': d._type,
-          'sgid': parentData.server_group._id,
-          'sid': parentData.server._id,
-          'did': parentData.database._id,
-          'obj_id': d._id,
-        };
-
-        var baseUrl = url_for('datagrid.initialize_datagrid', url_params);
-        var grid_title = parentData.server.label + ' - ' + parentData.database.label + ' - '
-                        + nsp_name + '.' + d.label;
-
-        self.create_transaction(baseUrl, null, 'false', parentData.server.server_type, '', grid_title, '');
+        showData.showDataGrid(this, pgBrowser, alertify, data, i);
       },
 
       // This is a callback function to show filtered data when user click on menu item.
@@ -384,63 +340,12 @@ define('pgadmin.datagrid', [
       },
 
       get_panel_title: function() {
-        // Get the parent data from the tree node hierarchy.
-        var tree = pgAdmin.Browser.tree,
-          selected_item = tree.selected(),
-          item_data = tree.itemData(selected_item);
-
-        var node = pgBrowser.Nodes[item_data._type],
-          parentData = node.getTreeNodeHierarchy(selected_item);
-
-        // If server, database is undefined then return from the function.
-        if (parentData.server === undefined) {
-          return;
-        }
-        // If Database is not available then use default db
-        var db_label = parentData.database ? parentData.database.label
-                                           : parentData.server.db;
-
-        var grid_title = db_label + ' on ' + parentData.server.user.name + '@' +
-                parentData.server.label;
-        return grid_title;
+        return panelTitle.getPanelTitle(pgBrowser);
       },
       // This is a callback function to show query tool when user click on menu item.
-      show_query_tool: function(url, i, panel_title) {
-        var sURL = url || '',
-          d = pgAdmin.Browser.tree.itemData(i);
-
-        panel_title = panel_title || '';
-        if (d === undefined) {
-          alertify.alert(
-            gettext('Query Tool Error'),
-            gettext('No object selected.')
-          );
-          return;
-        }
-
-        // Get the parent data from the tree node hierarchy.
-        var node = pgBrowser.Nodes[d._type],
-          parentData = node.getTreeNodeHierarchy(i);
-
-        // If server, database is undefined then return from the function.
-        if (parentData.server === undefined) {
-          return;
-        }
-
-        var url_params = {
-            'sgid': parentData.server_group._id,
-            'sid': parentData.server._id,
-          },
-          url_endpoint = 'datagrid.initialize_query_tool';
-        // If database not present then use Maintenance database
-        // We will handle this at server side
-        if (parentData.database) {
-          url_params['did'] = parentData.database._id;
-          url_endpoint = 'datagrid.initialize_query_tool_with_did';
-        }
-        var baseUrl = url_for(url_endpoint, url_params);
-
-        this.create_transaction(baseUrl, null, 'true', parentData.server.server_type, sURL, panel_title, '', false);
+      show_query_tool: function(url, aciTreeIdentifier, panelTitle) {
+        showQueryTool.showQueryTool(this, pgBrowser, alertify, url,
+          aciTreeIdentifier, panelTitle);
       },
       create_transaction: function(baseUrl, target, is_query_tool, server_type, sURL, panel_title, sql_filter, recreate) {
         var self = this;

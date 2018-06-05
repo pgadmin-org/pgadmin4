@@ -130,6 +130,7 @@ var webpackShimConfig = {
     'sources/utils': path.join(__dirname, './pgadmin/static/js/utils'),
     'babel-polyfill': path.join(__dirname, './node_modules/babel-polyfill/dist/polyfill'),
     'tools': path.join(__dirname, './pgadmin/tools/'),
+    'pgbrowser': path.join(__dirname, './pgadmin/browser/static/js/'),
 
     // Vendor JS
     'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),

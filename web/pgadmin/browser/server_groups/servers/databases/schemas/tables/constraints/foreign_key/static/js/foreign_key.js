@@ -603,7 +603,6 @@ define('pgadmin.node.foreign_key', [
   // Extend the browser's node class for foreign key node
   if (!pgBrowser.Nodes['foreign_key']) {
     pgAdmin.Browser.Nodes['foreign_key'] = pgBrowser.Node.extend({
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       type: 'foreign_key',
       label: gettext('Foreign key'),
       collection_type: 'coll-constraints',

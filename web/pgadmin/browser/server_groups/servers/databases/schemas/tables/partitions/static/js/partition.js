@@ -2,10 +2,12 @@ define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.browser.table.partition.utils',
 ],
 function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform, Backgrid
+  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
+  SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-partition']) {
@@ -13,7 +15,6 @@ function(
       pgAdmin.Browser.Collection.extend({
         node: 'partition',
         label: gettext('Partitions'),
-        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
         type: 'coll-partition',
         columns: [
           'name', 'schema', 'partition_value', 'is_partitioned', 'description',
@@ -80,36 +81,6 @@ function(
         },
         ]);
       },
-      getTreeNodeHierarchy: function(i) {
-        var idx = 0,
-          res = {},
-          t = pgBrowser.tree;
-
-        do {
-          var d = t.itemData(i);
-          if (
-            d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId
-          ) {
-            if (d._type == 'partition' && 'partition' in res) {
-              if (!('table' in res)) {
-                res['table'] = _.extend({}, d, {'priority': idx});
-                idx -= 1;
-              }
-            } else if (d._type == 'table') {
-              if (!('table' in res)) {
-                res['table'] = _.extend({}, d, {'priority': idx});
-                idx -= 1;
-              }
-            } else {
-              res[d._type] = _.extend({}, d, {'priority': idx});
-              idx -= 1;
-            }
-          }
-          i = t.hasParent(i) ? t.parent(i) : null;
-        } while (i);
-
-        return res;
-      },
       generate_url: function(item, type, d, with_id, info) {
         if (_.indexOf([
           'stats', 'statistics', 'dependency', 'dependent', 'reset',
@@ -133,8 +104,8 @@ function(
             encodeURIComponent(info['partition']._id)
             ).value();
       },
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
-      canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
+      canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+      canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       callbacks: {
         /* Enable trigger(s) on table */
         enable_triggers_on_table: function(args) {
@@ -1189,34 +1160,7 @@ function(
           return data;
         },
       }),
-      canCreate: function(itemData, item, data) {
-          //If check is false then , we will allow create menu
-        if (data && data.check == false)
-          return true;
-
-        var t = pgBrowser.tree, i = item, d = itemData;
-          // To iterate over tree to check parent node
-        while (i) {
-            // If it is schema then allow user to create table
-          if (_.indexOf(['schema'], d._type) > -1)
-            return true;
-
-          if ('coll-table' == d._type) {
-              //Check if we are not child of catalog
-            var prev_i = t.hasParent(i) ? t.parent(i) : null;
-            var prev_d = prev_i ? t.itemData(prev_i) : null;
-            if( prev_d._type == 'catalog') {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-          // by default we do not want to allow create menu
-        return true;
-      },
+      canCreate: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       // Check to whether table has disable trigger(s)
       canCreate_with_trigger_enable: function(itemData, item, data) {
         if(this.canCreate.apply(this, [itemData, item, data])) {

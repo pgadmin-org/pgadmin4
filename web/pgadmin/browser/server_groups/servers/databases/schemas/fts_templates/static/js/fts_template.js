@@ -1,7 +1,8 @@
 define('pgadmin.node.fts_template', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
+  'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild) {
 
   // Extend the collection class for fts template
   if (!pgBrowser.Nodes['coll-fts_template']) {
@@ -16,14 +17,11 @@ define('pgadmin.node.fts_template', [
 
   // Extend the node class for fts template
   if (!pgBrowser.Nodes['fts_template']) {
-    pgAdmin.Browser.Nodes['fts_template'] = pgAdmin.Browser.Node.extend({
-      parent_type: ['schema', 'catalog'],
+    pgAdmin.Browser.Nodes['fts_template'] = schemaChild.SchemaChildNode.extend({
       type: 'fts_template',
       sqlAlterHelp: 'sql-altertstemplate.html',
       sqlCreateHelp: 'sql-createtstemplate.html',
       dialogHelp: url_for('help.static', {'filename': 'fts_template_dialog.html'}),
-      canDrop: true,
-      canDropCascade: true,
       label: gettext('FTS Template'),
       hasSQL: true,
       hasDepends: true,
@@ -139,34 +137,6 @@ define('pgadmin.node.fts_template', [
           return null;
         },
       }),
-      canCreate: function(itemData, item, data) {
-        //If check is false then , we will allow create menu
-        if (data && data.check == false)
-          return true;
-
-        var t = pgBrowser.tree, i = item, d = itemData;
-        // To iterate over tree to check parent node
-        while (i) {
-          // If it is schema then allow user to create fts fts_template
-          if (_.indexOf(['schema'], d._type) > -1)
-            return true;
-
-          if ('coll-fts_template' == d._type) {
-            //Check if we are not child of catalog
-            var prev_i = t.hasParent(i) ? t.parent(i) : null,
-              prev_d = prev_i ? t.itemData(prev_i) : null;
-            if( prev_d._type == 'catalog') {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-        // by default we do not want to allow create menu
-        return true;
-      },
     });
   }
 

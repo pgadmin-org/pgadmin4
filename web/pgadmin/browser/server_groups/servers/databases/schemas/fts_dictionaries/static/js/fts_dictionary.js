@@ -1,8 +1,10 @@
 define('pgadmin.node.fts_dictionary', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
+  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
+], function(
+  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, schemaChild
+) {
 
   // Extend the browser's node model class to create a option/value pair
   var OptionLabelModel = pgAdmin.Browser.Node.Model.extend({
@@ -55,14 +57,11 @@ define('pgadmin.node.fts_dictionary', [
 
   // Extend the node class for FTS Dictionary
   if (!pgBrowser.Nodes['fts_dictionary']) {
-    pgAdmin.Browser.Nodes['fts_dictionary'] = pgAdmin.Browser.Node.extend({
-      parent_type: ['schema', 'catalog'],
+    pgAdmin.Browser.Nodes['fts_dictionary'] = schemaChild.SchemaChildNode.extend({
       type: 'fts_dictionary',
       sqlAlterHelp: 'sql-altertsdictionary.html',
       sqlCreateHelp: 'sql-createtsdictionary.html',
       dialogHelp: url_for('help.static', {'filename': 'fts_dictionary_dialog.html'}),
-      canDrop: true,
-      canDropCascade: true,
       label: gettext('FTS Dictionary'),
       hasSQL: true,
       hasDepends: true,
@@ -186,34 +185,6 @@ define('pgadmin.node.fts_dictionary', [
           return null;
         },
       }),
-      canCreate: function(itemData, item, data) {
-        //If check is false then , we will allow create menu
-        if (data && data.check == false)
-          return true;
-
-        var t = pgBrowser.tree, i = item, d = itemData;
-        // To iterate over tree to check parent node
-        while (i) {
-          // If it is schema then allow user to create fts dictionary
-          if (_.indexOf(['schema'], d._type) > -1)
-            return true;
-
-          if ('coll-fts_dictionary' == d._type) {
-            //Check if we are not child of catalog
-            var prev_i = t.hasParent(i) ? t.parent(i) : null,
-              prev_d = prev_i ? t.itemData(prev_i) : null;
-            if( prev_d._type == 'catalog') {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-        // by default we do not want to allow create menu
-        return true;
-      },
     });
   }
 

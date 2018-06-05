@@ -7,10 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 import filterDialog from 'sources/sqleditor/filter_dialog';
-// import filterDialogModel from 'sources/sqleditor/filter_dialog_model';
 
 describe('filterDialog', () => {
-  jasmine.createSpy('sqlEditorController');
   describe('filterDialog', () => {
     describe('when using filter dialog', () => {
       beforeEach(() => {

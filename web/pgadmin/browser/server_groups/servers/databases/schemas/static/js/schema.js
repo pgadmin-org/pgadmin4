@@ -425,54 +425,10 @@ define('pgadmin.node.schema', [
           return null;
         },
       }),
-      // This function will checks whether we can allow user to
-      // drop object or not based on location within schema & catalog
-      canChildDrop: function(itemData, item) {
-        var t = pgBrowser.tree, i = item, d = itemData;
-        // To iterate over tree to check parent node
-        while (i) {
-          // If it is schema then allow user to create collation
-          if (_.indexOf(['schema'], d._type) > -1)
-            return true;
-
-            //Check if we are not child of catalog
-          var prev_i = t.hasParent(i) ? t.parent(i) : null,
-            prev_d = prev_i ? t.itemData(prev_i) : null;
-          if(prev_d && prev_d._type == 'catalog') {
-            return false;
-          }
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-        // by default we do not want to allow create menu
-        return true;
-      },
     });
 
     pgBrowser.tableChildTreeNodeHierarchy = function(i) {
-      var idx = 0,
-        res = {},
-        t = pgBrowser.tree;
-
-      do {
-        var d = t.itemData(i);
-        if (
-          d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId
-        ) {
-          if (d._type === 'partition' || d._type === 'table') {
-            if (!('table' in res)) {
-              res['table'] = _.extend({}, d, {'priority': idx});
-              idx -= 1;
-            }
-          } else {
-            res[d._type] = _.extend({}, d, {'priority': idx});
-            idx -= 1;
-          }
-        }
-        i = t.hasParent(i) ? t.parent(i) : null;
-      } while (i);
-
-      return res;
+      return this.getTreeNodeHierarchy(i);
     };
   }
 

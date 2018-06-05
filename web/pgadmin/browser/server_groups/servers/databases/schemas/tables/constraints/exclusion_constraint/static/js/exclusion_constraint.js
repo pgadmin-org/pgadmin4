@@ -605,7 +605,6 @@ define('pgadmin.node.exclusion_constraint', [
   // Extend the browser's node class for exclusion constraint node
   if (!pgBrowser.Nodes['exclusion_constraint']) {
     pgAdmin.Browser.Nodes['exclusion_constraint'] = pgBrowser.Node.extend({
-      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       type: 'exclusion_constraint',
       label: gettext('Exclusion constraint'),
       collection_type: 'coll-constraints',

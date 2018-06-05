@@ -1,10 +1,12 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
-  'sources/utils', 'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui',
+  'sources/utils',
+  'sources/nodes/supported_database_node',
+  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui',
 ], function(
   gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-Backform, commonUtils
+Backform, commonUtils, supportedNodes
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -383,25 +385,6 @@ Backform, commonUtils
 
       this.initialized = true;
 
-      /*
-       * Enable/disable import menu in tools based on node selected. Import
-       * menu will be enabled only when user select table node.
-       */
-      var menu_enabled = function(itemData, item) {
-        var t = pgBrowser.tree,
-          i = item,
-          d = itemData;
-        var parent_item = t.hasParent(i) ? t.parent(i) : null,
-          parent_data = parent_item ? t.itemData(parent_item) : null;
-        if (!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data))
-          return (
-            (_.indexOf(['table'], d._type) !== -1 &&
-              parent_data._type != 'catalog') ? true : false
-          );
-        else
-          return false;
-      };
-
       // Initialize the context menu to display the import options when user open the context menu for table
       pgBrowser.add_menus([{
         name: 'import',
@@ -413,7 +396,9 @@ Backform, commonUtils
         priority: 10,
         label: gettext('Import/Export...'),
         icon: 'fa fa-shopping-cart',
-        enable: menu_enabled,
+        enable: supportedNodes.enabled.bind(
+          null, pgBrowser.treeMenu, ['table']
+        ),
       }]);
     },
 

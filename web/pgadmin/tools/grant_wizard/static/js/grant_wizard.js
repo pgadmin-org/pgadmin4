@@ -2,12 +2,15 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'pgadmin.backgrid', 'pgadmin.backform',
-  'pgadmin.browser', 'pgadmin.browser.node', 'backgrid.select.all',
+  'pgadmin.browser', 'pgadmin.browser.node',
+  'tools/grant_wizard/static/js/menu_utils',
+  'sources/nodes/supported_database_node',
+  'backgrid.select.all',
   'backgrid.filter', 'pgadmin.browser.server.privilege',
   'pgadmin.browser.wizard',
 ], function(
   gettext, url_for, $, _, Backbone, Alertify, Backgrid, Backform, pgBrowser,
-  pgNode
+  pgNode, menuUtils, supportedNodes
 ) {
 
   // if module is already initialized, refer to that.
@@ -143,41 +146,6 @@ define([
 
       this.initialized = true;
 
-      // Define list of nodes on which grant wizard context menu option appears
-      var supported_nodes = [
-          'schema', 'coll-function', 'coll-sequence',
-          'coll-table', 'coll-view', 'coll-procedure',
-          'coll-mview', 'database', 'coll-trigger_function',
-        ],
-
-        /**
-          Enable/disable grantwizard menu in tools based
-          on node selected
-          if selected node is present in supported_nodes,
-          menu will be enabled otherwise disabled.
-          Also, hide it for system view in catalogs
-        */
-        menu_enabled = function(itemData, item) {
-          var t = pgBrowser.tree,
-            i = item,
-            d = itemData;
-          var parent_item = t.hasParent(i) ? t.parent(i) : null,
-            parent_data = parent_item ? t.itemData(parent_item) : null;
-          if (!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
-            if (_.indexOf(supported_nodes, d._type) !== -1 &&
-              parent_data._type != 'catalog') {
-              if (d._type == 'database' && d.allowConn)
-                return true;
-              else if (d._type != 'database')
-                return true;
-              else
-                return false;
-            } else
-              return false;
-          } else
-            return false;
-        };
-
       // Define the nodes on which the menus to be appear
       var menus = [{
         name: 'grant_wizard_schema',
@@ -187,21 +155,25 @@ define([
         priority: 14,
         label: gettext('Grant Wizard...'),
         icon: 'fa fa-unlock-alt',
-        enable: menu_enabled,
+        enable: supportedNodes.enabled.bind(
+          null, pgBrowser.treeMenu, menuUtils.supportedNodes
+        ),
       }];
 
       // Add supported menus into the menus list
-      for (var idx = 0; idx < supported_nodes.length; idx++) {
+      for (var idx = 0; idx < menuUtils.supportedNodes.length; idx++) {
         menus.push({
-          name: 'grant_wizard_schema_context_' + supported_nodes[idx],
-          node: supported_nodes[idx],
+          name: 'grant_wizard_schema_context_' + menuUtils.supportedNodes[idx],
+          node: menuUtils.supportedNodes[idx],
           module: this,
           applies: ['context'],
           callback: 'start_grant_wizard',
           priority: 14,
           label: gettext('Grant Wizard...'),
           icon: 'fa fa-unlock-alt',
-          enable: menu_enabled,
+          enable: supportedNodes.enabled.bind(
+            null, pgBrowser.treeMenu, menuUtils.supportedNodes
+          ),
         });
       }
       pgBrowser.add_menus(menus);

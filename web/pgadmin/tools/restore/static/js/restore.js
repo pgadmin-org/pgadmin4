@@ -1,11 +1,13 @@
-// Restore dialog
 define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'underscore.string', 'pgadmin.alertifyjs', 'pgadmin.browser',
   'pgadmin.backgrid', 'pgadmin.backform', 'sources/utils',
+  'tools/restore/static/js/menu_utils',
+  'sources/nodes/supported_database_node',
+  'tools/restore/static/js/restore_dialog',
 ], function(
   gettext, url_for, $, _, Backbone, S, alertify, pgBrowser, Backgrid, Backform,
-commonUtils
+commonUtils, menuUtils, supportedNodes, restoreDialog
 ) {
 
   // if module is already initialized, refer to that.
@@ -307,59 +309,6 @@ commonUtils
 
       this.initialized = true;
 
-      // Define list of nodes on which restore context menu option appears
-      var restore_supported_nodes = [
-        'database', 'schema',
-        'table', 'function',
-        'trigger', 'index',
-        'partition',
-      ];
-
-      /**
-        Enable/disable restore menu in tools based
-        on node selected
-        if selected node is present in supported_nodes,
-        menu will be enabled otherwise disabled.
-        Also, hide it for system view in catalogs
-      */
-      var menu_enabled = function(itemData, item, data) {
-        var t = pgBrowser.tree,
-          i = item,
-          d = itemData;
-        var parent_item = t.hasParent(i) ? t.parent(i) : null,
-          parent_data = parent_item ? t.itemData(parent_item) : null;
-        if (!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
-          if (_.indexOf(restore_supported_nodes, d._type) !== -1 &&
-            is_parent_catalog(itemData, item, data)) {
-            if (d._type == 'database' && d.allowConn)
-              return true;
-            else if (d._type != 'database')
-              return true;
-            else
-              return false;
-          } else
-            return false;
-        } else
-          return false;
-      };
-
-      var is_parent_catalog = function(itemData, item) {
-        var t = pgBrowser.tree,
-          i = item,
-          d = itemData;
-
-        // To iterate over tree to check parent node
-        while (i) {
-          // If it is schema then allow user to restore
-          if (_.indexOf(['catalog'], d._type) > -1)
-            return false;
-          i = t.hasParent(i) ? t.parent(i) : null;
-          d = i ? t.itemData(i) : null;
-        }
-        // by default we do not want to allow create menu
-        return true;
-      };
-
       // Define the nodes on which the menus to be appear
       var menus = [{
         name: 'restore_object',
@@ -369,20 +318,24 @@ commonUtils
         priority: 13,
         label: gettext('Restore...'),
         icon: 'fa fa-upload',
-        enable: menu_enabled,
+        enable: supportedNodes.enabled.bind(
+          null, pgBrowser.treeMenu, menuUtils.restoreSupportedNodes
+        ),
       }];
 
-      for (var idx = 0; idx < restore_supported_nodes.length; idx++) {
+      for (var idx = 0; idx < menuUtils.restoreSupportedNodes.length; idx++) {
         menus.push({
-          name: 'restore_' + restore_supported_nodes[idx],
-          node: restore_supported_nodes[idx],
+          name: 'restore_' + menuUtils.restoreSupportedNodes[idx],
+          node: menuUtils.restoreSupportedNodes[idx],
           module: this,
           applies: ['context'],
           callback: 'restore_objects',
           priority: 13,
           label: gettext('Restore...'),
           icon: 'fa fa-upload',
-          enable: menu_enabled,
+          enable: supportedNodes.enabled.bind(
+            null, pgBrowser.treeMenu, menuUtils.restoreSupportedNodes
+          ),
         });
       }
 
@@ -391,318 +344,10 @@ commonUtils
     },
     // Callback to draw Backup Dialog for objects
     restore_objects: function(action, treeItem) {
-
-      var i = treeItem || pgBrowser.tree.selected(),
-        server_data = null;
-
-      while (i) {
-        var node_data = pgBrowser.tree.itemData(i);
-        if (node_data._type == 'server') {
-          server_data = node_data;
-          break;
-        }
-
-        if (pgBrowser.tree.hasParent(i)) {
-          i = $(pgBrowser.tree.parent(i));
-        } else {
-          alertify.alert(
-            gettext('Restore Error'),
-            gettext('Please select server or child node from tree.')
-          );
-          break;
-        }
-      }
-
-      if (!server_data) {
-        return;
-      }
-
-      var module = 'paths',
-        preference_name = 'pg_bin_dir',
-        msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
-
-      if ((server_data.type && server_data.type == 'ppas') ||
-        server_data.server_type == 'ppas') {
-        preference_name = 'ppas_bin_dir';
-        msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
-      }
-
-      var preference = pgBrowser.get_preference(module, preference_name);
-
-      if (preference) {
-        if (!preference.value) {
-          alertify.alert(gettext('Configuration required'), msg);
-          return;
-        }
-      } else {
-        alertify.alert(
-          gettext('Restore Error'),
-          S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value()
-        );
-        return;
-      }
-
-      var title = S(gettext('Restore (%s: %s)')),
-        tree = pgBrowser.tree,
-        item = treeItem || tree.selected(),
-        data = item && item.length == 1 && tree.itemData(item),
-        node = data && data._type && pgBrowser.Nodes[data._type];
-
-      if (!node)
-        return;
-
-      var treeInfo = node.getTreeNodeHierarchy.apply(node, [item]);
-
-      if (treeInfo.database._label.indexOf('=') >= 0) {
-        alertify.alert(
-          gettext('Restore error'),
-          gettext('Restore job creation failed. '+
-          'Databases with = symbols in the name cannot be restored using this utility.')
-        );
-        return;
-      }
-
-      title = title.sprintf(node.label, data.label).value();
-
-      if (!alertify.pg_restore) {
-        // Create Dialog title on the fly with node details
-        alertify.dialog('pg_restore', function factory() {
-          return {
-            main: function(title, item, data, node) {
-              this.set('title', title);
-              this.setting('pg_node', node);
-              this.setting('pg_item', item);
-              this.setting('pg_item_data', data);
-            },
-            build: function() {
-              alertify.pgDialogBuild.apply(this);
-            },
-            setup: function() {
-              return {
-                buttons: [{
-                  text: '',
-                  className: 'btn btn-default pull-left fa fa-lg fa-info',
-                  attrs: {
-                    name: 'object_help',
-                    type: 'button',
-                    url: 'backup.html',
-                    label: gettext('Restore'),
-                  },
-                }, {
-                  text: '',
-                  key: 112,
-                  className: 'btn btn-default pull-left fa fa-lg fa-question',
-                  attrs: {
-                    name: 'dialog_help',
-                    type: 'button',
-                    label: gettext('Restore'),
-                    url: url_for('help.static', {
-                      'filename': 'restore_dialog.html',
-                    }),
-                  },
-                }, {
-                  text: gettext('Restore'),
-                  key: 13,
-                  className: 'btn btn-primary fa fa-upload pg-alertify-button',
-                  restore: true,
-                  'data-btn-name': 'restore',
-                }, {
-                  text: gettext('Cancel'),
-                  key: 27,
-                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
-                  restore: false,
-                  'data-btn-name': 'cancel',
-                }],
-                // Set options for dialog
-                options: {
-                  title: title,
-                  //disable both padding and overflow control.
-                  padding: !1,
-                  overflow: !1,
-                  model: 0,
-                  resizable: true,
-                  maximizable: true,
-                  pinnable: false,
-                  closableByDimmer: false,
-                  modal: false,
-                },
-              };
-            },
-            hooks: {
-              // triggered when the dialog is closed
-              onclose: function() {
-                if (this.view) {
-                  this.view.remove({
-                    data: true,
-                    internal: true,
-                    silent: true,
-                  });
-                }
-              },
-            },
-            settings: {
-              pg_node: null,
-              pg_item: null,
-              pg_item_data: null,
-            },
-            prepare: function() {
-
-              var self = this;
-              // Disable Backup button until user provides Filename
-              this.__internal.buttons[2].element.disabled = true;
-              var $container = $('<div class=\'restore_dialog\'></div>');
-              var t = pgBrowser.tree,
-                i = t.selected(),
-                d = i && i.length == 1 ? t.itemData(i) : undefined,
-                node = d && pgBrowser.Nodes[d._type];
-
-              if (!d)
-                return;
-
-              var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
-
-              var newModel = new RestoreObjectModel({
-                  node_data: node,
-                }, {
-                  node_info: treeInfo,
-                }),
-                fields = Backform.generateViewSchema(
-                  treeInfo, newModel, 'create', node, treeInfo.server, true
-                );
-
-              var view = this.view = new Backform.Dialog({
-                el: $container,
-                model: newModel,
-                schema: fields,
-              });
-
-              $(this.elements.body.childNodes[0]).addClass(
-                'alertify_tools_dialog_properties obj_properties'
-              );
-
-              view.render();
-
-              this.elements.content.appendChild($container.get(0));
-
-              view.$el.attr('tabindex', -1);
-              // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
-              pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
-              var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
-              commonUtils.findAndSetFocus(container);
-
-              // Listen to model & if filename is provided then enable Backup button
-              this.view.model.on('change', function() {
-                if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {
-                  this.errorModel.clear();
-                  self.__internal.buttons[2].element.disabled = false;
-                } else {
-                  self.__internal.buttons[2].element.disabled = true;
-                  this.errorModel.set('file', gettext('Please provide filename'));
-                }
-              });
-
-            },
-            // Callback functions when click on the buttons of the Alertify dialogs
-            callback: function(e) {
-              // Fetch current server id
-              var t = pgBrowser.tree,
-                i = this.settings['pg_item'] || t.selected(),
-                d = this.settings['pg_item_data'] || (
-                  i && i.length == 1 ? t.itemData(i) : undefined
-                ),
-                node = this.settings['pg_node'] || (
-                  d && pgBrowser.Nodes[d._type]
-                );
-
-              if (e.button.element.name == 'dialog_help' || e.button.element.name == 'object_help') {
-                e.cancel = true;
-                pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
-                  node, i, e.button.element.getAttribute('label'));
-                return;
-              }
-
-              if (e.button['data-btn-name'] === 'restore') {
-                if (!d)
-                  return;
-
-                var info = node.getTreeNodeHierarchy.apply(node, [i]),
-                  m = this.view.model;
-                // Set current node info into model
-                m.set('database', info.database._label);
-                if (!m.get('custom')) {
-                  switch (d._type) {
-                  case 'schema':
-                    m.set('schemas', [d._label]);
-                    break;
-                  case 'table':
-                    m.set('schemas', [info.schema._label]);
-                    m.set('tables', [d._label]);
-                    break;
-                  case 'function':
-                    m.set('schemas', [info.schema._label]);
-                    m.set('functions', [d._label]);
-                    break;
-                  case 'index':
-                    m.set('schemas', [info.schema._label]);
-                    m.set('indexes', [d._label]);
-                    break;
-                  case 'trigger':
-                    m.set('schemas', [info.schema._label]);
-                    m.set('triggers', [d._label]);
-                    break;
-                  case 'trigger_func':
-                    m.set('schemas', [info.schema._label]);
-                    m.set('trigger_funcs', [d._label]);
-                    break;
-                  }
-                } else {
-                  // TODO::
-                  // When we will implement the object selection in the
-                  // import dialog, we will need to select the objects from
-                  // the tree selection tab.
-                }
-
-                var self = this,
-                  baseUrl = url_for('restore.create_job', {
-                    'sid': info.server._id,
-                  }),
-                  args = this.view.model.toJSON();
-
-                $.ajax({
-                  url: baseUrl,
-                  method: 'POST',
-                  data: {
-                    'data': JSON.stringify(args),
-                  },
-                  success: function(res) {
-                    if (res.success) {
-                      alertify.success(
-                        gettext('Restore job created.'), 5
-                      );
-                      pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
-                    } else {
-                      console.warn(res);
-                    }
-                  },
-                  error: function(xhr) {
-                    try {
-                      var err = JSON.parse(xhr.responseText);
-                      alertify.alert(
-                        gettext('Restore failed.'),
-                        err.errormsg
-                      );
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
-                  },
-                });
-              }
-            },
-          };
-        });
-      }
-
-      alertify.pg_restore(title, item, data, node).resizeTo('65%', '60%');
+      let dialog = new restoreDialog.RestoreDialog(
+        pgBrowser, $, alertify, RestoreObjectModel
+      );
+      dialog.draw(action, treeItem);
     },
   };
   return pgBrowser.Restore;

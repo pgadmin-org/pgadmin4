@@ -3,9 +3,12 @@ define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'pgadmin.alertifyjs', 'backbone', 'pgadmin.backgrid',
   'pgadmin.backform', 'pgadmin.browser', 'sources/utils',
+  'tools/backup/static/js/menu_utils',
+  'tools/backup/static/js/backup_dialog',
+  'sources/nodes/supported_database_node',
 ], function(
   gettext, url_for, $, _, S, alertify, Backbone, Backgrid, Backform, pgBrowser,
-commonUtils
+  commonUtils, menuUtils, globalBackupDialog, supportedNodes
 ) {
 
   // if module is already initialized, refer to that.
@@ -394,48 +397,6 @@ commonUtils
 
       this.initialized = true;
 
-      // Define list of nodes on which backup context menu option appears
-      var backup_supported_nodes = [
-        'database', 'schema', 'table', 'partition',
-      ];
-
-      /**
-        Enable/disable backup menu in tools based
-        on node selected
-        if selected node is present in supported_nodes,
-        menu will be enabled otherwise disabled.
-        Also, hide it for system view in catalogs
-      */
-      var menu_enabled = function(itemData, item) {
-        var t = pgBrowser.tree,
-          i = item,
-          d = itemData,
-          parent_item = t.hasParent(i) ? t.parent(i) : null,
-          parent_data = parent_item ? t.itemData(parent_item) : null;
-
-        if (!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
-          if (_.indexOf(backup_supported_nodes, d._type) !== -1 &&
-            parent_data._type != 'catalog') {
-            if (d._type == 'database' && d.allowConn)
-              return true;
-            else if (d._type != 'database')
-              return true;
-            else
-              return false;
-          } else
-            return false;
-        } else
-          return false;
-      };
-
-      var menu_enabled_server = function(itemData) {
-        // If server node selected && connected
-        if (!_.isUndefined(itemData) && !_.isNull(itemData))
-          return (('server' === itemData._type) && itemData.connected);
-        else
-          return false;
-      };
-
       // Define the nodes on which the menus to be appear
       var menus = [{
         name: 'backup_global',
@@ -445,7 +406,7 @@ commonUtils
         priority: 12,
         label: gettext('Backup Globals...'),
         icon: 'fa fa-floppy-o',
-        enable: menu_enabled_server,
+        enable: menuUtils.menuEnabledServer,
       }, {
         name: 'backup_server',
         module: this,
@@ -454,7 +415,7 @@ commonUtils
         priority: 12,
         label: gettext('Backup Server...'),
         icon: 'fa fa-floppy-o',
-        enable: menu_enabled_server,
+        enable: menuUtils.menuEnabledServer,
       }, {
         name: 'backup_global_ctx',
         module: this,
@@ -464,7 +425,7 @@ commonUtils
         priority: 12,
         label: gettext('Backup Globals...'),
         icon: 'fa fa-floppy-o',
-        enable: menu_enabled_server,
+        enable: menuUtils.menuEnabledServer,
       }, {
         name: 'backup_server_ctx',
         module: this,
@@ -474,7 +435,7 @@ commonUtils
         priority: 12,
         label: gettext('Backup Server...'),
         icon: 'fa fa-floppy-o',
-        enable: menu_enabled_server,
+        enable: menuUtils.menuEnabledServer,
       }, {
         name: 'backup_object',
         module: this,
@@ -483,20 +444,24 @@ commonUtils
         priority: 11,
         label: gettext('Backup...'),
         icon: 'fa fa-floppy-o',
-        enable: menu_enabled,
+        enable: supportedNodes.enabled.bind(
+          null, pgBrowser.treeMenu, menuUtils.backupSupportedNodes
+        ),
       }];
 
-      for (var idx = 0; idx < backup_supported_nodes.length; idx++) {
+      for (var idx = 0; idx < menuUtils.backupSupportedNodes.length; idx++) {
         menus.push({
-          name: 'backup_' + backup_supported_nodes[idx],
-          node: backup_supported_nodes[idx],
+          name: 'backup_' + menuUtils.backupSupportedNodes[idx],
+          node: menuUtils.backupSupportedNodes[idx],
           module: this,
           applies: ['context'],
           callback: 'backup_objects',
           priority: 11,
           label: gettext('Backup...'),
           icon: 'fa fa-floppy-o',
-          enable: menu_enabled,
+          enable: supportedNodes.enabled.bind(
+            null, pgBrowser.treeMenu, menuUtils.backupSupportedNodes
+          ),
         });
       }
 
@@ -521,542 +486,25 @@ commonUtils
     },
 
     // Callback to draw Backup Dialog for globals/server
-    start_backup_global_server: function(action, item, params) {
-      var i = item || pgBrowser.tree.selected(),
-        server_data = null;
-
-      while (i) {
-        var node_data = pgBrowser.tree.itemData(i);
-        if (node_data._type == 'server') {
-          server_data = node_data;
-          break;
-        }
-
-        if (pgBrowser.tree.hasParent(i)) {
-          i = $(pgBrowser.tree.parent(i));
-        } else {
-          alertify.alert(
-            gettext('Backup Error'),
-            gettext('Please select server or child node from the browser tree.')
-          );
-          break;
-        }
-      }
-
-      if (!server_data) {
-        return;
-      }
-
-      var module = 'paths',
-        preference_name = 'pg_bin_dir',
-        msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
-
-      if ((server_data.type && server_data.type == 'ppas') ||
-        server_data.server_type == 'ppas') {
-        preference_name = 'ppas_bin_dir';
-        msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
-      }
-
-      var preference = pgBrowser.get_preference(module, preference_name);
-
-      if (preference) {
-        if (!preference.value) {
-          alertify.alert(gettext('Configuration required'), msg);
-          return;
-        }
-      } else {
-        alertify.alert(
-          gettext('Backup Error'),
-          S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value()
-        );
-        return;
-      }
-
-      var of_type = undefined;
-
-      // Set Notes according to type of backup
-      if (!_.isUndefined(params['globals']) && params['globals']) {
-        of_type = 'globals';
-      } else {
-        of_type = 'server';
-      }
-
-      var DialogName = 'BackupDialog_' + of_type,
-        DialogTitle = ((of_type == 'globals') ?
-          gettext('Backup Globals...') :
-          gettext('Backup Server...'));
-
-      if (!alertify[DialogName]) {
-        alertify.dialog(DialogName, function factory() {
-          return {
-            main: function(title) {
-              this.set('title', title);
-            },
-            build: function() {
-              alertify.pgDialogBuild.apply(this);
-            },
-            setup: function() {
-              return {
-                buttons: [{
-                  text: '',
-                  className: 'btn btn-default pull-left fa fa-lg fa-info',
-                  attrs: {
-                    name: 'object_help',
-                    type: 'button',
-                    url: 'backup.html',
-                    label: gettext('Backup'),
-                  },
-                }, {
-                  text: '',
-                  key: 112,
-                  className: 'btn btn-default pull-left fa fa-lg fa-question',
-                  attrs: {
-                    name: 'dialog_help',
-                    type: 'button',
-                    label: gettext('Backup'),
-                    url: url_for('help.static', {
-                      'filename': 'backup_dialog.html',
-                    }),
-                  },
-                }, {
-                  text: gettext('Backup'),
-                  key: 13,
-                  className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
-                  'data-btn-name': 'backup',
-                }, {
-                  text: gettext('Cancel'),
-                  key: 27,
-                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
-                  'data-btn-name': 'cancel',
-                }],
-                // Set options for dialog
-                options: {
-                  title: DialogTitle,
-                  //disable both padding and overflow control.
-                  padding: !1,
-                  overflow: !1,
-                  model: 0,
-                  resizable: true,
-                  maximizable: true,
-                  pinnable: false,
-                  closableByDimmer: false,
-                  modal: false,
-                },
-              };
-            },
-            hooks: {
-              // Triggered when the dialog is closed
-              onclose: function() {
-                if (this.view) {
-                  // clear our backform model/view
-                  this.view.remove({
-                    data: true,
-                    internal: true,
-                    silent: true,
-                  });
-                }
-              },
-            },
-            prepare: function() {
-              var self = this;
-              // Disable Backup button until user provides Filename
-              this.__internal.buttons[2].element.disabled = true;
-
-              var $container = $('<div class=\'backup_dialog\'></div>');
-              // Find current/selected node
-              var t = pgBrowser.tree,
-                i = t.selected(),
-                d = i && i.length == 1 ? t.itemData(i) : undefined,
-                node = d && pgBrowser.Nodes[d._type];
-
-              if (!d)
-                return;
-              // Create treeInfo
-              var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
-              // Instance of backbone model
-              var newModel = new BackupModel({
-                  type: of_type,
-                }, {
-                  node_info: treeInfo,
-                }),
-                fields = Backform.generateViewSchema(
-                  treeInfo, newModel, 'create', node, treeInfo.server, true
-                );
-
-              var view = this.view = new Backform.Dialog({
-                el: $container,
-                model: newModel,
-                schema: fields,
-              });
-              // Add our class to alertify
-              $(this.elements.body.childNodes[0]).addClass(
-                'alertify_tools_dialog_properties obj_properties'
-              );
-              // Render dialog
-              view.render();
-
-              this.elements.content.appendChild($container.get(0));
-
-              var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
-              commonUtils.findAndSetFocus(container);
-
-              // Listen to model & if filename is provided then enable Backup button
-              this.view.model.on('change', function() {
-                if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {
-                  this.errorModel.clear();
-                  self.__internal.buttons[2].element.disabled = false;
-                } else {
-                  self.__internal.buttons[2].element.disabled = true;
-                  this.errorModel.set('file', gettext('Please provide a filename'));
-                }
-              });
-            },
-            // Callback functions when click on the buttons of the Alertify dialogs
-            callback: function(e) {
-              // Fetch current server id
-              var t = pgBrowser.tree,
-                i = t.selected(),
-                d = i && i.length == 1 ? t.itemData(i) : undefined,
-                node = d && pgBrowser.Nodes[d._type];
-
-              if (e.button.element.name == 'dialog_help' || e.button.element.name == 'object_help') {
-                e.cancel = true;
-                pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
-                  node, i, e.button.element.getAttribute('label'));
-                return;
-              }
-
-              if (e.button['data-btn-name'] === 'backup') {
-
-                if (!d)
-                  return;
-
-                var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
-
-                var self = this,
-                  baseUrl = url_for('backup.create_server_job', {
-                    'sid': treeInfo.server._id,
-                  }),
-                  args = this.view.model.toJSON();
-
-                $.ajax({
-                  url: baseUrl,
-                  method: 'POST',
-                  data: {
-                    'data': JSON.stringify(args),
-                  },
-                  success: function(res) {
-                    if (res.success) {
-                      alertify.success(gettext('Backup job created.'), 5);
-                      pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
-                    } else {
-                      console.warn(res);
-                    }
-                  },
-                  error: function(xhr) {
-                    try {
-                      var err = JSON.parse(xhr.responseText);
-                      alertify.alert(
-                        gettext('Backup job failed.'),
-                        err.errormsg
-                      );
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
-                  },
-                });
-              }
-            },
-          };
-        });
-      }
-      alertify[DialogName](true).resizeTo('60%', '50%');
+    start_backup_global_server: function(action, treeItem, params) {
+      let dialog = new globalBackupDialog.BackupDialog(
+        pgBrowser,
+        $,
+        alertify,
+        BackupModel
+      );
+      dialog.draw(action, treeItem, params);
     },
 
     // Callback to draw Backup Dialog for objects
     backup_objects: function(action, treeItem) {
-
-      var i = treeItem || pgBrowser.tree.selected(),
-        server_data = null;
-
-      while (i) {
-        var node_data = pgBrowser.tree.itemData(i);
-        if (node_data._type == 'server') {
-          server_data = node_data;
-          break;
-        }
-
-        if (pgBrowser.tree.hasParent(i)) {
-          i = $(pgBrowser.tree.parent(i));
-        } else {
-          alertify.alert(
-            gettext('Backup Error'),
-            gettext('Please select server or child node from tree.')
-          );
-          break;
-        }
-      }
-
-      if (!server_data) {
-        return;
-      }
-
-      var module = 'paths',
-        preference_name = 'pg_bin_dir',
-        msg = gettext('Please set binary path for PostgreSQL Server from preferences.');
-
-      if ((server_data.type && server_data.type == 'ppas') ||
-        server_data.server_type == 'ppas') {
-        preference_name = 'ppas_bin_dir';
-        msg = gettext('Please set binary path for EDB Postgres Advanced Server from preferences.');
-      }
-
-      var preference = pgBrowser.get_preference(module, preference_name);
-
-      if (preference) {
-        if (!preference.value) {
-          alertify.alert(gettext('Configuration required'), msg);
-          return;
-        }
-      } else {
-        alertify.alert(
-          gettext('Backup Error'),
-          S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value()
-        );
-        return;
-      }
-
-      var title = S(gettext('Backup (%s: %s)')),
-        tree = pgBrowser.tree,
-        item = treeItem || tree.selected(),
-        data = item && item.length == 1 && tree.itemData(item),
-        node = data && data._type && pgBrowser.Nodes[data._type];
-
-      if (!node)
-        return;
-
-      var treeInfo = node.getTreeNodeHierarchy.apply(node, [item]);
-
-      if (treeInfo.database._label.indexOf('=') >= 0) {
-        alertify.alert(
-          gettext('Backup error'),
-          gettext('Backup job creation failed. '+
-          'Databases with = symbols in the name cannot be backed up using this utility.')
-        );
-        return;
-      }
-
-      title = title.sprintf(node.label, data.label).value();
-
-      if (!alertify.backup_objects) {
-        // Create Dialog title on the fly with node details
-        alertify.dialog('backup_objects', function factory() {
-          return {
-            main: function(title) {
-              this.set('title', title);
-            },
-            build: function() {
-              alertify.pgDialogBuild.apply(this);
-            },
-            setup: function() {
-              return {
-                buttons: [{
-                  text: '',
-                  className: 'btn btn-default pull-left fa fa-lg fa-info',
-                  attrs: {
-                    name: 'object_help',
-                    type: 'button',
-                    url: 'backup.html',
-                    label: gettext('Backup'),
-                  },
-                }, {
-                  text: '',
-                  key: 112,
-                  className: 'btn btn-default pull-left fa fa-lg fa-question',
-                  attrs: {
-                    name: 'dialog_help',
-                    type: 'button',
-                    label: gettext('Backup'),
-                    url: url_for('help.static', {
-                      'filename': 'backup_dialog.html',
-                    }),
-                  },
-                }, {
-                  text: gettext('Backup'),
-                  key: 13,
-                  className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
-                  'data-btn-name': 'backup',
-                }, {
-                  text: gettext('Cancel'),
-                  key: 27,
-                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
-                  'data-btn-name': 'cancel',
-                }],
-                // Set options for dialog
-                options: {
-                  title: title,
-                  //disable both padding and overflow control.
-                  padding: !1,
-                  overflow: !1,
-                  model: 0,
-                  resizable: true,
-                  maximizable: true,
-                  pinnable: false,
-                  closableByDimmer: false,
-                  modal: false,
-                },
-              };
-            },
-            hooks: {
-              // triggered when the dialog is closed
-              onclose: function() {
-                if (this.view) {
-                  this.view.remove({
-                    data: true,
-                    internal: true,
-                    silent: true,
-                  });
-                }
-              },
-            },
-            prepare: function() {
-              var self = this;
-              // Disable Backup button until user provides Filename
-              this.__internal.buttons[2].element.disabled = true;
-              var $container = $('<div class=\'backup_dialog\'></div>');
-              var t = pgBrowser.tree,
-                i = t.selected(),
-                d = i && i.length == 1 ? t.itemData(i) : undefined,
-                node = d && pgBrowser.Nodes[d._type];
-
-              if (!d)
-                return;
-
-              var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
-
-              var newModel = new BackupObjectModel({}, {
-                  node_info: treeInfo,
-                }),
-                fields = Backform.generateViewSchema(
-                  treeInfo, newModel, 'create', node, treeInfo.server, true
-                );
-
-              var view = this.view = new Backform.Dialog({
-                el: $container,
-                model: newModel,
-                schema: fields,
-              });
-
-              $(this.elements.body.childNodes[0]).addClass(
-                'alertify_tools_dialog_properties obj_properties'
-              );
-
-              view.render();
-
-              this.elements.content.appendChild($container.get(0));
-
-              if(view) {
-                view.$el.attr('tabindex', -1);
-                // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
-                pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
-                var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
-                commonUtils.findAndSetFocus(container);
-              }
-              // Listen to model & if filename is provided then enable Backup button
-              this.view.model.on('change', function() {
-                if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {
-                  this.errorModel.clear();
-                  self.__internal.buttons[2].element.disabled = false;
-                } else {
-                  self.__internal.buttons[2].element.disabled = true;
-                  this.errorModel.set('file', gettext('Please provide filename'));
-                }
-              });
-
-            },
-            // Callback functions when click on the buttons of the Alertify dialogs
-            callback: function(e) {
-              // Fetch current server id
-              var t = pgBrowser.tree,
-                i = t.selected(),
-                d = i && i.length == 1 ? t.itemData(i) : undefined,
-                node = d && pgBrowser.Nodes[d._type];
-
-              if (e.button.element.name == 'dialog_help' || e.button.element.name == 'object_help') {
-                e.cancel = true;
-                pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
-                  node, i, e.button.element.getAttribute('label'));
-                return;
-              }
-
-              if (e.button['data-btn-name'] === 'backup') {
-                if (!d)
-                  return;
-
-                var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
-
-                // Set current database into model
-                this.view.model.set('database', treeInfo.database._label);
-
-                // We will remove once object tree is implemented
-                // If selected node is Schema then add it in model
-                if (d._type == 'schema') {
-                  var schemas = [];
-                  schemas.push(d._label);
-                  this.view.model.set('schemas', schemas);
-                }
-                // If selected node is Table then add it in model along with
-                // its schema
-                if (d._type == 'table') {
-                  this.view.model.set(
-                    'tables', [
-                      [treeInfo.schema._label, d._label],
-                    ]
-                  );
-                }
-
-                // Remove ratio attribute from model if it has empty string.
-                // The valid value can be between 0 to 9.
-                if (_.isEmpty(this.view.model.get('ratio'))) {
-                  this.view.model.unset('ratio');
-                }
-
-                var self = this,
-                  baseUrl = url_for('backup.create_object_job', {
-                    'sid': treeInfo.server._id,
-                  }),
-                  args = this.view.model.toJSON();
-
-                $.ajax({
-                  url: baseUrl,
-                  method: 'POST',
-                  data: {
-                    'data': JSON.stringify(args),
-                  },
-                  success: function(res) {
-                    if (res.success) {
-                      alertify.success(gettext('Backup job created.'), 5);
-                      pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
-                    }
-                  },
-                  error: function(xhr) {
-                    try {
-                      var err = JSON.parse(xhr.responseText);
-                      alertify.alert(
-                        gettext('Backup job failed.'),
-                        err.errormsg
-                      );
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
-                  },
-                });
-              }
-            },
-          };
-        });
-      }
-      alertify.backup_objects(title).resizeTo('65%', '60%');
+      let dialog = new globalBackupDialog.BackupDialog(
+        pgBrowser,
+        $,
+        alertify,
+        BackupObjectModel
+      );
+      dialog.draw(action, treeItem, null);
     },
   };
   return pgBrowser.Backup;

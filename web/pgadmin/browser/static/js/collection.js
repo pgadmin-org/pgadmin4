@@ -115,17 +115,17 @@ define([
         // Fetch Data
         collection.fetch({
           reset: true,
-          error: function(xhr, error, message) {
+          error: function(model, error, xhr) {
             pgBrowser.Events.trigger(
               'pgadmin:collection:retrieval:error', 'properties', xhr, error,
-              message, item, that
+              error.message, item, that
             );
             if (!Alertify.pgHandleItemError(
-              xhr, error, message, {item: item, info: info}
+              xhr, error, error.message, {item: item, info: info}
             )) {
               Alertify.pgNotifier(error, xhr, S(
                 gettext('Error retrieving properties - %s.')
-              ).sprintf(message || that.label).value(), function() {
+              ).sprintf(error.message || that.label).value(), function() {
                 console.warn(arguments);
               });
             }
