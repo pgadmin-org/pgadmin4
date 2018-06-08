@@ -119,7 +119,7 @@ def explain_js():
 
 
 ##########################################################################
-# A special URL used to shutdown the server
+# A special URL used to shut down the server
 ##########################################################################
 @blueprint.route("/shutdown", methods=('get', 'post'))
 def shutdown():

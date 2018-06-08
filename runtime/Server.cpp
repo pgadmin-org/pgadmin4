@@ -332,7 +332,7 @@ void Server::shutdown(QUrl url)
 {
     bool shotdown = shutdownServer(url);
     if (!shotdown)
-        setError(tr("Failed to shutdown application server thread."));
+        setError(tr("Failed to shut down application server thread."));
 
     QThread::quit();
     QThread::wait();

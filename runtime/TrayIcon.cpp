@@ -22,7 +22,7 @@
 
 TrayIcon::TrayIcon(QString logFile) :
     m_logFile(logFile)
-{   
+{
     m_logWindow = NULL;
 
     m_trayIcon = NULL;
@@ -148,7 +148,7 @@ void TrayIcon::createActions()
     m_logAction = new QAction(tr("&View log..."), this);
     connect(m_logAction, SIGNAL(triggered()), this, SLOT(onLog()));
 
-    m_quitAction = new QAction(tr("&Shutdown server"), this);
+    m_quitAction = new QAction(tr("&Shut down server"), this);
     m_quitAction->setEnabled(false);
     connect(m_quitAction, SIGNAL(triggered()), this, SLOT(onQuit()));
 }
@@ -206,7 +206,7 @@ void TrayIcon::onConfig()
 
         if (needRestart)
         {
-            if (QMessageBox::Yes == QMessageBox::question(this, tr("Shutdown server?"), QString(tr("The %1 server must be restarted for changes to take effect. Do you want to shutdown the server now?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
+            if (QMessageBox::Yes == QMessageBox::question(this, tr("Shut down server?"), QString(tr("The %1 server must be restarted for changes to take effect. Do you want to shut down the server now?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
             {
                 exit(0);
             }
@@ -239,9 +239,9 @@ void TrayIcon::onLog()
 // Exit
 void TrayIcon::onQuit()
 {
-    if (QMessageBox::Yes == QMessageBox::question(this, tr("Shutdown server?"), QString(tr("Are you sure you want to shutdown the %1 server?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
+    if (QMessageBox::Yes == QMessageBox::question(this, tr("Shut down server?"), QString(tr("Are you sure you want to shut down the %1 server?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
     {
-        // Emit the signal to shutdown the python server.
+        // Emit the signal to shut down the python server.
         emit shutdownSignal(m_appServerUrl);
         exit(0);
     }

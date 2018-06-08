@@ -14,7 +14,7 @@ additional instances of pgAdmin are launched, a new browser tab will be opened
 and be served by the existing instance of the server in order to minimise system
 resource utilisation. Clicking the icon in the system tray will present a menu
 offering options to open a new pgAdmin window, configure the runtime, view the
-server log and shutdown the server.
+server log and shut down the server.
 
 .. note:: Pre-compiled and configured installation packages are available for
      a number of platforms. These packages should be used by end-users whereever
@@ -68,7 +68,7 @@ semi-colon character, for example:
 .. code-block:: bash
 
      /Users/dpage/.virtualenvs/pgadmin4/lib/python2.7/site-packages/;/Users/dpage/python-libs/
-    
+
 The configuration settings are stored using the QSettings class in Qt, which
 will use an INI file on Unix systems (~/.config/pgadmin/pgadmin4.conf),
 a plist file on Mac OS X (~/Library/Preferences/org.pgadmin.pgadmin4.plist),
