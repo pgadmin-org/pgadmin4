@@ -35,3 +35,4 @@ Bug fixes
 | `Bug #3342 <https://redmine.postgresql.org/issues/3342>`_ - Set SESSION_COOKIE_SAMESITE='Lax' per Flask recommendation to prevents sending cookies with CSRF-prone requests from external sites, such as submitting a form
 | `Bug #3353 <https://redmine.postgresql.org/issues/3353>`_ - Handle errors properly if they occur when renaming a database
 | `Bug #3392 <https://redmine.postgresql.org/issues/3392>`_ - Fix IPv6 support in the container build.
+| `Bug #3409 <https://redmine.postgresql.org/issues/3409>`_ - Avoid an exception on GreenPlum when retrieving RE-SQL on a table.

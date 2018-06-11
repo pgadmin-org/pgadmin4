@@ -1003,6 +1003,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            if len(res['rows']) == 0:
+                continue
             data = dict(res['rows'][0])
             # Adding parent into data dict, will be using it while creating sql
             data['schema'] = schema
