@@ -576,7 +576,7 @@ define('pgadmin.misc.explain', [
 
       // Draw tooltip
       var image_data = this.toJSON();
-      image.on('mouseover',() => {
+      image.mouseover(() => {
 
         // Empty the tooltip content if it has any and add new data
         toolTipContainer.empty();
@@ -618,7 +618,7 @@ define('pgadmin.misc.explain', [
       });
 
       // Remove tooltip when mouse is out from node's area
-      image.on('mouseout',() => {
+      image.mouseout(() => {
         toolTipContainer.empty();
         toolTipContainer.css({
           'opacity': '0',
