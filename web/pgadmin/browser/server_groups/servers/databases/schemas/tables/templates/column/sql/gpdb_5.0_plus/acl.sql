@@ -1,5 +1,5 @@
 SELECT
-  'lanacl' AS deftype,
+  'attacl' AS deftype,
   'PUBLIC' AS grantee,
   NULL     AS grantor,
   NULL     AS privileges,
