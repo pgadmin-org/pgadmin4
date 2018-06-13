@@ -38,7 +38,7 @@ class procedureDeleteTestCase(BaseTestGenerator):
         func_name = "test_procedure_delete_%s" % str(uuid.uuid4())[1:8]
         proc_info = funcs_utils.create_procedure(
             self.server, self.db_name, self.schema_name, func_name,
-            self.server_type)
+            self.server_type, self.server_version)
 
         proc_id = proc_info[0]
         response = self.tester.delete(

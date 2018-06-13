@@ -39,7 +39,7 @@ class ProcedurePutTestCase(BaseTestGenerator):
         func_name = "test_procedure_put_%s" % str(uuid.uuid4())[1:8]
         proc_info = funcs_utils.create_procedure(
             self.server, self.db_name, self.schema_name, func_name,
-            self.server_type)
+            self.server_type, self.server_version)
 
         proc_id = proc_info[0]
         data = {

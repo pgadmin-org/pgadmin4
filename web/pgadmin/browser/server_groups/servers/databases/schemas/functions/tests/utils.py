@@ -99,7 +99,8 @@ def verify_trigger_function(server, db_name, func_name):
     return functions
 
 
-def create_procedure(server, db_name, schema_name, func_name, s_type):
+def create_procedure(server, db_name, schema_name, func_name, s_type,
+                     s_version):
     """This function add the procedure to schema"""
     try:
         connection = utils.get_db_connection(db_name,
@@ -116,10 +117,17 @@ def create_procedure(server, db_name, schema_name, func_name, s_type):
                     " SECURITY DEFINER AS $$" \
                     " SELECT 1; $$;"
         else:
-            query = "CREATE PROCEDURE " + schema_name + "." + func_name + \
-                    "()" \
-                    " SECURITY DEFINER AS $BODY$ BEGIN" \
-                    " NULL; END; $BODY$"
+            if s_version >= 90500:
+                query = "CREATE PROCEDURE " + schema_name + "." + func_name + \
+                        "()" \
+                        " SECURITY DEFINER AS $BODY$ BEGIN" \
+                        " NULL; END; $BODY$"
+            else:
+                query = "CREATE PROCEDURE " + schema_name + "." + func_name + \
+                        "()" \
+                        " AS $BODY$ BEGIN" \
+                        " NULL; END; $BODY$"
+
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created function
