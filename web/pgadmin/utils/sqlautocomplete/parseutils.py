@@ -73,7 +73,7 @@ TableReference = namedtuple(
 # This code is borrowed from sqlparse example script.
 # <url>
 def is_subselect(parsed):
-    if not parsed.is_group():
+    if not parsed.is_group:
         return False
     sql_type = ('SELECT', 'INSERT', 'UPDATE', 'CREATE', 'DELETE')
     for item in parsed.tokens:
