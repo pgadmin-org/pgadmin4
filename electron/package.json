@@ -1,0 +1,105 @@
+{
+  "name": "pgAdmin",
+  "version": "4.0.5-dev",
+  "description": "pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.",
+  "main": "src/index.js",
+  "repository": "git.postgresql.com",
+  "author": "pgAdmin Hackers",
+  "license": "PostgreSQL",
+  "scripts": {
+    "start": "electron-forge start",
+    "start:dev": "cross-env ENV=DEV electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "dist:linux": "electron-forge make --platfrom=linux --arch=x64 --targets=deb",
+    "dist:darwin": "electron-forge make --platfrom=darwin --arch=x64 --targets=dmg",
+    "dist:windows": "electron-forge make --platfrom=win32 --arch=x64 --targets=squirrel",
+    "lint": "eslint src test --color",
+    "copy-folder:nix": "cp -r ../web web && find web | grep .pyc$ | xargs -I '{}' rm '{}'",
+    "build:nix": "yarn copy-folder:nix && yarn bundle-app-js",
+    "test": "yarn lint && cross-env ENV=TEST yarn mocha"
+  },
+  "keywords": [
+    "pgadmin",
+    "pgadmin4",
+    "postgres",
+    "sqleditor",
+    "sql",
+    "query",
+    "database"
+  ],
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "dmg"
+        ],
+        "linux": [
+          "deb"
+        ]
+      },
+      "electronPackagerConfig": {
+        "packageManager": "yarn",
+        "asar": false
+      },
+      "electronWinstallerConfig": {
+        "name": "pgAdmin4",
+        "setupIcon": "assets/icons/windows/pgAdmin4.ico"
+      },
+      "electronInstallerDebian": {
+        "icon": "assets/icons/linux/pgAdmin4.png",
+        "categories": [
+          "Utility"
+        ],
+        "homepage": "http://pgadmin.org"
+      },
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": "",
+        "name": "electron"
+      },
+      "electronInstallerDMG": {
+        "background": "assets/icons/linux/pgAdmin4.png",
+        "icon": "assets/icons/darwin/pgAdmin4.icns",
+        "format": "ULFO"
+      }
+    }
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cross-env": "^5.1.5",
+    "electron-compile": "^6.4.2",
+    "electron-squirrel-startup": "^1.0.0",
+    "logform": "^1.6.0",
+    "winston": "^3.0.0-rc5"
+  },
+  "devDependencies": {
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "electron-forge": "^5.2.1",
+    "electron-prebuilt-compile": "2.0.0",
+    "eslint": "^3",
+    "eslint-config-airbnb": "^15",
+    "eslint-plugin-import": "^2",
+    "eslint-plugin-jsx-a11y": "^5",
+    "eslint-plugin-react": "^7",
+    "is-docker": "^1.1.0",
+    "macos-alias": "^0.2.11",
+    "mocha": "^5.1.1",
+    "spectron": "^3.8.0",
+    "webpack": "^4.8.1",
+    "webpack-babel-installer": "^1.0.0"
+  }
+}

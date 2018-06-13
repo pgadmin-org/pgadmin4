@@ -32,7 +32,7 @@
     <script type="text/javascript"
             src="{{ url_for('static', filename='vendor/require/require.js' if config.DEBUG else 'vendor/require/require.min.js') }}"></script>
     <script type="text/javascript">
-            require.config({
+            requirejs.config({
                 baseUrl: '',
                 waitSeconds: 0,
                 shim: {},

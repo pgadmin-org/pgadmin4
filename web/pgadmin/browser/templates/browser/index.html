@@ -10,7 +10,7 @@
 
 {% block init_script %}
 try {
-require(
+requirejs(
 ['sources/generated/app.bundle'],
 function() {
 },
@@ -29,7 +29,7 @@ console.log(err);
  * http://stackoverflow.com/questions/15581563/requirejs-load-script-progress
  * Little bit tweaked as per need
  */
-require.onResourceLoad = function (context, map, depMaps) {
+requirejs.onResourceLoad = function (context, map, depMaps) {
   var loadingStatusEl = panel = document.getElementById('pg-spinner');
   if (loadingStatusEl) {
     if (!context) {
@@ -54,7 +54,7 @@ require.onResourceLoad = function (context, map, depMaps) {
     panel.style.display = "";
     clearTimeout(panel.ttimer);
     panel.ttimer = setTimeout(function () {
-      var context = require.s.contexts._;
+      var context = requirejs.s.contexts._;
       var inited = true;
       for (name in context.registry) {
         var m = context.registry[name];
@@ -69,7 +69,7 @@ require.onResourceLoad = function (context, map, depMaps) {
       if (inited) {
         // will fire if module loads in 400ms. TODO: reset this timer
         // for slow module loading
-        require.onResourceLoad(false);
+        requirejs.onResourceLoad(false);
       }
     }, 400)
   }

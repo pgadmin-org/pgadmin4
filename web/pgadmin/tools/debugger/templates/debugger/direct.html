@@ -3,7 +3,7 @@
 {% block init_script %}
 
 try {
-  require(
+  requirejs(
     ['sources/generated/debugger_direct'],
     function(pgDirectDebug) {
       var pgDirectDebug = pgDirectDebug || pgAdmin.Tools.DirectDebug;

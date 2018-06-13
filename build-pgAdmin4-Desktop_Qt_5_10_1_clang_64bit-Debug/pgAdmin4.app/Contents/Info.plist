@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+<dict>
+    <!-- start of standard entries -->
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>pgAdmin 4</string>
+    <key>CFBundleShortVersionString</key>
+    <string>3.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>3.0.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.9</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright (C) 2013 - 2018, The pgAdmin Development Team</string>
+    <key>CFBundleIconFile</key>
+    <string>pgAdmin4.icns</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleGetInfoString</key>
+    <string>pgAdmin 4 - PostgreSQL Tools</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleExecutable</key>
+    <string>pgAdmin4</string>
+    <key>CFBundleIdentifier</key>
+    <string>org.pgadmin.pgAdmin4</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>LSUIElement</key>
+    <string>1</string>
+</dict>
+</plist>

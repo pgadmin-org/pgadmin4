@@ -1963,19 +1963,5 @@ define('pgadmin.browser', [
     pgAdmin.Browser.editor_shortcut_keys.Tab = 'insertSoftTab';
   }
 
-  window.onbeforeunload = function() {
-    var e = window.event,
-      msg = S(gettext('Are you sure you wish to close the %s browser?')).sprintf(pgBrowser.utils.app_name).value();
-
-    // For IE and Firefox prior to version 4
-    if (e) {
-      e.returnValue = msg;
-    }
-
-    // For Safari
-    return msg;
-  };
-
-
   return pgAdmin.Browser;
 });

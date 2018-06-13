@@ -28,6 +28,8 @@ if sys.path[0] != root:
 # Grab the SERVER_MODE if it's been set by the runtime
 if 'SERVER_MODE' in globals():
     builtins.SERVER_MODE = globals()['SERVER_MODE']
+elif 'SERVER_MODE' in os.environ:
+    builtins.SERVER_MODE = os.environ['SERVER_MODE'] == 'true'
 else:
     builtins.SERVER_MODE = None
 
@@ -114,6 +116,9 @@ app.PGADMIN_RUNTIME = PGADMIN_RUNTIME
 # Set the key if appropriate
 if 'PGADMIN_KEY' in globals():
     app.PGADMIN_KEY = globals()['PGADMIN_KEY']
+    app.logger.debug("Desktop security key: %s" % app.PGADMIN_KEY)
+elif 'PGADMIN_KEY' in os.environ:
+    app.PGADMIN_KEY = os.environ['PGADMIN_KEY']
     app.logger.debug("Desktop security key: %s" % app.PGADMIN_KEY)
 else:
     app.PGADMIN_KEY = ''

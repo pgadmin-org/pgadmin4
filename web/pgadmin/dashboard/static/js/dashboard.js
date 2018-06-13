@@ -4,7 +4,7 @@ define('pgadmin.dashboard', [
   'pgadmin.alertifyjs', 'pgadmin.backform', 'backgrid.filter',
   'pgadmin.browser', 'bootstrap', 'wcdocker',
 ], function(
-  url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
+  url_for, gettext, requirejs, $, _, pgAdmin, Backbone, Backgrid, Flotr,
   Alertify, Backform
 ) {
 
@@ -480,7 +480,7 @@ define('pgadmin.dashboard', [
         var i = pgBrowser.tree.selected().length != 0 ?
           pgBrowser.tree.selected() :
           pgBrowser.tree.first(null, false),
-          serverModule = require('pgadmin.node.server'),
+          serverModule = requirejs('pgadmin.node.server'),
           itemData = pgBrowser.tree.itemData(i);
 
         while (itemData && itemData._type != 'server_group') {

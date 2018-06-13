@@ -68,7 +68,7 @@ define('pgadmin.browser.utils',
     // load the module right now
     load_module: function(name, path, c) {
       var obj = this;
-      require([name],function(m) {
+      requirejs([name],function(m) {
         try {
           // initialize the module (if 'init' function present).
           if (m.init && typeof(m.init) == 'function')

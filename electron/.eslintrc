@@ -1,0 +1,47 @@
+{
+  "env": {
+    "node": true,
+    "browser": true,
+    "mocha": true
+  },
+  "extends": "eslint-config-airbnb",
+  "rules": {
+    "arrow-body-style": [
+      "error",
+      "always"
+    ],
+    "import/extensions": 0,
+    "import/no-extraneous-dependencies": 0,
+    "import/no-unresolved": [
+      2,
+      {
+        "ignore": [
+          "electron"
+        ]
+      }
+    ],
+    "linebreak-style": 0,
+    "indent": [
+      "error",
+      2
+    ],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false
+      }
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ]
+  }
+}
