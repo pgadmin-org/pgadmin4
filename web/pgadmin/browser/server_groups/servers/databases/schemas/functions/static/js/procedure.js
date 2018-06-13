@@ -71,10 +71,13 @@ define('pgadmin.node.procedure', [
         if ('catalog' in node_hierarchy)
           return false;
 
-        // Procedures supported only in PPAS
+        // Procedures supported only in PPAS and PG >= 11
         return (
-          'server' in node_hierarchy &&
-            node_hierarchy['server'].server_type == 'ppas'
+          'server' in node_hierarchy && (
+          node_hierarchy['server'].server_type == 'ppas' ||
+            (node_hierarchy['server'].server_type == 'pg' &&
+             node_hierarchy['server'].version >= 110000)
+          )
         );
       },
       model: Function.model.extend({
@@ -103,20 +106,24 @@ define('pgadmin.node.procedure', [
             return true;
           }
           switch(this.name){
-          case 'provolatility':
+          case 'provolatile':
           case 'proisstrict':
-          case 'prosecdef':
           case 'procost':
           case 'proleakproof':
+            return (this.node_info.server.version < 90500 || this.node_info.server.server_type != 'ppas');
           case 'variables':
+          case 'prosecdef':
             return this.node_info.server.version < 90500;
           case 'prorows':
             var server = this.node_info.server;
             return !(server.version >= 90500 && m.get('proretset') == true);
           case 'funcowner':
-          case 'lanname':
           case 'proargs':
             return true;
+          case 'proparallel':
+            return (this.node_info.server.version < 90600 || this.node_info.server.server_type != 'ppas');
+          case 'lanname':
+            return this.node_info.server.version < 110000;
           default:
             return false;
           }

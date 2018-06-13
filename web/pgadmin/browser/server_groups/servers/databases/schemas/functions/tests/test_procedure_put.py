@@ -17,37 +17,41 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as funcs_utils
 
 
-class TriggerFuncPutTestCase(BaseTestGenerator):
-    """ This class will update new trigger function under schema node. """
+class ProcedurePutTestCase(BaseTestGenerator):
+    """ This class will update new procedure under schema node. """
     skip_on_database = ['gpdb']
     scenarios = [
-        # Fetching default URL for trigger function node.
-        ('Fetch Trigger Function Node URL',
-         dict(url='/browser/trigger_function/obj/'))
+        # Fetching default URL for procedure node.
+        ('Fetch Procedure Node URL',
+         dict(url='/browser/procedure/obj/'))
     ]
 
     def runTest(self):
-        """ This function will update trigger function under database node. """
-        super(TriggerFuncPutTestCase, self).setUp()
+        """ This function will update procedure under database node. """
+        super(ProcedurePutTestCase, self).setUp()
         self = funcs_utils.set_up(self)
 
-        func_name = "test_event_delete_%s" % str(uuid.uuid4())[1:8]
-        function_info = funcs_utils.create_trigger_function(
+        if self.server_type == "pg" and\
+                self.server_version < 110000:
+            message = "Procedures are not supported by PG < 110000."
+            self.skipTest(message)
+
+        func_name = "test_procedure_put_%s" % str(uuid.uuid4())[1:8]
+        proc_info = funcs_utils.create_procedure(
             self.server, self.db_name, self.schema_name, func_name,
-            self.server_version)
+            self.server_type)
 
-        trigger_func_id = function_info[0]
-
+        proc_id = proc_info[0]
         data = {
-            "description": "This is a trigger function update comment",
-            "id": trigger_func_id
+            "description": "This is procedure update comment",
+            "id": proc_id
         }
 
         put_response = self.tester.put(
             self.url + str(utils.SERVER_GROUP) +
             '/' + str(self.server_id) + '/' + str(self.db_id) + '/' +
             str(self.schema_id) + '/' +
-            str(trigger_func_id),
+            str(proc_id),
             data=json.dumps(data),
             follow_redirects=True)
         self.assertEquals(put_response.status_code, 200)

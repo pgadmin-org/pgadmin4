@@ -1502,7 +1502,10 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             name = name.replace(arg, formatted_arg)
 
         name = name.replace(')', '\n)')
-        sql = "EXEC {0}".format(name)
+        if self.manager.server_type == 'pg':
+            sql = "CALL {0}".format(name)
+        else:
+            sql = "EXEC {0}".format(name)
 
         return ajax_response(response=sql)
 
@@ -1592,10 +1595,11 @@ class ProcedureModule(SchemaChildModule):
         """
         super(ProcedureModule, self).__init__(*args, **kwargs)
 
-        self.min_ver = 90100
+        self.min_ver = 110000
         self.max_ver = None
+        self.min_ppasver = 90100
         self.min_gpdbver = 1000000000
-        self.server_type = ['ppas']
+        self.server_type = ['pg', 'ppas']
 
     def get_nodes(self, gid, sid, did, scid):
         """

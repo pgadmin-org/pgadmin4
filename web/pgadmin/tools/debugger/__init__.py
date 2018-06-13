@@ -365,8 +365,11 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
     # Check server type is ppas or not
     ppas_server = False
+    is_proc_supported = False
     if server_type == 'ppas':
         ppas_server = True
+    else:
+        is_proc_supported = True if manager.version >= 110000 else False
 
     # Set the template path required to read the sql files
     template_path = 'debugger/sql'
@@ -395,7 +398,10 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     sql = render_template(
         "/".join([template_path, 'get_function_debug_info.sql']),
         is_ppas_database=ppas_server,
-        hasFeatureFunctionDefaults=True, fid=fid
+        hasFeatureFunctionDefaults=True,
+        fid=fid,
+        is_proc_supported=is_proc_supported
+
     )
     status, r_set = conn.execute_dict(sql)
     if not status:
@@ -509,6 +515,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         'oid': fid,
         'name': r_set['rows'][0]['name'],
         'is_func': r_set['rows'][0]['isfunc'],
+        'is_ppas_database': ppas_server,
         'is_callable': False,
         'schema': r_set['rows'][0]['schemaname'],
         'language': r_set['rows'][0]['lanname'],
@@ -765,6 +772,7 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
         'oid': func_data['oid'],
         'name': func_data['name'],
         'is_func': func_data['is_func'],
+        'is_ppas_database': func_data['is_ppas_database'],
         'is_callable': func_data['is_callable'],
         'schema': func_data['schema'],
         'language': func_data['language'],
@@ -1062,7 +1070,8 @@ def start_debugger_listener(trans_id):
                     func_name=func_name,
                     is_func=session_function_data['is_func'],
                     ret_type=session_function_data['return_type'],
-                    data=session_function_data['args_value']
+                    data=session_function_data['args_value'],
+                    is_ppas_database=session_function_data['is_ppas_database']
                 )
 
             status, result = conn.execute_async(str_query)
@@ -1946,8 +1955,9 @@ def poll_end_execution_result(trans_id):
         status, result = conn.poll()
         session_function_data = session['functionData'][str(trans_id)]
         if status == ASYNC_OK and \
-                not session_function_data['is_func'] and \
-                session_function_data['language'] == 'edbspl':
+            not session_function_data['is_func'] and\
+            (session_function_data['language'] == 'edbspl' or
+                session_function_data['language'] == 'plpgsql'):
             status = 'Success'
             additional_msgs = conn.messages()
             if len(additional_msgs) > 0:

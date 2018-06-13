@@ -16,32 +16,31 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as funcs_utils
 
 
-class TriggerFuncGetTestCase(BaseTestGenerator):
-    """This class will fetch added trigger function under schema node."""
-    skip_on_database = ['gpdb']
+class FunctionDeleteTestCase(BaseTestGenerator):
+    """ This class will delete the function under schema node. """
     scenarios = [
-        # Fetching default URL for trigger function node.
-        ('Fetch Trigger Function Node URL',
-         dict(url='/browser/trigger_function/obj/'))
+        # Fetching default URL for function node.
+        ('Fetch Function Node URL',
+         dict(url='/browser/function/obj/'))
     ]
 
     def runTest(self):
-        """ This function will delete trigger function under database node. """
-        super(TriggerFuncGetTestCase, self).setUp()
+        """ This function will delete function under database node. """
+        super(FunctionDeleteTestCase, self).setUp()
         self = funcs_utils.set_up(self)
 
-        func_name = "test_event_delete_%s" % str(uuid.uuid4())[1:8]
-        function_info = funcs_utils.create_trigger_function(
-            self.server, self.db_name, self.schema_name, func_name,
-            self.server_version)
+        func_name = "test_function_delete_%s" % str(uuid.uuid4())[1:8]
+        function_info = funcs_utils.create_function(
+            self.server, self.db_name, self.schema_name, func_name)
 
-        trigger_func_id = function_info[0]
-        response = self.tester.get(
+        func_id = function_info[0]
+        response = self.tester.delete(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' +
             str(self.db_id) + '/' +
-            str(self.schema_id) + '/' + str(trigger_func_id),
-            content_type='html/json')
+            str(self.schema_id) + '/' + str(func_id),
+            content_type='html/json'
+        )
         self.assertEquals(response.status_code, 200)
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

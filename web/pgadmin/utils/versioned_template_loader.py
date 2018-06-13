@@ -75,7 +75,8 @@ def get_version_mapping(template):
             {'name': "default", 'number': 0}
         )
 
-    return ({'name': "10_plus", 'number': 100000},
+    return ({'name': "11_plus", 'number': 110000},
+            {'name': "10_plus", 'number': 100000},
             {'name': "9.6_plus", 'number': 90600},
             {'name': "9.5_plus", 'number': 90500},
             {'name': "9.4_plus", 'number': 90400},

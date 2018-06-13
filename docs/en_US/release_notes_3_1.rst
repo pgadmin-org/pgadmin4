@@ -10,8 +10,9 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
-| `Bug #1447 <https://redmine.postgresql.org/issues/1447>`_ - Add support for SSH tunneled connections
-| `Bug #3204 <https://redmine.postgresql.org/issues/3204>`_ - Add support for LISTEN/NOTIFY in the query tool
+| `Feature #1447 <https://redmine.postgresql.org/issues/1447>`_ - Add support for SSH tunneled connections
+| `Feature #3204 <https://redmine.postgresql.org/issues/3204>`_ - Add support for LISTEN/NOTIFY in the query tool
+| `Feature #3362 <https://redmine.postgresql.org/issues/3362>`_ - Function and procedure support for PG11
 
 Bug fixes
 *********

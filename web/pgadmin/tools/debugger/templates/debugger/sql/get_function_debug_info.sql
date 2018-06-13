@@ -41,7 +41,11 @@ SELECT
         0 AS pkgconsoid,
         n.oid     AS schema,
         n.nspname AS schemaname,
-        true AS isfunc,
+        {% if is_proc_supported %}
+        CASE WHEN p.prokind in ('f', 'w') THEN TRUE ELSE FALSE END AS isfunc,
+        {% else %}
+        TRUE AS isfunc,
+        {% endif %}
     {%endif%}
     pg_catalog.pg_get_function_identity_arguments(p.oid) AS signature,
 

@@ -16,31 +16,36 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as funcs_utils
 
 
-class TriggerFuncGetTestCase(BaseTestGenerator):
-    """This class will fetch added trigger function under schema node."""
+class ProcedureGetTestCase(BaseTestGenerator):
+    """This class will fetch added procedure under schema node."""
     skip_on_database = ['gpdb']
     scenarios = [
-        # Fetching default URL for trigger function node.
-        ('Fetch Trigger Function Node URL',
-         dict(url='/browser/trigger_function/obj/'))
+        # Fetching default URL for procedure node.
+        ('Fetch Procedure Node URL',
+         dict(url='/browser/procedure/obj/'))
     ]
 
     def runTest(self):
-        """ This function will delete trigger function under database node. """
-        super(TriggerFuncGetTestCase, self).setUp()
+        """ This function will get procedure under database node. """
+        super(ProcedureGetTestCase, self).setUp()
         self = funcs_utils.set_up(self)
 
-        func_name = "test_event_delete_%s" % str(uuid.uuid4())[1:8]
-        function_info = funcs_utils.create_trigger_function(
-            self.server, self.db_name, self.schema_name, func_name,
-            self.server_version)
+        if self.server_type == "pg" and\
+                self.server_version < 110000:
+            message = "Procedures are not supported by PG < 110000."
+            self.skipTest(message)
 
-        trigger_func_id = function_info[0]
+        func_name = "test_procedure_get_%s" % str(uuid.uuid4())[1:8]
+        proc_info = funcs_utils.create_procedure(
+            self.server, self.db_name, self.schema_name, func_name,
+            self.server_type)
+
+        proc_id = proc_info[0]
         response = self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' +
             str(self.db_id) + '/' +
-            str(self.schema_id) + '/' + str(trigger_func_id),
+            str(self.schema_id) + '/' + str(proc_id),
             content_type='html/json')
         self.assertEquals(response.status_code, 200)
         # Disconnect the database

@@ -1,6 +1,8 @@
 {### Create executer function for plpgsql function debugging ###}
-{% if not is_func %}
+{% if is_ppas_database and not is_func %}
     EXEC {{ func_name }} (
+{% elif not is_func %}
+    CALL {{ func_name }} (
 {% elif ret_type == 'record' %}
     SELECT {{ func_name }} (
 {% else %}

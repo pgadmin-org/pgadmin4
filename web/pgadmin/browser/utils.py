@@ -51,7 +51,9 @@ class PGChildModule(object):
 
     def __init__(self, *args, **kwargs):
         self.min_ver = 0
-        self.max_ver = 1000000000
+        self.max_ver = 1100000000
+        self.min_ppasver = 0
+        self.max_ppasver = 1100000000
         self.server_type = None
         self.min_gpdbver = 80323
         self.max_gpdbver = 1000000000
@@ -72,6 +74,9 @@ class PGChildModule(object):
         if self.server_type is None or manager.server_type in self.server_type:
             min_server_version = self.min_ver
             max_server_version = self.max_ver
+            if manager.server_type == 'ppas':
+                min_server_version = self.min_ppasver
+                max_server_version = self.max_ppasver
             if manager.server_type == 'gpdb':
                 min_server_version = self.min_gpdbver
                 max_server_version = self.max_gpdbver
