@@ -16,10 +16,12 @@ if [ ! -f $SOURCEDIR/pkg/mac/framework.conf ]; then
     exit 1
 fi
 
+export SYSTEM_PYTHON=0
 if [ "x$PYTHON_HOME" == "x" ]; then
     echo "PYTHON_HOME not set. Setting it to default"
     export PYTHON_HOME=/System/Library/Frameworks/Python.framework/Versions/2.7
     export PYTHON_VERSION=27
+    export SYSTEM_PYTHON=1
 fi
 
 # Check if Python is working and calculate PYTHON_VERSION
@@ -85,7 +87,13 @@ _create_python_virtualenv() {
     export LD_LIBRARY_PATH=$PGDIR/lib:$_LD_LIBRARY_PATH
     test -d $BUILDROOT || mkdir $BUILDROOT || exit 1
     cd $BUILDROOT
-    test -d $VIRTUALENV || virtualenv -p $PYTHON $VIRTUALENV || exit 1
+
+    if [ $SYSTEM_PYTHON -eq 1 ]; then
+        test -d $VIRTUALENV || virtualenv -p $PYTHON $VIRTUALENV || exit 1
+    else
+        test -d $VIRTUALENV || virtualenv -p $PYTHON --always-copy $VIRTUALENV || exit 1
+    fi
+
     source $VIRTUALENV/bin/activate
     $PIP install --no-cache-dir --no-binary psycopg2 -r $SOURCEDIR/requirements.txt || { echo PIP install failed. Please resolve the issue and rerun the script; exit 1; }
 
@@ -101,21 +109,29 @@ _create_python_virtualenv() {
     # will clear PYTHONHOME for safety, which has the side-effect of preventing
     # it from finding modules that are not explicitly included in the venv
     cd $DIR_PYMODULES_PATH
-    
+
     # Files
     for FULLPATH in $PYSYSLIB_PATH/*.py; do
         FILE=${FULLPATH##*/}
         if [ ! -e $FILE ]; then
-           ln -s $FULLPATH $FILE
+           if [ $SYSTEM_PYTHON -eq 1 ]; then
+               ln -s $FULLPATH $FILE
+           else
+               cp $FULLPATH $FILE
+           fi
         fi
     done
-    
+
     # Paths
     for FULLPATH in $PYSYSLIB_PATH/*/; do
         FULLPATH=${FULLPATH%*/}
         FILE=${FULLPATH##*/}
         if [ ! -e $FILE ]; then
-            ln -s $FULLPATH $FILE
+            if [ $SYSTEM_PYTHON -eq 1 ]; then
+                ln -s $FULLPATH $FILE
+            else
+                cp -R $FULLPATH $FILE
+            fi
         fi
     done
 
@@ -124,9 +140,9 @@ _create_python_virtualenv() {
     find . -name "test" -type d -exec rm -rf "{}" \;
     find . -name "tests" -type d -exec rm -rf "{}" \;
 
-    # Move the python<version> directory to python so that the private environment path is found by the application.
+    # Link the python<version> directory to python so that the private environment path is found by the application.
     if test -d $DIR_PYMODULES_PATH; then
-        mv $DIR_PYMODULES_PATH $DIR_PYMODULES_PATH/../python
+        ln -s $(basename $DIR_PYMODULES_PATH) $DIR_PYMODULES_PATH/../python
     fi
 
     # Fix the backports module which will have no __init__.py file
@@ -146,8 +162,6 @@ _build_runtime() {
 
 _build_doc() {
     cd $SOURCEDIR/docs/en_US
-    # Commenting the build as it is taken care by Makefile
-    #LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 make -f Makefile.sphinx html || exit 1
     test -d "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources" || "mkdir -p $BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources"
     test -d "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/docs/en_US" || mkdir -p "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/docs/en_US"
     cp -r _build/html "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/docs/en_US/" || exit 1
@@ -169,9 +183,14 @@ _complete_bundle() {
     # copy Python private environment to app bundle
     cp -PR $BUILDROOT/$VIRTUALENV "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/" || exit 1
 
-    # remove the python bin and include from app bundle as it is not needed
-    rm -rf "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/$VIRTUALENV/bin" "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/$VIRTUALENV/include"
-    rm -rf "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/$VIRTUALENV/.Python"
+    if [ $SYSTEM_PYTHON -eq 1 ]; then
+        # remove the python bin and include from app bundle as it is not needed
+        rm -rf "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/$VIRTUALENV/bin" "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/$VIRTUALENV/include"
+        rm -rf "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/$VIRTUALENV/.Python"
+    fi
+
+    # Remove any TCL-related files that may cause us problems
+    find "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/$VIRTUALENV/" -name "_tkinter*" -exec rm -f "{}" \;
 
     # run complete-bundle to copy the dependent libraries and frameworks and fix the rpaths
     ./complete-bundle.sh "$BUILDROOT/$APP_BUNDLE_NAME" || { echo complete-bundle.sh failed; exit 1; }
