@@ -86,8 +86,7 @@ class RestoreMessage(IProcessDesc):
             else:
                 self.cmd += cmdArg(arg)
 
-    @property
-    def message(self):
+    def get_server_details(self):
         # Fetch the server details like hostname, port, roles etc
         s = Server.query.filter_by(
             id=self.sid, user_id=current_user.id
@@ -100,30 +99,25 @@ class RestoreMessage(IProcessDesc):
         host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
         port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
 
+        return s.name, host, port
+
+    @property
+    def message(self):
+        name, host, port = self.get_server_details()
+
         return _("Restoring backup on the server '{0}'...").format(
-            "{0} ({1}:{2})".format(s.name, host, port),
+            "{0} ({1}:{2})".format(name, host, port),
         )
 
     def details(self, cmd, args):
-        # Fetch the server details like hostname, port, roles etc
-        s = Server.query.filter_by(
-            id=self.sid, user_id=current_user.id
-        ).first()
-
-        from pgadmin.utils.driver import get_driver
-        driver = get_driver(PG_DEFAULT_DRIVER)
-        manager = driver.connection_manager(self.sid)
-
-        host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
-        port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
-
+        name, host, port = self.get_server_details()
         res = '<div class="h5">'
 
         res += html.safe_str(
             _(
                 "Restoring backup on the server '{0}'..."
             ).format(
-                "{0} ({1}:{2})".format(s.name, host, port)
+                "{0} ({1}:{2})".format(name, host, port)
             )
         )
 
@@ -206,6 +200,7 @@ def create_restore_job(sid):
 
     if _file is None:
         return make_json_response(
+            status=410,
             success=0,
             errormsg=_("File could not be found.")
         )

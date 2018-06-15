@@ -21,6 +21,8 @@ import config
 import regression
 from regression import test_setup
 
+from pgadmin.utils.preferences import Preferences
+
 SERVER_GROUP = test_setup.config_data['server_group']
 file_name = os.path.realpath(__file__)
 
@@ -68,7 +70,7 @@ def logout_tester_account(tester):
     :return: None
     """
 
-    response = tester.get('/logout')
+    tester.get('/logout')
 
 
 def get_config_data():
@@ -86,7 +88,8 @@ def get_config_data():
                 "db_password": srv['db_password'],
                 "role": "",
                 "sslmode": srv['sslmode'],
-                "tablespace_path": srv.get('tablespace_path', None)
+                "tablespace_path": srv.get('tablespace_path', None),
+                "default_binary_paths": srv.get('default_binary_paths', None)
             }
             if 'db_type' in srv:
                 data['db_type'] = srv['db_type']
@@ -444,7 +447,14 @@ def delete_server_with_api(tester, sid):
     try:
         url = '/browser/server/obj/' + str(SERVER_GROUP) + "/"
         # Call API to delete the server
-        response = tester.delete(url + str(sid))
+        tester.delete(url + str(sid))
+
+        cnt = 0
+        for s in regression.parent_node_dict["server"]:
+            if s['server_id'] == int(sid):
+                del regression.parent_node_dict["server"][cnt]
+            cnt += 1
+
     except Exception:
         traceback.print_exc(file=sys.stderr)
 
@@ -594,6 +604,64 @@ def get_db_server(sid):
             )
     conn.close()
     return connection
+
+
+def set_preference(default_binary_path):
+    conn = sqlite3.connect(config.TEST_SQLITE_PATH)
+    cur = conn.cursor()
+
+    perf = Preferences.module('paths')
+    pg_path_pref = perf.preference('pg_bin_dir')
+
+    user_pref = cur.execute(
+        'SELECT pid, uid FROM user_preferences where pid=%s' % pg_path_pref.pid
+    )
+    user_pref = user_pref.fetchone()
+
+    if user_pref:
+        cur.execute('UPDATE user_preferences SET value = ? WHERE pid = ?',
+                    (default_binary_path['pg'], pg_path_pref.pid))
+    else:
+        pg_pref_details = (pg_path_pref.pid, 1,
+                           default_binary_path['pg'])
+        cur.execute('INSERT INTO user_preferences(pid, uid, value)'
+                    ' VALUES (?,?,?)', pg_pref_details)
+
+    ppas_path_pref = perf.preference('ppas_bin_dir')
+
+    user_pref = cur.execute(
+        'SELECT pid, uid FROM user_preferences where pid=%s' %
+        ppas_path_pref.pid
+    )
+    user_pref = user_pref.fetchone()
+
+    if user_pref:
+        cur.execute('UPDATE user_preferences SET value = ? WHERE pid = ? ',
+                    (default_binary_path['ppas'], ppas_path_pref.pid))
+    else:
+        ppas_pref_details = (ppas_path_pref.pid, 1,
+                             default_binary_path['ppas'])
+        cur.execute('INSERT INTO user_preferences(pid, uid, value)'
+                    ' VALUES (?,?,?)', ppas_pref_details)
+
+    gpdb_path_pref = perf.preference('gpdb_bin_dir')
+
+    user_pref = cur.execute(
+        'SELECT pid, uid FROM user_preferences where pid=%s' %
+        gpdb_path_pref.pid
+    )
+    user_pref = user_pref.fetchone()
+
+    if user_pref:
+        cur.execute('UPDATE user_preferences SET value = ? WHERE pid = ? ',
+                    (default_binary_path['gpdb'], gpdb_path_pref.pid))
+    else:
+        gpdb_pref_details = (gpdb_path_pref.pid, 1,
+                             default_binary_path['gpdb'])
+        cur.execute('INSERT INTO user_preferences(pid, uid, value)'
+                    ' VALUES (?,?,?)', gpdb_pref_details)
+
+    conn.commit()
 
 
 def remove_db_file():

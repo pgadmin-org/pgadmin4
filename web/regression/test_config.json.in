@@ -23,7 +23,12 @@
       "maintenance_db": "postgres",
       "sslmode": "prefer",
       "tablespace_path": "",
-      "enabled": true
+      "enabled": true,
+      "default_binary_paths": {
+        "pg": "/opt/PostgreSQL/9.4/bin/",
+        "ppas": "/opt/edb/as10/bin/",
+        "gpdb": ""
+      }
     }
   ],
   "server_update_data": [

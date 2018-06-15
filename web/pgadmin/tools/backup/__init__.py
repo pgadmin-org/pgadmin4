@@ -109,8 +109,7 @@ class BackupMessage(IProcessDesc):
             else:
                 self.cmd += cmdArg(arg)
 
-    @property
-    def message(self):
+    def get_server_details(self):
         # Fetch the server details like hostname, port, roles etc
         s = Server.query.filter_by(
             id=self.sid, user_id=current_user.id
@@ -122,6 +121,12 @@ class BackupMessage(IProcessDesc):
 
         host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
         port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
+
+        return s.name, host, port
+
+    @property
+    def message(self):
+        name, host, port = self.get_server_details()
 
         if self.backup_type == BACKUP.OBJECT:
             return _(
@@ -129,7 +134,7 @@ class BackupMessage(IProcessDesc):
                 "from database '{1}'..."
             ).format(
                 "{0} ({1}:{2})".format(
-                    s.name, host, port
+                    name, host, port
                 ),
                 self.database
             )
@@ -137,13 +142,13 @@ class BackupMessage(IProcessDesc):
             return _("Backing up the global objects on "
                      "the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
-                    s.name, host, port
+                    name, host, port
                 )
             )
         elif self.backup_type == BACKUP.SERVER:
             return _("Backing up the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
-                    s.name, host, port
+                    name, host, port
                 )
             )
         else:
@@ -151,17 +156,7 @@ class BackupMessage(IProcessDesc):
             return "Unknown Backup"
 
     def details(self, cmd, args):
-        # Fetch the server details like hostname, port, roles etc
-        s = Server.query.filter_by(
-            id=self.sid, user_id=current_user.id
-        ).first()
-
-        from pgadmin.utils.driver import get_driver
-        driver = get_driver(PG_DEFAULT_DRIVER)
-        manager = driver.connection_manager(self.sid)
-
-        host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
-        port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
+        name, host, port = self.get_server_details()
 
         res = '<div class="h5">'
 
@@ -171,7 +166,7 @@ class BackupMessage(IProcessDesc):
                 "from database '{1}'..."
             ).format(
                 "{0} ({1}:{2})".format(
-                    html.safe_str(s.name),
+                    html.safe_str(name),
                     html.safe_str(host),
                     html.safe_str(port),
                 ),
@@ -181,7 +176,7 @@ class BackupMessage(IProcessDesc):
             res += _("Backing up the global objects on "
                      "the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
-                    html.safe_str(s.name),
+                    html.safe_str(name),
                     html.safe_str(host),
                     html.safe_str(port)
                 )
@@ -189,7 +184,7 @@ class BackupMessage(IProcessDesc):
         elif self.backup_type == BACKUP.SERVER:
             res += _("Backing up the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
-                    html.safe_str(s.name),
+                    html.safe_str(name),
                     html.safe_str(host),
                     html.safe_str(port)
                 )

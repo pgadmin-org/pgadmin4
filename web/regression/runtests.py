@@ -114,6 +114,9 @@ test_client = app.test_client()
 driver = None
 app_starter = None
 handle_cleanup = None
+app.PGADMIN_RUNTIME = True
+if config.SERVER_MODE is True:
+    app.PGADMIN_RUNTIME = False
 
 setattr(unit_test.result.TestResult, "passed", [])
 
@@ -234,7 +237,6 @@ def get_test_modules(arguments):
     # Sort module list so that test suite executes the test cases sequentially
     module_list = TestsGeneratorRegistry.registry.items()
     module_list = sorted(module_list, key=lambda module_tuple: module_tuple[0])
-
     return module_list
 
 
@@ -392,6 +394,9 @@ if __name__ == '__main__':
                   % server['name'], file=sys.stderr)
             # Create test server
             server_information = test_utils.create_parent_server_node(server)
+
+            if server['default_binary_paths'] is not None:
+                test_utils.set_preference(server['default_binary_paths'])
 
             suite = get_suite(test_module_list,
                               server,
