@@ -136,6 +136,7 @@ function keyboardShortcutsQueryTool(
   let downloadCsvKeys = keyboardShortcutConfig['download_csv'];
   let nextPanelKeys = keyboardShortcutConfig['move_next'];
   let previousPanelKeys = keyboardShortcutConfig['move_previous'];
+  let toggleCaseKeys = keyboardShortcutConfig['toggle_case'];
 
   if (this.validateShortcutKeys(executeKeys, event)) {
     this._stopEventPropagation(event);
@@ -149,6 +150,9 @@ function keyboardShortcutsQueryTool(
   } else if (this.validateShortcutKeys(downloadCsvKeys, event)) {
     this._stopEventPropagation(event);
     queryToolActions.download(sqlEditorController);
+  } else if (this.validateShortcutKeys(toggleCaseKeys, event)) {
+    this._stopEventPropagation(event);
+    queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
   } else if ((
      (this.isMac() && event.metaKey) ||
      (!this.isMac() && event.ctrlKey)

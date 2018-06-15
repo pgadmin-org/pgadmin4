@@ -132,6 +132,8 @@ let queryToolActions = {
       'sqleditor', 'move_next');
     let previousPanelPerf = window.top.pgAdmin.Browser.get_preference(
       'sqleditor', 'move_previous');
+    let toggleCasePerf = window.top.pgAdmin.Browser.get_preference(
+      'sqleditor', 'toggle_case');
 
     if(!executeQueryPref && sqlEditorController.handler.is_new_browser_tab) {
       executeQueryPref = window.opener.pgAdmin.Browser.get_preference(
@@ -151,6 +153,9 @@ let queryToolActions = {
       ),
       previousPanelPerf = window.opener.pgAdmin.Browser.get_preference(
         'sqleditor', 'move_previous'
+      ),
+      toggleCasePerf = window.opener.pgAdmin.Browser.get_preference(
+        'sqleditor', 'toggle_case'
       );
     }
 
@@ -161,8 +166,22 @@ let queryToolActions = {
       'download_csv': downloadCsvPref.value,
       'move_next': nextPanelPerf.value,
       'move_previous': previousPanelPerf.value,
+      'toggle_case': toggleCasePerf.value,
     };
 
+  },
+
+  toggleCaseOfSelectedText: function (sqlEditorController) {
+    let codeMirrorObj = sqlEditorController.gridView.query_tool_obj;
+    let selectedText = codeMirrorObj.getSelection();
+
+    if (!selectedText) return;
+
+    if (selectedText === selectedText.toUpperCase()) {
+      codeMirrorObj.replaceSelection(selectedText.toLowerCase());
+    } else {
+      codeMirrorObj.replaceSelection(selectedText.toUpperCase());
+    }
   },
 };
 

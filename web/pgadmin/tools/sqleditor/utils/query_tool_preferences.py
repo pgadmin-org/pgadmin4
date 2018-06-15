@@ -535,6 +535,32 @@ def RegisterQueryToolPreferences(self):
         fields=accesskey_fields
     )
 
+    self.preference.register(
+        'keyboard_shortcuts',
+        'toggle_case',
+        gettext('Toggle case of selected text'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': True,
+            'control': True,
+            'key': {
+                'key_code': 91,
+                'char': 'u'
+            }
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'auto_completion', 'keywords_in_uppercase',
+        gettext("Keywords in uppercase"), 'boolean', True,
+        category_label=gettext('Auto completion'),
+        help_str=gettext('If set to True, Keywords will be displayed '
+                         'in upper case for auto completion.')
+    )
+
 
 def get_query_tool_keyboard_shortcuts():
 
@@ -564,6 +590,7 @@ def get_query_tool_keyboard_shortcuts():
     explain_query = qt_perf.preference('explain_query').get()
     explain_analyze_query = qt_perf.preference('explain_analyze_query').get()
     find_options = qt_perf.preference('btn_find_options').get()
+    toggle_case = qt_perf.preference('toggle_case').get()
 
     return {
         'keys': {
@@ -587,7 +614,8 @@ def get_query_tool_keyboard_shortcuts():
             'explain_analyze_query': explain_analyze_query.get('key').get(
                 'char'
             ),
-            'find_options': find_options.get('key').get('char')
+            'find_options': find_options.get('key').get('char'),
+            'toggle_case': toggle_case.get('key').get('char')
         },
         'shortcuts': {
             'conn_status': conn_status,
@@ -608,7 +636,8 @@ def get_query_tool_keyboard_shortcuts():
             'execute_query': execute_query,
             'explain_query': explain_query,
             'explain_analyze_query': explain_analyze_query,
-            'find_options': find_options
+            'find_options': find_options,
+            'toggle_case': toggle_case
         },
     }
 

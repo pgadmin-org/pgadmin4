@@ -26,6 +26,7 @@ from .function_metadata import FunctionMetadata
 from .parseutils import (
     last_word, extract_tables, find_prev_keyword, parse_partial_identifier)
 from .prioritization import PrevalenceCounter
+from pgadmin.utils.preferences import Preferences
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -101,8 +102,17 @@ class SQLAutoComplete(object):
                 for record in res['rows']:
                     self.search_path.append(record['schema'])
 
+            pref = Preferences.module('sqleditor')
+            keywords_in_uppercase = \
+                pref.preference('keywords_in_uppercase').get()
+
             # Fetch the keywords
             query = render_template("/".join([self.sql_path, 'keywords.sql']))
+            # If setting 'Keywords in uppercase' is set to True in
+            # Preferences then fetch the keywords in upper case.
+            if keywords_in_uppercase:
+                query = render_template(
+                    "/".join([self.sql_path, 'keywords.sql']), upper_case=True)
             status, res = self.conn.execute_dict(query)
             if status:
                 for record in res['rows']:

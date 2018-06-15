@@ -11,7 +11,8 @@ import queryToolActions from 'sources/sqleditor/query_tool_actions';
 describe('queryToolActions', () => {
   let sqlEditorController,
     getSelectionSpy, getValueSpy,
-    selectedQueryString, entireQueryString;
+    selectedQueryString, entireQueryString,
+    replaceSelectionSpy;
 
   describe('executeQuery', () => {
     describe('when the command is being run from the query tool', () => {
@@ -437,9 +438,93 @@ describe('queryToolActions', () => {
     });
   });
 
+  describe('toggleCaseOfSelectedText', () => {
+    describe('when there is no query text', () => {
+      beforeEach(() => {
+        setUpSpies('', '');
+      });
+      it('does nothing', () => {
+        expect(
+          queryToolActions.toggleCaseOfSelectedText(sqlEditorController)
+        ).not.toBeDefined();
+      });
+    });
+
+    describe('when there is empty selection', () => {
+      beforeEach(() => {
+        setUpSpies('', 'a string\nddd\nsss');
+
+        sqlEditorController.gridView.query_tool_obj.getCursor = (isFrom) => {
+          return isFrom ? 3 : 3;
+        };
+      });
+
+      it('does nothing', () => {
+        expect(
+          queryToolActions.toggleCaseOfSelectedText(sqlEditorController)
+        ).not.toBeDefined();
+      });
+    });
+
+    describe('when selected query is in lower case', () => {
+      beforeEach(() => {
+        setUpSpies('string', 'a string\nddd\nsss');
+      });
+
+      it('toggle the selection and string should be in upper case', () => {
+        queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
+        expect(replaceSelectionSpy
+          ).toHaveBeenCalledWith('STRING');
+      });
+
+      it('(negative scenario toggle the selection and string should be in upper case', () => {
+        queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
+        expect(replaceSelectionSpy
+          ).not.toHaveBeenCalledWith('string');
+      });
+    });
+
+    describe('when selected query is in upper case', () => {
+      beforeEach(() => {
+        setUpSpies('STRING', 'a string\nddd\nsss');
+      });
+
+      it('toggle the selection and string should be in lower case', () => {
+        queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
+        expect(replaceSelectionSpy
+          ).toHaveBeenCalledWith('string');
+      });
+
+      it('(negative scenario toggle the selection and string should be in lower case', () => {
+        queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
+        expect(replaceSelectionSpy
+          ).not.toHaveBeenCalledWith('STRING');
+      });
+    });
+
+    describe('when selected query is in mixed case', () => {
+      beforeEach(() => {
+        setUpSpies('sTRIng', 'a string\nddd\nsss');
+      });
+
+      it('toggle the selection and string should be in upper case', () => {
+        queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
+        expect(replaceSelectionSpy
+          ).toHaveBeenCalledWith('STRING');
+      });
+
+      it('(negative scenario toggle the selection and string should be in upper case', () => {
+        queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
+        expect(replaceSelectionSpy
+          ).not.toHaveBeenCalledWith('sTRIng');
+      });
+    });
+  });
+
   function setUpSpies(selectedQueryString, entireQueryString) {
     getValueSpy = jasmine.createSpy('getValueSpy').and.returnValue(entireQueryString);
     getSelectionSpy = jasmine.createSpy('getSelectionSpy').and.returnValue(selectedQueryString);
+    replaceSelectionSpy = jasmine.createSpy('replaceSelectionSpy');
 
     sqlEditorController = {
       gridView: {
@@ -449,6 +534,7 @@ describe('queryToolActions', () => {
           toggleComment: jasmine.createSpy('toggleCommentSpy'),
           lineComment: jasmine.createSpy('lineCommentSpy'),
           uncomment: jasmine.createSpy('uncommentSpy'),
+          replaceSelection: replaceSelectionSpy,
           getCursor: (isFrom) => {
             return entireQueryString.indexOf(selectedQueryString) + (isFrom ? 0 : selectedQueryString.length);
           },
