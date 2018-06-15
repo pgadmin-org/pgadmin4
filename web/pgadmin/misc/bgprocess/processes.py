@@ -172,7 +172,7 @@ class BatchProcess(object):
         csv_writer = csv.writer(
             args_csv_io, delimiter=str(','), quoting=csv.QUOTE_MINIMAL
         )
-        if sys.version_info.major == 2:
+        if sys.version_info[0] == 2:
             csv_writer.writerow(
                 [
                     a.encode('utf-8')
