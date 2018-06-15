@@ -36,6 +36,7 @@ Bug fixes
 | `Bug #3333 <https://redmine.postgresql.org/issues/3333>`_ - Ensure the runtime core application is setup before trying to access any settings
 | `Bug #3342 <https://redmine.postgresql.org/issues/3342>`_ - Set SESSION_COOKIE_SAMESITE='Lax' per Flask recommendation to prevents sending cookies with CSRF-prone requests from external sites, such as submitting a form
 | `Bug #3353 <https://redmine.postgresql.org/issues/3353>`_ - Handle errors properly if they occur when renaming a database
+| `Bug #3356 <https://redmine.postgresql.org/issues/3356>`_ - Include the schema name on RE-SQL for packages
 | `Bug #3374 <https://redmine.postgresql.org/issues/3374>`_ - Fix autocomplete
 | `Bug #3392 <https://redmine.postgresql.org/issues/3392>`_ - Fix IPv6 support in the container build
 | `Bug #3409 <https://redmine.postgresql.org/issues/3409>`_ - Avoid an exception on GreenPlum when retrieving RE-SQL on a table

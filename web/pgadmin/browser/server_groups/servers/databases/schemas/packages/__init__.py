@@ -688,7 +688,7 @@ class PackageView(PGChildNodeView):
                 res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
             result = res['rows'][0]
-            sql, name = self.getSQL(gid, sid, did, result, scid)
+            sql, name = self.getSQL(gid, sid, did, result, scid, pkgid)
             # Most probably this is due to error
             if not isinstance(sql, (str, unicode)):
                 return sql
