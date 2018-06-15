@@ -1,8 +1,8 @@
 .. _sequence_dialog:
 
-*******************
-The Sequence Dialog
-*******************
+************************
+`Sequence Dialog`:index:
+************************
 
 Use the *Sequence* dialog to create a sequence.  A sequence generates unique values in a sequential order (not necessarily contiguous).
 

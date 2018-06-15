@@ -1,8 +1,8 @@
 .. _index_dialog:
 
-****************
-The Index Dialog
-****************
+*********************
+`Index Dialog`:index:
+*********************
 
 Use the *Index* dialog to create an index on a specified table or materialized view.
 

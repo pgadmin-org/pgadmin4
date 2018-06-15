@@ -1,8 +1,8 @@
 .. _exclusion_constraint_dialog:
 
-*******************************
-The Exclusion constraint Dialog
-*******************************
+************************************
+`Exclusion constraint Dialog`:index:
+************************************
 
 Use the *Exclusion constraint* dialog to define or modify the behavior of an exclusion constraint. An exclusion constraint guarantees that if any two rows are compared on the specified column or expression (using the specified operator), at least one of the operator comparisons will return false or null.
 

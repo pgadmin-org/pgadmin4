@@ -1,8 +1,8 @@
 .. _server_dialog:
 
-*****************
-The Server Dialog
-*****************
+**********************
+`Server Dialog`:index:
+**********************
 
 Use the *Server* dialog to describe a connection to a server. Note: you must ensure that the pg_hba.conf file of the server from which you are connecting allows connections from the host of the client.
 

@@ -1,6 +1,6 @@
-************
-Translations
-************
+*********************
+`Translations`:index:
+*********************
 
 pgAdmin supports multiple languages using the `Flask-Babel
 <https://pythonhosted.org/Flask-Babel/>`_ Python module. A list of supported

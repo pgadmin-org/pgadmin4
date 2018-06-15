@@ -1,8 +1,8 @@
 .. _package_dialog:
 
-******************
-The Package Dialog
-******************
+***********************
+`Package Dialog`:index:
+***********************
 
 Use the *Package* dialog to create a (user-defined) package specification.
 

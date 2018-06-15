@@ -1,8 +1,8 @@
 .. _restore_dialog:
 
-******************
-The Restore Dialog
-******************
+***********************
+`Restore Dialog`:index:
+***********************
 
 The *Restore* dialog provides an easy way to use a Custom, tar, or Directory format backup taken with the pgAdmin *Backup* dialog to recreate a database or database object.  The *Backup* dialog invokes options of the pg_dump client utility; the *Restore* dialog invokes options of the pg_restore client utility.
 

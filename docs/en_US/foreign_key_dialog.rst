@@ -1,8 +1,8 @@
 .. _foreign_key_dialog:
 
-**********************
-The Foreign key Dialog
-**********************
+***************************
+`Foreign key Dialog`:index:
+***************************
 
 Use the *Foreign key* dialog to specify the behavior of a foreign key constraint. A foreign key constraint maintains referential integrity between two tables.  A foreign key constraint cannot be defined between a temporary table and a permanent table.
 

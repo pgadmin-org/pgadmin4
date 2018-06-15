@@ -1,8 +1,8 @@
 .. _role_dialog:
 
-***************************
-The Login/Group Role Dialog
-***************************
+********************************
+`Login/Group Role Dialog`:index:
+********************************
 
 Use the *Login/Group Role* dialog to define a role. A role may be an individual user (with or without login privileges) or a group of users. Note that roles defined at the cluster level are shared by all databases in the cluster.
 

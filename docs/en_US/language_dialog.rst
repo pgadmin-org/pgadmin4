@@ -1,8 +1,8 @@
 .. _language:
 
-*******************
-The Language Dialog
-*******************
+************************
+`Language Dialog`:index:
+************************
 
 Use the CREATE LANGUAGE dialog to register a new procedural language.
 

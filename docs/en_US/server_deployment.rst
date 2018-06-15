@@ -1,8 +1,8 @@
 .. _server_deployment:
 
-*****************
-Server Deployment
-*****************
+**************************
+`Server Deployment`:index:
+**************************
 
 pgAdmin may be deployed as a web application by configuring the app to run in
 server mode and then deploying it either behind a webserver running as a reverse

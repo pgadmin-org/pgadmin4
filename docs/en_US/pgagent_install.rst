@@ -1,9 +1,9 @@
 .. _pgagent_install:
 
 
-********************
-`Installing pgAgent`
-********************
+***************************
+`Installing pgAgent`:index:
+***************************
 
 pgAgent runs as a daemon on Unix systems, and a service on Windows systems.  In most cases it will run on the database server itself - for this reason, pgAgent is not automatically configured when pgAdmin is installed. In some cases however, it may be preferable to run pgAgent on multiple systems, against the same database; individual jobs may be targeted at a particular host, or left for execution by any host. Locking prevents execution of the same instance of a job by multiple hosts.
 

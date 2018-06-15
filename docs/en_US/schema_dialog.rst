@@ -1,8 +1,8 @@
 .. _schema_dialog:
 
-*****************
-The Schema Dialog
-*****************
+**********************
+`Schema Dialog`:index:
+**********************
 
 Use the *Schema* dialog to define a schema. A schema is the organizational workhorse of a database, similar to directories or namespaces. To create a schema, you must be a database superuser or have the CREATE privilege.
 

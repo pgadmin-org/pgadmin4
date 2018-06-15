@@ -1,8 +1,8 @@
 .. _extension_dialog:
 
-********************
-The Extension Dialog
-********************
+*************************
+`Extension Dialog`:index:
+*************************
 
 Use the *Extension* dialog to install a new extension into the current database. An extension is a collection of SQL objects that add targeted functionality to your Postgres installation.  The *Extension* dialog adds the functionality of an extension to the current database only; you must register the extension in each database that use the extension.  Before you load an extension into a database, you should confirm that any pre-requisite files are installed.
 

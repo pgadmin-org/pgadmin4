@@ -1,8 +1,8 @@
 .. _collation_dialog:
 
-********************
-The Collation Dialog
-********************
+*************************
+`Collation Dialog`:index:
+*************************
 
 Use the *Collation* dialog to define a collation. A collation is an SQL schema object that maps a SQL name to operating system locales. To create a collation, you must have a CREATE privilege on the destination schema.
 

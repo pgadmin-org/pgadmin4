@@ -1,8 +1,8 @@
 .. _primary_key_dialog:
 
-**********************
-The Primary key Dialog
-**********************
+***************************
+`Primary key Dialog`:index:
+***************************
 
 Use the *Primary key* dialog to create or modify a primary key constraint. A primary key constraint indicates that a column, or group of columns, uniquely identifies rows in a table. This requires that the values in the selected column(s) be both unique and not null.
 

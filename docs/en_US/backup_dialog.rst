@@ -1,8 +1,8 @@
 .. _backup_dialog:
 
-*****************
-The Backup Dialog
-*****************
+**********************
+`Backup Dialog`:index:
+**********************
 
 Using the *pg_dump* utility, *pgAdmin* provides an easy way to create a backup in a plain-text or archived format.  You can then use a client application (like *psql* or the *Query Tool*) to restore a plain-text backup file, or use the Postgres *pg_restore* utility to restore an archived backup. The *pg_dump* utility must have read access to all database objects that you want to back up.
 

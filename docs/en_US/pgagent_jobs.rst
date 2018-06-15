@@ -1,9 +1,9 @@
 .. _pgagent_jobs:
 
 
-************************
-`Creating a pgAgent Job`
-************************
+*******************************
+`Creating a pgAgent Job`:index:
+*******************************
 
 pgAgent is a scheduling agent that runs and manages jobs; each job consists of steps and schedules.
 

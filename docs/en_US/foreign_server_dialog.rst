@@ -1,8 +1,8 @@
 .. _foreign_server_dialog:
 
-*************************
-The Foreign Server Dialog
-*************************
+******************************
+`Foreign Server Dialog`:index:
+******************************
 
 Use the *Foreign Server* dialog to create a foreign server. A foreign server typically encapsulates connection information that a foreign-data wrapper uses to access an external data resource. Each foreign data wrapper may connect to a different foreign server; in the *pgAdmin* tree control, expand the node of the applicable foreign data wrapper to launch the *Foreign Server* dialog.
 

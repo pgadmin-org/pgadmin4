@@ -1,8 +1,8 @@
 .. _foreign_table_dialog:
 
-************************
-The Foreign Table Dialog
-************************
+*****************************
+`Foreign Table Dialog`:index:
+*****************************
 
 Use the *Foreign Table* dialog to define a foreign table in the current database. Foreign tables define the structure of an external data source that resides on a foreign server.
 

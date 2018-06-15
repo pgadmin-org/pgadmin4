@@ -1,8 +1,8 @@
 .. _pgadmin_user:
 
-**************************
-The User Management Dialog
-**************************
+*******************************
+`User Management Dialog`:index:
+*******************************
 
 When invoking pgAdmin in desktop mode, a password is randomly generated, and then ignored.  If you install pgAdmin in server mode, you will be prompted for an administrator email and password for the pgAdmin client.
 

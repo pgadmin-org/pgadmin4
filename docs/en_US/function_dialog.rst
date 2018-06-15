@@ -1,8 +1,8 @@
 .. _function_dialog:
 
-*******************
-The Function Dialog
-*******************
+************************
+`Function Dialog`:index:
+************************
 
 Use the *Function* dialog to define a function.  If you drop and then recreate a function, the new function is not the same entity as the old; you must drop existing rules, views, triggers, etc. that refer to the old function.
 

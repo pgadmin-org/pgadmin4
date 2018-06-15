@@ -1,8 +1,8 @@
 .. _coding_standards:
 
-****************
-Coding Standards
-****************
+*************************
+`Coding Standards`:index:
+*************************
 
 pgAdmin uses multiple technologies and multiple languages, each of which have 
 their own coding standards.

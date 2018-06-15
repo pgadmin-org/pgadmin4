@@ -1,8 +1,8 @@
 .. _fts_dictionary_dialog:
 
-*************************
-The FTS Dictionary Dialog
-*************************
+******************************
+`FTS Dictionary Dialog`:index:
+******************************
 
 Use the *FTS Dictionary* dialog to create a full text search dictionary. You can use a predefined templates or create a new dictionary with custom parameters.
 

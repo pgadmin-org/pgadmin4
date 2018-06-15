@@ -1,8 +1,8 @@
 .. _connect_error:
 
-******************
-`Connection error`
-******************
+*************************
+`Connection error`:index:
+*************************
 
 When connecting to a PostgreSQL server, you may get an error message. If you encounter an error message, please review the message  carefully; each error message attempts to incorporate the information you'll need to resolve the problem.  For more details about specific errors, please locate the error message in the list below:
 

@@ -1,8 +1,8 @@
 .. _pgadmin_login:
 
-************************
-The pgAdmin Login Dialog
-************************
+*****************************
+`pgAdmin Login Dialog`:index:
+*****************************
 
 Use the *pgAdmin Login* dialog to log in to pgAdmin:
 

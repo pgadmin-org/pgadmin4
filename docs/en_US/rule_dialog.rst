@@ -1,8 +1,8 @@
 .. _rule_dialog:
 
-***************
-The Rule Dialog
-***************
+********************
+`Rule Dialog`:index:
+********************
 
 Use the *Rule* dialog to define or modify a rule for a specified table or view. A PostgreSQL rule allows you to define an additional action that will be performed when a SELECT, INSERT, UPDATE, or DELETE is performed against a table.
 

@@ -1,8 +1,8 @@
 .. _connect_to_server:
 
-*****************
-Connect to server
-*****************
+**************************
+`Connect to server`:index:
+**************************
 
 Use the *Connect to Server* dialog to authenticate with a defined server and access the objects stored on the server through the pgAdmin tree control. To access the dialog, right click on the server name in the *pgAdmin* tree control, and select *Connect Server...* from the context menu.
 

@@ -1,8 +1,8 @@
 .. _fts_parser_dialog:
 
-*********************
-The FTS Parser Dialog
-*********************
+**************************
+`FTS Parser Dialog`:index:
+**************************
 
 Use the *FTS Parser* dialog to create a new text search parser. A text search parser defines a method for splitting a text string into tokens and assigning types (categories) to the tokens.
 

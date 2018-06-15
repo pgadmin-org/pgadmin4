@@ -1,8 +1,8 @@
 .. _change_password_dialog:
 
-**************************
-The Change Password Dialog
-**************************
+*******************************
+`Change Password Dialog`:index:
+*******************************
 
 It is a good policy to routinely change your password to protect data, even in what you may consider a 'safe' environment. In the workplace, failure to apply an appropriate password policy could leave you in breach of Data Protection laws.
 

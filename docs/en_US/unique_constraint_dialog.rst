@@ -1,8 +1,8 @@
 .. _unique_constraint_dialog:
 
-****************************
-The Unique Constraint Dialog
-****************************
+*********************************
+`Unique Constraint Dialog`:index:
+*********************************
 
 Use the *Unique constraint* dialog to define a unique constraint for a specified table. Unique constraints ensure that the data contained in a column, or a group of columns, is unique among all the rows in the table.
 

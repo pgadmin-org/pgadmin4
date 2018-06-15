@@ -1,8 +1,8 @@
 .. _database_dialog:
 
-*******************
-The Database Dialog
-*******************
+************************
+`Database Dialog`:index:
+************************
 
 Use the *Database* dialog to define or modify a database. To create a database, you must be a database superuser or have the CREATE privilege.
 

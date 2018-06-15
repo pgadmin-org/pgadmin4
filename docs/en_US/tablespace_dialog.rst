@@ -1,8 +1,8 @@
 .. _tablespace_dialog:
 
-*********************
-The Tablespace Dialog
-*********************
+**************************
+`Tablespace Dialog`:index:
+**************************
 
 Use The *Tablespace* dialog to define a tablespace. A tablespace allows superusers to define an alternative location on the file system where the data files containing database objects (such as tables and indexes) reside. Tablespaces are only supported on systems that support symbolic links. Note that a tablespace cannot be used independently of the cluster in which it is defined.
 

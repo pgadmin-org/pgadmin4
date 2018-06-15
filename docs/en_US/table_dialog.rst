@@ -1,8 +1,8 @@
 .. _table_dialog:
 
-****************
-The Table Dialog
-****************
+*********************
+`Table Dialog`:index:
+*********************
 
 Use the *Table* dialog to create or modify a table.
 

@@ -1,8 +1,8 @@
 .. _pgadmin_tabbed_browser:
 
-**************************
-The pgAdmin Tabbed Browser
-**************************
+*******************************
+`pgAdmin Tabbed Browser`:index:
+*******************************
 
 The right pane of the *pgAdmin* window features a collection of tabs that display information about the object currently selected in the *pgAdmin* tree control in the left window.  Select a tab to access information about the highlighted object in the tree control.
 

@@ -1,8 +1,8 @@
 .. _backup_server_dialog:
 
-*************************
-The Backup Server Dialog
-*************************
+*****************************
+`Backup Server Dialog`:index:
+*****************************
 
 Use the *Backup Server* dialog to create a plain-text script that will recreate the selected server. You can use the pgAdmin *Query Tool* to play back a plain-text script, and recreate the server.
 

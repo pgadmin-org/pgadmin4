@@ -1,8 +1,8 @@
 .. _modifying_tables:
 
-*****************************
-Creating or Modifying a Table  
-*****************************
+**************************************
+`Creating or Modifying a Table`:index:
+**************************************
 
 pgAdmin 4 provides dialogs that allow you to modify all table properties and attributes.
 

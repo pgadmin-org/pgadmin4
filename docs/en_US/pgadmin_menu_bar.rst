@@ -1,8 +1,8 @@
 .. _pgadmin_menu_bar:
 
-********************
-The pgAdmin Menu Bar
-********************
+*************************
+`pgAdmin Menu Bar`:index:
+*************************
 
 The pgAdmin menu bar provides drop-down menus for access to options, commands, and utilities. The menu bar displays the following selections: *File*, *Object*, Tools*, and *Help*. Selections may be grayed out which indicates they are disabled for the object currently selected in the *pgAdmin* tree control.
 

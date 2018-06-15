@@ -1,8 +1,8 @@
 .. _domain_constraint_dialog:
 
-*****************************
-The Domain Constraints Dialog
-*****************************
+**********************************
+`Domain Constraints Dialog`:index:
+**********************************
 
 Use the *Domain Constraints* dialog to create or modify a domain constraint. A domain constraint confirms that the values provided for a domain meet a defined criteria. The *Domain Constraints* dialog implements options of the ALTER DOMAIN command.
 

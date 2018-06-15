@@ -1,8 +1,8 @@
 .. _user_mapping_dialog:
 
-***********************
-The User Mapping Dialog
-***********************
+****************************
+`User Mapping Dialog`:index:
+****************************
 
 Use the *User Mapping* dialog to define a new mapping of a user to a foreign server.
 

@@ -1,8 +1,8 @@
 .. _code_review:
 
-*****************
-Code Review Notes
-*****************
+**************************
+`Code Review Notes`:index:
+**************************
 
 This document lists a number of standard items that will be checked during the
 review process for any patches submitted for inclusion in pgAdmin.

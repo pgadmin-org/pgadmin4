@@ -1,8 +1,8 @@
 .. _managing_database_objects:
 
-*************************
-Managing Database Objects
-*************************
+**********************************
+`Managing Database Objects`:index:
+**********************************
 
 pgAdmin 4 provides simple but powerful dialogs that you can use to design and create database objects.  Each dialog contains a series of tabs that you use to describe the object that will be created by the dialog; the SQL tab displays the SQL command that the server will execute when creating the object.
 

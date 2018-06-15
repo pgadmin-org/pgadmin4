@@ -1,8 +1,8 @@
 .. _foreign_data_wrapper_dialog:
 
-*******************************
-The Foreign Data Wrapper Dialog
-*******************************
+************************************
+`Foreign Data Wrapper Dialog`:index:
+************************************
 
 Use the *Foreign Data Wrapper* dialog to create or modify a foreign data wrapper. A foreign data wrapper is an adapter between a Postgres database and data stored on another data source.
 

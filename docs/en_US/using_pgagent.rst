@@ -1,9 +1,9 @@
 .. _using_pgagent:
 
 
-***************
-`Using pgAgent`
-***************
+**********************
+`Using pgAgent`:index:
+**********************
 
 pgAgent is a scheduling agent that runs and manages jobs; each job consists of one or more steps and schedules.  If two or more jobs are scheduled to execute concurrently, pgAgent will execute the jobs in parallel (each with it's own thread).
 

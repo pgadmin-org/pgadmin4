@@ -1,8 +1,8 @@
 .. _event_trigger_dialog:
 
-************************
-The Event Trigger Dialog
-************************
+*****************************
+`Event Trigger Dialog`:index:
+*****************************
 
 Use the *Domain Trigger* dialog to define an event trigger. Unlike regular triggers, which are attached to a single table and capture only DML events, event triggers are global to a particular database and are capable of capturing DDL events.  Like regular triggers, event triggers can be written in any procedural language that includes event trigger support, or in C, but not in SQL.
 

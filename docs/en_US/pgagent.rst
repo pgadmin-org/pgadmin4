@@ -1,8 +1,8 @@
 .. _pgagent:
 
-
-pgAgent
-======= 
+****************
+`pgAgent`:index:
+****************
 
 pgAgent is a job scheduling agent for Postgres databases, capable of running multi-step batch or shell scripts and SQL tasks on complex schedules.
 

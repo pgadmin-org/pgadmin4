@@ -1,8 +1,8 @@
 .. _view_dialog:
 
-***************
-The View Dialog
-***************
+********************
+`View Dialog`:index:
+********************
 
 Use the *View* dialog to define a view. The view is not physically materialized; the query is executed each time the view is referenced in a query.
 

@@ -1,8 +1,8 @@
 .. _getting_started:
 
-***************
-Getting Started
-***************
+************************
+`Getting Started`:index:
+************************
 
 Pre-compiled and configured installation packages for pgAdmin 4 are available
 for a number of desktop environments; we recommend using an installer

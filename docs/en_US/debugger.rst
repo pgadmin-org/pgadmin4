@@ -1,8 +1,8 @@
 .. _debugger:
 
-******************
-`pgAdmin Debugger`
-******************
+*************************
+`pgAdmin Debugger`:index:
+*************************
 
 .. image:: images/debug_main.png
     :alt: Debugger page

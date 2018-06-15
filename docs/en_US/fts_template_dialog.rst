@@ -1,8 +1,8 @@
 .. _fts_template_dialog:
 
-***********************
-The FTS Template Dialog
-***********************
+****************************
+`FTS Template Dialog`:index:
+****************************
 
 Use the *FTS Template* dialog to create a new text search template. A text search template defines the functions that implement text search dictionaries.
 

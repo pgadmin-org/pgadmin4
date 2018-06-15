@@ -1,8 +1,8 @@
 .. _column_dialog:
 
-*****************
-The Column Dialog
-*****************
+**********************
+`Column Dialog`:index:
+**********************
 
 Use the *Column* dialog to add a column to an existing table or modify a column definition.
 

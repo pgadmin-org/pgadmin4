@@ -1,8 +1,8 @@
 .. _resource_group_dialog:
 
-*************************
-The Resource Group Dialog
-*************************
+******************************
+`Resource Group Dialog`:index:
+******************************
 
 Use the *Resource Group* dialog to create a resource group and set values for its resources. A resource group is a named, global group on which various resource usage limits can be defined. The resource group is accessible from all databases in the cluster. To use the *Resource Group* dialog, you must have superuser privileges.  Please note that resource groups are supported when connected to EDB Postgres Advanced Server; for more information about using resource groups, please see the EDB Postgres Advanced Server Guide, available at:
 

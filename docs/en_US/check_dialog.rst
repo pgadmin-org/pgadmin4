@@ -1,8 +1,8 @@
 .. _check_dialog:
 
-****************
-The Check Dialog
-****************
+*********************
+`Check Dialog`:index:
+*********************
 
 Use the *Check* dialog to define or modify a check constraint. A check constraint specifies an expression that produces a Boolean result that new or updated rows must satisfy for an insert or update operation to succeed.
 

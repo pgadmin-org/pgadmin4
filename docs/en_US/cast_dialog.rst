@@ -1,8 +1,8 @@
 .. _cast_dialog:
 
-***************
-The Cast Dialog
-***************
+********************
+`Cast Dialog`:index:
+********************
 
 Use the *Cast* dialog to define a cast. A cast specifies how to convert a value from one data type to another.
 

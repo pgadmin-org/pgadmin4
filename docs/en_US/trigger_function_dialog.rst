@@ -1,8 +1,8 @@
 .. _trigger_function_dialog:
 
-***************************
-The Trigger function Dialog
-***************************
+********************************
+`Trigger function Dialog`:index:
+********************************
 
 Use the *Trigger function* dialog to create or manage a trigger_function. A trigger function defines the action that will be invoked when a trigger fires.
 

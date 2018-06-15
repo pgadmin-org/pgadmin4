@@ -1,6 +1,6 @@
-******************
-Keyboard Shortcuts
-******************
+***************************
+`Keyboard Shortcuts`:index:
+***************************
 
 Keyboard shortcuts are provided in pgAdmin to allow easy access to specific
 functions. Alternate shortcuts can be configured through File > Preferences if

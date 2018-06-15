@@ -1,8 +1,8 @@
 .. _materialized_view_dialog:
 
-****************************
-The Materialized View Dialog
-****************************
+*********************************
+`Materialized View Dialog`:index:
+*********************************
 
 Use the *Materialized View* dialog to define a materialized view. A materialized view is a stored or cached view that contains the result set of a query. Use the REFRESH MATERIALIZED VIEW command to update the content of a materialized view.
 

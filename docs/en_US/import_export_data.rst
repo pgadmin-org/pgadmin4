@@ -1,8 +1,8 @@
 .. _import_export_data:
 
-*****************************
-The Import/Export data Dialog
-*****************************
+**********************************
+`Import/Export data Dialog`:index:
+**********************************
 
 Use the *Import/Export data* dialog to copy data from a table to a file, or copy data from a file into a table.
 

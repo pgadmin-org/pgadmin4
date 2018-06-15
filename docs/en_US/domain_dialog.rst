@@ -1,8 +1,8 @@
 .. _domain_dialog:
 
-*****************
-The Domain Dialog
-*****************
+**********************
+`Domain Dialog`:index:
+**********************
 
 Use the *Domain* dialog to define a domain. A domain is a data type definition that may constrain permissible values. Domains are useful when you are creating multiple tables that contain comparable columns; you can create a domain that defines constraints that are common to the columns and re-use the domain definition when creating the columns, rather than individually defining each set of constraints.
 

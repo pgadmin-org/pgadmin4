@@ -1,8 +1,8 @@
 .. _query_tool:
 
-**************
-The Query tool
-**************
+*******************
+`Query tool`:index:
+*******************
 
 The Query tool is a powerful, feature-rich environment that allows you to execute arbitrary SQL commands and review the result set.  You can access the Query tool via the *Query Tool* menu option on the *Tools* menu, or through the context menu of select nodes of the Browser tree control.  The Query Tool allows you to:
 

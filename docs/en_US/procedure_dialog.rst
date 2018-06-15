@@ -1,8 +1,8 @@
 .. _procedure_dialog:
 
-********************
-The Procedure Dialog
-********************
+*************************
+`Procedure Dialog`:index:
+*************************
 
 Use the *Procedure* dialog to create a procedure; procedures are supported by
 PostgreSQL v11+ and EDB Postgres Advanced Server. The *Procedure* dialog allows

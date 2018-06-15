@@ -1,8 +1,8 @@
 .. _fts_configuration_dialog:
 
-****************************
-The FTS Configuration dialog
-****************************
+*********************************
+`FTS Configuration dialog`:index:
+*********************************
 
 Use the *FTS Configuration* dialog to configure a full text search. A text search configuration specifies a text search parser that can divide a string into tokens, along with dictionaries that can identify searchable tokens.
 

@@ -1,8 +1,8 @@
 .. _preferences:
 
-**********************
-The Preferences Dialog
-**********************
+***************************
+`Preferences Dialog`:index:
+***************************
 
 Use options on the *Preferences* dialog to customize the behavior of the client. To open the *Preferences* dialog, select *Preferences* from the *File* menu.  The left pane of the *Preferences* dialog displays a tree control; each node of the tree control provides access to options that are related to the node under which they are displayed.
 

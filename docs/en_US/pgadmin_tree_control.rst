@@ -1,8 +1,8 @@
 .. _pgadmin_tree_control:
 
-************************
-The pgAdmin Tree Control
-************************
+*****************************
+`pgAdmin Tree Control`:index:
+*****************************
 
 The left pane of the main window displays a tree control (the *pgAdmin* tree control) that provides access to the objects that reside on a server.
 

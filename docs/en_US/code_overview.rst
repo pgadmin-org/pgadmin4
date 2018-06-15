@@ -1,8 +1,8 @@
 .. _code_overview:
 
-*************
-Code Overview
-*************
+**********************
+`Code Overview`:index:
+**********************
 
 The bulk of pgAdmin is a Python web application written using the Flask framework
 on the backend, and HTML5 with CSS3, Bootstrap and jQuery on the front end. A

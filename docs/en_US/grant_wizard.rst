@@ -1,8 +1,8 @@
 .. _grant_wizard:
 
-************
-Grant Wizard
-************
+*********************
+`Grant Wizard`:index:
+*********************
 
 The *Grant Wizard* tool is a graphical interface that allows you to manage the privileges of one or more database objects in a point-and-click environment. A search box, dropdown lists, and checkboxes facilitate quick selections of database objects, roles and privileges.
 

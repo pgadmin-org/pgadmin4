@@ -1,8 +1,8 @@
 .. _type_dialog:
 
-***************
-The Type Dialog
-***************
+********************
+`Type Dialog`:index:
+********************
 
 Use the *Type* dialog to register a custom data type.
 

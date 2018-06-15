@@ -1,8 +1,8 @@
 .. _maintenance_dialog:
 
-**********************
-The Maintenance Dialog
-**********************
+***************************
+`Maintenance Dialog`:index:
+***************************
 
 Use the *Maintenance* dialog to VACUUM, ANALYZE, REINDEX or CLUSTER a database or selected database objects.
 

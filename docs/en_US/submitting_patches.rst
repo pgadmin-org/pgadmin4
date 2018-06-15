@@ -1,8 +1,8 @@
 .. _submitting_patches:
 
-******************
-Submitting Patches
-******************
+***************************
+`Submitting Patches`:index:
+***************************
 
 Before developing a patch for pgAdmin you should always contact the developers 
 on the mailing list pgadmin-hackers@postgresql.org to discuss your 

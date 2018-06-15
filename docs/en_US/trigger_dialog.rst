@@ -1,8 +1,8 @@
 .. _trigger_dialog:
 
-******************
-The Trigger Dialog
-******************
+***********************
+`Trigger Dialog`:index:
+***********************
 
 Use the *Trigger* dialog to create a trigger or modify an existing trigger.  A trigger executes a specified function when certain events occur.
 
