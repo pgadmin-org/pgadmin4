@@ -4,7 +4,7 @@
 {% set is_columns = [] %}
 {% if data %}
 {% if query_for == 'sql_panel' and func_def is defined %}
-CREATE OR REPLACE  PROCEDURE {{func_def}}
+CREATE OR REPLACE PROCEDURE {{func_def}}
 {% else %}
 CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% if data.arguments is defined %}
 ({% for p in data.arguments %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{ conn|qtTypeIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
