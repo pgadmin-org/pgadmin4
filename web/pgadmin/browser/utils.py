@@ -266,6 +266,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
         commands = cls.generate_ops()
 
         for c in commands:
+            cmd = c['cmd'].replace('.', '-')
             if c['with_id']:
                 blueprint.add_url_rule(
                     '/{0}{1}'.format(
@@ -273,7 +274,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
                     ),
                     view_func=cls.as_view(
                         '{0}{1}'.format(
-                            c['cmd'], '_id' if c['req'] else ''
+                            cmd, '_id' if c['req'] else ''
                         ),
                         cmd=c['cmd']
                     ),
@@ -283,7 +284,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
                 blueprint.add_url_rule(
                     '/{0}'.format(c['cmd']),
                     view_func=cls.as_view(
-                        '{0}'.format(c['cmd']), cmd=c['cmd']
+                        cmd, cmd=c['cmd']
                     ),
                     methods=c['methods']
                 )
