@@ -301,7 +301,26 @@ class DatabaseView(PGChildNodeView):
 
     @check_precondition(action="get_databases")
     def get_databases(self, gid, sid):
-        res = self.get_nodes(gid, sid, True)
+        """
+        This function is used to get all the databases irrespective of
+        show_system_object flag for templates in create database dialog.
+        :param gid:
+        :param sid:
+        :return:
+        """
+        res = []
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            last_system_oid=0,
+        )
+        status, rset = self.conn.execute_dict(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            res.append(row['name'])
+
         return make_json_response(
             data=res,
             status=200
