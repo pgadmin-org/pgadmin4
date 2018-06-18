@@ -80,6 +80,7 @@ Create a migration file with the following command:
 
 This will create a file in: $PGADMIN4_SRC/web/migrations/versions/ .
 Add any changes to the 'upgrade' function.
+Increment the SCHEMA_VERSION in $PGADMIN4_SRC/web/pgadmin/model/__init__.py file.
 
 There is no need to increment the SETTINGS_SCHEMA_VERSION.
 
