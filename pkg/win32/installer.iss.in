@@ -164,6 +164,37 @@ begin
   end;
 end;
 
+// This function would be called during upgrade mode
+// In upgrade mode - delete venv/* for example
+procedure DelFolder(Path: string);
+var
+  FindRec: TFindRec;
+  FilePath: string;
+begin
+  if FindFirst(Path + '\*', FindRec) then
+  begin
+    try
+      repeat
+        if (FindRec.Name <> '.') and (FindRec.Name <> '..') then
+        begin
+          FilePath := Path + '\' + FindRec.Name;
+          if FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
+          begin
+            DeleteFile(FilePath);
+          end
+          else
+            begin
+              DelFolder(FilePath);
+              RemoveDir(FilePath);
+            end;
+          end;
+        until not FindNext(FindRec);
+      finally
+      FindClose(FindRec);
+    end;
+  end;
+end;
+
 //procedure CurPageChanged(CurPageID: Integer);
 function NextButtonClick(CurPageID: Integer): Boolean;
 var
@@ -186,6 +217,7 @@ begin
       if (IsUpgradeMode) then
       begin
         DelWebfolder(ExpandConstant('{app}\web'));
+        DelFolder(ExpandConstant('{app}\venv'));
       end;
 	end;
   end;
