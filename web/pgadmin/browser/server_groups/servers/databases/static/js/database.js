@@ -340,7 +340,7 @@ define('pgadmin.node.database', [
             else {
               if (data && _.isArray(data)) {
                 _.each(data, function(d) {
-                   res.push({label: d, value: d,
+                  res.push({label: d, value: d,
                     image: 'pg-icon-database'});
                 });
               }
