@@ -74,6 +74,8 @@ class ServerManager(object):
         self.sslcrl = server.sslcrl
         self.sslcompression = True if server.sslcompression else False
         self.service = server.service
+        self.connect_timeout = \
+            server.connect_timeout if server.connect_timeout else 0
         if config.SUPPORT_SSH_TUNNEL:
             self.use_ssh_tunnel = server.use_ssh_tunnel
             self.tunnel_host = server.tunnel_host

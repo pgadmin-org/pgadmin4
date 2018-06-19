@@ -627,6 +627,7 @@ define('pgadmin.node.server', [
           tunnel_identity_file: undefined,
           tunnel_password: undefined,
           tunnel_authentication: 0,
+          connect_timeout: 0,
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -888,6 +889,11 @@ define('pgadmin.node.server', [
           id: 'service', label: gettext('Service'), type: 'text',
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
           group: gettext('Connection'),
+        },{
+          id: 'connect_timeout', label: gettext('Connection timeout (seconds)'),
+          type: 'int', group: gettext('Advanced'),
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+          min: 0,
         }],
         validate: function() {
           const validateModel = new modelValidation.ModelValidation(this);

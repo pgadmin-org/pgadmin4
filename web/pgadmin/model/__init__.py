@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 16
+SCHEMA_VERSION = 17
 
 ##########################################################################
 #
@@ -145,6 +145,7 @@ class Server(db.Model):
     bgcolor = db.Column(db.Text(10), nullable=True)
     fgcolor = db.Column(db.Text(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)
+    connect_timeout = db.Column(db.Integer(), nullable=False)
     use_ssh_tunnel = db.Column(
         db.Integer(),
         db.CheckConstraint('use_ssh_tunnel >= 0 AND use_ssh_tunnel <= 1'),

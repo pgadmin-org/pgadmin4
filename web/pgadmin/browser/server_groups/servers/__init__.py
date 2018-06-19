@@ -480,6 +480,7 @@ class ServerNode(PGChildNodeView):
             'bgcolor': 'bgcolor',
             'fgcolor': 'fgcolor',
             'service': 'service',
+            'connect_timeout': 'connect_timeout',
             'use_ssh_tunnel': 'use_ssh_tunnel',
             'tunnel_host': 'tunnel_host',
             'tunnel_port': 'tunnel_port',
@@ -672,6 +673,8 @@ class ServerNode(PGChildNodeView):
                 'sslcompression': True if is_ssl and server.sslcompression
                 else False,
                 'service': server.service if server.service else None,
+                'connect_timeout':
+                    server.connect_timeout if server.connect_timeout else 0,
                 'use_ssh_tunnel': server.use_ssh_tunnel
                 if server.use_ssh_tunnel else 0,
                 'tunnel_host': server.tunnel_host if server.tunnel_host
@@ -755,6 +758,7 @@ class ServerNode(PGChildNodeView):
                 bgcolor=data.get('bgcolor', None),
                 fgcolor=data.get('fgcolor', None),
                 service=data.get('service', None),
+                connect_timeout=data.get('connect_timeout', 0),
                 use_ssh_tunnel=data.get('use_ssh_tunnel', 0),
                 tunnel_host=data.get('tunnel_host', None),
                 tunnel_port=data.get('tunnel_port', 22),

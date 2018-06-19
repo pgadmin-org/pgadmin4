@@ -307,7 +307,8 @@ class Connection(BaseConnection):
                 sslrootcert=get_complete_file_path(manager.sslrootcert),
                 sslcrl=get_complete_file_path(manager.sslcrl),
                 sslcompression=True if manager.sslcompression else False,
-                service=manager.service
+                service=manager.service,
+                connect_timeout=manager.connect_timeout
             )
 
             # If connection is asynchronous then we will have to wait
@@ -1234,7 +1235,8 @@ WHERE
                 sslrootcert=get_complete_file_path(manager.sslrootcert),
                 sslcrl=get_complete_file_path(manager.sslcrl),
                 sslcompression=True if manager.sslcompression else False,
-                service=manager.service
+                service=manager.service,
+                connect_timeout=manager.connect_timeout
             )
 
         except psycopg2.Error as e:
@@ -1519,7 +1521,8 @@ Failed to reset the connection to the server due to following error:
                     sslcrl=get_complete_file_path(self.manager.sslcrl),
                     sslcompression=True if self.manager.sslcompression
                     else False,
-                    service=self.manager.service
+                    service=self.manager.service,
+                    connect_timeout=self.manager.connect_timeout
                 )
 
                 # Get the cursor and run the query

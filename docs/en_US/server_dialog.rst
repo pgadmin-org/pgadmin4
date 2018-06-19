@@ -85,6 +85,7 @@ Use the fields in the *Advanced* tab to configure a connection:
 * Specify the IP address of the server host in the *Host address* field. Using this field to specify the host IP address may save time by avoiding a DNS lookup on connection, but it may be useful to specify both a host name and address when using Kerberos, GSSAPI, or SSPI authentication methods, as well as for verify-full SSL certificate verification.
 * Use the *DB restriction* field to provide a SQL restriction that will be used against the pg_database table to limit the databases that you see. For example, you might enter: *live_db test_db* so that only live_db and test_db are shown in the pgAdmin browser. Separate entries with a comma or tab as you type.
 * Use the *Password File* field to specify the location of a password file (.pgpass). A .pgpass file allows a user to login without providing a password when they connect.  For more information, see `Section 33.15 of the Postgres documentation <http://www.postgresql.org/docs/current/static/libpq-pgpass.html>`_.
+* Use the *Connection timeout* field to specify the maximum wait for connection, in seconds. Zero or not specified means wait indefinitely. It is not recommended to use a timeout of less than 2 seconds.
 
 *NOTE:* The password file option is only supported when pgAdmin is using libpq v10.0 or later to connect to the server.
 

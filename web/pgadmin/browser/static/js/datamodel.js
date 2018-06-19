@@ -173,8 +173,8 @@ define([
                 id: s.id,
                 label: s.label,
                 type: s.type,
-                min: s.min || undefined,
-                max: s.max || undefined,
+                min: !_.isUndefined(s.min) ? s.min : undefined,
+                max: !_.isUndefined(s.max) ? s.max : undefined,
               };
               break;
             default:
@@ -767,9 +767,9 @@ define([
         min_value = field.min,
         max_value = field.max;
 
-      if (min_value && value < min_value) {
+      if (!_.isUndefined(min_value) && value < min_value) {
         return S(pgAdmin.Browser.messages.MUST_GR_EQ).sprintf(label, min_value).value();
-      } else if (max_value && value > max_value) {
+      } else if (!_.isUndefined(max_value) && value > max_value) {
         return S(pgAdmin.Browser.messages.MUST_LESS_EQ).sprintf(label, max_value).value();
       }
       return null;
