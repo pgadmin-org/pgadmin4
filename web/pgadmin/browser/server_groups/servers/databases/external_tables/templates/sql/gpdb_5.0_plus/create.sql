@@ -48,7 +48,7 @@ OPTIONS (
 )
 {% endif %}
 ENCODING '{{ table.pgEncodingToChar }}'
-{% if table.rejectLimit and table.rejectLimit|length > 0 %}
+{% if table.rejectLimit and table.rejectLimit > 0 %}
 {%   if table.errorTableName and table.errorTableName|length > 0 %}
 LOG ERRORS {% endif %}SEGMENT REJECT LIMIT {{ table.rejectLimit }} {{ rejectionLimit }}
 {% endif %}
