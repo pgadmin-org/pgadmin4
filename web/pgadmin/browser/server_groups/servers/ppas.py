@@ -19,7 +19,7 @@ class PPAS(ServerType):
     )
 
     def instanceOf(self, ver):
-        return ver.startswith("EnterpriseDB")
+        return "EnterpriseDB" in ver
 
 
 # Default Server Type
