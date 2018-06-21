@@ -622,14 +622,15 @@ WHERE
         # We need to esacpe the data so that it does not fail when
         # it is encoded with python ascii
         # unicode_escape helps in escaping and unescaping
-        if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
-                                  'MULE_INTERNAL', 'MULEINTERNAL')\
-           and params is not None and type(params) == dict:
-                params = {
-                    key: val.encode('unicode_escape')
-                            .decode('raw_unicode_escape')
-                    for key, val in params.items()
-                }
+        if self.conn:
+            if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
+                                      'MULE_INTERNAL', 'MULEINTERNAL')\
+               and params is not None and type(params) == dict:
+                    params = dict(
+                        (key, val.encode('unicode_escape')
+                         .decode('raw_unicode_escape'))
+                        for key, val in params.items()
+                    )
         return params
 
     def __internal_blocking_execute(self, cur, query, params):
