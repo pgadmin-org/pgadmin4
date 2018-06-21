@@ -509,7 +509,16 @@ def create_app(app_name=None):
                 ):
                     svr_name = registry.get(section, 'Description')
                     svr_superuser = registry.get(section, 'Superuser')
-                    svr_port = registry.getint(section, 'Port')
+
+                    # getint function throws exception if value is blank.
+                    # Ex: Port=
+                    # In such case we should handle the exception and continue
+                    # to read the next section of the config file.
+                    try:
+                        svr_port = registry.getint(section, 'Port')
+                    except ValueError:
+                        continue
+
                     svr_discovery_id = section
                     description = registry.get(section, 'Description')
                     data_directory = registry.get(section, 'DataDirectory')
