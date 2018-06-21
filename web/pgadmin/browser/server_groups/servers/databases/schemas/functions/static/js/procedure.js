@@ -17,8 +17,6 @@ define('pgadmin.node.procedure', [
       });
   }
 
-  var pgSchemaNode = pgBrowser.Nodes['schema'];
-
   // Inherit Functions Node
   if (!pgBrowser.Nodes['procedure']) {
     pgAdmin.Browser.Nodes['procedure'] = pgBrowser.Node.extend({
@@ -62,8 +60,8 @@ define('pgadmin.node.procedure', [
         },
         ]);
       },
-      canDrop: pgSchemaNode.canChildDrop,
-      canDropCascade: false,
+      canDrop: true,
+      canDropCascade: true,
       canCreateProc: function(itemData, item) {
         var node_hierarchy = this.getTreeNodeHierarchy.apply(this, [item]);
 
