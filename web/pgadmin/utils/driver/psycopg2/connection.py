@@ -50,7 +50,6 @@ else:
 
 _ = gettext
 
-
 # Register global type caster which will be applicable to all connections.
 register_global_typecasters()
 
@@ -398,10 +397,29 @@ class Connection(BaseConnection):
         if self.use_binary_placeholder:
             register_binary_typecasters(self.conn)
 
-        status = _execute(cur, "SET DateStyle=ISO;"
-                               "SET client_min_messages=notice;"
-                               "SET bytea_output=escape;"
-                               "SET client_encoding='UNICODE';")
+        if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
+                                  'MULE_INTERNAL', 'MULEINTERNAL'):
+            status = _execute(cur, "SET DateStyle=ISO;"
+                                   "SET client_min_messages=notice;"
+                                   "SET bytea_output=escape;"
+                                   "SET client_encoding='{0}';"
+                              .format(self.conn.encoding))
+            self.python_encoding = 'raw_unicode_escape'
+        else:
+            status = _execute(cur, "SET DateStyle=ISO;"
+                                   "SET client_min_messages=notice;"
+                                   "SET bytea_output=escape;"
+                                   "SET client_encoding='UNICODE';")
+            self.python_encoding = 'utf-8'
+
+        # Replace the python encoding for original name and renamed encodings
+        # psycopg2 removes the underscore in conn.encoding
+        # Setting the encodings dict value will only help for select statements
+        # because for parameterized DML, param values are converted based on
+        # python encoding of pyscopg2s internal encodings dict.
+        for key, val in encodings.items():
+            if key.replace('_', '') == self.conn.encoding:
+                encodings[key] = self.python_encoding
 
         if status is not None:
             self.conn.close()
@@ -599,6 +617,21 @@ WHERE
 
         return True, cur
 
+    def escape_params_sqlascii(self, params):
+        # The data is unescaped using string_typecasters when selected
+        # We need to esacpe the data so that it does not fail when
+        # it is encoded with python ascii
+        # unicode_escape helps in escaping and unescaping
+        if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
+                                  'MULE_INTERNAL', 'MULEINTERNAL')\
+           and params is not None and type(params) == dict:
+                params = {
+                    key: val.encode('unicode_escape')
+                            .decode('raw_unicode_escape')
+                    for key, val in params.items()
+                }
+        return params
+
     def __internal_blocking_execute(self, cur, query, params):
         """
         This function executes the query using cursor's execute function,
@@ -618,6 +651,7 @@ WHERE
         else:
             query = query.encode('utf-8')
 
+        params = self.escape_params_sqlascii(params)
         cur.execute(query, params)
         if self.async == 1:
             self._wait(cur.connection)
@@ -735,7 +769,7 @@ WHERE
 
             header = []
             json_columns = []
-            conn_encoding = cur.connection.encoding
+            conn_encoding = encodings[cur.connection.encoding]
 
             for c in cur.ordered_description():
                 # This is to handle the case in which column name is non-ascii
@@ -880,6 +914,9 @@ WHERE
                 query = query.encode('utf-8')
         else:
             query = query.encode('utf-8')
+
+        # Convert the params based on python_encoding
+        params = self.escape_params_sqlascii(params)
 
         self.__async_cursor = None
         status, cur = self.__cursor()

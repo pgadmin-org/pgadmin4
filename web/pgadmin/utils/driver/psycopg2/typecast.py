@@ -164,46 +164,37 @@ def register_global_typecasters():
 
 
 def register_string_typecasters(connection):
-    if connection.encoding != 'UTF8':
-        # In python3 when database encoding is other than utf-8 and client
-        # encoding is set to UNICODE then we need to map data from database
-        # encoding to utf-8.
-        # This is required because when client encoding is set to UNICODE then
-        # psycopg assumes database encoding utf-8 and not the actual encoding.
-        # Not sure whether it's bug or feature in psycopg for python3.
+    # raw_unicode_escape used for SQL ASCII will escape the
+    # characters. Here we unescape them using unicode_escape
+    # and send ahead. When insert update is done, the characters
+    # are escaped again and sent to the DB.
+    if connection.encoding in ('SQL_ASCII', 'SQLASCII',
+                               'MULE_INTERNAL', 'MULEINTERNAL'):
         if sys.version_info >= (3,):
-            def return_as_unicode(value, cursor):
+            def non_ascii_escape(value, cursor):
                 if value is None:
                     return None
-                # Treat value as byte sequence of database encoding and then
-                # decode it as utf-8 to get correct unicode value.
                 return bytes(
                     value, encodings[cursor.connection.encoding]
-                ).decode('utf-8')
-
-            unicode_type = psycopg2.extensions.new_type(
-                # "char", name, text, character, character varying
-                (19, 18, 25, 1042, 1043, 0),
-                'UNICODE', return_as_unicode)
+                ).decode('unicode_escape')
         else:
-            def return_as_unicode(value, cursor):
+            def non_ascii_escape(value, cursor):
                 if value is None:
                     return None
-                # Decode it as utf-8 to get correct unicode value.
-                return value.decode('utf-8')
+                return value.decode('unicode_escape')
 
-            unicode_type = psycopg2.extensions.new_type(
-                # "char", name, text, character, character varying
-                (19, 18, 25, 1042, 1043, 0),
-                'UNICODE', return_as_unicode)
+        unicode_type = psycopg2.extensions.new_type(
+            # "char", name, text, character, character varying
+            (19, 18, 25, 1042, 1043, 0),
+            'UNICODE', non_ascii_escape)
 
         unicode_array_type = psycopg2.extensions.new_array_type(
             # "char"[], name[], text[], character[], character varying[]
             (1002, 1003, 1009, 1014, 1015, 0
              ), 'UNICODEARRAY', unicode_type)
 
-        psycopg2.extensions.register_type(unicode_type)
-        psycopg2.extensions.register_type(unicode_array_type)
+        psycopg2.extensions.register_type(unicode_type, connection)
+        psycopg2.extensions.register_type(unicode_array_type, connection)
 
 
 def register_binary_typecasters(connection):

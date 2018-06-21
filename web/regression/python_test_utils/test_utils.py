@@ -119,7 +119,7 @@ def clear_node_info_dict():
         del node_info_dict[node][:]
 
 
-def create_database(server, db_name):
+def create_database(server, db_name, encoding=None):
     """This function used to create database and returns the database id"""
     try:
         connection = get_db_connection(
@@ -133,8 +133,14 @@ def create_database(server, db_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute(
-            '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
+        if encoding is None:
+            pg_cursor.execute(
+                '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
+        else:
+            pg_cursor.execute(
+                '''CREATE DATABASE "%s" TEMPLATE template0
+                ENCODING='%s' LC_COLLATE='%s' LC_CTYPE='%s' ''' %
+                (db_name, encoding[0], encoding[1], encoding[1]))
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 
