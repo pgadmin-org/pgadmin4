@@ -96,7 +96,6 @@
     "eslint-plugin-jsx-a11y": "^5",
     "eslint-plugin-react": "^7",
     "is-docker": "^1.1.0",
-    "macos-alias": "^0.2.11",
     "mocha": "^5.1.1",
     "spectron": "^3.8.0",
     "webpack": "^4.8.1",

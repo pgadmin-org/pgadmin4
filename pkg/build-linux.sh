@@ -24,13 +24,6 @@ function fastcp() {
     -cf - ${src_folder} | tar -C ${dest_dir} -xf -
 }
 
-apt update
-apt install -y apt-transport-https
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-curl -sL https://deb.nodesource.com/setup_8.x | bash -
-apt install -y yarn fakeroot
-
 echo "## Copying Electron Folder to the temporary directory..."
 fastcp ${dir}/electron ${tmp_dir}
 
@@ -40,18 +33,23 @@ pushd ${tmp_dir}/electron > /dev/null
 
   echo "## Creating Virtual Environment..."
   rm -rf venv; mkdir -p venv
-  pip install virtualenv
+  pip3 install virtualenv
   virtualenv --always-copy ./venv
 
   # Hack: Copies all python installation files to the virtual environment
   # This was done because virtualenv does not copy all of the files
   # Looks like it assumes that they are not needed or that they should be installed in the system
   echo "  ## Copy all python libraries to the newly created virtual environment"
-  python_libraries_path=`dirname $(python -c "import logging;print(logging.__file__)")`/../
+  python_libraries_path=`dirname $(python3 -c "import logging;print(logging.__file__)")`/../
   cp -r ${python_libraries_path}* venv/lib/python3.6/
+  mkdir -p venv/lib/x86_64-linux-gnu/
+  cp /usr/lib/x86_64-linux-gnu/libpython3.6m.so.1.0 venv/lib/x86_64-linux-gnu/
+  pushd venv/lib/x86_64-linux-gnu > /dev/null
+      ln -s libpython3.6m.so.1.0 libpython3.6m.so.1
+  popd > /dev/null
 
   source ./venv/bin/activate
-  pip install --no-cache-dir --no-binary psycopg2 -r ${dir}/requirements.txt
+  pip3 install --no-cache-dir --no-binary psycopg2 -r ${dir}/requirements.txt
 
   echo "## Building the Javascript of the application..."
   pushd web > /dev/null
