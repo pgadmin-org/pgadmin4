@@ -673,7 +673,7 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
 
     # Check debugger extension version for EPAS 11 and above.
     # If it is 1.0 then return error to upgrade the extension.
-    if manager.server_type == 'ppas' and manager.sversion >= 11000:
+    if manager.server_type == 'ppas' and manager.sversion >= 110000:
         status, ext_version = conn.execute_scalar(
             "SELECT installed_version FROM pg_catalog.pg_available_extensions "
             "WHERE name = 'pldbgapi'"
