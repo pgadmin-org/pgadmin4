@@ -671,6 +671,22 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
                 current_app.logger.debug(msg)
                 return internal_server_error(msg)
 
+    # Check debugger extension version for EPAS 11 and above.
+    # If it is 1.0 then return error to upgrade the extension.
+    if manager.server_type == 'ppas' and manager.sversion >= 11000:
+        status, ext_version = conn.execute_scalar(
+            "SELECT installed_version FROM pg_catalog.pg_available_extensions "
+            "WHERE name = 'pldbgapi'"
+        )
+
+        if not status:
+            return internal_server_error(errormsg=ext_version)
+        else:
+            if float(ext_version) < 1.1:
+                return internal_server_error(
+                    errormsg=gettext("Please upgrade the pldbgapi extension"
+                                     "to 1.1 or above and try again."))
+
     # Set the template path required to read the sql files
     template_path = 'debugger/sql'
 
