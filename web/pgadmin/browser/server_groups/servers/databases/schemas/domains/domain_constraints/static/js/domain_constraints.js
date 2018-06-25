@@ -2,8 +2,8 @@
 define('pgadmin.node.domain_constraints', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser) {
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, schemaChildTreeNode) {
 
   // Define Domain Constraint Collection Node
   if (!pgBrowser.Nodes['coll-domain_constraints']) {
@@ -57,7 +57,7 @@ define('pgadmin.node.domain_constraints', [
         ]);
 
       },
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
+      canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
           name: undefined,

@@ -1,8 +1,8 @@
 define('pgadmin.node.package', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
+  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild) {
 
   // Extend the browser's collection class for package collection
   if (!pgBrowser.Nodes['coll-package']) {
@@ -17,14 +17,13 @@ define('pgadmin.node.package', [
 
   // Extend the browser's node class for package node
   if (!pgBrowser.Nodes['package']) {
-    pgBrowser.Nodes['package'] = pgBrowser.Node.extend({
+    pgBrowser.Nodes['package'] = schemaChild.SchemaChildNode.extend({
       type: 'package',
       dialogHelp: url_for('help.static', {'filename': 'package_dialog.html'}),
       label: gettext('Package'),
       collection_type: 'coll-package',
       hasSQL: true,
       hasDepends: true,
-      parent_type: ['schema', 'catalog'],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -54,8 +53,6 @@ define('pgadmin.node.package', [
         ]);
 
       },
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
-      canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       canCreate: function(itemData, item, data) {
           //If check is false then , we will allow create menu
         if (data && data.check == false)

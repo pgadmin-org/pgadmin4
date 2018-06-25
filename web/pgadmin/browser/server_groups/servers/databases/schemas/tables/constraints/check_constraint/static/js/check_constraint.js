@@ -2,8 +2,8 @@
 define('pgadmin.node.check_constraint', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
-  'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, schemaChildTreeNode) {
 
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraint']) {
@@ -81,7 +81,7 @@ define('pgadmin.node.check_constraint', [
           return false;
         },
       },
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
+      canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
 

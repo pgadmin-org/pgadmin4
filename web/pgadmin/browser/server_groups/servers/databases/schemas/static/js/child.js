@@ -8,15 +8,13 @@
 /////////////////////////////////////////////////////////////
 
 import * as Node from 'pgbrowser/node';
-import {
-  isTreeItemOfChildOfSchema, childCreateMenuEnabled,
-} from './schema_child_tree_node';
+import * as SchemaTreeNode from './schema_child_tree_node';
 
 let SchemaChildNode = Node.extend({
   parent_type: ['schema', 'catalog'],
-  canDrop: isTreeItemOfChildOfSchema,
-  canDropCascade: isTreeItemOfChildOfSchema,
-  canCreate: childCreateMenuEnabled,
+  canDrop: SchemaTreeNode.isTreeItemOfChildOfSchema,
+  canDropCascade: SchemaTreeNode.isTreeItemOfChildOfSchema,
+  canCreate: SchemaTreeNode.childCreateMenuEnabled,
 }, false);
 
 export {SchemaChildNode};

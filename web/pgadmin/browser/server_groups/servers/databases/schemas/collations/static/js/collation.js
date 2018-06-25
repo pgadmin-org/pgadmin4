@@ -24,7 +24,6 @@ define('pgadmin.node.collation', [
       collection_type: 'coll-collation',
       hasSQL: true,
       hasDepends: true,
-      parent_type: ['schema', 'catalog'],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -54,8 +53,6 @@ define('pgadmin.node.collation', [
         ]);
 
       },
-      canDrop: pgBrowser.Nodes['schema'].canChildDrop,
-      canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
           name: undefined,

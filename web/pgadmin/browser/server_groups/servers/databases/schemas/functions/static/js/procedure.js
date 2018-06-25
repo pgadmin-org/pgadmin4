@@ -2,9 +2,9 @@
 define('pgadmin.node.procedure', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.node.function', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Function) {
+  'pgadmin.node.function', 'pgadmin.node.schema.dir/child',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Function, schemaChild) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {
     pgAdmin.Browser.Nodes['coll-procedure'] =
@@ -19,7 +19,7 @@ define('pgadmin.node.procedure', [
 
   // Inherit Functions Node
   if (!pgBrowser.Nodes['procedure']) {
-    pgAdmin.Browser.Nodes['procedure'] = pgBrowser.Node.extend({
+    pgAdmin.Browser.Nodes['procedure'] = schemaChild.SchemaChildNode.extend({
       type: 'procedure',
       sqlAlterHelp: 'sql-alterprocedure.html',
       sqlCreateHelp: 'sql-createprocedure.html',
@@ -30,7 +30,6 @@ define('pgadmin.node.procedure', [
       hasDepends: true,
       hasStatistics: true,
       hasScriptTypes: ['create', 'exec'],
-      parent_type: ['schema', 'catalog'],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.proc_initialized)
@@ -60,8 +59,6 @@ define('pgadmin.node.procedure', [
         },
         ]);
       },
-      canDrop: true,
-      canDropCascade: true,
       canCreateProc: function(itemData, item) {
         var node_hierarchy = this.getTreeNodeHierarchy.apply(this, [item]);
 

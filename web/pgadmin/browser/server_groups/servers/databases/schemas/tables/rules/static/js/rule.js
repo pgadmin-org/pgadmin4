@@ -1,7 +1,8 @@
 define('pgadmin.node.rule', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
+  'pgadmin.node.schema.dir/schema_child_tree_node',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChildTreeNode) {
 
   /**
     Create and add a rule collection into nodes
@@ -43,16 +44,16 @@ define('pgadmin.node.rule', [
       collection_type: 'coll-table',
       hasSQL:  true,
       hasDepends: true,
-      canDrop: function(itemData, item, data){
-        pgBrowser.Nodes['schema'].canChildDrop.apply(this, [itemData, item, data]);
+      canDrop: function(itemData, item){
+        schemaChildTreeNode.isTreeItemOfChildOfSchema.apply(this, [itemData, item]);
         if(_.has(itemData, 'label') && itemData.label === '_RETURN')
           return false;
         else {
           return true;
         }
       },
-      canDropCascade: function(itemData, item, data){
-        pgBrowser.Nodes['schema'].canChildDrop.apply(this, [itemData, item, data]);
+      canDropCascade: function(itemData, item){
+        schemaChildTreeNode.isTreeItemOfChildOfSchema.apply(this, [itemData, item]);
         if(_.has(itemData, 'label') && itemData.label === '_RETURN')
           return false;
         else {
