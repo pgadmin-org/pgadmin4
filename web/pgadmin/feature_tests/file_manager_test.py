@@ -7,8 +7,10 @@
 #
 ##########################################################################
 
+from __future__ import print_function
 import os
 import time
+import sys
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -21,7 +23,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
     """Tests to check file manager for XSS."""
 
     scenarios = [
-        ("Tests to check if File manager is vulnerable to XSS",
+        ("File manager feature test",
          dict())
     ]
 
@@ -55,10 +57,17 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         test_utils.drop_database(connection, "acceptance_test_db")
 
     def runTest(self):
+        print("Tests to check if File manager is vulnerable to XSS... ",
+              file=sys.stderr, end="")
         self._navigate_to_query_tool()
         self.page.fill_codemirror_area_with("SELECT 1;")
         self._create_new_file()
         self._open_file_manager_and_check_xss_file()
+        print("OK.", file=sys.stderr)
+
+        print("File manager sorting of data", file=sys.stderr)
+        self._check_file_sorting()
+        print("OK.", file=sys.stderr)
 
     def _navigate_to_query_tool(self):
         self.page.toggle_open_tree_item(self.server['name'])
@@ -124,3 +133,32 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         assert source_code.find(
             string_to_find
         ) != -1, "{0} might be vulnerable to XSS ".format(source)
+
+    def _check_file_sorting(self):
+        self.page.find_by_id("btn-load-file").click()
+        self.wait.until(
+            EC.element_to_be_clickable((
+                By.CSS_SELECTOR,
+                "#contents th[data-column='0']")
+            )
+        )
+
+        # Added time.sleep so that the element to be clicked.
+        time.sleep(0.05)
+        self.page.find_by_css_selector("#contents th[data-column='0']").click()
+        # Check for sort Ascending
+        self.wait.until(
+            EC.presence_of_element_located((
+                By.CSS_SELECTOR,
+                "#contents th[data-column='0'].tablesorter-headerAsc")
+            )
+        )
+
+        # Click and Check for sort Descending
+        self.page.find_by_css_selector("#contents th[data-column='0']").click()
+        self.wait.until(
+            EC.presence_of_element_located((
+                By.CSS_SELECTOR,
+                "#contents th[data-column='0'].tablesorter-headerDesc")
+            )
+        )

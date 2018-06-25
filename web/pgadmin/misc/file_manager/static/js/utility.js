@@ -13,6 +13,7 @@ import loading_icon from 'acitree/image/load-root.gif';
 define([
   'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'sources/gettext', 'sources/url_for', 'dropzone', 'sources/pgadmin',
+  'tablesorter',
 ], function($, _, S, Alertify, gettext, url_for, Dropzone, pgAdmin) {
 
   /*---------------------------------------------------------
@@ -574,8 +575,8 @@ define([
 
             result += '</ul>';
           } else {
-            result += '<table id="contents" class="list">';
-            result += '<thead><tr><th class="headerSortDown">';
+            result += '<table id="contents" class="list tablesorter">';
+            result += '<thead><tr><th>';
             result += '<span>' + lg.name + '</span></th>';
             result += '<th><span>' + lg.size + '</span></th><th>';
             result += '<span>' + lg.modified + '</span></th></tr></thead>';
@@ -649,8 +650,8 @@ define([
           if ($('.fileinfo').data('view') == 'grid') {
             result += '<ul id="contents" class="grid"></ul>';
           } else {
-            result += '<table id="contents" class="list">';
-            result += '<thead><tr><th class="headerSortDown"><span>' +
+            result += '<table id="contents" class="list tablesorter">';
+            result += '<thead><tr><th><span>' +
               lg.name + '</span></th><th><span>' + lg.size +
               '</span></th><th><span>' + lg.modified +
               '</span></th></tr></thead>';
@@ -667,6 +668,13 @@ define([
 
         // Add the new markup to the DOM.
         $('.fileinfo .file_listing').html(result);
+        $('.fileinfo .file_listing #contents').tablesorter({
+          headers: {
+            2: {
+              sorter: 'shortDate',
+            },
+          },
+        });
 
         // rename file/folder
         $('.file_manager button.rename').off().on('click', function(e) {

@@ -13,6 +13,7 @@ Features
 | `Feature #1447 <https://redmine.postgresql.org/issues/1447>`_ - Add support for SSH tunneled connections
 | `Feature #2686 <https://redmine.postgresql.org/issues/2686>`_ - Add an option to auto-complete keywords in upper case
 | `Feature #3204 <https://redmine.postgresql.org/issues/3204>`_ - Add support for LISTEN/NOTIFY in the query tool
+| `Feature #3273 <https://redmine.postgresql.org/issues/3273>`_ - Allow sorting in the file dialogue
 | `Feature #3362 <https://redmine.postgresql.org/issues/3362>`_ - Function and procedure support for PG11
 | `Feature #3388 <https://redmine.postgresql.org/issues/3388>`_ - Allow the connection timeout to be configured on a per-server basis
 

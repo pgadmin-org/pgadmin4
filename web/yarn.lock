@@ -5327,7 +5327,7 @@ jquery-ui@>=1.8.0, jquery-ui@^1.12.1:
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.12.1.tgz#bcb4045c8dd0539c134bc1488cdd3e768a7a9e51"
 
-jquery@3.3.1, "jquery@>=1.7.1 <4.0.0", jquery@>=1.8.0, "jquery@^1.8.3 || ^2.0 || ^3.0", jquery@^3.3.1:
+jquery@3.3.1, jquery@>=1.2.6, "jquery@>=1.7.1 <4.0.0", jquery@>=1.8.0, "jquery@^1.8.3 || ^2.0 || ^3.0", jquery@^3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
 
@@ -8851,6 +8851,12 @@ table@^3.7.8:
     lodash "^4.0.0"
     slice-ansi "0.0.4"
     string-width "^2.0.0"
+
+tablesorter@^2.30.6:
+  version "2.30.6"
+  resolved "https://registry.yarnpkg.com/tablesorter/-/tablesorter-2.30.6.tgz#d24b0a5a9e44f9970d41f51a7d194d538fc6f953"
+  dependencies:
+    jquery ">=1.2.6"
 
 tapable@^0.2.7:
   version "0.2.8"
