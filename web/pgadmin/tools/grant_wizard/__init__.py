@@ -240,9 +240,11 @@ def properties(sid, did, node_id, node_type):
 
             res_data.extend(res['rows'])
 
-        # Fetch procedures only if server type is ppas
+        # Fetch procedures only if server type is EPAS or PG >= 11
         if (len(server_prop) > 0 and
-            server_prop['server_type'] == 'ppas' and
+            (server_prop['server_type'] == 'ppas' or
+             (server_prop['server_type'] == 'pg' and
+              server_prop['version'] >= 11000)) and
                 ntype in ['schema', 'procedure']):
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/function.sql']),

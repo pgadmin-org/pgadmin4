@@ -81,6 +81,8 @@ class PartitionsModule(CollectionNodeModule):
         super(PartitionsModule, self).__init__(*args, **kwargs)
         self.min_ver = 100000
         self.max_ver = None
+        self.min_ppasver = 100000
+        self.max_ppasver = None
 
     def get_nodes(self, gid, sid, did, scid, **kwargs):
         """
