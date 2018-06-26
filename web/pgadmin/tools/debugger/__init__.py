@@ -684,7 +684,7 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
         else:
             if float(ext_version) < 1.1:
                 return internal_server_error(
-                    errormsg=gettext("Please upgrade the pldbgapi extension"
+                    errormsg=gettext("Please upgrade the pldbgapi extension "
                                      "to 1.1 or above and try again."))
 
     # Set the template path required to read the sql files
