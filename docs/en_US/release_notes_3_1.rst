@@ -2,7 +2,7 @@
 Version 3.1
 ***********
 
-Release date: 2018-??-??
+Release date: 2018-06-28
 
 This release contains a number of features and fixes reported since the release of pgAdmin4 3.0
 
