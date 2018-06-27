@@ -10540,8 +10540,8 @@ msgid ""
 msgstr ""
 "Taille des caractères à utiliser dans les boites de code SQL. La valeur "
 "indiquée utilise l'unité \"em\", pour laquelle 1 est la valeur relative "
-"par défaut. Par exemple, pour augmenter la taille de 20% il faut indiquer"
-" 1.2, pour la réduire de 20% indiquer 0.8. Le minimum est 0.1, le maximum"
+"par défaut. Par exemple, pour augmenter la taille de 20 pour cent il faut indiquer"
+" 1.2, pour la réduire de 20 pour cent indiquer 0.8. Le minimum est 0.1, le maximum"
 " est 10."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:94
