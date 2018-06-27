@@ -62,7 +62,8 @@ class PgadminPage:
         self.fill_input_by_field_name("password", server_config['db_password'])
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
             (By.CSS_SELECTOR, "button[type='save'].btn.btn-primary")))
-        self.find_by_css_selector("button[type='save'].btn.btn-primary").click()
+        self.find_by_css_selector("button[type='save'].btn.btn-primary").\
+            click()
 
         self.find_by_xpath(
             "//*[@id='tree']//*[.='" + server_config['name'] + "']")
