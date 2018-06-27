@@ -32,6 +32,7 @@ Bug fixes
 | `Bug #3290 <https://redmine.postgresql.org/issues/3290>`_ - Close button added to the alertify message box, which pops up in case of backend error
 | `Bug #3295 <https://redmine.postgresql.org/issues/3295>`_ - Ensure the debugger gets focus when loaded so shortcut keys work as expected
 | `Bug #3298 <https://redmine.postgresql.org/issues/3298>`_ - Fixed query tool keyboard issue where arrow keys were not behaving as expected for execute options dropdown
+| `Bug #3303 <https://redmine.postgresql.org/issues/3303>`_ - Fix a Japanese translation error that could prevent the server starting up
 | `Bug #3306 <https://redmine.postgresql.org/issues/3306>`_ - Fixed display SQL of table with index for Greenplum database
 | `Bug #3307 <https://redmine.postgresql.org/issues/3307>`_ - Allow connections to servers with port numbers < 1024 which may be seen in container environments
 | `Bug #3308 <https://redmine.postgresql.org/issues/3308>`_ - Fixed issue where icon for Partitioned tables was the same as Non Partitioned tables for Greenplum database
