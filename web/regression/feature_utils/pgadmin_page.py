@@ -60,9 +60,9 @@ class PgadminPage:
         self.fill_input_by_field_name("port", server_config['port'])
         self.fill_input_by_field_name("username", server_config['username'])
         self.fill_input_by_field_name("password", server_config['db_password'])
-        # Required sleep to avoid "fe_sendauth" password error.
-        time.sleep(0.5)
-        self.find_by_xpath("//button[contains(.,'Save')]").click()
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, "button[type='save'].btn.btn-primary")))
+        self.find_by_css_selector("button[type='save'].btn.btn-primary").click()
 
         self.find_by_xpath(
             "//*[@id='tree']//*[.='" + server_config['name'] + "']")
@@ -235,6 +235,11 @@ class PgadminPage:
         action.perform()
 
     def click_tab(self, tab_name):
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
+            (By.XPATH, "//*[contains(@class,'wcTabTop')]//"
+                       "*[contains(@class,'wcPanelTab') "
+                       "and contains(.,'" + tab_name + "')]")))
+
         tab = self.find_by_xpath("//*[contains(@class,'wcTabTop')]//"
                                  "*[contains(@class,'wcPanelTab') "
                                  "and contains(.,'" + tab_name + "')]")
