@@ -39,7 +39,8 @@
           "dmg"
         ],
         "linux": [
-          "deb"
+          "deb",
+          "rpm"
         ]
       },
       "electronPackagerConfig": {
@@ -53,9 +54,12 @@
       "electronInstallerDebian": {
         "icon": "assets/icons/linux/pgAdmin4.png",
         "categories": [
-          "Utility"
+          "Development"
         ],
-        "homepage": "http://pgadmin.org"
+        "homepage": "http://pgadmin.org",
+        "depends": [
+          "libpq5"
+        ]
       },
       "electronInstallerRedhat": {},
       "github_repository": {
