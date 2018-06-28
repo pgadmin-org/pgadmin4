@@ -73,7 +73,7 @@ pushd web
     yarn install
     yarn run bundle
 
-    for FILE in `ls -d pgAdmin/static/js/generated/*`
+    for FILE in `ls -d pgadmin/static/js/generated/*`
     do
         echo Adding $FILE
         tar cf - $FILE | (cd ../src-build/$TARBALL_NAME/web; tar xf -)
