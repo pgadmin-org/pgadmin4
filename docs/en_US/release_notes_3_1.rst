@@ -45,5 +45,5 @@ Bug fixes
 | `Bug #3374 <https://redmine.postgresql.org/issues/3374>`_ - Fix autocomplete
 | `Bug #3392 <https://redmine.postgresql.org/issues/3392>`_ - Fix IPv6 support in the container build
 | `Bug #3409 <https://redmine.postgresql.org/issues/3409>`_ - Avoid an exception on GreenPlum when retrieving RE-SQL on a table
-| `Bug #3409 <https://redmine.postgresql.org/issues/3409>`_ - Fix a French translation error that could prevent the server starting up
+| `Bug #3411 <https://redmine.postgresql.org/issues/3411>`_ - Fix a French translation error that could prevent the server starting up
 | `Bug #3431 <https://redmine.postgresql.org/issues/3431>`_ - Fix the RE-SQL generation for GreenPlum external tables
