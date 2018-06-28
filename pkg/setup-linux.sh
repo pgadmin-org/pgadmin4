@@ -21,7 +21,7 @@ if [ "${DISTRIB_DESCRIPTION}" = "Ubuntu 18.04 LTS" ]; then
     echo
 
     # Install various dependencies
-    sudo apt install -y apt-transport-https curl fakeroot wget python3.6 python3-pip libpq5 libpq-dev git nodejs
+    sudo apt install -y apt-transport-https curl fakeroot wget python3.6 python3-pip python3-venv libpq5 libpq-dev nodejs
 
     # Install Yarn
     sudo apt remove -y cmdtest

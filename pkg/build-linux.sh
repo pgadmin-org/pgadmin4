@@ -33,8 +33,7 @@ pushd ${tmp_dir}/electron > /dev/null
 
   echo "## Creating Virtual Environment..."
   rm -rf venv; mkdir -p venv
-  pip3 install virtualenv
-  virtualenv --always-copy ./venv
+  python3 -m venv --copies ./venv
 
   # Hack: Copies all python installation files to the virtual environment
   # This was done because virtualenv does not copy all of the files
