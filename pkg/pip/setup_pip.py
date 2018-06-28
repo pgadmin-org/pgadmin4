@@ -87,26 +87,26 @@ setup(
     extras_require={
         # ...
         ":python_version<'2.7'": [
-            "ordereddict",
-            "Flask-Script",
             "psycopg2==2.7.3.2",
-            "pycrypto==2.6.1",
+            "Flask-Script==2.0.5",
+            "ordereddict",
             "python-dateutil==2.5.0",
             "SQLAlchemy==1.0.14",
             "Flask-Security==1.7.5",
             "Flask-BabelEx==0.9.3"
         ],
         ":python_version<='2.7'": [
-            "backports.csv",
-            "importlib"
+            "backports.csv==1.0.5",
+            "importlib==1.0.3"
         ],
         ":python_version>='2.7'": [
-            "Flask-HTMLmin",
-            "psycopg2>=2.7.3.2",
-            "pycrypto==2.6.1",
+            "psycopg2>=2.7.4",
             "python-dateutil>=2.7.1",
+            "htmlmin==0.1.12",
+            "Flask-HTMLmin==1.3.2",
             "SQLAlchemy>=1.2.5",
-            "Flask-Security>=3.0.0"
+            "Flask-Security>=3.0.0",
+            "sshtunnel>=0.1.3"
         ]
     },
 
