@@ -2,10 +2,11 @@ define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'alertify', 'sources/pgadmin', 'pgadmin.browser',
   'backbone', 'pgadmin.backgrid', 'codemirror', 'pgadmin.backform',
-  'pgadmin.tools.debugger.ui', 'wcdocker', 'pgadmin.browser.frame',
+  'pgadmin.tools.debugger.ui', 'pgadmin.tools.debugger.utils',
+  'wcdocker', 'pgadmin.browser.frame',
 ], function(
   gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  CodeMirror, Backform, get_function_arguments
+  CodeMirror, Backform, get_function_arguments, debuggerUtils
 ) {
   var pgTools = pgAdmin.Tools = pgAdmin.Tools || {},
     wcDocker = window.wcDocker;
@@ -337,7 +338,7 @@ define([
             'sid': treeInfo.server._id,
             'did': treeInfo.database._id,
             'scid': treeInfo.schema._id,
-            'func_id': treeInfo.procedure._id,
+            'func_id': debuggerUtils.getProcedureId(treeInfo),
           }
         );
       } else if (d._type == 'trigger_function') {
@@ -482,7 +483,7 @@ define([
                   'sid': treeInfo.server._id,
                   'did': treeInfo.database._id,
                   'scid': treeInfo.schema._id,
-                  'func_id': treeInfo.procedure._id,
+                  'func_id': debuggerUtils.getProcedureId(treeInfo),
                 }
               );
             }

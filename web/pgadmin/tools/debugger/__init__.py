@@ -1240,6 +1240,8 @@ def execute_debugger_query(trans_id, query_type):
                 update_session_debugger_transaction(trans_id, session_obj)
 
             status, result = conn.execute_async(sql)
+            if not status:
+                internal_server_error(errormsg=result)
             return make_json_response(
                 data={'status': status, 'result': result}
             )
@@ -1969,6 +1971,16 @@ def poll_end_execution_result(trans_id):
         if statusmsg and statusmsg == 'SELECT 1':
             statusmsg = ''
         status, result = conn.poll()
+        if not status:
+            status = 'ERROR'
+            return make_json_response(
+                info=gettext("Execution completed with an error."),
+                data={
+                    'status': status,
+                    'status_message': result
+                }
+            )
+
         session_function_data = session['functionData'][str(trans_id)]
         if status == ASYNC_OK and \
             not session_function_data['is_func'] and\
@@ -1996,7 +2008,7 @@ def poll_end_execution_result(trans_id):
             if 'ERROR' in result:
                 status = 'ERROR'
                 return make_json_response(
-                    info=gettext("Execution completed with error"),
+                    info=gettext("Execution completed with an error."),
                     data={
                         'status': status,
                         'status_message': result
@@ -2084,7 +2096,9 @@ def poll_result(trans_id):
 
     if conn.connected():
         status, result = conn.poll()
-        if status == ASYNC_OK and result is not None:
+        if not status:
+            status = 'ERROR'
+        elif status == ASYNC_OK and result is not None:
             status = 'Success'
             columns, result = convert_data_to_dict(conn, result)
         else:

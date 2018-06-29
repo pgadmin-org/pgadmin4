@@ -7,9 +7,12 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-import { setFocusToDebuggerEditor } from '../../pgadmin/tools/debugger/static/js/debugger_utils';
+import {
+  setFocusToDebuggerEditor,
+  getProcedureId,
+} from '../../pgadmin/tools/debugger/static/js/debugger_utils';
 
-describe('debuggerUtils', function () {
+describe('setFocusToDebuggerEditor', function () {
   let editor;
   editor = jasmine.createSpyObj('editor', ['focus']);
 
@@ -23,22 +26,60 @@ describe('debuggerUtils', function () {
     keyCode: 13,
   };
 
-  describe('debuggerUtils', function () {
+  describe('setFocusToDebuggerEditor', function () {
     it('returns undefined if no command is passed', function () {
       expect(setFocusToDebuggerEditor(editor, null)).toEqual(undefined);
     });
   });
 
-  describe('debuggerUtils', function () {
+  describe('setFocusToDebuggerEditor', function () {
     it('should call focus on editor', function () {
       setFocusToDebuggerEditor(editor, enter_key);
       expect(editor.focus).toHaveBeenCalled();
     });
   });
 
-  describe('debuggerUtils', function () {
+  describe('setFocusToDebuggerEditor', function () {
     it('should not call focus on editor and returns undefined', function () {
       expect(setFocusToDebuggerEditor(editor, tab_key)).toEqual(undefined);
     });
   });
 });
+
+describe('getProcedureId', function () {
+  let treeInfroProc = {
+    'procedure': {
+      '_id': 123,
+    },
+  };
+  let treeInfroInvalidProcId = {
+    'procedure': {
+      '_id': null,
+    },
+  };
+  let treeInfroEdbProc = {
+    'edbproc': {
+      '_id': 321,
+    },
+  };
+  let fakeTreeInfro;
+
+  describe('Should return proper object id', function () {
+    it('returns valid procedure id', function () {
+      expect(getProcedureId(treeInfroProc)).toBe(123);
+    });
+
+    it('returns valid edbproc id', function () {
+      expect(getProcedureId(treeInfroEdbProc)).toBe(321);
+    });
+
+    it('returns undefined for fake tree info', function () {
+      expect(getProcedureId(fakeTreeInfro)).toBe(undefined);
+    });
+
+    it('returns undefined for invalid procedure id', function () {
+      expect(getProcedureId(treeInfroInvalidProcId)).toBe(undefined);
+    });
+  });
+});
+

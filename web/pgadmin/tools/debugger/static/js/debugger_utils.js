@@ -18,6 +18,19 @@ function setFocusToDebuggerEditor(editor, command) {
   }
 }
 
+function getProcedureId(treeInfoObject) {
+  let objectId;
+  if(treeInfoObject) {
+    if (treeInfoObject.procedure && treeInfoObject.procedure._id) {
+      objectId = treeInfoObject.procedure._id;
+    } else if (treeInfoObject.edbproc && treeInfoObject.edbproc._id) {
+      objectId = treeInfoObject.edbproc._id;
+    }
+  }
+  return objectId;
+}
+
 module.exports = {
   setFocusToDebuggerEditor: setFocusToDebuggerEditor,
+  getProcedureId: getProcedureId,
 };
