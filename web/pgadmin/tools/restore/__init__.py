@@ -168,7 +168,7 @@ def filename_with_file_manager_path(_file):
     elif not os.path.isabs(_file):
         _file = os.path.join(document_dir(), _file)
 
-    if not os.path.isfile(_file):
+    if not os.path.isfile(_file) and not os.path.exists(_file):
         return None
 
     return fs_short_path(_file)

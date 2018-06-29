@@ -51,6 +51,32 @@ class RestoreCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When restore object with format directory',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='directory',
+                 custom=False,
+                 verbose=True,
+                 blobs=False,
+                 schemas=[],
+                 tables=[],
+                 database='postgres'
+             ),
+             url='/restore/job/{0}',
+             expected_cmd_opts=['--verbose', '--format=d'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
         ('When restore object with the sections options',
          dict(
              class_params=dict(

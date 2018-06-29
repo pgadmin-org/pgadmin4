@@ -2269,6 +2269,12 @@ define([
       // Introduce a new class to fix the error icon placement on the control
       this.$el.addClass('pgadmin-file-has-error');
     },
+    disable_button: function() {
+      this.$el.find('button.select_item').attr('disabled', 'disabled');
+    },
+    enable_button: function() {
+      this.$el.find('button.select_item').removeAttr('disabled');
+    },
   });
 
   Backform.DatetimepickerControl =

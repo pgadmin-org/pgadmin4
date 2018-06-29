@@ -36,7 +36,7 @@ define([
       async: false,
       cache: false,
       url: url,
-      dataType: 'jsonp',
+      dataType: 'json',
       contentType: 'application/json; charset=utf-8',
     });
   };
@@ -169,7 +169,7 @@ define([
     if (!has_capability(data, 'download') || pgAdmin.FileUtils.hideButtons()) {
       $('.file_manager').find('button.download').hide();
     } else {
-      $('.file_manager').find('button.download').off().on('click',() => {
+      $('.file_manager').find('button.download').off().on('click', function() {
         var path;
         if ($('.fileinfo').data('view') == 'grid') {
           path = $('.fileinfo li.selected').find('.clip span').attr('data-alt');
@@ -879,7 +879,7 @@ define([
             }
           });
 
-          $('.fileinfo').find('#contents li').on('click',(e) => {
+          $('.fileinfo').find('#contents li').on('click', function(e) {
             e.stopPropagation();
             var path = decodeURI($(this).find('.clip span').attr('data-alt')),
               is_protected = $(this).find(
@@ -909,6 +909,7 @@ define([
                   '.file_manager #uploader .filemanager-path-group'
                 );
               }
+              pgAdmin.FileUtils.setUploader(path);
             } else {
               if (
                 has_capability(data_cap, 'select_file') &&
@@ -952,6 +953,7 @@ define([
                   '.file_manager #uploader .filemanager-path-group'
                 );
               }
+              pgAdmin.FileUtils.setUploader(path);
             } else {
               if (has_capability(data_cap, 'select_file') && is_protected == undefined) {
                 $(this).parent().find('tr.selected').removeClass('selected');
@@ -1229,7 +1231,7 @@ define([
       });
 
       // re-render the home view
-      $('.file_manager .home').on('click',() => {
+      $('.file_manager .home').on('click', function() {
         var currentViewMode = $('.fileinfo').data('view');
         $('.fileinfo').data('view', currentViewMode);
         getFolderInfo('/');
@@ -1237,7 +1239,7 @@ define([
       });
 
       // Go one directory back
-      $('.file_manager .level-up').on('click',() => {
+      $('.file_manager .level-up').on('click', function() {
         var b = $('.currentpath').val();
         // Enable/Disable level up button
         enab_dis_level_up();
@@ -1395,7 +1397,7 @@ define([
         $('.upload').remove();
         $('.create').before('<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn fa fa-upload upload" tabindex="6"><span></span></button> ');
 
-        $('#uploader .upload').off().on('click',() => {
+        $('#uploader .upload').off().on('click', function() {
           // we create prompt
           var msg = '<div id="dropzone-container">' +
             '<button class="fa fa-times dz_cross_btn" tabindex="7"></button>' +
@@ -1541,7 +1543,7 @@ define([
       $('.storage_dialog #uploader .input-path').attr('data-path', path);
 
       // create new folder
-      $('.create').off().on('click',() => {
+      $('.create').off().on('click', function() {
         var foldername = lg.new_folder;
         var $file_element,
           $file_element_list,

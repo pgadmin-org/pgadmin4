@@ -112,9 +112,23 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       label: gettext('Filename'),
       type: 'text',
       disabled: false,
-      control: Backform.FileControl,
+      control: Backform.FileControl.extend({
+        render: function() {
+          var attributes = this.model.toJSON();
+          if (attributes.format == 'directory') {
+            this.field.attributes.dialog_type = 'select_folder';
+          }
+          else {
+            this.field.attributes.dialog_type = 'select_file';
+          }
+
+          Backform.InputControl.prototype.render.apply(this, arguments);
+          return this;
+        },
+      }),
       dialog_type: 'select_file',
       supp_types: ['*', 'backup', 'sql', 'patch'],
+      deps: ['format'],
     }, {
       id: 'no_of_jobs',
       label: gettext('Number of jobs'),

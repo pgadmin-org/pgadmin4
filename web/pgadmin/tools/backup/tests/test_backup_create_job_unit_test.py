@@ -52,6 +52,31 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When backup object with format directory',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_folder',
+                 format='directory',
+                 verbose=True,
+                 blobs=False,
+                 schemas=[],
+                 tables=[],
+                 database='postgres'
+             ),
+             url='/backup/job/{0}/object',
+             expected_cmd_opts=['--verbose', '--format=d'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
         ('When backup the object with option sections to all data',
          dict(
              class_params=dict(

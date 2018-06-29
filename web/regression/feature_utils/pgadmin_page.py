@@ -244,6 +244,7 @@ class PgadminPage:
         tab = self.find_by_xpath("//*[contains(@class,'wcTabTop')]//"
                                  "*[contains(@class,'wcPanelTab') "
                                  "and contains(.,'" + tab_name + "')]")
+
         self.click_element(tab)
 
     def wait_for_input_field_content(self, field_name, content):

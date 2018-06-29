@@ -221,10 +221,11 @@ def script():
     )
 
 
-def filename_with_file_manager_path(_file):
+def filename_with_file_manager_path(_file, create_file=True):
     """
     Args:
         file: File name returned from client file manager
+        create_file: Set flag to False when file creation doesn't required
 
     Returns:
         Filename to use for backup with full path taken from preference
@@ -237,9 +238,10 @@ def filename_with_file_manager_path(_file):
     elif not os.path.isabs(_file):
         _file = os.path.join(document_dir(), _file)
 
-    # Touch the file to get the short path of the file on windows.
-    with open(_file, 'a'):
-        pass
+    if create_file:
+        # Touch the file to get the short path of the file on windows.
+        with open(_file, 'a'):
+            pass
 
     return fs_short_path(_file)
 
@@ -385,7 +387,10 @@ def create_backup_objects_job(sid):
         data.pop("ratio")
 
     try:
-        backup_file = filename_with_file_manager_path(data['file'])
+        if data['format'] == 'directory':
+            backup_file = filename_with_file_manager_path(data['file'], False)
+        else:
+            backup_file = filename_with_file_manager_path(data['file'])
     except Exception as e:
         return bad_request(errormsg=str(e))
 

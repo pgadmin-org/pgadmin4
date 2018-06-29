@@ -16,4 +16,4 @@ Features
 Bug fixes
 *********
 
-| `Bug #???? <https://redmine.postgresql.org/issues/????>`_ - Fix foo!
+| `Bug #3309 <https://redmine.postgresql.org/issues/3309>`_ - Fix Directory format support for backups.
