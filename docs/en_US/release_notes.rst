@@ -9,6 +9,7 @@ for it.
 
 .. toctree::
 
+   release_notes_3_2
    release_notes_3_1
    release_notes_3_0
    release_notes_2_1
