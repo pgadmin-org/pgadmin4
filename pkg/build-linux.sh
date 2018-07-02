@@ -2,14 +2,23 @@
 
 set -e
 
-dir=$(cd `dirname $0` && cd .. && pwd)
-tmp_dir=$(mktemp -d)
+DIR=$(cd `dirname $0` && cd .. && pwd)
+TMP_DIR=$(mktemp -d)
+
+if [ -f /etc/lsb-release ]; then
+    source /etc/lsb-release
+elif [ -f /etc/redhat-release ]; then
+    DISTRIB_DESCRIPTION=$(cat /etc/redhat-release | sed -e 's/[[:space:]]*$//')
+else
+    echo "Unknown Linux distribution."
+    exit 1
+fi
 
 function fastcp() {
-  src_dir=${1}
-  parent_dir=$(dirname ${src_dir})
-  src_folder=$(basename ${src_dir})
-  dest_dir=${2}
+  SRC_DIR=${1}
+  PARENT_DIR=$(dirname ${SRC_DIR})
+  SRC_FOLDER=$(basename ${SRC_DIR})
+  DEST_DIR=${2}
 
   tar \
     --exclude=node_modules \
@@ -20,16 +29,16 @@ function fastcp() {
     --exclude=regression \
     --exclude='pgadmin/static/js/generated/.cache' \
     --exclude='.cache' \
-    -C ${parent_dir} \
-    -cf - ${src_folder} | tar -C ${dest_dir} -xf -
+    -C ${PARENT_DIR} \
+    -cf - ${SRC_FOLDER} | tar -C ${DEST_DIR} -xf -
 }
 
 echo "## Copying Electron Folder to the temporary directory..."
-fastcp ${dir}/electron ${tmp_dir}
+fastcp ${DIR}/electron ${TMP_DIR}
 
-pushd ${tmp_dir}/electron > /dev/null
+pushd ${TMP_DIR}/electron > /dev/null
   echo "## Copying pgAdmin folder to the temporary directory..."
-  rm -rf web; fastcp ${dir}/web ${tmp_dir}/electron
+  rm -rf web; fastcp ${DIR}/web ${TMP_DIR}/electron
 
   echo "## Creating Virtual Environment..."
   rm -rf venv; mkdir -p venv
@@ -39,16 +48,21 @@ pushd ${tmp_dir}/electron > /dev/null
   # This was done because virtualenv does not copy all of the files
   # Looks like it assumes that they are not needed or that they should be installed in the system
   echo "  ## Copy all python libraries to the newly created virtual environment"
-  python_libraries_path=`dirname $(python3 -c "import logging;print(logging.__file__)")`/../
-  cp -r ${python_libraries_path}* venv/lib/python3.6/
-  mkdir -p venv/lib/x86_64-linux-gnu/
-  cp /usr/lib/x86_64-linux-gnu/libpython3.6m.so.1.0 venv/lib/x86_64-linux-gnu/
-  pushd venv/lib/x86_64-linux-gnu > /dev/null
-      ln -s libpython3.6m.so.1.0 libpython3.6m.so.1
-  popd > /dev/null
+  PYTHON_LIB_PATH=`dirname $(python3 -c "import logging;print(logging.__file__)")`/../
+  PYTHON_VERSION=$(python3 -c 'import sys; print(("%d.%d") % (sys.version_info.major, sys.version_info.minor))')
+  cp -r ${PYTHON_LIB_PATH}* venv/lib/python${PYTHON_VERSION}/
+
+  # Needed for Ubuntu
+  if [[ ${DISTRIB_DESCRIPTION} =~ "Ubuntu" ]]; then  
+      mkdir -p venv/lib/x86_64-linux-gnu/
+      cp /usr/lib/x86_64-linux-gnu/libpython${PYTHON_VERSION}m.so.1.0 venv/lib/x86_64-linux-gnu/
+      pushd venv/lib/x86_64-linux-gnu > /dev/null
+          ln -s libpython${PYTHON_VERSION}m.so.1.0 libpython${PYTHON_VERSION}m.so.1
+      popd > /dev/null
+  fi
 
   source ./venv/bin/activate
-  pip3 install --no-cache-dir --no-binary psycopg2 -r ${dir}/requirements.txt
+  PATH=$PATH:/usr/pgsql-10/bin pip3 install --no-cache-dir --no-binary psycopg2 -r ${DIR}/requirements.txt
 
   echo "## Building the Javascript of the application..."
   pushd web > /dev/null
@@ -56,12 +70,21 @@ pushd ${tmp_dir}/electron > /dev/null
     yarn bundle-app-js
   popd > /dev/null
 
-  echo "## Creating the deb file..."
+  echo "## Creating the package file..."
   yarn install
-  yarn dist:linux
+  if [ -f /etc/redhat-release ]; then
+      yarn dist:rpm
+  else
+      yarn dist:deb
+  fi
 popd > /dev/null
 
-destination_folder=${dir}/dist/debian/
-rm -f ${destination_folder}/*.deb
-mkdir -p ${destination_folder}
-mv ${tmp_dir}/electron/out/make/*.deb ${destination_folder}
+if [ -f /etc/redhat-release ]; then
+    rm -f ${DIR}/dist/*.deb
+    mkdir -p ${DIR}/dist
+    mv ${TMP_DIR}/electron/out/make/*.deb ${DIR}/dist
+else
+    rm -f ${DIR}/dist/*.rpm
+    mkdir -p ${DIR}/dist
+    mv ${TMP_DIR}/electron/out/make/*.rpm ${DIR}/dist
+fi

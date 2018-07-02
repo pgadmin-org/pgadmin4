@@ -8,7 +8,7 @@
 if [ -f /etc/lsb-release ]; then
     source /etc/lsb-release
 elif [ -f /etc/redhat-release ]; then
-    DISTRIB_DESCRIPTION=$(cat /etc/redhat-release)
+    DISTRIB_DESCRIPTION=$(cat /etc/redhat-release | sed -e 's/[[:space:]]*$//')
 else
     echo "Unknown Linux distribution."
     exit 1
@@ -36,6 +36,25 @@ if [ "${DISTRIB_DESCRIPTION}" = "Ubuntu 18.04 LTS" ]; then
     rm -f "$TEMP_DEB"
 
     exit 0
+
+elif [[ "${DISTRIB_DESCRIPTION}" =~ "CentOS Linux release 7" ]]; then
+
+    echo
+    echo "Setting up for ${DISTRIB_DESCRIPTION}..."
+    echo
+
+    sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo yum install -y https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
+    sudo yum install -y curl fakeroot wget libpng12 libpng12-devel postgresql10 postgresql10-devel python34 python34-pip python34-virtualenv
+    sudo yum groupinstall -y "Development Tools"
+
+    sudo url --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
+    curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo  
+    curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -
+    sudo yum -y install yarn 
+
+    exit 0
+
 else
     echo "Unsupported Linux distribution: ${DISTRIB_DESCRIPTION}."
     exit 1
