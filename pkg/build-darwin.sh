@@ -4,6 +4,7 @@ set -e
 
 DIR=$(cd `dirname $0` && cd .. && pwd)
 BUILD_DIR=${DIR}/mac-build
+mkdir -p ${BUILD_DIR}
 
 function fastcp() {
   SRC_DIR=${1}

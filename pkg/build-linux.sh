@@ -8,6 +8,7 @@ if [ -f /etc/redhat-release ]; then
 else
     BUILD_DIR=${DIR}/deb-build
 fi
+mkdir -p ${BUILD_DIR}
 
 if [ -f /etc/lsb-release ]; then
     source /etc/lsb-release
