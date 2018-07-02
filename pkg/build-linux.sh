@@ -3,7 +3,11 @@
 set -e
 
 DIR=$(cd `dirname $0` && cd .. && pwd)
-TMP_DIR=$(mktemp -d)
+if [ -f /etc/redhat-release ]; then
+    BUILD_DIR=${DIR}/rpm-build
+else
+    BUILD_DIR=${DIR}/deb-build
+fi
 
 if [ -f /etc/lsb-release ]; then
     source /etc/lsb-release
@@ -34,11 +38,11 @@ function fastcp() {
 }
 
 echo "## Copying Electron Folder to the temporary directory..."
-fastcp ${DIR}/electron ${TMP_DIR}
+fastcp ${DIR}/electron ${BUILD_DIR}
 
-pushd ${TMP_DIR}/electron > /dev/null
+pushd ${BUILD_DIR}/electron > /dev/null
   echo "## Copying pgAdmin folder to the temporary directory..."
-  rm -rf web; fastcp ${DIR}/web ${TMP_DIR}/electron
+  rm -rf web; fastcp ${DIR}/web ${BUILD_DIR}/electron
 
   echo "## Creating Virtual Environment..."
   rm -rf venv; mkdir -p venv
@@ -82,9 +86,9 @@ popd > /dev/null
 if [ -f /etc/redhat-release ]; then
     rm -f ${DIR}/dist/*.rpm
     mkdir -p ${DIR}/dist
-    mv ${TMP_DIR}/electron/out/make/*.rpm ${DIR}/dist
+    mv ${BUILD_DIR}/electron/out/make/*.rpm ${DIR}/dist
 else
     rm -f ${DIR}/dist/*.deb
     mkdir -p ${DIR}/dist
-    mv ${TMP_DIR}/electron/out/make/*.deb ${DIR}/dist
+    mv ${BUILD_DIR}/electron/out/make/*.deb ${DIR}/dist
 fi

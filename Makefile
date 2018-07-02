@@ -53,7 +53,7 @@ runtime:
 	cd runtime && qmake CONFIG+=release && make
 
 # Include all clean sub-targets in clean
-clean: clean-appbundle clean-docker clean-dist clean-docs clean-node clean-pip clean-src clean-runtime
+clean: clean-appbundle clean-deb clean-docker clean-dist clean-docs clean-node clean-pip clean-rpm clean-src clean-runtime
 	rm -rf web/pgadmin/static/js/generated/*
 	rm -rf web/pgadmin/static/js/generated/.cache
 	rm -rf web/pgadmin/static/css/generated/*
@@ -64,6 +64,9 @@ clean-runtime:
 
 clean-appbundle:
 	rm -rf mac-build/
+
+clean-deb:
+	rm -rf deb-build/
 
 clean-docker:
 	rm -rf docker-build/
@@ -79,6 +82,9 @@ clean-node:
 
 clean-pip:
 	rm -rf pip-build/
+
+clean-rpm:
+	rm -rf rpm-build/
 
 clean-src:
 	rm -rf src-build/

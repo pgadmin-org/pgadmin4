@@ -11,9 +11,11 @@
 .idea
 .vscode
 /dist
+/deb-build
 /docker-build
 /mac-build
 /pip-build
+/rpm-build
 /src-build
 /win-build
 _build

@@ -2,14 +2,14 @@
 
 set -e
 
-dir=$(cd `dirname $0` && cd .. && pwd)
-tmp_dir=$(mktemp -d)
+DIR=$(cd `dirname $0` && cd .. && pwd)
+BUILD_DIR=${DIR}/mac-build
 
 function fastcp() {
-  src_dir=${1}
-  parent_dir=$(dirname ${src_dir})
-  src_folder=$(basename ${src_dir})
-  dest_dir=${2}
+  SRC_DIR=${1}
+  PARENT_DIR=$(dirname ${SRC_DIR})
+  SRC_FOLDER=$(basename ${SRC_DIR})
+  DEST_DIR=${2}
 
   tar \
     --exclude=node_modules \
@@ -20,16 +20,16 @@ function fastcp() {
     --exclude=regression \
     --exclude='pgadmin/static/js/generated/.cache' \
     --exclude='.cache' \
-    -C ${parent_dir} \
-    -cf - ${src_folder} | tar -C ${dest_dir} -xf -
+    -C ${PARENT_DIR} \
+    -cf - ${SRC_FOLDER} | tar -C ${DEST_DIR} -xf -
 }
 
 echo "## Copying Electron Folder to the temporary directory..."
-fastcp ${dir}/electron ${tmp_dir}
+fastcp ${DIR}/electron ${BUILD_DIR}
 
-pushd ${tmp_dir}/electron > /dev/null
+pushd ${BUILD_DIR}/electron > /dev/null
   echo "## Copying pgAdmin folder to the temporary directory..."
-  rm -rf web; fastcp ${dir}/web ${tmp_dir}/electron
+  rm -rf web; fastcp ${DIR}/web ${BUILD_DIR}/electron
 
   echo "## Creating Virtual Environment..."
   rm -rf venv; mkdir -p venv
@@ -40,13 +40,13 @@ pushd ${tmp_dir}/electron > /dev/null
   # This was done because virtualenv does not copy all of the files
   # Looks like it assumes that they are not needed or that they should be installed in the system
   echo "  ## Copy all python libraries to the newly created virtual environment"
-  python_libraries_path=`dirname $(python -c "import logging;print(logging.__file__)")`/../
-  cp -r ${python_libraries_path}* venv/lib/python3.6/
+  PYTHON_LIB_PATH=`dirname $(python -c "import logging;print(logging.__file__)")`/../
+  cp -r ${PYTHON_LIB_PATH}* venv/lib/python3.6/
 
   source ./venv/bin/activate
 
   echo "## Installs all the dependencies of pgAdmin"
-  pip install --no-cache-dir --no-binary psycopg2 -r ${dir}/requirements.txt
+  pip install --no-cache-dir --no-binary psycopg2 -r ${DIR}/requirements.txt
 
   echo "## Building the Javascript of the application..."
   pushd web > /dev/null
@@ -59,7 +59,6 @@ pushd ${tmp_dir}/electron > /dev/null
   yarn dist:darwin
 popd > /dev/null
 
-destination_folder=${dir}/dist/darwin/
-rm -f ${destination_folder}/*.dmg
-mkdir -p ${destination_folder}
-mv ${tmp_dir}/electron/out/make/*.dmg ${destination_folder}
+rm -f ${DIR}/dist/*.dmg
+mkdir -p ${DIR}/dist
+mv ${BUILD_DIR}/electron/out/make/*.dmg ${DIR}/dist/
