@@ -86,6 +86,9 @@
     "logform": "^1.6.0",
     "winston": "^3.0.0-rc5"
   },
+  "optionalDependencies": {
+    "macos-alias": "^0.2.11"
+  },
   "devDependencies": {
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
