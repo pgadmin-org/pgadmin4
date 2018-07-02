@@ -228,15 +228,6 @@ describe('ExecuteQuery', () => {
                 done();
               }, 0);
           });
-
-          it('should disable the cancel button', (done) => {
-            setTimeout(
-              () => {
-                expect(cancelButtonSpy)
-                  .toHaveBeenCalledWith('disabled', true);
-                done();
-              }, 0);
-          });
         });
 
         describe('when query was cancelled', () => {
@@ -333,15 +324,6 @@ describe('ExecuteQuery', () => {
                   }, 0);
               });
 
-              it('should disable the cancel button', (done) => {
-                setTimeout(
-                  () => {
-                    expect(cancelButtonSpy)
-                      .toHaveBeenCalledWith('disabled', true);
-                    done();
-                  }, 0);
-              });
-
               it('should not login is displayed', (done) => {
                 setTimeout(
                   () => {
@@ -402,15 +384,6 @@ describe('ExecuteQuery', () => {
                   () => {
                     expect(sqlEditorMock.disable_tool_buttons)
                       .toHaveBeenCalledWith(false);
-                    done();
-                  }, 0);
-              });
-
-              it('should disable the cancel button', (done) => {
-                setTimeout(
-                  () => {
-                    expect(cancelButtonSpy)
-                      .toHaveBeenCalledWith('disabled', true);
                     done();
                   }, 0);
               });
@@ -483,15 +456,6 @@ describe('ExecuteQuery', () => {
                   }, 0);
               });
 
-              it('should disable the cancel button', (done) => {
-                setTimeout(
-                  () => {
-                    expect(cancelButtonSpy)
-                      .toHaveBeenCalledWith('disabled', true);
-                    done();
-                  }, 0);
-              });
-
               it('should login is not displayed', (done) => {
                 setTimeout(
                   () => {
@@ -558,15 +522,6 @@ describe('ExecuteQuery', () => {
                   }, 0);
               });
 
-              it('should disable the cancel button', (done) => {
-                setTimeout(
-                  () => {
-                    expect(cancelButtonSpy)
-                      .toHaveBeenCalledWith('disabled', true);
-                    done();
-                  }, 0);
-              });
-
               it('should login is displayed', (done) => {
                 setTimeout(
                   () => {
@@ -626,15 +581,6 @@ describe('ExecuteQuery', () => {
                 () => {
                   expect(sqlEditorMock.disable_tool_buttons)
                     .toHaveBeenCalledWith(false);
-                  done();
-                }, 0);
-            });
-
-            it('should disable the cancel button', (done) => {
-              setTimeout(
-                () => {
-                  expect(cancelButtonSpy)
-                    .toHaveBeenCalledWith('disabled', true);
                   done();
                 }, 0);
             });
@@ -970,14 +916,6 @@ describe('ExecuteQuery', () => {
                 }, 0);
             });
 
-            it('should not disable the cancel button', (done) => {
-              setTimeout(
-                () => {
-                  expect(cancelButtonSpy).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
-            });
           });
 
           describe('when cannot reach the Python Server', () => {
@@ -1251,15 +1189,6 @@ describe('ExecuteQuery', () => {
             }, 0);
           });
 
-          it('disable the cancel query button', (done) => {
-            setTimeout(() => {
-              let buttonFlash = $('#btn-cancel-query');
-
-              expect(buttonFlash.prop('disabled')).toEqual(true);
-              done();
-            }, 0);
-          });
-
           it('enable the query tool buttons', (done) => {
             setTimeout(() => {
               expect(sqlEditorMock.disable_tool_buttons).toHaveBeenCalledWith(false);
@@ -1369,16 +1298,6 @@ describe('ExecuteQuery', () => {
               done();
             }, 0);
         });
-
-        it('should disable the cancel button', (done) => {
-          setTimeout(
-            () => {
-              let buttonFlash = $('#btn-cancel-query');
-
-              expect(buttonFlash.prop('disabled')).toEqual(true);
-              done();
-            }, 0);
-        });
       });
 
       describe('when error is returned by the server', () => {
@@ -1424,16 +1343,6 @@ describe('ExecuteQuery', () => {
               () => {
                 expect(sqlEditorMock.disable_tool_buttons)
                   .toHaveBeenCalledWith(false);
-                done();
-              }, 0);
-          });
-
-          it('should disable the cancel button', (done) => {
-            setTimeout(
-              () => {
-                let buttonFlash = $('#btn-cancel-query');
-
-                expect(buttonFlash.prop('disabled')).toEqual(true);
                 done();
               }, 0);
           });
@@ -1492,16 +1401,6 @@ describe('ExecuteQuery', () => {
               () => {
                 expect(sqlEditorMock.disable_tool_buttons)
                   .toHaveBeenCalledWith(false);
-                done();
-              }, 0);
-          });
-
-          it('should disable the cancel button', (done) => {
-            setTimeout(
-              () => {
-                let buttonFlash = $('#btn-cancel-query');
-
-                expect(buttonFlash.prop('disabled')).toEqual(true);
                 done();
               }, 0);
           });
@@ -1567,16 +1466,6 @@ describe('ExecuteQuery', () => {
               }, 0);
           });
 
-          it('should disable the cancel button', (done) => {
-            setTimeout(
-              () => {
-                let buttonFlash = $('#btn-cancel-query');
-
-                expect(buttonFlash.prop('disabled')).toEqual(true);
-                done();
-              }, 0);
-          });
-
           it('should not save the state', () => {
             setTimeout(() => {
               expect(sqlEditorMock.saveState).not.toHaveBeenCalled();
@@ -1637,16 +1526,6 @@ describe('ExecuteQuery', () => {
               () => {
                 expect(sqlEditorMock.disable_tool_buttons)
                   .toHaveBeenCalledWith(false);
-                done();
-              }, 0);
-          });
-
-          it('should disable the cancel button', (done) => {
-            setTimeout(
-              () => {
-                let buttonFlash = $('#btn-cancel-query');
-
-                expect(buttonFlash.prop('disabled')).toEqual(true);
                 done();
               }, 0);
           });

@@ -240,12 +240,10 @@ class ExecuteQuery {
 
   enableSQLEditorButtons() {
     this.sqlServerObject.disable_tool_buttons(false);
-    $('#btn-cancel-query').prop('disabled', true);
   }
 
   disableSQLEditorButtons() {
     this.sqlServerObject.disable_tool_buttons(true);
-    $('#btn-cancel-query').prop('disabled', false);
   }
 
   static wasConnectionLostToPythonServer(httpResponse) {

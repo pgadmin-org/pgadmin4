@@ -3370,6 +3370,10 @@ define('tools.querytool', [
         $('#btn-edit-dropdown').prop('disabled', disabled);
         $('#btn-edit').prop('disabled', disabled);
         $('#btn-load-file').prop('disabled', disabled);
+        if (this.is_query_tool) {
+          // Cancel query tool needs opposite behaviour
+          $('#btn-cancel-query').prop('disabled', !disabled);
+        }
       },
 
       // This function will fetch the sql query from the text box
@@ -3461,8 +3465,6 @@ define('tools.querytool', [
       // This function will cancel the running query.
       _cancel_query: function() {
         var self = this;
-
-        $('#btn-cancel-query').prop('disabled', true);
         $.ajax({
           url: url_for('sqleditor.cancel_transaction', {
             'trans_id': self.transId,
@@ -3470,12 +3472,10 @@ define('tools.querytool', [
           method: 'POST',
           contentType: 'application/json',
           success: function(res) {
-            if (res.data.status) {
-              self.disable_tool_buttons(false);
-            } else {
-              self.disable_tool_buttons(false);
+            if (!res.data.status) {
               alertify.alert(gettext('Cancel Query Error'), res.data.result);
             }
+            self.disable_tool_buttons(false);
             is_query_running = false;
             setTimeout(() => { self.gridView.query_tool_obj.focus(); }, 200);
           },
