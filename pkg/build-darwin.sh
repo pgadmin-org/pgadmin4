@@ -4,6 +4,9 @@ set -e
 
 DIR=$(cd `dirname $0` && cd .. && pwd)
 BUILD_DIR=${DIR}/mac-build
+if  [ -d ${BUILD_DIR} ]; then
+    rm -rf ${BUILD_DIR}
+fi
 mkdir -p ${BUILD_DIR}
 
 function fastcp() {
@@ -30,12 +33,10 @@ fastcp ${DIR}/electron ${BUILD_DIR}
 
 pushd ${BUILD_DIR}/electron > /dev/null
   echo "## Copying pgAdmin folder to the temporary directory..."
-  rm -rf web; fastcp ${DIR}/web ${BUILD_DIR}/electron
+  fastcp ${DIR}/web ${BUILD_DIR}/electron
 
   echo "## Creating Virtual Environment..."
-  rm -rf venv; mkdir -p venv
-  pip install virtualenv
-  virtualenv --always-copy ./venv
+  python3 -m venv --copies ./venv
 
   # Hack: Copies all python installation files to the virtual environment
   # This was done because virtualenv does not copy all of the files
@@ -51,7 +52,6 @@ pushd ${BUILD_DIR}/electron > /dev/null
 
   echo "## Building the Javascript of the application..."
   pushd web > /dev/null
-    rm -rf node_modules
     yarn bundle-app-js
   popd > /dev/null
 
@@ -60,6 +60,5 @@ pushd ${BUILD_DIR}/electron > /dev/null
   yarn dist:darwin
 popd > /dev/null
 
-rm -f ${DIR}/dist/*.dmg
 mkdir -p ${DIR}/dist
-mv ${BUILD_DIR}/electron/out/make/*.dmg ${DIR}/dist/
+cp -f ${BUILD_DIR}/electron/out/make/*.dmg ${DIR}/dist/

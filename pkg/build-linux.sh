@@ -8,6 +8,9 @@ if [ -f /etc/redhat-release ]; then
 else
     BUILD_DIR=${DIR}/deb-build
 fi
+if  [ -d ${BUILD_DIR} ]; then
+    rm -rf ${BUILD_DIR}
+fi
 mkdir -p ${BUILD_DIR}
 
 if [ -f /etc/lsb-release ]; then
@@ -43,10 +46,9 @@ fastcp ${DIR}/electron ${BUILD_DIR}
 
 pushd ${BUILD_DIR}/electron > /dev/null
   echo "## Copying pgAdmin folder to the temporary directory..."
-  rm -rf web; fastcp ${DIR}/web ${BUILD_DIR}/electron
+  fastcp ${DIR}/web ${BUILD_DIR}/electron
 
   echo "## Creating Virtual Environment..."
-  rm -rf venv; mkdir -p venv
   python3 -m venv --copies ./venv
 
   # Hack: Copies all python installation files to the virtual environment
@@ -71,7 +73,6 @@ pushd ${BUILD_DIR}/electron > /dev/null
 
   echo "## Building the Javascript of the application..."
   pushd web > /dev/null
-    rm -rf node_modules
     yarn bundle-app-js
   popd > /dev/null
 
@@ -85,11 +86,9 @@ pushd ${BUILD_DIR}/electron > /dev/null
 popd > /dev/null
 
 if [ -f /etc/redhat-release ]; then
-    rm -f ${DIR}/dist/*.rpm
     mkdir -p ${DIR}/dist
-    mv ${BUILD_DIR}/electron/out/make/*.rpm ${DIR}/dist
+    cp -f ${BUILD_DIR}/electron/out/make/*.rpm ${DIR}/dist
 else
-    rm -f ${DIR}/dist/*.deb
     mkdir -p ${DIR}/dist
-    mv ${BUILD_DIR}/electron/out/make/*.deb ${DIR}/dist
+    cp -f ${BUILD_DIR}/electron/out/make/*.deb ${DIR}/dist
 fi
