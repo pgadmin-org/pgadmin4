@@ -299,13 +299,13 @@ def create_restore_job(sid):
         if data['format'] == 'directory':
             args.extend(['--format=d'])
 
-        set_value('pre_data', '--section=pre-data', False)
-        set_value('data', '--section=data', False)
-        set_value('post_data', '--section=post-data', False)
+        set_param('pre_data', '--section=pre-data')
+        set_param('data', '--section=data')
+        set_param('post_data', '--section=post-data')
 
         if not set_param('only_data', '--data-only'):
             set_param('dns_owner', '--no-owner')
-            set_param('dns_privilege ', '--no-privileges')
+            set_param('dns_privilege', '--no-privileges')
             set_param('dns_tablespace', '--no-tablespaces')
 
         if not set_param('only_schema', '--schema-only'):
@@ -314,8 +314,8 @@ def create_restore_job(sid):
         set_param('include_create_database', '--create')
         set_param('clean', '--clean')
         set_param('single_transaction', '--single-transaction')
-        set_param('no_data_fail_table ', '--no-data-for-failed-tables')
-        set_param('use_set_session_auth ', '--use-set-session-authorization')
+        set_param('no_data_fail_table', '--no-data-for-failed-tables')
+        set_param('use_set_session_auth', '--use-set-session-authorization')
         set_param('exit_on_error', '--exit-on-error')
 
         set_value('no_of_jobs', '--jobs', True)
