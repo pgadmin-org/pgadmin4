@@ -104,8 +104,9 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_schema=True
              ),
              url='/restore/job/{0}',
-             # Please include sections data here, right now this is a bug
-             expected_cmd_opts=['--verbose', '--jobs', '2'],
+             expected_cmd_opts=['--verbose', '--jobs', '2',
+                                '--section=pre-data', '--section=data',
+                                '--section=post-data'],
              not_expected_cmd_opts=[],
              # Below options should be enabled once we fix the issue #3368
              # not_expected_cmd_opts=['--data-only', '--schema-only'],
@@ -167,9 +168,9 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_data=False
              ),
              url='/restore/job/{0}',
-             # Add '--no-privileges' to the expected_cmd once #3363 fixed
              expected_cmd_opts=['--no-owner',
-                                '--no-tablespaces'],
+                                '--no-tablespaces',
+                                '--no-privileges'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -224,9 +225,8 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_schema=False
              ),
              url='/restore/job/{0}',
-             # Add '--no-data-for-failed-tables' into
-             # expected_cmd_opts once #3363 fixed
-             expected_cmd_opts=['--disable-triggers'],
+             expected_cmd_opts=['--disable-triggers',
+                                '--no-data-for-failed-tables'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
