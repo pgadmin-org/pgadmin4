@@ -80,11 +80,11 @@ pushd ${TMP_DIR}/electron > /dev/null
 popd > /dev/null
 
 if [ -f /etc/redhat-release ]; then
-    rm -f ${DIR}/dist/*.deb
-    mkdir -p ${DIR}/dist
-    mv ${TMP_DIR}/electron/out/make/*.deb ${DIR}/dist
-else
     rm -f ${DIR}/dist/*.rpm
     mkdir -p ${DIR}/dist
     mv ${TMP_DIR}/electron/out/make/*.rpm ${DIR}/dist
+else
+    rm -f ${DIR}/dist/*.deb
+    mkdir -p ${DIR}/dist
+    mv ${TMP_DIR}/electron/out/make/*.deb ${DIR}/dist
 fi
