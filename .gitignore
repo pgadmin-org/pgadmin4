@@ -12,6 +12,7 @@
 .vscode
 /dist
 /deb-build
+/deps
 /docker-build
 /mac-build
 /pip-build
