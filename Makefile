@@ -19,6 +19,9 @@ all: docs pip src runtime
 appbundle: docs
 	./pkg/mac/build.sh
 
+mac-deps:
+	./pkg/setup-macos.sh
+
 install-node:
 	cd web && yarn install
 
@@ -64,6 +67,9 @@ clean-runtime:
 
 clean-appbundle:
 	rm -rf mac-build/
+
+clean-deps:
+	rm -rf deps/
 
 clean-deb:
 	rm -rf deb-build/

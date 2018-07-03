@@ -3,6 +3,7 @@
 set -e
 
 OPENSSL_VERSION=1.0.2o
+POSTGRES_VERSION=10.4
 PYTHON_VERSION=3.6.6
 NODE_VERSION=8.11.3
 
@@ -27,6 +28,16 @@ pushd ${DEP_DIR}
          make depend || (echo "Failed to build OpenSSL" && exit 1)
          make tests || (echo "Failed to test OpenSSL" && exit 1)
          make install || (echo "Failed to install OpenSSL" && exit 1)
+    popd
+
+    # Download and install PostgreSQL
+    curl -O https://ftp.postgresql.org/pub/source/v${POSTGRES_VERSION}/postgresql-${POSTGRES_VERSION}.tar.gz || (echo "Failed to download PostgreSQL" && exit 1)
+    tar -zxvf postgresql-${POSTGRES_VERSION}.tar.gz || (echo "Failed to unpack PostgreSQL" && exit 1)
+    pushd postgresql-${POSTGRES_VERSION} > /dev/null
+        ./configure --prefix=${DEP_DIR}/pgsql --with-openssl --with-includes="${DEP_DIR}/openssl/include" --with-libraries="${DEP_DIR}/openssl/lib" || (echo "Failed to configure PostgreSQL" && exit 1)
+        make all || (echo "Failed to build PostgreSQL" && exit 1)
+        make check || (echo "Failed to test PostgreSQL" && exit 1)
+        make install || (echo "Failed to install PostgreSQL" && exit 1)
     popd
 
     # Download and install Python 3.6
@@ -56,5 +67,5 @@ popd
 echo
 echo Set your PATH variable to use the configured dependencies:
 echo
-echo export PATH=$(pwd)/node_modules/.bin:${DEP_DIR}/node-v${NODE_VERSION}-darwin-x64/bin:${DEP_DIR}/python/bin:\$PATH
+echo export PATH=$(pwd)/node_modules/.bin:${DEP_DIR}/node-v${NODE_VERSION}-darwin-x64/bin:${DEP_DIR}/python/bin:${DEP_DIR}/pgsql/bin:\$PATH
 echo
