@@ -4,7 +4,7 @@ set -e
 
 OPENSSL_VERSION=1.0.2o
 PYTHON_VERSION=3.6.6
-NODE_VERSION=10.5.0
+NODE_VERSION=8.11.3
 
 DIR=$(cd `dirname $0` && cd .. && pwd)
 DEP_DIR=${DIR}/deps
@@ -56,5 +56,5 @@ popd
 echo
 echo Set your PATH variable to use the configured dependencies:
 echo
-echo export PATH=$(pwd)/node_modules/.bin:${DEP_DIR}/node-v10.5.0-darwin-x64/bin:${DEP_DIR}/python/bin:\$PATH
+echo export PATH=$(pwd)/node_modules/.bin:${DEP_DIR}/node-v${NODE_VERSION}-darwin-x64/bin:${DEP_DIR}/python/bin:\$PATH
 echo
