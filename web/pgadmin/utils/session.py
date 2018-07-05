@@ -102,10 +102,11 @@ class SessionManager(object):
 
 
 class CachingSessionManager(SessionManager):
-    def __init__(self, parent, num_to_store):
+    def __init__(self, parent, num_to_store, skip_paths=[]):
         self.parent = parent
         self.num_to_store = num_to_store
         self._cache = OrderedDict()
+        self.skip_paths = skip_paths
 
     def _normalize(self):
         if len(self._cache) > self.num_to_store:
@@ -115,6 +116,12 @@ class CachingSessionManager(SessionManager):
 
     def new_session(self):
         session = self.parent.new_session()
+
+        # Do not store the session if skip paths
+        for sp in self.skip_paths:
+            if request.path.startswith(sp):
+                return session
+
         self._cache[session.sid] = session
         self._normalize()
 
@@ -143,6 +150,11 @@ class CachingSessionManager(SessionManager):
         if not session:
             session = self.parent.get(sid, digest)
 
+        # Do not store the session if skip paths
+        for sp in self.skip_paths:
+            if request.path.startswith(sp):
+                return session
+
         self._cache[sid] = session
         self._normalize()
 
@@ -150,23 +162,31 @@ class CachingSessionManager(SessionManager):
 
     def put(self, session):
         self.parent.put(session)
+
+        # Do not store the session if skip paths
+        for sp in self.skip_paths:
+            if request.path.startswith(sp):
+                return
+
         if session.sid in self._cache:
             try:
                 del self._cache[session.sid]
             except Exception:
                 pass
+
         self._cache[session.sid] = session
         self._normalize()
 
 
 class FileBackedSessionManager(SessionManager):
 
-    def __init__(self, path, secret, disk_write_delay):
+    def __init__(self, path, secret, disk_write_delay, skip_paths=[]):
         self.path = path
         self.secret = secret
         self.disk_write_delay = disk_write_delay
         if not os.path.exists(self.path):
             os.makedirs(self.path)
+        self.skip_paths = skip_paths
 
     def exists(self, sid):
         fname = os.path.join(self.path, sid)
@@ -184,6 +204,11 @@ class FileBackedSessionManager(SessionManager):
         while os.path.exists(fname):
             sid = str(uuid4())
             fname = os.path.join(self.path, sid)
+
+        # Do not store the session if skip paths
+        for sp in self.skip_paths:
+            if request.path.startswith(sp):
+                return ManagedSession(sid=sid)
 
         # touch the file
         with open(fname, 'wb'):
@@ -233,6 +258,12 @@ class FileBackedSessionManager(SessionManager):
 
         session.last_write = current_time
         session.force_write = False
+
+        # Do not store the session if skip paths
+        for sp in self.skip_paths:
+            if request.path.startswith(sp):
+                return
+
         fname = os.path.join(self.path, session.sid)
         with open(fname, 'wb') as f:
             dump(
@@ -242,9 +273,8 @@ class FileBackedSessionManager(SessionManager):
 
 
 class ManagedSessionInterface(SessionInterface):
-    def __init__(self, manager, skip_paths, cookie_timedelta):
+    def __init__(self, manager, cookie_timedelta):
         self.manager = manager
-        self.skip_paths = skip_paths
         self.cookie_timedelta = cookie_timedelta
 
     def get_expiration_time(self, app, session):
@@ -256,11 +286,6 @@ class ManagedSessionInterface(SessionInterface):
         cookie_val = request.cookies.get(app.session_cookie_name)
 
         if not cookie_val or '!' not in cookie_val:
-            # Don't bother creating a cookie for static resources
-            for sp in self.skip_paths:
-                if request.path.startswith(sp):
-                    return None
-
             return self.manager.new_session()
 
         sid, digest = cookie_val.split('!', 1)
@@ -301,10 +326,12 @@ def create_session_interface(app, skip_paths=[]):
             FileBackedSessionManager(
                 app.config['SESSION_DB_PATH'],
                 app.config['SECRET_KEY'],
-                app.config.get('PGADMIN_SESSION_DISK_WRITE_DELAY', 10)
+                app.config.get('PGADMIN_SESSION_DISK_WRITE_DELAY', 10),
+                skip_paths
             ),
-            1000
-        ), skip_paths,
+            1000,
+            skip_paths
+        ),
         datetime.timedelta(days=1))
 
 

@@ -490,7 +490,7 @@ define('pgadmin.browser', [
       // Ping the server every 5 minutes
       setInterval(function() {
         $.ajax({
-          url: url_for('misc.ping'),
+          url: url_for('misc.cleanup'),
           type:'POST',
           success: function() {},
           error: function() {},

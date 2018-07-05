@@ -74,7 +74,7 @@ class MiscModule(PgAdminModule):
         Returns:
             list: a list of url endpoints exposed to the client.
         """
-        return ['misc.ping', 'misc.index']
+        return ['misc.ping', 'misc.index', 'misc.cleanup']
 
 
 # Initialise the module
@@ -92,12 +92,17 @@ def index():
 ##########################################################################
 # A special URL used to "ping" the server
 ##########################################################################
-@blueprint.route("/ping", methods=('get', 'post'))
+@blueprint.route("/ping")
 def ping():
     """Generate a "PING" response to indicate that the server is alive."""
-    driver.ping()
-
     return "PING"
+
+
+# For Garbage Collecting closed connections
+@blueprint.route("/cleanup", methods=['POST'])
+def cleanup():
+    driver.ping()
+    return ""
 
 
 @blueprint.route("/explain/explain.js")

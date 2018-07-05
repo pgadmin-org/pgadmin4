@@ -354,7 +354,9 @@ def create_app(app_name=None):
     # register custom unauthorised handler.
     app.login_manager.unauthorized_handler(pga_unauthorised)
 
-    app.session_interface = create_session_interface(app)
+    app.session_interface = create_session_interface(
+        app, config.SESSION_SKIP_PATHS
+    )
 
     # Make the Session more secure against XSS & CSRF when running in web mode
     if config.SERVER_MODE:
