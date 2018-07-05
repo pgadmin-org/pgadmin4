@@ -16,6 +16,7 @@ Features
 Bug fixes
 *********
 
+| `Bug #3294 <https://redmine.postgresql.org/issues/3294>`_ - Infrastructure (and changes to the Query Tool) for realtime preference handling.
 | `Bug #3309 <https://redmine.postgresql.org/issues/3309>`_ - Fix Directory format support for backups.
 | `Bug #3319 <https://redmine.postgresql.org/issues/3319>`_ - Cleanup and fix handling of Query Tool Cancel button status.
 | `Bug #3363 <https://redmine.postgresql.org/issues/3363>`_ - Fix restoring of restore options for sections.
