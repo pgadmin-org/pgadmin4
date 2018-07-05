@@ -29,6 +29,23 @@ define('pgadmin.datagrid', [
         this.initialized = true;
         this.title_index = 1;
 
+
+        let self = this;
+        /* Cache may take time to load for the first time
+         * Keep trying till available
+         */
+        let cacheIntervalId = setInterval(function() {
+          if(pgBrowser.preference_version() > 0) {
+            self.preferences = pgBrowser.get_preferences_for_module('sqleditor');
+            clearInterval(cacheIntervalId);
+          }
+        },0);
+
+        pgBrowser.onPreferencesChange('sqleditor', function() {
+          self.preferences = pgBrowser.get_preferences_for_module('sqleditor');
+        });
+
+
         this.spinner_el = '<div class="wcLoadingContainer">'+
               '<div class="wcLoadingBackground"></div>'+
                 '<div class="wcLoadingIconContainer">'+
@@ -279,12 +296,12 @@ define('pgadmin.datagrid', [
                   lineNumbers: true,
                   mode: 'text/x-pgsql',
                   extraKeys: pgBrowser.editor_shortcut_keys,
-                  indentWithTabs: pgAdmin.Browser.editor_options.indent_with_tabs,
-                  indentUnit: pgAdmin.Browser.editor_options.tabSize,
-                  tabSize: pgBrowser.editor_options.tabSize,
-                  lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
-                  autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
-                  matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
+                  indentWithTabs: !this.preferences.use_spaces,
+                  indentUnit: this.preferences.tab_size,
+                  tabSize: this.preferences.tab_size,
+                  lineWrapping: this.preferences.wrap_code,
+                  autoCloseBrackets: this.preferences.insert_pair_brackets,
+                  matchBrackets: this.preferences.brace_matching,
                 });
 
                 setTimeout(function() {
@@ -415,13 +432,20 @@ define('pgadmin.datagrid', [
           }
         }
 
-        if (trans_obj.newBrowserTab) {
+        if (self.preferences.new_browser_tab) {
           var newWin = window.open(baseUrl, '_blank');
 
           // add a load listener to the window so that the title gets changed on page load
           newWin.addEventListener('load', function() {
             newWin.document.title = panel_title;
+
+            /* Set the initial version of pref cache the new window is having
+             * This will be used by the poller to compare with window openers
+             * pref cache version
+             */
+            //newWin.pgAdmin.Browser.preference_version(pgBrowser.preference_version());
           });
+
         } else {
           /* On successfully initialization find the dashboard panel,
            * create new panel and add it to the dashboard panel.

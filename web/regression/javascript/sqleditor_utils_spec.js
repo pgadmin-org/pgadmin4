@@ -28,5 +28,13 @@ function (SqlEditorUtils) {
         expect(SqlEditorUtils.capitalizeFirstLetter('create script')).toEqual('Create script');
       });
     });
+
+    describe('Calculate font size of input number passed', function () {
+      it('calcFontSize', function () {
+        expect(SqlEditorUtils.calcFontSize(1.456)).toEqual('1.46em');
+        expect(SqlEditorUtils.calcFontSize()).toEqual('0em');
+        expect(SqlEditorUtils.calcFontSize(2)).toEqual('2em');
+      });
+    });
   });
 });

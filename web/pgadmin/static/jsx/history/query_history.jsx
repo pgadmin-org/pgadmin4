@@ -97,13 +97,16 @@ export default class QueryHistory extends React.Component {
           selectedEntry={this.state.selectedEntry}
           onSelectEntry={this.selectHistoryEntry}
         />
-        <QueryHistoryDetail historyEntry={this.state.currentHistoryDetail}/>
+        <QueryHistoryDetail historyEntry={this.state.currentHistoryDetail}
+            sqlEditorPref={this.props.sqlEditorPref}
+        />
       </SplitPane>);
   }
 }
 
 QueryHistory.propTypes = {
   historyCollection: Shapes.historyCollectionClass.isRequired,
+  sqlEditorPref: Shapes.sqlEditorPrefObj,
 };
 
 export {

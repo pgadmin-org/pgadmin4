@@ -10,13 +10,6 @@
     .alertify .ajs-dialog.ajs-shake{-webkit-animation-name: none;}
     .sql-editor-busy-icon.fa-pulse{-webkit-animation: none;}
     {% endif %}
-
-    {# Note: If we will display connection status then we have to provide some
-    space to display status icon else we can use all the space available #}
-    .editor-title {
-      width:{% if display_connection_status -%} calc(100% - 43px)
-    {% else %} 100% {%- endif %};
-    }
 </style>
 <div id="main-editor_panel">
     <div id="fetching_data" class="wcLoadingIconContainer sql-editor-busy-fetching hide">
@@ -28,14 +21,14 @@
         <div id="btn-toolbar" class="pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-load-file" type="button" class="btn btn-default btn-load-file"
-                        title="{{ _('Open File') }}{{ _(' (accesskey+{0})'.format(key.open_file.upper())) }}"
-                        accesskey="{{key.open_file}}"
+                        title=""
+                        accesskey=""
                         tabindex="0">
                     <i class="fa fa-folder-open-o" aria-hidden="true"></i>
                 </button>
                 <button id="btn-save" type="button" class="btn btn-default"
-                        title="{{ _('Save') }}{{ _(' (accesskey+{0})'.format(key.save_file.upper())) }}"
-                        accesskey="{{key.save_file}}"
+                        title=""
+                        accesskey=""
                         disabled>
                     <i class="fa fa-floppy-o" aria-hidden="true" tabindex="0"></i>
                 </button>
@@ -63,8 +56,8 @@
                 </button>
                 <button id="btn-find-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        title="{{ _('Find options') }}{{ _(' (accesskey+{0})'.format(key.find_options.upper())) }}"
-                        accesskey="{{key.find_options}}"
+                        title=""
+                        accesskey=""
                         tabindex="0">
                     <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
                 </button>
@@ -122,22 +115,22 @@
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-copy-row" type="button" class="btn btn-default"
-                        title="{{ _('Copy') }}{{ _(' (accesskey+{0})'.format(key.copy_row.upper())) }}"
-                        accesskey="{{key.copy_row}}"
+                        title=""
+                        accesskey=""
                         tabindex="0" disabled>
                     <i class="fa fa-files-o" aria-hidden="true"></i>
                 </button>
                 <button id="btn-paste-row" type="button" class="btn btn-default"
-                        title="{{ _('Paste') }}{{ _(' (accesskey+{0})'.format(key.paste_row.upper())) }}"
-                        accesskey="{{key.paste_row}}"
+                        title=""
+                        accesskey=""
                         tabindex="0" disabled>
                     <i class="fa fa-clipboard" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-delete-row" type="button" class="btn btn-default"
-                        title="{{ _('Delete') }}{{ _(' (accesskey+{0})'.format(key.delete_row.upper())) }}"
-                        accesskey="{{key.delete_row}}"
+                        title=""
+                        accesskey=""
                         tabindex="0" disabled>
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
@@ -188,15 +181,15 @@
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-filter" type="button" class="btn btn-default"
-                        title="{{ _('Filter') }}{{ _(' (accesskey+{0})'.format(key.filter_dialog.upper())) }}"
-                        accesskey="{{key.filter_dialog}}"
+                        title=""
+                        accesskey=""
                         tabindex="0" disabled>
                     <i class="fa fa-filter" aria-hidden="true"></i>
                 </button>
                 <button id="btn-filter-dropdown" type="button" class="btn btn-default dropdown-toggle"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        title="{{ _('Filter options') }}{{ _(' (accesskey+{0})'.format(key.filter_options.upper())) }}"
-                        accesskey="{{key.filter_options}}"
+                        title=""
+                        accesskey=""
                         disabled tabindex="0">
                     <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
                 </button>
@@ -210,9 +203,9 @@
                 </ul>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <select class="limit" style="height: 30px; width: 90px;" disabled
-                        title="{{ _('Rows limit') }}{{ _(' (accesskey+{0})'.format(key.rows_limit.upper())) }}"
-                        accesskey="{{key.rows_limit}}"
+                <select id="btn-rows-limit" class="limit" style="height: 30px; width: 90px;" disabled
+                        title=""
+                        accesskey=""
                         tabindex="0">
                     <option value="-1">{{ _('No limit') }}</option>
                     <option value="1000">{{ _('1000 rows') }}</option>
@@ -223,31 +216,31 @@
 
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-flash" data-test-selector="execute-refresh-button" type="button" class="btn btn-default" style="width: 40px;"
-                        title="{{ _('Execute/Refresh') }}{{ _(' ({0})'.format(get_shortcut_text(shortcuts.execute_query))) }}"
+                        title=""
                         tabindex="0">
                     <i class="fa fa-bolt" aria-hidden="true"></i>
                 </button>
                 <button id="btn-query-dropdown" type="button" class="btn btn-default dropdown-toggle"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        accesskey="{{key.execute_options}}"
-                        title="{{ _('Execute options') }}{{ _(' (accesskey+{0})'.format(key.execute_options.upper())) }}"
+                        accesskey=""
+                        title=""
                         tabindex="0">
                     <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li>
                         <a id="btn-flash-menu" href="#" tabindex="0">
-                            <span>{{ _('Execute/Refresh') }}{{ _(' ({0})'.format(get_shortcut_text(shortcuts.execute_query))) }}</span>
+                            <span></span>
                         </a>
                     </li>
                     <li>
                         <a id="btn-explain" href="#" tabindex="0">
-                            <span>{{ _('Explain') }}{{ _(' ({0})'.format(get_shortcut_text(shortcuts.explain_query))) }}</span>
+                            <span></span>
                         </a>
                     </li>
                     <li>
                         <a id="btn-explain-analyze" href="#" tabindex="0">
-                            <span>{{ _('Explain Analyze') }}{{ _(' ({0})'.format(get_shortcut_text(shortcuts.explain_analyze_query))) }}</span>
+                            <span></span>
                         </a>
                     </li>
                     <li class="divider"></li>
@@ -295,8 +288,8 @@
                     </li>
                 </ul>
                 <button id="btn-cancel-query" type="button" class="btn btn-default"
-                        title="{{ _('Cancel query') }}{{ _(' (accesskey+{0})'.format(key.cancel_query.upper())) }}"
-                        accesskey="{{key.cancel_query}}"
+                        title=""
+                        accesskey=""
                         tabindex="0" disabled >
                     <i class="fa fa-stop" aria-hidden="true"></i>
                 </button>
@@ -304,8 +297,8 @@
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-clear-dropdown" type="button" class="btn btn-default dropdown-toggle"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        title="{{ _('Clear') }}{{ _(' (accesskey+{0})'.format(key.clear_options.upper())) }}"
-                        accesskey="{{key.clear_options}}"
+                        title=""
+                        accesskey=""
                         tabindex="0">
                     <i class="fa fa-eraser" aria-hidden="true"></i>
                     <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
@@ -325,7 +318,7 @@
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-download" type="button" class="btn btn-default"
-                        title="{{ _('Download as CSV') }}{{ _(' ({0})'.format(get_shortcut_text(shortcuts.download_csv))) }}"
+                        title=""
                         tabindex="0">
                     <i class="fa fa-download" aria-hidden="true"></i>
                 </button>
@@ -333,21 +326,17 @@
         </div>
 
         <div class="connection_status_wrapper">
-            {% if display_connection_status %}
-            <div style="display: inline-block;"
-                 title="{{ _('Connection status (click for details) (accesskey+{0})'.format(key.conn_status.upper())) }}">
-                <div class="connection_status" data-container="body"
-                     data-toggle="popover" data-placement="bottom"
-                     data-content=""
-                     data-panel-visible="visible"
-                     accesskey="{{key.conn_status}}"
-                     tabindex="0">
-                    <i class="fa-custom fa-query-tool-disconnected" aria-hidden="true"
-                        title="{{ _('Connection status (click for details) (accesskey+{0})'.format(key.conn_status.upper())) }}">
-                    </i>
-                </div>
+            <div id="btn-conn-status"
+                 class="connection_status connection-status-show" data-container="body"
+                 data-toggle="popover" data-placement="bottom"
+                 data-content=""
+                 data-panel-visible="visible"
+                 accesskey=""
+                 tabindex="0">
+                <i class="fa-custom fa-query-tool-disconnected" aria-hidden="true"
+                    title="">
+                </i>
             </div>
-            {% endif %}
             <div class="editor-title"
                  style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% else %}{{ bgcolor or '#2C76B4' }}{% endif %}; color: {{ fgcolor or 'white' }};"></div>
         </div>
@@ -398,9 +387,7 @@
         {{ is_query_tool }},
         "{{ editor_title }}",
         script_type_url,
-        {{ is_new_browser_tab }},
         "{{ server_type }}",
-        {{ prompt_save_changes }},
         {{ url_params|safe}}
     );
 });

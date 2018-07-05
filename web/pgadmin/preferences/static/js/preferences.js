@@ -439,8 +439,18 @@ define('pgadmin.preferences', [
 
             if (e.button.text == gettext('OK')) {
               preferences.updateAll();
+
+              /* Find the modules changed */
+              let modulesChanged = {};
+              _.each(changed, (val, key)=> {
+                let pref = pgBrowser.get_preference_for_id(Number(key));
+                if(!modulesChanged[pref.module]) {
+                  modulesChanged[pref.module] = true;
+                }
+              });
+
               // Refresh preferences cache
-              setTimeout(pgBrowser.cache_preferences(), 2000);
+              pgBrowser.cache_preferences(modulesChanged);
             }
           },
           build: function() {

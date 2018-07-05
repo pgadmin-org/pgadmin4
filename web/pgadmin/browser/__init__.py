@@ -680,17 +680,6 @@ def browser_css():
     """Render and return CSS snippets from the nodes and modules."""
     snippets = []
 
-    # Get configurable options
-    prefs = Preferences.module('sqleditor')
-
-    sql_font_size_pref = prefs.preference('sql_font_size')
-    sql_font_size = round(float(sql_font_size_pref.get()), 2)
-
-    if sql_font_size != 0:
-        snippets.append(
-            '.CodeMirror { font-size: %sem; }' % str(sql_font_size)
-        )
-
     for submodule in blueprint.submodules:
         snippets.extend(submodule.csssnippets)
     return make_response(

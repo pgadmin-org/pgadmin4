@@ -29,7 +29,7 @@ import '../helper/enzyme.helper';
 describe('QueryHistory', () => {
   let historyCollection;
   let historyWrapper;
-
+  let sqlEditorPref = {sql_font_size: '1em'};
   beforeEach(() => {
     jasmineEnzyme();
   });
@@ -37,7 +37,9 @@ describe('QueryHistory', () => {
   describe('when there is no history', () => {
     beforeEach(() => {
       historyCollection = new HistoryCollection([]);
-      historyWrapper = mount(<QueryHistory historyCollection={historyCollection}/>);
+      historyWrapper = mount(<QueryHistory historyCollection={historyCollection}
+        sqlEditorPref={sqlEditorPref}
+      />);
     });
 
     describe('when we switch to the query history tab', () => {
@@ -89,8 +91,9 @@ describe('QueryHistory', () => {
           message: 'something important ERROR:  message from second sql query',
         }];
         historyCollection = new HistoryCollection(historyObjects);
-
-        historyWrapper = mount(<QueryHistory historyCollection={historyCollection}/>);
+        historyWrapper = mount(<QueryHistory historyCollection={historyCollection}
+            sqlEditorPref={sqlEditorPref}
+        />);
 
         queryHistoryEntriesComponent = historyWrapper.find(QueryHistoryEntries);
         isInvisibleSpy = spyOn(queryHistoryEntriesComponent.instance(), 'isInvisible')
@@ -479,7 +482,9 @@ describe('QueryHistory', () => {
         }];
         historyCollection = new HistoryCollection(historyObjects);
 
-        historyWrapper = mount(<QueryHistory historyCollection={historyCollection}/>);
+        historyWrapper = mount(<QueryHistory historyCollection={historyCollection}
+            sqlEditorPref={sqlEditorPref}
+        />);
 
         const queryHistoryEntriesComponent = historyWrapper.find(QueryHistoryEntries);
         isInvisibleSpy = spyOn(queryHistoryEntriesComponent.instance(), 'isInvisible')

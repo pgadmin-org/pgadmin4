@@ -2,8 +2,8 @@ define('pgadmin.browser', [
   'sources/tree/tree',
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
-  'sources/check_node_visibility', 'sources/modify_animation', 'pgadmin.browser.utils', 'wcdocker',
-  'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
+  'sources/check_node_visibility', 'pgadmin.browser.utils', 'wcdocker',
+  'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree', 'pgadmin.browser.preferences',
   'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel',
   'pgadmin.browser.error', 'pgadmin.browser.frame',
@@ -13,7 +13,7 @@ define('pgadmin.browser', [
 ], function(
   tree,
   gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
-  codemirror, checkNodeVisibility, modifyAnimation
+  codemirror, checkNodeVisibility
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
@@ -342,7 +342,7 @@ define('pgadmin.browser', [
 
       // Cache preferences
       obj.cache_preferences();
-      this.add_panels();
+      obj.add_panels();
       // Initialize the Docker
       obj.docker = new wcDocker(
         '#dockerContainer', {
@@ -400,11 +400,22 @@ define('pgadmin.browser', [
           mode: 'text/x-pgsql',
           readOnly: true,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-          tabSize: pgAdmin.Browser.editor_options.tabSize,
-          lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
-          autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
-          matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
         });
+      /* Cache may take time to load for the first time
+       * Reflect the changes once cache is available
+       */
+      let cacheIntervalId = setInterval(()=> {
+        let sqlEditPreferences = obj.get_preferences_for_module('sqleditor');
+        if(sqlEditPreferences) {
+          clearInterval(cacheIntervalId);
+          obj.reflectPreferences('sqleditor');
+        }
+      }, 500);
+
+      /* Check for sql editor preference changes */
+      obj.onPreferencesChange('sqleditor', function() {
+        obj.reflectPreferences('sqleditor');
+      });
 
       setTimeout(function() {
         obj.editor.setValue('-- ' + select_object_msg);
@@ -513,10 +524,6 @@ define('pgadmin.browser', [
         single: single,
       };
     },
-
-    // This will hold preference data (Works as a cache object)
-    // Here node will be a key and it's preference data will be value
-    preferences_cache: {},
 
     // Add menus of module/extension at appropriate menu
     add_menus: function(menus) {
@@ -661,46 +668,6 @@ define('pgadmin.browser', [
         }
       }
     },
-
-    // Get preference value from cache
-    get_preference: function(module, preference) {
-      var self = this;
-      // If cache is not yet loaded then keep checking
-      if(_.size(self.preferences_cache) == 0) {
-        var check_preference = function() {
-            if(_.size(self.preferences_cache) > 0) {
-              clearInterval(preferenceTimeout);
-              return _.findWhere(
-              self.preferences_cache, {'module': module, 'name': preference}
-            );
-            }
-          },
-          preferenceTimeout = setInterval(check_preference, 1000);
-      }
-      else {
-        return _.findWhere(
-          self.preferences_cache, {'module': module, 'name': preference}
-        );
-      }
-    },
-
-    // Get and cache the preferences
-    cache_preferences: function () {
-      var self = this;
-      $.ajax({
-        url: url_for('preferences.get_all'),
-        success: function(res) {
-          self.preferences_cache = res;
-          pgBrowser.keyboardNavigation.init();
-          modifyAnimation.modifyAcitreeAnimation(self);
-          modifyAnimation.modifyAlertifyAnimation(self);
-        },
-        error: function(xhr, status, error) {
-          Alertify.pgRespErrorNotify(xhr, error);
-        },
-      });
-    },
-
     _findTreeChildNode: function(_i, _d, _o) {
       var loaded = _o.t.wasLoad(_i),
         onLoad = function() {

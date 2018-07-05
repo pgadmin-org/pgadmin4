@@ -178,29 +178,20 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
         });
       },
 
-      // This function will update the connection status
-      updateConnectionStatus: function(target, poll_time) {
-        var $el = $(target.gridView.$el.find('.connection_status')),
-          $status_el = $($el.find('.fa-custom'));
-
-        // Apply popover on element
-        $el.popover();
-
-        // To set initial connection statussource$el.popover()
-        sqlEditorUtils.fetchConnectionStatus(target, $el, $status_el);
-
-        // Calling it again in specified interval
-        setInterval(
-          sqlEditorUtils.fetchConnectionStatus.bind(null, target, $el, $status_el),
-          poll_time * 1000
-        );
-      },
-
       // Updates the flag for connection status poll
       updateConnectionStatusFlag: function(status) {
         var $el = $('.connection_status');
         if ($el.data('panel-visible') != status) {
           $el.data('panel-visible', status);
+        }
+      },
+
+      calcFontSize: function(fontSize) {
+        if(fontSize) {
+          return Number((Math.round(fontSize + 'e+2') + 'e-2')) + 'em';
+        }
+        else {
+          return '0em';
         }
       },
     };

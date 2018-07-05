@@ -24,12 +24,9 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.preferences import Preferences
 from pgadmin.model import Server
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
-from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
-    get_query_tool_keyboard_shortcuts, get_text_representation_of_shortcut
 
 
 class DataGridModule(PgAdminModule):
@@ -184,13 +181,9 @@ def initialize_datagrid(cmd_type, obj_type, sgid, sid, did, obj_id):
     # Store the grid dictionary into the session variable
     session['gridData'] = sql_grid_data
 
-    pref = Preferences.module('sqleditor')
-    new_browser_tab = pref.preference('new_browser_tab').get()
-
     return make_json_response(
         data={
-            'gridTransId': trans_id,
-            'newBrowserTab': new_browser_tab
+            'gridTransId': trans_id
         }
     )
 
@@ -246,12 +239,6 @@ def panel(trans_id, is_query_tool, editor_title):
     if "linux" in _platform:
         is_linux_platform = True
 
-    pref = Preferences.module('sqleditor')
-    if pref.preference('new_browser_tab').get():
-        new_browser_tab = 'true'
-    else:
-        new_browser_tab = 'false'
-
     # Fetch the server details
     bgcolor = None
     fgcolor = None
@@ -271,25 +258,16 @@ def panel(trans_id, is_query_tool, editor_title):
 
     url_params = dict()
     if is_query_tool == 'true':
-        prompt_save_changes = pref.preference(
-            'prompt_save_query_changes'
-        ).get()
         url_params['sgid'] = trans_obj.sgid
         url_params['sid'] = trans_obj.sid
         url_params['did'] = trans_obj.did
     else:
-        prompt_save_changes = pref.preference(
-            'prompt_save_data_changes'
-        ).get()
         url_params['cmd_type'] = trans_obj.cmd_type
         url_params['obj_type'] = trans_obj.object_type
         url_params['sgid'] = trans_obj.sgid
         url_params['sid'] = trans_obj.sid
         url_params['did'] = trans_obj.did
         url_params['obj_id'] = trans_obj.obj_id
-
-    display_connection_status = pref.preference('connection_status').get()
-    queryToolShortcuts = get_query_tool_keyboard_shortcuts()
 
     return render_template(
         "datagrid/index.html",
@@ -300,19 +278,11 @@ def panel(trans_id, is_query_tool, editor_title):
         script_type_url=sURL,
         is_desktop_mode=app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
-        is_new_browser_tab=new_browser_tab,
         server_type=server_type,
         client_platform=user_agent.platform,
         bgcolor=bgcolor,
         fgcolor=fgcolor,
-        # convert python boolean value to equivalent js boolean literal
-        # before passing it to html template.
-        prompt_save_changes='true' if prompt_save_changes else 'false',
-        display_connection_status=display_connection_status,
-        url_params=json.dumps(url_params),
-        key=queryToolShortcuts.get('keys'),
-        shortcuts=queryToolShortcuts.get('shortcuts'),
-        get_shortcut_text=get_text_representation_of_shortcut
+        url_params=json.dumps(url_params)
     )
 
 
@@ -387,13 +357,9 @@ def initialize_query_tool(sgid, sid, did=None):
     # Store the grid dictionary into the session variable
     session['gridData'] = sql_grid_data
 
-    pref = Preferences.module('sqleditor')
-    new_browser_tab = pref.preference('new_browser_tab').get()
-
     return make_json_response(
         data={
-            'gridTransId': trans_id,
-            'newBrowserTab': new_browser_tab
+            'gridTransId': trans_id
         }
     )
 

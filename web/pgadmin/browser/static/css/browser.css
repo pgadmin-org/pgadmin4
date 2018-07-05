@@ -1,3 +1,6 @@
+:root {
+  --codemirror-font-size : 1em;
+}
 /* Styles for the main browser */
 .browser-pane-container {
     position: absolute;
@@ -65,4 +68,8 @@ samp,
 
 .pg-login-icon {
   font-size: 16px;
+}
+
+.CodeMirror {
+  font-size: var(--codemirror-font-size, '1em');
 }

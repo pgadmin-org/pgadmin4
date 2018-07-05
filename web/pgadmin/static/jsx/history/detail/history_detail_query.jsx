@@ -64,6 +64,7 @@ export default class HistoryDetailQuery extends React.Component {
             mode: 'text/x-pgsql',
             readOnly: true,
           }}
+          sqlFontSize= {this.props.sqlEditorPref.sql_font_size}
         />
       </div>);
   }
@@ -71,4 +72,5 @@ export default class HistoryDetailQuery extends React.Component {
 
 HistoryDetailQuery.propTypes = {
   historyEntry: Shapes.historyDetail,
+  sqlEditorPref: Shapes.sqlEditorPrefObj,
 };

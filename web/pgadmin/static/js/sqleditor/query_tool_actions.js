@@ -119,58 +119,6 @@ let queryToolActions = {
     window.top.document.activeElement.blur();
   },
 
-  getKeyboardShortcuts: function (sqlEditorController) {
-    let executeQueryPref = window.top.pgAdmin.Browser.get_preference(
-      'sqleditor', 'execute_query');
-    let explainQueryPref = window.top.pgAdmin.Browser.get_preference(
-      'sqleditor', 'explain_query');
-    let explainAnalyzeQueryPref = window.top.pgAdmin.Browser.get_preference(
-      'sqleditor', 'explain_analyze_query');
-    let downloadCsvPref = window.top.pgAdmin.Browser.get_preference(
-      'sqleditor', 'download_csv');
-    let nextPanelPerf = window.top.pgAdmin.Browser.get_preference(
-      'sqleditor', 'move_next');
-    let previousPanelPerf = window.top.pgAdmin.Browser.get_preference(
-      'sqleditor', 'move_previous');
-    let toggleCasePerf = window.top.pgAdmin.Browser.get_preference(
-      'sqleditor', 'toggle_case');
-
-    if(!executeQueryPref && sqlEditorController.handler.is_new_browser_tab) {
-      executeQueryPref = window.opener.pgAdmin.Browser.get_preference(
-        'sqleditor', 'execute_query'
-      ),
-      explainQueryPref = window.opener.pgAdmin.Browser.get_preference(
-        'sqleditor', 'explain_query'
-      ),
-      explainAnalyzeQueryPref = window.opener.pgAdmin.Browser.get_preference(
-        'sqleditor', 'explain_analyze_query'
-      ),
-      downloadCsvPref = window.opener.pgAdmin.Browser.get_preference(
-        'sqleditor', 'download_csv'
-      ),
-      nextPanelPerf = window.opener.pgAdmin.Browser.get_preference(
-        'sqleditor', 'move_next'
-      ),
-      previousPanelPerf = window.opener.pgAdmin.Browser.get_preference(
-        'sqleditor', 'move_previous'
-      ),
-      toggleCasePerf = window.opener.pgAdmin.Browser.get_preference(
-        'sqleditor', 'toggle_case'
-      );
-    }
-
-    return {
-      'execute': executeQueryPref.value,
-      'explain': explainQueryPref.value,
-      'explain_analyze': explainAnalyzeQueryPref.value,
-      'download_csv': downloadCsvPref.value,
-      'move_next': nextPanelPerf.value,
-      'move_previous': previousPanelPerf.value,
-      'toggle_case': toggleCasePerf.value,
-    };
-
-  },
-
   toggleCaseOfSelectedText: function (sqlEditorController) {
     let codeMirrorObj = sqlEditorController.gridView.query_tool_obj;
     let selectedText = codeMirrorObj.getSelection();

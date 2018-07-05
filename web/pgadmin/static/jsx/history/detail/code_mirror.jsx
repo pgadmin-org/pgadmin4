@@ -50,6 +50,11 @@ export default class CodeMirror extends React.Component {
     Object.keys(props.options || {}).forEach(key => this.editor.setOption(key, props.options[key]));
 
     this.editor.setValue(props.value || '');
+
+    if(props.sqlFontSize) {
+      $(this.editor.getWrapperElement()).css('font-size', props.sqlFontSize);
+    }
+
     this.editor.refresh();
   }
 

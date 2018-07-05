@@ -83,6 +83,7 @@ module.exports = {
       'pgadmin.backform': sourcesDir + '/js/backform.pgadmin',
       'pgbrowser': path.resolve(__dirname, 'regression/javascript/fake_browser'),
       'pgadmin.schema.dir': path.resolve(__dirname, 'pgadmin/browser/server_groups/servers/databases/schemas/static/js'),
+      'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
     },
   },
 };
