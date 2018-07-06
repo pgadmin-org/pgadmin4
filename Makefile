@@ -19,9 +19,6 @@ all: docs pip src runtime
 appbundle: docs
 	./pkg/mac/build.sh
 
-mac-deps:
-	./pkg/setup-macos.sh
-
 install-node:
 	cd web && yarn install
 

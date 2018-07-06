@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e -x
+set -e
 
 OPENSSL_VERSION=1.0.2o
 POSTGRES_VERSION=10.4
