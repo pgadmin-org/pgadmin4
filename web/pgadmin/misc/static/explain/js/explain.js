@@ -1,7 +1,7 @@
 define('pgadmin.misc.explain', [
   'sources/url_for', 'jquery', 'underscore', 'underscore.string',
-  'sources/pgadmin', 'backbone', 'snapsvg',
-], function(url_for, $, _, S, pgAdmin, Backbone, Snap) {
+  'sources/pgadmin', 'backbone', 'snapsvg', 'explain_statistics',
+], function(url_for, $, _, S, pgAdmin, Backbone, Snap, StatisticsModel) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
 
@@ -615,6 +615,9 @@ define('pgadmin.misc.explain', [
         });
         toolTipContainer.css('left', toolTipX);
         toolTipContainer.css('top', toolTipY);
+
+        $('.pgadmin-explain-tooltip').css('padding', '5px');
+        $('.pgadmin-explain-tooltip').css('border', '1px solid white');
       });
 
       // Remove tooltip when mouse is out from node's area
@@ -696,6 +699,7 @@ define('pgadmin.misc.explain', [
     },
     initialize: function() {
       this.set('Plan', new PlanModel());
+      this.set('Statistics', new StatisticsModel());
     },
 
     // Parse the JSON data and fetch its children plans
@@ -716,6 +720,17 @@ define('pgadmin.misc.explain', [
         data['height'] = plan.get('height') + (yMargin * 4);
 
         delete data['Plan'];
+      }
+
+      var statistics = this.get('Statistics');
+      if (data && 'JIT' in data) {
+        statistics.set('JIT', data['JIT']);
+        delete data ['JIT'];
+      }
+
+      if (data && 'Triggers' in data) {
+        statistics.set('Triggers', data['Triggers']);
+        delete data ['Triggers'];
       }
 
       return data;
@@ -745,6 +760,10 @@ define('pgadmin.misc.explain', [
       plan.draw(
         g, xpos, ypos, undefined, undefined, graphContainer, toolTipContainer
       );
+
+      //Set the Statistics as tooltip
+      var statistics = this.get('Statistics');
+      statistics.set_statistics(toolTipContainer);
     },
   });
 
@@ -783,6 +802,21 @@ define('pgadmin.misc.explain', [
           $('<i></i>', {
             class: 'fa fa-search-minus',
           }));
+
+      var statsArea = $('<div></div>', {
+        class: 'pg-explain-stats-area btn-group hidden',
+        role: 'group',
+      }).appendTo(container);
+
+      $('<button></button>', {
+        id: 'btn-explain-stats',
+        class: 'btn pg-explain-stats-btn badge',
+        title: 'Statistics',
+        tabindex: 0,
+      }).appendTo(statsArea).append(
+        $('<i></i>', {
+          class: 'fa fa-line-chart',
+        }));
 
       // Main div to be drawn all images on
       var planDiv = $('<div></div>', {

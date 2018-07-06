@@ -104,6 +104,16 @@ class QueryToolFeatureTest(BaseFeatureTest):
         self._query_tool_notify_statements()
         self._clear_query_tool()
 
+        # explain query with JIT stats
+        print("Explain query with JIT stats... ",
+              file=sys.stderr, end="")
+        if self._supported_jit_on_server():
+            self._query_tool_explain_check_jit_stats()
+            print("OK.", file=sys.stderr)
+            self._clear_query_tool()
+        else:
+            print("Skipped.", file=sys.stderr)
+
     def after(self):
         self.page.remove_server(self.server)
         connection = test_utils.get_db_connection(
@@ -660,8 +670,61 @@ SELECT 1, pg_sleep(300)"""
             wait.until(WaitForAnyElementWithText(
                 (By.CSS_SELECTOR, 'td.payload'), "Hello"))
             print("OK.", file=sys.stderr)
+            self._clear_query_tool()
         else:
             print("Skipped.", file=sys.stderr)
+
+    def _supported_jit_on_server(self):
+        connection = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
+
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('select version()')
+        version_string = pg_cursor.fetchone()
+
+        is_edb = False
+        if len(version_string) > 0:
+            is_edb = 'EnterpriseDB' in version_string[0]
+
+        connection.close()
+
+        return connection.server_version >= 110000 and not is_edb
+
+    def _query_tool_explain_check_jit_stats(self):
+        wait = WebDriverWait(self.page.driver, 10)
+
+        self.page.fill_codemirror_area_with("SET jit_above_cost=10;")
+        self.page.find_by_id("btn-flash").click()
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self._clear_query_tool()
+
+        self.page.fill_codemirror_area_with("SELECT count(*) FROM pg_class;")
+        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op.click()
+        ActionChains(self.driver).move_to_element(
+            query_op.find_element_by_xpath(
+                "//li[contains(.,'Explain Options')]")).perform()
+
+        self.page.find_by_id("btn-explain-verbose").click()
+        self.page.find_by_id("btn-explain-costs").click()
+        self.page.find_by_id("btn-explain-analyze").click()
+
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.click_tab('Data Output')
+
+        canvas = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas"))
+        )
+        # Search for 'Output' word in result (verbose option)
+        canvas.find_element_by_xpath("//*[contains(string(), 'JIT')]")
+
+        self._clear_query_tool()
 
 
 class WaitForAnyElementWithText(object):

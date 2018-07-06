@@ -10,7 +10,7 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
-| `Feature #???? <https://redmine.postgresql.org/issues/????>`_ - Add support for foo!
+| `Feature #3397 <https://redmine.postgresql.org/issues/3397>`_ - Add support for Trigger and JIT stats in the graphical query plan viewer.
 
 
 Bug fixes

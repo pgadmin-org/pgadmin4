@@ -17,6 +17,24 @@
    opacity: 1;
 }
 
+.pg-explain-stats-area {
+  position: absolute;
+  top: 5px;
+  right: 25px;
+  opacity: 0.5;
+}
+
+.pg-explain-stats-btn {
+  top: 5px;
+  min-width: 25px;
+  border: 1px solid transparent;
+  pointer-events: none;
+}
+
+.pg-explain-stats-area:hover {
+  opacity: 1;
+}
+
 .explain-tooltip {
   display: table-cell;
   text-align: left;
@@ -37,8 +55,6 @@ td.explain-tooltip-val {
 
 .pgadmin-explain-tooltip {
   position: absolute;
-  padding:5px;
-  border: 1px solid white;
   opacity:0;
   color: cornsilk;
   background-color: #010125;
