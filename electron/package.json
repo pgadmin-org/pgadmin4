@@ -74,7 +74,7 @@
       "electronInstallerDMG": {
         "background": "assets/icons/linux/pgAdmin4.png",
         "icon": "assets/icons/darwin/pgAdmin4.icns",
-        "format": "ULFO"
+        "format": "UDZO"
       }
     }
   },
