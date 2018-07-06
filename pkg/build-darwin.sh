@@ -2,6 +2,8 @@
 
 set -e
 
+export MACOSX_DEPLOYMENT_TARGET=10.10
+
 DIR=$(cd `dirname $0` && cd .. && pwd)
 BUILD_DIR=${DIR}/mac-build
 if  [ -d ${BUILD_DIR} ]; then

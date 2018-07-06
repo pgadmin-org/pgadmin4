@@ -7,6 +7,8 @@ POSTGRES_VERSION=10.4
 PYTHON_VERSION=3.6.6
 NODE_VERSION=8.11.3
 
+export MACOSX_DEPLOYMENT_TARGET=10.10
+
 DIR=$(cd `dirname $0` && cd .. && pwd)
 DEP_DIR=${DIR}/deps
 if  [ -d ${DEP_DIR} ]; then
