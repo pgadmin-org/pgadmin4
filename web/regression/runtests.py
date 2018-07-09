@@ -216,7 +216,7 @@ def get_test_modules(arguments):
                 if 'headless_chrome' in test_setup.config_data:
                     if test_setup.config_data['headless_chrome']:
                         options.add_argument("--headless")
-            options.add_argument("--window-size=1280x1024")
+            options.add_argument("--window-size=1280,1024")
             driver = webdriver.Chrome(chrome_options=options)
 
         app_starter = AppStarter(driver, config)
