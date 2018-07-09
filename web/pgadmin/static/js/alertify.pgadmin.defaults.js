@@ -337,25 +337,25 @@ define([
           null, 'connect', args.info.server, true, args.info
         ),
         dataType: 'json',
-        success: function(res) {
-          if (res.success && 'connected' in res.data) {
-            if (res.data.connected) {
-              // Server is connected, but - the connection with the
-              // particular database has been lost.
-              pgBrowser.Events.trigger(
-                'pgadmin:database:connection:lost', args.item, jsonResp
-              );
-              return;
-            }
+      })
+      .done(function(res) {
+        if (res.success && 'connected' in res.data) {
+          if (res.data.connected) {
+            // Server is connected, but - the connection with the
+            // particular database has been lost.
+            pgBrowser.Events.trigger(
+              'pgadmin:database:connection:lost', args.item, jsonResp
+            );
+            return;
           }
+        }
 
-          // Serever was not connected, we should first try to connect
-          // the server.
-          reconnectServer();
-        },
-        error: function() {
-          reconnectServer();
-        },
+        // Serever was not connected, we should first try to connect
+        // the server.
+        reconnectServer();
+      })
+      .fail(function() {
+        reconnectServer();
       });
       return true;
     }

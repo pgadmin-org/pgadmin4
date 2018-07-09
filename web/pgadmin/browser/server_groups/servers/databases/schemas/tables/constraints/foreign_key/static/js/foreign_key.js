@@ -214,12 +214,12 @@ define('pgadmin.node.foreign_key', [
                       async: false,
                       data : {tid:tid},
                       url: full_url,
-                      success: function(res) {
-                        data = res.data;
-                      },
-                      error: function() {
-                        m.trigger('pgadmin:view:fetch:error', m, self.field);
-                      },
+                    })
+                    .done(function(res) {
+                      data = res.data;
+                    })
+                    .fail(function() {
+                      m.trigger('pgadmin:view:fetch:error', m, self.field);
                     });
                     m.trigger('pgadmin:view:fetched', m, self.field);
                   }
@@ -558,12 +558,12 @@ define('pgadmin.node.foreign_key', [
               async: false,
               data : {cols:JSON.stringify(cols)},
               url: full_url,
-              success: function(res) {
-                coveringindex = res.data;
-              },
-              error: function() {
-                m.trigger('pgadmin:view:fetch:error', m, self.field);
-              },
+            })
+            .done(function(res) {
+              coveringindex = res.data;
+            })
+            .fail(function() {
+              m.trigger('pgadmin:view:fetch:error', m, self.field);
             });
             m.trigger('pgadmin:view:fetched', m, self.field);
           }
@@ -653,21 +653,21 @@ define('pgadmin.node.foreign_key', [
           $.ajax({
             url: obj.generate_url(i, 'validate', d, true),
             type:'GET',
-            success: function(res) {
-              if (res.success == 1) {
-                Alertify.success(res.info);
-                t.removeIcon(i);
-                data.valid = true;
-                data.icon = 'icon-foreign_key';
-                t.addIcon(i, {icon: data.icon});
-                setTimeout(function() {t.deselect(i);}, 10);
-                setTimeout(function() {t.select(i);}, 100);
-              }
-            },
-            error: function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
-            },
+          })
+          .done(function(res) {
+            if (res.success == 1) {
+              Alertify.success(res.info);
+              t.removeIcon(i);
+              data.valid = true;
+              data.icon = 'icon-foreign_key';
+              t.addIcon(i, {icon: data.icon});
+              setTimeout(function() {t.deselect(i);}, 10);
+              setTimeout(function() {t.select(i);}, 100);
+            }
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error);
+            t.unload(i);
           });
 
           return false;

@@ -229,65 +229,65 @@ define('misc.statistics', [
                 }
               }, 1000);
             },
-            success: function(res) {
-              // clear timer and reset message.
-              clearTimeout(timer);
-              $msgContainer.text('');
-              if (res.data) {
-                var data = res.data;
-                if (node.hasCollectiveStatistics || data['rows'].length > 1) {
-                  self.__createMultiLineStatistics.call(self, data, node.statsPrettifyFields);
-                } else {
-                  self.__createSingleLineStatistics.call(self, data, node.statsPrettifyFields);
-                }
-
-                if (self.grid) {
-                  delete self.grid;
-                  self.grid = null;
-                }
-
-                self.grid = new Backgrid.Grid({
-                  columns: self.columns,
-                  collection: self.collection,
-                  className: GRID_CLASSES,
-                });
-                self.grid.render();
-                $gridContainer.empty();
-                $gridContainer.append(self.grid.$el);
-
-                if (!$msgContainer.hasClass('hidden')) {
-                  $msgContainer.addClass('hidden');
-                }
-                $gridContainer.removeClass('hidden');
-
-              } else if (res.info) {
-                if (!$gridContainer.hasClass('hidden')) {
-                  $gridContainer.addClass('hidden');
-                }
-                $msgContainer.text(res.info);
-                $msgContainer.removeClass('hidden');
+          })
+          .done(function(res) {
+            // clear timer and reset message.
+            clearTimeout(timer);
+            $msgContainer.text('');
+            if (res.data) {
+              var data = res.data;
+              if (node.hasCollectiveStatistics || data['rows'].length > 1) {
+                self.__createMultiLineStatistics.call(self, data, node.statsPrettifyFields);
+              } else {
+                self.__createSingleLineStatistics.call(self, data, node.statsPrettifyFields);
               }
-            },
-            error: function(xhr, error, message) {
-              var _label = treeHierarchy[n_type].label;
-              pgBrowser.Events.trigger(
-                'pgadmin:node:retrieval:error', 'statistics', xhr, error, message, item
+
+              if (self.grid) {
+                delete self.grid;
+                self.grid = null;
+              }
+
+              self.grid = new Backgrid.Grid({
+                columns: self.columns,
+                collection: self.collection,
+                className: GRID_CLASSES,
+              });
+              self.grid.render();
+              $gridContainer.empty();
+              $gridContainer.append(self.grid.$el);
+
+              if (!$msgContainer.hasClass('hidden')) {
+                $msgContainer.addClass('hidden');
+              }
+              $gridContainer.removeClass('hidden');
+
+            } else if (res.info) {
+              if (!$gridContainer.hasClass('hidden')) {
+                $gridContainer.addClass('hidden');
+              }
+              $msgContainer.text(res.info);
+              $msgContainer.removeClass('hidden');
+            }
+          })
+          .fail(function(xhr, error, message) {
+            var _label = treeHierarchy[n_type].label;
+            pgBrowser.Events.trigger(
+              'pgadmin:node:retrieval:error', 'statistics', xhr, error, message, item
+            );
+            if (!Alertify.pgHandleItemError(xhr, error, message, {
+              item: item,
+              info: treeHierarchy,
+            })) {
+              Alertify.pgNotifier(
+                error, xhr,
+                S(gettext('Error retrieving the information - %s')).sprintf(
+                  message || _label
+                ).value(),
+                function() {}
               );
-              if (!Alertify.pgHandleItemError(xhr, error, message, {
-                item: item,
-                info: treeHierarchy,
-              })) {
-                Alertify.pgNotifier(
-                  error, xhr,
-                  S(gettext('Error retrieving the information - %s')).sprintf(
-                    message || _label
-                  ).value(),
-                  function() {}
-                );
-              }
-              // show failed message.
-              $msgContainer.text(gettext('Failed to retrieve data from the server.'));
-            },
+            }
+            // show failed message.
+            $msgContainer.text(gettext('Failed to retrieve data from the server.'));
           });
         }
       }

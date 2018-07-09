@@ -80,32 +80,32 @@ _.extend(pgBrowser, {
     setTimeout(function() {
       $.ajax({
         url: url_for('preferences.get_all'),
-        success: function(res) {
-          self.preferences_cache = res;
-          self.preference_version(self.generate_preference_version());
+      })
+      .done(function(res) {
+        self.preferences_cache = res;
+        self.preference_version(self.generate_preference_version());
 
-          pgBrowser.keyboardNavigation.init();
-          if(pgBrowser.tree) {
-            modifyAnimation.modifyAcitreeAnimation(self);
-            modifyAnimation.modifyAlertifyAnimation(self);
-          }
+        pgBrowser.keyboardNavigation.init();
+        if(pgBrowser.tree) {
+          modifyAnimation.modifyAcitreeAnimation(self);
+          modifyAnimation.modifyAlertifyAnimation(self);
+        }
 
-          /* Once the cache is loaded after changing the preferences,
-           * notify the modules of the change
-           */
-          if(modulesChanged) {
-            if(typeof modulesChanged === 'string'){
-              $.event.trigger('prefchange:'+modulesChanged);
-            } else {
-              _.each(modulesChanged, (val, key)=> {
-                $.event.trigger('prefchange:'+key);
-              });
-            }
+        /* Once the cache is loaded after changing the preferences,
+         * notify the modules of the change
+         */
+        if(modulesChanged) {
+          if(typeof modulesChanged === 'string'){
+            $.event.trigger('prefchange:'+modulesChanged);
+          } else {
+            _.each(modulesChanged, (val, key)=> {
+              $.event.trigger('prefchange:'+key);
+            });
           }
-        },
-        error: function(xhr, status, error) {
-          Alertify.pgRespErrorNotify(xhr, error);
-        },
+        }
+      })
+      .fail(function(xhr, status, error) {
+        Alertify.pgRespErrorNotify(xhr, error);
       });
     }, 500);
   },

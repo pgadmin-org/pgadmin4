@@ -111,20 +111,20 @@ define('pgadmin.node.fts_configuration', [
                     $.ajax({
                       async: false,
                       url: full_url,
-                      success: function(res) {
-                      /*
-                       * We will cache this data for short period of time for
-                       * avoiding same calls.
-                       */
-                        data = cache_node.cache(url,
-                                 node_info,
-                                 cache_level,
-                                 res.data
-                               );
-                      },
-                      error: function() {
-                        m.trigger('pgadmin:view:fetch:error', m, self.field);
-                      },
+                    })
+                    .done(function(res) {
+                    /*
+                     * We will cache this data for short period of time for
+                     * avoiding same calls.
+                     */
+                      data = cache_node.cache(url,
+                               node_info,
+                               cache_level,
+                               res.data
+                             );
+                    })
+                    .fail(function() {
+                      m.trigger('pgadmin:view:fetch:error', m, self.field);
                     });
                     m.trigger('pgadmin:view:fetched', m, self.field);
                   }

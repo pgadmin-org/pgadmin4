@@ -79,102 +79,102 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
         $.ajax({
           url: url,
           method: 'GET',
-          success: function (res) {
-            if(res && res.data) {
-              var status = res.data.status,
-                msg = res.data.message,
-                is_status_changed = false;
+        })
+        .done(function (res) {
+          if(res && res.data) {
+            var status = res.data.status,
+              msg = res.data.message,
+              is_status_changed = false;
 
-              // Raise notify messages comes from database server.
-              sqleditor_obj.update_notifications(res.data.notifies);
+            // Raise notify messages comes from database server.
+            sqleditor_obj.update_notifications(res.data.notifies);
 
-              // Inject CSS as required
-              switch(status) {
-                  // Busy
-              case 1:
-                      // if received busy status more than once then only
-                if(status == sqlEditorUtils.previousStatus &&
-                          !$status_el.hasClass('fa-hourglass-half')) {
-                  $status_el.removeClass()
-                                  .addClass('fa fa-hourglass-half');
-                  is_status_changed = true;
-                }
-                break;
-                  // Idle in transaction
-              case 2:
-                if(sqlEditorUtils.previousStatus != status &&
-                          !$status_el.hasClass('fa-clock-o')) {
-                  $status_el.removeClass()
-                                  .addClass('fa fa-clock-o');
-                  is_status_changed = true;
-                }
-                break;
-                  // Failed in transaction
-              case 3:
-                if(sqlEditorUtils.previousStatus != status &&
-                          !$status_el.hasClass('fa-exclamation-circle')) {
-                  $status_el.removeClass()
-                                  .addClass('fa fa-exclamation-circle');
-                  is_status_changed = true;
-                }
-                break;
-                  // Failed in transaction with unknown server side error
-              case 4:
-                if(sqlEditorUtils.previousStatus != status &&
-                          !$status_el.hasClass('fa-exclamation-triangle')) {
-                  $status_el.removeClass()
-                                  .addClass('fa fa-exclamation-triangle');
-                  is_status_changed = true;
-                }
-                break;
-              default:
-                if(sqlEditorUtils.previousStatus != status &&
-                          !$status_el.hasClass('fa-query_tool_connected')) {
-                  $status_el.removeClass()
-                                  .addClass('fa-custom fa-query-tool-connected');
-                  is_status_changed = true;
-                }
-              }
-
-              sqlEditorUtils.previousStatus = status;
-              // Set bootstrap popover message
-              if(is_status_changed) {
-                $el.popover('hide');
-                $el.attr('data-content', msg);
-              }
-            } else {
-              // We come here means we did not receive expected response
-              // from server, we need to error out
-              sqlEditorUtils.previousStatus = -99;
-              msg = gettext('An unexpected error occurred - ' +
-                            'ensure you are logged into the application.');
-              $el.attr('data-content', msg);
-              if(!$status_el.hasClass('fa-query-tool-disconnected')) {
-                $el.popover('hide');
+            // Inject CSS as required
+            switch(status) {
+                // Busy
+            case 1:
+                    // if received busy status more than once then only
+              if(status == sqlEditorUtils.previousStatus &&
+                        !$status_el.hasClass('fa-hourglass-half')) {
                 $status_el.removeClass()
-                          .addClass('fa-custom fa-query-tool-disconnected');
+                                .addClass('fa fa-hourglass-half');
+                is_status_changed = true;
+              }
+              break;
+                // Idle in transaction
+            case 2:
+              if(sqlEditorUtils.previousStatus != status &&
+                        !$status_el.hasClass('fa-clock-o')) {
+                $status_el.removeClass()
+                                .addClass('fa fa-clock-o');
+                is_status_changed = true;
+              }
+              break;
+                // Failed in transaction
+            case 3:
+              if(sqlEditorUtils.previousStatus != status &&
+                        !$status_el.hasClass('fa-exclamation-circle')) {
+                $status_el.removeClass()
+                                .addClass('fa fa-exclamation-circle');
+                is_status_changed = true;
+              }
+              break;
+                // Failed in transaction with unknown server side error
+            case 4:
+              if(sqlEditorUtils.previousStatus != status &&
+                        !$status_el.hasClass('fa-exclamation-triangle')) {
+                $status_el.removeClass()
+                                .addClass('fa fa-exclamation-triangle');
+                is_status_changed = true;
+              }
+              break;
+            default:
+              if(sqlEditorUtils.previousStatus != status &&
+                        !$status_el.hasClass('fa-query_tool_connected')) {
+                $status_el.removeClass()
+                                .addClass('fa-custom fa-query-tool-connected');
+                is_status_changed = true;
               }
             }
-          },
-          error: function (e) {
-            sqlEditorUtils.previousStatus = -1;
-            var msg = gettext('Transaction status check failed.');
-            if (e.readyState == 0) {
-              msg = gettext('Not connected to the server or the connection to ' +
-                            'the server has been closed.');
-            } else if (e.responseJSON && e.responseJSON.errormsg) {
-              msg = e.responseJSON.errormsg;
-            }
 
-            // Set bootstrap popover
+            sqlEditorUtils.previousStatus = status;
+            // Set bootstrap popover message
+            if(is_status_changed) {
+              $el.popover('hide');
+              $el.attr('data-content', msg);
+            }
+          } else {
+            // We come here means we did not receive expected response
+            // from server, we need to error out
+            sqlEditorUtils.previousStatus = -99;
+            msg = gettext('An unexpected error occurred - ' +
+                          'ensure you are logged into the application.');
             $el.attr('data-content', msg);
-            // Add error class
             if(!$status_el.hasClass('fa-query-tool-disconnected')) {
               $el.popover('hide');
               $status_el.removeClass()
                         .addClass('fa-custom fa-query-tool-disconnected');
             }
-          },
+          }
+        })
+        .fail(function (e) {
+          sqlEditorUtils.previousStatus = -1;
+          var msg = gettext('Transaction status check failed.');
+          if (e.readyState == 0) {
+            msg = gettext('Not connected to the server or the connection to ' +
+                          'the server has been closed.');
+          } else if (e.responseJSON && e.responseJSON.errormsg) {
+            msg = e.responseJSON.errormsg;
+          }
+
+          // Set bootstrap popover
+          $el.attr('data-content', msg);
+          // Add error class
+          if(!$status_el.hasClass('fa-query-tool-disconnected')) {
+            $el.popover('hide');
+            $status_el.removeClass()
+                      .addClass('fa-custom fa-query-tool-disconnected');
+          }
         });
       },
 

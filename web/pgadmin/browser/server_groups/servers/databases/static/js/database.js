@@ -185,33 +185,33 @@ define('pgadmin.node.database', [
               $.ajax({
                 url: obj.generate_url(i, 'connect', d, true),
                 type:'DELETE',
-                success: function(res) {
-                  if (res.success == 1) {
-                    var prv_i = t.parent(i);
-                    Alertify.success(res.info);
-                    t.removeIcon(i);
-                    data.connected = false;
-                    data.icon = 'icon-database-not-connected';
-                    t.addIcon(i, {icon: data.icon});
-                    t.unload(i);
-                    t.setInode(i);
-                    setTimeout(function() {
-                      t.select(prv_i);
-                    }, 10);
-
-                  } else {
-                    try {
-                      Alertify.error(res.errormsg);
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
-                    t.unload(i);
-                  }
-                },
-                error: function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
+              })
+              .done(function(res) {
+                if (res.success == 1) {
+                  var prv_i = t.parent(i);
+                  Alertify.success(res.info);
+                  t.removeIcon(i);
+                  data.connected = false;
+                  data.icon = 'icon-database-not-connected';
+                  t.addIcon(i, {icon: data.icon});
                   t.unload(i);
-                },
+                  t.setInode(i);
+                  setTimeout(function() {
+                    t.select(prv_i);
+                  }, 10);
+
+                } else {
+                  try {
+                    Alertify.error(res.errormsg);
+                  } catch (e) {
+                    console.warn(e.stack || e);
+                  }
+                  t.unload(i);
+                }
+              })
+              .fail(function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
+                t.unload(i);
               });
             },
             function() { return true; });

@@ -277,17 +277,17 @@ define('pgadmin.node.tablespace', [
                           url: url,
                           method:'PUT',
                           data:{'data': JSON.stringify(args) },
-                          success: function(res) {
-                            if (res.success) {
-                              Alertify.success(res.info);
-                              self.close();
-                            } else {
-                              Alertify.error(res.errormsg);
-                            }
-                          },
-                          error: function(xhr, status, error) {
-                            Alertify.pgRespErrorNotify(xhr, error);
-                          },
+                        })
+                        .done(function(res) {
+                          if (res.success) {
+                            Alertify.success(res.info);
+                            self.close();
+                          } else {
+                            Alertify.error(res.errormsg);
+                          }
+                        })
+                        .fail(function(xhr, status, error) {
+                          Alertify.pgRespErrorNotify(xhr, error);
                         });
                       },
                       function() {

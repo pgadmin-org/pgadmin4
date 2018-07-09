@@ -192,26 +192,26 @@ define([
               url: _Url,
               method: 'GET',
               async: false,
-              success: function(res) {
-                if (res.data.args_count != 0) {
-                  for (i = 0; i < res.data.result.length; i++) {
-                    // Below will format the data to be stored in sqlite database
-                    func_args_data.push({
-                      'arg_id': res.data.result[i]['arg_id'],
-                      'is_null': res.data.result[i]['is_null'],
-                      'is_expression': res.data.result[i]['is_expression'],
-                      'use_default': res.data.result[i]['use_default'],
-                      'value': res.data.result[i]['value'],
-                    });
-                  }
+            })
+            .done(function(res) {
+              if (res.data.args_count != 0) {
+                for (i = 0; i < res.data.result.length; i++) {
+                  // Below will format the data to be stored in sqlite database
+                  func_args_data.push({
+                    'arg_id': res.data.result[i]['arg_id'],
+                    'is_null': res.data.result[i]['is_null'],
+                    'is_expression': res.data.result[i]['is_expression'],
+                    'use_default': res.data.result[i]['use_default'],
+                    'value': res.data.result[i]['value'],
+                  });
                 }
-              },
-              error: function() {
-                Alertify.alert(
-                  gettext('Debugger Error'),
-                  gettext('Unable to fetch the arguments from server')
-                );
-              },
+              }
+            })
+            .fail(function() {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Unable to fetch the arguments from server')
+              );
             });
 
             var argname, argtype, argmode, default_args_count, default_args, arg_cnt;
@@ -701,97 +701,97 @@ define([
                   data: {
                     'data': JSON.stringify(args_value_list),
                   },
-                  success: function(res) {
+                })
+                .done(function(res) {
 
-                    var url = url_for(
-                      'debugger.direct', {
+                  var url = url_for(
+                    'debugger.direct', {
+                      'trans_id': res.data.debuggerTransId,
+                    }
+                  );
+
+                  if (res.data.newBrowserTab) {
+                    window.open(url, '_blank');
+                  } else {
+                    pgBrowser.Events.once(
+                      'pgadmin-browser:frame:urlloaded:frm_debugger',
+                      function(frame) {
+                        frame.openURL(url);
+                      });
+
+                    // Create the debugger panel as per the data received from user input dialog.
+                    var dashboardPanel = pgBrowser.docker.findPanels('properties'),
+                      panel = pgBrowser.docker.addPanel(
+                        'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
+                      );
+
+                    panel.focus();
+
+                    // Panel Closed event
+                    panel.on(wcDocker.EVENT.CLOSED, function() {
+                      var closeUrl = url_for('debugger.close', {
                         'trans_id': res.data.debuggerTransId,
-                      }
-                    );
-
-                    if (res.data.newBrowserTab) {
-                      window.open(url, '_blank');
-                    } else {
-                      pgBrowser.Events.once(
-                        'pgadmin-browser:frame:urlloaded:frm_debugger',
-                        function(frame) {
-                          frame.openURL(url);
-                        });
-
-                      // Create the debugger panel as per the data received from user input dialog.
-                      var dashboardPanel = pgBrowser.docker.findPanels('properties'),
-                        panel = pgBrowser.docker.addPanel(
-                          'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
-                        );
-
-                      panel.focus();
-
-                      // Panel Closed event
-                      panel.on(wcDocker.EVENT.CLOSED, function() {
-                        var closeUrl = url_for('debugger.close', {
-                          'trans_id': res.data.debuggerTransId,
-                        });
-                        $.ajax({
-                          url: closeUrl,
-                          method: 'DELETE',
-                        });
                       });
-                    }
-                    var _Url;
-
-                    if (d._type == 'function') {
-                      _Url = url_for('debugger.set_arguments', {
-                        'sid': treeInfo.server._id,
-                        'did': treeInfo.database._id,
-                        'scid': treeInfo.schema._id,
-                        'func_id': treeInfo.function._id,
+                      $.ajax({
+                        url: closeUrl,
+                        method: 'DELETE',
                       });
-                    } else if (d._type == 'procedure') {
-                      _Url = url_for('debugger.set_arguments', {
-                        'sid': treeInfo.server._id,
-                        'did': treeInfo.database._id,
-                        'scid': treeInfo.schema._id,
-                        'func_id': treeInfo.procedure._id,
-                      });
-                    } else if (d._type == 'edbfunc') {
-                      // Get the existing function parameters available from sqlite database
-                      _Url = url_for('debugger.set_arguments', {
-                        'sid': treeInfo.server._id,
-                        'did': treeInfo.database._id,
-                        'scid': treeInfo.schema._id,
-                        'func_id': treeInfo.edbfunc._id,
-                      });
-                    } else if (d._type == 'edbproc') {
-                      // Get the existing function parameters available from sqlite database
-                      _Url = url_for('debugger.set_arguments', {
-                        'sid': treeInfo.server._id,
-                        'did': treeInfo.database._id,
-                        'scid': treeInfo.schema._id,
-                        'func_id': treeInfo.edbproc._id,
-                      });
-                    }
-
-                    $.ajax({
-                      url: _Url,
-                      method: 'POST',
-                      data: {
-                        'data': JSON.stringify(sqlite_func_args_list),
-                      },
-                      success: function() {},
-                      error: function() {
-                        Alertify.alert(
-                          gettext('Debugger Error'),
-                          gettext('Unable to set the arguments on the server')
-                        );
-                      },
                     });
-                  },
-                  error: function(e) {
+                  }
+                  var _Url;
+
+                  if (d._type == 'function') {
+                    _Url = url_for('debugger.set_arguments', {
+                      'sid': treeInfo.server._id,
+                      'did': treeInfo.database._id,
+                      'scid': treeInfo.schema._id,
+                      'func_id': treeInfo.function._id,
+                    });
+                  } else if (d._type == 'procedure') {
+                    _Url = url_for('debugger.set_arguments', {
+                      'sid': treeInfo.server._id,
+                      'did': treeInfo.database._id,
+                      'scid': treeInfo.schema._id,
+                      'func_id': treeInfo.procedure._id,
+                    });
+                  } else if (d._type == 'edbfunc') {
+                    // Get the existing function parameters available from sqlite database
+                    _Url = url_for('debugger.set_arguments', {
+                      'sid': treeInfo.server._id,
+                      'did': treeInfo.database._id,
+                      'scid': treeInfo.schema._id,
+                      'func_id': treeInfo.edbfunc._id,
+                    });
+                  } else if (d._type == 'edbproc') {
+                    // Get the existing function parameters available from sqlite database
+                    _Url = url_for('debugger.set_arguments', {
+                      'sid': treeInfo.server._id,
+                      'did': treeInfo.database._id,
+                      'scid': treeInfo.schema._id,
+                      'func_id': treeInfo.edbproc._id,
+                    });
+                  }
+
+                  $.ajax({
+                    url: _Url,
+                    method: 'POST',
+                    data: {
+                      'data': JSON.stringify(sqlite_func_args_list),
+                    },
+                  })
+                  .done(function() {})
+                  .fail(function() {
                     Alertify.alert(
-                      gettext('Debugger Target Initialization Error'),
-                      e.responseJSON.errormsg
+                      gettext('Debugger Error'),
+                      gettext('Unable to set the arguments on the server')
                     );
-                  },
+                  });
+                })
+                .fail(function(e) {
+                  Alertify.alert(
+                    gettext('Debugger Target Initialization Error'),
+                    e.responseJSON.errormsg
+                  );
                 });
               } else {
                 // If the debugging is started again then we should only set the
@@ -806,13 +806,13 @@ define([
                   data: {
                     'data': JSON.stringify(args_value_list),
                   },
-                  success: function() {},
-                  error: function(e) {
-                    Alertify.alert(
-                      gettext('Debugger Listener Startup Error'),
-                      e.responseJSON.errormsg
-                    );
-                  },
+                })
+                .done(function() {})
+                .fail(function(e) {
+                  Alertify.alert(
+                    gettext('Debugger Listener Startup Error'),
+                    e.responseJSON.errormsg
+                  );
                 });
 
                 // Set the new input arguments given by the user during debugging
@@ -828,13 +828,13 @@ define([
                   data: {
                     'data': JSON.stringify(sqlite_func_args_list),
                   },
-                  success: function() {},
-                  error: function() {
-                    Alertify.alert(
-                      gettext('Debugger Error'),
-                      gettext('Unable to set the arguments on the server')
-                    );
-                  },
+                })
+                .done(function() {})
+                .fail(function() {
+                  Alertify.alert(
+                    gettext('Debugger Error'),
+                    gettext('Unable to set the arguments on the server')
+                  );
                 });
 
               }

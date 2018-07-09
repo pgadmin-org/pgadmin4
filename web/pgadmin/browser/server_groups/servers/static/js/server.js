@@ -189,38 +189,38 @@ define('pgadmin.node.server', [
             $.ajax({
               url: obj.generate_url(i, 'connect', d, true),
               type:'DELETE',
-              success: function(res) {
-                if (res.success == 1) {
-                  Alertify.success(res.info);
-                  d = t.itemData(i);
-                  t.removeIcon(i);
-                  d.connected = false;
-                  d.icon = 'icon-server-not-connected';
-                  t.addIcon(i, {icon: d.icon});
-                  obj.callbacks.refresh.apply(obj, [null, i]);
-                  if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
-                    delete pgBrowser.serverInfo[d._id];
-                  }
-                  pgBrowser.enable_disable_menus(i);
-                  // Trigger server disconnect event
-                  pgBrowser.Events.trigger(
-                    'pgadmin:server:disconnect',
-                    {item: i, data: d}, false
-                  );
+            })
+            .done(function(res) {
+              if (res.success == 1) {
+                Alertify.success(res.info);
+                d = t.itemData(i);
+                t.removeIcon(i);
+                d.connected = false;
+                d.icon = 'icon-server-not-connected';
+                t.addIcon(i, {icon: d.icon});
+                obj.callbacks.refresh.apply(obj, [null, i]);
+                if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
+                  delete pgBrowser.serverInfo[d._id];
                 }
-                else {
-                  try {
-                    Alertify.error(res.errormsg);
-                  } catch (e) {
-                    console.warn(e.stack || e);
-                  }
-                  t.unload(i);
+                pgBrowser.enable_disable_menus(i);
+                // Trigger server disconnect event
+                pgBrowser.Events.trigger(
+                  'pgadmin:server:disconnect',
+                  {item: i, data: d}, false
+                );
+              }
+              else {
+                try {
+                  Alertify.error(res.errormsg);
+                } catch (e) {
+                  console.warn(e.stack || e);
                 }
-              },
-              error: function(xhr, status, error) {
-                Alertify.pgRespErrorNotify(xhr, error);
                 t.unload(i);
-              },
+              }
+            })
+            .fail(function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
+              t.unload(i);
             });
           };
 
@@ -284,18 +284,18 @@ define('pgadmin.node.server', [
               $.ajax({
                 url: obj.generate_url(i, 'reload', d, true),
                 method:'GET',
-                success: function(res) {
-                  if (res.data.status) {
-                    Alertify.success(res.data.result);
-                  }
-                  else {
-                    Alertify.error(res.data.result);
-                  }
-                },
-                error: function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                  t.unload(i);
-                },
+              })
+              .done(function(res) {
+                if (res.data.status) {
+                  Alertify.success(res.data.result);
+                }
+                else {
+                  Alertify.error(res.data.result);
+                }
+              })
+              .fail(function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
+                t.unload(i);
               });
             },
             function() { return true; }
@@ -325,13 +325,13 @@ define('pgadmin.node.server', [
                   url: obj.generate_url(i, 'restore_point', d, true),
                   method:'POST',
                   data:{ 'value': JSON.stringify(value) },
-                  success: function(res) {
-                    Alertify.success(res.data.result, 10);
-                  },
-                  error: function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
-                    t.unload(i);
-                  },
+                })
+                .done(function(res) {
+                  Alertify.success(res.data.result, 10);
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
                 });
               } else {
                 evt.cancel = true;
@@ -481,27 +481,27 @@ define('pgadmin.node.server', [
                       url: url,
                       method:'POST',
                       data:{'data': JSON.stringify(args) },
-                      success: function(res) {
-                        if (res.success) {
-                          // Notify user to update pgpass file
-                          if(is_pgpass_file_used) {
-                            Alertify.alert(
-                              gettext('Change Password'),
-                              gettext('Please make sure to disconnect the server'
-                                + ' and update the new password in the pgpass file'
-                                  + ' before performing any other operation')
-                            );
-                          }
-
-                          Alertify.success(res.info);
-                          self.close();
-                        } else {
-                          Alertify.error(res.errormsg);
+                    })
+                    .done(function(res) {
+                      if (res.success) {
+                        // Notify user to update pgpass file
+                        if(is_pgpass_file_used) {
+                          Alertify.alert(
+                            gettext('Change Password'),
+                            gettext('Please make sure to disconnect the server'
+                              + ' and update the new password in the pgpass file'
+                                + ' before performing any other operation')
+                          );
                         }
-                      },
-                      error: function(xhr, status, error) {
-                        Alertify.pgRespErrorNotify(xhr, error);
-                      },
+
+                        Alertify.success(res.info);
+                        self.close();
+                      } else {
+                        Alertify.error(res.errormsg);
+                      }
+                    })
+                    .fail(function(xhr, status, error) {
+                      Alertify.pgRespErrorNotify(xhr, error);
                     });
                   }
                 },
@@ -513,15 +513,15 @@ define('pgadmin.node.server', [
           $.ajax({
             url: check_pgpass_url,
             method:'GET',
-            success: function(res) {
-              if (res.success && res.data.is_pgpass) {
-                is_pgpass_file_used = true;
-              }
-              Alertify.changeServerPassword(d).resizeTo('40%','52%');
-            },
-            error: function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
-            },
+          })
+          .done(function(res) {
+            if (res.success && res.data.is_pgpass) {
+              is_pgpass_file_used = true;
+            }
+            Alertify.changeServerPassword(d).resizeTo('40%','52%');
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error);
           });
 
           return false;
@@ -542,23 +542,23 @@ define('pgadmin.node.server', [
             url: obj.generate_url(i, 'wal_replay' , d, true),
             type:'DELETE',
             dataType: 'json',
-            success: function(res) {
-              if (res.success == 1) {
-                Alertify.success(res.info);
-                t.itemData(i).wal_pause=res.data.wal_pause;
-                t.unload(i);
-                t.setInode(i);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            },
-            error: function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+          })
+          .done(function(res) {
+            if (res.success == 1) {
+              Alertify.success(res.info);
+              t.itemData(i).wal_pause=res.data.wal_pause;
               t.unload(i);
-            },
+              t.setInode(i);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error);
+            t.unload(i);
           });
         },
 
@@ -577,23 +577,23 @@ define('pgadmin.node.server', [
             url: obj.generate_url(i, 'wal_replay' , d, true),
             type:'PUT',
             dataType: 'json',
-            success: function(res) {
-              if (res.success == 1) {
-                Alertify.success(res.info);
-                t.itemData(i).wal_pause=res.data.wal_pause;
-                t.unload(i);
-                t.setInode(i);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            },
-            error: function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+          })
+          .done(function(res) {
+            if (res.success == 1) {
+              Alertify.success(res.info);
+              t.itemData(i).wal_pause=res.data.wal_pause;
               t.unload(i);
-            },
+              t.setInode(i);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error);
+            t.unload(i);
           });
         },
       },
@@ -1128,16 +1128,16 @@ define('pgadmin.node.server', [
                   timeout: 30000,
                   url: _url,
                   data: $('#frmPassword').serialize(),
-                  success: function(res) {
-                    return _onSuccess(
-                      res, _node, _data, _tree, _item, _status
-                    );
-                  },
-                  error: function(xhr, status, error) {
-                    return _onFailure(
-                      xhr, status, error, _node, _data, _tree, _item, _status
-                    );
-                  },
+                })
+                .done(function(res) {
+                  return _onSuccess(
+                    res, _node, _data, _tree, _item, _status
+                  );
+                })
+                .fail(function(xhr, status, error) {
+                  return _onFailure(
+                    xhr, status, error, _node, _data, _tree, _item, _status
+                  );
                 });
               } else {
                 _onCancel && typeof(_onCancel) == 'function' &&

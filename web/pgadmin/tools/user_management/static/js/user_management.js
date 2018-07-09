@@ -776,17 +776,17 @@ define([
                 url: ROLEURL,
                 method: 'GET',
                 async: false,
-                success: function(res) {
-                  Roles = res;
-                },
-                error: function() {
-                  setTimeout(function() {
-                    alertify.alert(
-                      gettext('Error'),
-                      gettext('Cannot load user roles.')
-                    );
-                  }, 100);
-                },
+              })
+              .done(function(res) {
+                Roles = res;
+              })
+              .fail(function() {
+                setTimeout(function() {
+                  alertify.alert(
+                    gettext('Error'),
+                    gettext('Cannot load user roles.')
+                  );
+                }, 100);
               });
 
               var view = this.view = new Backgrid.Grid({

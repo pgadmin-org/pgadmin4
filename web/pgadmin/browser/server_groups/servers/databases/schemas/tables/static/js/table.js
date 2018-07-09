@@ -164,25 +164,25 @@ define('pgadmin.node.table', [
                   type:'PUT',
                   data: params,
                   dataType: 'json',
-                  success: function(res) {
-                    if (res.success == 1) {
-                      Alertify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Alertify.success(res.info);
+                    t.removeIcon(i);
+                    data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
+                    t.addIcon(i, {icon: data.icon});
                     t.unload(i);
-                  },
+                    t.setInode(i);
+                    t.deselect(i);
+                    // Fetch updated data from server
+                    setTimeout(function() {
+                      t.select(i);
+                    }, 10);
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
                 });
               }
             }, function() {}
@@ -207,25 +207,25 @@ define('pgadmin.node.table', [
                 $.ajax({
                   url: obj.generate_url(i, 'reset' , d, true),
                   type:'DELETE',
-                  success: function(res) {
-                    if (res.success == 1) {
-                      Alertify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Alertify.success(res.info);
+                    t.removeIcon(i);
+                    data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
+                    t.addIcon(i, {icon: data.icon});
                     t.unload(i);
-                  },
+                    t.setInode(i);
+                    t.deselect(i);
+                    // Fetch updated data from server
+                    setTimeout(function() {
+                      t.select(i);
+                    }, 10);
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
                 });
               }
             },
@@ -245,20 +245,20 @@ define('pgadmin.node.table', [
           $.ajax({
             url: obj.generate_url(i, 'count_rows' , d, true),
             type:'GET',
-            success: function(res) {
-              Alertify.success(res.info);
-              d.rows_cnt = res.data.total_rows;
-              t.unload(i);
-              t.setInode(i);
-              t.deselect(i);
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
-            },
-            error: function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
-            },
+          })
+          .done(function(res) {
+            Alertify.success(res.info);
+            d.rows_cnt = res.data.total_rows;
+            t.unload(i);
+            t.setInode(i);
+            t.deselect(i);
+            setTimeout(function() {
+              t.select(i);
+            }, 10);
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error);
+            t.unload(i);
           });
         },
       },
@@ -983,19 +983,19 @@ define('pgadmin.node.table', [
 
                   type: 'GET',
                   async: false,
-                  success: function(res) {
-                    if (res.success == 1) {
-                      self.model.table_options = res.data;
-                    }
-                    else {
-                      Alertify.alert(
-                        gettext('Error fetching tables to be attached'), res.data.result
-                      );
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
-                  },
+                })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    self.model.table_options = res.data;
+                  }
+                  else {
+                    Alertify.alert(
+                      gettext('Error fetching tables to be attached'), res.data.result
+                    );
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
                 });
               }
             },
@@ -1261,12 +1261,12 @@ define('pgadmin.node.table', [
             async: false,
             url: full_url,
             data: arg,
-            success: function(res) {
-              data = cache_node.cache(url, node_info, cache_level, res.data);
-            },
-            error: function() {
-              m.trigger('pgadmin:view:fetch:error', m, self.field);
-            },
+          })
+          .done(function(res) {
+            data = cache_node.cache(url, node_info, cache_level, res.data);
+          })
+          .fail(function() {
+            m.trigger('pgadmin:view:fetch:error', m, self.field);
           });
           m.trigger('pgadmin:view:fetched', m, self.field);
           data = (data && data.data) || [];

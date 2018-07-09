@@ -172,13 +172,13 @@ define('pgadmin.node.pga_job', [
         $.ajax({
           url: obj.generate_url(i, 'run_now', d, true),
           method:'PUT',
-          // 'pgagent.pga_job' table updated with current time to run the job
-          // now.
-          success: function() { t.unload(i); },
-          error: function(xhr, status, error) {
-            alertify.pgRespErrorNotify(xhr, error);
-            t.unload(i);
-          },
+        })
+        // 'pgagent.pga_job' table updated with current time to run the job
+        // now.
+        .done(function() { t.unload(i); })
+        .fail(function(xhr, status, error) {
+          alertify.pgRespErrorNotify(xhr, error);
+          t.unload(i);
         });
 
         return false;

@@ -303,12 +303,12 @@ define([
             $.ajax({
               async: false,
               url: full_url,
-              success: function (res) {
-                data = res.data;
-              },
-              error: function() {
-                m.trigger('pgadmin-view:fetch:error', m, self.field);
-              },
+            })
+            .done(function (res) {
+              data = res.data;
+            })
+            .fail(function() {
+              m.trigger('pgadmin-view:fetch:error', m, self.field);
             });
             m.trigger('pgadmin-view:fetched', m, self.field);
 

@@ -423,12 +423,12 @@ define('pgadmin.node.type', [
                   url: _url,
                   cache: false,
                   data: {'typname' : l_typname},
-                  success: function(res) {
-                    result = res.data;
-                  },
-                  error: function() {
-                    self.model.trigger('pgadmin:view:fetch:error', self.model, self.field);
-                  },
+                })
+                .done(function(res) {
+                  result = res.data;
+                })
+                .fail(function() {
+                  self.model.trigger('pgadmin:view:fetch:error', self.model, self.field);
                 });
                 //
               }
@@ -491,13 +491,13 @@ define('pgadmin.node.type', [
                   url: _url,
                   cache: false,
                   data: {'name' : name},
-                  success: function(res) {
-                    result = res.data;
-                  },
-                  error: function() {
-                    self.model.trigger('pgadmin:view:fetch:error',
-                      self.model, self.field);
-                  },
+                })
+                .done(function(res) {
+                  result = res.data;
+                })
+                .fail(function() {
+                  self.model.trigger('pgadmin:view:fetch:error',
+                    self.model, self.field);
                 });
               }
               return result;
@@ -527,13 +527,13 @@ define('pgadmin.node.type', [
                   url: _url,
                   cache: false,
                   data: {'typname' : l_typname, 'opcname': l_opcname},
-                  success: function(res) {
-                    result = res.data;
-                  },
-                  error: function() {
-                    self.model.trigger('pgadmin:view:fetch:error',
-                        self.model, self.field);
-                  },
+                })
+                .done(function(res) {
+                  result = res.data;
+                })
+                .fail(function() {
+                  self.model.trigger('pgadmin:view:fetch:error',
+                      self.model, self.field);
                 });
               }
               return result;

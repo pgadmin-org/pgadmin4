@@ -89,17 +89,17 @@ define('pgadmin.dashboard', [
           $.ajax({
             url: action_url,
             type: 'DELETE',
-            success: function(res) {
-              if (res == gettext('Success')) {
-                Alertify.success(txtSuccess);
-                refresh_grid();
-              } else {
-                Alertify.error(txtError);
-              }
-            },
-            error: function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
-            },
+          })
+          .done(function(res) {
+            if (res == gettext('Success')) {
+              Alertify.success(txtSuccess);
+              refresh_grid();
+            } else {
+              Alertify.error(txtError);
+            }
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error);
           });
         },
         function() {
@@ -214,14 +214,14 @@ define('pgadmin.dashboard', [
             url: url,
             type: 'GET',
             dataType: 'html',
-            success: function(data) {
-              $(div).html(data);
-            },
-            error: function() {
-              $(div).html(
-                '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-              );
-            },
+          })
+          .done(function(data) {
+            $(div).html(data);
+          })
+          .fail(function() {
+            $(div).html(
+              '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+            );
           });
 
           // Cache the current IDs for next time
@@ -306,14 +306,14 @@ define('pgadmin.dashboard', [
                   url: url,
                   type: 'GET',
                   dataType: 'html',
-                  success: function(data) {
-                    $(div).html(data);
-                  },
-                  error: function() {
-                    $(div).html(
-                      '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-                    );
-                  },
+                })
+                .done(function(data) {
+                  $(div).html(data);
+                })
+                .fail(function() {
+                  $(div).html(
+                    '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+                  );
                 });
                 $(dashboardPanel).data('server_status', true);
               }
@@ -431,43 +431,43 @@ define('pgadmin.dashboard', [
           url: path,
           type: 'GET',
           dataType: 'html',
-          success: function(resp) {
-            $(container).removeClass('graph-error');
-            data = JSON.parse(resp);
-            pgAdmin.Dashboard.render_chart(container, data, dataset, sid, did, url, options, counter, refresh);
-          },
-          error: function(xhr) {
-            let err = '';
-            let msg = '';
-            let cls = 'info';
+        })
+        .done(function(resp) {
+          $(container).removeClass('graph-error');
+          data = JSON.parse(resp);
+          pgAdmin.Dashboard.render_chart(container, data, dataset, sid, did, url, options, counter, refresh);
+        })
+        .fail(function(xhr) {
+          let err = '';
+          let msg = '';
+          let cls = 'info';
 
-            if (xhr.readyState === 0) {
-              msg = gettext('Not connected to the server or the connection to the server has been closed.');
-            } else {
-              err = JSON.parse(xhr.responseText);
-              msg = err.errormsg;
+          if (xhr.readyState === 0) {
+            msg = gettext('Not connected to the server or the connection to the server has been closed.');
+          } else {
+            err = JSON.parse(xhr.responseText);
+            msg = err.errormsg;
 
-              // If we get a 428, it means the server isn't connected
-              if (xhr.status === 428) {
-                if (_.isUndefined(msg) || _.isNull(msg)) {
-                  msg = gettext('Please connect to the selected server to view the graph.');
-                }
-              } else {
-                msg = gettext('An error occurred whilst rendering the graph.');
-                cls = 'danger';
+            // If we get a 428, it means the server isn't connected
+            if (xhr.status === 428) {
+              if (_.isUndefined(msg) || _.isNull(msg)) {
+                msg = gettext('Please connect to the selected server to view the graph.');
               }
+            } else {
+              msg = gettext('An error occurred whilst rendering the graph.');
+              cls = 'danger';
             }
+          }
 
-            $(container).addClass('graph-error');
-            $(container).html(
-              '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
-            );
+          $(container).addClass('graph-error');
+          $(container).html(
+            '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
+          );
 
-            // Try again...
-            if (container.clientHeight > 0 && container.clientWidth > 0) {
-              setTimeout(setTimeoutFunc, refresh * 1000);
-            }
-          },
+          // Try again...
+          if (container.clientHeight > 0 && container.clientWidth > 0) {
+            setTimeout(setTimeoutFunc, refresh * 1000);
+          }
         });
       };
 

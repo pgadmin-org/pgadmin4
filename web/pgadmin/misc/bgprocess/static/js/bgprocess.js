@@ -226,18 +226,18 @@ define('misc.bgprocess', [
           cache: false,
           async: true,
           contentType: 'application/json',
-          success: function(res) {
+        })
+        .done(function(res) {
+          setTimeout(function() {
+            self.update(res);
+          }, 10);
+        })
+        .fail(function(res) {
+          // Try after some time only if job id present
+          if (res.status != 410)
             setTimeout(function() {
               self.update(res);
-            }, 10);
-          },
-          error: function(res) {
-            // Try after some time only if job id present
-            if (res.status != 410)
-              setTimeout(function() {
-                self.update(res);
-              }, 10000);
-          },
+            }, 10000);
         });
       },
 
@@ -429,12 +429,12 @@ define('misc.bgprocess', [
           cache: false,
           async: true,
           contentType: 'application/json',
-          success: function() {
-            return;
-          },
-          error: function() {
-            console.warn(arguments);
-          },
+        })
+        .done(function() {
+          return;
+        })
+        .fail(function() {
+          console.warn(arguments);
         });
       },
     });
@@ -478,31 +478,31 @@ define('misc.bgprocess', [
           cache: false,
           async: true,
           contentType: 'application/json',
-          success: function(res) {
-            if (!res || !_.isArray(res)) {
-              return;
-            }
-            for (var idx in res) {
-              var process = res[idx];
-              if ('id' in process) {
-                if (!(process.id in observer.bgprocesses)) {
-                  observer.bgprocesses[process.id] = new BGProcess(process);
-                }
+        })
+        .done(function(res) {
+          if (!res || !_.isArray(res)) {
+            return;
+          }
+          for (var idx in res) {
+            var process = res[idx];
+            if ('id' in process) {
+              if (!(process.id in observer.bgprocesses)) {
+                observer.bgprocesses[process.id] = new BGProcess(process);
               }
             }
-            if (recheck && res.length == 0) {
-              // Recheck after some more time
-              setTimeout(
-                function() {
-                  observer.update_process_list(false);
-                }, 3000
-              );
-            }
-          },
-          error: function() {
-            // FIXME:: What to do now?
-            console.warn(arguments);
-          },
+          }
+          if (recheck && res.length == 0) {
+            // Recheck after some more time
+            setTimeout(
+              function() {
+                observer.update_process_list(false);
+              }, 3000
+            );
+          }
+        })
+        .fail(function() {
+          // FIXME:: What to do now?
+          console.warn(arguments);
         });
       },
 

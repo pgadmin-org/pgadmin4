@@ -82,13 +82,13 @@ define('pgadmin.node.exclusion_constraint', [
                 async: false,
                 data : {indextype:indextype},
                 url: full_url,
-                success: function(res) {
-                  data = res.data;
-                  self.column.set('options', data);
-                },
-                error: function() {
-                  eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
-                },
+              })
+              .done(function(res) {
+                data = res.data;
+                self.column.set('options', data);
+              })
+              .fail(function() {
+                eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
               });
               eventHandler.trigger('pgadmin:view:fetched', m, self.column);
             }
@@ -183,13 +183,13 @@ define('pgadmin.node.exclusion_constraint', [
                 async: false,
                 data : {col_type:col_type},
                 url: full_url,
-                success: function(res) {
-                  data = res.data;
-                  self.column.set('options', data);
-                },
-                error: function() {
-                  eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
-                },
+              })
+              .done(function(res) {
+                data = res.data;
+                self.column.set('options', data);
+              })
+              .fail(function() {
+                eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
               });
               eventHandler.trigger('pgadmin:view:fetched', m, self.column);
             }

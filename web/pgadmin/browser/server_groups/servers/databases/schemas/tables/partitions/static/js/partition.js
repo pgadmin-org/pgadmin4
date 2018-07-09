@@ -134,21 +134,21 @@ function(
             type:'PUT',
             data: params,
             dataType: 'json',
-            success: function(res) {
-              if (res.success == 1) {
-                Alertify.success(res.info);
-                t.unload(i);
-                t.setInode(i);
-                t.deselect(i);
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            },
-            error: function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+          })
+          .done(function(res) {
+            if (res.success == 1) {
+              Alertify.success(res.info);
               t.unload(i);
-            },
+              t.setInode(i);
+              t.deselect(i);
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error);
+            t.unload(i);
           });
         },
         /* Truncate table */
@@ -182,25 +182,25 @@ function(
                   type:'PUT',
                   data: params,
                   dataType: 'json',
-                  success: function(res) {
-                    if (res.success == 1) {
-                      Alertify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = 'icon-partition';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                    // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Alertify.success(res.info);
+                    t.removeIcon(i);
+                    data.icon = 'icon-partition';
+                    t.addIcon(i, {icon: data.icon});
                     t.unload(i);
-                  },
+                    t.setInode(i);
+                    t.deselect(i);
+                  // Fetch updated data from server
+                    setTimeout(function() {
+                      t.select(i);
+                    }, 10);
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
                 });
               }},
             function() {}
@@ -225,25 +225,25 @@ function(
                 $.ajax({
                   url: obj.generate_url(i, 'reset' , d, true),
                   type:'DELETE',
-                  success: function(res) {
-                    if (res.success == 1) {
-                      Alertify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = 'icon-partition';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Alertify.success(res.info);
+                    t.removeIcon(i);
+                    data.icon = 'icon-partition';
+                    t.addIcon(i, {icon: data.icon});
                     t.unload(i);
-                  },
+                    t.setInode(i);
+                    t.deselect(i);
+                    // Fetch updated data from server
+                    setTimeout(function() {
+                      t.select(i);
+                    }, 10);
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
                 });
               }
             },
@@ -268,26 +268,26 @@ function(
                 $.ajax({
                   url: obj.generate_url(i, 'detach' , d, true),
                   type:'PUT',
-                  success: function(res) {
-                    if (res.success == 1) {
-                      Alertify.success(res.info);
-                      var n = t.next(i);
+                })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Alertify.success(res.info);
+                    var n = t.next(i);
+                    if (!n || !n.length) {
+                      n = t.prev(i);
                       if (!n || !n.length) {
-                        n = t.prev(i);
-                        if (!n || !n.length) {
-                          n = t.parent(i);
-                          t.setInode(n, true);
-                        }
-                      }
-                      t.remove(i);
-                      if (n.length) {
-                        t.select(n);
+                        n = t.parent(i);
+                        t.setInode(n, true);
                       }
                     }
-                  },
-                  error: function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
-                  },
+                    t.remove(i);
+                    if (n.length) {
+                      t.select(n);
+                    }
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
                 });
               }
             },
@@ -874,19 +874,19 @@ function(
 
                   type: 'GET',
                   async: false,
-                  success: function(res) {
-                    if (res.success == 1) {
-                      self.model.table_options = res.data;
-                    }
-                    else {
-                      Alertify.alert(
-                        gettext('Error fetching tables to be attached'), res.data.result
-                      );
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error, gettext('Error fetching tables to be attached'));
-                  },
+                })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    self.model.table_options = res.data;
+                  }
+                  else {
+                    Alertify.alert(
+                      gettext('Error fetching tables to be attached'), res.data.result
+                    );
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error, gettext('Error fetching tables to be attached'));
                 });
               }
             },
@@ -1148,12 +1148,12 @@ function(
             async: false,
             url: full_url,
             data: arg,
-            success: function(res) {
-              data = cache_node.cache(url, node_info, cache_level, res.data);
-            },
-            error: function() {
-              m.trigger('pgadmin:view:fetch:error', m, self.field);
-            },
+          })
+          .done(function(res) {
+            data = cache_node.cache(url, node_info, cache_level, res.data);
+          })
+          .fail(function() {
+            m.trigger('pgadmin:view:fetch:error', m, self.field);
           });
           m.trigger('pgadmin:view:fetched', m, self.field);
           data = (data && data.data) || [];

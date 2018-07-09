@@ -385,20 +385,20 @@ define([
                   data: {
                     'data': JSON.stringify(this.view.model.toJSON()),
                   },
-                  success: function(res) {
-                    if (res.data && res.data.status) {
-                      //Do nothing as we are creating the job and exiting from the main dialog
-                      Alertify.success(res.data.info);
-                      pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
-                    } else {
-                      Alertify.error(res.data.errmsg);
-                    }
-                  },
-                  error: function() {
-                    Alertify.alert(
-                      gettext('Maintenance job creation failed.')
-                    );
-                  },
+                })
+                .done(function(res) {
+                  if (res.data && res.data.status) {
+                    //Do nothing as we are creating the job and exiting from the main dialog
+                    Alertify.success(res.data.info);
+                    pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
+                  } else {
+                    Alertify.error(res.data.errmsg);
+                  }
+                })
+                .fail(function() {
+                  Alertify.alert(
+                    gettext('Maintenance job creation failed.')
+                  );
                 });
               }
             },

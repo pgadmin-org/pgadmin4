@@ -118,25 +118,25 @@ define('pgadmin.node.trigger', [
             type:'PUT',
             data: {'enable' : true},
             dataType: 'json',
-            success: function(res) {
-              if (res.success == 1) {
-                alertify.success(res.info);
-                t.removeIcon(i);
-                data.icon = 'icon-trigger';
-                t.addIcon(i, {icon: data.icon});
-                t.unload(i);
-                t.setInode(false);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            },
-            error: function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
+          })
+          .done(function(res) {
+            if (res.success == 1) {
+              alertify.success(res.info);
+              t.removeIcon(i);
+              data.icon = 'icon-trigger';
+              t.addIcon(i, {icon: data.icon});
               t.unload(i);
-            },
+              t.setInode(false);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          })
+          .fail(function(xhr, status, error) {
+            alertify.pgRespErrorNotify(xhr, error);
+            t.unload(i);
           });
         },
         /* Disable trigger */
@@ -156,25 +156,25 @@ define('pgadmin.node.trigger', [
             type:'PUT',
             data: {'enable' : false},
             dataType: 'json',
-            success: function(res) {
-              if (res.success == 1) {
-                alertify.success(res.info);
-                t.removeIcon(i);
-                data.icon = 'icon-trigger-bad';
-                t.addIcon(i, {icon: data.icon});
-                t.unload(i);
-                t.setInode(false);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            },
-            error: function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error, gettext('Disable trigger failed'));
+          })
+          .done(function(res) {
+            if (res.success == 1) {
+              alertify.success(res.info);
+              t.removeIcon(i);
+              data.icon = 'icon-trigger-bad';
+              t.addIcon(i, {icon: data.icon});
               t.unload(i);
-            },
+              t.setInode(false);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          })
+          .fail(function(xhr, status, error) {
+            alertify.pgRespErrorNotify(xhr, error, gettext('Disable trigger failed'));
+            t.unload(i);
           });
         },
       },

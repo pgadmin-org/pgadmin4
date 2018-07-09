@@ -31,12 +31,12 @@ define('pgadmin.node.schema', [
           $.ajax({
             async: false,
             url: full_url,
-            success: function (res) {
-              data = res;
-            },
-            error: function() {
-              m.trigger('pgadmin-view:fetch:error', m, self.field);
-            },
+          })
+          .done(function (res) {
+            data = res;
+          })
+          .fail(function() {
+            m.trigger('pgadmin-view:fetch:error', m, self.field);
           });
           m.trigger('pgadmin-view:fetched', m, self.field);
 

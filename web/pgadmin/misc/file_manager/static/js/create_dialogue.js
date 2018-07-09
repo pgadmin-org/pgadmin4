@@ -82,14 +82,14 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
         dataType: 'json',
         contentType: 'application/x-download; charset=utf-8',
         async: false,
-        success: function(resp) {
-          var data = resp.data.result;
-          if (data['Code'] === 1) {
-            is_exist = true;
-          } else {
-            is_exist = false;
-          }
-        },
+      })
+      .done(function(resp) {
+        var data = resp.data.result;
+        if (data['Code'] === 1) {
+          is_exist = true;
+        } else {
+          is_exist = false;
+        }
       });
       return is_exist;
     },
@@ -109,19 +109,19 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
         dataType: 'json',
         contentType: 'application/json; charset=utf-8',
         async: false,
-        success: function(resp) {
-          var data = resp.data.result;
-          if (data.Code === 1) {
-            permission = true;
-          } else {
-            $('.file_manager_ok').addClass('disabled');
-            Alertify.error(data.Error);
-          }
-        },
-        error: function() {
+      })
+      .done(function(resp) {
+        var data = resp.data.result;
+        if (data.Code === 1) {
+          permission = true;
+        } else {
           $('.file_manager_ok').addClass('disabled');
-          Alertify.error(gettext('Error occurred while checking access permission.'));
-        },
+          Alertify.error(data.Error);
+        }
+      })
+      .fail(function() {
+        $('.file_manager_ok').addClass('disabled');
+        Alertify.error(gettext('Error occurred while checking access permission.'));
       });
       return permission;
     },

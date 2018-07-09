@@ -526,23 +526,23 @@ Backform, commonUtils, supportedNodes
                   data: {
                     'data': JSON.stringify(this.view.model.toJSON()),
                   },
-                  success: function(res) {
-                    if (res.success) {
-                      Alertify.success(gettext('Import/export job created.'), 5);
-                      pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
-                    }
-                  },
-                  error: function(xhr) {
-                    try {
-                      var err = JSON.parse(xhr.responseText);
-                      Alertify.alert(
-                        gettext('Import/export job failed.'),
-                        err.errormsg
-                      );
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
-                  },
+                })
+                .done(function(res) {
+                  if (res.success) {
+                    Alertify.success(gettext('Import/export job created.'), 5);
+                    pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
+                  }
+                })
+                .fail(function(xhr) {
+                  try {
+                    var err = JSON.parse(xhr.responseText);
+                    Alertify.alert(
+                      gettext('Import/export job failed.'),
+                      err.errormsg
+                    );
+                  } catch (e) {
+                    console.warn(e.stack || e);
+                  }
                 });
               }
             },

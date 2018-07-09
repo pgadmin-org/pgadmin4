@@ -729,30 +729,30 @@ define('pgadmin.browser.node', [
             $.ajax({
               url: obj.generate_url(i, input.url, d, true),
               type: 'DELETE',
-              success: function(res) {
-                if (res.success == 0) {
-                  pgBrowser.report_error(res.errormsg, res.info);
-                } else {
-                  pgBrowser.removeTreeNode(i, true);
+            })
+            .done(function(res) {
+              if (res.success == 0) {
+                pgBrowser.report_error(res.errormsg, res.info);
+              } else {
+                pgBrowser.removeTreeNode(i, true);
+              }
+              return true;
+            })
+            .fail(function(jqx) {
+              var msg = jqx.responseText;
+              /* Error from the server */
+              if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
+                try {
+                  var data = JSON.parse(jqx.responseText);
+                  msg = data.errormsg;
+                } catch (e) {
+                  console.warn(e.stack || e);
                 }
-                return true;
-              },
-              error: function(jqx) {
-                var msg = jqx.responseText;
-                /* Error from the server */
-                if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-                  try {
-                    var data = JSON.parse(jqx.responseText);
-                    msg = data.errormsg;
-                  } catch (e) {
-                    console.warn(e.stack || e);
-                  }
-                }
-                pgBrowser.report_error(
-                  S(gettext('Error dropping %s: "%s"'))
-                  .sprintf(obj.label, objName)
-                  .value(), msg);
-              },
+              }
+              pgBrowser.report_error(
+                S(gettext('Error dropping %s: "%s"'))
+                .sprintf(obj.label, objName)
+                .value(), msg);
             });
           },
           null).show();

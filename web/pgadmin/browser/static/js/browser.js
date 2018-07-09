@@ -503,9 +503,9 @@ define('pgadmin.browser', [
         $.ajax({
           url: url_for('misc.cleanup'),
           type:'POST',
-          success: function() {},
-          error: function() {},
-        });
+        })
+        .done(function() {})
+        .fail(function() {});
       }, 300000);
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
@@ -1539,69 +1539,69 @@ define('pgadmin.browser', [
           type: 'GET',
           cache: false,
           dataType: 'json',
-          success: function(res) {
-            // Node information can come as result/data
-            var data = res.result || res.data;
+        })
+        .done(function(res) {
+          // Node information can come as result/data
+          var data = res.result || res.data;
 
-            data._label = data.label;
-            data.label = _.escape(data.label);
-            var d = ctx.t.itemData(ctx.i);
-            _.extend(d, data);
-            ctx.t.setLabel(ctx.i, {label: _d.label});
-            ctx.t.addIcon(ctx.i, {icon: _d.icon});
-            ctx.t.setId(ctx.i, {id: _d.id});
-            ctx.t.setInode(ctx.i, {inode: data.inode});
+          data._label = data.label;
+          data.label = _.escape(data.label);
+          var d = ctx.t.itemData(ctx.i);
+          _.extend(d, data);
+          ctx.t.setLabel(ctx.i, {label: _d.label});
+          ctx.t.addIcon(ctx.i, {icon: _d.icon});
+          ctx.t.setId(ctx.i, {id: _d.id});
+          ctx.t.setInode(ctx.i, {inode: data.inode});
 
-            if (
-              _n.can_expand && typeof(_n.can_expand) == 'function'
-            ) {
-              if (!_n.can_expand(d)) {
-                ctx.t.unload(ctx.i);
-                return;
-              }
+          if (
+            _n.can_expand && typeof(_n.can_expand) == 'function'
+          ) {
+            if (!_n.can_expand(d)) {
+              ctx.t.unload(ctx.i);
+              return;
             }
-            ctx.b._refreshNode(ctx, ctx.branch);
-            var success = (ctx.o && ctx.o.success) || ctx.success;
-            if (success && typeof(success) == 'function') {
-              success();
+          }
+          ctx.b._refreshNode(ctx, ctx.branch);
+          var success = (ctx.o && ctx.o.success) || ctx.success;
+          if (success && typeof(success) == 'function') {
+            success();
+          }
+        })
+        .fail(function(xhr, error, status) {
+          if (
+            !Alertify.pgHandleItemError(
+              xhr, error, status, {item: _i, info: info}
+            )
+          ) {
+            var contentType = xhr.getResponseHeader('Content-Type'),
+              jsonResp = (
+                contentType &&
+                  contentType.indexOf('application/json') == 0 &&
+                  JSON.parse(xhr.responseText)
+              ) || {};
+
+            if (xhr.status == 410 && jsonResp.success == 0) {
+              var p = ctx.t.parent(ctx.i);
+
+              ctx.t.remove(ctx.i, {
+                success: function() {
+                  if (p) {
+                    // Try to refresh the parent on error
+                    try {
+                      pgBrowser.Events.trigger(
+                        'pgadmin:browser:tree:refresh', p
+                      );
+                    } catch (e) { console.warn(e.stack || e); }
+                  }
+                },
+              });
             }
-          },
-          error: function(xhr, error, status) {
-            if (
-              !Alertify.pgHandleItemError(
-                xhr, error, status, {item: _i, info: info}
-              )
-            ) {
-              var contentType = xhr.getResponseHeader('Content-Type'),
-                jsonResp = (
-                  contentType &&
-                    contentType.indexOf('application/json') == 0 &&
-                    JSON.parse(xhr.responseText)
-                ) || {};
 
-              if (xhr.status == 410 && jsonResp.success == 0) {
-                var p = ctx.t.parent(ctx.i);
-
-                ctx.t.remove(ctx.i, {
-                  success: function() {
-                    if (p) {
-                      // Try to refresh the parent on error
-                      try {
-                        pgBrowser.Events.trigger(
-                          'pgadmin:browser:tree:refresh', p
-                        );
-                      } catch (e) { console.warn(e.stack || e); }
-                    }
-                  },
-                });
-              }
-
-              Alertify.pgNotifier(
-                error, xhr, gettext('Error retrieving details for the node.'),
-                function() { console.warn(arguments); }
-              );
-            }
-          },
+            Alertify.pgNotifier(
+              error, xhr, gettext('Error retrieving details for the node.'),
+              function() { console.warn(arguments); }
+            );
+          }
         });
       }.bind(this);
 
@@ -1786,16 +1786,16 @@ define('pgadmin.browser', [
           $.ajax({
             url: childNodeUrl,
             dataType: 'json',
-            success: function(res) {
-              if (res.success) {
-                arrayChildNodeData.push(res.data);
-              }
-              fetchNodeInfo(_callback);
-            },
-            error: function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
-              fetchNodeInfo(_callback);
-            },
+          })
+          .done(function(res) {
+            if (res.success) {
+              arrayChildNodeData.push(res.data);
+            }
+            fetchNodeInfo(_callback);
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error);
+            fetchNodeInfo(_callback);
           });
         };
 

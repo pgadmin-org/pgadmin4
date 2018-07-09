@@ -33,18 +33,18 @@ define('pgadmin.settings', [
             url: url_for('settings.reset_layout'),
             type: 'DELETE',
             async: false,
-            success: function() {
-              // Prevent saving layout on server for next page reload.
-              $(window).unbind('unload');
-              window.onbeforeunload = null;
-              // Now reload page
-              location.reload(true);
-            },
-            error: function() {
-              console.warn(
-                'Something went wrong on server while resetting layout.'
-              );
-            },
+          })
+          .done(function() {
+            // Prevent saving layout on server for next page reload.
+            $(window).unbind('unload');
+            window.onbeforeunload = null;
+            // Now reload page
+            location.reload(true);
+          })
+          .fail(function() {
+            console.warn(
+              'Something went wrong on server while resetting layout.'
+            );
           });
 
         },

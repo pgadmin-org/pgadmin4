@@ -350,17 +350,17 @@ define('pgadmin.node.foreign_table', [
           async: false,
           url: full_url,
           data: data,
-          success: function(res) {
-            /*
-             * We will cache this data for short period of time for avoiding
-             * same calls.
-             */
-            data = cache_node.cache(url, node_info, cache_level, res.data);
+        })
+        .done(function(res) {
+          /*
+           * We will cache this data for short period of time for avoiding
+           * same calls.
+           */
+          data = cache_node.cache(url, node_info, cache_level, res.data);
 
-          },
-          error: function() {
-            m.trigger('pgadmin:view:fetch:error', m, self.field);
-          },
+        })
+        .fail(function() {
+          m.trigger('pgadmin:view:fetch:error', m, self.field);
         });
         m.trigger('pgadmin:view:fetched', m, self.field);
 

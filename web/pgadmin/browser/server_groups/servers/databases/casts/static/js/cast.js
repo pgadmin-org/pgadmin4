@@ -201,17 +201,15 @@ define('pgadmin.node.cast', [
                 cache: false,
                 async: false,
                 data: {'srctyp' : srcTyp, 'trgtyp' : trgtyp},
-
-                 // On success return function list from server
-                success: function(result) {
-                  res = result.data;
-                  return res;
-                },
-
-                 // On failure show error appropriate error message to user
-                error: function(xhr, status, error) {
-                  alertify.pgRespErrorNotify(xhr, error);
-                },
+              })
+               // On success return function list from server
+              .done(function(result) {
+                res = result.data;
+                return res;
+              })
+               // On failure show error appropriate error message to user
+              .fail(function(xhr, status, error) {
+                alertify.pgRespErrorNotify(xhr, error);
               });
             }
             return res;
