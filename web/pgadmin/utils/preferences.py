@@ -617,7 +617,7 @@ class Preferences(object):
         try:
             pref.set(value)
         except Exception as e:
-            current_app.logger.exeception(e)
+            current_app.logger.exception(e)
             return False, str(e)
 
         return True, None

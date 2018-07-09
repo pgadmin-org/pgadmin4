@@ -2075,7 +2075,14 @@ define([
       var self = this;
       /* self.sqlCtrl is null when Definition tab is not active */
       if(self.sqlCtrl) {
-        let sqlEditPreferences = pgAdmin.Browser.get_preferences_for_module('sqleditor');
+
+        /* This control is used by filter dialog in query editor, so taking preferences from window
+         * SQL Editor can be in different tab
+         */
+        let browser = window.opener ?
+              window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+
+        let sqlEditPreferences = browser.get_preferences_for_module('sqleditor');
 
         $(self.sqlCtrl.getWrapperElement()).css(
           'font-size',SqlEditorUtils.calcFontSize(sqlEditPreferences.sql_font_size)
