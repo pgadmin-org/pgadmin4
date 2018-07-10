@@ -65,12 +65,15 @@ _.extend(pgBrowser, {
         preferences[preference.name] = preference.value;
       }
     );
-    return preferences;
+    if(Object.keys(preferences).length > 0) {
+      return preferences;
+    }
   },
 
   /* Get preference of an id, id is numeric */
   get_preference_for_id : function(id) {
     var self = this;
+    /* findWhere returns undefined if not found */
     return _.findWhere(self.preferences_cache, {'id': id});
   },
 

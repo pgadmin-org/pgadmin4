@@ -1,6 +1,3 @@
-:root {
-  --codemirror-font-size : 1em;
-}
 /* Styles for the main browser */
 .browser-pane-container {
     position: absolute;
@@ -71,5 +68,5 @@ samp,
 }
 
 .CodeMirror {
-  font-size: var(--codemirror-font-size, '1em');
+  font-size: 1em;
 }

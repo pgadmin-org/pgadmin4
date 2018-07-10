@@ -188,11 +188,12 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
 
       calcFontSize: function(fontSize) {
         if(fontSize) {
-          return Number((Math.round(fontSize + 'e+2') + 'e-2')) + 'em';
+          let rounded = Number((Math.round(fontSize + 'e+2') + 'e-2'));
+          if(rounded > 0) {
+            return rounded + 'em';
+          }
         }
-        else {
-          return '0em';
-        }
+        return '1em';
       },
     };
     return sqlEditorUtils;
