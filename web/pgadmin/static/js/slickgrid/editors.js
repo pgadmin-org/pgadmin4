@@ -138,10 +138,10 @@
 
       $buttons.find('button:first').on('click', this.save);
       $buttons.find('button:last').on('click', this.cancel);
-      $input.bind('keydown', this.handleKeyDown);
+      $input.on('keydown', this.handleKeyDown);
 
       scope.position(args.position);
-      $input.focus().select();
+      $input.trigger('focus').trigger('select');
     };
 
     this.handleKeyDown = function(e) {
@@ -188,7 +188,7 @@
     };
 
     this.focus = function() {
-      $input.focus();
+      $input.trigger('focus');
     };
 
     // When text editor opens
@@ -210,11 +210,11 @@
           $input.val(defaultValue = '\\"\\"');
         } else {
           $input.val(defaultValue = item[args.column.field]);
-          $input.select();
+          $input.trigger('select');
         }
       } else {
         $input.val(defaultValue = item[args.column.field]);
-        $input.select();
+        $input.trigger('select');
       }
     };
 
@@ -295,10 +295,10 @@
 
       $buttons.find('button:first').on('click', this.save);
       $buttons.find('button:last').on('click', this.cancel);
-      $input.bind('keydown', this.handleKeyDown);
+      $input.on('keydown', this.handleKeyDown);
 
       scope.position(args.position);
-      $input.focus().select();
+      $input.trigger('focus').trigger('select');
     };
 
     this.handleKeyDown = function(e) {
@@ -345,7 +345,7 @@
     };
 
     this.focus = function() {
-      $input.focus();
+      $input.trigger('focus');
     };
 
     this.loadValue = function(item) {
@@ -364,7 +364,7 @@
         data = '[' + temp.join() + ']';
       }
       $input.val(data);
-      $input.select();
+      $input.trigger('select');
     };
 
     this.serializeValue = function() {
@@ -417,10 +417,10 @@
       $buttons = getButtons(false).appendTo($wrapper);
 
       $buttons.find('button:first').on('click', this.cancel);
-      $input.bind('keydown', this.handleKeyDown);
+      $input.on('keydown', this.handleKeyDown);
 
       scope.position(args.position);
-      $input.focus().select();
+      $input.trigger('focus').trigger('select');
     };
 
     this.handleKeyDown = function(e) {
@@ -465,12 +465,12 @@
     };
 
     this.focus = function() {
-      $input.focus();
+      $input.trigger('focus');
     };
 
     this.loadValue = function(item) {
       $input.val(defaultValue = item[args.column.field]);
-      $input.select();
+      $input.trigger('select');
     };
 
     this.serializeValue = function() {
@@ -516,10 +516,10 @@
       $buttons = getButtons(false).appendTo($wrapper);
 
       $buttons.find('button:first').on('click', this.cancel);
-      $input.bind('keydown', this.handleKeyDown);
+      $input.on('keydown', this.handleKeyDown);
 
       scope.position(args.position);
-      $input.focus().select();
+      $input.trigger('focus').trigger('select');
     };
 
     this.handleKeyDown = function(e) {
@@ -564,7 +564,7 @@
     };
 
     this.focus = function() {
-      $input.focus();
+      $input.trigger('focus');
     };
 
     this.loadValue = function(item) {
@@ -583,7 +583,7 @@
         data = '[' + temp.join() + ']';
       }
       $input.val(data);
-      $input.select();
+      $input.trigger('select');
     };
 
     this.serializeValue = function() {
@@ -622,13 +622,13 @@
     this.init = function() {
       $input = $('<INPUT type=text class=\'editor-text\' readonly/>')
         .appendTo(args.container)
-        .bind('keydown.nav', function(e) {
+        .on('keydown.nav', function(e) {
           if (e.keyCode === $.ui.keyCode.LEFT || e.keyCode === $.ui.keyCode.RIGHT) {
             e.stopImmediatePropagation();
           }
         })
-        .focus()
-        .select();
+        .trigger('focus')
+        .trigger('select');
     };
 
     this.destroy = function() {
@@ -636,7 +636,7 @@
     };
 
     this.focus = function() {
-      $input.focus();
+      $input.trigger('focus');
     };
 
     this.getValue = function() {
@@ -653,7 +653,7 @@
       defaultValue = value;
       $input.val(defaultValue);
       $input[0].defaultValue = defaultValue;
-      $input.select();
+      $input.trigger('select');
     };
 
     this.serializeValue = function() {
@@ -692,7 +692,7 @@
     this.init = function() {
       $select = $('<INPUT type=checkbox value=\'true\' class=\'editor-checkbox\' hideFocus disabled>');
       $select.appendTo(args.container);
-      $select.focus();
+      $select.trigger('focus');
     };
 
     this.destroy = function() {
@@ -700,7 +700,7 @@
     };
 
     this.focus = function() {
-      $select.focus();
+      $select.trigger('focus');
     };
 
     this.loadValue = function(item) {
@@ -755,14 +755,14 @@
     this.init = function() {
       $input = $('<INPUT type=text class=\'editor-text\' />');
 
-      $input.bind('keydown.nav', function(e) {
+      $input.on('keydown.nav', function(e) {
         if (e.keyCode === $.ui.keyCode.LEFT || e.keyCode === $.ui.keyCode.RIGHT) {
           e.stopImmediatePropagation();
         }
       });
 
       $input.appendTo(args.container);
-      $input.focus().select();
+      $input.trigger('focus').trigger('select');
     };
 
     this.destroy = function() {
@@ -770,7 +770,7 @@
     };
 
     this.focus = function() {
-      $input.focus();
+      $input.trigger('focus');
     };
 
     this.loadValue = function(item) {
@@ -783,7 +783,7 @@
       }
 
       $input[0].defaultValue = defaultValue;
-      $input.select();
+      $input.trigger('select');
     };
 
     this.serializeValue = function() {
@@ -888,10 +888,10 @@
     this.init = function() {
       $select = $('<div class=\'multi-checkbox\'><span class=\'check\' hideFocus></span></div>');
       $select.appendTo(args.container);
-      $select.focus();
+      $select.trigger('focus');
 
       // The following code is taken from https://css-tricks.com/indeterminate-checkboxes/
-      $select.bind('click', function() {
+      $select.on('click', function() {
         el = $(this);
         var states = ['unchecked', 'partial', 'checked'];
         var curState = el.find('.check').data('state');
@@ -908,7 +908,7 @@
     };
 
     this.focus = function() {
-      $select.focus();
+      $select.trigger('focus');
     };
 
     this.loadValue = function(item) {

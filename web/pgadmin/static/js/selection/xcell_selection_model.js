@@ -41,7 +41,7 @@ define([
       grid.registerPlugin(_selector);
       _selector.onCellRangeSelected.subscribe(handleCellRangeSelected);
       _selector.onBeforeCellRangeSelected.subscribe(handleBeforeCellRangeSelected);
-      $(window.parent).mouseup(handleWindowMouseUp);
+      $(window.parent).on('mouseup',handleWindowMouseUp);
     }
 
     function destroy() {

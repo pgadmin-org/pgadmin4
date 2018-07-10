@@ -230,7 +230,7 @@ define([
     finishWizard: function() {
       this.onFinish();
       this.remove(); // Remove view from DOM
-      this.unbind(); // Unbind all local event bindings
+      this.off(); // Unbind all local event bindings
       delete this.$el; // Delete the jQuery wrapped object variable
       delete this.el; // Delete the variable reference to this node
       return true;

@@ -1355,7 +1355,7 @@ define([
 
           self.data_cap = cap;
 
-          $('.storage_dialog #uploader .input-path').keyup(function(e) {
+          $('.storage_dialog #uploader .input-path').on('keyup',function(e) {
             if (e.keyCode == 13) {
               e.stopPropagation();
               var path = $(this).val();
@@ -1567,7 +1567,7 @@ define([
           $file_element.find('p input').toggle().val(lg.new_folder).select();
 
           // rename folder/file on pressing enter key
-          $('.file_manager').bind().on('keyup', function(e) {
+          $('.file_manager').on('keyup', function(e) {
             if (e.keyCode == 13) {
               e.stopPropagation();
               $file_element.find('p input').trigger('blur');
@@ -1608,7 +1608,7 @@ define([
           $file_element_list.find('p input').toggle().val(lg.new_folder).select();
 
           // rename folder/file on pressing enter key
-          $('.file_manager').bind().on('keyup', function(e) {
+          $('.file_manager').on('keyup', function(e) {
             if (e.keyCode == 13) {
               e.stopPropagation();
               $file_element_list.find('p input').trigger('blur');

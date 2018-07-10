@@ -247,7 +247,7 @@ function keyboardShortcutsQueryTool(
           isDivider = false;
         }
       }
-      currLi.find('a:first').focus();
+      currLi.find('a:first').trigger('focus');
     }
   } else if(keyCode === LEFT_KEY || keyCode === RIGHT_KEY) {
     /*Apply only for dropdown*/
@@ -269,7 +269,7 @@ function keyboardShortcutsQueryTool(
           currLi = currLiMenu.closest('.dropdown-submenu');
         }
       }
-      currLi.find('a:first').focus();
+      currLi.find('a:first').trigger('focus');
     }
   }
 

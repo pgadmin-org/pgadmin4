@@ -36,7 +36,7 @@ define('pgadmin.settings', [
           })
           .done(function() {
             // Prevent saving layout on server for next page reload.
-            $(window).unbind('unload');
+            $(window).off('unload');
             window.onbeforeunload = null;
             // Now reload page
             location.reload(true);
