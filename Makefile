@@ -92,6 +92,8 @@ docs:
 docs-pdf:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx latexpdf
 
+messages: msg-extract msg-update msg-compile
+
 msg-compile:
 	cd web && pybabel compile --statistics -d pgadmin/translations
 
