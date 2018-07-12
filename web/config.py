@@ -85,6 +85,7 @@ LANGUAGES = {
     'zh': 'Chinese (Simplified)',
     'de': 'German',
     'fr': 'French',
+    'ko': 'Korean',
     'ja': 'Japanese',
     'pl': 'Polish',
     'ru': 'Russian'
