@@ -105,7 +105,22 @@ define('pgadmin.node.procedure', [
           case 'proisstrict':
           case 'procost':
           case 'proleakproof':
-            return (this.node_info.server.version < 90500 || this.node_info.server.server_type != 'ppas');
+            if(this.node_info.server.version < 90500 ||
+              this.node_info.server.server_type != 'ppas' ||
+              m.get('lanname') != 'edbspl') {
+
+              setTimeout(function() {
+                m.set('provolatile', undefined);
+                m.set('proisstrict', undefined);
+                m.set('procost', undefined);
+                m.set('proleakproof', undefined);
+              }, 10);
+              return true;
+            }
+            else{
+              return false;
+            }
+
           case 'variables':
           case 'prosecdef':
             return this.node_info.server.version < 90500;
@@ -116,7 +131,17 @@ define('pgadmin.node.procedure', [
           case 'proargs':
             return true;
           case 'proparallel':
-            return (this.node_info.server.version < 90600 || this.node_info.server.server_type != 'ppas');
+            if (this.node_info.server.version < 90600 ||
+              this.node_info.server.server_type != 'ppas' ||
+              m.get('lanname') != 'edbspl') {
+              setTimeout(function() {
+                m.set('proparallel', undefined);
+              }, 10);
+              return true;
+            }
+            else{
+              return false;
+            }
           case 'lanname':
             return this.node_info.server.version < 110000;
           default:
@@ -144,11 +169,24 @@ define('pgadmin.node.procedure', [
             errmsg = errmsg || err['lanname'];
           }
 
-          if (_.isUndefined(this.get('prosrc')) || String(this.get('prosrc')).replace(/^\s+|\s+$/g, '') == '') {
-            err['prosrc'] = gettext('Code cannot be empty.');
-            errmsg = errmsg || err['prosrc'];
-          }
+          if (String(this.get('lanname')) == 'c') {
+            if (_.isUndefined(this.get('probin')) || String(this.get('probin'))
+              .replace(/^\s+|\s+$/g, '') == '') {
+              err['probin'] = gettext('Object File cannot be empty.');
+              errmsg = errmsg || err['probin'];
+            }
 
+            if (_.isUndefined(this.get('prosrc_c')) || String(this.get('prosrc_c')).replace(/^\s+|\s+$/g, '') == '') {
+              err['prosrc_c'] = gettext('Link Symbol cannot be empty.');
+              errmsg = errmsg || err['prosrc_c'];
+            }
+          }
+          else {
+            if (_.isUndefined(this.get('prosrc')) || String(this.get('prosrc')).replace(/^\s+|\s+$/g, '') == '') {
+              err['prosrc'] = gettext('Code cannot be empty.');
+              errmsg = errmsg || err['prosrc'];
+            }
+          }
 
           if (seclabels) {
             var secLabelsErr;

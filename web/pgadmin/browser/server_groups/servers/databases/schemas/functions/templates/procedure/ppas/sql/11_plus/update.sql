@@ -1,5 +1,6 @@
 {% import 'macros/functions/security.macros' as SECLABEL %}
-{% import 'macros/functions/privilege.macros' as PRIVILEGE %}{% if data %}
+{% import 'macros/functions/privilege.macros' as PRIVILEGE %}
+{% import 'macros/functions/variable.macros' as VARIABLE %}{% if data %}
 {% set name = o_data.name %}
 {% if data.name %}
 {% if data.name != o_data.name %}
@@ -21,10 +22,19 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}({% if 
     LANGUAGE {{ o_data.lanname|qtLiteral }}
     {% endif %}
 {% if ('prosecdef' in data and data.prosecdef) or ('prosecdef' not in data and o_data.prosecdef) %}SECURITY DEFINER{% endif %}
-{% if data.merged_variables %}{% for v in data.merged_variables %}
+{% if data.lanname == 'edbspl' %}
+{% if ('proleakproof' in data and data.proleakproof) or ('proleakproof' not in data and o_data.proleakproof) %} LEAKPROOF{% else %} NOT LEAKPROOF{% endif %}
+    {% if ('proisstrict' in data and data.proisstrict) or ('proisstrict' not in data and o_data.proisstrict) %} STRICT{% endif %}
+
+    {% if 'proparallel' in data and data.proparallel %}PARALLEL {{ data.proparallel }}{% elif 'proparallel' not in data and o_data.proparallel %}PARALLEL {{ o_data.proparallel }}{% endif %}
+
+    {% if data.procost %}COST {{data.procost}}{% elif o_data.procost %}COST {{o_data.procost}}{% endif %}{% if data.prorows %}
+
+    ROWS {{data.prorows}}{% elif data.prorows is not defined and o_data.prorows and o_data.prorows != '0' %}    ROWS {{o_data.prorows}}{% endif -%}{% if data.merged_variables %}{% for v in data.merged_variables %}
 
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
-    {% endif %}
+{% endif %}
+{% endif %}
 
 AS {% if 'probin' in data or 'prosrc_c' in data %}
 {% if 'probin' in data %}{{ data.probin|qtLiteral }}{% else %}{{ o_data.probin|qtLiteral }}{% endif %}, {% if 'prosrc_c' in data %}{{ data.prosrc_c|qtLiteral }}{% else %}{{ o_data.prosrc_c|qtLiteral }}{% endif %}{% elif 'prosrc' in data %}
@@ -50,8 +60,7 @@ ALTER PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if o_data.proarg
 
 {{ PRIVILEGE.UNSETALL(conn, 'PROCEDURE', priv.grantee, name, o_data.pronamespace, o_data.proargtypenames) }}
 
-{{ PRIVILEGE.SET(conn, 'PROCEDURE', priv.grantee, name, priv.without_grant,
- priv.with_grant, o_data.pronamespace, o_data.proargtypenames) }}
+{{ PRIVILEGE.SET(conn, 'PROCEDURE', priv.grantee, name, priv.without_grant, priv.with_grant, o_data.pronamespace, o_data.proargtypenames) }}
 {% endfor %}
 {% endif -%}
 {% if 'added' in data.acl %}
@@ -65,11 +74,11 @@ ALTER PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if o_data.proarg
 {% if data.variables %}
 {% if 'deleted' in data.variables and data.variables.deleted|length > 0 %}
 
-{{ VARIABLE.UNSET(conn, 'FUNCTION', name, data.variables.deleted, o_data.pronamespace, o_data.proargtypenames) }}
+{{ VARIABLE.UNSET(conn, 'PROCEDURE', name, data.variables.deleted, o_data.pronamespace, o_data.proargtypenames) }}
 {% endif -%}
 {% if 'merged_variables' in data and data.merged_variables|length > 0 %}
 
-{{ VARIABLE.SET(conn, 'FUNCTION', name, data.merged_variables, o_data.pronamespace, o_data.proargtypenames) }}
+{{ VARIABLE.SET(conn, 'PROCEDURE', name, data.merged_variables, o_data.pronamespace, o_data.proargtypenames) }}
 {% endif -%}
 {% endif -%}
 {% endif -%}

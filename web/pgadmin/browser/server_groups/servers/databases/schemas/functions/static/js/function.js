@@ -255,6 +255,7 @@ define('pgadmin.node.function', [
         },{
           id: 'provolatile', label: gettext('Volatility'), cell: 'string',
           control: 'node-ajax-options', type: 'text', group: gettext('Options'),
+          deps: ['lanname'],
           options:[
             {'label': 'VOLATILE', 'value': 'v'},
             {'label': 'STABLE', 'value': 's'},
@@ -267,6 +268,7 @@ define('pgadmin.node.function', [
         },{
           id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
           group: gettext('Options'), disabled: 'isDisabled',
+          deps: ['lanname'],
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
@@ -283,6 +285,7 @@ define('pgadmin.node.function', [
         },{
           id: 'proparallel', label: gettext('Parallel'), cell: 'string',
           control: 'node-ajax-options', type: 'text', group: gettext('Options'),
+          deps: ['lanname'],
           options:[
             {'label': 'UNSAFE', 'value': 'u'},
             {'label': 'RESTRICTED', 'value': 'r'},
@@ -291,7 +294,7 @@ define('pgadmin.node.function', [
           select2: {allowClear: false},
         },{
           id: 'procost', label: gettext('Estimated cost'), group: gettext('Options'),
-          cell:'string', type: 'text', disabled: 'isDisabled',
+          cell:'string', type: 'text', disabled: 'isDisabled', deps: ['lanname'],
         },{
           id: 'prorows', label: gettext('Estimated rows'), type: 'text',
           deps: ['proretset'], visible: 'isVisible', disabled: 'isDisabled',
@@ -299,7 +302,7 @@ define('pgadmin.node.function', [
         },{
           id: 'proleakproof', label: gettext('Leak proof?'),
           group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
-          disabled: 'isDisabled',
+          disabled: 'isDisabled', deps: ['lanname'],
         },{
           id: 'proacl', label: gettext('Privileges'), type: 'text',
           mode: ['properties'], group: gettext('Security'),

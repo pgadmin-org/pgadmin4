@@ -22,4 +22,5 @@ Bug fixes
 | `Bug #3319 <https://redmine.postgresql.org/issues/3319>`_ - Cleanup and fix handling of Query Tool Cancel button status.
 | `Bug #3363 <https://redmine.postgresql.org/issues/3363>`_ - Fix restoring of restore options for sections.
 | `Bug #3371 <https://redmine.postgresql.org/issues/3371>`_ - Don't create a session when the /misc/ping test endpoint is called.
+| `Bug #3446 <https://redmine.postgresql.org/issues/3446>`_ - Various procedure/function related fixes for EPAS/PG 11.
 | `Bug #3457 <https://redmine.postgresql.org/issues/3457>`_ - Fix debugging of procedures in EPAS packages.
