@@ -223,6 +223,8 @@ if IS_WIN:
         buf_size = len(_path)
         while True:
             res = ctypes.create_unicode_buffer(buf_size)
+            # Note:- _GetShortPathNameW may return empty value
+            # if directory doesn't exist.
             needed = _GetShortPathNameW(_path, res, buf_size)
 
             if buf_size >= needed:

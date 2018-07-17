@@ -243,7 +243,17 @@ def filename_with_file_manager_path(_file, create_file=True):
         with open(_file, 'a'):
             pass
 
-    return fs_short_path(_file)
+    short_path = fs_short_path(_file)
+
+    # fs_short_path() function may return empty path on Windows
+    # if directory doesn't exists. In that case we strip the last path
+    # component and get the short path.
+    if os.name == 'nt' and short_path == '':
+        base_name = os.path.basename(_file)
+        dir_name = os.path.dirname(_file)
+        short_path = fs_short_path(dir_name) + '\\' + base_name
+
+    return short_path
 
 
 @blueprint.route(
