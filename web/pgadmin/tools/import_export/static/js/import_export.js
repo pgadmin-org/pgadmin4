@@ -146,19 +146,22 @@ Backform, commonUtils, supportedNodes
           res = [];
 
         _.each(rows, function(r) {
-          var l = (_.isFunction(node['node_label']) ?
-              (node['node_label']).apply(node, [r, self.model, self]) :
-              r.label),
-            image = (_.isFunction(node['node_image']) ?
-              (node['node_image']).apply(
-                node, [r, self.model, self]
-              ) :
-              (node['node_image'] || ('icon-' + node.type)));
-          res.push({
-            'value': r.label,
-            'image': image,
-            'label': l,
-          });
+          // System columns with id less than 0 should not be added.
+          if ('_id' in r && r._id > 0) {
+            var l = (_.isFunction(node['node_label']) ?
+                (node['node_label']).apply(node, [r, self.model, self]) :
+                r.label),
+              image = (_.isFunction(node['node_image']) ?
+                (node['node_image']).apply(
+                  node, [r, self.model, self]
+                ) :
+                (node['node_image'] || ('icon-' + node.type)));
+            res.push({
+              'value': r.label,
+              'image': image,
+              'label': l,
+            });
+          }
         });
 
         return res;
