@@ -55,7 +55,7 @@ void FloatingWindow::createMenu()
 {
     createActions();
 
-    m_floatingWindowMenu = menuBar()->addMenu(QString(tr("%1")).arg(PGA_APP_NAME));
+    m_floatingWindowMenu = menuBar()->addMenu(QString(tr("&%1")).arg(PGA_APP_NAME));
     m_floatingWindowMenu->addAction(m_newAction);
     m_floatingWindowMenu->addSeparator();
     m_floatingWindowMenu->addAction(m_configAction);
