@@ -87,19 +87,23 @@ else {
 }
 
 # Source code
-HEADERS     =   \
-                Server.h \
+HEADERS     =   Server.h \
                 pgAdmin4.h \
                 ConfigWindow.h \
                 TrayIcon.h \
-                LogWindow.h
+                LogWindow.h \
+                MenuActions.h \
+                FloatingWindow.h
 SOURCES     =   pgAdmin4.cpp \
                 Server.cpp \
                 ConfigWindow.cpp \
                 TrayIcon.cpp \
-                LogWindow.cpp
+                LogWindow.cpp \
+                MenuActions.cpp \
+                FloatingWindow.cpp
 FORMS       =   ConfigWindow.ui \
-                LogWindow.ui
+                LogWindow.ui \
+                FloatingWindow.ui
 ICON        =   pgAdmin4.icns
 QMAKE_INFO_PLIST = Info.plist
 

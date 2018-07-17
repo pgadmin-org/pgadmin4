@@ -16,29 +16,23 @@
 
 // QT headers
 #include <QWidget>
-#include <QMessageBox>
-
-// App headers
-#include "LogWindow.h"
+#include "MenuActions.h"
 
 class TrayIcon : public QWidget
 {
     Q_OBJECT
 
 public:
-    TrayIcon(QString logFile);
+    TrayIcon();
     ~TrayIcon();
 
-    bool Init();
-    void setAppServerUrl(QString appServerUrl);
+    void Init();
     void enableShutdownMenu();
+    void setMenuActions(MenuActions * menuActions);
 
 private:
     void createTrayIcon();
-    bool isSystemTrayAvailable();
     void createActions();
-
-    void wait(int msec);
 
     QAction *m_newAction;
     QAction *m_configAction;
@@ -48,18 +42,7 @@ private:
     QSystemTrayIcon *m_trayIcon;
     QMenu *m_trayIconMenu;
 
-    QString m_appServerUrl, m_logFile;
-
-    LogWindow *m_logWindow;
-
-private slots:
-    void onNew();
-    void onConfig();
-    void onLog();
-    void onQuit();
-
-signals:
-    void shutdownSignal(QUrl);
+    MenuActions *m_menuActions;
 };
 
 #endif // TRAYICON_H

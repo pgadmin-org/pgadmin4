@@ -34,6 +34,8 @@
 #include "ConfigWindow.h"
 #include "Server.h"
 #include "TrayIcon.h"
+#include "MenuActions.h"
+#include "FloatingWindow.h"
 
 #include <QTime>
 
@@ -172,6 +174,7 @@ int main(int argc, char * argv[])
     // Display the spash screen
     QSplashScreen *splash = new QSplashScreen();
     splash->setPixmap(QPixmap(":/splash.png"));
+    splash->setWindowFlags(splash->windowFlags() | Qt::WindowStaysOnTopHint);
     splash->show();
     app.processEvents(QEventLoop::AllEvents);
 
@@ -205,15 +208,43 @@ int main(int argc, char * argv[])
     // Generate the filename for the log
     logFileName = homeDir + (QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash)).remove(" ");
 
-    // Start the tray service
-    TrayIcon *trayicon = new TrayIcon(logFileName);
+    // Create Menu Actions
+    MenuActions *menuActions = new MenuActions();
+    if(menuActions != NULL)
+        menuActions->setLogFile(logFileName);
 
-    if (!trayicon->Init())
+    splash->showMessage(QString(QWidget::tr("Checking for system tray...")), Qt::AlignBottom | Qt::AlignCenter);
+
+    // Check system tray is available or not. If not then create one floating window.
+    FloatingWindow *floatingWindow = NULL;
+    TrayIcon *trayicon = NULL;
+    if (QSystemTrayIcon::isSystemTrayAvailable())
     {
-        QString error = QString(QWidget::tr("An error occurred initialising the tray icon"));
-        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+        // Start the tray service
+        trayicon = new TrayIcon();
 
-        exit(1);
+        // Set the MenuActions object to connect to slot
+        if (trayicon != NULL)
+            trayicon->setMenuActions(menuActions);
+
+        trayicon->Init();
+    }
+    else
+    {
+        splash->showMessage(QString(QWidget::tr("System tray not found, creating floating window...")), Qt::AlignBottom | Qt::AlignCenter);
+        // Unable to find tray icon, so creating floting window
+        floatingWindow = new FloatingWindow();
+        if (floatingWindow == NULL)
+        {
+            QString error = QString(QWidget::tr("Unable to initialize either a tray icon or control window."));
+            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+            exit(1);
+        }
+
+        // Set the MenuActions object to connect to slot
+        floatingWindow->setMenuActions(menuActions);
+        floatingWindow->Init();
     }
 
     // Fire up the webserver
@@ -221,6 +252,7 @@ int main(int argc, char * argv[])
 
     bool done = false;
 
+    splash->showMessage(QString(QWidget::tr("Starting pgAdmin4 server...")), Qt::AlignBottom | Qt::AlignCenter);
     while (done != true)
     {
         server = new Server(port, key, logFileName);
@@ -335,9 +367,13 @@ int main(int argc, char * argv[])
     }
 
     // Go!
-    trayicon->setAppServerUrl(appServerUrl);
+    menuActions->setAppServerUrl(appServerUrl);
+
     // Enable the shutdown server menu as server started successfully.
-    trayicon->enableShutdownMenu();
+    if (trayicon != NULL)
+        trayicon->enableShutdownMenu();
+    if (floatingWindow != NULL)
+        floatingWindow->enableShutdownMenu();
 
     QString cmd = settings.value("BrowserCommand").toString();
 
@@ -357,9 +393,11 @@ int main(int argc, char * argv[])
         }
     }
 
-    QObject::connect(trayicon, SIGNAL(shutdownSignal(QUrl)), server, SLOT(shutdown(QUrl)));
-
+    QObject::connect(menuActions, SIGNAL(shutdownSignal(QUrl)), server, SLOT(shutdown(QUrl)));
     splash->finish(NULL);
+
+    if (floatingWindow != NULL)
+        floatingWindow->show();
 
     return app.exec();
 }
