@@ -2,7 +2,7 @@ SELECT  pg_proc.oid,
         pg_proc.proname || '(' || COALESCE(pg_catalog.pg_get_function_identity_arguments(pg_proc.oid), '') || ')' AS name,
         pg_get_userbyid(proowner) AS funcowner
 FROM pg_proc, pg_namespace
-WHERE format_type(prorettype, NULL) = 'void'
+WHERE protype = '0'::char
 {% if fnid %}
 AND pg_proc.oid = {{ fnid|qtLiteral }}
 {% endif %}

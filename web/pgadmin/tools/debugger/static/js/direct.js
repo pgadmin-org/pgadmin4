@@ -650,7 +650,6 @@ define([
           // Start pooling again
           pgTools.DirectDebug.polling_timeout_idle = false;
           pgTools.DirectDebug.is_polling_required = true;
-          self.poll_end_execution_result(trans_id);
           self.poll_result(trans_id);
 
           if (restart_dbg) {

@@ -16,6 +16,7 @@ Features
 Bug fixes
 *********
 
+| `Bug #3191 <https://redmine.postgresql.org/issues/3191>`_ - Fix a number of debugger execution issues.
 | `Bug #3294 <https://redmine.postgresql.org/issues/3294>`_ - Infrastructure (and changes to the Query Tool) for realtime preference handling.
 | `Bug #3309 <https://redmine.postgresql.org/issues/3309>`_ - Fix Directory format support for backups.
 | `Bug #3316 <https://redmine.postgresql.org/issues/3316>`_ - Support running on systems without a system tray.

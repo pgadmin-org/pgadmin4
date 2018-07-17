@@ -12,6 +12,6 @@ JOIN
     pg_namespace nsp ON nsp.oid=pr.pronamespace
     AND nsp.nspname={{ nspname|qtLiteral }}
 WHERE
-    proisagg = FALSE
+    pr.prokind IN ('f', 'w')
     AND typname NOT IN ('trigger', 'event_trigger')
     AND pr.proname = {{ name|qtLiteral }};

@@ -391,32 +391,13 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         proargmodenames = {'i': 'IN', 'o': 'OUT', 'b': 'INOUT',
                            'v': 'VARIADIC', 't': 'TABLE'}
 
-        # The proargtypes doesn't give OUT params, so we need to fetch
-        # those from database explicitly, below code is written for this
-        # purpose.
-        #
-        # proallargtypes gives all the Function's argument including OUT,
-        # but we have not used that column; as the data type of this
-        # column (i.e. oid[]) is not supported by oidvectortypes(oidvector)
-        # function which we have used to fetch the datatypes
-        # of the other parameters.
+        # EPAS explicitly converts OUT to INOUT, So we always have proargtypes
 
         proargmodes_fltrd = copy.deepcopy(proargmodes)
         proargnames_fltrd = []
         cnt = 0
         for m in proargmodes:
-            if m == 'o':  # Out Mode
-                SQL = render_template("/".join([self.sql_template_path,
-                                                'get_out_types.sql']),
-                                      out_arg_oid=proallargtypes[cnt])
-                status, out_arg_type = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=out_arg_type)
-
-                # Insert out parameter datatype
-                proargtypes.insert(cnt, out_arg_type)
-                proargdefaultvals.insert(cnt, '')
-            elif m == 'v':  # Variadic Mode
+            if m in ['v', 'o']:  # Out / Variadic Mode
                 proargdefaultvals.insert(cnt, '')
             elif m == 't':  # Table Mode
                 proargmodes_fltrd.remove(m)
@@ -532,8 +513,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         """
         SQL = render_template(
             "/".join([self.sql_template_path, 'get_body.sql']),
-            scid=scid,
-            pkgid=pkgid)
+            edbfnid=edbfnid)
 
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -543,7 +523,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
                 gettext("Could not find the function in the database.")
             )
 
-        body = self.get_inner(res['rows'][0]['pkgbodysrc'])
+        body = res['rows'][0]['funcdef']
 
         if body is None:
             body = ''
