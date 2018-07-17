@@ -98,7 +98,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="browserCommandLineEdit"/>
+            <widget class="QLineEdit" name="browserCommandLineEdit">
+             <property name="placeholderText">
+              <string>/usr/bin/firefox %URL%</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -169,7 +173,11 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="pythonPathLineEdit"/>
+            <widget class="QLineEdit" name="pythonPathLineEdit">
+             <property name="placeholderText">
+              <string>/usr/pgadmin4/lib/python2.7;/usr/pgadmin4/lib/python2.7/site-packages</string>
+             </property>
+            </widget>
            </item>
            <item row="1" column="1">
             <widget class="QLabel" name="label">
@@ -189,7 +197,11 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QLineEdit" name="applicationPathLineEdit"/>
+            <widget class="QLineEdit" name="applicationPathLineEdit">
+             <property name="placeholderText">
+              <string>/usr/pgadmin4/web</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
