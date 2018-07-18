@@ -224,10 +224,10 @@ class Connection(BaseConnection):
         encpass = kwargs['password'] if 'password' in kwargs else None
         passfile = kwargs['passfile'] if 'passfile' in kwargs else None
         tunnel_password = kwargs['tunnel_password'] if 'tunnel_password' in \
-                                                       kwargs else None
+                                                       kwargs else ''
 
         # Check SSH Tunnel needs to be created
-        if manager.use_ssh_tunnel == 1 and tunnel_password is not None:
+        if manager.use_ssh_tunnel == 1 and not manager.tunnel_created:
             status, error = manager.create_ssh_tunnel(tunnel_password)
             if not status:
                 return False, error

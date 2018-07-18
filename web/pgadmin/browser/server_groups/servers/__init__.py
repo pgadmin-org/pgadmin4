@@ -782,7 +782,7 @@ class ServerNode(PGChildNodeView):
                 have_password = False
                 password = None
                 passfile = None
-                tunnel_password = None
+                tunnel_password = ''
                 if 'password' in data and data["password"] != '':
                     # login with password
                     have_password = True
@@ -973,7 +973,7 @@ class ServerNode(PGChildNodeView):
                 return self.get_response_for_password(server, 428)
             else:
                 tunnel_password = data['tunnel_password'] if 'tunnel_password'\
-                                                             in data else None
+                                                             in data else ''
                 # Encrypt the password before saving with user's login
                 # password key.
                 try:

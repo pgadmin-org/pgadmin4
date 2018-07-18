@@ -40,6 +40,7 @@ class ServerManager(object):
         self.local_bind_host = '127.0.0.1'
         self.local_bind_port = None
         self.tunnel_object = None
+        self.tunnel_created = False
 
         self.update(server)
 
@@ -378,20 +379,21 @@ WHERE db.oid = {0}""".format(did))
         if user is None:
             return False, gettext("Unauthorized request.")
 
-        try:
-            tunnel_password = decrypt(tunnel_password, user.password)
-            # Handling of non ascii password (Python2)
-            if hasattr(str, 'decode'):
-                tunnel_password = \
-                    tunnel_password.decode('utf-8').encode('utf-8')
-            # password is in bytes, for python3 we need it in string
-            elif isinstance(tunnel_password, bytes):
-                tunnel_password = tunnel_password.decode()
+        if tunnel_password is not None and tunnel_password != '':
+            try:
+                tunnel_password = decrypt(tunnel_password, user.password)
+                # Handling of non ascii password (Python2)
+                if hasattr(str, 'decode'):
+                    tunnel_password = \
+                        tunnel_password.decode('utf-8').encode('utf-8')
+                # password is in bytes, for python3 we need it in string
+                elif isinstance(tunnel_password, bytes):
+                    tunnel_password = tunnel_password.decode()
 
-        except Exception as e:
-            current_app.logger.exception(e)
-            return False, "Failed to decrypt the SSH tunnel " \
-                          "password.\nError: {0}".format(str(e))
+            except Exception as e:
+                current_app.logger.exception(e)
+                return False, "Failed to decrypt the SSH tunnel " \
+                              "password.\nError: {0}".format(str(e))
 
         try:
             # If authentication method is 1 then it uses identity file
@@ -413,6 +415,7 @@ WHERE db.oid = {0}""".format(did))
                 )
 
             self.tunnel_object.start()
+            self.tunnel_created = True
         except BaseSSHTunnelForwarderError as e:
             current_app.logger.exception(e)
             return False, "Failed to create the SSH tunnel." \
@@ -427,6 +430,7 @@ WHERE db.oid = {0}""".format(did))
         # Check SSH Tunnel is alive or not. if it is not then
         # raise the ConnectionLost exception.
         if self.tunnel_object is None or not self.tunnel_object.is_active:
+            self.tunnel_created = False
             raise SSHTunnelConnectionLost(self.tunnel_host)
 
     def stop_ssh_tunnel(self):
@@ -435,3 +439,4 @@ WHERE db.oid = {0}""".format(did))
             self.tunnel_object.stop()
             self.local_bind_port = None
             self.tunnel_object = None
+            self.tunnel_created = False
