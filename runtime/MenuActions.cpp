@@ -77,21 +77,29 @@ void MenuActions::onConfig()
     ConfigWindow *dlg = new ConfigWindow();
     dlg->setWindowTitle(QString(tr("%1 Configuration")).arg(PGA_APP_NAME));
     dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
+    dlg->setFixedPort(settings.value("FixedPort").toBool());
+    dlg->setPortNumber(settings.value("PortNumber").toInt());
     dlg->setPythonPath(settings.value("PythonPath").toString());
     dlg->setApplicationPath(settings.value("ApplicationPath").toString());
     dlg->setModal(true);
     ok = dlg->exec();
 
     QString browsercommand = dlg->getBrowserCommand();
+    bool fixedport = dlg->getFixedPort();
+    int portnumber = dlg->getPortNumber();
     QString pythonpath = dlg->getPythonPath();
     QString applicationpath = dlg->getApplicationPath();
 
     if (ok)
     {
-        bool needRestart = (settings.value("PythonPath").toString() != pythonpath ||
+        bool needRestart = (settings.value("FixedPort").toBool() != fixedport ||
+                            settings.value("PortNumber").toInt() != portnumber ||
+                            settings.value("PythonPath").toString() != pythonpath ||
                             settings.value("ApplicationPath").toString() != applicationpath);
 
         settings.setValue("BrowserCommand", browsercommand);
+        settings.setValue("FixedPort", fixedport);
+        settings.setValue("PortNumber", portnumber);
         settings.setValue("PythonPath", pythonpath);
         settings.setValue("ApplicationPath", applicationpath);
 

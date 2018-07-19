@@ -27,16 +27,21 @@ public:
     ~ConfigWindow();
 
     QString getBrowserCommand();
+    bool getFixedPort();
+    int getPortNumber();
     QString getPythonPath();
     QString getApplicationPath();
 
     void setBrowserCommand(QString command);
+    void setFixedPort(bool fixedPort);
+    void setPortNumber(int port);
     void setPythonPath(QString path);
     void setApplicationPath(QString path);
 
 private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
+    void on_chkFixedPort_stateChanged(int state);
 
 private:
     Ui::ConfigWindow *ui;

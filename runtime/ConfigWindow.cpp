@@ -34,9 +34,27 @@ void ConfigWindow::on_buttonBox_rejected()
     this->close();
 }
 
+void ConfigWindow::on_chkFixedPort_stateChanged(int state)
+{
+    if (state == Qt::Checked)
+        ui->spinPortNumber->setEnabled(true);
+    else
+        ui->spinPortNumber->setEnabled(false);
+}
+
 QString ConfigWindow::getBrowserCommand()
 {
     return ui->browserCommandLineEdit->text();
+}
+
+bool ConfigWindow::getFixedPort()
+{
+    return ui->chkFixedPort->isChecked();
+}
+
+int ConfigWindow::getPortNumber()
+{
+    return ui->spinPortNumber->value();
 }
 
 QString ConfigWindow::getPythonPath()
@@ -53,6 +71,25 @@ QString ConfigWindow::getApplicationPath()
 void ConfigWindow::setBrowserCommand(QString command)
 {
     ui->browserCommandLineEdit->setText(command);
+}
+
+void ConfigWindow::setFixedPort(bool fixedPort)
+{
+    if (fixedPort)
+    {
+        ui->chkFixedPort->setCheckState(Qt::Checked);
+        ui->spinPortNumber->setEnabled(true);
+    }
+    else
+    {
+        ui->chkFixedPort->setCheckState(Qt::Unchecked);
+        ui->spinPortNumber->setEnabled(false);
+    }
+}
+
+void ConfigWindow::setPortNumber(int port)
+{
+    ui->spinPortNumber->setValue(port);
 }
 
 void ConfigWindow::setPythonPath(QString path)
