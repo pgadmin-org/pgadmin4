@@ -55,6 +55,8 @@ Use the context-sensitive fields in the *Columns* panel to specify which column(
 
 * Use the drop-down listbox in the *Collation* field to select a collation to use for the index.
 
+Use *Include columns* field to specify columns for *INCLUDE* clause of the index. This option is available in Postgres 11 and later.
+
 Click the *SQL* tab to continue.
 
 Your entries in the *Index* dialog generate a SQL command (see an example below). Use the *SQL* tab for review; revisit or switch tabs to make any changes to the SQL command.

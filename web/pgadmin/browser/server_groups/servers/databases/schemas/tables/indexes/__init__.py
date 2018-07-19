@@ -527,8 +527,33 @@ class IndexesView(PGChildNodeView):
         # Push as collection
         data['columns'] = columns
         # Push as string
-        data['cols'] = ', '.join(cols)
+        data['columns_csv'] = ', '.join(cols)
 
+        return data
+
+    def _include_details(self, idx, data, mode='properties'):
+        """
+        This functional will fetch list of include details for index
+        supported with Postgres 11+
+
+        Args:
+            idx: Index OID
+            data: Properties data
+
+        Returns:
+            Updated properties data with include details
+        """
+
+        SQL = render_template(
+            "/".join([self.template_path, 'include_details.sql']), idx=idx
+        )
+        status, rset = self.conn.execute_2darray(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        # Push as collection
+        data['include'] = [col['colname'] for col in rset['rows']]
         return data
 
     @check_precondition
@@ -567,6 +592,10 @@ class IndexesView(PGChildNodeView):
 
         # Add column details for current index
         data = self._column_details(idx, data)
+
+        # Add Include details of the index
+        if self.manager.version >= 110000:
+            data = self._include_details(idx, data)
 
         return ajax_response(
             response=data,
@@ -904,6 +933,10 @@ class IndexesView(PGChildNodeView):
 
         # Add column details for current index
         data = self._column_details(idx, data, 'create')
+
+        # Add Include details of the index
+        if self.manager.version >= 110000:
+            data = self._include_details(idx, data, 'create')
 
         SQL, name = self.get_sql(did, scid, tid, None, data)
         if not isinstance(SQL, (str, unicode)):

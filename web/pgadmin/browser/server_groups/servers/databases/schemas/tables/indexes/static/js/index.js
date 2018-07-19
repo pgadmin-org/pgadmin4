@@ -226,6 +226,7 @@ define('pgadmin.node.index', [
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: ['Size', 'Index size'],
+      width: '45%',
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -331,9 +332,47 @@ define('pgadmin.node.index', [
             },
           }),
         },{
-          id: 'cols', label: gettext('Columns'), cell: 'string',
+          id: 'columns_csv', label: gettext('Columns'), cell: 'string',
           type: 'text', disabled: 'inSchema', mode: ['properties'],
           group: gettext('Definition'),
+        },{
+          id: 'include', label: gettext('Include columns'),
+          type: 'array', group: gettext('Definition'),
+          editable: false,
+          canDelete: true, canAdd: true, mode: ['properties'],
+          disabled: 'inSchemaWithModelCheck',
+          visible: function(m) {
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+              m.node_info.server.version >= 110000)
+              return true;
+
+            return false;
+          },
+          control: Backform.MultiSelectAjaxControl.extend({
+            defaults: _.extend(
+              {},
+              Backform.NodeListByNameControl.prototype.defaults,
+              {
+                select2: {
+                  allowClear: false,
+                  width: 'style',
+                  multiple: true,
+                  placeholder: gettext('Select the column(s)'),
+                },
+              }
+            ),
+          }),
+          transform : function(data){
+            var res = [];
+            if (data && _.isArray(data)) {
+              _.each(data, function(d) {
+                res.push({label: d.label, value: d.label, image:'icon-column'});
+              });
+            }
+            return res;
+          },
+          node:'column',
         },{
           id: 'fillfactor', label: gettext('Fill factor'), cell: 'string',
           type: 'int', disabled: 'inSchema', mode: ['create', 'edit', 'properties'],
@@ -387,6 +426,44 @@ define('pgadmin.node.index', [
           },
           control: 'unique-col-collection', uniqueCol : ['colname'],
           columns: ['colname', 'op_class', 'sort_order', 'nulls', 'collspcname'],
+        },{
+          id: 'include', label: gettext('Include columns'),
+          type: 'array', group: gettext('Definition'),
+          editable: false,
+          canDelete: true, canAdd: true, mode: ['edit', 'create'],
+          disabled: 'inSchemaWithModelCheck',
+          visible: function(m) {
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+              m.node_info.server.version >= 110000)
+              return true;
+
+            return false;
+          },
+          control: Backform.MultiSelectAjaxControl.extend({
+            defaults: _.extend(
+              {},
+              Backform.NodeListByNameControl.prototype.defaults,
+              {
+                select2: {
+                  allowClear: false,
+                  width: 'style',
+                  multiple: true,
+                  placeholder: gettext('Select the column(s)'),
+                },
+              }
+            ),
+          }),
+          transform : function(data){
+            var res = [];
+            if (data && _.isArray(data)) {
+              _.each(data, function(d) {
+                res.push({label: d.label, value: d.label, image:'icon-column'});
+              });
+            }
+            return res;
+          },
+          node:'column',
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],

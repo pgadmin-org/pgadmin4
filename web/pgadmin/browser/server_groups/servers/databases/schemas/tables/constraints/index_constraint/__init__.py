@@ -263,7 +263,8 @@ class IndexConstraintView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'index_constraint/sql'
+            self.template_path = 'index_constraint/sql/#{0}#'\
+                .format(self.manager.version)
 
             # We need parent's name eg table name and schema name
             SQL = render_template("/".join([self.template_path,
@@ -323,7 +324,7 @@ class IndexConstraintView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, 'get_constraint_cols.sql']),
             cid=cid,
-            colcnt=result['indnatts'])
+            colcnt=result['col_count'])
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -334,6 +335,18 @@ class IndexConstraintView(PGChildNodeView):
             columns.append({"column": row['column'].strip('"')})
 
         result['columns'] = columns
+
+        # Add Include details of the index supported for PG-11+
+        if self.manager.version >= 110000:
+            sql = render_template(
+                "/".join([self.template_path, 'get_constraint_include.sql']),
+                cid=cid)
+            status, res = self.conn.execute_dict(sql)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            result['include'] = [col['colname'] for col in res['rows']]
 
         return ajax_response(
             response=result,
@@ -384,7 +397,8 @@ class IndexConstraintView(PGChildNodeView):
         """
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
-        self.template_path = 'index_constraint/sql'
+        self.template_path = 'index_constraint/sql/#{0}#'\
+            .format(self.manager.version)
 
         # We need parent's name eg table name and schema name
         SQL = render_template("/".join([self.template_path,
@@ -505,7 +519,8 @@ class IndexConstraintView(PGChildNodeView):
         """
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
-        self.template_path = 'index_constraint/sql'
+        self.template_path = 'index_constraint/sql/#{0}#'\
+            .format(self.manager.version)
 
         # We need parent's name eg table name and schema name
         SQL = render_template("/".join([self.template_path,
@@ -935,7 +950,7 @@ class IndexConstraintView(PGChildNodeView):
 
         sql = render_template(
             "/".join([self.template_path, 'get_constraint_cols.sql']),
-            cid=cid, colcnt=data['indnatts'])
+            cid=cid, colcnt=data['col_count'])
 
         status, res = self.conn.execute_dict(sql)
 
@@ -947,6 +962,18 @@ class IndexConstraintView(PGChildNodeView):
             columns.append({"column": row['column'].strip('"')})
 
         data['columns'] = columns
+
+        # Add Include details of the index supported for PG-11+
+        if self.manager.version >= 110000:
+            sql = render_template(
+                "/".join([self.template_path, 'get_constraint_include.sql']),
+                cid=cid)
+            status, res = self.conn.execute_dict(sql)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            data['include'] = [col['colname'] for col in res['rows']]
 
         SQL = render_template(
             "/".join([self.template_path, 'create.sql']),

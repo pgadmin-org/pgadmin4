@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-import json
 import uuid
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
@@ -19,12 +18,14 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as exclusion_utils
 
 
-class IndexesAddTestCase(BaseTestGenerator):
-    """This class will add new index to existing table column"""
+class ExclusionConstraintDeleteTestCase(BaseTestGenerator):
+    """This class will delete the existing exclusion constraint of table."""
     scenarios = [
-        ('Add index Node URL', dict(url='/browser/index/obj/'))
+        ('Delete Exclusion Constraint Node URL',
+         dict(url='/browser/exclusion_constraint/obj/'))
     ]
 
     def setUp(self):
@@ -43,28 +44,35 @@ class IndexesAddTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
-        self.table_name = "table_for_column_%s" % (str(uuid.uuid4())[1:8])
+        self.table_name = "table_exclusion_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
+        self.index_name = "test_exclusion_delete_%s" % (str(uuid.uuid4())[1:8])
+        self.index_id = exclusion_utils.create_exclusion_constraint(
+            self.server, self.db_name, self.schema_name, self.table_name,
+            self.index_name
+        )
 
     def runTest(self):
-        """This function will add index to existing table column."""
-        self.index_name = "test_index_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {"name": self.index_name,
-                "spcname": "pg_default",
-                "amname": "btree",
-                "columns": [
-                    {"colname": "id", "sort_order": False, "nulls": False}],
-                "include": ["name"]
-                }
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.schema_id) + '/' + str(self.table_id) + '/',
-            data=json.dumps(data),
-            content_type='html/json')
+        """This function will delete exclusion constraint."""
+        index_response = exclusion_utils.verify_exclusion_constraint(
+            self.server, self.db_name, self.index_name)
+        if not index_response:
+            raise Exception("Could not find the constraint to delete.")
+        response = self.tester.delete(self.url + str(utils.SERVER_GROUP) +
+                                      '/' + str(self.server_id) + '/' +
+                                      str(self.db_id) + '/' +
+                                      str(self.schema_id) + '/' +
+                                      str(self.table_id) + '/' +
+                                      str(self.index_id),
+                                      follow_redirects=True)
         self.assertEquals(response.status_code, 200)
+
+        index_response = exclusion_utils.verify_exclusion_constraint(
+            self.server, self.db_name, self.index_name)
+        if index_response:
+            raise Exception("Constraint is not deleted.")
 
     def tearDown(self):
         # Disconnect the database

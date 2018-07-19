@@ -301,7 +301,7 @@ class ExclusionConstraintView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, 'get_constraint_cols.sql']),
             cid=exid,
-            colcnt=result['indnatts'])
+            colcnt=result['col_count'])
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -325,6 +325,18 @@ class ExclusionConstraintView(PGChildNodeView):
                             })
 
         result['columns'] = columns
+
+        # Add Include details of the index supported for PG-11+
+        if self.manager.version >= 110000:
+            sql = render_template(
+                "/".join([self.template_path, 'get_constraint_include.sql']),
+                cid=exid)
+            status, res = self.conn.execute_dict(sql)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            result['include'] = [col['colname'] for col in res['rows']]
 
         return ajax_response(
             response=result,
@@ -875,7 +887,7 @@ class ExclusionConstraintView(PGChildNodeView):
             sql = render_template(
                 "/".join([self.template_path, 'get_constraint_cols.sql']),
                 cid=exid,
-                colcnt=data['indnatts'])
+                colcnt=data['col_count'])
             status, res = self.conn.execute_dict(sql)
 
             if not status:
@@ -898,6 +910,20 @@ class ExclusionConstraintView(PGChildNodeView):
                                 })
 
             data['columns'] = columns
+
+            # Add Include details of the index supported for PG-11+
+            if self.manager.version >= 110000:
+                sql = render_template(
+                    "/".join(
+                        [self.template_path, 'get_constraint_include.sql']
+                    ),
+                    cid=exid)
+                status, res = self.conn.execute_dict(sql)
+
+                if not status:
+                    return internal_server_error(errormsg=res)
+
+                data['include'] = [col['colname'] for col in res['rows']]
 
             if not data['amname'] or data['amname'] == '':
                 data['amname'] = 'btree'

@@ -86,6 +86,7 @@ define('pgadmin.node.unique_constraint', [
           condeferrable: undefined,
           condeferred: undefined,
           columns: [],
+          include: [],
         },
 
         // Define the schema for the index constraint node
@@ -362,6 +363,103 @@ define('pgadmin.node.unique_constraint', [
             return res;
           },
           select2:{allowClear:false},
+          disabled: function(m) {
+            // If we are in table edit mode then
+            if (_.has(m, 'top') && !_.isUndefined(m.top)
+              && !m.top.isNew()) {
+                // If OID is undefined then user is trying to add
+                // new constraint which should be allowed for Unique
+              return !_.isUndefined(m.get('oid'));
+            }
+
+            // We can't update columns of existing index constraint.
+            if (!m.isNew()) {
+              return true;
+            }
+            // Disable if index is selected.
+            var index = m.get('index');
+            if(_.isUndefined(index) || index == '') {
+              return false;
+            } else {
+              var col = m.get('columns');
+              col.reset();
+              return true;
+            }
+          },
+        },{
+          id: 'include', label: gettext('Include columns'),
+          type: 'array', group: gettext('Definition'),
+          editable: false,
+          canDelete: true, canAdd: true, mode: ['properties', 'create', 'edit'],
+          visible: function(m) {
+            /* In table properties, m.node_info is not available */
+            m = m.top;
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+              m.node_info.server.version >= 110000)
+              return true;
+
+            return false;
+          },
+          control: Backform.MultiSelectAjaxControl.extend({
+            defaults: _.extend(
+              {},
+              Backform.NodeListByNameControl.prototype.defaults,
+              {
+                select2: {
+                  allowClear: false,
+                  width: 'style',
+                  multiple: true,
+                  placeholder: gettext('Select the column(s)'),
+                },
+              }
+            ),
+            initialize: function() {
+              // Here we will decide if we need to call URL
+              // Or fetch the data from parent columns collection
+              var self = this;
+              if(this.model.handler) {
+                Backform.Select2Control.prototype.initialize.apply(this, arguments);
+                // Do not listen for any event(s) for existing constraint.
+                if (_.isUndefined(self.model.get('oid'))) {
+                  var tableCols = self.model.top.get('columns');
+                  self.listenTo(tableCols, 'remove' , self.resetColOptions);
+                  self.listenTo(tableCols, 'change:name', self.resetColOptions);
+                }
+
+                self.custom_options();
+              } else {
+                Backform.MultiSelectAjaxControl.prototype.initialize.apply(this, arguments);
+              }
+            },
+            resetColOptions: function() {
+              var self = this;
+
+              setTimeout(function () {
+                self.custom_options();
+                self.render.apply(self);
+              }, 50);
+            },
+            custom_options: function() {
+              // We will add all the columns entered by user in table model
+              var columns = this.model.top.get('columns'),
+                added_columns_from_tables = [];
+
+              if (columns.length > 0) {
+                _.each(columns.models, function(m) {
+                  var col = m.get('name');
+                  if(!_.isUndefined(col) && !_.isNull(col)) {
+                    added_columns_from_tables.push(
+                      {label: col, value: col, image:'icon-column'}
+                    );
+                  }
+                });
+              }
+              // Set the values in to options so that user can select
+              this.field.set('options', added_columns_from_tables);
+            },
+          }),
+          deps: ['index'], node: 'column',
           disabled: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)

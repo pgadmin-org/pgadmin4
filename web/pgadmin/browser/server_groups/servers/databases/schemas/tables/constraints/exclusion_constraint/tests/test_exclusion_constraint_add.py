@@ -19,12 +19,14 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as exclusion_utils
 
 
-class IndexesAddTestCase(BaseTestGenerator):
-    """This class will add new index to existing table column"""
+class ExclusionConstraintAddTestCase(BaseTestGenerator):
+    """This class will add new exclusion constraint to existing table"""
     scenarios = [
-        ('Add index Node URL', dict(url='/browser/index/obj/'))
+        ('Add Exclusion Constraint URL',
+         dict(url='/browser/exclusion_constraint/obj/'))
     ]
 
     def setUp(self):
@@ -43,19 +45,20 @@ class IndexesAddTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
-        self.table_name = "table_for_column_%s" % (str(uuid.uuid4())[1:8])
+        self.table_name = "table_for_exclusion_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
 
     def runTest(self):
-        """This function will add index to existing table column."""
+        """This function will add exclusion constraint to existing table."""
         self.index_name = "test_index_add_%s" % (str(uuid.uuid4())[1:8])
         data = {"name": self.index_name,
                 "spcname": "pg_default",
                 "amname": "btree",
                 "columns": [
-                    {"colname": "id", "sort_order": False, "nulls": False}],
+                    {"column": "id", "sort_order": False, "nulls": False,
+                     "operator": "="}],
                 "include": ["name"]
                 }
         response = self.tester.post(
@@ -65,6 +68,12 @@ class IndexesAddTestCase(BaseTestGenerator):
             data=json.dumps(data),
             content_type='html/json')
         self.assertEquals(response.status_code, 200)
+
+        index_response = exclusion_utils.verify_exclusion_constraint(
+            self.server, self.db_name, self.index_name)
+
+        if not index_response:
+            raise Exception("Could not find the constraint added.")
 
     def tearDown(self):
         # Disconnect the database

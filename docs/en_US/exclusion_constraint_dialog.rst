@@ -48,6 +48,8 @@ Use the fields in the *Columns* tab to to specify the column(s) to which the con
 * Use the *NULLs order* column to specify the placement of NULL values (when sorted).  Specify *FIRST* or *LAST*.
 * Use the drop-down list next to *Operator* to specify a comparison or conditional operator.
 
+Use *Include columns* field to specify columns for *INCLUDE* clause of the constraint. This option is available in Postgres 11 and later.
+
 Click the *SQL* tab to continue.
 
 Your entries in the *Exclusion Constraint* dialog generate a SQL command (see an example below). Use the *SQL* tab for review; revisit or switch tabs to make any changes to the SQL command.

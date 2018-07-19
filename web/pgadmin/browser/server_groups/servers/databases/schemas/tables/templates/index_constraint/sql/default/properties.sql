@@ -1,7 +1,6 @@
 SELECT cls.oid,
     cls.relname as name,
     indnatts as col_count,
-    amname,
     CASE WHEN length(spcname) > 0 THEN spcname ELSE
         (SELECT sp.spcname FROM pg_database dtb
         JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
@@ -30,5 +29,5 @@ WHERE indrelid = {{tid}}::oid
 {% if cid %}
 AND cls.oid = {{cid}}::oid
 {% endif %}
-AND contype='x'
+AND contype='{{constraint_type}}'
 ORDER BY cls.relname

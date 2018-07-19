@@ -1,6 +1,6 @@
 SELECT cls.oid,
     cls.relname as name,
-    indnatts,
+    indnkeyatts as col_count,
     CASE WHEN length(spcname) > 0 THEN spcname ELSE
         (SELECT sp.spcname FROM pg_database dtb
         JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid

@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-import json
 import uuid
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
@@ -19,12 +18,14 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as exclusion_utils
 
 
-class IndexesAddTestCase(BaseTestGenerator):
-    """This class will add new index to existing table column"""
+class ExclusionGetTestCase(BaseTestGenerator):
+    """This class will fetch the existing exclusion constraint"""
     scenarios = [
-        ('Add index Node URL', dict(url='/browser/index/obj/'))
+        ('Fetch Exclusion Constraint',
+         dict(url='/browser/exclusion_constraint/obj/'))
     ]
 
     def setUp(self):
@@ -43,27 +44,24 @@ class IndexesAddTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
-        self.table_name = "table_for_column_%s" % (str(uuid.uuid4())[1:8])
+        self.table_name = "table_exclusion_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
+        self.index_name = "test_exclusion_get_%s" % (str(uuid.uuid4())[1:8])
+        self.index_id = exclusion_utils.create_exclusion_constraint(
+            self.server, self.db_name, self.schema_name, self.table_name,
+            self.index_name
+        )
 
     def runTest(self):
-        """This function will add index to existing table column."""
-        self.index_name = "test_index_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {"name": self.index_name,
-                "spcname": "pg_default",
-                "amname": "btree",
-                "columns": [
-                    {"colname": "id", "sort_order": False, "nulls": False}],
-                "include": ["name"]
-                }
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.schema_id) + '/' + str(self.table_id) + '/',
-            data=json.dumps(data),
-            content_type='html/json')
+        """This function will fetch the existing exclusion constraint."""
+        response = self.tester.get(
+            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
+                                                self.server_id, self.db_id,
+                                                self.schema_id, self.table_id,
+                                                self.index_id),
+            follow_redirects=True)
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):

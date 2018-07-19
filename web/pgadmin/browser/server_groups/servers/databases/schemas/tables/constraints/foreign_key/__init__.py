@@ -1118,7 +1118,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
             sql = render_template(
                 "/".join([self.template_path, 'get_cols.sql']),
                 cid=costrnt['oid'],
-                colcnt=costrnt['indnatts'])
+                colcnt=costrnt['col_count'])
             status, rest = self.conn.execute_dict(sql)
 
             if not status:

@@ -127,7 +127,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 'exclusion_constraint/sql', server_type, ver)
 
             # Template for PK & Unique constraint node
-            self.index_constraint_template_path = 'index_constraint/sql'
+            self.index_constraint_template_path = 'index_constraint/sql/#{0}#'\
+                .format(ver)
 
             # Template for foreign key constraint node
             self.foreign_key_template_path = compile_template_path(
@@ -368,7 +369,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     "/".join([self.index_constraint_template_path,
                               'get_constraint_cols.sql']),
                     cid=row['oid'],
-                    colcnt=row['indnatts'])
+                    colcnt=row['col_count'])
                 status, res = self.conn.execute_dict(sql)
 
                 if not status:
@@ -379,6 +380,19 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     columns.append({"column": r['column'].strip('"')})
 
                 result['columns'] = columns
+
+                # INCLUDE clause in index is supported from PG-11+
+                if self.manager.version >= 110000:
+                    sql = render_template(
+                        "/".join([self.index_constraint_template_path,
+                                  'get_constraint_include.sql']),
+                        cid=row['oid'])
+                    status, res = self.conn.execute_dict(sql)
+
+                    if not status:
+                        return internal_server_error(errormsg=res)
+
+                    result['include'] = [col['colname'] for col in res['rows']]
 
                 # If not exists then create list and/or append into
                 # existing list [ Adding into main data dict]
@@ -513,7 +527,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 [self.exclusion_constraint_template_path,
                  'get_constraint_cols.sql']),
                 cid=ex['oid'],
-                colcnt=ex['indnatts'])
+                colcnt=ex['col_count'])
 
             status, res = self.conn.execute_dict(sql)
 
@@ -538,6 +552,20 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                                 })
 
             ex['columns'] = columns
+
+            # INCLUDE clause in index is supported from PG-11+
+            if self.manager.version >= 110000:
+                sql = render_template(
+                    "/".join([self.exclusion_constraint_template_path,
+                              'get_constraint_include.sql']),
+                    cid=ex['oid'])
+                status, res = self.conn.execute_dict(sql)
+
+                if not status:
+                    return internal_server_error(errormsg=res)
+
+                ex['include'] = [col['colname'] for col in res['rows']]
+
             # If not exists then create list and/or append into
             # existing list [ Adding into main data dict]
             data.setdefault('exclude_constraint', []).append(ex)
@@ -961,6 +989,18 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             data['columns'] = columns
             # Push as string
             data['cols'] = ', '.join(cols)
+
+            if self.manager.version >= 110000:
+                SQL = render_template(
+                    "/".join([self.index_template_path,
+                              'include_details.sql']),
+                    idx=row['oid'])
+                status, res = self.conn.execute_dict(SQL)
+
+                if not status:
+                    return internal_server_error(errormsg=res)
+
+                data['include'] = [col['colname'] for col in res['rows']]
 
             sql_header = u"\n-- Index: {0}\n\n-- ".format(data['name'])
 
@@ -2389,7 +2429,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             sql = render_template(
                 "/".join([self.foreign_key_template_path, 'get_cols.sql']),
                 cid=costrnt['oid'],
-                colcnt=costrnt['indnatts'])
+                colcnt=costrnt['col_count'])
             status, rest = self.conn.execute_dict(sql)
 
             if not status:
