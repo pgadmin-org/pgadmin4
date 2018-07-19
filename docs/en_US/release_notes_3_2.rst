@@ -27,3 +27,4 @@ Bug fixes
 | `Bug #3448 <https://redmine.postgresql.org/issues/3448>`_ - Exclude system columns in Import/Export.
 | `Bug #3457 <https://redmine.postgresql.org/issues/3457>`_ - Fix debugging of procedures in EPAS packages.
 | `Bug #3468 <https://redmine.postgresql.org/issues/3468>`_ - Support SSH tunneling with keys that don't have a passphrase.
+| `Bug #3471 <https://redmine.postgresql.org/issues/3471>`_ - Ensure the SSH tunnel port number is honoured.

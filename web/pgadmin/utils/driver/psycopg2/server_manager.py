@@ -400,7 +400,7 @@ WHERE db.oid = {0}""".format(did))
             # and password
             if self.tunnel_authentication == 1:
                 self.tunnel_object = SSHTunnelForwarder(
-                    self.tunnel_host,
+                    (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_pkey=get_complete_file_path(self.tunnel_identity_file),
                     ssh_private_key_password=tunnel_password,
@@ -408,7 +408,7 @@ WHERE db.oid = {0}""".format(did))
                 )
             else:
                 self.tunnel_object = SSHTunnelForwarder(
-                    self.tunnel_host,
+                    (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_password=tunnel_password,
                     remote_bind_address=(self.host, self.port)
