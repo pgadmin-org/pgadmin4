@@ -35,6 +35,7 @@ private:
 
 protected slots:
     void onNew();
+    void onCopyUrl();
     void onConfig();
     void onLog();
     void onQuit();

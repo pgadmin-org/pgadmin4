@@ -42,6 +42,7 @@ private:
     void closeEvent(QCloseEvent * event);
 
     QAction *m_newAction;
+    QAction *m_copyUrlAction;
     QAction *m_configAction;
     QAction *m_logAction;
     QAction *m_quitAction;

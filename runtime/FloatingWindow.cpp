@@ -57,6 +57,7 @@ void FloatingWindow::createMenu()
 
     m_floatingWindowMenu = menuBar()->addMenu(QString(tr("&%1")).arg(PGA_APP_NAME));
     m_floatingWindowMenu->addAction(m_newAction);
+    m_floatingWindowMenu->addAction(m_copyUrlAction);
     m_floatingWindowMenu->addSeparator();
     m_floatingWindowMenu->addAction(m_configAction);
     m_floatingWindowMenu->addAction(m_logAction);
@@ -70,7 +71,10 @@ void FloatingWindow::createActions()
     m_newAction = new QAction(QString(tr("&New %1 window...")).arg(PGA_APP_NAME), this);
     connect(m_newAction, SIGNAL(triggered()), m_menuActions, SLOT(onNew()));
 
-    m_configAction = new QAction(tr("&Configure..."), this);
+    m_copyUrlAction = new QAction(tr("&Copy server URL"), this);
+    connect(m_copyUrlAction, SIGNAL(triggered()), m_menuActions, SLOT(onCopyUrl()));
+
+    m_configAction = new QAction(tr("C&onfigure..."), this);
     connect(m_configAction, SIGNAL(triggered()), m_menuActions, SLOT(onConfig()));
 
     m_logAction = new QAction(tr("&View log..."), this);

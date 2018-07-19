@@ -50,6 +50,7 @@ void TrayIcon::createTrayIcon()
 
     m_trayIconMenu = new QMenu(this);
     m_trayIconMenu->addAction(m_newAction);
+    m_trayIconMenu->addAction(m_copyUrlAction);
     m_trayIconMenu->addSeparator();
     m_trayIconMenu->addAction(m_configAction);
     m_trayIconMenu->addAction(m_logAction);
@@ -77,6 +78,9 @@ void TrayIcon::createActions()
 {
     m_newAction = new QAction(QString(tr("&New %1 window...")).arg(PGA_APP_NAME), this);
     connect(m_newAction, SIGNAL(triggered()), m_menuActions, SLOT(onNew()));
+
+    m_copyUrlAction = new QAction(tr("&Copy server URL"), this);
+    connect(m_copyUrlAction, SIGNAL(triggered()), m_menuActions, SLOT(onCopyUrl()));
 
     m_configAction = new QAction(tr("&Configure..."), this);
     connect(m_configAction, SIGNAL(triggered()), m_menuActions, SLOT(onConfig()));

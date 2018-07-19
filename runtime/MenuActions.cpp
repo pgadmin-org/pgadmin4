@@ -12,6 +12,7 @@
 #include "MenuActions.h"
 
 // QT headers
+#include <QClipboard>
 #include <QMessageBox>
 
 MenuActions::MenuActions()
@@ -57,6 +58,15 @@ void MenuActions::onNew()
         }
     }
 }
+
+
+// Copy the application server URL to the clipboard
+void MenuActions::onCopyUrl()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(m_appServerUrl);
+}
+
 
 // Show the config dialogue
 void MenuActions::onConfig()
