@@ -189,9 +189,6 @@ int main(int argc, char * argv[])
     {
         // Find an unused port number. Essentially, we're just reserving one
         // here that Flask will use when we start up the server.
-        // In order to use the socket, we need to free this socket ASAP.
-        // Hence - putting this code in a code block so the scope of the socket
-        // variable vanishes to make that socket available.
 #if QT_VERSION >= 0x050000
         QTcpSocket socket;
 
