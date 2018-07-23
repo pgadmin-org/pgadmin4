@@ -240,10 +240,6 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
             else:
                 nodes.extend(module.get_nodes(**kwargs))
 
-        # Explicitly include 'partition' module as we had excluded it during
-        # registration.
-        nodes.extend(self.blueprint.get_nodes(**kwargs))
-
         # Return sorted nodes based on label
         return make_json_response(
             data=sorted(

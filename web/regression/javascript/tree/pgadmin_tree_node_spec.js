@@ -178,9 +178,14 @@ describe('tree#node#getTreeNodeHierarchy', () => {
             'special one': {
               'some key': 'some value',
               '_type': 'special one',
-              'priority': -1,
+              'priority': -2,
             },
             'table': {
+              'some key': 'some value',
+              '_type': 'table',
+              'priority': -1,
+            },
+            'partition': {
               'some key': 'expected value',
               'some other key': 'some other value',
               '_type': 'partition',
@@ -337,9 +342,14 @@ describe('tree#node#getTreeNodeHierarchy', () => {
             'special one': {
               'some key': 'some value',
               '_type': 'special one',
-              'priority': -1,
+              'priority': -2,
             },
             'table': {
+              'some key': 'some value',
+              '_type': 'table',
+              'priority': -1,
+            },
+            'partition': {
               'some key': 'expected value',
               'some other key': 'some other value',
               '_type': 'partition',

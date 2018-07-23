@@ -48,12 +48,13 @@ export function getTreeNodeHierarchyFromIdentifier(aciTreeNodeIdentifier) {
 
 export function getTreeNodeHierarchy(currentNode) {
   let idx = 0;
+  let node_cnt = 0;
   let result = {};
 
   do {
     const currentNodeData = currentNode.getData();
     if (currentNodeData._type in this.Nodes && this.Nodes[currentNodeData._type].hasId) {
-      const nodeType = mapType(currentNodeData._type);
+      const nodeType = mapType(currentNodeData._type, node_cnt);
       if (result[nodeType] === undefined) {
         result[nodeType] = _.extend({}, currentNodeData, {
           'priority': idx,
@@ -61,12 +62,13 @@ export function getTreeNodeHierarchy(currentNode) {
         idx -= 1;
       }
     }
+    node_cnt += 1;
     currentNode = currentNode.hasParent() ? currentNode.parent() : null;
   } while (currentNode);
 
   return result;
 }
 
-function mapType(type) {
-  return type === 'partition' ? 'table' : type;
+function mapType(type, idx) {
+  return (type === 'partition' && idx > 0) ? 'table' : type;
 }
