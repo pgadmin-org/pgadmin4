@@ -1245,7 +1245,16 @@ class ServerNode(PGChildNodeView):
                     return unauthorized(gettext("Incorrect password."))
 
             # Hash new password before saving it.
-            password = pqencryptpassword(data['newPassword'], manager.user)
+            if manager.sversion >= 100000:
+                password = conn.pq_encrypt_password_conn(data['newPassword'],
+                                                         manager.user)
+                if password is None:
+                    # Unable to encrypt the password so used the
+                    # old method of encryption
+                    password = pqencryptpassword(data['newPassword'],
+                                                 manager.user)
+            else:
+                password = pqencryptpassword(data['newPassword'], manager.user)
 
             SQL = render_template(
                 "/servers/sql/#{0}#/change_password.sql".format(

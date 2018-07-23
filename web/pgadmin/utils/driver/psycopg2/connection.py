@@ -143,6 +143,10 @@ class Connection(BaseConnection):
     * get_notifies()
       - This function will returns list of notifies received from database
         server.
+
+    * pq_encrypt_password_conn()
+      - This function will return the encrypted password for database server
+      - greater than or equal to 10.
     """
 
     def __init__(self, manager, conn_id, db, auto_reconnect=True, async=0,
@@ -1814,3 +1818,38 @@ Failed to reset the connection to the server due to following error:
                          } for notify in self.__notifies
                         ]
         return notifies
+
+    def pq_encrypt_password_conn(self, password, user):
+        """
+        This function will return the encrypted password for database server
+        greater than or equal to 10
+        :param password: password to be encrypted
+        :param user: user of the database server
+        :return:
+        """
+        enc_password = None
+        if psycopg2.__libpq_version__ >= 100000 and \
+                hasattr(psycopg2.extensions, 'encrypt_password'):
+            if self.connected():
+                status, enc_algorithm = \
+                    self.execute_scalar("SHOW password_encryption")
+                if status:
+                    enc_password = psycopg2.extensions.encrypt_password(
+                        password=password, user=user, scope=self.conn,
+                        algorithm=enc_algorithm
+                    )
+        elif psycopg2.__libpq_version__ < 100000:
+            current_app.logger.warning(
+                u"To encrypt passwords the required libpq version is "
+                u"greater than or equal to 100000. Current libpq version "
+                u"is {curr_ver}".format(
+                    curr_ver=psycopg2.__libpq_version__
+                )
+            )
+        elif not hasattr(psycopg2.extensions, 'encrypt_password'):
+            current_app.logger.warning(
+                u"The psycopg2.extensions module does not have the"
+                u"'encrypt_password' method."
+            )
+
+        return enc_password
