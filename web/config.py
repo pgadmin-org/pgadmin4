@@ -365,6 +365,13 @@ COOKIE_DEFAULT_DOMAIN = None
 SESSION_COOKIE_DOMAIN = None
 SESSION_COOKIE_SAMESITE = 'Lax'
 
+#########################################################################
+# Skip storing session in files and cache for specific paths
+#########################################################################
+SESSION_SKIP_PATHS = [
+    '/misc/ping'
+]
+
 ##########################################################################
 # SSH Tunneling supports only for Python 2.7 and 3.4+
 ##########################################################################
@@ -393,10 +400,3 @@ if (SUPPORT_SSH_TUNNEL is True and
      (sys.version_info[0] == 3 and sys.version_info[1] < 4))):
     SUPPORT_SSH_TUNNEL = False
 
-
-#########################################################################
-# Skip storing session in files and cache for specific paths
-#########################################################################
-SESSION_SKIP_PATHS = [
-    '/misc/ping'
-]
