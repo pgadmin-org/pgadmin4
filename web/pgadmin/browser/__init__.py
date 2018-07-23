@@ -9,6 +9,7 @@
 
 import json
 import logging
+import os
 from abc import ABCMeta, abstractmethod, abstractproperty
 from smtplib import SMTPConnectError, SMTPResponseException, \
     SMTPServerDisconnected, SMTPDataError, SMTPHeloError, SMTPException, \
@@ -505,7 +506,10 @@ def index():
             # Do not wait for more than 5 seconds.
             # It stuck on rendering the browser.html, while working in the
             # broken network.
-            response = urlreq.urlopen(url, data, 5)
+            if os.path.exists(config.CA_FILE):
+                response = urlreq.urlopen(url, data, 5, cafile=config.CA_FILE)
+            else:
+                response = urlreq.urlopen(url, data, 5)
             current_app.logger.debug(
                 'Version check HTTP response code: %d' % response.getcode()
             )

@@ -294,6 +294,11 @@ UPGRADE_CHECK_ENABLED = True
 # Where should we get the data from?
 UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 
+# Which CA file should we use?
+# Default to cacert.pem in the same directory as config.py et al.
+CA_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                       "cacert.pem")
+
 ##########################################################################
 # Storage Manager storage url config settings
 # If user sets STORAGE_DIR to empty it will show all volumes if platform
@@ -399,4 +404,3 @@ if (SUPPORT_SSH_TUNNEL is True and
     ((sys.version_info[0] == 2 and sys.version_info[1] < 7) or
      (sys.version_info[0] == 3 and sys.version_info[1] < 4))):
     SUPPORT_SSH_TUNNEL = False
-
