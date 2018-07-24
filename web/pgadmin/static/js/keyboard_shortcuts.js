@@ -117,13 +117,10 @@ function validateShortcutKeys(user_defined_shortcut, event) {
 }
 
 /* Debugger: Keyboard Shortcuts handling */
-function keyboardShortcutsDebugger($el, event, user_defined_shortcuts) {
+function keyboardShortcutsDebugger($el, event, preferences) {
   let panel_id, panel_content, $input;
-  let edit_grid_keys = user_defined_shortcuts.edit_grid_keys,
-    next_panel_keys = user_defined_shortcuts.next_panel_keys,
-    previous_panel_keys = user_defined_shortcuts.previous_panel_keys;
 
-  if(this.validateShortcutKeys(edit_grid_keys, event)) {
+  if(this.validateShortcutKeys(preferences.edit_grid_values, event)) {
     this._stopEventPropagation(event);
     panel_content = $el.find(
       'div.wcPanelTabContent:not(".wcPanelTabContentHidden")'
@@ -133,10 +130,10 @@ function keyboardShortcutsDebugger($el, event, user_defined_shortcuts) {
       if($input.length)
         $input.trigger('click');
     }
-  } else if(this.validateShortcutKeys(next_panel_keys, event)) {
+  } else if(this.validateShortcutKeys(preferences.move_next, event)) {
     this._stopEventPropagation(event);
     panel_id = this.getInnerPanel($el, 'right');
-  } else if(this.validateShortcutKeys(previous_panel_keys, event)) {
+  } else if(this.validateShortcutKeys(preferences.move_previous, event)) {
     this._stopEventPropagation(event);
     panel_id = this.getInnerPanel($el, 'left');
   }

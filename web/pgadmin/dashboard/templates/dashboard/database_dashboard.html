@@ -1,135 +1,110 @@
 <div class="dashboard-container">
-{% if settings.show_graphs %}
-    <div class="row">
-        <div class="col-xs-6">
-            <div class="obj_properties">
-                <legend class="badge">{{ _('Database sessions') }}</legend>
+    <div id="dashboard-graphs" class="dashboard-hidden">
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="obj_properties">
+                    <legend class="badge">{{ _('Database sessions') }}</legend>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="obj_properties">
+                    <legend class="badge">{{ _('Transactions per second') }}</legend>
+                </div>
             </div>
         </div>
-        <div class="col-xs-6">
-            <div class="obj_properties">
-                <legend class="badge">{{ _('Transactions per second') }}</legend>
+        <div class="row dashboard-row">
+            <div class="col-xs-6">
+                <div id="graph-sessions" class="graph-container"></div>
+            </div>
+            <div class="col-xs-6">
+                <div id="graph-tps" class="graph-container"></div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6">
-            <div id="graph-sessions" class="graph-container"></div>
-        </div>
-        <div class="col-xs-6">
-            <div id="graph-tps" class="graph-container"></div>
-        </div>
-    </div>
 
-    <div class="row dashboard-header-spacer">
-        <div class="col-xs-4">
-            <div class="obj_properties">
-                <legend class="badge">{{ _('Tuples in') }}</legend>
+        <div class="row">
+            <div class="col-xs-4">
+                <div class="obj_properties">
+                    <legend class="badge">{{ _('Tuples in') }}</legend>
+                </div>
+            </div>
+            <div class="col-xs-4">
+                <div class="obj_properties">
+                    <legend class="badge">{{ _('Tuples out') }}</legend>
+                </div>
+            </div>
+            <div class="col-xs-4">
+                <div class="obj_properties">
+                    <legend class="badge">{{ _('Block I/O') }}</legend>
+                </div>
             </div>
         </div>
-        <div class="col-xs-4">
-            <div class="obj_properties">
-                <legend class="badge">{{ _('Tuples out') }}</legend>
-            </div>
-        </div>
-        <div class="col-xs-4">
-            <div class="obj_properties">
-                <legend class="badge">{{ _('Block I/O') }}</legend>
-            </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xs-4">
-            <div id="graph-ti" class="graph-container"></div>
-        </div>
-        <div class="col-xs-4">
-            <div id="graph-to" class="graph-container"></div>
-        </div>
-        <div class="col-xs-4">
-            <div id="graph-bio" class="graph-container"></div>
-        </div>
-    </div>
-{% endif %}
-{% if settings.show_activity %}
-  {# If we are displaying graphs then only we need space on top #}
-  {% if settings.show_graphs %}
-    <div class="row dashboard-header-spacer">
-  {% else %}
-    <div class="row">
-  {% endif %}
-        <div class="col-xs-12">
-            <div class="obj_properties">
-                <legend class="badge">{{ _('Database activity') }}</legend>
+        <div class="row dashboard-row">
+            <div class="col-xs-4">
+                <div id="graph-ti" class="graph-container"></div>
+            </div>
+            <div class="col-xs-4">
+                <div id="graph-to" class="graph-container"></div>
+            </div>
+            <div class="col-xs-4">
+                <div id="graph-bio" class="graph-container"></div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="dashboard-tab-container">
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
-                    <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_database_activity"
-                                                                            aria-controls="tab_database_activity"
-                                                                            role="tab" data-toggle="tab">{{ _('Sessions') }}</a>
-                    </li>
-                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_locks"
-                                                                     aria-controls="tab_database_locks" role="tab"
-                                                                     data-toggle="tab">{{ _('Locks') }}</a></li>
-                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_prepared"
-                                                                     aria-controls="tab_database_prepared" role="tab"
-                                                                     data-toggle="tab">{{ _('Prepared Transactions') }}</a></li>
-                </ul>
+    <div id="dashboard-activity" class="dashboard-hidden">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="obj_properties">
+                    <legend class="badge">{{ _('Database activity') }}</legend>
+                </div>
+            </div>
+        </div>
+        <div class="row dashboard-row">
+            <div class="col-xs-12">
+                <div class="dashboard-tab-container">
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
+                        <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_database_activity"
+                                                                                aria-controls="tab_database_activity"
+                                                                                role="tab" data-toggle="tab">{{ _('Sessions') }}</a>
+                        </li>
+                        <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_locks"
+                                                                         aria-controls="tab_database_locks" role="tab"
+                                                                         data-toggle="tab">{{ _('Locks') }}</a></li>
+                        <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_prepared"
+                                                                         aria-controls="tab_database_prepared" role="tab"
+                                                                         data-toggle="tab">{{ _('Prepared Transactions') }}</a></li>
+                    </ul>
 
-                <!-- Tab panes -->
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="tab_panel_database_activity">
-                        <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                            <button id="btn_database_activity_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
-                            <div id="database_activity_filter"></div>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="tab_panel_database_activity">
+                            <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
+                                <button id="btn_database_activity_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                                <div id="database_activity_filter"></div>
+                            </div>
+                            <div id="database_activity" class="grid-container"></div>
                         </div>
-                        <div id="database_activity" class="grid-container"></div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="tab_panel_database_locks">
-                        <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                            <button id="btn_database_locks_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
-                            <div id="database_locks_filter"></div>
+                        <div role="tabpanel" class="tab-pane" id="tab_panel_database_locks">
+                            <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
+                                <button id="btn_database_locks_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                                <div id="database_locks_filter"></div>
+                            </div>
+                            <div id="database_locks" class="grid-container"></div>
                         </div>
-                        <div id="database_locks" class="grid-container"></div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="tab_panel_database_prepared">
-                        <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                            <button id="btn_database_prepared_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
-                            <div id="database_prepared_filter"></div>
+                        <div role="tabpanel" class="tab-pane" id="tab_panel_database_prepared">
+                            <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
+                                <button id="btn_database_prepared_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                                <div id="database_prepared_filter"></div>
+                            </div>
+                            <div id="database_prepared" class="grid-container"></div>
                         </div>
-                        <div id="database_prepared" class="grid-container"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-{% endif %}
-
-{% if not settings.show_graphs and not settings.show_activity %}
-    <div class="alert alert-info pg-panel-message" role="alert">
+    <div id="dashboard-none-show" class="alert alert-info pg-panel-message dashboard-hidden" role="alert">
         {{ _('All Dashboard elements are currently disabled.') }}
     </div>
-{% endif %}
-
 </div>
-
-<script type="text/javascript">
-    // Initiate database dashboard
-    pgAdmin.Dashboard.init_database_dashboard(
-      {{ sid }},
-      {{ did }},
-      {{ version }},
-      {{ rates.session_stats_refresh }},
-      {{ rates.tps_stats_refresh }},
-      {{ rates.ti_stats_refresh }},
-      {{ rates.to_stats_refresh }},
-      {{ rates.bio_stats_refresh }},
-      {{ settings.show_graphs|lower }},
-      {{ settings.show_activity|lower }}
-    );
-</script>

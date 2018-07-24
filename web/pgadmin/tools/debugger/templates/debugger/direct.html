@@ -35,47 +35,47 @@ try {
     .debugger-container .wcLoadingIcon.fa-pulse{-webkit-animation: none;}
 </style>
 {% endif %}
-<div class="dubugger_main_container" tabindex="0">
+<div class="debugger_main_container" tabindex="0">
     <nav class="navbar-inverse navbar-fixed-top">
         <div id="btn-toolbar" class="btn-toolbar pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
             <div class="btn-group" role="group" aria-label="">
-                <button type="button" class="btn btn-default btn-step-into"
-                        title="{{ _('Step into') }}{{ _(' (accesskey+{0})'.format(accesskey.step_into)) }}"
-                        accesskey="{{ accesskey.step_into }}"
+                <button type="button" class="btn btn-default btn-step-into" id="btn-step-into"
+                        title=""
+                        accesskey=""
                         tabindex="0" autofocus="autofocus">
                     <i class="fa fa-indent"></i>
                 </button>
-                <button type="button" class="btn btn-default btn-step-over"
-                        title="{{ _('Step over') }}{{ _(' (accesskey+{0})'.format(accesskey.step_over)) }}"
-                        accesskey="{{ accesskey.step_over }}"
+                <button type="button" class="btn btn-default btn-step-over" id="btn-step-over"
+                        title=""
+                        accesskey=""
                         tabindex="0">
                     <i class="fa fa-outdent"></i>
                 </button>
-                <button type="button" class="btn btn-default btn-continue"
-                        title="{{ _('Continue/Start') }}{{ _(' (accesskey+{0})'.format(accesskey.start)) }}"
-                        accesskey="{{ accesskey.start }}"
+                <button type="button" class="btn btn-default btn-continue" id="btn-continue"
+                        title=""
+                        accesskey=""
                         tabindex="0">
                     <i class="fa fa-play-circle"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <button type="button" class="btn btn-default btn-toggle-breakpoint"
-                        title="{{ _('Toggle breakpoint') }}{{ _(' (accesskey+{0})'.format(accesskey.toggle_breakpoint)) }}"
-                        accesskey="{{ accesskey.toggle_breakpoint }}"
+                <button type="button" class="btn btn-default btn-toggle-breakpoint" id="btn-toggle-breakpoint"
+                        title=""
+                        accesskey=""
                         tabindex="0">
                     <i class="fa fa-circle"></i>
                 </button>
-                <button type="button" class="btn btn-default btn-clear-breakpoint"
-                        title="{{ _('Clear all breakpoints') }}{{ _(' (accesskey+{0})'.format(accesskey.clear_breakpoints)) }}"
-                        accesskey="{{ accesskey.clear_breakpoints }}"
+                <button type="button" class="btn btn-default btn-clear-breakpoint" id="btn-clear-breakpoint"
+                        title=""
+                        accesskey=""
                         tabindex="0">
                     <i class="fa fa-ban"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <button type="button" class="btn btn-default btn-stop"
-                        accesskey="{{ accesskey.stop }}"
-                        title="{{ _('Stop') }}{{ _(' (accesskey+{0})'.format(accesskey.stop)) }}"
+                <button type="button" class="btn btn-default btn-stop" id="btn-stop"
+                        accesskey=""
+                        title=""
                         tabindex="0">
                     <i class="fa fa-stop-circle"></i>
                 </button>

@@ -184,6 +184,18 @@ define([
       });
 
       this.frame.load(pgBrowser.docker);
+
+      let self = this;
+      let cacheIntervalId = setInterval(function() {
+        try {
+          self.preferences = window.top.pgAdmin.Browser;
+          clearInterval(cacheIntervalId);
+        }
+        catch(err) {
+          clearInterval(cacheIntervalId);
+          throw err;
+        }
+      });
     },
     // It will check weather the function is actually debuggable or not with pre-required condition.
     can_debug: function(itemData, item, data) {
@@ -313,7 +325,8 @@ define([
       var t = pgBrowser.tree,
         i = item || t.selected(),
         d = i && i.length == 1 ? t.itemData(i) : undefined,
-        node = d && pgBrowser.Nodes[d._type];
+        node = d && pgBrowser.Nodes[d._type],
+        self = this;
 
       if (!d)
         return;
@@ -384,7 +397,7 @@ define([
           'trans_id': res.data.debuggerTransId,
         });
 
-        if (res.data.newBrowserTab) {
+        if (self.preferences.debugger_new_browser_tab) {
           window.open(url, '_blank');
         } else {
           pgBrowser.Events.once(
@@ -435,7 +448,8 @@ define([
       var t = pgBrowser.tree,
         i = item || t.selected(),
         d = i && i.length == 1 ? t.itemData(i) : undefined,
-        node = d && pgBrowser.Nodes[d._type];
+        node = d && pgBrowser.Nodes[d._type],
+        self = this;
 
       if (!d)
         return;
@@ -499,7 +513,7 @@ define([
               'trans_id': res.data.debuggerTransId,
             });
 
-            if (res.data.newBrowserTab) {
+            if (self.preferences.debugger_new_browser_tab) {
               window.open(url, '_blank');
             } else {
               pgBrowser.Events.once(

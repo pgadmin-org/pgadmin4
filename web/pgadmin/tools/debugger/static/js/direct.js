@@ -1393,7 +1393,7 @@ define([
     controller about the click and controller will take the action for the specified button click.
   */
   var DebuggerToolbarView = Backbone.View.extend({
-    el: '.dubugger_main_container',
+    el: '.debugger_main_container',
     initialize: function() {
       controller.on('pgDebugger:button:state:stop', this.enable_stop, this);
       controller.on('pgDebugger:button:state:step_over', this.enable_step_over, this);
@@ -1496,44 +1496,11 @@ define([
       controller.Step_into(pgTools.DirectDebug.trans_id);
     },
     keyAction: function (event) {
-      var $el = this.$el, panel_id, actual_panel;
-
-      // If already fetched earlier then don't do it again
-      if(_.size(pgTools.DirectDebug.debugger_keyboard_shortcuts) == 0) {
-        // Fetch keyboard shortcut keys
-        var edit_grid_shortcut_perf, next_panel_perf, previous_panel_perf;
-        edit_grid_shortcut_perf = window.top.pgAdmin.Browser.get_preference(
-          'debugger', 'edit_grid_values'
-        );
-        next_panel_perf = window.top.pgAdmin.Browser.get_preference(
-          'debugger', 'move_next'
-        );
-        previous_panel_perf = window.top.pgAdmin.Browser.get_preference(
-          'debugger', 'move_previous'
-        );
-
-        // If debugger opened in new Tab then window.top won't be available
-        if(!edit_grid_shortcut_perf || !next_panel_perf || !previous_panel_perf) {
-          edit_grid_shortcut_perf = window.opener.pgAdmin.Browser.get_preference(
-            'debugger', 'edit_grid_values'
-          );
-          next_panel_perf = window.opener.pgAdmin.Browser.get_preference(
-            'debugger', 'move_next'
-          );
-          previous_panel_perf = window.opener.pgAdmin.Browser.get_preference(
-            'debugger', 'move_previous'
-          );
-        }
-
-        pgTools.DirectDebug.debugger_keyboard_shortcuts = {
-          'edit_grid_keys': edit_grid_shortcut_perf.value,
-          'next_panel_keys': next_panel_perf.value,
-          'previous_panel_keys': previous_panel_perf.value,
-        };
-      }
+      var $el = this.$el, panel_id, actual_panel,
+        self = this;
 
       panel_id = keyboardShortcuts.processEventDebugger(
-        $el, event, pgTools.DirectDebug.debugger_keyboard_shortcuts
+        $el, event, self.preferences
       );
 
       // Panel navigation
@@ -1572,7 +1539,10 @@ define([
       this.debug_restarted = false;
       this.is_user_aborted_debugging = false;
       this.is_polling_required = true; // Flag to stop unwanted ajax calls
-      this.debugger_keyboard_shortcuts = {};
+
+      let browser = window.opener ?
+              window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+      this.preferences = browser.get_preferences_for_module('sqleditor');
 
       this.docker = new wcDocker(
         '#container', {
@@ -1856,6 +1826,35 @@ define([
         if(self.docker.$container){
           self.docker.$container.parent().focus();
         }
+
+        let cacheIntervalId = setInterval(function() {
+          try {
+            let browser = window.opener ? window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+            if(browser.preference_version() > 0) {
+              clearInterval(cacheIntervalId);
+              self.reflectPreferences();
+
+              /* If debugger is in a new tab, event fired is not available
+               * instead, a poller is set up who will check
+               */
+              if(self.preferences.debugger_new_browser_tab) {
+                let pollIntervalId = setInterval(()=>{
+                  if(window.opener && window.opener.pgAdmin) {
+                    self.reflectPreferences();
+                  }
+                  else {
+                    clearInterval(pollIntervalId);
+                  }
+                }, 1000);
+              }
+            }
+          }
+          catch(err) {
+            clearInterval(cacheIntervalId);
+            throw err;
+          }
+        },0);
+
       };
 
       self.docker.startLoading(gettext('Loading...'));
@@ -1863,8 +1862,50 @@ define([
 
       // Create the toolbar view for debugging the function
       this.toolbarView = new DebuggerToolbarView();
-    },
 
+      /* Cache may take time to load for the first time
+       * Keep trying till available
+       */
+
+
+      /* Register for preference changed event broadcasted in parent
+       * to reload the shorcuts.
+       */
+      pgBrowser.onPreferencesChange('debugger', function() {
+        self.reflectPreferences();
+      });
+    },
+    reflectPreferences: function() {
+      let self = this,
+        browser = window.opener ? window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+      self.preferences = browser.get_preferences_for_module('debugger');
+      self.toolbarView.preferences = self.preferences;
+
+      /* Update the shortcuts of the buttons */
+      self.toolbarView.$el.find('#btn-step-into')
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Step into',self.preferences.btn_step_into))
+        .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_step_into));
+
+      self.toolbarView.$el.find('#btn-step-over')
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Step over',self.preferences.btn_step_over))
+        .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_step_over));
+
+      self.toolbarView.$el.find('#btn-continue')
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Continue/Start',self.preferences.btn_start))
+        .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_start));
+
+      self.toolbarView.$el.find('#btn-toggle-breakpoint')
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Toggle breakpoint',self.preferences.btn_toggle_breakpoint))
+        .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_toggle_breakpoint));
+
+      self.toolbarView.$el.find('#btn-clear-breakpoint')
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Clear all breakpoints',self.preferences.btn_clear_breakpoints))
+        .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_clear_breakpoints));
+
+      self.toolbarView.$el.find('#btn-stop')
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Stop',self.preferences.btn_stop))
+        .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_stop));
+    },
     // Register the panel with new debugger docker instance.
     registerPanel: function(name, title, width, height, onInit) {
       var self = this;

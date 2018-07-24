@@ -293,33 +293,6 @@ def update_session_function_transaction(trans_id, data):
     session['functionData'] = function_data
 
 
-def get_shortcuts_for_accesskey():
-    """
-    This function will fetch and return accesskey shortcuts for debugger
-    toolbar buttons
-
-    Returns:
-        Dict of shortcut keys
-    """
-    # Fetch debugger preferences
-    dp = Preferences.module('debugger')
-    btn_start = dp.preference('btn_start').get()
-    btn_stop = dp.preference('btn_stop').get()
-    btn_step_into = dp.preference('btn_step_into').get()
-    btn_step_over = dp.preference('btn_step_over').get()
-    btn_toggle_breakpoint = dp.preference('btn_toggle_breakpoint').get()
-    btn_clear_breakpoints = dp.preference('btn_clear_breakpoints').get()
-
-    return {
-        'start': btn_start.get('key').get('char'),
-        'stop': btn_stop.get('key').get('char'),
-        'step_into': btn_step_into.get('key').get('char'),
-        'step_over': btn_step_over.get('key').get('char'),
-        'toggle_breakpoint': btn_toggle_breakpoint.get('key').get('char'),
-        'clear_breakpoints': btn_clear_breakpoints.get('key').get('char')
-    }
-
-
 @blueprint.route(
     '/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>',
     methods=['GET'], endpoint='init_for_function'
@@ -589,7 +562,6 @@ def direct_new(trans_id):
         is_linux=is_linux_platform,
         client_platform=user_agent.platform,
         stylesheets=[url_for('debugger.static', filename='css/debugger.css')],
-        accesskey=get_shortcuts_for_accesskey()
     )
 
 
@@ -811,12 +783,8 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
     # is initialized
     del session['funcData']
 
-    pref = Preferences.module('debugger')
-    new_browser_tab = pref.preference('debugger_new_browser_tab').get()
-
     return make_json_response(data={'status': status,
-                                    'debuggerTransId': trans_id,
-                                    'newBrowserTab': new_browser_tab})
+                                    'debuggerTransId': trans_id})
 
 
 @blueprint.route(

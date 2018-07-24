@@ -170,10 +170,9 @@ define(
           if (pgBrowser.tree) {
             pgBrowser.save_current_layout(pgBrowser);
             var selectedNode = pgBrowser.tree.selected();
-            // Discontinue this event after first time visible
-            this.off(wcDocker.EVENT.VISIBILITY_CHANGED);
-            if (!_.isUndefined(pgAdmin.Dashboard))
-              pgAdmin.Dashboard.toggleVisibility(true);
+            if (!_.isUndefined(pgAdmin.Dashboard)) {
+              pgAdmin.Dashboard.toggleVisibility(pgBrowser.panels.dashboard.panel.isVisible());
+            }
             // Explicitly trigger tree selected event when we add the tab.
             pgBrowser.Events.trigger('pgadmin-browser:tree:selected', selectedNode,
               pgBrowser.tree.itemData(selectedNode), pgBrowser.Node);

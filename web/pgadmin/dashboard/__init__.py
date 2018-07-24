@@ -280,8 +280,6 @@ def index(sid=None, did=None):
     rates = {}
     settings = {}
 
-    prefs = Preferences.module('dashboards')
-
     # Get the server version
     if sid is not None:
         g.manager = get_driver(
@@ -293,22 +291,6 @@ def index(sid=None, did=None):
         if not g.conn.connected():
             g.version = 0
 
-    session_stats_refresh_pref = prefs.preference('session_stats_refresh')
-    rates['session_stats_refresh'] = session_stats_refresh_pref.get()
-    tps_stats_refresh_pref = prefs.preference('tps_stats_refresh')
-    rates['tps_stats_refresh'] = tps_stats_refresh_pref.get()
-    ti_stats_refresh_pref = prefs.preference('ti_stats_refresh')
-    rates['ti_stats_refresh'] = ti_stats_refresh_pref.get()
-    to_stats_refresh_pref = prefs.preference('to_stats_refresh')
-    rates['to_stats_refresh'] = to_stats_refresh_pref.get()
-    bio_stats_refresh_pref = prefs.preference('bio_stats_refresh')
-    rates['bio_stats_refresh'] = bio_stats_refresh_pref.get()
-    # Whether to display graphs and server activity preferences
-    show_graphs_pref = prefs.preference('show_graphs')
-    settings['show_graphs'] = show_graphs_pref.get()
-    show_activity_pref = prefs.preference('show_activity')
-    settings['show_activity'] = show_activity_pref.get()
-
     # Show the appropriate dashboard based on the identifiers passed to us
     if sid is None and did is None:
         return render_template('/dashboard/welcome_dashboard.html')
@@ -317,8 +299,7 @@ def index(sid=None, did=None):
             '/dashboard/server_dashboard.html',
             sid=sid,
             rates=rates,
-            version=g.version,
-            settings=settings
+            version=g.version
         )
     else:
         return render_template(
@@ -326,8 +307,7 @@ def index(sid=None, did=None):
             sid=sid,
             did=did,
             rates=rates,
-            version=g.version,
-            settings=settings
+            version=g.version
         )
 
 

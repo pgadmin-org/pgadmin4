@@ -2,8 +2,8 @@
     padding: 15px;
 }
 
-.dashboard-header-spacer {
-    padding-top: 15px;
+.dashboard-row {
+    margin-bottom: 15px;
 }
 
 .dashboard-link {
@@ -175,4 +175,6 @@
     margin-bottom: 0%;
 }
 
-/* CSS to make subnode control look preety in backgrid - END */
+.dashboard-hidden {
+  display: none;
+}
