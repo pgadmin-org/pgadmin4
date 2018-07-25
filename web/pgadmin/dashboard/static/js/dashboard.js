@@ -249,8 +249,6 @@ define('pgadmin.dashboard', [
     // Handle treeview clicks
     object_selected: function(item, itemData, node) {
       let self = this;
-      /* Clear all the interval functions of previous dashboards */
-      self.clearIntervalId();
 
       if (itemData && itemData._type && dashboardVisible) {
         var treeHierarchy = node.getTreeNodeHierarchy(item),
@@ -291,6 +289,8 @@ define('pgadmin.dashboard', [
             url += self.sid;
             cancel_query_url += self.sid + '/';
             terminate_session_url += self.sid + '/';
+          } else {
+            is_server_dashboard = is_database_dashboard = false;
           }
         }
 
@@ -306,8 +306,10 @@ define('pgadmin.dashboard', [
               if (url !== $(dashboardPanel).data('dashboard_url') || (
                 url === $(dashboardPanel).data('dashboard_url') &&
                   $(dashboardPanel).data('server_status') == false)) {
-                // Clear out everything so any existing timers die off
                 $(div).empty();
+                /* Clear all the interval functions of previous dashboards */
+                self.clearIntervalId();
+
 
                 $.ajax({
                   url: url,
@@ -324,9 +326,6 @@ define('pgadmin.dashboard', [
                   );
                 });
                 $(dashboardPanel).data('server_status', true);
-              }
-              else {
-                self.init_dashboard();
               }
             } else {
               $(div).empty();
@@ -655,10 +654,6 @@ define('pgadmin.dashboard', [
     init_dashboard: function() {
       let self = this;
 
-      if(self.sid === -1 && self.did === -1) {
-        return;
-      }
-
       /* Cache may take time to load for the first time
        * Keep trying till available
        */
@@ -683,30 +678,7 @@ define('pgadmin.dashboard', [
     },
 
     reflectPreferences: function() {
-      /* Common things can come here */
       var self = this;
-      var div_sessions = $('.dashboard-container').find('#graph-sessions')[0];
-      var div_tps = $('.dashboard-container').find('#graph-tps')[0];
-      var div_ti = $('.dashboard-container').find('#graph-ti')[0];
-      var div_to = $('.dashboard-container').find('#graph-to')[0];
-      var div_bio = $('.dashboard-container').find('#graph-bio')[0];
-      var options_line = {
-        parseFloat: false,
-        xaxis: {
-          min: 100,
-          max: 0,
-          autoscale: 0,
-        },
-        yaxis: {
-          autoscale: 1,
-        },
-        legend: {
-          position: 'nw',
-          backgroundColor: '#D2E8FF',
-        },
-        shadowSize: 0,
-        resolution : 5,
-      };
 
       /* We will use old preferences for selective graph updates on preference change */
       if(self.preferences) {
@@ -718,60 +690,86 @@ define('pgadmin.dashboard', [
         self.old_preferences = self.preferences;
       }
 
-      if(self.preferences.show_graphs && $('#dashboard-graphs').hasClass('dashboard-hidden')) {
-        $('#dashboard-graphs').removeClass('dashboard-hidden');
-      }
-      else if(!self.preferences.show_graphs) {
-        $('#dashboard-graphs').addClass('dashboard-hidden');
-        self.clearIntervalId();
-      }
+      if(is_server_dashboard || is_database_dashboard) {
+        /* Common things can come here */
+        var div_sessions = $('.dashboard-container').find('#graph-sessions')[0];
+        var div_tps = $('.dashboard-container').find('#graph-tps')[0];
+        var div_ti = $('.dashboard-container').find('#graph-ti')[0];
+        var div_to = $('.dashboard-container').find('#graph-to')[0];
+        var div_bio = $('.dashboard-container').find('#graph-bio')[0];
+        var options_line = {
+          parseFloat: false,
+          xaxis: {
+            min: 100,
+            max: 0,
+            autoscale: 0,
+          },
+          yaxis: {
+            autoscale: 1,
+          },
+          legend: {
+            position: 'nw',
+            backgroundColor: '#D2E8FF',
+          },
+          shadowSize: 0,
+          resolution : 5,
+        };
 
-      if (self.preferences.show_activity && $('#dashboard-activity').hasClass('dashboard-hidden')) {
-        $('#dashboard-activity').removeClass('dashboard-hidden');
-      }
-      else if(!self.preferences.show_activity) {
-        $('#dashboard-activity').addClass('dashboard-hidden');
-      }
+        if(self.preferences.show_graphs && $('#dashboard-graphs').hasClass('dashboard-hidden')) {
+          $('#dashboard-graphs').removeClass('dashboard-hidden');
+        }
+        else if(!self.preferences.show_graphs) {
+          $('#dashboard-graphs').addClass('dashboard-hidden');
+          self.clearIntervalId();
+        }
 
-      if(self.preferences.show_graphs) {
-        // Render the graphs
-        pgAdmin.Dashboard.render_chart(
-          div_sessions, url_for('dashboard.session_stats'), options_line, false,
-          'session_stats', 'session_stats_refresh'
-        );
-        pgAdmin.Dashboard.render_chart(
-          div_tps, url_for('dashboard.tps_stats'), options_line, true,
-          'tps_stats','tps_stats_refresh'
-        );
-        pgAdmin.Dashboard.render_chart(
-          div_ti, url_for('dashboard.ti_stats'), options_line, true,
-          'ti_stats', 'ti_stats_refresh'
-        );
-        pgAdmin.Dashboard.render_chart(
-          div_to, url_for('dashboard.to_stats'), options_line, true,
-          'to_stats','to_stats_refresh'
-        );
-        pgAdmin.Dashboard.render_chart(
-          div_bio, url_for('dashboard.bio_stats'), options_line, true,
-          'bio_stats','bio_stats_refresh'
-        );
-      }
+        if (self.preferences.show_activity && $('#dashboard-activity').hasClass('dashboard-hidden')) {
+          $('#dashboard-activity').removeClass('dashboard-hidden');
+        }
+        else if(!self.preferences.show_activity) {
+          $('#dashboard-activity').addClass('dashboard-hidden');
+        }
 
-      /* Dashboard specific preferences can be updated in the
-       * appropriate functions
-       */
-      if(is_server_dashboard) {
-        self.reflectPreferencesServer();
-      }
-      else if(is_database_dashboard) {
-        self.reflectPreferencesDatabase();
-      }
+        if(self.preferences.show_graphs) {
+          // Render the graphs
+          pgAdmin.Dashboard.render_chart(
+            div_sessions, url_for('dashboard.session_stats'), options_line, false,
+            'session_stats', 'session_stats_refresh'
+          );
+          pgAdmin.Dashboard.render_chart(
+            div_tps, url_for('dashboard.tps_stats'), options_line, true,
+            'tps_stats','tps_stats_refresh'
+          );
+          pgAdmin.Dashboard.render_chart(
+            div_ti, url_for('dashboard.ti_stats'), options_line, true,
+            'ti_stats', 'ti_stats_refresh'
+          );
+          pgAdmin.Dashboard.render_chart(
+            div_to, url_for('dashboard.to_stats'), options_line, true,
+            'to_stats','to_stats_refresh'
+          );
+          pgAdmin.Dashboard.render_chart(
+            div_bio, url_for('dashboard.bio_stats'), options_line, true,
+            'bio_stats','bio_stats_refresh'
+          );
+        }
 
-      if(!self.preferences.show_graphs && !self.preferences.show_activity) {
-        $('#dashboard-none-show').removeClass('dashboard-hidden');
-      }
-      else {
-        $('#dashboard-none-show').addClass('dashboard-hidden');
+        if(!self.preferences.show_graphs && !self.preferences.show_activity) {
+          $('#dashboard-none-show').removeClass('dashboard-hidden');
+        }
+        else {
+          $('#dashboard-none-show').addClass('dashboard-hidden');
+        }
+
+        /* Dashboard specific preferences can be updated in the
+         * appropriate functions
+         */
+        if(is_server_dashboard) {
+          self.reflectPreferencesServer();
+        }
+        else if(is_database_dashboard) {
+          self.reflectPreferencesDatabase();
+        }
       }
     },
     reflectPreferencesServer: function() {
@@ -1313,12 +1311,7 @@ define('pgadmin.dashboard', [
       }
     },
     toggleVisibility: function(flag) {
-//      let self = this;
       dashboardVisible = flag;
-
-//      if(dashboardVisible) {
-//        self.init_dashboard();
-//      }
     },
     can_take_action: function(m) {
       // We will validate if user is allowed to cancel the active query
