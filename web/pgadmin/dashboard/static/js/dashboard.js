@@ -1,11 +1,12 @@
 define('pgadmin.dashboard', [
   'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
   'sources/pgadmin', 'backbone', 'backgrid', 'flotr2',
-  'pgadmin.alertifyjs', 'pgadmin.backform', 'backgrid.filter',
+  'pgadmin.alertifyjs', 'pgadmin.backform',
+  'sources/nodes/dashboard', 'backgrid.filter',
   'pgadmin.browser', 'bootstrap', 'wcdocker',
 ], function(
   url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
-  Alertify, Backform
+  Alertify, Backform, NodesDashboard
 ) {
 
   pgAdmin.Browser = pgAdmin.Browser || {};
@@ -250,38 +251,29 @@ define('pgadmin.dashboard', [
       let self = this;
       /* Clear all the interval functions of previous dashboards */
       self.clearIntervalId();
+
       if (itemData && itemData._type && dashboardVisible) {
         var treeHierarchy = node.getTreeNodeHierarchy(item),
-          url = url_for('dashboard.index'),
-          b = pgAdmin.Browser,
-          m = b && b.Nodes[itemData._type];
+          url = NodesDashboard.url(itemData, item, treeHierarchy);
 
-        self.sid = self.did = -1;
-        self.version = itemData.version;
-        cancel_query_url = url_for('dashboard.index') + 'cancel_query/';
-        terminate_session_url = url_for('dashboard.index') + 'terminate_session/';
+        if (url === null) {
+          url = url_for('dashboard.index');
 
-        // Check if user is super user
-        var server = treeHierarchy['server'];
-        maintenance_database = (server && server.db) || null;
+          cancel_query_url = url + 'cancel_query/';
+          terminate_session_url = url + 'terminate_session/';
 
-        if (server && server.user && server.user.is_superuser) {
-          is_super_user = true;
-        } else {
-          is_super_user = false;
-          // Set current user
-          current_user = (server && server.user) ? server.user.name : null;
-        }
+          // Check if user is super user
+          var server = treeHierarchy['server'];
+          maintenance_database = (server && server.db) || null;
 
-        if (m && m.dashboard) {
-          if (_.isFunction(m.dashboard)) {
-            url = m.dashboard.apply(
-              item, itemData, node, treeHierarchy
-            );
+          if (server && server.user && server.user.is_superuser) {
+            is_super_user = true;
           } else {
-            url = m.dashboard;
+            is_super_user = false;
+            // Set current user
+            current_user = (server && server.user) ? server.user.name : null;
           }
-        } else {
+
           if ('database' in treeHierarchy) {
             self.sid = treeHierarchy.server._id;
             self.did = treeHierarchy.database._id;
@@ -310,8 +302,10 @@ define('pgadmin.dashboard', [
           if (div) {
             if (itemData.connected || _.isUndefined(itemData.connected)) {
               // Avoid unnecessary reloads
-              if (url != $(dashboardPanel).data('dashboard_url') ||
-                (url == $(dashboardPanel).data('dashboard_url') && $(dashboardPanel).data('server_status') == false)) {
+              if (url !== $(dashboardPanel).data('dashboard_url') || (
+                url === $(dashboardPanel).data('dashboard_url') &&
+                  $(dashboardPanel).data('server_status') == false)) {
+                // Clear out everything so any existing timers die off
                 $(div).empty();
 
                 $.ajax({

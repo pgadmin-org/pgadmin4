@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+import {isValidData} from 'sources/utils';
+
 export class TreeNode {
   constructor(id, data, domNode, parent) {
     this.id = id;
@@ -217,6 +219,6 @@ function findInTree(rootNode, path) {
   })(rootNode);
 }
 
-export function isValidTreeNodeData(treeNodeData) {
-  return !_.isUndefined(treeNodeData) && !_.isNull(treeNodeData);
-}
+let isValidTreeNodeData = isValidData;
+
+export {isValidTreeNodeData};

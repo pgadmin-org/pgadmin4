@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+import _ from 'underscore';
+
 export function parseShortcutValue(obj) {
   var shortcut = '';
   if (obj.alt) { shortcut += 'alt+'; }
@@ -36,3 +38,11 @@ export function findAndSetFocus(container) {
     }
   }, 200);
 }
+
+let isValidData = (data) => (!_.isUndefined(data) && !_.isNull(data));
+let isFunction = (fn) => (_.isFunction(fn));
+let isString = (str) => (_.isString(str));
+
+export {
+  isValidData, isFunction, isString,
+};
