@@ -258,6 +258,7 @@ define('pgadmin.dashboard', [
 
         if (url === null) {
           url = url_for('dashboard.index');
+          self.version = (treeHierarchy.server && treeHierarchy.server.version) || 0;
 
           cancel_query_url = url + 'cancel_query/';
           terminate_session_url = url + 'terminate_session/';
