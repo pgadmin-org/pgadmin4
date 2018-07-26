@@ -301,15 +301,16 @@ define('pgadmin.dashboard', [
           );
 
           if (div) {
+
+            /* Clear all the interval functions of previous dashboards */
+            self.clearIntervalId();
+
             if (itemData.connected || _.isUndefined(itemData.connected)) {
               // Avoid unnecessary reloads
               if (url !== $(dashboardPanel).data('dashboard_url') || (
                 url === $(dashboardPanel).data('dashboard_url') &&
                   $(dashboardPanel).data('server_status') == false)) {
                 $(div).empty();
-                /* Clear all the interval functions of previous dashboards */
-                self.clearIntervalId();
-
 
                 $.ajax({
                   url: url,
