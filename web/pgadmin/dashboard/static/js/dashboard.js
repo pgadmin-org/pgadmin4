@@ -243,14 +243,32 @@ define('pgadmin.dashboard', [
 
     // Handle Server Disconnect
     object_disconnected: function(obj) {
-      this.object_selected(obj.item, obj.data, pgBrowser.Nodes[obj.data._type]);
+      let item = pgBrowser.tree.selected(),
+        itemData = item && pgBrowser.tree.itemData(item);
+
+      // The server connected may not be the same one, which was selected, and
+      // we do care out the current selected one only.
+      if (item.length != 0) {
+        this.object_selected(item, itemData, pgBrowser.Nodes[itemData._type]);
+      }
     },
 
     // Handle treeview clicks
     object_selected: function(item, itemData, node) {
       let self = this;
 
-      if (itemData && itemData._type && dashboardVisible) {
+      if (dashboardVisible === false) {
+        /*
+         * Clear all the interval functions, even when dashboard is not
+         * visible (in case of connection of the object got disconnected).
+         */
+        if (
+          !_.isUndefined(itemData.connected) &&
+            itemData.connected !== true
+        ) {
+          self.clearIntervalId();
+        }
+      } else if (itemData && itemData._type) {
         var treeHierarchy = node.getTreeNodeHierarchy(item),
           url = NodesDashboard.url(itemData, item, treeHierarchy);
 
@@ -301,16 +319,18 @@ define('pgadmin.dashboard', [
           );
 
           if (div) {
-
-            /* Clear all the interval functions of previous dashboards */
-            self.clearIntervalId();
-
             if (itemData.connected || _.isUndefined(itemData.connected)) {
               // Avoid unnecessary reloads
-              if (url !== $(dashboardPanel).data('dashboard_url') || (
-                url === $(dashboardPanel).data('dashboard_url') &&
-                  $(dashboardPanel).data('server_status') == false)) {
+              if (
+                url !== $(dashboardPanel).data('dashboard_url') || (
+                  url === $(dashboardPanel).data('dashboard_url') &&
+                  $(dashboardPanel).data('server_status') == false
+                )
+              ) {
                 $(div).empty();
+
+                /* Clear all the interval functions of previous dashboards */
+                self.clearIntervalId();
 
                 $.ajax({
                   url: url,
@@ -330,6 +350,13 @@ define('pgadmin.dashboard', [
               }
             } else {
               $(div).empty();
+              if (
+                !_.isUndefined(itemData.connected) &&
+                  itemData.connected !== true
+              ) {
+                /* Clear all the interval functions of previous dashboards */
+                self.clearIntervalId();
+              }
               $(div).html(
                 '<div class="alert alert-info pg-panel-message" role="alert">' + gettext('Please connect to the selected server to view the dashboard.') + '</div>'
               );
