@@ -560,14 +560,15 @@ define('pgadmin.node.index', [
 
         var t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
-          is_immediate_parent_table_partitioned = false;
+          is_immediate_parent_table_partitioned = false,
+          s_version = this.getTreeNodeHierarchy(i).server.version;
         // To iterate over tree to check parent node
         while (i) {
           // Do not allow creating index on partitioned tables.
           if (!immediate_parent_table_found &&
             _.indexOf(['table', 'partition'], d._type) > -1) {
             immediate_parent_table_found = true;
-            if ('is_partitioned' in d && d.is_partitioned) {
+            if ('is_partitioned' in d && d.is_partitioned && s_version < 110000) {
               is_immediate_parent_table_partitioned = true;
             }
           }

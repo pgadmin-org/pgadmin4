@@ -237,6 +237,8 @@ define('pgadmin.node.table_partition_utils', [
       values_from: undefined,
       values_to: undefined,
       values_in: undefined,
+      values_modulus: undefined,
+      values_remainder: undefined,
     },
     keys:['partition_name'],
     schema: [{
@@ -252,7 +254,7 @@ define('pgadmin.node.table_partition_utils', [
       },
     },{
       id: 'partition_name', label: gettext('Name'), type: 'text', cell:'string',
-      cellHeaderClasses: 'width_percent_25',
+      cellHeaderClasses: 'width_percent_15',
       editable: function(m) {
         if (m instanceof Backbone.Model && m.isNew())
           return true;
@@ -261,11 +263,11 @@ define('pgadmin.node.table_partition_utils', [
     },{
       id: 'values_from', label: gettext('From'), type:'text',
       cell:Backgrid.Extension.StringDepCell,
-      cellHeaderClasses: 'width_percent_20',
+      cellHeaderClasses: 'width_percent_15',
       editable: function(m) {
         if(m.handler && m.handler.top &&
           m.handler.top.attributes &&
-          m.handler.top.attributes.partition_type == 'range' &&
+          m.handler.top.attributes.partition_type === 'range' &&
           m instanceof Backbone.Model && m.isNew())
           return true;
         return false;
@@ -273,11 +275,11 @@ define('pgadmin.node.table_partition_utils', [
     },{
       id: 'values_to', label: gettext('To'), type:'text',
       cell:Backgrid.Extension.StringDepCell,
-      cellHeaderClasses: 'width_percent_20',
+      cellHeaderClasses: 'width_percent_15',
       editable: function(m) {
         if(m.handler && m.handler.top &&
           m.handler.top.attributes &&
-          m.handler.top.attributes.partition_type == 'range' &&
+          m.handler.top.attributes.partition_type === 'range' &&
           m instanceof Backbone.Model && m.isNew())
           return true;
         return false;
@@ -285,11 +287,35 @@ define('pgadmin.node.table_partition_utils', [
     },{
       id: 'values_in', label: gettext('In'), type:'text',
       cell:Backgrid.Extension.StringDepCell,
-      cellHeaderClasses: 'width_percent_25',
+      cellHeaderClasses: 'width_percent_15',
       editable: function(m) {
         if(m.handler && m.handler.top &&
           m.handler.top.attributes &&
-          m.handler.top.attributes.partition_type == 'list' &&
+          m.handler.top.attributes.partition_type === 'list' &&
+          m instanceof Backbone.Model && m.isNew())
+          return true;
+        return false;
+      },
+    },{
+      id: 'values_modulus', label: gettext('Modulus'), type:'int',
+      cell:Backgrid.Extension.StringDepCell,
+      cellHeaderClasses: 'width_percent_15',
+      editable: function(m) {
+        if(m.handler && m.handler.top &&
+          m.handler.top.attributes &&
+          m.handler.top.attributes.partition_type === 'hash' &&
+          m instanceof Backbone.Model && m.isNew())
+          return true;
+        return false;
+      },
+    },{
+      id: 'values_remainder', label: gettext('Remainder'), type:'int',
+      cell:Backgrid.Extension.StringDepCell,
+      cellHeaderClasses: 'width_percent_15 width_percent_20',
+      editable: function(m) {
+        if(m.handler && m.handler.top &&
+          m.handler.top.attributes &&
+          m.handler.top.attributes.partition_type === 'hash' &&
           m instanceof Backbone.Model && m.isNew())
           return true;
         return false;
@@ -300,6 +326,8 @@ define('pgadmin.node.table_partition_utils', [
         values_from = this.get('values_from'),
         values_to = this.get('values_to'),
         values_in = this.get('values_in'),
+        values_modulus = this.get('values_modulus'),
+        values_remainder = this.get('values_remainder'),
         msg;
 
       // Have to clear existing validation before initiating current state
@@ -307,29 +335,41 @@ define('pgadmin.node.table_partition_utils', [
       this.errorModel.clear();
 
       if (_.isUndefined(partition_name) || _.isNull(partition_name) ||
-       String(partition_name).replace(/^\s+|\s+$/g, '') == '') {
+       String(partition_name).replace(/^\s+|\s+$/g, '') === '') {
         msg = gettext('Partition name cannot be empty.');
         this.errorModel.set('partition_name', msg);
         return msg;
       }
 
-      if (this.top.get('partition_type') == 'range') {
+      if (this.top.get('partition_type') === 'range') {
         if (_.isUndefined(values_from) || _.isNull(values_from) ||
-          String(values_from).replace(/^\s+|\s+$/g, '') == '') {
+          String(values_from).replace(/^\s+|\s+$/g, '') === '') {
           msg = gettext('For range partition From field cannot be empty.');
           this.errorModel.set('values_from', msg);
           return msg;
         } else if (_.isUndefined(values_to) || _.isNull(values_to) ||
-          String(values_to).replace(/^\s+|\s+$/g, '') == '') {
+          String(values_to).replace(/^\s+|\s+$/g, '') === '') {
           msg = gettext('For range partition To field cannot be empty.');
           this.errorModel.set('values_to', msg);
           return msg;
         }
-      } else if (this.top.get('partition_type') == 'list') {
+      } else if (this.top.get('partition_type') === 'list') {
         if (_.isUndefined(values_in) || _.isNull(values_in) ||
-          String(values_in).replace(/^\s+|\s+$/g, '') == '') {
+          String(values_in).replace(/^\s+|\s+$/g, '') === '') {
           msg = gettext('For list partition In field cannot be empty.');
           this.errorModel.set('values_in', msg);
+          return msg;
+        }
+      } else if (this.top.get('partition_type') === 'hash') {
+        if (_.isUndefined(values_modulus) || _.isNull(values_modulus) ||
+          String(values_modulus).replace(/^\s+|\s+$/g, '') === '') {
+          msg = gettext('For hash partition Modulus field cannot be empty.');
+          this.errorModel.set('values_modulus', msg);
+          return msg;
+        } else if (_.isUndefined(values_remainder) || _.isNull(values_remainder) ||
+          String(values_remainder).replace(/^\s+|\s+$/g, '') === '') {
+          msg = gettext('For hash partition Remainder field cannot be empty.');
+          this.errorModel.set('values_remainder', msg);
           return msg;
         }
       }

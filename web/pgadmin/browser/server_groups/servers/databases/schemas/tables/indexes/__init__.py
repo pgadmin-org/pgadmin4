@@ -75,8 +75,9 @@ class IndexesModule(CollectionNodeModule):
         if super(IndexesModule, self).BackendSupported(manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 
-            # In case of partitioned table return false.
-            if 'tid' in kwargs and manager.version >= 100000:
+            # If PG version > 100000 and < 110000 then index is
+            # not supported for partitioned table.
+            if 'tid' in kwargs and 100000 <= manager.version < 110000:
                 return not backend_supported(self, manager, **kwargs)
 
             if 'vid' not in kwargs:

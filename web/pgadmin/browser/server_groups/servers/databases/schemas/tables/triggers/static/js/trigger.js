@@ -204,7 +204,9 @@ define('pgadmin.node.trigger', [
           disabled: function(m) {
             // Disabled if table is a partitioned table.
             if (_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
-              _.has(m.node_info.table, 'is_partitioned') && m.node_info.table.is_partitioned)
+              _.has(m.node_info.table, 'is_partitioned') &&
+               m.node_info.table.is_partitioned && m.node_info.server.version < 110000
+               )
             {
               setTimeout(function(){
                 m.set('is_row_trigger', false);

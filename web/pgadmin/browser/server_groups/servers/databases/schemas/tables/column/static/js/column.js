@@ -205,7 +205,8 @@ define('pgadmin.node.column', [
                   m.top.get('primary_key').length > 0 &&
                   !_.isUndefined(m.top.get('primary_key').first().get('oid'))
               ) || (
-                m.top.has('is_partitioned') && m.top.get('is_partitioned')
+                m.top.has('is_partitioned') && m.top.get('is_partitioned') &&
+                m.top.node_info.server && m.top.node_info.server.version < 11000
               ))
             ) {
               return true;
@@ -235,7 +236,8 @@ define('pgadmin.node.column', [
 
             // If table is partitioned table then disable
             if (m.top && !_.isUndefined(m.top.get('is_partitioned')) &&
-              m.top.get('is_partitioned'))
+              m.top.get('is_partitioned') && m.top.node_info.server &&
+              m.top.node_info.server.version < 11000)
             {
               setTimeout(function () {
                 m.set('is_primary_key', false);

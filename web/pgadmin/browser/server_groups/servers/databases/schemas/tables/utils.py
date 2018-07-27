@@ -874,6 +874,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         # Table & Schema declaration so that we can use them in child nodes
         schema = data['schema']
         table = data['name']
+        is_partitioned = 'is_partitioned' in data and data['is_partitioned']
 
         data = self._formatter(did, scid, tid, data)
 
@@ -1139,7 +1140,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         # 5) Reverse engineered sql for PARTITIONS
         ##########################################
         """
-        if 'is_partitioned' in data and data['is_partitioned']:
+        if is_partitioned:
             SQL = render_template("/".join([self.partition_template_path,
                                             'nodes.sql']),
                                   scid=scid, tid=tid)
@@ -1211,6 +1212,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         elif 'partition_type' in data \
                 and data['partition_type'] == 'list':
             partition_scheme = 'LIST ('
+        elif 'partition_type' in data \
+                and data['partition_type'] == 'hash':
+            partition_scheme = 'HASH ('
 
         for row in data['partition_keys']:
             if row['key_type'] == 'column':
@@ -2205,7 +2209,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         'values_from': range_from,
                         'values_to': range_to
                     })
-                else:
+                elif data['partition_type'] == 'list':
                     range_part = \
                         row['partition_value'].split('FOR VALUES IN (')[1]
 
@@ -2214,6 +2218,20 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         'oid': row['oid'],
                         'partition_name': partition_name,
                         'values_in': range_in
+                    })
+                else:
+                    range_part = row['partition_value'].split(
+                        'FOR VALUES WITH (')[1].split(",")
+                    range_modulus = range_part[0].strip().strip(
+                        "modulus").strip()
+                    range_remainder = range_part[1].strip().\
+                        strip(" remainder").strip(")").strip()
+
+                    partitions.append({
+                        'oid': row['oid'],
+                        'partition_name': partition_name,
+                        'values_modulus': range_modulus,
+                        'values_remainder': range_remainder
                     })
 
             data['partitions'] = partitions
@@ -2256,10 +2274,26 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                 part_data['partition_value'] = 'FOR VALUES FROM (' + from_str \
                                                + ') TO (' + to_str + ')'
-            else:
+
+            elif partitions['partition_type'] == 'list':
                 range_in = row['values_in'].split(',')
                 in_str = ', '.join("{0}".format(item) for item in range_in)
-                part_data['partition_value'] = 'FOR VALUES IN (' + in_str + ')'
+                part_data['partition_value'] = 'FOR VALUES IN (' + in_str\
+                                               + ')'
+
+            else:
+                range_modulus = row['values_modulus'].split(',')
+                range_remainder = row['values_remainder'].split(',')
+
+                modulus_str = ', '.join("{0}".format(item) for item in
+                                        range_modulus)
+                remainder_str = ', '.join("{0}".format(item) for item in
+                                          range_remainder)
+
+                part_data['partition_value'] = 'FOR VALUES WITH (MODULUS '\
+                                               + modulus_str \
+                                               + ', REMAINDER ' +\
+                                               remainder_str + ')'
 
             if 'is_attach' in row and row['is_attach']:
                 partition_sql = render_template(

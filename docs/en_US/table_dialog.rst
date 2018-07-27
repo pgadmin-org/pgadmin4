@@ -256,6 +256,31 @@ Use the fields in the **Like** box to specify which attributes of an existing ta
 * Move the *With storage?* switch to the *Yes* position to copy storage settings.
 * Move the *With comments?* switch to the *Yes* position to copy comments.
 
+With PostgreSQL 10 forward, the *Partition* tab will be visible.
+
+Click the *Partition* tab to continue.
+
+.. image:: images/table_partition.png
+    :alt: Table dialog partition tab
+
+Use the fields in the *partition* tab to create the partitions for the table:
+
+* Select a partition type from the *Partition Type* selection box. There are 3 options available; Range, List and Hash. Hash option will only enable for PostgreSQL version >= 11.
+
+Use the *Partition Keys* panel to define the partition keys. Click the *Add* icon (+) to add each partition keys selection:
+
+* Select a partition key type in the *Keytype* field.
+* Select a partition column in the *Column* field if Column option selected for *Keytype* field .
+* Specify the expression in the *Expression* field if Expression option selected for the *Keytype* field.
+
+Use the *Partitions* panel to define the partitions of a table. Click the *Add* icon (+) to add each partition:
+
+* Move the *Operation* switch to *attach* to attach the partition, by default it is *create*.
+* Use the *Name* field to add the name of the partition.
+* If partition type is Range then *From* and *To* fields will be enabled.
+* If partition type is List then *In* field will be enabled.
+* If partition type is Hash then *Modulus* and *Remainder* fields will be enabled.
+
 Click the *Parameter* tab to continue.
 
 .. image:: images/table_parameter.png

@@ -36,6 +36,12 @@ class TableAddTestCase(BaseTestGenerator):
               server_min_version=100000,
               partition_type='list'
               )
+         ),
+        ('Create Hash partitioned table with 2 partitions',
+         dict(url='/browser/table/obj/',
+              server_min_version=110000,
+              partition_type='hash'
+              )
          )
     ]
 
@@ -93,13 +99,14 @@ class TableAddTestCase(BaseTestGenerator):
                     "attoptions": [],
                     "seclabels": []
                 },
-                {"name": "DOJ",
-                 "cltype": "date",
-                 "attacl": [],
-                 "is_primary_key": False,
-                 "attoptions": [],
-                 "seclabels": []
-                 }
+                {
+                    "name": "DOJ",
+                    "cltype": "date",
+                    "attacl": [],
+                    "is_primary_key": False,
+                    "attoptions": [],
+                    "seclabels": []
+                }
             ],
             "exclude_constraint": [],
             "fillfactor": "",
@@ -208,7 +215,9 @@ class TableAddTestCase(BaseTestGenerator):
                       'is_attach': False,
                       'partition_name': 'emp_2011'
                       }]
-            else:
+                data['partition_keys'] = \
+                    [{'key_type': 'column', 'pt_column': 'DOJ'}]
+            elif self.partition_type == 'list':
                 data['partitions'] = \
                     [{'values_in': "'2012-01-01', '2012-12-31'",
                       'is_attach': False,
@@ -218,8 +227,22 @@ class TableAddTestCase(BaseTestGenerator):
                       'is_attach': False,
                       'partition_name': 'emp_2013'
                       }]
-            data['partition_keys'] = \
-                [{'key_type': 'column', 'pt_column': 'DOJ'}]
+                data['partition_keys'] = \
+                    [{'key_type': 'column', 'pt_column': 'DOJ'}]
+            else:
+                data['partitions'] = \
+                    [{'values_modulus': "24",
+                      'values_remainder': "3",
+                      'is_attach': False,
+                      'partition_name': 'emp_2016'
+                      },
+                     {'values_modulus': "8",
+                      'values_remainder': "2",
+                      'is_attach': False,
+                      'partition_name': 'emp_2017'
+                      }]
+                data['partition_keys'] = \
+                    [{'key_type': 'column', 'pt_column': 'empno'}]
 
         # Add table
         response = self.tester.post(

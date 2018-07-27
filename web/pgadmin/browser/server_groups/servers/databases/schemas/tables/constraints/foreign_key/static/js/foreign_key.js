@@ -1061,13 +1061,15 @@ define('pgadmin.node.foreign_key', [
 
         var t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
-          is_immediate_parent_table_partitioned = false;
+          is_immediate_parent_table_partitioned = false,
+          s_version = this.getTreeNodeHierarchy(i).server.version;
+
           // To iterate over tree to check parent node
         while (i) {
             // If table is partitioned table then return false
           if (!immediate_parent_table_found && (d._type == 'table' || d._type == 'partition')) {
             immediate_parent_table_found = true;
-            if ('is_partitioned' in d && d.is_partitioned) {
+            if ('is_partitioned' in d && d.is_partitioned && s_version < 110000) {
               is_immediate_parent_table_partitioned = true;
             }
           }

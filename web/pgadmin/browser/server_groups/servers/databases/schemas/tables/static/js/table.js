@@ -593,7 +593,9 @@ define('pgadmin.node.table', [
             control: 'unique-col-collection',
             columns : ['name', 'columns'],
             canAdd: function(m) {
-              if (m.get('is_partitioned')) {
+              if (m.get('is_partitioned') && !_.isUndefined(m.top.node_info) && !_.isUndefined(m.top.node_info.server)
+              && !_.isUndefined(m.top.node_info.server.version) &&
+                m.top.node_info.server.version < 110000) {
                 setTimeout(function() {
                   var coll = m.get('primary_key');
                   coll.remove(coll.filter(function() { return true; }));
@@ -620,7 +622,9 @@ define('pgadmin.node.table', [
             canEdit: true, canDelete: true, deps:['is_partitioned'],
             control: 'unique-col-collection',
             canAdd: function(m) {
-              if (m.get('is_partitioned')) {
+              if (m.get('is_partitioned') && !_.isUndefined(m.top.node_info) && !_.isUndefined(m.top.node_info.server)
+              && !_.isUndefined(m.top.node_info.server.version) &&
+                m.top.node_info.server.version < 110000) {
                 setTimeout(function() {
                   var coll = m.get('foreign_key');
                   coll.remove(coll.filter(function() { return true; }));
@@ -656,7 +660,8 @@ define('pgadmin.node.table', [
             control: 'unique-col-collection',
             columns : ['name', 'columns'],
             canAdd: function(m) {
-              if (m.get('is_partitioned')) {
+              if (m.get('is_partitioned') && !_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) && m.node_info.server.version < 110000) {
                 setTimeout(function() {
                   var coll = m.get('unique_constraint');
                   coll.remove(coll.filter(function() { return true; }));
@@ -834,11 +839,22 @@ define('pgadmin.node.table', [
           id: 'partition_type', label:gettext('Partition Type'),
           editable: false, type: 'select2', select2: {allowClear: false},
           group: 'partition', deps: ['is_partitioned'],
-          options:[{
-            label: gettext('Range'), value: 'range',
-          },{
-            label: gettext('List'), value: 'list',
-          }],
+          options: function() {
+            var options = [{
+              label: gettext('Range'), value: 'range',
+            },{
+              label: gettext('List'), value: 'list',
+            }];
+
+            if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
+              && !_.isUndefined(this.node_info.server.version) &&
+                this.node_info.server.version >= 110000) {
+              options.push({
+                label: gettext('Hash'), value: 'hash',
+              });
+            }
+            return options;
+          },
           mode:['create'],
           visible: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
@@ -963,7 +979,7 @@ define('pgadmin.node.table', [
           canEdit: false, canDelete: true,
           customDeleteTitle: gettext('Detach Partition'),
           customDeleteMsg: gettext('Are you sure you wish to detach this partition?'),
-          columns:['is_attach', 'partition_name', 'values_from', 'values_to', 'values_in'],
+          columns:['is_attach', 'partition_name', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder'],
           control: Backform.SubNodeCollectionControl.extend({
             row: Backgrid.PartitionRow,
             initialize: function() {
@@ -1039,6 +1055,8 @@ define('pgadmin.node.table', [
             gettext('From/To: Enabled for range partition. Consider partitioned table with multiple keys of type Integer, then values should be specified like \'100\',\'200\'.'),
             '</li><li> ',
             gettext('In: Enabled for list partition. Values must be comma(,) separated and quoted with single quote.'),
+            '</li></ul></li></ul>',
+            gettext('Modulus/Remainder: Enabled for hash partition.'),
             '</li></ul></li></ul>',
           ].join(''),
           visible: function(m) {

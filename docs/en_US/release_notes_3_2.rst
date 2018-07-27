@@ -13,6 +13,7 @@ Features
 | `Feature #2214 <https://redmine.postgresql.org/issues/2214>`_ - Add support for SCRAM password changes (requires psycopg2 >= 2.8).
 | `Feature #3074 <https://redmine.postgresql.org/issues/3074>`_ - Add support for reset saved password.
 | `Feature #3397 <https://redmine.postgresql.org/issues/3397>`_ - Add support for Trigger and JIT stats in the graphical query plan viewer.
+| `Feature #3412 <https://redmine.postgresql.org/issues/3412>`_ - Add support for primary key, foreign key, unique key, indexes and triggers on partitioned tables for PG/EPAS 11.
 | `Feature #3506 <https://redmine.postgresql.org/issues/3506>`_ - Allow the user to specify a fixed port number in the runtime to aid cookie whitelisting etc.
 | `Feature #3510 <https://redmine.postgresql.org/issues/3510>`_ - Add a menu option to the runtime to copy the appserver URL to the clipboard.
 
