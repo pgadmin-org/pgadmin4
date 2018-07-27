@@ -137,7 +137,9 @@ class ServerModule(sg.ServerGroupPluginModule):
                 db=manager.db,
                 user=manager.user_info if connected else None,
                 in_recovery=in_recovery,
-                wal_pause=wal_paused
+                wal_pause=wal_paused,
+                is_password_saved=True if server.password is not None
+                else False
             )
 
     @property
@@ -248,7 +250,8 @@ class ServerNode(PGChildNodeView):
         'wal_replay': [{
             'delete': 'pause_wal_replay', 'put': 'resume_wal_replay'
         }],
-        'check_pgpass': [{'get': 'check_pgpass'}]
+        'check_pgpass': [{'get': 'check_pgpass'}],
+        'reset_server_password': [{'put': 'reset_server_password'}]
     })
     EXP_IP4 = "^\s*((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
               "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
@@ -357,7 +360,9 @@ class ServerNode(PGChildNodeView):
                     db=manager.db,
                     user=manager.user_info if connected else None,
                     in_recovery=in_recovery,
-                    wal_pause=wal_paused
+                    wal_pause=wal_paused,
+                    is_password_saved=True if server.password is not None
+                    else False
                 )
             )
 
@@ -410,7 +415,9 @@ class ServerNode(PGChildNodeView):
                 db=manager.db,
                 user=manager.user_info if connected else None,
                 in_recovery=in_recovery,
-                wal_pause=wal_paused
+                wal_pause=wal_paused,
+                is_password_saved=True if server.password is not None
+                else False
             )
         )
 
@@ -1439,6 +1446,41 @@ class ServerNode(PGChildNodeView):
                     _=gettext
                 )
             )
+
+    def reset_server_password(self, gid, sid):
+        """
+        This function is used to remove database server password stored into
+        the pgAdmin's db file.
+
+        :param gid:
+        :param sid:
+        :return:
+        """
+        try:
+            server = Server.query.filter_by(
+                user_id=current_user.id, id=sid
+            ).first()
+
+            if server is None:
+                return make_json_response(
+                    success=0,
+                    info=gettext("Could not find the required server.")
+                )
+
+            setattr(server, 'password', None)
+            db.session.commit()
+        except Exception as e:
+            current_app.logger.error(
+                "Unable to reset password.\nError: {0}".format(str(e))
+            )
+
+            return internal_server_error(errormsg=str(e))
+
+        return make_json_response(
+            success=1,
+            info=gettext("Reset server password successfully."),
+            data={'is_password_saved': False}
+        )
 
 
 ServerNode.register_node_view(blueprint)

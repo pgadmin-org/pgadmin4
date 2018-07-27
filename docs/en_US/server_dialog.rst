@@ -92,3 +92,7 @@ Use the fields in the *Advanced* tab to configure a connection:
 * Click the *Save* button to save your work.
 * Click the *Cancel* button to exit without saving your work.
 * Click the *Reset* button to return the values specified on the Server dialog to their original condition.
+
+.. toctree::
+
+    reset_passwords

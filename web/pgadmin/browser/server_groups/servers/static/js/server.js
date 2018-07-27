@@ -107,6 +107,17 @@ define('pgadmin.node.server', [
           applies: ['tools', 'context'], callback: 'resume_wal_replay',
           category: 'wal_replay_resume', priority: 8, label: gettext('Resume Replay of WAL'),
           icon: 'fa fa-play-circle', enable : 'wal_resume_enabled',
+        },{
+          name: 'reset_server_password', node: 'server', module: this,
+          applies: ['file', 'context'], callback: 'reset_server_password',
+          label: gettext('Reset server password'), icon: 'fa fa-eraser',
+          enable: function(node) {
+            if (node && node._type === 'server' &&
+              node.connected !== true && node.is_password_saved) {
+              return true;
+            }
+            return false;
+          },
         }]);
 
         _.bindAll(this, 'connection_lost');
@@ -595,6 +606,46 @@ define('pgadmin.node.server', [
             Alertify.pgRespErrorNotify(xhr, error);
             t.unload(i);
           });
+        },
+
+        /* Reset stored database server password */
+        reset_server_password: function(args){
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          Alertify.confirm(
+            gettext('Reset server password'),
+            S(
+              gettext('Are you sure you want to reset the stored password for server %s?')
+            ).sprintf(d.label).value(),
+            function() {
+              $.ajax({
+                url: obj.generate_url(i, 'reset_server_password', d, true),
+                method:'PUT',
+              })
+              .done(function(res) {
+                if (res.success == 1) {
+                  Alertify.success(res.info);
+                  t.itemData(i).is_password_saved=res.data.is_password_saved;
+                }
+                else {
+                  Alertify.error(res.info);
+                }
+              })
+              .fail(function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
+              });
+            },
+            function() { return true; }
+          );
+
+          return false;
         },
       },
       model: pgAdmin.Browser.Node.Model.extend({

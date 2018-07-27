@@ -13,15 +13,17 @@ The pgAdmin menu bar provides drop-down menus for access to options, commands, a
 
 Use the *File* menu to access the following options:
 
-+----------------------+---------------------------------------------------------------------------------------------------------+
-| Option               | Action                                                                                                  |
-+======================+=========================================================================================================+
-| *Change Password...* | Click to open the :ref:`Change Password... <change_password_dialog>` dialog to change your password.    |
-+----------------------+---------------------------------------------------------------------------------------------------------+
-| *Preferences*        | Click to open the :ref:`Preferences <preferences>` dialog to to customize your pgAdmin settings.        |
-+----------------------+---------------------------------------------------------------------------------------------------------+
-| *Reset Layout*       | If you have modified the workspace, click to restore the default layout.                                |
-+----------------------+---------------------------------------------------------------------------------------------------------+
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| Option                  | Action                                                                                                  |
++=========================+=========================================================================================================+
+| *Change Password...*    | Click to open the :ref:`Change Password... <change_password_dialog>` dialog to change your password.    |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Preferences*           | Click to open the :ref:`Preferences <preferences>` dialog to to customize your pgAdmin settings.        |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Reset Layout*          | If you have modified the workspace, click to restore the default layout.                                |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Reset server password* | If you have saved the database server password, click to reset the saved password.                      |
++-------------------------+---------------------------------------------------------------------------------------------------------+
 
 **The Object Menu**
 
