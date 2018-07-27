@@ -242,7 +242,7 @@ define('pgadmin.dashboard', [
     },
 
     // Handle Server Disconnect
-    object_disconnected: function(obj) {
+    object_disconnected: function() {
       let item = pgBrowser.tree.selected(),
         itemData = item && pgBrowser.tree.itemData(item);
 
