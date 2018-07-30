@@ -310,6 +310,8 @@ define('pgadmin.dashboard', [
           } else {
             is_server_dashboard = is_database_dashboard = false;
           }
+        } else {
+          is_server_dashboard = is_database_dashboard = false;
         }
 
         var dashboardPanel = pgBrowser.panels['dashboard'].panel;
@@ -802,10 +804,11 @@ define('pgadmin.dashboard', [
     },
     reflectPreferencesServer: function() {
       var self = this;
-      var div_server_activity = $('.dashboard-container').find('#server_activity');
-      var div_server_locks = $('.dashboard-container').find('#server_locks');
-      var div_server_prepared = $('.dashboard-container').find('#server_prepared');
-      var div_server_config = $('.dashboard-container').find('#server_config');
+      var $dashboardContainer = $('.dashboard-container');
+      var div_server_activity = $dashboardContainer.find('#server_activity').get(0);
+      var div_server_locks = $dashboardContainer.find('#server_locks').get(0);
+      var div_server_prepared = $dashboardContainer.find('#server_prepared').get(0);
+      var div_server_config = $dashboardContainer.find('#server_config').get(0);
 
       // Display server activity
       if (self.preferences.show_activity) {
