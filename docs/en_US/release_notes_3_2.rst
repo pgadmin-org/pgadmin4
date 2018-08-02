@@ -34,3 +34,4 @@ Bug fixes
 | `Bug #3457 <https://redmine.postgresql.org/issues/3457>`_ - Fix debugging of procedures in EPAS packages.
 | `Bug #3468 <https://redmine.postgresql.org/issues/3468>`_ - Support SSH tunneling with keys that don't have a passphrase.
 | `Bug #3471 <https://redmine.postgresql.org/issues/3471>`_ - Ensure the SSH tunnel port number is honoured.
+| `Bug #3527 <https://redmine.postgresql.org/issues/3527>`_ - View Data->Filtered Rows dialog should be displayed.

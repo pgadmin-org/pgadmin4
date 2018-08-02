@@ -281,7 +281,7 @@ define('pgadmin.datagrid', [
                 alertify.pgDialogBuild.apply(this);
               },
               prepare:function() {
-                var self = this,
+                var that = this,
                   $content = $(this.message),
                   $sql_filter = $content.find('#sql_filter');
 
@@ -296,17 +296,17 @@ define('pgadmin.datagrid', [
                   lineNumbers: true,
                   mode: 'text/x-pgsql',
                   extraKeys: pgBrowser.editor_shortcut_keys,
-                  indentWithTabs: !this.preferences.use_spaces,
-                  indentUnit: this.preferences.tab_size,
-                  tabSize: this.preferences.tab_size,
-                  lineWrapping: this.preferences.wrap_code,
-                  autoCloseBrackets: this.preferences.insert_pair_brackets,
-                  matchBrackets: this.preferences.brace_matching,
+                  indentWithTabs: !self.preferences.use_spaces,
+                  indentUnit: self.preferences.tab_size,
+                  tabSize: self.preferences.tab_size,
+                  lineWrapping: self.preferences.wrap_code,
+                  autoCloseBrackets: self.preferences.insert_pair_brackets,
+                  matchBrackets: self.preferences.brace_matching,
                 });
 
                 setTimeout(function() {
                   // Set focus on editor
-                  self.filter_obj.focus();
+                  that.filter_obj.focus();
                 }, 500);
               },
 
