@@ -94,8 +94,8 @@ define('pgadmin.node.server', [
           icon: 'fa fa-anchor', enable : 'is_applicable',
         },{
           name: 'change_password', node: 'server', module: this,
-          applies: ['file'], callback: 'change_password',
-          label: gettext('Change Password...'),
+          applies: ['object'], callback: 'change_password',
+          label: gettext('Change Password...'), priority: 10,
           icon: 'fa fa-lock', enable : 'is_connected',
         },{
           name: 'wal_replay_pause', node: 'server', module: this,
@@ -108,12 +108,13 @@ define('pgadmin.node.server', [
           category: 'wal_replay_resume', priority: 8, label: gettext('Resume Replay of WAL'),
           icon: 'fa fa-play-circle', enable : 'wal_resume_enabled',
         },{
-          name: 'reset_server_password', node: 'server', module: this,
-          applies: ['file', 'context'], callback: 'reset_server_password',
-          label: gettext('Reset server password'), icon: 'fa fa-eraser',
+          name: 'clear_saved_password', node: 'server', module: this,
+          applies: ['object', 'context'], callback: 'clear_saved_password',
+          label: gettext('Clear Saved Password'), icon: 'fa fa-eraser',
+          priority: 11,
           enable: function(node) {
             if (node && node._type === 'server' &&
-              node.connected !== true && node.is_password_saved) {
+              node.is_password_saved) {
               return true;
             }
             return false;
@@ -608,8 +609,8 @@ define('pgadmin.node.server', [
           });
         },
 
-        /* Reset stored database server password */
-        reset_server_password: function(args){
+        /* Cleat saved database server password */
+        clear_saved_password: function(args){
           var input = args || {},
             obj = this,
             t = pgBrowser.tree,
@@ -620,13 +621,13 @@ define('pgadmin.node.server', [
             return false;
 
           Alertify.confirm(
-            gettext('Reset server password'),
+            gettext('Clear saved password'),
             S(
-              gettext('Are you sure you want to reset the stored password for server %s?')
+              gettext('Are you sure you want to clear the saved password for server %s?')
             ).sprintf(d.label).value(),
             function() {
               $.ajax({
-                url: obj.generate_url(i, 'reset_server_password', d, true),
+                url: obj.generate_url(i, 'clear_saved_password', d, true),
                 method:'PUT',
               })
               .done(function(res) {

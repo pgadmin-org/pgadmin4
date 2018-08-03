@@ -251,7 +251,7 @@ class ServerNode(PGChildNodeView):
             'delete': 'pause_wal_replay', 'put': 'resume_wal_replay'
         }],
         'check_pgpass': [{'get': 'check_pgpass'}],
-        'reset_server_password': [{'put': 'reset_server_password'}]
+        'clear_saved_password': [{'put': 'clear_saved_password'}]
     })
     EXP_IP4 = "^\s*((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
               "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
@@ -1447,7 +1447,7 @@ class ServerNode(PGChildNodeView):
                 )
             )
 
-    def reset_server_password(self, gid, sid):
+    def clear_saved_password(self, gid, sid):
         """
         This function is used to remove database server password stored into
         the pgAdmin's db file.
@@ -1471,14 +1471,14 @@ class ServerNode(PGChildNodeView):
             db.session.commit()
         except Exception as e:
             current_app.logger.error(
-                "Unable to reset password.\nError: {0}".format(str(e))
+                "Unable to clear saved password.\nError: {0}".format(str(e))
             )
 
             return internal_server_error(errormsg=str(e))
 
         return make_json_response(
             success=1,
-            info=gettext("Reset server password successfully."),
+            info=gettext("Clear saved password successfully."),
             data={'is_password_saved': False}
         )
 

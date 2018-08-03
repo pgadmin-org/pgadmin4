@@ -95,4 +95,4 @@ Use the fields in the *Advanced* tab to configure a connection:
 
 .. toctree::
 
-    reset_passwords
+    clear_saved_passwords
