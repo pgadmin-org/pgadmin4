@@ -599,6 +599,40 @@ def create_app(app_name=None):
         return response
 
     ##########################################################################
+    # Cache busting
+    ##########################################################################
+
+    # Version number to be added to all static file url requests
+    # This is used by url_for function when generating urls
+    # This will solve caching issues when application is upgrading
+    # This is called - Cache Busting
+    @app.url_defaults
+    def add_internal_version(endpoint, values):
+        extensions = config.APP_VERSION_EXTN
+
+        # Add the internal version only if it is set
+        if config.APP_VERSION_PARAM is not None and \
+           config.APP_VERSION_PARAM != '':
+            # If there is a filename, add the version
+            if 'filename' in values \
+               and values['filename'].endswith(extensions):
+                values[config.APP_VERSION_PARAM] = config.APP_VERSION_INT
+            else:
+                # Sometimes there may be direct endpoint for some files
+                # There will be only one rule for such endpoints
+                urls = [url for url in app.url_map.iter_rules(endpoint)]
+                if len(urls) == 1 and urls[0].rule.endswith(extensions):
+                    values[config.APP_VERSION_PARAM] = \
+                        config.APP_VERSION_INT
+
+    # Strip away internal version param before sending further to app as it was
+    # required for cache busting only
+    @app.url_value_preprocessor
+    def strip_version_number(endpoint, values):
+        if (config.APP_VERSION_PARAM in values):
+            values.pop(config.APP_VERSION_PARAM)
+
+    ##########################################################################
     # Minify output
     ##########################################################################
     # HTMLMIN doesn't work with Python 2.6.

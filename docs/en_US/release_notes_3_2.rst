@@ -10,6 +10,7 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
+| `Feature #2136 <https://redmine.postgresql.org/issues/2136>`_ - Added version number for URL's to ensure that files are only cached on a per-version basis.
 | `Feature #2214 <https://redmine.postgresql.org/issues/2214>`_ - Add support for SCRAM password changes (requires psycopg2 >= 2.8).
 | `Feature #3074 <https://redmine.postgresql.org/issues/3074>`_ - Add support for reset saved password.
 | `Feature #3397 <https://redmine.postgresql.org/issues/3397>`_ - Add support for Trigger and JIT stats in the graphical query plan viewer.

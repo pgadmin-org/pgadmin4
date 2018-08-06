@@ -155,6 +155,15 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 #       has no effect on <= Python 2.7.
 MINIFY_PAGE = True
 
+# This will be added to static urls as url parameter with value as
+# APP_VERSION_INT for cache busting on version upgrade. If the value is set as
+# None or empty string then it will not be added.
+# eg - http:localhost:5050/pgadmin.css?intver=3.13
+APP_VERSION_PARAM = 'ver'
+
+# Add the internal version param to below extensions only
+APP_VERSION_EXTN = ('.css', '.js', '.html', '.svg', '.png', '.gif', '.ico')
+
 # Data directory for storage of config settings etc. This shouldn't normally
 # need to be changed - it's here as various other settings depend on it.
 # On Windows, we always store data in %APPDATA%\pgAdmin. On other platforms,

@@ -34,6 +34,9 @@
     <script type="text/javascript">
             require.config({
                 baseUrl: '',
+{% if config.APP_VERSION_PARAM is not none and config.APP_VERSION_PARAM != '' %}
+                urlArgs: '{{config.APP_VERSION_PARAM}}={{config.APP_VERSION_INT}}',
+{% endif %}
                 waitSeconds: 0,
                 shim: {},
                 paths: {
