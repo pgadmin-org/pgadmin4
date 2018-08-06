@@ -33,6 +33,7 @@ Bug fixes
 | `Bug #3446 <https://redmine.postgresql.org/issues/3446>`_ - Various procedure/function related fixes for EPAS/PG 11.
 | `Bug #3448 <https://redmine.postgresql.org/issues/3448>`_ - Exclude system columns in Import/Export.
 | `Bug #3457 <https://redmine.postgresql.org/issues/3457>`_ - Fix debugging of procedures in EPAS packages.
+| `Bug #3458 <https://redmine.postgresql.org/issues/3458>`_ - pgAdmin4 should work with python 3.7.
 | `Bug #3468 <https://redmine.postgresql.org/issues/3468>`_ - Support SSH tunneling with keys that don't have a passphrase.
 | `Bug #3471 <https://redmine.postgresql.org/issues/3471>`_ - Ensure the SSH tunnel port number is honoured.
 | `Bug #3526 <https://redmine.postgresql.org/issues/3526>`_ - COST statement should not be automatically duplicated after creating trigger function.

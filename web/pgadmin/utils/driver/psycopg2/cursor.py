@@ -208,6 +208,9 @@ class DictCursor(_cursor):
 
     def __iter__(self):
         it = _cursor.__iter__(self)
-        yield self._dict_tuple(next(it))
-        while 1:
+        try:
             yield self._dict_tuple(next(it))
+            while 1:
+                yield self._dict_tuple(next(it))
+        except StopIteration:
+            pass

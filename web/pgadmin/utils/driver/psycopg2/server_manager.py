@@ -153,7 +153,7 @@ class ServerManager(object):
 
     def connection(
             self, database=None, conn_id=None, auto_reconnect=True, did=None,
-            async=None, use_binary_placeholder=False, array_to_string=False
+            async_=None, use_binary_placeholder=False, array_to_string=False
     ):
         if database is not None:
             if hasattr(str, 'decode') and \
@@ -206,12 +206,12 @@ WHERE db.oid = {0}""".format(did))
         if my_id in self.connections:
             return self.connections[my_id]
         else:
-            if async is None:
-                async = 1 if conn_id is not None else 0
+            if async_ is None:
+                async_ = 1 if conn_id is not None else 0
             else:
-                async = 1 if async is True else 0
+                async_ = 1 if async_ is True else 0
             self.connections[my_id] = Connection(
-                self, my_id, database, auto_reconnect, async,
+                self, my_id, database, auto_reconnect, async_,
                 use_binary_placeholder=use_binary_placeholder,
                 array_to_string=array_to_string
             )
@@ -256,7 +256,7 @@ WHERE db.oid = {0}""".format(did))
             conn_info = connections[conn_id]
             conn = self.connections[conn_info['conn_id']] = Connection(
                 self, conn_info['conn_id'], conn_info['database'],
-                conn_info['auto_reconnect'], conn_info['async'],
+                conn_info['auto_reconnect'], conn_info['async_'],
                 use_binary_placeholder=conn_info['use_binary_placeholder'],
                 array_to_string=conn_info['array_to_string']
             )

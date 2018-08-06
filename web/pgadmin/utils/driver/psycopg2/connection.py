@@ -149,7 +149,7 @@ class Connection(BaseConnection):
       - greater than or equal to 10.
     """
 
-    def __init__(self, manager, conn_id, db, auto_reconnect=True, async=0,
+    def __init__(self, manager, conn_id, db, auto_reconnect=True, async_=0,
                  use_binary_placeholder=False, array_to_string=False):
         assert (manager is not None)
         assert (conn_id is not None)
@@ -159,7 +159,7 @@ class Connection(BaseConnection):
         self.db = db if db is not None else manager.db
         self.conn = None
         self.auto_reconnect = auto_reconnect
-        self.async = async
+        self.async_ = async_
         self.__async_cursor = None
         self.__async_query_id = None
         self.__backend_pid = None
@@ -189,7 +189,7 @@ class Connection(BaseConnection):
         res = dict()
         res['conn_id'] = self.conn_id
         res['database'] = self.db
-        res['async'] = self.async
+        res['async_'] = self.async_
         res['wasConnected'] = self.wasConnected
         res['auto_reconnect'] = self.auto_reconnect
         res['use_binary_placeholder'] = self.use_binary_placeholder
@@ -202,7 +202,7 @@ class Connection(BaseConnection):
             self.conn_id, self.db,
             'Connected' if self.conn and not self.conn.closed else
             "Disconnected",
-            self.async
+            self.async_
         )
 
     def __str__(self):
@@ -210,7 +210,7 @@ class Connection(BaseConnection):
             self.conn_id, self.db,
             'Connected' if self.conn and not self.conn.closed else
             "Disconnected",
-            self.async
+            self.async_
         )
 
     def connect(self, **kwargs):
@@ -302,7 +302,7 @@ class Connection(BaseConnection):
                 database=database,
                 user=user,
                 password=password,
-                async=self.async,
+                async_=self.async_,
                 passfile=get_complete_file_path(passfile),
                 sslmode=manager.ssl_mode,
                 sslcert=get_complete_file_path(manager.sslcert),
@@ -316,7 +316,7 @@ class Connection(BaseConnection):
 
             # If connection is asynchronous then we will have to wait
             # until the connection is ready to use.
-            if self.async == 1:
+            if self.async_ == 1:
                 self._wait(pg_conn)
 
         except psycopg2.Error as e:
@@ -385,7 +385,7 @@ class Connection(BaseConnection):
 
         # autocommit flag does not work with asynchronous connections.
         # By default asynchronous connection runs in autocommit mode.
-        if self.async == 0:
+        if self.async_ == 0:
             if 'autocommit' in kwargs and kwargs['autocommit'] is False:
                 self.conn.autocommit = False
             else:
@@ -641,7 +641,7 @@ WHERE
         """
         This function executes the query using cursor's execute function,
         but in case of asynchronous connection we need to wait for the
-        transaction to be completed. If self.async is 1 then it is a
+        transaction to be completed. If self.async_ is 1 then it is a
         blocking call.
 
         Args:
@@ -658,7 +658,7 @@ WHERE
 
         params = self.escape_params_sqlascii(params)
         cur.execute(query, params)
-        if self.async == 1:
+        if self.async_ == 1:
             self._wait(cur.connection)
 
     def execute_on_server_as_csv(self,

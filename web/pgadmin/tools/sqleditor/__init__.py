@@ -1391,7 +1391,7 @@ def start_query_download_tool(trans_id):
                     did=trans_obj.did,
                     conn_id=conn_id,
                     auto_reconnect=False,
-                    async=False
+                    async_=False
                 )
 
                 sync_conn.connect(autocommit=False)
