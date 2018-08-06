@@ -53,6 +53,7 @@ class ServerManager(object):
         self.server_type = None
         self.server_cls = None
         self.password = None
+        self.tunnel_password = None
 
         self.sid = server.id
         self.host = server.host
@@ -84,6 +85,7 @@ class ServerManager(object):
             self.tunnel_username = server.tunnel_username
             self.tunnel_authentication = server.tunnel_authentication
             self.tunnel_identity_file = server.tunnel_identity_file
+            self.tunnel_password = server.tunnel_password
         else:
             self.use_ssh_tunnel = 0
             self.tunnel_host = None
@@ -91,6 +93,7 @@ class ServerManager(object):
             self.tunnel_username = None
             self.tunnel_authentication = None
             self.tunnel_identity_file = None
+            self.tunnel_password = None
 
         for con in self.connections:
             self.connections[con]._release()
@@ -118,6 +121,17 @@ class ServerManager(object):
                 res['password'] = str(self.password)
         else:
             res['password'] = self.password
+
+        if self.use_ssh_tunnel:
+            if hasattr(self, 'tunnel_password') and self.tunnel_password:
+                # If running under PY2
+                if hasattr(self.tunnel_password, 'decode'):
+                    res['tunnel_password'] = \
+                        self.tunnel_password.decode('utf-8')
+                else:
+                    res['tunnel_password'] = str(self.tunnel_password)
+            else:
+                res['tunnel_password'] = self.tunnel_password
 
         connections = res['connections'] = dict()
 
@@ -248,6 +262,9 @@ WHERE db.oid = {0}""".format(did))
         try:
             if 'password' in data and data['password']:
                 data['password'] = data['password'].encode('utf-8')
+            if 'tunnel_password' in data and data['tunnel_password']:
+                data['tunnel_password'] = \
+                    data['tunnel_password'].encode('utf-8')
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -265,6 +282,14 @@ WHERE db.oid = {0}""".format(did))
             # auto_reconnect is true.
             if conn_info['wasConnected'] and conn_info['auto_reconnect']:
                 try:
+                    # Check SSH Tunnel needs to be created
+                    if self.use_ssh_tunnel == 1 and not self.tunnel_created:
+                        status, error = self.create_ssh_tunnel(
+                            data['tunnel_password'])
+
+                        # Check SSH Tunnel is alive or not.
+                        self.check_ssh_tunnel_alive()
+
                     conn.connect(
                         password=data['password'],
                         server_types=ServerType.types()

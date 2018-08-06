@@ -36,5 +36,6 @@ Bug fixes
 | `Bug #3458 <https://redmine.postgresql.org/issues/3458>`_ - pgAdmin4 should work with python 3.7.
 | `Bug #3468 <https://redmine.postgresql.org/issues/3468>`_ - Support SSH tunneling with keys that don't have a passphrase.
 | `Bug #3471 <https://redmine.postgresql.org/issues/3471>`_ - Ensure the SSH tunnel port number is honoured.
+| `Bug #3511 <https://redmine.postgresql.org/issues/3511>`_ - Add support to save and clear SSH Tunnel password.
 | `Bug #3526 <https://redmine.postgresql.org/issues/3526>`_ - COST statement should not be automatically duplicated after creating trigger function.
 | `Bug #3527 <https://redmine.postgresql.org/issues/3527>`_ - View Data->Filtered Rows dialog should be displayed.

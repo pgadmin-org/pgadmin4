@@ -390,6 +390,9 @@ SESSION_SKIP_PATHS = [
 # SSH Tunneling supports only for Python 2.7 and 3.4+
 ##########################################################################
 SUPPORT_SSH_TUNNEL = True
+# Allow SSH Tunnel passwords to be saved if the user chooses.
+# Set to False to disable password saving.
+ALLOW_SAVE_TUNNEL_PASSWORD = False
 
 ##########################################################################
 # Local config settings
@@ -413,3 +416,4 @@ if (SUPPORT_SSH_TUNNEL is True and
     ((sys.version_info[0] == 2 and sys.version_info[1] < 7) or
      (sys.version_info[0] == 3 and sys.version_info[1] < 4))):
     SUPPORT_SSH_TUNNEL = False
+    ALLOW_SAVE_TUNNEL_PASSWORD = False

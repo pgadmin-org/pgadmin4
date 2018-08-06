@@ -119,6 +119,18 @@ define('pgadmin.node.server', [
             }
             return false;
           },
+        },{
+          name: 'clear_sshtunnel_password', node: 'server', module: this,
+          applies: ['object', 'context'], callback: 'clear_sshtunnel_password',
+          label: gettext('Clear SSH Tunnel Password'), icon: 'fa fa-eraser',
+          priority: 12,
+          enable: function(node) {
+            if (node && node._type === 'server' &&
+              node.is_tunnel_password_saved) {
+              return true;
+            }
+            return false;
+          },
         }]);
 
         _.bindAll(this, 'connection_lost');
@@ -648,6 +660,46 @@ define('pgadmin.node.server', [
 
           return false;
         },
+
+        /* Reset stored ssh tunnel  password */
+        clear_sshtunnel_password: function(args){
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          Alertify.confirm(
+            gettext('Clear SSH Tunnel password'),
+            S(
+              gettext('Are you sure you want to clear the saved password of SSH Tunnel for server %s?')
+            ).sprintf(d.label).value(),
+            function() {
+              $.ajax({
+                url: obj.generate_url(i, 'clear_sshtunnel_password', d, true),
+                method:'PUT',
+              })
+              .done(function(res) {
+                if (res.success == 1) {
+                  Alertify.success(res.info);
+                  t.itemData(i).is_tunnel_password_saved=res.data.is_tunnel_password_saved;
+                }
+                else {
+                  Alertify.error(res.info);
+                }
+              })
+              .fail(function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
+              });
+            },
+            function() { return true; }
+          );
+
+          return false;
+        },
       },
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
@@ -679,6 +731,7 @@ define('pgadmin.node.server', [
           tunnel_identity_file: undefined,
           tunnel_password: undefined,
           tunnel_authentication: 0,
+          save_tunnel_password: false,
           connect_timeout: 0,
         },
         // Default values!
@@ -745,27 +798,12 @@ define('pgadmin.node.server', [
         },{
           id: 'save_password', controlLabel: gettext('Save password?'),
           type: 'checkbox', group: gettext('Connection'), mode: ['create'],
-          deps: ['connect_now', 'use_ssh_tunnel'], visible: function(model) {
+          deps: ['connect_now'], visible: function(model) {
             return model.get('connect_now') && model.isNew();
           },
-          disabled: function(model) {
+          disabled: function() {
             if (!current_user.allow_save_password)
               return true;
-
-            if (model.get('use_ssh_tunnel')) {
-              if (model.get('save_password')) {
-                Alertify.alert(
-                  gettext('Stored Password'),
-                  gettext('Database passwords cannot be stored when using SSH tunnelling. The \'Save password\' option has been turned off.')
-                );
-              }
-
-              setTimeout(function() {
-                model.set('save_password', false);
-              }, 10);
-
-              return true;
-            }
 
             return false;
           },
@@ -917,6 +955,19 @@ define('pgadmin.node.server', [
           deps: ['use_ssh_tunnel'],
           disabled: function(model) {
             return !model.get('use_ssh_tunnel');
+          },
+        }, {
+          id: 'save_tunnel_password', controlLabel: gettext('Save password?'),
+          type: 'checkbox', group: gettext('SSH Tunnel'), mode: ['create'],
+          deps: ['connect_now', 'use_ssh_tunnel'], visible: function(model) {
+            return model.get('connect_now') && model.isNew();
+          },
+          disabled: function(model) {
+            if (!current_user.allow_save_tunnel_password ||
+              !model.get('use_ssh_tunnel'))
+              return true;
+
+            return false;
           },
         }, {
           id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),

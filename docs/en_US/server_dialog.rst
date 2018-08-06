@@ -30,7 +30,7 @@ Use the fields in the *Connection* tab to configure a connection:
 * Use the *Maintenance database* field to specify the name of the initial database to which the client will connect. If you will be using pgAgent or adminpack objects, the pgAgent schema and adminpack objects should be installed on that database.
 * Use the *Username* field to specify the name of a role that will be used when authenticating with the server.
 * Use the *Password* field to provide a password that will be supplied when authenticating with the server.
-* Check the box next to *Save password?* to instruct pgAdmin to save the password for future use.
+* Check the box next to *Save password?* to instruct pgAdmin to save the password for future use. Use :ref:`Clear Saved Password <clear_saved_passwords>` to remove the saved password.
 * Use the *Role* field to specify the name of a role that has privileges that will be conveyed to the client after authentication with the server. This selection allows you to connect as one role, and then assume the permissions of this specified role after the connection is established. Note that the connecting role must be a member of the role specified.
 * Use the *Service* field to specify the service name. For more information, see `Section 33.16 of the Postgres documentation <https://www.postgresql.org/docs/10/static/libpq-pgservice.html>`_.
 
@@ -73,7 +73,9 @@ not be able to connect directly.
    *  Select the *Password* option to specify that pgAdmin will use a password for authentication to the SSH host. This is the default.
    *  Select the *Identity file* to specify that pgAdmin will use a private key file when connecting.
 * If the SSH host is expecting a private key file for authentication, use the *Identity file* field to specify the location of the key file.
-* If the SSH host is expecting a password, use the *Password/Passphrase* field to specify the password, or if an identity file is being used, the passphrase.
+* If the SSH host is expecting a password of the user name or an identity file if being used, use the *Password* field to specify the password.
+* Check the box next to *Save password?* to instruct pgAdmin to save the password for future use. Use :ref:`Clear SSH Tunnel Password <clear_saved_passwords>` to remove the saved password.
+
 
 Click the *Advanced* tab to continue.
 

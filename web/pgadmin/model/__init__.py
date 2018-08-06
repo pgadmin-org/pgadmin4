@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 17
+SCHEMA_VERSION = 18
 
 ##########################################################################
 #
@@ -164,6 +164,7 @@ class Server(db.Model):
         nullable=False
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
+    tunnel_password = db.Column(db.String(64), nullable=True)
 
 
 class ModulePreference(db.Model):

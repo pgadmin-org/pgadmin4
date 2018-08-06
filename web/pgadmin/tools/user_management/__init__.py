@@ -150,7 +150,9 @@ def current_user_info():
                 else 'postgres'
             ),
             allow_save_password='true' if config.ALLOW_SAVE_PASSWORD
-            else 'false'
+            else 'false',
+            allow_save_tunnel_password='true'
+            if config.ALLOW_SAVE_TUNNEL_PASSWORD else 'false',
         ),
         status=200,
         mimetype="application/javascript"

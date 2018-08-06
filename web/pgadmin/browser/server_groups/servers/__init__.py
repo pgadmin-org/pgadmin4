@@ -139,7 +139,9 @@ class ServerModule(sg.ServerGroupPluginModule):
                 in_recovery=in_recovery,
                 wal_pause=wal_paused,
                 is_password_saved=True if server.password is not None
-                else False
+                else False,
+                is_tunnel_password_saved=True
+                if server.tunnel_password is not None else False
             )
 
     @property
@@ -251,7 +253,8 @@ class ServerNode(PGChildNodeView):
             'delete': 'pause_wal_replay', 'put': 'resume_wal_replay'
         }],
         'check_pgpass': [{'get': 'check_pgpass'}],
-        'clear_saved_password': [{'put': 'clear_saved_password'}]
+        'clear_saved_password': [{'put': 'clear_saved_password'}],
+        'clear_sshtunnel_password': [{'put': 'clear_sshtunnel_password'}]
     })
     EXP_IP4 = "^\s*((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
               "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
@@ -362,7 +365,9 @@ class ServerNode(PGChildNodeView):
                     in_recovery=in_recovery,
                     wal_pause=wal_paused,
                     is_password_saved=True if server.password is not None
-                    else False
+                    else False,
+                    is_tunnel_password_saved=True
+                    if server.tunnel_password is not None else False
                 )
             )
 
@@ -417,7 +422,9 @@ class ServerNode(PGChildNodeView):
                 in_recovery=in_recovery,
                 wal_pause=wal_paused,
                 is_password_saved=True if server.password is not None
-                else False
+                else False,
+                is_tunnel_password_saved=True
+                if server.tunnel_password is not None else False
             )
         )
 
@@ -787,6 +794,7 @@ class ServerNode(PGChildNodeView):
                 conn = manager.connection()
 
                 have_password = False
+                have_tunnel_password = False
                 password = None
                 passfile = None
                 tunnel_password = ''
@@ -801,6 +809,7 @@ class ServerNode(PGChildNodeView):
                     db.session.commit()
 
                 if 'tunnel_password' in data and data["tunnel_password"] != '':
+                    have_tunnel_password = True
                     tunnel_password = data['tunnel_password']
                     tunnel_password = \
                         encrypt(tunnel_password, current_user.password)
@@ -826,6 +835,13 @@ class ServerNode(PGChildNodeView):
                     if 'save_password' in data and data['save_password'] and \
                             have_password and config.ALLOW_SAVE_PASSWORD:
                         setattr(server, 'password', password)
+                        db.session.commit()
+
+                    if 'save_tunnel_password' in data and \
+                        data['save_tunnel_password'] and \
+                        have_tunnel_password and \
+                            config.ALLOW_SAVE_TUNNEL_PASSWORD:
+                        setattr(server, 'tunnel_password', tunnel_password)
                         db.session.commit()
 
                     user = manager.user_info
@@ -969,6 +985,9 @@ class ServerNode(PGChildNodeView):
         passfile = None
         tunnel_password = None
         save_password = False
+        save_tunnel_password = False
+        prompt_password = False
+        prompt_tunnel_password = False
 
         # Connect the Server
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
@@ -977,10 +996,16 @@ class ServerNode(PGChildNodeView):
         # If server using SSH Tunnel
         if server.use_ssh_tunnel:
             if 'tunnel_password' not in data:
-                return self.get_response_for_password(server, 428)
+                if server.tunnel_password is None:
+                    prompt_tunnel_password = True
+                else:
+                    tunnel_password = server.tunnel_password
             else:
-                tunnel_password = data['tunnel_password'] if 'tunnel_password'\
-                                                             in data else ''
+                tunnel_password = data['tunnel_password'] \
+                    if 'tunnel_password'in data else ''
+                save_tunnel_password = data['save_tunnel_password'] \
+                    if tunnel_password and 'save_tunnel_password' in data \
+                    else False
                 # Encrypt the password before saving with user's login
                 # password key.
                 try:
@@ -995,9 +1020,7 @@ class ServerNode(PGChildNodeView):
             conn_passwd = getattr(conn, 'password', None)
             if conn_passwd is None and server.password is None and \
                     server.passfile is None and server.service is None:
-                # Return the password template in case password is not
-                # provided, or password has not been saved earlier.
-                return self.get_response_for_password(server, 428)
+                prompt_password = True
             elif server.passfile and server.passfile != '':
                 passfile = server.passfile
             else:
@@ -1016,6 +1039,13 @@ class ServerNode(PGChildNodeView):
                 current_app.logger.exception(e)
                 return internal_server_error(errormsg=e.message)
 
+        # Check do we need to prompt for the database server or ssh tunnel
+        # password or both. Return the password template in case password is
+        # not provided, or password has not been saved earlier.
+        if prompt_password or prompt_tunnel_password:
+            return self.get_response_for_password(server, 428, prompt_password,
+                                                  prompt_tunnel_password)
+
         status = True
         try:
             status, errmsg = conn.connect(
@@ -1027,7 +1057,7 @@ class ServerNode(PGChildNodeView):
         except Exception as e:
             current_app.logger.exception(e)
             return self.get_response_for_password(
-                server, 401, getattr(e, 'message', str(e)))
+                server, 401, True, True, getattr(e, 'message', str(e)))
 
         if not status:
             if hasattr(str, 'decode'):
@@ -1037,14 +1067,27 @@ class ServerNode(PGChildNodeView):
                 "Could not connected to server(#{0}) - '{1}'.\nError: {2}"
                 .format(server.id, server.name, errmsg)
             )
-
-            return self.get_response_for_password(server, 401, errmsg)
+            return self.get_response_for_password(server, 401, True,
+                                                  True, errmsg)
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
                     # Save the encrypted password using the user's login
                     # password key.
                     setattr(server, 'password', password)
+                    db.session.commit()
+                except Exception as e:
+                    # Release Connection
+                    current_app.logger.exception(e)
+                    manager.release(database=server.maintenance_db)
+                    conn = None
+
+                    return internal_server_error(errormsg=e.message)
+
+            if save_tunnel_password and config.ALLOW_SAVE_TUNNEL_PASSWORD:
+                try:
+                    # Save the encrypted tunnel password.
+                    setattr(server, 'tunnel_password', tunnel_password)
                     db.session.commit()
                 except Exception as e:
                     # Release Connection
@@ -1072,7 +1115,11 @@ class ServerNode(PGChildNodeView):
                     'db': manager.db,
                     'user': manager.user_info,
                     'in_recovery': in_recovery,
-                    'wal_pause': wal_paused
+                    'wal_pause': wal_paused,
+                    'is_password_saved': True if server.password is not None
+                    else False,
+                    'is_tunnel_password_saved': True
+                    if server.tunnel_password is not None else False,
                 }
             )
 
@@ -1418,7 +1465,8 @@ class ServerNode(PGChildNodeView):
             )
             return internal_server_error(errormsg=str(e))
 
-    def get_response_for_password(self, server, status, errmsg=None):
+    def get_response_for_password(self, server, status, prompt_password=False,
+                                  prompt_tunnel_password=False, errmsg=None):
         if server.use_ssh_tunnel:
             return make_json_response(
                 success=0,
@@ -1431,7 +1479,9 @@ class ServerNode(PGChildNodeView):
                     tunnel_host=server.tunnel_host,
                     tunnel_identity_file=server.tunnel_identity_file,
                     errmsg=errmsg,
-                    _=gettext
+                    _=gettext,
+                    prompt_tunnel_password=prompt_tunnel_password,
+                    prompt_password=prompt_password
                 )
             )
         else:
@@ -1478,8 +1528,44 @@ class ServerNode(PGChildNodeView):
 
         return make_json_response(
             success=1,
-            info=gettext("Clear saved password successfully."),
+            info=gettext("The saved password cleared successfully."),
             data={'is_password_saved': False}
+        )
+
+    def clear_sshtunnel_password(self, gid, sid):
+        """
+        This function is used to remove sshtunnel password stored into
+        the pgAdmin's db file.
+
+        :param gid:
+        :param sid:
+        :return:
+        """
+        try:
+            server = Server.query.filter_by(
+                user_id=current_user.id, id=sid
+            ).first()
+
+            if server is None:
+                return make_json_response(
+                    success=0,
+                    info=gettext("Could not find the required server.")
+                )
+
+            setattr(server, 'tunnel_password', None)
+            db.session.commit()
+        except Exception as e:
+            current_app.logger.error(
+                "Unable to clear ssh tunnel password."
+                "\nError: {0}".format(str(e))
+            )
+
+            return internal_server_error(errormsg=str(e))
+
+        return make_json_response(
+            success=1,
+            info=gettext("The saved password cleared successfully."),
+            data={'is_tunnel_password_saved': False}
         )
 
 

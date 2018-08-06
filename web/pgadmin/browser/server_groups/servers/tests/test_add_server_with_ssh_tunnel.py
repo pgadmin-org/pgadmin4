@@ -20,13 +20,30 @@ class ServersWithSSHTunnelAddTestCase(BaseTestGenerator):
         (
             'Add server using SSH tunnel with password', dict(
                 url='/browser/server/obj/',
-                with_password=True
+                with_password=True,
+                save_password=False,
             )
         ),
         (
             'Add server using SSH tunnel with identity file', dict(
                 url='/browser/server/obj/',
-                with_password=False
+                with_password=False,
+                save_password=False,
+            )
+        ),
+        (
+            'Add server using SSH tunnel with password and saved it', dict(
+                url='/browser/server/obj/',
+                with_password=True,
+                save_password=True,
+            )
+        ),
+        (
+            'Add server using SSH tunnel with identity file and save the '
+            'password', dict(
+                url='/browser/server/obj/',
+                with_password=False,
+                save_password=True,
             )
         ),
     ]
@@ -47,6 +64,9 @@ class ServersWithSSHTunnelAddTestCase(BaseTestGenerator):
         else:
             self.server['tunnel_authentication'] = 1
             self.server['tunnel_identity_file'] = 'pkey_rsa'
+
+        if self.save_password:
+            self.server['tunnel_password'] = '123456'
 
         response = self.tester.post(
             url,

@@ -28,38 +28,41 @@ Use the *File* menu to access the following options:
 
 The *Object* menu is context-sensitive. Use the *Object* menu to access the following options (in alphabetical order):
 
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| Option                 | Action                                                                                                                   |
-+========================+==========================================================================================================================+
-| *Change Password...*   | Click to open the :ref:`Change Password... <change_password_dialog>` dialog to change your password.                     |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Clear Saved Password* | If you have saved the database server password, click to reset the saved password.                                       |
-|                        | Enable only when password is already saved and database server is disconnected.                                          |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Connect Server...*    | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.           |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Create*               | Click *Create* to access a context menu that provides context-sensitive selections.                                      |
-|                        | Your selection opens a *Create* dialog for creating a new object.                                                        |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Delete/Drop*          | Click to delete the currently selected object from the server.                                                           |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Disconnect Server...* | Click to refresh the currently selected object.                                                                          |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Drop Cascade*         | Click to delete the currently selected object and all dependent objects from the server.                                 |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Properties...*        | Click to review or modify the currently selected object's properties.                                                    |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Refresh...*           | Click to refresh the currently selected object.                                                                          |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Scripts*              | Click to open the :ref:`Query tool <query_tool>` to edit or view the selected script from the flyout menu.               |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Trigger(s)*           | Click to *Disable* or *Enable* trigger(s) for the currently selected table. Options are displayed on the flyout menu.    |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Truncate*             | Click to remove all rows from a table (*Truncate*) or to remove all rows from a table and its child tables               |
-|                        | (*Truncate Cascade*). Options are displayed on the flyout menu.                                                          |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *View Data*            | Click to access a context menu that provides several options for viewing data (see below).                               |
-+------------------------+--------------------------------------------------------------------------------------------------------------------------+
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Option                      | Action                                                                                                                   |
++=============================+==========================================================================================================================+
+| *Change Password...*        | Click to open the :ref:`Change Password... <change_password_dialog>` dialog to change your password.                     |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Clear Saved Password*      | If you have saved the database server password, click to clear the saved password.                                       |
+|                             | Enable only when password is already saved.                                                                              |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Clear SSH Tunnel Password* | If you have saved the ssh tunnel password, click to clear the saved password.                                            |
+|                             | Enable only when password is already saved.                                                                              |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Connect Server...*         | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.           |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Create*                    | Click *Create* to access a context menu that provides context-sensitive selections.                                      |
+|                             | Your selection opens a *Create* dialog for creating a new object.                                                        |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Delete/Drop*               | Click to delete the currently selected object from the server.                                                           |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Disconnect Server...*      | Click to refresh the currently selected object.                                                                          |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Drop Cascade*              | Click to delete the currently selected object and all dependent objects from the server.                                 |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Properties...*             | Click to review or modify the currently selected object's properties.                                                    |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Refresh...*                | Click to refresh the currently selected object.                                                                          |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Scripts*                   | Click to open the :ref:`Query tool <query_tool>` to edit or view the selected script from the flyout menu.               |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Trigger(s)*                | Click to *Disable* or *Enable* trigger(s) for the currently selected table. Options are displayed on the flyout menu.    |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Truncate*                  | Click to remove all rows from a table (*Truncate*) or to remove all rows from a table and its child tables               |
+|                             | (*Truncate Cascade*). Options are displayed on the flyout menu.                                                          |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *View Data*                 | Click to access a context menu that provides several options for viewing data (see below).                               |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 
 **The Tools Menu**
 
