@@ -38,3 +38,4 @@ Source Code Pro     1.1            SIL OFL      https://fonts.googleapis.com/css
 Open Sans           2.0            AL           https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700
 Spectrum            1.8            MIT          https://bgrins.github.io/spectrum/
 Mousetrap           1.6.1          AL           https://github.com/ccampbell/mousetrap
+Axios               0.18.0         MIT          https://github.com/axios/axios
