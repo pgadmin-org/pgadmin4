@@ -48,3 +48,9 @@ div.pgadmin-preference-body div.ajs-content {
 .preferences_content .pgadmin-controls input[type="checkbox"] {
   margin-left: -20px !important;
 }
+
+.preferences_content .pgadmin-controls .shift,
+.preferences_content .pgadmin-controls .control,
+.preferences_content .pgadmin-controls .alt {
+  margin-left: 15px !important;
+}

@@ -2740,6 +2740,13 @@ define([
         cntr.render();
 
         if(fld['type'] == 'checkbox') {
+          // Remove control label for keyboard shortcuts to
+          // align it properly.
+          let label = cntr.$el.find('label.control-label').text().trim();
+          if (label.length <= 0) {
+            cntr.$el.find('label.control-label').remove();
+          }
+
           if (fld['name'] == 'alt_option') {
             $container.append($('<div class="pg-el-sm-3 pg-el-xs-12"></div>').append(cntr.$el));
           } else {
