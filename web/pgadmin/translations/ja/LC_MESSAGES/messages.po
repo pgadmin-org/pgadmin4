@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2018-08-06 16:10+0530\n"
-"PO-Revision-Date: 2018-06-27 14:36+0900\n"
+"PO-Revision-Date: 2018-08-07 01:07+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -341,7 +341,7 @@ msgstr "ダイアログタブを戻す"
 
 #: pgadmin/browser/register_browser_preferences.py:298
 msgid "Refresh browser tree"
-msgstr ""
+msgstr "ブラウザツリーを再読み込みする"
 
 #: pgadmin/browser/utils.py:254
 msgid "Unimplemented method ({0}) for this url ({1})"
@@ -648,7 +648,7 @@ msgstr "サーバへ接続してください"
 #: pgadmin/browser/server_groups/servers/__init__.py:1531
 #: pgadmin/browser/server_groups/servers/__init__.py:1567
 msgid "The saved password cleared successfully."
-msgstr ""
+msgstr "保存されたパスワードは消去されました"
 
 #: pgadmin/browser/server_groups/servers/gpdb.py:15
 msgid "Greenplum Database Binary Path"
@@ -3154,7 +3154,7 @@ msgstr "ハンドラ"
 #: pgadmin/static/js/generated/app.bundle.js:14097
 #: pgadmin/static/js/generated/sqleditor.js:11710
 msgid "Validator"
-msgstr "バリデータ"
+msgstr "検証"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:55
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:12
@@ -3227,7 +3227,7 @@ msgstr "インライン関数"
 #: pgadmin/static/js/generated/app.bundle.js:13881
 #: pgadmin/static/js/generated/sqleditor.js:11494
 msgid "Validator Function"
-msgstr "バリデータ関数"
+msgstr "検証関数"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:256
 #: pgadmin/static/js/generated/app.bundle.js:13937
@@ -5921,7 +5921,7 @@ msgstr "制約"
 #: pgadmin/static/js/generated/sqleditor.js:23497
 #: pgadmin/static/js/generated/sqleditor.js:24038
 msgid "Include columns"
-msgstr ""
+msgstr "INCLUDEするカラム"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:919
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:232
@@ -7108,13 +7108,13 @@ msgstr "IN"
 #: pgadmin/static/js/generated/app.bundle.js:3999
 #: pgadmin/static/js/generated/sqleditor.js:4170
 msgid "Modulus"
-msgstr ""
+msgstr "MODULUS"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:312
 #: pgadmin/static/js/generated/app.bundle.js:4007
 #: pgadmin/static/js/generated/sqleditor.js:4178
 msgid "Remainder"
-msgstr ""
+msgstr "REMAINDER"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:339
 #: pgadmin/static/js/generated/app.bundle.js:4029
@@ -7144,13 +7144,13 @@ msgstr "リストパーティションではINフィールドが必須です"
 #: pgadmin/static/js/generated/app.bundle.js:4052
 #: pgadmin/static/js/generated/sqleditor.js:4223
 msgid "For hash partition Modulus field cannot be empty."
-msgstr ""
+msgstr "ハッシュパーティションではMODULUSフィールドが必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:371
 #: pgadmin/static/js/generated/app.bundle.js:4056
 #: pgadmin/static/js/generated/sqleditor.js:4227
 msgid "For hash partition Remainder field cannot be empty."
-msgstr ""
+msgstr "ハッシュパーティションではREMAINDERフィールドが必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:63
@@ -7192,7 +7192,7 @@ msgstr "「Ofタイプ」を変更するカラム定義が削除されます"
 #: pgadmin/static/js/generated/app.bundle.js:22022
 #: pgadmin/static/js/generated/sqleditor.js:19635
 msgid "Hash"
-msgstr ""
+msgstr "ハッシュ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:953
 #: pgadmin/static/js/generated/app.bundle.js:22105
@@ -7285,7 +7285,7 @@ msgstr "IN： リストパーティションを有効化します。値はコン
 #: pgadmin/static/js/generated/app.bundle.js:22171
 #: pgadmin/static/js/generated/sqleditor.js:19784
 msgid "Modulus/Remainder: Enabled for hash partition."
-msgstr ""
+msgstr "MODULUS/REMAINDER： ハッシュパーティションを有効化します"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:2
 msgid "Null fraction"
@@ -7718,7 +7718,7 @@ msgstr "トリガを無効化"
 #: pgadmin/static/js/generated/app.bundle.js:20269
 #: pgadmin/static/js/generated/sqleditor.js:17882
 msgid "Disable trigger failed"
-msgstr ""
+msgstr "トリガの無効化に失敗しました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:196
 #: pgadmin/static/js/generated/app.bundle.js:20289
@@ -8259,7 +8259,7 @@ msgstr "マテリアライズドビューが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1765
 msgid "View refreshed"
-msgstr "ビューが再読み込みされました"
+msgstr "ビューがリフレッシュされました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:45
 #: pgadmin/static/js/generated/app.bundle.js:21012
@@ -10368,11 +10368,11 @@ msgstr "WALの適用を再開"
 #: pgadmin/static/js/generated/app.bundle.js:1923
 #: pgadmin/static/js/generated/sqleditor.js:2094
 msgid "Clear Saved Password"
-msgstr ""
+msgstr "保存されたパスワードの消去"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:125
 msgid "Clear SSH Tunnel Password"
-msgstr ""
+msgstr "SSH トンネルパスワードの消去"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:253
 #: pgadmin/static/js/generated/app.bundle.js:2030
@@ -10520,25 +10520,25 @@ msgstr "他の操作をする前に、サーバから切断し、pgpassファイ
 #: pgadmin/static/js/generated/app.bundle.js:2375
 #: pgadmin/static/js/generated/sqleditor.js:2546
 msgid "Clear saved password"
-msgstr ""
+msgstr "保存されたパスワードの消去"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:638
 #: pgadmin/static/js/generated/app.bundle.js:2375
 #: pgadmin/static/js/generated/sqleditor.js:2546
 #, python-format
 msgid "Are you sure you want to clear the saved password for server %s?"
-msgstr ""
+msgstr "サーバ %s に保存されたパスワードを消去しますか？"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:676
 msgid "Clear SSH Tunnel password"
-msgstr ""
+msgstr "SSH トンネルパスワードの消去"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:678
 #, python-format
 msgid ""
 "Are you sure you want to clear the saved password of SSH Tunnel for "
 "server %s?"
-msgstr ""
+msgstr "サーバ %s に対するSSH トンネルの保存されたパスワードを消去しますか？"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:752
 #: pgadmin/static/js/generated/app.bundle.js:2443
@@ -10778,7 +10778,7 @@ msgstr "SSL 圧縮"
 #: pgadmin/static/js/generated/app.bundle.js:2589
 #: pgadmin/static/js/generated/sqleditor.js:2760
 msgid "Use SSH tunneling"
-msgstr ""
+msgstr "SSH トンネリングを使用"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:895
 #: pgadmin/browser/server_groups/servers/static/js/server.js:909
@@ -10806,25 +10806,25 @@ msgstr ""
 #: pgadmin/static/js/generated/sqleditor.js:2817
 #: pgadmin/static/js/generated/sqleditor.js:2820
 msgid "SSH Tunnel"
-msgstr ""
+msgstr "SSH トンネル"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:909
 #: pgadmin/static/js/generated/app.bundle.js:2604
 #: pgadmin/static/js/generated/sqleditor.js:2775
 msgid "Tunnel host"
-msgstr ""
+msgstr "トンネルホスト"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:915
 #: pgadmin/static/js/generated/app.bundle.js:2610
 #: pgadmin/static/js/generated/sqleditor.js:2781
 msgid "Tunnel port"
-msgstr ""
+msgstr "トンネルポート番号"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:927
 #: pgadmin/static/js/generated/app.bundle.js:2622
 #: pgadmin/static/js/generated/sqleditor.js:2793
 msgid "Authentication"
-msgstr ""
+msgstr "認証"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:929
 #: pgadmin/browser/server_groups/servers/static/js/server.js:936
@@ -10836,7 +10836,7 @@ msgstr ""
 #: pgadmin/static/js/generated/sqleditor.js:2802
 #: pgadmin/static/js/generated/sqleditor.js:2816
 msgid "Identity file"
-msgstr ""
+msgstr "識別情報ファイル"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:973
 #: pgadmin/static/js/generated/app.bundle.js:2655
@@ -10869,7 +10869,7 @@ msgstr "サービス"
 #: pgadmin/static/js/generated/app.bundle.js:2678
 #: pgadmin/static/js/generated/sqleditor.js:2849
 msgid "Connection timeout (seconds)"
-msgstr ""
+msgstr "接続タイムアウト（秒）"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1121
 #: pgadmin/static/js/generated/app.bundle.js:2784
@@ -11029,15 +11029,15 @@ msgstr "ユーザ「{0}」のサーバ「{1}」に接続するためのパスワ
 msgid ""
 "SSH Tunnel password for the identity file '{0}' to connect the server "
 "\"{1}\""
-msgstr ""
+msgstr "サーバ「{1}」に接続するための識別情報ファイル「{0}」に対するSSH トンネルパスワード"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:11
 msgid "SSH Tunnel password for the user '{0}' to connect the server \"{1}\""
-msgstr ""
+msgstr "サーバ「{1}」に接続するためのユーザ「{0}」に対するSSH トンネルパスワード"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:27
 msgid "Database server password for the user '{0}' to connect the server \"{1}\""
-msgstr ""
+msgstr "サーバ「{1}」に接続するためのユーザ「{0}」に対するデータベースサーバパスワード"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:31
@@ -12571,13 +12571,13 @@ msgstr "詳細"
 #: pgadmin/static/js/generated/file_utils.js:12429
 #: pgadmin/static/js/generated/pgadmin_commons.js:603
 msgid "Unknown error"
-msgstr ""
+msgstr "不明なエラー"
 
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:158
 #: pgadmin/static/js/generated/file_utils.js:12436
 #: pgadmin/static/js/generated/pgadmin_commons.js:610
 msgid "INTERNAL SERVER ERROR"
-msgstr ""
+msgstr "内部サーバエラー"
 
 #: pgadmin/static/js/backform.pgadmin.js:1526
 #: pgadmin/static/js/generated/pgadmin_commons.js:11899
@@ -12657,12 +12657,12 @@ msgstr "Alt"
 #: pgadmin/static/js/keyboard_shortcuts.js:82
 #, python-format
 msgid "%(title)s (%(text_representation)s)"
-msgstr ""
+msgstr "%(title)s (%(text_representation)s)"
 
 #: pgadmin/static/js/keyboard_shortcuts.js:94
 #, python-format
 msgid "%(title)s (accesskey + %(key)s)"
-msgstr ""
+msgstr "%(title)s (アクセスキー + %(key)s)"
 
 #: pgadmin/static/js/generated/app.bundle.js:685
 #: pgadmin/static/js/generated/debugger_direct.js:2697
@@ -12686,7 +12686,7 @@ msgstr "トランザクション状態のチェックに失敗しました"
 msgid ""
 "Databases with = symbols in the name cannot be backed up or restored "
 "using this utility."
-msgstr ""
+msgstr "このユーティリティでは、名前に「=」記号の入ったデータベースをバックアップ及びリストアすることができません"
 
 #: pgadmin/static/js/alertify/dialog.js:76
 msgid "Please select server or child node from the browser tree."
@@ -12741,19 +12741,19 @@ msgstr "ポート番号は必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:47
 msgid "SSH Tunnel host must be specified."
-msgstr ""
+msgstr "SSH トンネルホストは必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:48
 msgid "SSH Tunnel port must be specified."
-msgstr ""
+msgstr "SSH トンネルポート番号は必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:49
 msgid "SSH Tunnel username must be specified."
-msgstr ""
+msgstr "SSH トンネルユーザ名は必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:51
 msgid "SSH Tunnel identity file must be specified."
-msgstr ""
+msgstr "SSH トンネル識別情報ファイルは必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:83
 msgid "Either Host name, Address or Service must be specified."
@@ -12796,14 +12796,14 @@ msgstr "実行時"
 #: pgadmin/static/js/generated/app.bundle.js:2500
 #: pgadmin/static/js/generated/sqleditor.js:2671
 msgid "Stored Password"
-msgstr ""
+msgstr "保存されたパスワード"
 
 #: pgadmin/static/js/generated/app.bundle.js:2500
 #: pgadmin/static/js/generated/sqleditor.js:2671
 msgid ""
 "Database passwords cannot be stored when using SSH tunnelling. The 'Save "
 "password' option has been turned off."
-msgstr ""
+msgstr "SSH トンネリングを使用する場合、データベースパスワードを保存することはできません。「パスワードを保存」オプションは無効化されました。"
 
 #: pgadmin/static/js/generated/app.bundle.js:4198
 #: pgadmin/static/js/generated/debugger_direct.js:3862
@@ -13980,14 +13980,14 @@ msgstr "ツリーからサーバか子ノードを選択してください"
 #: pgadmin/static/js/generated/app.bundle.js:31739
 #: pgadmin/tools/maintenance/static/js/maintenance.js:269
 msgid "Maintenance error"
-msgstr ""
+msgstr "メンテナンスエラー"
 
 #: pgadmin/static/js/generated/app.bundle.js:31739
 #: pgadmin/tools/maintenance/static/js/maintenance.js:270
 msgid ""
 "Maintenance job creation failed. Databases with = symbols in the name "
 "cannot be maintained using this utility."
-msgstr ""
+msgstr "メンテナンスジョブの作成に失敗しました。名前に「=」記号の入ったデータベースは、このユーティリティではメンテナンスできません"
 
 #: pgadmin/static/js/generated/app.bundle.js:31759
 #: pgadmin/static/js/generated/app.bundle.js:31768
@@ -14241,7 +14241,7 @@ msgstr "クエリの履歴"
 #: pgadmin/static/js/generated/sqleditor.js:26610
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:263
 msgid "Notifications"
-msgstr ""
+msgstr "通知"
 
 #: pgadmin/static/js/generated/sqleditor.js:26646
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:301
@@ -14516,7 +14516,7 @@ msgstr "EXPLAIN オプションエラー"
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3569
 #, python-format
 msgid "Error occurred while setting %(subItem)s option in explain."
-msgstr ""
+msgstr "EXPLAIN の%(subItem)s オプション設定中にエラーが発生しました"
 
 #: pgadmin/static/js/generated/sqleditor.js:30694
 #: pgadmin/static/js/selection/grid_selector.js:42
@@ -14563,36 +14563,36 @@ msgstr "SQLフィルタ"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:109
 msgid "Data Sorting"
-msgstr "データの並び替え"
+msgstr "データの並べ替え"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:15
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:65
 msgid "Recorded time"
-msgstr ""
+msgstr "記録時刻"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:31
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:77
 msgid "Process ID"
-msgstr ""
+msgstr "プロセスID"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:39
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:83
 msgid "Payload"
-msgstr ""
+msgstr "ペイロード"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:108
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:116
 msgid "Asynchronous notification \""
-msgstr ""
+msgstr "非同期通知「"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:110
 msgid "\" with payload \""
-msgstr ""
+msgstr "」とペイロード「"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:112
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:118
 msgid "\" received from server process with PID "
-msgstr ""
+msgstr "」を受信しました。送信元サーバプロセスのPID："
 
 #: pgadmin/templates/security/change_password.html:2
 #, python-format
@@ -14895,7 +14895,7 @@ msgstr "新しいブラウザタブで開く"
 
 #: pgadmin/tools/debugger/__init__.py:74
 msgid "If set to True, the Debugger will be opened in a new browser tab."
-msgstr "True の場合、デバッガが新しいブラウザタブで開きます"
+msgstr "True の場合、デバッガは新しいブラウザタブで開きます"
 
 #: pgadmin/tools/debugger/__init__.py:80
 msgid "Accesskey (Continue/Start)"
@@ -14980,12 +14980,12 @@ msgid ""
 "shared_preload_libraries setting in the postgresql.conf file and restart "
 "the database server for indirect debugging."
 msgstr ""
-"デバッガプラグインが無効です。間接デバッグをするには、postgresql.conf の shared_preload_libraries "
+"デバッガプラグインが無効です。間接デバッグを行うには、postgresql.conf の shared_preload_libraries "
 "設定にプラグインを追加して、データベースサーバを再起動してください。"
 
 #: pgadmin/tools/debugger/__init__.py:659
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
-msgstr ""
+msgstr "pldbgapi 拡張をバージョン1.1以上にアップグレードし、再試行してください"
 
 #: pgadmin/tools/debugger/__init__.py:933
 msgid "Not connected to server or connection with the server hasbeen closed."
@@ -15006,7 +15006,7 @@ msgstr "値の設定中にエラーが発生しました"
 #: pgadmin/tools/debugger/__init__.py:1945
 #: pgadmin/tools/debugger/__init__.py:1979
 msgid "Execution completed with an error."
-msgstr ""
+msgstr "実行がエラーで完了しました"
 
 #: pgadmin/tools/debugger/__init__.py:1969
 #: pgadmin/tools/debugger/__init__.py:2001
@@ -15015,7 +15015,7 @@ msgstr "実行が完了しました"
 
 #: pgadmin/tools/debugger/templates/debugger/direct.html:2
 msgid "Debugger - "
-msgstr "デバッガ- "
+msgstr "デバッガ - "
 
 #: pgadmin/tools/import_export/__init__.py:115
 msgid "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})..."
@@ -15110,7 +15110,7 @@ msgstr "リストアジョブが作成されました"
 
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:146
 msgid "Restore job failed."
-msgstr ""
+msgstr "リストアジョブが失敗しました"
 
 #: pgadmin/tools/sqleditor/__init__.py:67
 msgid "SQL Editor"
@@ -15279,7 +15279,7 @@ msgstr "未保存のクエリを閉じる際に確認する"
 msgid ""
 "Specifies whether or not to prompt user to save unsaved query on query "
 "tool exit."
-msgstr "クエリツールを閉じる時、保存されていない変更済みのクエリを保存するかどうか確認する"
+msgstr "クエリツールを閉じる時、未保存のクエリを保存するかどうか確認する"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:154
 msgid "Prompt to save unsaved data changes?"
@@ -15289,7 +15289,7 @@ msgstr "未保存のデータを閉じる際に確認する"
 msgid ""
 "Specifies whether or not to prompt user to save unsaved data on data grid"
 " exit."
-msgstr "データグリッドを閉じる時、保存されていない変更済みのデータを保存するかどうか確認する"
+msgstr "データグリッドを閉じる時、未保存のデータを保存するかどうか確認する"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:164
 msgid "CSV quoting"
@@ -15418,21 +15418,21 @@ msgstr "アクセスキー (検索オプション)"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:541
 msgid "Toggle case of selected text"
-msgstr ""
+msgstr "選択中テキストの大文字小文字変換"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:558
 msgid "Keywords in uppercase"
-msgstr ""
+msgstr "大文字キーワード"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:559
 msgid "Auto completion"
-msgstr ""
+msgstr "自動補完"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:560
 msgid ""
 "If set to True, Keywords will be displayed in upper case for auto "
 "completion."
-msgstr ""
+msgstr "True の場合、自動補完時のキーワードが大文字で表示されます"
 
 #: pgadmin/tools/user_management/__init__.py:106
 msgid "Invalid email address."
@@ -15454,7 +15454,7 @@ msgstr "サービスが利用できません"
 msgid ""
 "Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to "
 "the database server."
-msgstr ""
+msgstr "ホスト「{0}」に対するSSH トンネルへの接続が失われました。データベースサーバに再接続してください"
 
 #: pgadmin/utils/preferences.py:167
 msgid "Invalid value for a boolean option."
@@ -15567,13 +15567,13 @@ msgstr "データベースサーバに接続できません"
 msgid ""
 "Asynchronous notification \"{0}\" with payload \"{1}\" received from "
 "server process with PID {2}\n"
-msgstr ""
+msgstr "非同期通知「{0}」とペイロード「{1}」を受信しました。送信元サーバプロセスのPID：{2}\n"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1615
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
-msgstr ""
+msgstr "非同期通知「{0}」を受信しました。送信元サーバプロセスのPID：{1}\n"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1708
 msgid "SQL state: "
@@ -16394,16 +16394,16 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "ダッシュボードはユーザによって無効化されています"
 
 #~ msgid "Step into"
-#~ msgstr "ステップ情報"
+#~ msgstr "詳細ステップ実行"
 
 #~ msgid "Step over"
-#~ msgstr "Step over"
+#~ msgstr "ステップ実行"
 
 #~ msgid "Continue/Start"
-#~ msgstr "継続/開始"
+#~ msgstr "続行/開始"
 
 #~ msgid "Toggle breakpoint"
-#~ msgstr "ブレークポイントを切り替える"
+#~ msgstr "ブレークポイントの設定/解除"
 
 #~ msgid "Clear all breakpoints"
 #~ msgstr "すべてのブレークポイントを削除"
