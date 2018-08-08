@@ -10,6 +10,7 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
+| `Feature #3553 <https://redmine.postgresql.org/issues/3553>`_ - Add a Spanish translation.
 
 Bug fixes
 *********

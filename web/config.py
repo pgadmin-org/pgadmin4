@@ -83,12 +83,13 @@ HELP_PATH = '../../../docs/en_US/_build/html/'
 LANGUAGES = {
     'en': 'English',
     'zh': 'Chinese (Simplified)',
-    'de': 'German',
     'fr': 'French',
-    'ko': 'Korean',
+    'de': 'German',
     'ja': 'Japanese',
+    'ko': 'Korean',
     'pl': 'Polish',
-    'ru': 'Russian'
+    'ru': 'Russian',
+    'es': 'Spanish',
 }
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
