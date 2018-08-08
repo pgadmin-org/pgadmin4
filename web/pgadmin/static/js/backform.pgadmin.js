@@ -112,9 +112,15 @@ define([
       // Remove the events for the dependent fields in the model
       var self = this,
         deps = self.field.get('deps');
+      var attrArr = this.field.get('name').split('.');
+      var name = attrArr.shift();
 
       self.stopListening(self.model, 'change:' + name, self.render);
-      self.stopListening(self.model.errorModel, 'change:' + name, self.updateInvalid);
+      if (self.model.errorModel instanceof Backbone.Model) {
+        self.stopListening(
+          self.model.errorModel, 'change:' + name, self.updateInvalid
+        );
+      }
 
       if (deps && _.isArray(deps)) {
         _.each(deps, function(d) {
