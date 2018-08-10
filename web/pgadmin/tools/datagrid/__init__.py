@@ -332,8 +332,12 @@ def initialize_query_tool(sgid, sid, did=None):
                                   use_binary_placeholder=True,
                                   array_to_string=True)
         if connect:
-            conn.connect()
+            status, msg = conn.connect()
+            if not status:
+                app.logger.error(msg)
+                return internal_server_error(errormsg=str(msg))
     except (ConnectionLost, SSHTunnelConnectionLost) as e:
+        app.logger.error(e)
         raise
     except Exception as e:
         app.logger.error(e)

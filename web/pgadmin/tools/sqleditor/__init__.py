@@ -307,7 +307,7 @@ def start_query_tool(trans_id):
 
     connect = 'connect' in request.args and request.args['connect'] == '1'
 
-    return StartRunningQuery(blueprint, current_app).execute(
+    return StartRunningQuery(blueprint, current_app.logger).execute(
         sql, trans_id, session, connect
     )
 
