@@ -903,34 +903,6 @@ define('pgadmin.browser.node', [
             // is active).
             this.showProperties(item, d, b.panels['properties'].panel);
           }
-          if ('sql' in b.panels &&
-            b.panels['sql'] &&
-            b.panels['sql'].panel &&
-            b.panels['sql'].panel.isVisible()) {
-            // TODO:: Show reverse engineered query for this object (when 'sql'
-            // tab is active.)
-          }
-          if ('statistics' in b.panels &&
-            b.panels['statistics'] &&
-            b.panels['statistics'].panel &&
-            b.panels['statistics'].panel.isVisible()) {
-            // TODO:: Show statistics for this object (when the 'statistics'
-            // tab is active.)
-          }
-          if ('dependencies' in b.panels &&
-            b.panels['dependencies'] &&
-            b.panels['dependencies'].panel &&
-            b.panels['dependencies'].panel.isVisible()) {
-            // TODO:: Show dependencies for this object (when the
-            // 'dependencies' tab is active.)
-          }
-          if ('dependents' in b.panels &&
-            b.panels['dependents'] &&
-            b.panels['dependents'].panel &&
-            b.panels['dependents'].panel.isVisible()) {
-            // TODO:: Show dependents for this object (when the 'dependents'
-            // tab is active.)
-          }
         }
 
         return true;
@@ -974,9 +946,17 @@ define('pgadmin.browser.node', [
         }
       },
       refresh: function(cmd, _item) {
+        var self = this,
+          t = pgBrowser.tree,
+          data = _item && t.itemData(_item);
+
+        $(pgBrowser.panels['properties'].panel).removeData('node-prop');
         pgBrowser.Events.trigger(
-          'pgadmin:browser:tree:refresh', _item || pgBrowser.tree.selected()
-        );
+          'pgadmin:browser:tree:refresh', _item || pgBrowser.tree.selected(), {
+            success: function() {
+              self.callbacks.selected.apply(self, [_item, data, pgBrowser]);
+            },
+          });
       },
     },
     /**********************************************************************

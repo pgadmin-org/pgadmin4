@@ -1494,6 +1494,8 @@ define('pgadmin.browser', [
         isOpen,
         idx = -1;
 
+      this.Events.trigger('pgadmin-browser:tree:refreshing', _i, d, n);
+
       if (!n) {
         _i = null;
         ctx.i = null;

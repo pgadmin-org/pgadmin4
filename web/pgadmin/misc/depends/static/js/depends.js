@@ -152,6 +152,7 @@ define('misc.depends', [
             // If Dependencies panel exists and is focused then we need to listen the browser tree selection events.
             if ((dependenciesPanels[0].isVisible()) || dependenciesPanels.length != 1) {
               pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependencies);
+              pgBrowser.Events.on('pgadmin-browser:tree:refreshing', this.refreshDependencies, this);
             }
           }.bind(this)
         );
@@ -161,6 +162,7 @@ define('misc.depends', [
         // If Dependencies panel exists and is focused then we need to listen the browser tree selection events.
         if ((dependenciesPanels[0].isVisible()) || dependenciesPanels.length != 1) {
           pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependencies);
+          pgBrowser.Events.on('pgadmin-browser:tree:refreshing', this.refreshDependencies, this);
         }
       }
 
@@ -174,6 +176,7 @@ define('misc.depends', [
             // If Dependents panel exists and is focused then we need to listen the browser tree selection events.
             if ((dependentsPanels[0].isVisible()) || dependentsPanels.length != 1) {
               pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependents);
+              pgBrowser.Events.on('pgadmin-browser:tree:refreshing', this.refreshDependents, this);
             }
           }.bind(this)
         );
@@ -183,6 +186,7 @@ define('misc.depends', [
         // If Dependents panel exists and is focused then we need to listen the browser tree selection events.
         if ((dependentsPanels[0].isVisible()) || dependentsPanels.length != 1) {
           pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependents);
+          pgBrowser.Events.on('pgadmin-browser:tree:refreshing', this.refreshDependents, this);
         }
       }
     },
@@ -297,6 +301,19 @@ define('misc.depends', [
         $msgContainer.text(msg);
       }
     },
+    refreshDependents: function(item, data, node) {
+      var that = this,
+        cache_flag = {
+          node_type: data._type,
+          url: node.generate_url(item, 'dependent', data, true),
+        };
+
+      if (_.isEqual($(that.dependentsPanels[0]).data('node-prop'), cache_flag)) {
+        // Reset the current item selection
+        $(that.dependentsPanels[0]).data('node-prop', '');
+        that.showDependents(item, data, node);
+      }
+    },
     showDependents: function(item, data, node) {
       /**
        * We can't start fetching the Dependents immediately, it is possible the user
@@ -333,10 +350,25 @@ define('misc.depends', [
 
         // We will start listening the tree selection event.
         pgBrowser.Events.on('pgadmin-browser:tree:selected', pgBrowser.ShowNodeDepends.showDependents);
+        pgBrowser.Events.on('pgadmin-browser:tree:refreshing', pgBrowser.ShowNodeDepends.refreshDependents, this);
       } else {
 
         // We don't need to listen the tree item selection event.
         pgBrowser.Events.off('pgadmin-browser:tree:selected', pgBrowser.ShowNodeDepends.showDependents);
+        pgBrowser.Events.off('pgadmin-browser:tree:refreshing', pgBrowser.ShowNodeDepends.refreshDependents, this);
+      }
+    },
+    refreshDependencies: function(item, data, node) {
+      var that = this,
+        cache_flag = {
+          node_type: data._type,
+          url: node.generate_url(item, 'dependency', data, true),
+        };
+
+      if (_.isEqual($(that.dependenciesPanels[0]).data('node-prop'), cache_flag)) {
+        // Reset the current item selection
+        $(that.dependenciesPanels[0]).data('node-prop', '');
+        that.showDependencies(item, data, node);
       }
     },
     showDependencies: function(item, data, node) {
@@ -377,9 +409,11 @@ define('misc.depends', [
 
         // We will start listening the tree selection event.
         pgBrowser.Events.on('pgadmin-browser:tree:selected', pgBrowser.ShowNodeDepends.showDependencies);
+        pgBrowser.Events.on('pgadmin-browser:tree:refreshing', pgBrowser.ShowNodeDepends.refreshDependencies, this);
       } else {
         // We don't need to listen the tree item selection event.
         pgBrowser.Events.off('pgadmin-browser:tree:selected', pgBrowser.ShowNodeDepends.showDependencies);
+        pgBrowser.Events.off('pgadmin-browser:tree:refreshing', pgBrowser.ShowNodeDepends.refreshDependencies, this);
       }
     },
   });

@@ -164,6 +164,9 @@ define('misc.statistics', [
               pgBrowser.Events.on(
                 'pgadmin-browser:tree:selected', this.showStatistics
               );
+              pgBrowser.Events.on(
+                'pgadmin-browser:tree:refreshing', this.refreshStatistics, this
+              );
             }
           }.bind(this)
         );
@@ -173,11 +176,17 @@ define('misc.statistics', [
           pgBrowser.Events.on(
             'pgadmin-browser:tree:selected', this.showStatistics
           );
+          pgBrowser.Events.on(
+            'pgadmin-browser:tree:refreshing', this.refreshStatistics, this
+          );
         }
       }
       if (self.panel.length > 0 && self.panel[0].isVisible()) {
         pgBrowser.Events.on(
           'pgadmin-browser:tree:selected', this.showStatistics
+        );
+        pgBrowser.Events.on(
+          'pgadmin-browser:tree:refreshing', this.refreshStatistics, this
         );
       }
     },
@@ -300,7 +309,19 @@ define('misc.statistics', [
         $msgContainer.text(msg);
       }
     },
+    refreshStatistics: function(item, data, node) {
+      var that = this,
+        cache_flag = {
+          node_type: data._type,
+          url: node.generate_url(item, 'stats', data, true),
+        };
 
+      if (_.isEqual($(that.panel[0]).data('node-prop'), cache_flag)) {
+        // Reset the current item selection
+        $(that.panel[0]).data('node-prop', '');
+        that.showStatistics(item, data, node);
+      }
+    },
     showStatistics: function(item, data, node) {
       var self = this;
       if (!node) {
@@ -395,11 +416,21 @@ define('misc.statistics', [
           'pgadmin-browser:tree:selected',
           pgBrowser.NodeStatistics.showStatistics
         );
+        pgBrowser.Events.on(
+          'pgadmin-browser:tree:refreshing',
+          pgBrowser.NodeStatistics.refreshStatistics,
+          this
+        );
       } else {
         // We don't need to listen the tree item selection event.
         pgBrowser.Events.off(
           'pgadmin-browser:tree:selected',
           pgBrowser.NodeStatistics.showStatistics
+        );
+        pgBrowser.Events.off(
+          'pgadmin-browser:tree:refreshing',
+          pgBrowser.NodeStatistics.refreshStatistics,
+          this
         );
       }
     },

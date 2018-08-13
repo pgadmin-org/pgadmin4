@@ -16,4 +16,5 @@ Bug fixes
 *********
 
 | `Bug #3407 <https://redmine.postgresql.org/issues/3407>`_ - Fix keyboard shortcuts layout in the preferences panel.
+| `Bug #3461 <https://redmine.postgresql.org/issues/3461>`_ - Ensure that refreshing a node also updates the Property list.
 | `Bug #3528 <https://redmine.postgresql.org/issues/3528>`_ - Handle connection errors properly in the query tool.

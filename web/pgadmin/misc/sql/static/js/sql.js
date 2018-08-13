@@ -48,13 +48,32 @@ define('misc.sql', [
               pgBrowser.Events.on(
                 'pgadmin-browser:tree:selected', this.showSQL
               );
+              pgBrowser.Events.on(
+                'pgadmin-browser:tree:refreshing', this.refreshSQL, this
+              );
             }
           }.bind(this)
         );
       } else {
         if ((sqlPanels[0].isVisible()) || sqlPanels.length != 1) {
           pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showSQL);
+          pgBrowser.Events.on(
+            'pgadmin-browser:tree:refreshing', this.refreshSQL, this
+          );
         }
+      }
+    },
+    refreshSQL: function(item, data, node) {
+      var that = this,
+        cache_flag = {
+          node_type: data._type,
+          url: node.generate_url(item, 'sql', data, true),
+        };
+
+      if (_.isEqual($(that.sqlPanels[0]).data('node-prop'), cache_flag)) {
+        // Reset the current item selection
+        $(that.sqlPanels[0]).data('node-prop', '');
+        that.showSQL(item, data, node);
       }
     },
     showSQL: function(item, data, node) {
@@ -149,9 +168,15 @@ define('misc.sql', [
 
         // We will start listening the tree selection event.
         pgBrowser.Events.on('pgadmin-browser:tree:selected', pgBrowser.ShowNodeSQL.showSQL);
+        pgBrowser.Events.on(
+          'pgadmin-browser:tree:refreshing', pgBrowser.ShowNodeSQL.refreshSQL, this
+        );
       } else {
         // We don't need to listen the tree item selection event.
         pgBrowser.Events.off('pgadmin-browser:tree:selected', pgBrowser.ShowNodeSQL.showSQL);
+        pgBrowser.Events.off(
+          'pgadmin-browser:tree:refreshing', pgBrowser.ShowNodeSQL.refreshSQL, this
+        );
       }
     },
   });
