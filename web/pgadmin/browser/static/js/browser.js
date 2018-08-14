@@ -1544,21 +1544,25 @@ define('pgadmin.browser', [
         })
         .done(function(res) {
           // Node information can come as result/data
-          var data = res.result || res.data;
+          var newData = res.result || res.data;
 
-          data._label = data.label;
-          data.label = _.escape(data.label);
-          var d = ctx.t.itemData(ctx.i);
-          _.extend(d, data);
-          ctx.t.setLabel(ctx.i, {label: _d.label});
-          ctx.t.addIcon(ctx.i, {icon: _d.icon});
-          ctx.t.setId(ctx.i, {id: _d.id});
-          ctx.t.setInode(ctx.i, {inode: data.inode});
+          newData._label = newData.label;
+          newData.label = _.escape(newData.label);
+
+          ctx.t.setLabel(ctx.i, {label: newData.label});
+          ctx.t.addIcon(ctx.i, {icon: newData.icon});
+          ctx.t.setId(ctx.i, {id: newData.id});
+          if (newData.inode)
+            ctx.t.setInode(ctx.i, {inode: true});
+
+          // This will update the tree item data.
+          var itemData = ctx.t.itemData(ctx.i);
+          _.extend(itemData, newData);
 
           if (
             _n.can_expand && typeof(_n.can_expand) == 'function'
           ) {
-            if (!_n.can_expand(d)) {
+            if (!_n.can_expand(itemData)) {
               ctx.t.unload(ctx.i);
               return;
             }
