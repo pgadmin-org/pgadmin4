@@ -629,7 +629,7 @@ def create_app(app_name=None):
     # required for cache busting only
     @app.url_value_preprocessor
     def strip_version_number(endpoint, values):
-        if (config.APP_VERSION_PARAM in values):
+        if values and config.APP_VERSION_PARAM in values:
             values.pop(config.APP_VERSION_PARAM)
 
     ##########################################################################
