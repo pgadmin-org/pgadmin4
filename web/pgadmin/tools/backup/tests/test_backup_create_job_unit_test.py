@@ -395,7 +395,7 @@ class BackupCreateJobTest(BaseTestGenerator):
                  type='globals'
              ),
              url='/backup/job/{0}',
-             expected_cmd_opts=['--verbose'],
+             expected_cmd_opts=['--globals-only'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          ))

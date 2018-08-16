@@ -330,13 +330,13 @@ def create_backup_job(sid):
         args.append('--verbose')
     if 'dqoute' in data and data['dqoute']:
         args.append('--quote-all-identifiers')
-    if data['type'] == 'global':
+    if data['type'] == 'globals':
         args.append('--globals-only')
 
     try:
         p = BatchProcess(
             desc=BackupMessage(
-                BACKUP.SERVER if data['type'] != 'global' else BACKUP.GLOBALS,
+                BACKUP.SERVER if data['type'] != 'globals' else BACKUP.GLOBALS,
                 sid,
                 data['file'].encode('utf-8') if hasattr(
                     data['file'], 'encode'
