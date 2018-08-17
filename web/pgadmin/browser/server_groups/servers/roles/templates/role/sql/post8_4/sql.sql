@@ -59,35 +59,6 @@ FROM
 		oid=%(rid)s::OID
 	) r
 ) a) b)
--- PostgreSQL >= 9.0
-UNION ALL
-(SELECT
-	array_to_string(array_agg(sql), E'\n') AS sql
-FROM
-	(SELECT
-		'ALTER ROLE ' || pg_catalog.quote_ident(pg_get_userbyid(%(rid)s::OID)) ||
-		' SET ' || param|| ' TO ' ||
-		CASE
-		WHEN param IN ('search_path', 'temp_tablespaces') THEN value
-		ELSE quote_literal(value)
-		END || ';' AS sql
-	FROM
-		(SELECT
-			datname, split_part(rolconfig, '=', 1) AS param, replace(rolconfig, split_part(rolconfig, '=', 1) || '=', '') AS value
-		FROM
-			(SELECT
-				d.datname, unnest(c.setconfig) AS rolconfig
-			FROM
-				(SELECT *
-				FROM
-					pg_catalog.pg_db_role_setting dr
-				WHERE
-					dr.setrole=%(rid)s::OID AND dr.setdatabase!=0) c
-				LEFT JOIN pg_catalog.pg_database d ON (d.oid = c.setdatabase)
-			) a
-		) b
-	) d
-)
 UNION ALL
 (SELECT
 	'COMMENT ON ROLE ' || pg_catalog.quote_ident(pg_get_userbyid(%(rid)s::OID)) || ' IS ' ||  pg_catalog.quote_literal(description) || ';' AS sql
