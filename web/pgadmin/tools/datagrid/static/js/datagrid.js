@@ -304,8 +304,12 @@ define('pgadmin.datagrid', [
                   matchBrackets: self.preferences.brace_matching,
                 });
 
+                let sql_font_size = sqlEditorUtils.calcFontSize(self.preferences.sql_font_size);
+                $(this.filter_obj.getWrapperElement()).css('font-size', sql_font_size);
+
                 setTimeout(function() {
                   // Set focus on editor
+                  that.filter_obj.refresh();
                   that.filter_obj.focus();
                 }, 500);
               },

@@ -51,13 +51,13 @@ let FilterDialog = {
                   }),
                 },
               }, {
-                text: gettext('Ok'),
-                className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                text: gettext('OK'),
+                className: 'btn btn-primary pg-alertify-button',
                 'data-btn-name': 'ok',
               }, {
                 text: gettext('Cancel'),
                 key: 27,
-                className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                className: 'btn btn-danger pg-alertify-button',
                 'data-btn-name': 'cancel',
               }],
               // Set options for dialog

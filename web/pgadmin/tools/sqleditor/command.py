@@ -425,12 +425,10 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
         """
         This function gets the order required for primary keys
         """
-        if self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_ALL_ROWS):
-            return 'asc'
-        elif self.cmd_type == VIEW_LAST_100_ROWS:
+        if self.cmd_type == VIEW_LAST_100_ROWS:
             return 'desc'
         else:
-            return None
+            return 'asc'
 
 
 class TableCommand(GridCommand):

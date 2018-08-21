@@ -42,10 +42,6 @@
   color: #964;
 }
 
-.pgadmin-controls.sql_field_layout .CodeMirror {
-  line-height: 22px;
-}
-
 /* Codemirror buttons */
 .CodeMirror-dialog button {
     font-family: 'Open Sans';
