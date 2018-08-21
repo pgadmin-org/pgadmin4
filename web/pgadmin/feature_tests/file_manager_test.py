@@ -11,11 +11,11 @@ from __future__ import print_function
 import os
 import time
 import sys
+
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 
 
@@ -28,15 +28,11 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
     ]
 
     def before(self):
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
-        test_utils.create_database(self.server, "acceptance_test_db")
+        if os.name == 'nt':
+            self.skipTest("This test is skipped for Windows. As Windows "
+                          "does not allow the '<' and '>' character while "
+                          "specifying the file name.")
+
         self.page.add_server(self.server)
         self.wait = WebDriverWait(self.page.driver, 10)
         self.XSS_FILE = '/tmp/<img src=x onmouseover=alert("1")>.sql'
@@ -47,14 +43,6 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
     def after(self):
         self.page.close_query_tool('sql', False)
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
 
     def runTest(self):
         print("Tests to check if File manager is vulnerable to XSS... ",
@@ -72,7 +60,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
     def _navigate_to_query_tool(self):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item('acceptance_test_db')
+        self.page.toggle_open_tree_item(self.test_db)
         self.page.open_query_tool()
 
     def _create_new_file(self):
@@ -145,20 +133,49 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
 
         # Added time.sleep so that the element to be clicked.
         time.sleep(0.05)
-        self.page.find_by_css_selector("#contents th[data-column='0']").click()
-        # Check for sort Ascending
-        self.wait.until(
-            EC.presence_of_element_located((
-                By.CSS_SELECTOR,
-                "#contents th[data-column='0'].tablesorter-headerAsc")
-            )
-        )
+
+        # Intermittently facing issue on first click it is not successful
+        # so tried couple of times.
+        iteration = 0
+        success = False
+        while not success and iteration < 4:
+            self.page.find_by_xpath("//th[@data-column='0']"
+                                    "/div/span[text()='Name']").click()
+            # Check for sort Ascending
+            try:
+                self.wait.until(
+                    EC.presence_of_element_located((
+                        By.CSS_SELECTOR,
+                        "#contents th[data-column='0'].tablesorter-headerAsc")
+                    ))
+                success = True
+            except Exception as e:
+                iteration += 1
+
+        if not success:
+            raise Exception("Unable to sort in ascending order while clicked "
+                            "on 'Name' column")
+
+        time.sleep(0.05)
 
         # Click and Check for sort Descending
-        self.page.find_by_css_selector("#contents th[data-column='0']").click()
-        self.wait.until(
-            EC.presence_of_element_located((
-                By.CSS_SELECTOR,
-                "#contents th[data-column='0'].tablesorter-headerDesc")
-            )
-        )
+        # Intermittently facing issue on first click it is not successful
+        # so tried couple of times.
+        iteration = 0
+        success = False
+        while not success and iteration < 4:
+            self.page.find_by_xpath("//th[@data-column='0']"
+                                    "/div/span[text()='Name']").click()
+            try:
+                self.wait.until(
+                    EC.presence_of_element_located((
+                        By.CSS_SELECTOR,
+                        "#contents th[data-column='0'].tablesorter-headerDesc")
+                    ))
+                success = True
+            except Exception as e:
+                iteration += 1
+
+        if not success:
+            raise Exception("Unable to sort in descending order while clicked "
+                            "on 'Name' column")

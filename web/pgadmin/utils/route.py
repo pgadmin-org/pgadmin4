@@ -115,3 +115,7 @@ class BaseTestGenerator(unittest.TestCase):
     @classmethod
     def setServerInformation(cls, server_information):
         cls.server_information = server_information
+
+    @classmethod
+    def setTestDatabaseName(cls, database_name):
+        cls.test_db = database_name

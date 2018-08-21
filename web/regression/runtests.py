@@ -19,6 +19,7 @@ import signal
 import sys
 import traceback
 import json
+import random
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -126,7 +127,8 @@ unit_test.runner.TextTestResult.addSuccess = test_utils.add_success
 scenarios.apply_scenario = test_utils.apply_scenario
 
 
-def get_suite(module_list, test_server, test_app_client, server_information):
+def get_suite(module_list, test_server, test_app_client, server_information,
+              test_db_name):
     """
      This function add the tests to test suite and return modified test suite
       variable.
@@ -156,6 +158,7 @@ def get_suite(module_list, test_server, test_app_client, server_information):
         obj.setTestServer(test_server)
         obj.setDriver(driver)
         obj.setServerInformation(server_information)
+        obj.setTestDatabaseName(test_db_name)
         scenario = scenarios.generate_scenarios(obj)
         pgadmin_suite.addTests(scenario)
 
@@ -380,7 +383,6 @@ if __name__ == '__main__':
     except Exception as e:
         print(str(e))
         sys.exit(1)
-
     # Login the test client
     test_utils.login_tester_account(test_client)
 
@@ -395,13 +397,32 @@ if __name__ == '__main__':
             # Create test server
             server_information = test_utils.create_parent_server_node(server)
 
+            # Create test database with random number to avoid conflict in
+            # parallel execution on different platforms. This database will be
+            # used across all feature tests.
+            test_db_name = "acceptance_test_db" + \
+                           str(random.randint(10000, 65535))
+            connection = test_utils.get_db_connection(
+                server['db'],
+                server['username'],
+                server['db_password'],
+                server['host'],
+                server['port'],
+                server['sslmode']
+            )
+
+            # Drop the database if already exists.
+            test_utils.drop_database(connection, test_db_name)
+            # Create database
+            test_utils.create_database(server, test_db_name)
+
             if server['default_binary_paths'] is not None:
                 test_utils.set_preference(server['default_binary_paths'])
 
             suite = get_suite(test_module_list,
                               server,
                               test_client,
-                              server_information)
+                              server_information, test_db_name)
             tests = unit_test.TextTestRunner(stream=sys.stderr,
                                              descriptions=True,
                                              verbosity=2).run(suite)
@@ -417,6 +438,11 @@ if __name__ == '__main__':
 
             if len(failed_cases) > 0:
                 failure = True
+
+            # Drop the testing database created initially
+            if connection:
+                test_utils.drop_database(connection, test_db_name)
+                connection.close()
 
             # Delete test server
             test_utils.delete_test_server(test_client)

@@ -8,7 +8,6 @@
 ##########################################################################
 
 from __future__ import print_function
-import time
 import sys
 
 from selenium.common.exceptions import StaleElementReferenceException
@@ -32,20 +31,11 @@ class QueryToolFeatureTest(BaseFeatureTest):
     ]
 
     def before(self):
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
-        test_utils.create_database(self.server, "acceptance_test_db")
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
         self._locate_database_tree_node()
         self.page.open_query_tool()
+        self.page.wait_for_spinner_to_disappear()
         self._reset_options()
 
     def runTest(self):
@@ -116,15 +106,6 @@ class QueryToolFeatureTest(BaseFeatureTest):
 
     def after(self):
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
 
     def _reset_options(self):
         # this will set focus to correct iframe.
@@ -135,6 +116,10 @@ class QueryToolFeatureTest(BaseFeatureTest):
         ActionChains(self.driver).move_to_element(
             query_op.find_element_by_xpath(
                 "//li[contains(.,'Explain Options')]")).perform()
+        self.page.driver.execute_script(
+            "arguments[0].scrollIntoView()",
+            self.page.find_by_xpath(
+                "//span[normalize-space(text())='Verbose']"))
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in ('explain-verbose', 'explain-costs',
@@ -156,7 +141,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
     def _locate_database_tree_node(self):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item('acceptance_test_db')
+        self.page.toggle_open_tree_item(self.test_db)
 
     def _clear_query_tool(self):
         self.page.click_element(
@@ -187,8 +172,6 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         self.page.find_by_id("btn-flash").click()
 
-        # self.page.wait_for_query_tool_loading_indicator_to_disappear()
-
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
              '//span[@data-row="0" and text()="1"]'))
@@ -210,8 +193,6 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
               file=sys.stderr, end="")
         self.page.find_by_id("btn-flash").click()
 
-        # self.page.wait_for_query_tool_loading_indicator_to_disappear()
-
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
              '//span[@data-row="0" and text()="1"]'))
@@ -230,7 +211,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
               file=sys.stderr, end="")
         self.page.find_by_id("btn-flash").click()
 
-        # self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
@@ -275,6 +256,11 @@ SELECT generate_series(1, 1000) as id order by id desc"""
             query_op.find_element_by_xpath(
                 "//li[contains(.,'Explain Options')]")).perform()
 
+        self.page.driver.execute_script(
+            "arguments[0].scrollIntoView()",
+            self.page.find_by_xpath(
+                "//span[normalize-space(text())='Verbose']"))
+
         self.page.find_by_id("btn-explain-verbose").click()
 
         self.page.find_by_id("btn-explain-costs").click()
@@ -309,6 +295,11 @@ SELECT generate_series(1, 1000) as id order by id desc"""
         ActionChains(self.driver).move_to_element(
             query_op.find_element_by_xpath(
                 "//li[contains(.,'Explain Options')]")).perform()
+
+        self.page.driver.execute_script(
+            "arguments[0].scrollIntoView()",
+            self.page.find_by_xpath(
+                "//span[normalize-space(text())='Verbose']"))
 
         self.page.find_by_id("btn-explain-buffers").click()
 
@@ -670,7 +661,6 @@ SELECT 1, pg_sleep(300)"""
             wait.until(WaitForAnyElementWithText(
                 (By.CSS_SELECTOR, 'td.payload'), "Hello"))
             print("OK.", file=sys.stderr)
-            self._clear_query_tool()
         else:
             print("Skipped.", file=sys.stderr)
 

@@ -10,6 +10,7 @@
 import os
 import json
 import time
+
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,7 +18,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
-
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -48,8 +48,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             self.server['db_password'],
             self.server['host'],
             self.server['port'],
-            self.server['sslmode']
-        )
+            self.server['sslmode'])
 
         self.timezone = int(test_utils.get_timezone_without_dst(connection))
 
@@ -66,15 +65,15 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         else:
             self.timezone_hh_mm = '+{}'.format(self.timezone_hh_mm)
 
-        test_utils.drop_database(connection, "acceptance_test_db")
-        test_utils.create_database(self.server, "acceptance_test_db")
-
         self.database_version = connection.server_version
 
         # For this test case we need to set "Insert bracket pairs?"
         # SQL Editor preference to 'false' to avoid codemirror
         # to add matching closing bracket by it self.
         self._update_preferences()
+
+        # close the db connection
+        connection.close()
 
     def _update_preferences(self):
         self.page.find_by_id("mnu_file").click()
@@ -137,32 +136,24 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
     def after(self):
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
 
     def _schema_node_expandable(self):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item('acceptance_test_db')
+        self.page.toggle_open_tree_item(self.test_db)
 
     def _check_datatype(self):
         # Slick grid does not render all the column if viewport is not enough
         # wide. So execute test as batch of queries.
+        self.page.select_tree_item(self.test_db)
         self.page.open_query_tool()
         self._create_enum_type()
         for batch in config_data:
             query = self.construct_select_query(batch)
             self.page.fill_codemirror_area_with(query)
             self.page.find_by_id("btn-flash").click()
-            wait = WebDriverWait(self.page.driver, 5)
 
+            wait = WebDriverWait(self.page.driver, 5)
             wait.until(EC.presence_of_element_located(
                 (By.XPATH,
                  "//*[contains(@class,'column-type') and "

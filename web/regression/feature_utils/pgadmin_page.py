@@ -10,7 +10,7 @@
 import time
 
 from selenium.common.exceptions import NoSuchElementException, \
-    WebDriverException
+    WebDriverException, TimeoutException, NoSuchWindowException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -27,10 +27,23 @@ class PgadminPage:
         self.driver = driver
         self.app_config = app_config
         self.timeout = 30
-        self.app_start_timeout = 60
+        self.app_start_timeout = 90
 
     def reset_layout(self):
-        self.click_element(self.find_by_partial_link_text("File"))
+        attempt = 0
+        while attempt < 4:
+            try:
+                self.click_element(self.find_by_partial_link_text("File"))
+                break
+            except (TimeoutException, NoSuchWindowException):
+                self.driver.refresh()
+                try:
+                    WebDriverWait(self.driver, 3).until(EC.alert_is_present())
+                    self.driver.switch_to_alert().accept()
+                    attempt = attempt + 1
+                except TimeoutException:
+                    attempt = attempt + 1
+
         self.find_by_partial_link_text("Reset Layout").click()
         self.click_modal('OK')
         self.wait_for_reloading_indicator_to_disappear()

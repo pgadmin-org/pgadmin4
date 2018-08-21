@@ -10,6 +10,7 @@
 import json
 import os
 import time
+
 from selenium.webdriver import ActionChains
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
@@ -87,26 +88,18 @@ CREATE TABLE public.defaults_{0}
                     "COLLATE is not present in PG versions below v9.1"
                 )
 
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
-        test_utils.create_database(self.server, "acceptance_test_db")
-
         # Create pre-requisite table
         for k, v in {1: 'id', 2: '"ID"'}.items():
             test_utils.create_table_with_query(
                 self.server,
-                "acceptance_test_db",
+                self.test_db,
                 CheckForViewDataTest.defaults_query.format(k, v))
 
         # Initialize an instance of WebDriverWait with timeout of 3 seconds
         self.wait = WebDriverWait(self.driver, 3)
+
+        # close the db connection
+        connection.close()
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
@@ -129,15 +122,6 @@ CREATE TABLE public.defaults_{0}
 
     def after(self):
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
 
     @staticmethod
     def _get_cell_xpath(cell, row):
@@ -227,7 +211,7 @@ CREATE TABLE public.defaults_{0}
     def _tables_node_expandable(self):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item('acceptance_test_db')
+        self.page.toggle_open_tree_item(self.test_db)
         self.page.toggle_open_tree_item('Schemas')
         self.page.toggle_open_tree_item('public')
         self.page.toggle_open_tree_item('Tables')

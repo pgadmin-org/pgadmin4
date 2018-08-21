@@ -29,26 +29,16 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     scenarios = [
         ("Test XSS check for panels and query tool", dict())
     ]
+    test_table_name = "<h1>X"
 
     def before(self):
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
-        test_utils.create_database(self.server, "acceptance_test_db")
         test_utils.create_table(
-            self.server, "acceptance_test_db", "<h1>X"
+            self.server, self.test_db, self.test_table_name
         )
-
         # This is needed to test dependents tab (eg: BackGrid)
         test_utils.create_constraint(
-            self.server, "acceptance_test_db",
-            "<h1>X",
+            self.server, self.test_db,
+            self.test_table_name,
             "unique", "<h1 onmouseover='console.log(2);'>Y"
         )
 
@@ -67,24 +57,15 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def after(self):
         self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
 
     def _tables_node_expandable(self):
         self.page.toggle_open_server(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item('acceptance_test_db')
+        self.page.toggle_open_tree_item(self.test_db)
         self.page.toggle_open_tree_item('Schemas')
         self.page.toggle_open_tree_item('public')
         self.page.toggle_open_tree_item('Tables')
-        self.page.select_tree_item("<h1>X")
+        self.page.select_tree_item(self.test_table_name)
 
     def _check_xss_in_browser_tree(self):
         # Fetch the inner html & check for escaped characters

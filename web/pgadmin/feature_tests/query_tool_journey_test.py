@@ -8,6 +8,7 @@
 ##########################################################################
 
 import pyperclip
+import random
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -25,26 +26,18 @@ class QueryToolJourneyTest(BaseFeatureTest):
         ("Tests the path through the query tool", dict())
     ]
 
+    test_table_name = ""
+
     def before(self):
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port']
-        )
-        test_utils.drop_database(connection, "acceptance_test_db")
-        test_utils.create_database(self.server, "acceptance_test_db")
+        self.test_table_name = "test_table" + str(random.randint(1000, 3000))
         test_utils.create_table(
-            self.server, "acceptance_test_db", "test_table")
+            self.server, self.test_db, self.test_table_name)
         self.page.add_server(self.server)
 
     def runTest(self):
         self._navigate_to_query_tool()
-
         self._execute_query(
-            "SELECT * FROM test_table ORDER BY value"
-        )
+            "SELECT * FROM %s ORDER BY value " % self.test_table_name)
 
         self._test_copies_rows()
         self._test_copies_columns()
@@ -100,11 +93,18 @@ class QueryToolJourneyTest(BaseFeatureTest):
             .perform()
         selected_history_entry = self.page.find_by_css_selector(
             "#query_list .selected")
-        self.assertIn("SELECT * FROM test_table ORDER BY value",
+        self.assertIn(("SELECT * FROM %s ORDER BY value" %
+                       self.test_table_name),
                       selected_history_entry.text)
-        selected_history_detail_pane = self.page.find_by_id("query_detail")
-        self.assertIn("SELECT * FROM test_table ORDER BY value",
-                      selected_history_detail_pane.text)
+
+        query_element = self.page.driver.\
+            find_element_by_xpath(
+                "//div[@id='history_grid']//div[@class='entry selected']"
+                "/div[@class='query']")
+
+        self.assertIn(("SELECT * FROM %s ORDER BY value"
+                       % self.test_table_name), query_element.text)
+
         newly_selected_history_entry = self.page.find_by_xpath(
             "//*[@id='query_list']/ul/li[2]")
         self.page.click_element(newly_selected_history_entry)
@@ -167,7 +167,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _navigate_to_query_tool(self):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item('acceptance_test_db')
+        self.page.toggle_open_tree_item(self.test_db)
         self.page.open_query_tool()
 
     def _execute_query(self, query):
@@ -180,10 +180,3 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def after(self):
         self.page.close_query_tool()
         self.page.remove_server(self.server)
-
-        connection = test_utils.get_db_connection(self.server['db'],
-                                                  self.server['username'],
-                                                  self.server['db_password'],
-                                                  self.server['host'],
-                                                  self.server['port'])
-        test_utils.drop_database(connection, "acceptance_test_db")
