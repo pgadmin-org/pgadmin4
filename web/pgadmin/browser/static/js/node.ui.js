@@ -17,47 +17,56 @@ define([
 
     function SelectAll() {}
     SelectAll.prototype.render = function(decorated) {
-      var self = this,
-        $rendered = decorated.call(this),
-        $selectAll = $([
-          '<button class="btn btn-xs btn-default" type="button"',
-          ' style="width: 49%;margin: 0 0.5%;">',
-          '<i class="fa fa-check-square-o"></i>',
-          '<span style="padding: 0px 5px;">',
-          gettext('Select All'),
-          '</span></button>',
-        ].join('')),
-        $unselectAll = $([
-          '<button class="btn btn-xs btn-default" type="button"',
-          ' style="width: 49%;margin: 0 0.5%;">',
-          '<i class="fa fa-square-o"></i><span style="padding: 0px 5px;">',
-          gettext('Unselect All'),
-          '</span></button>',
-        ].join('')),
-        $btnContainer = $(
-          '<div style="padding: 3px 0px; background-color: #2C76B4; margin-bottom: 3px;">'
-        ).append($selectAll).append($unselectAll);
+      let self = this;
+      let $rendered = decorated.call(this);
+
+      let $selectAll = $([
+        '<button class="btn btn-xs btn-default" type="button"',
+        ' style="width: 49%;margin: 0 0.5%;">',
+        '<i class="fa fa-check-square-o"></i>',
+        '<span style="padding: 0px 5px;">',
+        gettext('Select All'),
+        '</span></button>',
+      ].join(''));
+
+      let $unselectAll = $([
+        '<button class="btn btn-xs btn-default" type="button"',
+        ' style="width: 49%;margin: 0 0.5%;">',
+        '<i class="fa fa-square-o"></i><span style="padding: 0px 5px;">',
+        gettext('Unselect All'),
+        '</span></button>',
+      ].join(''));
+
+      let $btnContainer = $(
+        '<div style="padding: 3px 0px; background-color: #2C76B4; margin-bottom: 3px;">'
+      ).append($selectAll).append($unselectAll);
 
       if (!this.$element.prop('multiple')) {
         // this isn't a multi-select -> don't add the buttons!
         return $rendered;
       }
       $rendered.find('.select2-dropdown').prepend($btnContainer);
+      // Select All button click
       $selectAll.on('click', function() {
         $rendered.find('.select2-results__option[aria-selected=false]').each(
           function() {
+            // Note: With latest version we do not get data in the data attribute of a element
+            // Hence as per new logic we will fetch the data from the cache created by Select2.
+            let data = Utils.GetData($(this)[0], 'data');
             self.trigger('select', {
-              data: $(this).data('data'),
+              data: data,
             });
           }
         );
         self.trigger('close');
       });
+      // Unselect All button click
       $unselectAll.on('click', function() {
         $rendered.find('.select2-results__option[aria-selected=true]').each(
           function() {
+            let data = Utils.GetData($(this)[0], 'data');
             self.trigger('unselect', {
-              data: $(this).data('data'),
+              data: data,
             });
           }
         );
