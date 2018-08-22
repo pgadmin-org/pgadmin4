@@ -1526,7 +1526,11 @@ def get_filter_data(trans_id):
     Args:
         trans_id: unique transaction id
     """
-    return FilterDialog.get(*check_transaction_status(trans_id))
+
+    status, error_msg, conn, trans_obj, session_ob = \
+        check_transaction_status(trans_id)
+
+    return FilterDialog.get(status, error_msg, conn, trans_obj, session_ob)
 
 
 @blueprint.route(
@@ -1541,8 +1545,12 @@ def set_filter_data(trans_id):
     Args:
         trans_id: unique transaction id
     """
+
+    status, error_msg, conn, trans_obj, session_ob = \
+        check_transaction_status(trans_id)
+
     return FilterDialog.save(
-        *check_transaction_status(trans_id),
+        status, error_msg, conn, trans_obj, session_ob,
         request=request,
         trans_id=trans_id
     )

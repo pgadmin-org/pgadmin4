@@ -550,45 +550,40 @@ class TableCommand(GridCommand):
         all_sorted_columns = []
         data_sorting = self.get_data_sorting()
         all_columns = []
-        if conn.connected():
+        # Fetch the primary key column names
+        query = render_template(
+            "/".join([self.sql_path, 'primary_keys.sql']),
+            obj_id=self.obj_id
+        )
 
-            # Fetch the primary key column names
-            query = render_template(
-                "/".join([self.sql_path, 'primary_keys.sql']),
-                obj_id=self.obj_id
+        status, result = conn.execute_dict(query)
+
+        if not status:
+            raise Exception(result)
+
+        for row in result['rows']:
+            all_columns.append(row['attname'])
+            all_sorted_columns.append(
+                {
+                    'name': row['attname'],
+                    'order': self.get_pk_order()
+                }
             )
 
-            status, result = conn.execute_dict(query)
-            if not status:
-                raise Exception(result)
+        # Fetch the rest of the column names
+        query = render_template(
+            "/".join([self.sql_path, 'get_columns.sql']),
+            obj_id=self.obj_id
+        )
+        status, result = conn.execute_dict(query)
+        if not status:
+            raise Exception(result)
 
-            for row in result['rows']:
+        for row in result['rows']:
+            # Only append if not already present in the list
+            if row['attname'] not in all_columns:
                 all_columns.append(row['attname'])
-                all_sorted_columns.append(
-                    {
-                        'name': row['attname'],
-                        'order': self.get_pk_order()
-                    }
-                )
 
-            # Fetch the rest of the column names
-            query = render_template(
-                "/".join([self.sql_path, 'get_columns.sql']),
-                obj_id=self.obj_id
-            )
-            status, result = conn.execute_dict(query)
-            if not status:
-                raise Exception(result)
-
-            for row in result['rows']:
-                # Only append if not already present in the list
-                if row['attname'] not in all_columns:
-                    all_columns.append(row['attname'])
-        else:
-            raise Exception(
-                gettext('Not connected to server or connection with the '
-                        'server has been closed.')
-            )
         # If user has custom data sorting then pass as it as it is
         if data_sorting and len(data_sorting) > 0:
             all_sorted_columns = data_sorting

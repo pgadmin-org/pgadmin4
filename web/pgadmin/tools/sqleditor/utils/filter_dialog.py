@@ -11,9 +11,11 @@
 import pickle
 import simplejson as json
 from flask_babelex import gettext
+from flask import current_app
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
     update_session_grid_transaction
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 
 
 class FilterDialog(object):
@@ -32,7 +34,16 @@ class FilterDialog(object):
         if status and conn is not None and \
                 trans_obj is not None and session_obj is not None:
             msg = gettext('Success')
-            columns, column_list = trans_obj.get_all_columns_with_order(conn)
+
+            try:
+                columns, column_list = \
+                    trans_obj.get_all_columns_with_order(conn)
+            except (ConnectionLost, SSHTunnelConnectionLost):
+                raise
+            except Exception as e:
+                current_app.logger.error(e)
+                raise
+
             sql = trans_obj.get_filter()
         else:
             status = False
