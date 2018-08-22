@@ -49,6 +49,8 @@ Click the *Restore options* tab to continue. Use the fields on the *Restore opti
    * Move the switch next to *Owner* to the *Yes* position to exclude commands that set object ownership.
    * Move the switch next to *Privilege* to the *Yes* position to exclude commands that create access privileges.
    * Move the switch next to *Tablespace* to the *Yes* position to exclude tablespaces.
+   * Move the switch next to *Comments* to the *Yes* position to exclude commands that set the comments. **Note:** This option is visible only for database server greater than or equal to 11.
+
 
 .. image:: images/restore_queries.png
     :alt: Restore dialog queries section

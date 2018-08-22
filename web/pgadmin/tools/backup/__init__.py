@@ -259,117 +259,6 @@ def filename_with_file_manager_path(_file, create_file=True):
 @blueprint.route(
     '/job/<int:sid>', methods=['POST'], endpoint='create_server_job'
 )
-@login_required
-def create_backup_job(sid):
-    """
-    Args:
-        sid: Server ID
-
-        Creates a new job for backup task (Backup Server/Globals)
-
-    Returns:
-        None
-    """
-    if request.form:
-        # Convert ImmutableDict to dict
-        data = dict(request.form)
-        data = json.loads(data['data'][0], encoding='utf-8')
-    else:
-        data = json.loads(request.data, encoding='utf-8')
-
-    try:
-        backup_file = filename_with_file_manager_path(data['file'])
-    except Exception as e:
-        return bad_request(errormsg=str(e))
-
-    # Fetch the server details like hostname, port, roles etc
-    server = Server.query.filter_by(
-        id=sid, user_id=current_user.id
-    ).first()
-
-    if server is None:
-        return make_json_response(
-            success=0,
-            errormsg=_("Could not find the specified server.")
-        )
-
-    # To fetch MetaData for the server
-    from pgadmin.utils.driver import get_driver
-    driver = get_driver(PG_DEFAULT_DRIVER)
-    manager = driver.connection_manager(server.id)
-    conn = manager.connection()
-    connected = conn.connected()
-
-    if not connected:
-        return make_json_response(
-            success=0,
-            errormsg=_("Please connect to the server first.")
-        )
-
-    utility = manager.utility('backup_server')
-
-    args = [
-        '--file',
-        backup_file,
-        '--host',
-        manager.local_bind_host if manager.use_ssh_tunnel else server.host,
-        '--port',
-        str(manager.local_bind_port) if manager.use_ssh_tunnel
-        else str(server.port),
-        '--username',
-        server.username,
-        '--no-password',
-        '--database',
-        server.maintenance_db
-    ]
-
-    if 'role' in data and data['role']:
-        args.append('--role')
-        args.append(data['role'])
-    if 'verbose' in data and data['verbose']:
-        args.append('--verbose')
-    if 'dqoute' in data and data['dqoute']:
-        args.append('--quote-all-identifiers')
-    if data['type'] == 'globals':
-        args.append('--globals-only')
-
-    try:
-        p = BatchProcess(
-            desc=BackupMessage(
-                BACKUP.SERVER if data['type'] != 'globals' else BACKUP.GLOBALS,
-                sid,
-                data['file'].encode('utf-8') if hasattr(
-                    data['file'], 'encode'
-                ) else data['file'],
-                *args
-            ),
-            cmd=utility, args=args
-        )
-        manager.export_password_env(p.id)
-        # Check for connection timeout and if it is greater than 0 then
-        # set the environment variable PGCONNECT_TIMEOUT.
-        if manager.connect_timeout > 0:
-            env = dict()
-            env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
-            p.set_env_variables(server, env=env)
-        else:
-            p.set_env_variables(server)
-
-        p.start()
-        jid = p.id
-    except Exception as e:
-        current_app.logger.exception(e)
-        return make_json_response(
-            status=410,
-            success=0,
-            errormsg=str(e)
-        )
-    # Return response
-    return make_json_response(
-        data={'job_id': jid, 'success': 1}
-    )
-
-
 @blueprint.route(
     '/job/<int:sid>/object', methods=['POST'], endpoint='create_object_job'
 )
@@ -392,12 +281,12 @@ def create_backup_objects_job(sid):
     else:
         data = json.loads(request.data, encoding='utf-8')
 
-    # Remove ratio from data in case of empty string
-    if 'ratio' in data and data['ratio'] == '':
-        data.pop("ratio")
+    backup_obj_type = 'objects'
+    if 'type' in data:
+        backup_obj_type = data['type']
 
     try:
-        if data['format'] == 'directory':
+        if 'format' in data and data['format'] == 'directory':
             backup_file = filename_with_file_manager_path(data['file'], False)
         else:
             backup_file = filename_with_file_manager_path(data['file'])
@@ -428,7 +317,9 @@ def create_backup_objects_job(sid):
             errormsg=_("Please connect to the server first.")
         )
 
-    utility = manager.utility('backup')
+    utility = manager.utility('backup') if backup_obj_type == 'objects' \
+        else manager.utility('backup_server')
+
     args = [
         '--file',
         backup_file,
@@ -442,48 +333,53 @@ def create_backup_objects_job(sid):
         '--no-password'
     ]
 
+    if backup_obj_type != 'objects':
+        args.append('--database')
+        args.append(server.maintenance_db)
+
+    if backup_obj_type == 'globals':
+        args.append('--globals-only')
+
     def set_param(key, param):
         if key in data and data[key]:
             args.append(param)
 
-    def set_value(key, param, value):
-        if key in data:
-            if value:
-                if value is True and data[key]:
-                    args.append(param)
-                    args.append(data[key])
-                else:
-                    args.append(param)
-                    args.append(value)
+    def set_value(key, param, default_value=None):
+        if key in data and data[key] is not None and data[key] != '':
+            args.append(param)
+            args.append(data[key])
+        elif default_value is not None:
+            args.append(param)
+            args.append(default_value)
 
     set_param('verbose', '--verbose')
     set_param('dqoute', '--quote-all-identifiers')
-    set_value('role', '--role', True)
-    if data['format'] is not None:
+    set_value('role', '--role')
+
+    if backup_obj_type == 'objects' and \
+            'format' in data and data['format'] is not None:
         if data['format'] == 'custom':
             args.extend(['--format=c'])
-
             set_param('blobs', '--blobs')
-            set_value('ratio', '--compress', True)
-
+            set_value('ratio', '--compress')
         elif data['format'] == 'tar':
             args.extend(['--format=t'])
-
             set_param('blobs', '--blobs')
-
         elif data['format'] == 'plain':
             args.extend(['--format=p'])
-            if 'only_data' in data and data['only_data']:
-                args.append('--data-only')
-                set_param('disable_trigger', '--disable-triggers')
-            else:
-                set_param('only_schema', '--schema-only')
-                set_param('dns_owner', '--no-owner')
-                set_param('include_create_database', '--create')
-                set_param('include_drop_database', '--clean')
         elif data['format'] == 'directory':
             args.extend(['--format=d'])
 
+    if 'only_data' in data and data['only_data']:
+        set_param('only_data', '--data-only')
+        if 'format' in data and data['format'] == 'plain':
+            set_param('disable_trigger', '--disable-triggers')
+    elif 'only_schema' in data and data['only_schema']:
+        set_param('only_schema', '--schema-only')
+
+    set_param('dns_owner', '--no-owner')
+    set_param('include_create_database', '--create')
+    set_param('include_drop_database', '--clean')
     set_param('pre_data', '--section=pre-data')
     set_param('data', '--section=data')
     set_param('post_data', '--section=post-data')
@@ -496,31 +392,51 @@ def create_backup_objects_job(sid):
     set_param('with_oids', '--oids')
     set_param('use_set_session_auth', '--use-set-session-authorization')
 
-    set_value('encoding', '--encoding', True)
-    set_value('no_of_jobs', '--jobs', True)
+    if manager.version >= 110000:
+        set_param('no_comments', '--no-comments')
+        set_param('load_via_partition_root', '--load-via-partition-root')
 
-    for s in data['schemas']:
-        args.extend(['--schema', s])
+    set_value('encoding', '--encoding')
+    set_value('no_of_jobs', '--jobs')
 
-    for s, t in data['tables']:
-        args.extend([
-            '--table', driver.qtIdent(conn, s, t)
-        ])
+    if 'schemas' in data:
+        for s in data['schemas']:
+            args.extend(['--schema', s])
 
-    args.append(data['database'])
+    if 'tables' in data:
+        for s, t in data['tables']:
+            args.extend([
+                '--table', driver.qtIdent(conn, s, t)
+            ])
 
     try:
-        p = BatchProcess(
-            desc=BackupMessage(
-                BACKUP.OBJECT, sid,
-                data['file'].encode('utf-8') if hasattr(
-                    data['file'], 'encode'
-                ) else data['file'],
-                *args,
-                database=data['database']
-            ),
-            cmd=utility, args=args
-        )
+        if backup_obj_type == 'objects':
+            args.append(data['database'])
+            p = BatchProcess(
+                desc=BackupMessage(
+                    BACKUP.OBJECT, sid,
+                    data['file'].encode('utf-8') if hasattr(
+                        data['file'], 'encode'
+                    ) else data['file'],
+                    *args,
+                    database=data['database']
+                ),
+                cmd=utility, args=args
+            )
+        else:
+            p = BatchProcess(
+                desc=BackupMessage(
+                    BACKUP.SERVER if backup_obj_type != 'globals'
+                    else BACKUP.GLOBALS,
+                    sid,
+                    data['file'].encode('utf-8') if hasattr(
+                        data['file'], 'encode'
+                    ) else data['file'],
+                    *args
+                ),
+                cmd=utility, args=args
+            )
+
         manager.export_password_env(p.id)
         # Check for connection timeout and if it is greater than 0 then
         # set the environment variable PGCONNECT_TIMEOUT.

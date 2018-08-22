@@ -58,13 +58,15 @@ Click the *Dump options* tab to continue. Use the box fields in the *Dump option
 
 * Move switches in the **Do not save** field box to select the objects that will not be included in the backup.
 
-   * Move the switch next to *Owner* to the *Yes* position to include commands that set object ownership.
+   * Move the switch next to *Owner* to the *Yes* position to exclude commands that set object ownership.
 
-   * Move the switch next to *Privilege* to the *Yes* position to include commands that create access privileges.
+   * Move the switch next to *Privilege* to the *Yes* position to exclude commands that create access privileges.
 
-   * Move the switch next to *Tablespace* to the *Yes* position to include tablespaces.
+   * Move the switch next to *Tablespace* to the *Yes* position to exclude tablespaces.
 
-   * Move the switch next to *Unlogged table data* to the *Yes* position to include the contents of unlogged tables.
+   * Move the switch next to *Unlogged table data* to the *Yes* position to exclude the contents of unlogged tables.
+
+   * Move the switch next to *Comments* to the *Yes* position to exclude commands that set the comments. **Note:** This option is visible only for database server greater than or equal to 11.
 
 .. image:: images/backup_queries.png
     :alt: Queries option on backup dialog
@@ -78,6 +80,8 @@ Click the *Dump options* tab to continue. Use the box fields in the *Dump option
    * Move the switch next to *Include CREATE DATABASE statement* to the *Yes* position to include a command in the backup that creates a new database when restoring the backup.
 
    * Move the switch next to *Include DROP DATABASE statement* to the *Yes* position to include a command in the backup that will drop any existing database object with the same name before recreating the object during a backup.
+
+   * Move the switch next to *Load Via Partition Root* to the *Yes* position, so when dumping a COPY or INSERT statement for a partitioned table, target the root of the partitioning hierarchy which contains it rather than the partition itself. **Note:** This option is visible only for database server greater than or equal to 11.
 
 .. image:: images/backup_disable.png
     :alt: Disable option on backup dialog

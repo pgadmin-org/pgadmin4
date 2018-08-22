@@ -243,17 +243,13 @@ def create_restore_job(sid):
                 return True
             return False
 
-        def set_value(key, param, value):
-            if key in data:
-                if value:
-                    if value is True and data[key]:
-                        args.append(param)
-                        args.append(data[key])
-                    else:
-                        args.append(param)
-                        args.append(value)
-                    return True
-            return False
+        def set_value(key, param, default_value=None):
+            if key in data and data[key] is not None and data[key] != '':
+                args.append(param)
+                args.append(data[key])
+            elif default_value is not None:
+                args.append(param)
+                args.append(default_value)
 
         def set_multiple(key, param, with_schema=True):
             if key in data:
@@ -293,8 +289,8 @@ def create_restore_job(sid):
             '--username', server.username, '--no-password'
         ])
 
-        set_value('role', '--role', True)
-        set_value('database', '--dbname', True)
+        set_value('role', '--role')
+        set_value('database', '--dbname')
 
         if data['format'] == 'directory':
             args.extend(['--format=d'])
@@ -318,7 +314,10 @@ def create_restore_job(sid):
         set_param('use_set_session_auth', '--use-set-session-authorization')
         set_param('exit_on_error', '--exit-on-error')
 
-        set_value('no_of_jobs', '--jobs', True)
+        if manager.version >= 110000:
+            set_param('no_comments', '--no-comments')
+
+        set_value('no_of_jobs', '--jobs')
         set_param('verbose', '--verbose')
 
         set_multiple('schemas', '--schema', False)

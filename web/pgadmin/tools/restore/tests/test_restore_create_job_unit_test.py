@@ -174,6 +174,36 @@ class RestoreCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When restore object with option - Do not save comments',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 verbose=True,
+                 custom=False,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 no_comments=True,
+                 only_data=False
+             ),
+             url='/restore/job/{0}',
+             expected_cmd_opts=['--no-comments'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=110000,
+             message='Restore object with --no-comments are not supported '
+                     'by EPAS/PG server less than 11.0'
+         )),
         ('When restore object with option - Queries',
          dict(
              class_params=dict(
@@ -314,6 +344,11 @@ class RestoreCreateJobTest(BaseTestGenerator):
             db_owner = server_response['data']['user']['name']
             self.data = database_utils.get_db_data(db_owner)
             self.db_name = self.data['name']
+
+            if hasattr(self, 'server_min_version') and \
+                    server_response["data"]["version"] < \
+                    self.server_min_version:
+                self.skipTest(self.message)
 
         url = self.url.format(self.server_id)
 

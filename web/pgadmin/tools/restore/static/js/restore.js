@@ -240,6 +240,20 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
         control: Backform.CustomSwitchControl,
         disabled: false,
         group: gettext('Do not save'),
+      }, {
+        id: 'no_comments',
+        label: gettext('Comments'),
+        control: Backform.CustomSwitchControl,
+        disabled: false,
+        group: gettext('Do not save'),
+        visible: function() {
+          var t = pgBrowser.tree,
+            i = t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined,
+            s = pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+
+          return s.version >= 110000;
+        },
       }],
     }, {
       type: 'nested',

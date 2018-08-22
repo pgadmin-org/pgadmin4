@@ -62,7 +62,7 @@ define([
       dqoute: false,
       verbose: true,
       type: undefined,
-      /* global, server */
+      /* global */
     },
     schema: [{
       id: 'file',
@@ -98,21 +98,10 @@ define([
         group: gettext('Miscellaneous'),
       }],
     }, {
-      id: 'server_note',
-      label: gettext('Note'),
-      text: gettext('The backup format will be PLAIN'),
-      type: 'note',
-      visible: function(m) {
-        return m.get('type') === 'server';
-      },
-    }, {
       id: 'globals_note',
       label: gettext('Note'),
       text: gettext('Only objects global to the entire database will be backed up in PLAIN format'),
       type: 'note',
-      visible: function(m) {
-        return m.get('type') === 'globals';
-      },
     }, {}],
     validate: function() {
       // TODO: HOW TO VALIDATE ???
@@ -183,6 +172,13 @@ define([
         value: 'directory',
       },
       ],
+      visible: function(m) {
+        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server') {
+          setTimeout(function() { m.set('format', 'plain'); }, 10);
+          return false;
+        }
+        return true;
+      },
     }, {
       id: 'ratio',
       label: gettext('Compression ratio'),
@@ -190,6 +186,11 @@ define([
       min: 0,
       max: 9,
       disabled: false,
+      visible: function(m) {
+        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
+          return false;
+        return true;
+      },
     }, {
       id: 'encoding',
       label: gettext('Encoding'),
@@ -198,6 +199,15 @@ define([
       node: 'database',
       control: 'node-ajax-options',
       url: 'get_encodings',
+      visible: function(m) {
+        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server') {
+          var t = pgBrowser.tree,
+            i = t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
+          return d.version >= 110000;
+        }
+        return true;
+      },
     }, {
       id: 'no_of_jobs',
       label: gettext('Number of jobs'),
@@ -206,6 +216,11 @@ define([
       disabled: function(m) {
         return !(m.get('format') === 'Directory');
       },
+      visible: function(m) {
+        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
+          return false;
+        return true;
+      },
     }, {
       id: 'role',
       label: gettext('Role name'),
@@ -213,6 +228,14 @@ define([
       node: 'role',
       select2: {
         allowClear: false,
+      },
+    },  {
+      id: 'server_note',
+      label: gettext('Note'),
+      text: gettext('The backup format will be PLAIN'),
+      type: 'note',
+      visible: function(m) {
+        return m.get('type') === 'server';
       },
     }, {
       type: 'nested',
@@ -250,6 +273,11 @@ define([
             m.get('only_schema');
         },
       }],
+      visible: function(m) {
+        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
+          return false;
+        return true;
+      },
     }, {
       type: 'nested',
       control: 'fieldset',
@@ -285,6 +313,13 @@ define([
         control: Backform.CustomSwitchControl,
         disabled: false,
         group: gettext('Type of objects'),
+        visible: function(m) {
+          if (!_.isUndefined(m.get('type')) && m.get('type') === 'server') {
+            setTimeout(function() { m.set('blobs', false); }, 10);
+            return false;
+          }
+          return true;
+        },
       }],
     }, {
       type: 'nested',
@@ -315,6 +350,20 @@ define([
         control: Backform.CustomSwitchControl,
         disabled: false,
         group: gettext('Do not save'),
+      }, {
+        id: 'no_comments',
+        label: gettext('Comments'),
+        control: Backform.CustomSwitchControl,
+        disabled: false,
+        group: gettext('Do not save'),
+        visible: function() {
+          var t = pgBrowser.tree,
+            i = t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined,
+            s = pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+
+          return s.version >= 110000;
+        },
       }],
     }, {
       type: 'nested',
@@ -339,12 +388,41 @@ define([
         control: Backform.CustomSwitchControl,
         disabled: false,
         group: gettext('Queries'),
+        visible: function(m) {
+          if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
+            return false;
+          return true;
+        },
       }, {
         id: 'include_drop_database',
         label: gettext('Include DROP DATABASE statement'),
         control: Backform.CustomSwitchControl,
+        group: gettext('Queries'),
+        deps: ['only_data'],
+        disabled: function(m) {
+          if (m.get('only_data')) {
+            setTimeout(function() { m.set('include_drop_database', false); }, 10);
+            return true;
+          }
+          return false;
+        },
+      }, {
+        id: 'load_via_partition_root',
+        label: gettext('Load Via Partition Root'),
+        control: Backform.CustomSwitchControl,
         disabled: false,
         group: gettext('Queries'),
+        visible: function(m) {
+          if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
+            return false;
+
+          var t = pgBrowser.tree,
+            i = t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined,
+            s = pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+
+          return s.version >= 110000;
+        },
       }],
     }, {
       type: 'nested',
@@ -376,8 +454,15 @@ define([
         id: 'with_oids',
         label: gettext('With OID(s)'),
         control: Backform.CustomSwitchControl,
-        disabled: false,
+        deps: ['use_column_inserts', 'use_insert_commands'],
         group: gettext('Miscellaneous'),
+        disabled: function(m) {
+          if (m.get('use_column_inserts') || m.get('use_insert_commands')) {
+            setTimeout(function() { m.set('with_oids', false); }, 10);
+            return true;
+          }
+          return false;
+        },
       }, {
         id: 'verbose',
         label: gettext('Verbose messages'),
@@ -483,33 +568,23 @@ define([
       return this;
     },
     start_backup_global: function(action, item) {
-      var params = {
-        'globals': true,
-      };
-      this.start_backup_global_server.apply(
-        this, [action, item, params]
-      );
-    },
-    start_backup_server: function(action, item) {
-      var params = {
-        'server': true,
-      };
-      this.start_backup_global_server.apply(
-        this, [action, item, params]
-      );
-    },
-
-    // Callback to draw Backup Dialog for globals/server
-    start_backup_global_server: function(action, treeItem, params) {
       let dialog = new globalBackupDialog.BackupDialog(
         pgBrowser,
         $,
         alertify,
         BackupModel
       );
-      dialog.draw(action, treeItem, params);
+      dialog.draw(action, item, {'globals': true});
     },
-
+    start_backup_server: function(action, item) {
+      let dialog = new globalBackupDialog.BackupDialog(
+        pgBrowser,
+        $,
+        alertify,
+        BackupObjectModel
+      );
+      dialog.draw(action, item, {'server': true});
+    },
     // Callback to draw Backup Dialog for objects
     backup_objects: function(action, treeItem) {
       let dialog = new globalBackupDialog.BackupDialog(
