@@ -24,6 +24,7 @@ import random
 import string
 import time
 from uuid import uuid4
+from threading import Lock
 from flask import current_app, request, flash, redirect
 from flask_login import login_url
 from pgadmin.utils.ajax import make_json_response
@@ -48,6 +49,9 @@ def _calc_hmac(body, secret):
             secret.encode(), body.encode(), hashlib.sha1
         ).digest()
     ).decode()
+
+
+sess_lock = Lock()
 
 
 class ManagedSession(CallbackDict, SessionMixin):
@@ -111,8 +115,9 @@ class CachingSessionManager(SessionManager):
     def _normalize(self):
         if len(self._cache) > self.num_to_store:
             # Flush 20% of the cache
-            while len(self._cache) > (self.num_to_store * 0.8):
-                self._cache.popitem(False)
+            with sess_lock:
+                while len(self._cache) > (self.num_to_store * 0.8):
+                    self._cache.popitem(False)
 
     def new_session(self):
         session = self.parent.new_session()
@@ -122,59 +127,64 @@ class CachingSessionManager(SessionManager):
             if request.path.startswith(sp):
                 return session
 
-        self._cache[session.sid] = session
+        with sess_lock:
+            self._cache[session.sid] = session
         self._normalize()
 
         return session
 
     def remove(self, sid):
-        self.parent.remove(sid)
-        if sid in self._cache:
-            del self._cache[sid]
+        with sess_lock:
+            self.parent.remove(sid)
+            if sid in self._cache:
+                del self._cache[sid]
 
     def exists(self, sid):
-        if sid in self._cache:
-            return True
-        return self.parent.exists(sid)
+        with sess_lock:
+            if sid in self._cache:
+                return True
+            return self.parent.exists(sid)
 
     def get(self, sid, digest):
         session = None
-        if sid in self._cache:
-            session = self._cache[sid]
-            if session.hmac_digest != digest:
-                session = None
+        with sess_lock:
+            if sid in self._cache:
+                session = self._cache[sid]
+                if session.hmac_digest != digest:
+                    session = None
 
-            # reset order in Dict
-            del self._cache[sid]
+                # reset order in Dict
+                del self._cache[sid]
 
-        if not session:
-            session = self.parent.get(sid, digest)
+            if not session:
+                session = self.parent.get(sid, digest)
 
-        # Do not store the session if skip paths
-        for sp in self.skip_paths:
-            if request.path.startswith(sp):
-                return session
+            # Do not store the session if skip paths
+            for sp in self.skip_paths:
+                if request.path.startswith(sp):
+                    return session
 
-        self._cache[sid] = session
+            self._cache[sid] = session
         self._normalize()
 
         return session
 
     def put(self, session):
-        self.parent.put(session)
+        with sess_lock:
+            self.parent.put(session)
 
-        # Do not store the session if skip paths
-        for sp in self.skip_paths:
-            if request.path.startswith(sp):
-                return
+            # Do not store the session if skip paths
+            for sp in self.skip_paths:
+                if request.path.startswith(sp):
+                    return
 
-        if session.sid in self._cache:
-            try:
-                del self._cache[session.sid]
-            except Exception:
-                pass
+            if session.sid in self._cache:
+                try:
+                    del self._cache[session.sid]
+                except Exception:
+                    pass
 
-        self._cache[session.sid] = session
+            self._cache[session.sid] = session
         self._normalize()
 
 
