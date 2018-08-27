@@ -11,9 +11,15 @@
 
 import re
 import operator
+import sys
 from itertools import count, repeat, chain
 from .completion import Completion
-from collections import namedtuple, defaultdict, OrderedDict
+from collections import namedtuple, defaultdict
+if sys.version_info < (2, 7):
+    from ordereddict import OrderedDict
+else:
+    from collections import OrderedDict
+
 from .sqlcompletion import (
     FromClauseItem, suggest_type, Database, Schema, Table,
     Function, Column, View, Keyword, Datatype, Alias, JoinCondition, Join)
@@ -286,15 +292,14 @@ class SQLAutoComplete(object):
         # This is used when suggesting functions, to avoid the latency that
         # would result if we'd recalculate the arg lists each time we suggest
         # functions (in large DBs)
-        self._arg_list_cache = {
-            usage: {
-                meta: self._arg_list(meta, usage)
-                for sch, funcs in self.dbmetadata['functions'].items()
-                for func, metas in funcs.items()
-                for meta in metas
-            }
-            for usage in ('call', 'call_display', 'signature')
-        }
+
+        self._arg_list_cache = \
+            dict((usage,
+                 dict((meta, self._arg_list(meta, usage))
+                      for sch, funcs in self.dbmetadata['functions'].items()
+                      for func, metas in funcs.items()
+                      for meta in metas))
+                 for usage in ('call', 'call_display', 'signature'))
 
     def extend_foreignkeys(self, fk_data):
 
@@ -532,11 +537,10 @@ class SQLAutoComplete(object):
                 c.name for t, cs in scoped_cols.items() if t.ref != ltbl
                 for c in cs
             )
-            scoped_cols = {
-                t: [col for col in cols if col.name in other_tbl_cols]
-                for t, cols in scoped_cols.items()
-                if t.ref == ltbl
-            }
+            scoped_cols = \
+                dict((t, [col for col in cols if col.name in other_tbl_cols])
+                     for t, cols in scoped_cols.items() if t.ref == ltbl)
+
         lastword = last_word(word_before_cursor, include='most_punctuations')
         if lastword == '*':
             if suggestion.context == 'insert':
@@ -547,10 +551,9 @@ class SQLAutoComplete(object):
                         p.match(col.default)
                         for p in self.insert_col_skip_patterns
                     )
-                scoped_cols = {
-                    t: [col for col in cols if filter(col)]
-                    for t, cols in scoped_cols.items()
-                }
+                scoped_cols = \
+                    dict((t, [col for col in cols if filter(col)])
+                         for t, cols in scoped_cols.items())
             if self.asterisk_column_order == 'alphabetic':
                 for cols in scoped_cols.values():
                     cols.sort(key=operator.attrgetter('name'))
