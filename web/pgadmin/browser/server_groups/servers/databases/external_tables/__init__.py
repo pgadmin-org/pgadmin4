@@ -67,6 +67,7 @@ class ExternalTablesModule(CollectionNodeModule):
 
         super(ExternalTablesModule, self).__init__(*args, **kwargs)
         self.max_ver = 0
+        self.server_type = ['gpdb']
 
     def get_nodes(self, gid, sid, did):
         yield self.generate_browser_collection_node(did)

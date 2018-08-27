@@ -33,6 +33,16 @@ class TestExternalTablesModule(BaseTestGenerator):
              ),
              expected_result=False,
          )),
+        ('#BackendSupported When access the on a Postgres Plus Advance Server '
+         'Database, it returns false',
+         dict(
+             test_type='backend-support',
+             manager=dict(
+                 server_type='ppas',
+                 sversion=90100
+             ),
+             expected_result=False,
+         )),
         ('#BackendSupported When access the on a GreenPlum Database, '
          'it returns true',
          dict(

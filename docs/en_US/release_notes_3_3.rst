@@ -25,6 +25,7 @@ Bug fixes
 | `Bug #3461 <https://redmine.postgresql.org/issues/3461>`_ - Ensure that refreshing a node also updates the Property list.
 | `Bug #3528 <https://redmine.postgresql.org/issues/3528>`_ - Handle connection errors properly in the query tool.
 | `Bug #3547 <https://redmine.postgresql.org/issues/3547>`_ - Make session implementation thread safe
+| `Bug #3548 <https://redmine.postgresql.org/issues/3548>`_ - Ensure external table node should be visible only for GPDB.
 | `Bug #3558 <https://redmine.postgresql.org/issues/3558>`_ - Fix sort/filter dialog editing issue.
 | `Bug #3561 <https://redmine.postgresql.org/issues/3561>`_ - Ensure sort/filter dialog should display proper message after losing database connection.
 | `Bug #3578 <https://redmine.postgresql.org/issues/3578>`_ - Ensure sql for Role should be visible in SQL panel for GPDB.
