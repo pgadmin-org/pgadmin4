@@ -1,30 +1,16 @@
 {# ============= Fetch the list of functions based on given schema_names ============= #}
-{% if func_name %}
 SELECT n.nspname schema_name,
     p.proname func_name,
-    pg_catalog.pg_get_function_arguments(p.oid) arg_list,
-    pg_catalog.pg_get_function_result(p.oid) return_type,
+    p.proargnames arg_names,
+    COALESCE(proallargtypes::regtype[], proargtypes::regtype[])::text[] arg_types,
+    p.proargmodes arg_modes,
+    prorettype::regtype::text return_type,
     p.proisagg is_aggregate,
     p.proiswindow is_window,
-    p.proretset is_set_returning
+    p.proretset is_set_returning,
+    pg_get_expr(proargdefaults, 0) AS arg_defaults
 FROM pg_catalog.pg_proc p
     INNER JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
-    WHERE n.nspname = '{{schema_name}}' AND p.proname = '{{func_name}}'
-    AND p.proretset
-    ORDER BY 1, 2
-{% else %}
-SELECT n.nspname schema_name,
-    p.proname object_name,
-    pg_catalog.pg_get_function_arguments(p.oid) arg_list,
-    pg_catalog.pg_get_function_result(p.oid) return_type,
-    p.proisagg is_aggregate,
-    p.proiswindow is_window,
-    p.proretset is_set_returning
-FROM pg_catalog.pg_proc p
-    INNER JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
-    WHERE n.nspname IN ({{schema_names}})
-{% if is_set_returning %}
-    AND p.proretset
-{% endif %}
-    ORDER BY 1, 2
-{% endif %}
+WHERE p.prorettype::regtype != 'trigger'::regtype
+    AND n.nspname IN ({{schema_names}})
+ORDER BY 1, 2

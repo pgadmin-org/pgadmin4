@@ -1,8 +1,8 @@
 import re
-from collections import defaultdict
-
 import sqlparse
 from sqlparse.tokens import Name
+from collections import defaultdict
+
 
 white_space_regex = re.compile(r'\\s+', re.MULTILINE)
 
@@ -10,7 +10,7 @@ white_space_regex = re.compile(r'\\s+', re.MULTILINE)
 def _compile_regex(keyword):
     # Surround the keyword with word boundaries and replace interior whitespace
     # with whitespace wildcards
-    pattern = r'\\b' + re.sub(white_space_regex, r'\\s+', keyword) + r'\\b'
+    pattern = r'\\b' + white_space_regex.sub(r'\\s+', keyword) + r'\\b'
     return re.compile(pattern, re.MULTILINE | re.IGNORECASE)
 
 

@@ -73,7 +73,7 @@ TableReference = namedtuple(
 # This code is borrowed from sqlparse example script.
 # <url>
 def is_subselect(parsed):
-    if not parsed.is_group:
+    if not parsed.is_group():
         return False
     sql_type = ('SELECT', 'INSERT', 'UPDATE', 'CREATE', 'DELETE')
     for item in parsed.tokens:
@@ -104,7 +104,7 @@ def extract_from_part(parsed, stop_at_punctuation=True):
             # condition. So we need to ignore the keyword JOIN and its
             # variants INNER JOIN, FULL OUTER JOIN, etc.
             elif item.ttype is Keyword and (
-                    not item.value.upper() == 'FROM') and (
+                not item.value.upper() == 'FROM') and (
                     not item.value.upper().endswith('JOIN')):
                 tbl_prefix_seen = False
             else:

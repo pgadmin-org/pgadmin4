@@ -1,29 +1,43 @@
 {# SQL query for getting columns #}
 {% if object_name == 'table' %}
-SELECT
-    att.attname column_name
-FROM pg_catalog.pg_attribute att
-    INNER JOIN pg_catalog.pg_class cls
-        ON att.attrelid = cls.oid
-    INNER JOIN pg_catalog.pg_namespace nsp
-        ON cls.relnamespace = nsp.oid
-    WHERE cls.relkind = ANY(array['r'])
+SELECT  nsp.nspname schema_name,
+        cls.relname table_name,
+        att.attname column_name,
+        att.atttypid::regtype::text type_name,
+        att.atthasdef AS has_default,
+        def.adsrc as default
+FROM    pg_catalog.pg_attribute att
+        INNER JOIN pg_catalog.pg_class cls
+            ON att.attrelid = cls.oid
+        INNER JOIN pg_catalog.pg_namespace nsp
+            ON cls.relnamespace = nsp.oid
+        LEFT OUTER JOIN pg_attrdef def
+            ON def.adrelid = att.attrelid
+            AND def.adnum = att.attnum
+WHERE   nsp.nspname IN ({{schema_names}})
+        AND cls.relkind = ANY(array['r'])
         AND NOT att.attisdropped
         AND att.attnum  > 0
-        AND (nsp.nspname = '{{schema_name}}' AND cls.relname = '{{rel_name}}')
-    ORDER BY 1
+ORDER BY 1, 2, att.attnum
 {% endif %}
 {% if object_name == 'view' %}
-SELECT
-    att.attname column_name
-FROM pg_catalog.pg_attribute att
-    INNER JOIN pg_catalog.pg_class cls
-        ON att.attrelid = cls.oid
-    INNER JOIN pg_catalog.pg_namespace nsp
-        ON cls.relnamespace = nsp.oid
-    WHERE cls.relkind = ANY(array['v', 'm'])
+SELECT  nsp.nspname schema_name,
+        cls.relname table_name,
+        att.attname column_name,
+        att.atttypid::regtype::text type_name,
+        att.atthasdef AS has_default,
+        def.adsrc as default
+FROM    pg_catalog.pg_attribute att
+        INNER JOIN pg_catalog.pg_class cls
+            ON att.attrelid = cls.oid
+        INNER JOIN pg_catalog.pg_namespace nsp
+            ON cls.relnamespace = nsp.oid
+        LEFT OUTER JOIN pg_attrdef def
+            ON def.adrelid = att.attrelid
+            AND def.adnum = att.attnum
+WHERE   nsp.nspname IN ({{schema_names}})
+        AND cls.relkind = ANY(array['v', 'm'])
         AND NOT att.attisdropped
         AND att.attnum  > 0
-        AND (nsp.nspname = '{{schema_name}}' AND cls.relname = '{{rel_name}}')
-    ORDER BY 1
+ORDER BY 1, 2, att.attnum
 {% endif %}
