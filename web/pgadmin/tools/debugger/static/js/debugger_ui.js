@@ -120,14 +120,17 @@ define([
     }
   };
 
-  var res = function(args, restart_debug) {
+  var res = function(debug_info, restart_debug, is_edb_proc) {
     if (!Alertify.debuggerInputArgsDialog) {
       Alertify.dialog('debuggerInputArgsDialog', function factory() {
         return {
-          main: function(title, data, restart_debug) {
+          main: function(title, debug_info, restart_debug, is_edb_proc) {
             this.set('title', title);
-            this.data = data;
-            this.restart_debug = restart_debug;
+
+            // setting value in alertify settings allows us to access it from
+            // other functions other than main function.
+            this.set('debug_info', debug_info);
+            this.set('restart_debug', restart_debug);
 
             // Variables to store the data sent from sqlite database
             var func_args_data = this.func_args_data = [];
@@ -182,10 +185,10 @@ define([
             } else {
               // Get the existing function parameters available from sqlite database
               _Url = url_for('debugger.get_arguments', {
-                'sid': this.data.server_id,
-                'did': this.data.database_id,
-                'scid': this.data.schema_id,
-                'func_id': this.data.function_id,
+                'sid': debug_info.server_id,
+                'did': debug_info.database_id,
+                'scid': debug_info.schema_id,
+                'func_id': debug_info.function_id,
               });
             }
             $.ajax({
@@ -279,60 +282,63 @@ define([
             // Below will calculate the input argument id required to store in sqlite database
             var input_arg_id = this.input_arg_id = [],
               k;
-            if (this.data['proargmodes'] != null) {
-              var argmode_1 = this.data['proargmodes'].split(',');
+            if (debug_info['proargmodes'] != null) {
+              var argmode_1 = debug_info['proargmodes'].split(',');
               for (k = 0; k < argmode_1.length; k++) {
-                if (argmode_1[k] == 'i' || argmode_1[k] == 'b') {
+                if (argmode_1[k] == 'i' || argmode_1[k] == 'b' ||
+                  (is_edb_proc && argmode_1[k] == 'o')) {
                   input_arg_id.push(k);
                 }
               }
             } else {
-              var argtype_1 = this.data['proargtypenames'].split(',');
+              var argtype_1 = debug_info['proargtypenames'].split(',');
               for (k = 0; k < argtype_1.length; k++) {
                 input_arg_id.push(k);
               }
             }
 
-            argtype = this.data['proargtypenames'].split(',');
+            argtype = debug_info['proargtypenames'].split(',');
 
-            if (this.data['proargmodes'] != null) {
-              argmode = this.data['proargmodes'].split(',');
+            if (debug_info['proargmodes'] != null) {
+              argmode = debug_info['proargmodes'].split(',');
             }
 
-            if (this.data['pronargdefaults']) {
-              default_args_count = this.data['pronargdefaults'];
-              default_args = this.data['proargdefaults'].split(',');
+            if (debug_info['pronargdefaults']) {
+              default_args_count = debug_info['pronargdefaults'];
+              default_args = debug_info['proargdefaults'].split(',');
               arg_cnt = default_args_count;
             }
 
             var vals, values, index, use_def_value, j;
 
-            if (this.data['proargnames'] != null) {
-              argname = this.data['proargnames'].split(',');
+            if (debug_info['proargnames'] != null) {
+              argname = debug_info['proargnames'].split(',');
 
               // It will assign default values to "Default value" column
               for (j = (argname.length - 1); j >= 0; j--) {
-                if (this.data['proargmodes'] != null) {
-                  if (arg_cnt && (argmode[j] == 'i' || argmode[j] == 'b')) {
-                    arg_cnt = arg_cnt - 1;
-                    def_val_list[j] = default_args[arg_cnt];
-                  } else {
-                    def_val_list[j] = '<No default value>';
+                if (debug_info['proargmodes'] != null) {
+                  if (argmode[j] == 'i' || argmode[j] == 'b' ||
+                    (is_edb_proc && argmode[j] == 'o')) {
+                    if (arg_cnt) {
+                      arg_cnt = arg_cnt - 1;
+                      def_val_list[j] = default_args[arg_cnt];
+                    } else {
+                      def_val_list[j] = '<No default value>';
+                    }
                   }
+                } else if (arg_cnt) {
+                  arg_cnt = arg_cnt - 1;
+                  def_val_list[j] = default_args[arg_cnt];
                 } else {
-                  if (arg_cnt) {
-                    arg_cnt = arg_cnt - 1;
-                    def_val_list[j] = default_args[arg_cnt];
-                  } else {
-                    def_val_list[j] = '<No default value>';
-                  }
+                  def_val_list[j] = '<No default value>';
                 }
               }
 
               if (argtype.length != 0) {
                 for (i = 0; i < argtype.length; i++) {
-                  if (this.data['proargmodes'] != null) {
-                    if (argmode[i] == 'i' || argmode[i] == 'b') {
+                  if (debug_info['proargmodes'] != null) {
+                    if (argmode[i] == 'i' || argmode[i] == 'b' ||
+                      (is_edb_proc && argmode[i] == 'o')) {
                       use_def_value = false;
                       if (def_val_list[i] != '<No default value>') {
                         use_def_value = true;
@@ -356,14 +362,17 @@ define([
                       'default_value': def_val_list[i],
                     });
                   }
-
-
                 }
               }
 
               // Need to update the func_obj variable from sqlite database if available
               if (func_args_data.length != 0) {
                 for (i = 0; i < func_args_data.length; i++) {
+                  if (debug_info['proargmodes'] != null &&
+                    (argmode[i] == 'o' && !is_edb_proc)) {
+                    continue;
+                  }
+
                   index = func_args_data[i]['arg_id'];
                   values = [];
                   if (argtype[index].indexOf('[]') != -1) {
@@ -407,7 +416,7 @@ define([
               }
 
               // If there is no default arguments
-              if (!this.data['pronargdefaults']) {
+              if (!debug_info['pronargdefaults']) {
                 for (i = 0; i < argtype.length; i++) {
                   my_obj.push({
                     'name': myargname[i],
@@ -421,7 +430,7 @@ define([
                 // If there is default arguments
                 //Below logic will assign default values to "Default value" column
                 for (j = (myargname.length - 1); j >= 0; j--) {
-                  if (this.data['proargmodes'] == null) {
+                  if (debug_info['proargmodes'] == null) {
                     if (arg_cnt) {
                       arg_cnt = arg_cnt - 1;
                       def_val_list[j] = default_args[arg_cnt];
@@ -429,7 +438,7 @@ define([
                       def_val_list[j] = '<No default value>';
                     }
                   } else {
-                    if (arg_cnt && (argmode[j] == 'i' || argmode[j] == 'b')) {
+                    if (arg_cnt) {
                       arg_cnt = arg_cnt - 1;
                       def_val_list[j] = default_args[arg_cnt];
                     } else {
@@ -439,7 +448,7 @@ define([
                 }
 
                 for (i = 0; i < argtype.length; i++) {
-                  if (this.data['proargmodes'] == null) {
+                  if (debug_info['proargmodes'] == null) {
                     use_def_value = false;
                     if (def_val_list[i] != '<No default value>') {
                       use_def_value = true;
@@ -451,7 +460,8 @@ define([
                       'default_value': def_val_list[i],
                     });
                   } else {
-                    if (argmode[i] == 'i' || argmode[i] == 'b') {
+                    if (argmode[i] == 'i' || argmode[i] == 'b' ||
+                      (is_edb_proc && argmode[i] == 'o')) {
                       use_def_value = false;
                       if (def_val_list[i] != '<No default value>') {
                         use_def_value = true;
@@ -536,6 +546,10 @@ define([
             }
 
           },
+          settings: {
+            debug_info: undefined,
+            restart_debug: undefined,
+          },
           setup: function() {
             return {
               buttons: [{
@@ -573,7 +587,7 @@ define([
 
               // If the debugging is started again then treeInfo is already
               // stored in this.data so we can use the same.
-              if (self.restart_debug == 0) {
+              if (self.setting('restart_debug') == 0) {
                 var t = pgBrowser.tree,
                   i = t.selected(),
                   d = i && i.length == 1 ? t.itemData(i) : undefined,
@@ -615,7 +629,7 @@ define([
                   }
                 }
 
-                if (self.restart_debug == 0) {
+                if (self.setting('restart_debug') == 0) {
                   var f_id;
                   if (d._type == 'function') {
                     f_id = treeInfo.function._id;
@@ -642,10 +656,10 @@ define([
                 } else {
                   // Below will format the data to be stored in sqlite database
                   sqlite_func_args_list.push({
-                    'server_id': self.data.server_id,
-                    'database_id': self.data.database_id,
-                    'schema_id': self.data.schema_id,
-                    'function_id': self.data.function_id,
+                    'server_id': self.setting('debug_info').server_id,
+                    'database_id': self.setting('debug_info').database_id,
+                    'schema_id': self.setting('debug_info').schema_id,
+                    'function_id': self.setting('debug_info').function_id,
                     'arg_id': self.input_arg_id[int_count],
                     'is_null': m.get('is_null') ? 1 : 0,
                     'is_expression': m.get('expr') ? 1 : 0,
@@ -660,7 +674,7 @@ define([
               var baseUrl;
 
               // If debugging is not started again then we should initialize the target otherwise not
-              if (self.restart_debug == 0) {
+              if (self.setting('restart_debug') == 0) {
                 if (d._type == 'function') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
@@ -797,7 +811,7 @@ define([
                 // If the debugging is started again then we should only set the
                 // arguments and start the listener again
                 baseUrl = url_for('debugger.start_listener', {
-                  'trans_id': self.data.trans_id,
+                  'trans_id': self.setting('debug_info').trans_id,
                 });
 
                 $.ajax({
@@ -817,10 +831,10 @@ define([
 
                 // Set the new input arguments given by the user during debugging
                 var _Url = url_for('debugger.set_arguments', {
-                  'sid': self.data.server_id,
-                  'did': self.data.database_id,
-                  'scid': self.data.schema_id,
-                  'func_id': self.data.function_id,
+                  'sid': self.setting('debug_info').server_id,
+                  'did': self.setting('debug_info').database_id,
+                  'scid': self.setting('debug_info').schema_id,
+                  'func_id': self.setting('debug_info').function_id,
                 });
                 $.ajax({
                   url: _Url,
@@ -871,33 +885,38 @@ define([
              debug button.
             */
             this.grid.listenTo(this.debuggerInputArgsColl, 'backgrid:edited',
-              (function(obj) {
+                (function(obj) {
 
-                return function() {
+                  return function() {
 
-                  var enable_btn = false;
+                    var enable_btn = false;
 
-                  for (var i = 0; i < this.collection.length; i++) {
+                    for (var i = 0; i < this.collection.length; i++) {
 
-                    // TODO: Need to check the "NULL" and "Expression" column value to
-                    // enable/disable the "Debug" button
-                    if (this.collection.models[i].get('value') == '' ||
-                      this.collection.models[i].get('value') == null ||
-                      this.collection.models[i].get('value') == undefined) {
-                      enable_btn = true;
-
-                      if (this.collection.models[i].get('use_default')) {
+                      if (this.collection.models[i].get('is_null')) {
                         obj.__internal.buttons[0].element.disabled = false;
-                      } else {
-                        obj.__internal.buttons[0].element.disabled = true;
-                        break;
+                        enable_btn = true;
+                        continue;
+                      }
+                      // TODO: Need to check the "Expression" column value to
+                      // enable/disable the "Debug" button
+                      if (this.collection.models[i].get('value') == '' ||
+                        this.collection.models[i].get('value') == null ||
+                        this.collection.models[i].get('value') == undefined) {
+                        enable_btn = true;
+
+                        if (this.collection.models[i].get('use_default')) {
+                          obj.__internal.buttons[0].element.disabled = false;
+                        } else {
+                          obj.__internal.buttons[0].element.disabled = true;
+                          break;
+                        }
                       }
                     }
-                  }
-                  if (!enable_btn)
-                    obj.__internal.buttons[0].element.disabled = false;
-                };
-              })(this)
+                    if (!enable_btn)
+                      obj.__internal.buttons[0].element.disabled = false;
+                  };
+                })(this)
             );
           },
         };
@@ -905,7 +924,7 @@ define([
     }
 
     Alertify.debuggerInputArgsDialog(
-      gettext('Debugger'), args, restart_debug
+      gettext('Debugger'), debug_info, restart_debug, is_edb_proc
     ).resizeTo('60%', '60%');
 
   };

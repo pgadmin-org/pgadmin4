@@ -354,6 +354,24 @@ define([
             'func_id': debuggerUtils.getProcedureId(treeInfo),
           }
         );
+      } else if (d._type == 'edbfunc') {
+        // Get the existing function parameters available from sqlite database
+        baseUrl = url_for('debugger.initialize_target_for_function', {
+          'debug_type': 'indirect',
+          'sid': treeInfo.server._id,
+          'did': treeInfo.database._id,
+          'scid': treeInfo.schema._id,
+          'func_id': treeInfo.edbfunc._id,
+        });
+      } else if (d._type == 'edbproc') {
+        // Get the existing function parameters available from sqlite database
+        baseUrl = url_for('debugger.initialize_target_for_function', {
+          'debug_type': 'indirect',
+          'sid': treeInfo.server._id,
+          'did': treeInfo.database._id,
+          'scid': treeInfo.schema._id,
+          'func_id': treeInfo.edbproc._id,
+        });
       } else if (d._type == 'trigger_function') {
         baseUrl = url_for(
           'debugger.initialize_target_for_function', {
@@ -449,7 +467,8 @@ define([
         i = item || t.selected(),
         d = i && i.length == 1 ? t.itemData(i) : undefined,
         node = d && pgBrowser.Nodes[d._type],
-        self = this;
+        self = this,
+        is_edb_proc = d._type == 'edbproc';
 
       if (!d)
         return;
@@ -465,7 +484,7 @@ define([
 
         // Open Alertify the dialog to take the input arguments from user if function having input arguments
         if (res.data[0]['require_input']) {
-          get_function_arguments(res.data[0], 0);
+          get_function_arguments(res.data[0], 0, is_edb_proc);
         } else {
           // Initialize the target and create asynchronous connection and unique transaction ID
           // If there is no arguments to the functions then we should not ask for for function arguments and

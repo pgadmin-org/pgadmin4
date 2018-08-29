@@ -17,6 +17,7 @@ Bug fixes
 *********
 
 | `Bug #3136 <https://redmine.postgresql.org/issues/3136>`_ - Stabilise feature tests for continuous running on CI systems.
+| `Bug #3191 <https://redmine.postgresql.org/issues/3191>`_ - Fixed debugger execution issues.
 | `Bug #3313 <https://redmine.postgresql.org/issues/3313>`_ - Ensure 'select all' and 'unselect all' working properly for pgAgent schedule.
 | `Bug #3325 <https://redmine.postgresql.org/issues/3325>`_ - Fix sort/filter dialog issue where it incorrectly requires ASC/DESC.
 | `Bug #3347 <https://redmine.postgresql.org/issues/3347>`_ - Ensure backup should work with '--data-only' and '--schema-only' for any format.

@@ -26,12 +26,7 @@ SELECT
                     pg_catalog.generate_series(0, pg_catalog.array_upper(proargtypes, 1)) s(i)), ',')
         END AS proargtypes,
     pg_catalog.array_to_string(p.proargnames, ',') AS proargnames,
-    {% if is_ppas_database %}
-    pg_catalog.array_to_string(proargdeclaredmodes, ',') AS proargmodes,
-    {% else %}
     pg_catalog.array_to_string(proargmodes, ',') AS proargmodes,
-    {% endif %}
-
     {% if is_ppas_database %}
         CASE WHEN n.nspparent <> 0 THEN n.oid ELSE 0 END AS pkg,
         CASE WHEN n.nspparent <> 0 THEN n.nspname ELSE '' END AS pkgname,
