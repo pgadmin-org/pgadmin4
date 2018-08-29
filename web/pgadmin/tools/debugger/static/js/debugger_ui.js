@@ -125,6 +125,7 @@ define([
       Alertify.dialog('debuggerInputArgsDialog', function factory() {
         return {
           main: function(title, debug_info, restart_debug, is_edb_proc) {
+            this.preferences = window.top.pgAdmin.Browser.get_preferences_for_module('debugger');
             this.set('title', title);
 
             // setting value in alertify settings allows us to access it from
@@ -724,7 +725,7 @@ define([
                     }
                   );
 
-                  if (res.data.newBrowserTab) {
+                  if (self.preferences.debugger_new_browser_tab) {
                     window.open(url, '_blank');
                   } else {
                     pgBrowser.Events.once(

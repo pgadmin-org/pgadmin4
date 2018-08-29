@@ -49,7 +49,14 @@ body {
     width: 100% !important;
 }
 
-.pg-panel-content { position:absolute;top:0px;left:0px;right:0px;bottom:0px; }
+.pg-panel-content {
+  position:absolute;
+  top:0px;
+  left:0px;
+  right:0px;
+  bottom:0px;
+  height: 100%!important;
+}
 
 /* iFrames should have no border */
 iframe {

@@ -128,6 +128,33 @@ define([
         return result;
       },
 
+      setActiveLine: function(lineNo) {
+        let editor = pgTools.DirectDebug.editor;
+
+        /* If lineNo sent, remove active line */
+        if(lineNo && self.active_line_no) {
+          editor.removeLineClass(
+            self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+          );
+        }
+
+        /* If lineNo not sent, set it to active line */
+        if(!lineNo && self.active_line_no) {
+          lineNo = self.active_line_no;
+        }
+
+        /* Set new active line only if positive */
+        if(lineNo > 0) {
+          self.active_line_no = lineNo;
+          editor.addLineClass(
+            self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
+          );
+
+          /* centerOnLine is codemirror extension in bundle/codemirror.js */
+          editor.centerOnLine(self.active_line_no);
+        }
+      },
+
       // Function to start the executer and execute the user requested option for debugging
       start_execution: function(trans_id, port_num) {
         var self = this;
@@ -181,11 +208,8 @@ define([
               res.data.result[0].linenumber != null
             ) {
               pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
-              self.active_line_no = (res.data.result[0].linenumber - 2);
-              pgTools.DirectDebug.editor.addLineClass(
-                (res.data.result[0].linenumber - 2), 'wrap',
-                'CodeMirror-activeline-background'
-              );
+
+              self.setActiveLine(res.data.result[0].linenumber - 2);
             }
             // Call function to create and update local variables ....
             self.GetStackInformation(trans_id);
@@ -336,26 +360,17 @@ define([
                   if (res.data.result[0].src != undefined || res.data.result[0].src != null) {
                     pgTools.DirectDebug.polling_timeout_idle = false;
                     pgTools.DirectDebug.docker.finishLoading(50);
-                    pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
-                    self.UpdateBreakpoint(trans_id);
-                    pgTools.DirectDebug.editor.removeLineClass(
-                      self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
-                    );
-                    pgTools.DirectDebug.editor.addLineClass(
-                      (res.data.result[0].linenumber - 2),
-                      'wrap', 'CodeMirror-activeline-background'
-                    );
-                    self.active_line_no = (res.data.result[0].linenumber - 2);
+                    if (res.data.result[0].src != pgTools.DirectDebug.editor.getValue()) {
+                      pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
+                      self.UpdateBreakpoint(trans_id);
+                    }
+                    self.setActiveLine(res.data.result[0].linenumber - 2);
                     // Update the stack, local variables and parameters information
                     self.GetStackInformation(trans_id);
 
                   } else if (!pgTools.DirectDebug.debug_type && !pgTools.DirectDebug.first_time_indirect_debug) {
                     pgTools.DirectDebug.docker.finishLoading(50);
-                    if (self.active_line_no != undefined) {
-                      pgTools.DirectDebug.editor.removeLineClass(
-                        self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
-                      );
-                    }
+                    self.setActiveLine(-1);
                     self.clear_all_breakpoint(trans_id);
                     self.execute_query(trans_id);
                     pgTools.DirectDebug.first_time_indirect_debug = true;
@@ -369,15 +384,7 @@ define([
                       self.UpdateBreakpoint(trans_id);
                     }
 
-                    pgTools.DirectDebug.editor.removeLineClass(
-                      self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
-                    );
-                    pgTools.DirectDebug.editor.addLineClass(
-                      (res.data.result[0].linenumber - 2),
-                      'wrap', 'CodeMirror-activeline-background'
-                    );
-                    self.active_line_no = (res.data.result[0].linenumber - 2);
-
+                    self.setActiveLine(res.data.result[0].linenumber - 2);
                     // Update the stack, local variables and parameters information
                     self.GetStackInformation(trans_id);
                   }
@@ -493,9 +500,7 @@ define([
                    As Once the EDB procedure execution is completed then we are
                    not getting any result so we need ignore the result.
                   */
-                  pgTools.DirectDebug.editor.removeLineClass(
-                    self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
-                  );
+                  self.setActiveLine(-1);
                   pgTools.DirectDebug.direct_execution_completed = true;
                   pgTools.DirectDebug.polling_timeout_idle = true;
 
@@ -524,9 +529,7 @@ define([
                 } else {
                   // Call function to create and update local variables ....
                   if (res.data.result != null) {
-                    pgTools.DirectDebug.editor.removeLineClass(
-                      self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
-                    );
+                    self.setActiveLine(-1);
                     self.AddResults(res.data.col_info, res.data.result);
                     pgTools.DirectDebug.results_panel.focus();
                     pgTools.DirectDebug.direct_execution_completed = true;
@@ -572,9 +575,7 @@ define([
                 );
               } else if (res.data.status === 'ERROR') {
                 pgTools.DirectDebug.direct_execution_completed = true;
-                pgTools.DirectDebug.editor.removeLineClass(
-                  self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
-                );
+                self.setActiveLine(-1);
 
                 //Set the Alertify message to inform the user that execution is
                 // completed with error.
@@ -837,9 +838,7 @@ define([
         .done(function(res) {
           if (res.data.status) {
             // Call function to create and update local variables ....
-            pgTools.DirectDebug.editor.removeLineClass(
-              self.active_line_no, 'wrap', 'CodeMirror-activeline-background'
-            );
+            self.setActiveLine(-1);
             pgTools.DirectDebug.direct_execution_completed = true;
             pgTools.DirectDebug.is_user_aborted_debugging = true;
 
@@ -1368,12 +1367,7 @@ define([
           if (res.data.status) {
             pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
             self.UpdateBreakpoint(pgTools.DirectDebug.trans_id);
-            // active_line_no =
-            //   self.active_line_no = (res.data.result[0].linenumber - 2);
-            pgTools.DirectDebug.editor.addLineClass(
-              (res.data.result[0].linenumber - 2), 'wrap',
-              'CodeMirror-activeline-background'
-            );
+            self.setActiveLine(res.data.result[0].linenumber - 2);
             // Call function to create and update local variables ....
             self.GetLocalVariables(pgTools.DirectDebug.trans_id);
           }
@@ -1621,7 +1615,6 @@ define([
         if (res.data.status === 'Success') {
           self.intializePanels();
           // If status is Success then find the port number to attach the executer.
-          //self.start_execution(trans_id, res.data.result);
           controller.start_execution(trans_id, res.data.result);
         } else if (res.data.status === 'Busy') {
           // If status is Busy then poll the result by recursive call to the poll function
@@ -1770,10 +1763,10 @@ define([
           'stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
 
       var editor_pane = $('<div id="stack_editor_pane" ' +
-        'class="full-container-pane info"></div>');
+        'class="pg-panel-content info"></div>');
       var code_editor_area = $('<textarea id="debugger-editor-textarea">' +
-        '</textarea>').append(editor_pane);
-      self.code_editor_panel.layout().addItem(code_editor_area);
+        '</textarea>').appendTo(editor_pane);
+      self.code_editor_panel.layout().addItem(editor_pane);
 
       // To show the line-number and set breakpoint marker details by user.
       self.editor = CodeMirror.fromTextArea(
