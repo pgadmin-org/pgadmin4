@@ -23,6 +23,7 @@ Bug fixes
 | `Bug #3407 <https://redmine.postgresql.org/issues/3407>`_ - Fix keyboard shortcuts layout in the preferences panel.
 | `Bug #3420 <https://redmine.postgresql.org/issues/3420>`_ - Merge pgcli code with version 1.10.3, which is used for auto complete feature.
 | `Bug #3461 <https://redmine.postgresql.org/issues/3461>`_ - Ensure that refreshing a node also updates the Property list.
+| `Bug #3525 <https://redmine.postgresql.org/issues/3525>`_ - Ensure that refresh button on dashboard should refresh the table.
 | `Bug #3528 <https://redmine.postgresql.org/issues/3528>`_ - Handle connection errors properly in the query tool.
 | `Bug #3547 <https://redmine.postgresql.org/issues/3547>`_ - Make session implementation thread safe
 | `Bug #3548 <https://redmine.postgresql.org/issues/3548>`_ - Ensure external table node should be visible only for GPDB.

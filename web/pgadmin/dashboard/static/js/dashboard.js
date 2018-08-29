@@ -1078,9 +1078,10 @@ define('pgadmin.dashboard', [
           }
         });
 
-        // Handle button clicks
-        $('button').off('click').on('click',() => {
-          switch (this.id) {
+        $('button').off('click').on('click', (e) => {
+          let $this = $(e.currentTarget);
+          let targetID = $this.length ? $this[0].id : undefined;
+          switch (targetID) {
           case 'btn_server_activity_refresh':
             pgAdmin.Dashboard.render_grid_data(div_server_activity);
             break;
@@ -1324,8 +1325,10 @@ define('pgadmin.dashboard', [
         });
 
         // Handle button clicks
-        $('button').off('click').on('click',() => {
-          switch (this.id) {
+        $('button').off('click').on('click', (e) => {
+          let $this = $(e.currentTarget);
+          let targetID = $this.length ? $this[0].id : undefined;
+          switch (targetID) {
           case 'btn_database_activity_refresh':
             pgAdmin.Dashboard.render_grid_data(div_database_activity);
             break;
