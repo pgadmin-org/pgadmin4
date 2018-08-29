@@ -189,6 +189,9 @@ REM Main build sequence Ends
     CD "%PGBUILDPATH%"
     "%PYTHON_HOME%\Scripts\virtualenv.exe" "%VIRTUALENV%"
 
+    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\DLLs" "%PGBUILDPATH%\%VIRTUALENV%\DLLs" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\Lib" "%PGBUILDPATH%\%VIRTUALENV%\Lib" > nul || EXIT /B 1
+
     ECHO Activating virtual environment -  %PGBUILDPATH%\%VIRTUALENV%...
     CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B 1
 
@@ -317,9 +320,6 @@ REM Main build sequence Ends
     COPY %PYTHON_DLL% "%PGBUILDPATH%\runtime"  > nul || EXIT /B 1
     COPY %PYTHON_HOME%\python.exe "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     COPY %PYTHON_HOME%\pythonw.exe "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-
-    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\DLLs" "%PGBUILDPATH%\%VIRTUALENV%\DLLs" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\Lib" "%PGBUILDPATH%\%VIRTUALENV%\Lib" > nul || EXIT /B 1
 
     ECHO Cleaning up unnecessary .pyc and .pyo files...
     FOR /R "%PGBUILDPATH%\%VIRTUALENV%" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
