@@ -95,6 +95,28 @@ To delete a row, press the *Delete* toolbar button.  A popup will open, asking y
 
 To commit the changes to the server, select the *Save* toolbar button.  Modifications to a row are written to the server automatically when you select a different row.
 
+**Geometry Data Viewer**
+
+If PostGIS is installed, you can view GIS objects in a map by selecting row(s) and clicking the 'View Geometry' button in the column. If no rows are selected, the entire data set will be rendered:
+
+.. image:: images/geometry_viewer.png
+    :alt: Geometry Viewer Button
+
+You can adjust the layout by dragging the title of the panel. To view the properties of the geometries directly in map, just click the specific geometry:
+
+.. image:: images/geometry_viewer_property_table.png
+    :alt: Geometry Viewer Property Table
+
+Notes:
+
+- *Supported data types:* The Geometry Viewer supports 2D and 3DM geometries in EWKB format including `Point, LineString, Polygon MultiPoint, MultiLineString, MultiPolygon and GeometryCollection`.
+
+- *SRIDs:* If there are geometries with different SRIDs in the same column, the viewer will render geometries with the same SRID in the map. If SRID=4326 the OSM tile layer will be added into the map.
+
+- *Data size:* For performance reasons, the viewer will render no more than 100000 geometries, totaling up to 20MB.
+
+- *Internet access:* An internet connection is required for the Geometry Viewer to function correctly.
+
 **Sort/Filter options dialog**
 
 You can access *Sort/Filter options dialog* by clicking on Sort/Filter button. This allows you to specify an SQL Filter to limit the data displayed and data sorting options in the edit grid window:
@@ -120,4 +142,3 @@ To delete a row from the grid, click the trash icon.
 * Click the *Help* button (?) to access online help.
 * Click the *Ok* button to save work.
 * Click the *Close* button to discard current changes and close the dialog.
-

@@ -15,6 +15,7 @@ define('tools.querytool', [
   'sources/sqleditor/execute_query',
   'sources/sqleditor/query_tool_http_error_handler',
   'sources/sqleditor/filter_dialog',
+  'sources/sqleditor/geometry_viewer',
   'sources/history/index.js',
   'sourcesjsx/history/query_history',
   'react', 'react-dom',
@@ -37,7 +38,7 @@ define('tools.querytool', [
   babelPollyfill, gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
-  HistoryBundle, queryHistory, React, ReactDOM,
+  GeometryViewer, HistoryBundle, queryHistory, React, ReactDOM,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
   modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref) {
   /* Return back, this has been called more than once */
@@ -217,7 +218,7 @@ define('tools.querytool', [
         }, 200);
       });
 
-      // Create panels for 'Data Output', 'Explain', 'Messages' and 'History'
+      // Create panels for 'Data Output', 'Explain', 'Messages', 'History' and 'Geometry Viewer'
       var data_output = new pgAdmin.Browser.Panel({
         name: 'data_output',
         title: gettext('Data Output'),
@@ -268,12 +269,23 @@ define('tools.querytool', [
         content: '<div id ="notification_grid" class="sql-editor-notifications" tabindex: "0"></div>',
       });
 
+      var geometry_viewer = new pgAdmin.Browser.Panel({
+        name: 'geometry_viewer',
+        title: gettext('Geometry Viewer'),
+        width: '100%',
+        height: '100%',
+        isCloseable: true,
+        isPrivate: true,
+        content: '<div id ="geometry_viewer_panel" class="sql-editor-geometry-viewer" tabindex: "0"></div>',
+      });
+
       // Load all the created panels
       data_output.load(main_docker);
       explain.load(main_docker);
       messages.load(main_docker);
       history.load(main_docker);
       notifications.load(main_docker);
+      geometry_viewer.load(main_docker);
 
       // Add all the panels to the docker
       self.data_output_panel = main_docker.addPanel('data_output', wcDocker.DOCK.BOTTOM, sql_panel_obj);
@@ -605,6 +617,8 @@ define('tools.querytool', [
      - This plugin is useful for selecting rows using checkbox
      3) RowSelectionModel
      - This plugin is needed by CheckboxSelectColumn plugin to select rows
+     4) Slick.HeaderButtons
+     - This plugin is useful for add buttons in column header
 
      Grid Options:
      -------------
@@ -743,6 +757,9 @@ define('tools.querytool', [
         } else if (c.cell == 'binary') {
           // We do not support editing binary data in SQL editor and data grid.
           options['formatter'] = Slick.Formatters.Binary;
+        } else if (c.cell == 'geometry' || c.cell == 'geography') {
+          // increase width to add 'view' button
+          options['width'] += 28;
         } else {
           options['editor'] = is_editable ? Slick.Editors.pgText :
             Slick.Editors.ReadOnlypgText;
@@ -754,6 +771,13 @@ define('tools.querytool', [
 
       var gridSelector = new GridSelector();
       grid_columns = self.grid_columns = gridSelector.getColumnDefinitions(grid_columns);
+
+      // add 'view' button in geometry and geography type column header
+      _.each(grid_columns, function (c) {
+        if (c.column_type_internal == 'geometry' || c.column_type_internal == 'geography') {
+          GeometryViewer.add_header_button(c);
+        }
+      });
 
       if (rows_affected) {
         // calculate with for header row column.
@@ -817,6 +841,38 @@ define('tools.querytool', [
       grid.registerPlugin(new ActiveCellCapture());
       grid.setSelectionModel(new XCellSelectionModel());
       grid.registerPlugin(gridSelector);
+      var headerButtonsPlugin = new Slick.Plugins.HeaderButtons();
+      headerButtonsPlugin.onCommand.subscribe(function (e, args) {
+        let command = args.command;
+        if (command === 'view-geometries') {
+          let columns = args.grid.getColumns();
+          let columnIndex = columns.indexOf(args.column);
+          let selectedRows = args.grid.getSelectedRows();
+          if (selectedRows.length === 0) {
+            // if no rows are selected, load and render all the rows
+            if (self.handler.has_more_rows) {
+              self.fetch_next_all(function () {
+                // trigger onGridSelectAll manually with new event data.
+                gridSelector.onGridSelectAll.notify(args, new Slick.EventData());
+                let items = args.grid.getData().getItems();
+                GeometryViewer.render_geometries(self.handler, items, columns, columnIndex);
+              });
+            } else {
+              gridSelector.onGridSelectAll.notify(args, new Slick.EventData());
+              let items = args.grid.getData().getItems();
+              GeometryViewer.render_geometries(self.handler, items, columns, columnIndex);
+            }
+          } else {
+            // render selected rows
+            let items = args.grid.getData().getItems();
+            let selectedItems = _.map(selectedRows, function (row) {
+              return items[row];
+            });
+            GeometryViewer.render_geometries(self.handler, selectedItems, columns, columnIndex);
+          }
+        }
+      });
+      grid.registerPlugin(headerButtonsPlugin);
 
       var editor_data = {
         keys: (_.isEmpty(self.handler.primary_keys) && self.handler.has_oids) ? self.handler.oids : self.handler.primary_keys,
@@ -2397,6 +2453,14 @@ define('tools.querytool', [
           case 'bytea':
           case 'bytea[]':
             col_cell = 'binary';
+            break;
+          case 'geometry':
+            // PostGIS geometry type
+            col_cell = 'geometry';
+            break;
+          case 'geography':
+            // PostGIS geography type
+            col_cell = 'geography';
             break;
           default:
             col_cell = 'string';

@@ -641,3 +641,76 @@ input.editor-checkbox:focus {
 .connection-status-hide {
   display: none;
 }
+
+/* For geometry data viewer panel */
+.sql-editor-geometry-viewer{
+  width: 100%;
+  height: 100%;
+}
+
+.geometry-viewer-container {
+  width: 100%;
+  height: 100%;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAANElEQVQoU2O8e/fuf2VlZUYGLAAkB5bApggmBteJrAiZjWI0SAJkIrKVxCvAawVeRxLyJgB+Ajc1cwux9wAAAABJRU5ErkJggg==);
+ }
+
+/* For leaflet map background */
+.geometry-viewer-container-plain-background {
+  background: #ffffff;
+}
+
+/* For geometry column button */
+.div-view-geometry-column {
+  float: right;
+  height: 100%;
+  display: flex;
+  display: -webkit-flex;
+  align-items: center;
+  padding-right: 4px;
+}
+
+/* For leaflet popup */
+.leaflet-popup-content-wrapper {
+  border-radius: 2px;
+}
+
+.leaflet-popup-content {
+  margin: 5px;
+  padding: 10px 10px 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+/* For geometry viewer property table */
+.view-geometry-property-table {
+  table-layout: fixed;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.view-geometry-property-table th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.view-geometry-property-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.view-geometry-property-table .td-disabled{
+  color: #999999;
+}
+
+/* For geometry viewer info control */
+.geometry-viewer-info-control {
+  padding: 5px;
+  background: white;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  background-clip: padding-box;
+  border-radius: 2px;
+}
+
+.geometry-viewer-info-control i{
+  margin: 0 0 0 4px;
+}

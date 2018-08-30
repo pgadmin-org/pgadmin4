@@ -8,5 +8,7 @@ import 'slickgrid/slick.formatters';
 import 'slickgrid/plugins/slick.autotooltips';
 import 'slickgrid/plugins/slick.cellrangedecorator';
 import 'slickgrid/plugins/slick.cellrangeselector';
+import 'sources/slickgrid/custom_header_buttons';
 
 export default window.Slick;
+

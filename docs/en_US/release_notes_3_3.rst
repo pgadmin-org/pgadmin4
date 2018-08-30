@@ -10,6 +10,7 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
+| `Feature #1407 <https://redmine.postgresql.org/issues/1407>`_ - Add a geometry viewer that can render PostGIS data on a blank canvas or various map sources.
 | `Feature #3503 <https://redmine.postgresql.org/issues/3503>`_ - Added new backup/restore options for PostgreSQL 11. Added dump options for 'pg_dumpall'.
 | `Feature #3553 <https://redmine.postgresql.org/issues/3553>`_ - Add a Spanish translation.
 

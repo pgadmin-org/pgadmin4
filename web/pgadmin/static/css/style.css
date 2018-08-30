@@ -14,6 +14,7 @@
 @import '~webcabin-docker/Build/wcDocker.css';
 @import '~acitree/css/aciTree.css';
 @import '~spectrum-colorpicker/spectrum.css';
+@import '~leaflet/dist/leaflet.css';
 
 @import '~codemirror/lib/codemirror.css';
 @import '~codemirror/addon/dialog/dialog.css';
