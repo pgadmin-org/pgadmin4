@@ -140,6 +140,11 @@ class SQLAutoComplete(object):
             status, res = self.conn.execute_dict(query)
             if status:
                 for record in res['rows']:
+                    # 'public' is a keyword in EPAS database server. Don't add
+                    # this into the list of keywords.
+                    # This is a hack to fix the issue in autocomplete.
+                    if record['word'].lower() == 'public':
+                        continue
                     self.keywords.append(record['word'])
 
         self.prioritizer = PrevalenceCounter(self.keywords)
