@@ -34,3 +34,4 @@ Bug fixes
 | `Bug #3561 <https://redmine.postgresql.org/issues/3561>`_ - Ensure sort/filter dialog should display proper message after losing database connection.
 | `Bug #3578 <https://redmine.postgresql.org/issues/3578>`_ - Ensure sql for Role should be visible in SQL panel for GPDB.
 | `Bug #3579 <https://redmine.postgresql.org/issues/3579>`_ - When building the Windows installer, copy system Python packages before installing dependencies to ensure we don't end up with older versions than intended.
+| `Bug #3604 <https://redmine.postgresql.org/issues/3604>`_ - Correct the documentation of View/Edit data.

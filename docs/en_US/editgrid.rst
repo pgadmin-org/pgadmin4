@@ -38,7 +38,7 @@ Hover over an icon to display a tooltip that describes the icon's functionality.
 +----------------------+---------------------------------------------------------------------------------------------------+-------------+
 | *Paste Row*          | Click the *Paste Row* icon to paste the content that is currently on the clipboard.               |             |
 +----------------------+---------------------------------------------------------------------------------------------------+-------------+
-| *Delete Row*         | Use the *Delete Row* icon to add a new row in the output panel.                                   |             |
+| *Delete Row*         | Use the *Delete Row* icon to delete all the selected rows from the output panel.                  |             |
 +----------------------+---------------------------------------------------------------------------------------------------+-------------+
 | *Filter*             | Click the *Filter* icon to open a dialog that allows you to write and apply a filter for the      |             |
 |                      | content currently displayed in the output panel.  Click the down arrow to open the *Filter* drop- |             |
@@ -67,7 +67,7 @@ Hover over an icon to display a tooltip that describes the icon's functionality.
 +----------------------+---------------------------------------------------------------------------------------------------+-------------+
 | *Stop*               | Click the *Stop* icon to cancel the execution of the currently running query.                     |             |
 +----------------------+---------------------------------------------------------------------------------------------------+-------------+
-| *Clear query window* | Use the *Clear query window* drop-down menu to erase the contents of the *History* tab.           |             |
+| *Clear History*      | Use the *Clear History* drop-down menu to erase the contents of the *History* tab.                |             |
 +----------------------+---------------------------------------------------------------------------------------------------+-------------+
 | *Download as CSV*    | Click the *Download as CSV* icon to download the result set of the current query to a             | F8          |
 |                      | comma-separated list. You can control the CSV settings through                                    |             |
