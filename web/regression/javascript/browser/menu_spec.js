@@ -23,7 +23,7 @@ define([
         });
 
         it('should change the text color to gray', function () {
-          expect(menuItem.$el.find('span').hasClass('font-gray-4')).toBeTruthy();
+          expect(menuItem.$el.find('span').hasClass('text-gray')).toBeTruthy();
         });
 
         describe('when becomes enabled', function () {
@@ -33,8 +33,8 @@ define([
           });
 
           it('should change the text color to white', function () {
-            expect(menuItem.$el.find('span').hasClass('font-gray-4')).toBeFalsy();
-            expect(menuItem.$el.find('span').hasClass('font-white')).toBeTruthy();
+            expect(menuItem.$el.find('span').hasClass('text-gray')).toBeFalsy();
+            expect(menuItem.$el.find('span').hasClass('text-fg-inverse')).toBeTruthy();
           });
         });
       });
@@ -46,7 +46,7 @@ define([
         });
 
         it('should change the text color to white', function () {
-          expect(menuItem.$el.find('span').hasClass('font-white')).toBeTruthy();
+          expect(menuItem.$el.find('span').hasClass('text-fg-inverse')).toBeTruthy();
         });
 
         describe('when becomes disabled', function () {
@@ -56,8 +56,8 @@ define([
           });
 
           it('should change the text color to gray', function () {
-            expect(menuItem.$el.find('span').hasClass('font-gray-4')).toBeTruthy();
-            expect(menuItem.$el.find('span').hasClass('font-white')).toBeFalsy();
+            expect(menuItem.$el.find('span').hasClass('text-gray')).toBeTruthy();
+            expect(menuItem.$el.find('span').hasClass('text-fg-inverse')).toBeFalsy();
           });
         });
       });

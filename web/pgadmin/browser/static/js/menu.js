@@ -81,18 +81,18 @@ define([
 
 
       span.addClass('text-gray');
-      span.removeClass('font-white');
+      span.removeClass('text-fg-inverse');
       icon.addClass('text-gray');
-      icon.removeClass('font-white');
+      icon.removeClass('text-fg-inverse');
     },
 
     applyEnabledStyle: function() {
       var element = this.$el;
       var span = this.$el.find('span');
 
-      span.addClass('font-white');
+      span.addClass('text-fg-inverse');
       span.removeClass('text-gray');
-      element.find('i').addClass('font-white');
+      element.find('i').addClass('text-fg-inverse');
       element.find('i').removeClass('text-gray');
 
       span.on('mouseover',() => {
