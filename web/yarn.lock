@@ -414,6 +414,12 @@ async@^2.0.0, async@^2.1.2, async@^2.4.1:
   dependencies:
     lodash "^4.14.0"
 
+async@^2.1.4:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
+  dependencies:
+    lodash "^4.17.10"
+
 async@~2.1.2:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/async/-/async-2.1.5.tgz#e587c68580994ac67fc56ff86d3ac56bdbe810bc"
@@ -5727,7 +5733,7 @@ loader-runner@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.3.0.tgz#f482aea82d543e07921700d5a46ef26fdac6b8a2"
 
-loader-utils@^1.0.0, loader-utils@^1.0.1, loader-utils@^1.0.2, loader-utils@^1.1.0:
+loader-utils@^1.0.0, loader-utils@^1.0.1, loader-utils@^1.0.2, loader-utils@^1.0.4, loader-utils@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-1.1.0.tgz#c98aef488bcceda2ffb5e2de646d6a754429f5cd"
   dependencies:
@@ -5921,7 +5927,7 @@ lodash@^3.10.1, lodash@^3.5.0, lodash@^3.8.0:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@^4.0.0, lodash@^4.14.0, lodash@^4.14.1, lodash@^4.15.0, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.3.0, lodash@^4.5.0, lodash@~4.17.4:
+lodash@^4.0.0, lodash@^4.14.0, lodash@^4.14.1, lodash@^4.15.0, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.3.0, lodash@^4.5.0, lodash@~4.17.4:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -8133,15 +8139,25 @@ sass-graph@^2.2.4:
     scss-tokenizer "^0.2.3"
     yargs "^7.0.0"
 
-sass-loader@^6.0.6:
-  version "6.0.7"
-  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-6.0.7.tgz#dd2fdb3e7eeff4a53f35ba6ac408715488353d00"
+sass-loader@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-7.1.0.tgz#16fd5138cb8b424bf8a759528a1972d72aad069d"
   dependencies:
     clone-deep "^2.0.1"
     loader-utils "^1.0.1"
     lodash.tail "^4.1.1"
     neo-async "^2.5.0"
     pify "^3.0.0"
+    semver "^5.5.0"
+
+sass-resources-loader@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/sass-resources-loader/-/sass-resources-loader-1.3.3.tgz#90f0e614c444f6dfb8f54ce3e1d5f64a18d31537"
+  dependencies:
+    async "^2.1.4"
+    chalk "^1.1.3"
+    glob "^7.1.1"
+    loader-utils "^1.0.4"
 
 sax@^1.2.4, sax@~1.2.1:
   version "1.2.4"

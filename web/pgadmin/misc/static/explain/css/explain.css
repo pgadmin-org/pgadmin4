@@ -53,13 +53,6 @@ td.explain-tooltip-val {
 
 }
 
-.pgadmin-explain-tooltip {
-  position: absolute;
-  opacity:0;
-  color: cornsilk;
-  background-color: #010125;
-}
-
 .pgadmin-tooltip-table {
   border-collapse: collapse;
   border-spacing: 1px;

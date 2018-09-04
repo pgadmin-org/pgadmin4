@@ -1,31 +1,31 @@
 .aciTree .aciTreeText {
-    font-family: 'Open Sans';
+    font-family: $font-family-primary;
     font-size: 12px;
 }
 
 /* Hover over an element */
 .aciTree .aciTreeLine.aciTreeHover .aciTreeItem  {
-    background-color: #e7f2ff;
-    border-color: #84acdd;
+    background-color: $color-primary-lighter;
+    border-color: $color-primary-light;
 }
 
 .aciTree .aciTreeLine.aciTreeHover .aciTreeText  {
-    color: black;
+    color: $color-fg;
 }
 
 /* Selected element and in focus*/
 .aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine .aciTreeItem {
-    background-color: #e7f2ff;
+    background-color: $color-primary-lighter;
 }
 
 .aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine .aciTreeText {
-    color: black;
+    color: $color-fg;
 }
 
 /* Selected element but not in focus */
 .aciTree .aciTreeSelected > .aciTreeLine .aciTreeItem {
-    background-color: #e7f2ff;
-    border-color: #84acdd;
+    background-color: $color-primary-lighter;
+    border-color: $color-primary-light;
 }
 
 .aciTree .aciTreeItem {

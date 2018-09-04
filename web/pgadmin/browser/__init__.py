@@ -67,11 +67,9 @@ class BrowserModule(PgAdminModule):
             ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
             ('static', context_menu_file),
             ('static', wcdocker_file),
-            ('browser.static', 'css/browser.css'),
             ('browser.static', 'vendor/aciTree/css/aciTree.css')
         ]:
             stylesheets.append(url_for(endpoint, filename=filename))
-        stylesheets.append(url_for('browser.browser_css'))
         return stylesheets
 
     def get_own_javascripts(self):

@@ -69,9 +69,7 @@ define([
        * variable name.
        */
     var VariableRow = Backgrid.Row.extend({
-      modelDuplicateColor: 'lightYellow',
-
-      modelUniqueColor: '#fff',
+      modelDuplicateClass: 'bg-model-duplicate',
 
       initialize: function () {
         Backgrid.Row.prototype.initialize.apply(this, arguments);
@@ -101,10 +99,10 @@ define([
       },
       modelDuplicate: function() {
         $(this.el).removeClass('new');
-        this.el.style.backgroundColor = this.modelDuplicateColor;
+        $(this.el).addClass(this.modelDuplicateClass);
       },
       modelUnique: function() {
-        this.el.style.backgroundColor = this.modelUniqueColor;
+        $(this.el).removeClass(this.modelDuplicateClass);
       },
 
     });

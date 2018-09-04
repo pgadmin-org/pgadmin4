@@ -4,9 +4,7 @@ define('pgadmin.node.table_partition_utils', [
 ], function(gettext, $, _, Backbone, pgBrowser, Backform, Backgrid) {
 
   Backgrid.PartitionRow = Backgrid.Row.extend({
-    modelDuplicateColor: 'lightYellow',
-
-    modelUniqueColor: '#fff',
+    modelDuplicateClass: 'bg-model-duplicate',
 
     initialize: function () {
       Backgrid.Row.prototype.initialize.apply(this, arguments);
@@ -34,10 +32,10 @@ define('pgadmin.node.table_partition_utils', [
     },
     modelDuplicate: function() {
       $(this.el).removeClass('new');
-      this.el.style.backgroundColor = this.modelDuplicateColor;
+      $(this.el).addClass(this.modelDuplicateClass);
     },
     modelUnique: function() {
-      this.el.style.backgroundColor = this.modelUniqueColor;
+      $(this.el).removeClass(this.modelDuplicateClass);
     },
   });
 

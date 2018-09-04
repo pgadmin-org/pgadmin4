@@ -2,7 +2,7 @@
 
 /* Ensure simple forms don't hit the top of the screen */
 body {
-    font-family: 'Open Sans';
+    font-family: $font-family-primary;
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -70,7 +70,7 @@ iframe {
 
 /* Disabled menu items */
 .mnu-disabled {
-    color: #999999 !important;
+    color:  $color-gray !important;
 }
 
 /*
@@ -105,13 +105,13 @@ iframe {
     border-color: transparent;
     border-style: solid;
     border-width: 5px 0 5px 5px;
-    border-left-color: #cccccc;
+    border-left-color: $color-gray-light;
     margin-top: 5px;
     margin-right: -10px;
 }
 
 .dropdown-submenu:hover>a:after {
-    border-left-color: #ffffff;
+    border-left-color: $color-bg;
 }
 
 .dropdown-submenu.pull-left {
@@ -128,26 +128,26 @@ iframe {
 
 .navbar-inverse > li > a,
 .navbar-inverse .navbar-nav > li > a {
-    color: #FFF;
+    color: $color-fg-inverse;
 }
 
 .navbar-inverse .navbar-brand {
-    color: #009DCF;
+    color: $color-brand;
 }
 
 .navbar-inverse .navbar-brand:hover {
-    color: #009DCF;
+    color: $color-brand;
 }
 
 .navbar-inverse .navbar-brand:focus {
-    color: #009DCF;
+    color: $color-brand;
 }
 
 .navbar-inverse .navbar-nav > .open > a,
 .navbar-inverse .navbar-nav > .active > a,
 .navbar-inverse .navbar-nav > .open > a:hover,
 .navbar-inverse .navbar-nav > .open > a:focus {
-    background: #555 none;
+    background:  $color-gray-dark none;
 }
 
 .dropdown-menu > hr {
@@ -171,18 +171,18 @@ iframe {
 
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus {
-    color: #FFFFFF;
-    background: #555 none;
+    color: $color-fg-inverse;
+    background:  $color-gray-dark none;
 }
 
 .form-group fieldset {
-    background-color: #F2F2F2;
+    background-color: $color-gray-lighter;
     padding: 0px 0px 0px 5px;
     border-width: 1px;
     margin-left: 2px;
     margin-right: 2px;
     margin-bottom: 2px;
-    border-color: #DDD;
+    border-color: $color-gray-lighter;
 }
 
 .form-group legend {
@@ -270,10 +270,6 @@ iframe {
     padding: 2px 0px;
 }
 
-.fieldset-content .pgadmin-control-group:nth-child(even): {
-    background-color: #FF0000;
-}
-
 .control-label {
     margin: 0px;
     padding: 5px 25px 5px 5px;
@@ -320,7 +316,7 @@ iframe {
 .obj_properties fieldset > .fieldset-content {
   border-radius:5px;
   padding: 5px 10px;
-  border-color: #92AFC8;
+  border-color: $color-primary-lighter;
   border-width: 2px;
   border-style: ridge;
 }
@@ -330,7 +326,7 @@ iframe {
   text-align: left;
   cursor: pointer;
   margin-bottom: 1px;
-  background-color: #2C76B4;
+  background-color: $color-primary;
   border-radius:5px;
   padding: 5px 7px;
 }
@@ -362,12 +358,12 @@ iframe {
 }
 
 .obj_properties table tr {
-    border: 0px white solid;
+    border: 0px $color-bg solid;
     margin: 1em;
 }
 
 .obj_properties .pgadmin-properties {
-    border: 1px rgb(105, 78, 72) solid;
+    border: 1px  $color-gray-dark solid;
     border-radius: 6px;
     padding: 5px;
     margin: 0.2px 2px 2px 2px;
@@ -379,11 +375,6 @@ iframe {
 
 .obj_properties table td {
     vertical-align: middle;
-}
-
-button.btn:disabled {
-    pointer-events: auto;
-    cursor: default;
 }
 
 .pg-prop-btn-group {
@@ -398,7 +389,7 @@ button.btn:disabled {
 
 .pg-prop-btn-group-below {
     text-align: right;
-    border-color: #A9A9A9;
+    border-color: $color-gray-light;
     border-width: 2px 1px 0px;
     border-style: inset;
     border-left-style: solid
@@ -490,21 +481,21 @@ button.btn:disabled {
 }
 
 .form-control {
-    color: #333333;
+    color:  $color-gray-dark;
     padding: 3px 6px;
 }
 
 .form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control {
-    color: #666666;
+    color:  $color-gray-dark;
 }
 
 .highlight {
     padding: 5px;
     margin-bottom: 5px;
-    background-color: #F7F7F9;
-    border: 1px solid #E1E1E8;
+    background-color: $color-gray-lighter;
+    border: 1px solid $color-gray-lighter;
     border-radius: 3px;
 }
 
@@ -535,7 +526,7 @@ fieldset[disabled] .form-control {
 }
 
 .backgrid > thead th{
-    background-color: #2C76B4;
+    background-color: $color-primary;
 }
 
 .backgrid > thead > th, .backgrid > tbody > td {
@@ -554,7 +545,7 @@ fieldset[disabled] .form-control {
 }
 
 .backgrid > thead th a {
-    color: white;
+    color: $color-fg-inverse;
     font-size: 12px;
 }
 
@@ -569,7 +560,7 @@ fieldset[disabled] .form-control {
 }
 
 .backgrid.presentation {
-    background-color: #EEEEEE;
+    background-color: $color-gray-lighter;
 }
 
 .backgrid.presentation td.renderable {
@@ -578,11 +569,11 @@ fieldset[disabled] .form-control {
 }
 
 .backgrid:not(.presentation) td.renderable:not(.editable):not(.delete-cell) {
-    background-color: #F1F1F1;
+    background-color: $color-gray-lighter;
 }
 
 .backgrid tr.header td.renderable:not(.editable):not(.delete-cell) {
-    background-color: #AAA;
+    background-color: $color-gray-light;
 }
 
 .sql-editor-grid-container .backgrid > thead > th.renderable,
@@ -591,9 +582,9 @@ fieldset[disabled] .form-control {
 }
 
 .subnode-header {
-    background-color: #2C76B4;
+    background-color: $color-primary;
     height: 35px;
-    color: #FFFFFF;
+    color: $color-fg-inverse;
     border-radius: 3px 3px 0px 0px;
     padding-top: 3px;
 }
@@ -622,9 +613,9 @@ fieldset[disabled] .form-control {
     right: 0;
     height: auto;
     margin-left: 23px;
-    background-color: #dadada;
+    background-color: $color-gray-lighter;
     margin-top: 0px;
-    border: 1px solid #a9a9a9;
+    border: 1px solid $color-gray-light;
 }
 .subnode-body {
     height: auto;
@@ -644,19 +635,19 @@ fieldset[disabled] .form-control {
 }
 
 .sub-node-form > .nav-tabs {
-    background-color: #DADADA;
+    background-color: $color-gray-lighter;
 }
 
 .sub-node-form > ul.tab-content{
-    background-color: #FFFFFF;
+    background-color: $color-bg;
     padding-left: 15px;
     left: 1px;
 }
 
 table.backgrid tr.new {
-    background-color: rgba(82, 168, 236, 0.1) !important;
+    background-color: rgba($color-primary, 0.1) !important;
     box-sizing: border-box;
-    outline: 1px solid rgba(82, 168, 236, 0.8);
+    outline: 1px solid rgba($color-primary, 0.8);
     outline-offset: -1px;
   }
 
@@ -675,7 +666,7 @@ table.backgrid tr.new {
     width: 0px;
     margin: 0px;
     padding: 0px;
-    border: 0px solid black;
+    border: 0px solid $color-fg;
 }
 
 .switch-cell {
@@ -725,10 +716,10 @@ td.switch-cell > div.bootstrap-switch {
     z-index: 4;
 }
 .subnode-header-form {
-    background-color: #EEEEEE;
+    background-color: $color-gray-lighter;
     color: black;
     padding: 3px 0 10px 0;
-    border-top: solid 1.5px white;
+    border-top: solid 1.5px $color-bg;
     font-size: 12px;
 }
 
@@ -738,7 +729,7 @@ td.switch-cell > div.bootstrap-switch {
 }
 
 .subnode-error .help-block {
-    color: #a94442;
+    color: $color-danger;
 }
 
 .select2-container--default .select2-search--inline .select2-search__field {
@@ -761,7 +752,7 @@ fieldset.inline-fieldset {
     margin: 0px; margin-left: 2px; margin-right: 2px;
     padding-right: 10px; padding-left: 10px; padding-top: 6px; padding-bottom: 12px;
     border: 1px solid; border-radius: 5px;
-    border-color: #C3C3C3; box-shadow: 0.1px 0.1px 0.1px #C3C3C3;
+    border-color: $color-gray-lighter; box-shadow: 0.1px 0.1px 0.1px $color-gray-lighter;
 }
 
 fieldset.inline-fieldset-without-border {
@@ -771,7 +762,7 @@ fieldset.inline-fieldset-without-border {
 }
 
 fieldset.inline-fieldset > legend {
-    display: block; border: 0px solid black; box-shadow: none;
+    display: block; border: 0px solid $color-fg; box-shadow: none;
     box-sizing: content-box; top: auto; bottom: auto; left: auto;
     font-size: 14px; font-style: normal; font-weight: 600;
     height: 20px; line-height: 20px; margin: 0px; padding-bottom: 0px;
@@ -818,7 +809,7 @@ div.inline-tab-panel > ul.nav-tabs > li:first-child > a:focus {
 }
 
 div.inline-tab-panel > ul.tab-content {
-  padding-left: 5px; padding-right: 5px; border-color: #DDD;
+  padding-left: 5px; padding-right: 5px; border-color: $color-gray-lighter;
   border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
   border-width: 0px 1px 1px 1px; border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px; border-style: solid solid;
@@ -854,11 +845,11 @@ td.edit-cell.editable.sortable.renderable.editor {
 }
 
 .subnode > table.backgrid > thead > tr > th:first-child{
-  border-left-color: #2C76B4;
+  border-left-color: $color-primary;
 }
 
 .subnode > table.backgrid > thead > tr > th:last-child{
-  border-right-color: #2C76B4;
+  border-right-color: $color-primary;
 }
 
 .select2-container .select2-selection--single .select2-selection__rendered{
@@ -885,20 +876,20 @@ td.edit-cell.editable.sortable.renderable.editor {
 
 .select2-container--default.select2-container--focus
 .select2-selection--multiple {
-  border: 1px solid #aaa !important;
+  border: 1px solid $color-gray-light !important;
   outline: 0 none;
 }
 
 .select2-container--default.select2-container--focus {
-  border-color: #66afe9;
+  border-color: $color-primary-light;
   outline: 0;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color-primary, .6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color-primary, .6);
 }
 
 /* CSS for SqlField control */
 .sql_field_layout {
-    border: 1px solid rgba(184, 184, 184, 1) !important;
+    border: 1px solid rgba($color-gray-light, 1) !important;
     border-radius: 4px;
     padding: 0px;
 }
@@ -923,20 +914,22 @@ td.edit-cell.editable.sortable.renderable.editor {
 }
 
 .nav-tabs>li>a{
-    border-radius: 5px 5px 0 0;
+  border-radius: 5px 5px 0 0;
 	margin-right:1px;
 	border:0px;
+	color: $color-primary;
 }
 
 .nav-tabs>li > a:hover , .nav-tabs>li > a:focus{
 	border:0px;
 	margin-bottom:0px;
-	color:black;
+	color:$color-fg;
 	padding-bottom: 4px!important;
+	background-color: $color-gray-white;
 }
 .nav-tabs>li.active>a ,.nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover ,.nav-tabs>li.active>a:active{
 	border:0px;
-	color:black;
+	color:$color-fg;
 	margin-top: 0px;
 	padding-top: 7px!important;
 	padding-bottom: 4px!important;
@@ -948,18 +941,19 @@ td.edit-cell.editable.sortable.renderable.editor {
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 4px;
-	padding-bottom:0px;
-	margin-top:3px;
+    padding-bottom:0px;
+    margin-top:3px;
 }
 
 .obj_properties .backform-tab > .nav-tabs {
-	background-color: #E2E2E2;
+	background-color: $color-gray-lighter;
 }
 
 ul.nav.nav-tabs {
-    background-color: #E2E2E2;
+  background-color: $color-gray-lighter;
 	padding-top: 4px;
 }
+
 
 .pg-panel-depends-container >table.backgrid.table-bordered {
   border: 0px;
@@ -967,7 +961,7 @@ ul.nav.nav-tabs {
 
 .pg-panel-depends-container > table > thead > tr > th {
   padding: 2px;
-  border: 1px solid #ddd;
+  border: 1px $color-gray-lighter solid;
 }
 
 .pg-panel-depends-container > table > thead > tr > th:first-child {
@@ -994,27 +988,27 @@ ul.nav.nav-tabs {
 
 /* Alert info panel */
 .alert-info-panel {
-  border: 2px solid #a1a1a1;
+  border: 2px solid $color-gray-light;
   margin-top: 2em;
   padding: 5px 5px;
-  background: #dddddd;
+  background: $color-gray-lighter;
   border-radius: 5px;
   height: 8em;
   overflow: scroll;
 }
 
 span.button-label {
-  font-family: 'Open Sans';
+  font-family: $font-family-primary;
   font-size: initial;
 }
 
 .backform_control_notes {
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
+  background-color: $color-gray-lighter;
+  border: 1px solid $color-gray-light;
   border-radius: 3px;
-  color: #333;
+  color:  $color-gray-dark;
   display: block;
-  font-family: 'Source Code Pro';
+  font-family: $font-family-editor;
   font-size: 12px;
   line-height: 1.42857;
   margin: 0 0 10px;
@@ -1028,7 +1022,7 @@ div.backform_control_notes label.control-label {
 }
 
 form[name="change_password_form"] .help-block {
-    color: #A94442 !important;
+    color: $color-danger !important;
 }
 
 .file_selection_ctrl .create_input span {
@@ -1051,12 +1045,12 @@ form[name="change_password_form"] .help-block {
 
 .file_selection_ctrl button.select_item {
   display: inline;
-  background: #777;
-  background: -webkit-linear-gradient(#777, #999999);
-  background: -o-linear-gradient(#777, #999);
-  background: -moz-linear-gradient(#777, #999);
-  background: linear-gradient(#777, #999);
-  color: #fff;
+  background:  $color-gray;
+  background: -webkit-linear-gradient( $color-gray,  $color-gray);
+  background: -o-linear-gradient( $color-gray, $color-gray-light);
+  background: -moz-linear-gradient( $color-gray, $color-gray-light);
+  background: linear-gradient( $color-gray, $color-gray-light);
+  color: $color-fg-inverse;
   padding: 9px 0px 9px 0px;
   margin-left: 0px;
   margin-right: -7px;
@@ -1166,7 +1160,7 @@ form[name="change_password_form"] .help-block {
 
 .subnode-footer {
   text-align: right;
-  border-color: #a9a9a9;
+  border-color: $color-gray-light;
   border-style: inset inset inset solid;
   border-width: 2px 1px 0;
   margin-top: -10px;
@@ -1184,12 +1178,12 @@ form[name="change_password_form"] .help-block {
 }
 
 .close-error-bar {
-  background: #d0021b;
+  background: $color-danger;
   padding: 5px;
 }
 
 .close-error-bar a {
-  color: #FFFFFF;
+  color: $color-fg-inverse;
   cursor: pointer;
 }
 
@@ -1241,7 +1235,7 @@ height: calc(100% - 35px);
 
 .pg-panel-statistics-container > table > thead > tr > th {
   padding: 2px;
-  border: 1px solid #ddd;
+  border: 1px solid $color-gray-lighter;
 }
 
 .pg-panel-statistics-container > table > thead > tr > th:first-child {
@@ -1274,10 +1268,10 @@ table.backgrid {
 }
 
 .pgadmin-controls.focused {
-  border-color: #66afe9;
+  border-color: $color-primary-light;
   outline: 0;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color-primary, .6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color-primary, .6);
 }
 
 .bootstrap-datetimepicker-widget td,
@@ -1338,13 +1332,13 @@ body {
 .backgrid tr th button {
   background: none;
   border: none;
-  color: #fff;
+  color: $color-fg-inverse;
   padding: 0;
 }
 
 /* Latest backgrid adds column name like `label` to td element, override color*/
 .backgrid td.label {
-  color: #333;
+  color:  $color-gray-dark;
   font-size: 14px;
   font-weight: normal;
 }
@@ -1361,17 +1355,17 @@ body {
 
 /* Override CSS for Colour Picker to match it with pgAdmin4 style */
 .sp-replacer {
-  background: #fff;
-  border: solid 1px #ccc;
+  background: $color-bg;
+  border: solid 1px $color-gray-light;
   border-radius: 3px;
 }
 
 .sp-replacer:hover {
-  border-color: #ccc;
+  border-color: $color-gray-light;
 }
 
 .sp-replacer.sp-active {
-  border-color: #66afe9;
+  border-color: $color-primary-light;
   border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
@@ -1381,40 +1375,40 @@ body {
 }
 
 .sp-replacer.sp-disabled {
-    background-color: #eee;
+    background-color: $color-gray-lighter;
 }
 
 .sp-container {
-  background-color: #fff;
-  border: solid 1px #ccc;
+  background-color: $color-bg;
+  border: solid 1px $color-gray-light;
   border-radius: 3px !important;
 }
 
 .sp-palette-button-container button,
 .sp-palette-button-container button:hover {
   padding: 5px;
-  background-color: #2c76b4;
+  background-color: $color-primary;
   background-image: none;
-  font-family: 'Open Sans';
+  font-family: $font-family-primary;
   font-size: 12px;
-  color: #fff;
+  color: $color-fg-inverse;
   text-shadow: none;
   -webkit-font-smoothing: auto;
 }
 
 .sp-container button:active {
-    border: 1px solid #84acdd;
+    border: 1px solid $color-primary;
     border-bottom: none;
-    -webkit-box-shadow: inset 0 0 5px 2px #84acdd, 0 1px 0 0 #84acdd;
-    -moz-box-shadow: inset 0 0 5px 2px #84acdd, 0 1px 0 0 #84acdd;
-    -ms-box-shadow: inset 0 0 5px 2px #84acdd, 0 1px 0 0 #84acdd;
-    -o-box-shadow: inset 0 0 5px 2px #84acdd, 0 1px 0 0 #84acdd;
-    box-shadow: inset 0 0 5px 2px #84acdd, 0 1px 0 0 #84acdd;
+    -webkit-box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+    -moz-box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+    -ms-box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+    -o-box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+    box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
 }
 
 .sp-dd {
   font-size: 8px;
-  color: #888888;
+  color:  $color-gray;
 }
 
 /* CSS for custom checkbox editor in SlickGrid */
@@ -1423,7 +1417,7 @@ body {
   vertical-align: top;
   width: 16px;
   height: 16px;
-  border: 1px solid #333;
+  border: 1px solid  $color-gray-dark;
   margin: 3px;
   text-align: center;
   line-height: 16px;
@@ -1431,11 +1425,11 @@ body {
 
 .multi-checkbox .check.checked,
 .multi-checkbox .check.unchecked {
-  background: #fff;
+  background: $color-bg;
 }
 
 .multi-checkbox .check.partial {
-  background: #e8e8e8;
+  background: $color-gray-lighter;
 }
 
 .multi-checkbox .check.checked:after {
@@ -1448,6 +1442,11 @@ body {
 
 /* Override default bootstrap popover fonts & size */
 .popover-content {
-  font-family: 'Open Sans';
+  font-family: $font-family-primary;
   font-size: 13px;
+}
+
+
+.btn.btn-default[disabled] {
+  color: $color-gray;
 }

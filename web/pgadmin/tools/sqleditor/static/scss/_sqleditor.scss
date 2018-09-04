@@ -1,0 +1,197 @@
+.filter-title {
+  background-color: $color-primary;
+  padding: 2px;
+  color: $color-fg-inverse;
+  font-size: 13px;
+}
+
+#editor-panel .CodeMirror-activeline-background {
+  background: $color-primary-lighter;
+}
+
+.ajs-body .warn-icon {
+  color: $color-warning;
+  font-size: 2em;
+  margin-right: 20px;
+  padding-top: 10px;
+}
+
+.connection_status_wrapper {
+  width: 100%;
+  background-color: $color-gray-white;
+}
+
+.connection_status .fa-clock-o,
+.connection_status .fa-hourglass-half {
+  color: $color-warning;
+}
+
+.connection_status .fa-exclamation-circle,
+.connection_status .fa-exclamation-triangle {
+  color: $color-danger;
+}
+
+li.CodeMirror-hint-active {
+  background: $color-primary-light;
+  color: $color-primary-fg;
+}
+
+.filter-container {
+  position: relative;
+  background-color: $color-bg;
+  border: 1px solid black;
+  box-shadow: 0.5px 0.5px 5px #000;
+  padding-bottom: 30px;
+  top: 10px;
+  z-index: 1;
+  margin: auto;
+  width: 60%;
+}
+
+.limit-enabled {
+  background-color: $color-bg;
+}
+
+.CodeMirror-hint {
+  margin: 0;
+  padding: 0 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  white-space: pre;
+  color: $color-fg;
+  cursor: pointer;
+}
+
+.grid-header .ui-icon.ui-state-hover {
+  background-color: $color-bg;
+}
+
+.slick-cell.selected span[data-cell-type="row-header-selector"] {
+  color: $color-fg-inverse;
+}
+
+.slick-cell.cell-move-handle {
+  font-weight: bold;
+  text-align: right;
+  border-right: solid  $color-gray;
+  background: $color-gray-white;
+  cursor: move;
+}
+
+.cell-move-handle:hover {
+  background: $color-gray-light;
+}
+
+.slick-row.selected .cell-move-handle {
+  background: $color-warning-light;
+}
+
+.slick-row.complete {
+  background-color: $color-success-lighter;
+  color:  $color-gray-dark;
+}
+
+.cell-selection {
+  border-right-color: $color-gray-light;
+  border-right-style: solid;
+  background: $color-gray-lighter;
+  color:  $color-gray;
+  text-align: right;
+  font-size: 10px;
+}
+
+#datagrid .slick-header .slick-header-columns {
+  background: $color-bg;
+  height: 40px;
+  border-bottom: none;
+}
+
+#datagrid .slick-header .slick-header-column.ui-state-default {
+  color:  $color-gray-dark;
+  padding: 4px 0 3px 6px;
+  background-color: $color-gray-lighter;
+  border-bottom: 1px solid $color-gray-light !important;
+  border-right: 1px solid $color-gray-light !important;
+}
+
+#datagrid .slick-header .slick-header-column.selected {
+  background-color: $color-primary;
+  color: $color-fg-inverse;
+}
+
+/* Remove active cell border */
+.slick-cell.active {
+  border: 1px solid transparent;
+  border-right: 1px solid $color-gray-light;
+  border-bottom-color: $color-gray-light;
+}
+
+/* To highlight all newly inserted rows */
+.grid-canvas .new_row {
+  background: $color-success-lighter !important;
+}
+
+/* To highlight all the updated rows */
+.grid-canvas .updated_row {
+  background: $color-gray-lighter;
+}
+
+/* To highlight row at fault */
+.grid-canvas .new_row.error, .grid-canvas .updated_row.error {
+  background: $color-danger-lighter !important;
+}
+
+/* Disabled row */
+.grid-canvas .disabled_row {
+  background: $color-gray-lighter;
+}
+
+/* Disabled cell */
+.grid-canvas .disabled_cell {
+  color: $color-gray-light;
+}
+
+/* Override selected row color */
+#datagrid .slick-row .slick-cell.selected {
+    background-color: $color-primary-lighter;
+}
+
+/* color the first column */
+#datagrid .slick-row .slick-cell.l0.r0 {
+  background-color: $color-gray-lighter;
+}
+
+#datagrid .slick-row .slick-cell.l0.r0.selected {
+  background-color: $color-primary;
+}
+
+#datagrid div.slick-header.ui-state-default {
+  background: $color-bg;
+  border-bottom: none;
+  border-right: none;
+  border-top: 1px solid  $color-gray;
+}
+
+.pg_text_editor {
+  z-index:10000;
+  position:absolute;
+  background: $color-bg;
+  padding: 7px 5px 5px 1px;
+  border:2px solid  $color-gray;
+  -moz-border-radius:10px;
+  border-radius:10px;
+}
+
+.CodeMirror-foldmarker {
+  color: $color-primary;
+  text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
+  font-family: "Open Sans";
+  line-height: .3;
+  cursor: pointer;
+}
+
+.editor-title-connection {
+  width:calc(100% - 43px);
+  color: $color-fg-inverse;
+  background-color: $color-primary;
+}

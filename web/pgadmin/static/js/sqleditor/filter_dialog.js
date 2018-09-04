@@ -113,7 +113,7 @@ let FilterDialog = {
 
             // Status bar
             this.statusBar = $('<div class=\'pg-prop-status-bar pg-el-xs-12 hide\'>' +
-              '  <div class=\'media error-in-footer bg-red-1 border-red-2 font-red-3 text-14\'>' +
+              '  <div class=\'media error-in-footer bg-danger-lighter border-danger-light text-danger text-14\'>' +
               '    <div class=\'media-body media-middle\'>' +
               '      <div class=\'alert-icon error-icon\'>' +
               '        <i class=\'fa fa-exclamation-triangle\' aria-hidden=\'true\'></i>' +

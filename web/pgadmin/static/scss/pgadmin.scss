@@ -1,20 +1,9 @@
-$enable-flex: true;
-@import '../css/webcabin.overrides.css';
-@import '../css/bootstrap.overrides.css';
-@import '../css/aci_tree.overrides.css';
-@import '../css/select2.overrides.css';
-@import '../css/pgadmin.css';
-@import '../css/pgadmin.style.css';
-@import '../css/codemirror.overrides.css';
-
-@import 'primaryblue';
-@import 'colorsgrey';
-@import 'othercolors';
-@import 'typography';
-
-@import 'utils';
+@import 'webcabin.overrides';
+@import 'bootstrap.overrides';
+@import 'aci_tree.overrides';
+@import 'select2.overrides';
+@import 'codemirror.overrides';
 
 @import 'alert';
 @import 'alertify.overrides';
 @import 'backform.overrides';
-@import 'sqleditor/history';

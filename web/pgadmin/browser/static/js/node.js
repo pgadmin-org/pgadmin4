@@ -314,7 +314,7 @@ define('pgadmin.browser.node', [
 
           var onSessionInvalid = function(msg) {
             var alertMessage = '\
-              <div class="media error-in-footer bg-red-1 border-red-2 font-red-3 text-14">\
+              <div class="media error-in-footer bg-danger-lighter border-danger-light text-danger text-14">\
                 <div class="media-body media-middle">\
                   <div class="alert-icon error-icon">\
                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\
@@ -1148,7 +1148,7 @@ define('pgadmin.browser.node', [
               },
             });
 
-            createButtons(buttons, 'header', 'pg-prop-btn-group-above bg-gray-2 border-gray-3');
+            createButtons(buttons, 'header', 'pg-prop-btn-group-above bg-gray-lighter border-gray-light');
           }
           j.append(content);
         }.bind(panel),
@@ -1404,7 +1404,7 @@ define('pgadmin.browser.node', [
                   }, 0);
                 });
               },
-            }], 'footer', 'pg-prop-btn-group-below bg-gray-2 border-gray-3');
+            }], 'footer', 'pg-prop-btn-group-below bg-gray-lighter border-gray-light');
           }
 
           // Create status bar.

@@ -60,9 +60,7 @@ class MaintenanceModule(PgAdminModule):
         Returns:
             list: the stylesheets used by this module.
         """
-        stylesheets = [
-            url_for('maintenance.static', filename='css/maintenance.css')
-        ]
+        stylesheets = []
         return stylesheets
 
     def get_exposed_url_endpoints(self):

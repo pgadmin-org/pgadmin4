@@ -348,7 +348,7 @@ define('pgadmin.browser', [
         '#dockerContainer', {
           allowContextMenu: true,
           allowCollapse: false,
-          themePath: '../static/css/',
+          themePath: '../static/css',
           theme: 'webcabin.overrides.css',
         });
       if (obj.docker) {

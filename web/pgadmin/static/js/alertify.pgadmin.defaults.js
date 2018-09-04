@@ -108,7 +108,7 @@ define([
             var alertMessage = promptmsg;
             if (type === 'error') {
               alertMessage = '\
-                  <div class="media font-red-3 text-14">\
+                  <div class="media text-danger text-14">\
                     <div class="media-body media-middle">\
                       <div class="alert-text">' + promptmsg + '</div><br/>\
                       <div class="alert-text">' + gettext('Click for details.') + '</div>\
@@ -153,7 +153,7 @@ define([
         }
         if (contentType.indexOf('text/html') >= 0) {
           var alertMessage = '\
-                <div class="media font-red-3 text-14">\
+                <div class="media text-danger text-14">\
                   <div class="media-body media-middle">\
                     <div class="alert-text">' + gettext('INTERNAL SERVER ERROR') + '</div><br/>\
                     <div class="alert-text">' + gettext('Click for details.') + '</div>\
@@ -377,7 +377,7 @@ define([
   _.extend(alertify, {
     success: function(message, timeout, callback) {
       var alertMessage = '\
-      <div class="media font-green-3 text-14">\
+      <div class="media text-success text-14">\
         <div class="media-body media-middle">\
           <div class="alert-icon success-icon">\
             <i class="fa fa-check" aria-hidden="true"></i>\
@@ -389,7 +389,7 @@ define([
     },
     error: function(message, timeout, callback) {
       var alertMessage = '\
-      <div class="media font-red-3 text-14">\
+      <div class="media text-danger text-14">\
         <div class="media-body media-middle">\
           <div class="alert-icon error-icon">\
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\

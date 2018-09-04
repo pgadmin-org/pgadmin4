@@ -51,10 +51,7 @@ class GrantWizardModule(PgAdminModule):
         Returns:
             list: the stylesheets used by this module.
         """
-        stylesheets = [
-            url_for('browser.static', filename='css/wizard.css'),
-            url_for('grant_wizard.static', filename='css/grant_wizard.css')
-        ]
+        stylesheets = []
         return stylesheets
 
     def get_own_javascripts(self):

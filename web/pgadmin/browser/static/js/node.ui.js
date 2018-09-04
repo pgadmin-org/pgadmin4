@@ -38,7 +38,7 @@ define([
       ].join(''));
 
       let $btnContainer = $(
-        '<div style="padding: 3px 0px; background-color: #2C76B4; margin-bottom: 3px;">'
+        '<div style="">'
       ).append($selectAll).append($unselectAll);
 
       if (!this.$element.prop('multiple')) {

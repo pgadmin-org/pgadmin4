@@ -44,9 +44,7 @@ class DashboardModule(PgAdminModule):
         Returns:
             list: the stylesheets used by this module.
         """
-        stylesheets = [
-            url_for('dashboard.static', filename='css/dashboard.css')
-        ]
+        stylesheets = []
         return stylesheets
 
     def get_panels(self):

@@ -561,7 +561,6 @@ def direct_new(trans_id):
         is_desktop_mode=current_app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
         client_platform=user_agent.platform,
-        stylesheets=[url_for('debugger.static', filename='css/debugger.css')],
     )
 
 

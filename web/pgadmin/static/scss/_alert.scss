@@ -1,7 +1,7 @@
 .alert-icon {
   display: flex;
   align-items: center;
-  color: white;
+  color: $color-fg-inverse;
   padding: 15px 15px 15px 17px;
   width: 50px;
   min-height: 50px;
@@ -26,15 +26,15 @@
 }
 
 .success-icon {
-  background: $color-green-3;
+  background: $color-success;
 }
 
 .error-icon {
-  background: $color-red-3;
+  background: $color-danger;
 }
 
 .info-icon {
-  background: #2c76b4;
+  background: $color-primary;
 }
 
 .alert-text {
@@ -42,11 +42,13 @@
   padding: 0 12px 0 10px;
   align-self: center;
   // To make sure IE picks up the correct font
-  font-family: 'Open Sans';
+  font-family: $font-family-primary;
 }
 
 .alert-info {
-  border-color: $color-blue-2;
+  border-color: $color-primary-light;
+  background-color: $color-primary-lighter;
+  color : $color-primary;
   background-image: none;
 }
 
@@ -103,7 +105,7 @@
 
   .alert-text {
     flex-grow: 1;
-    border: 1px solid $color-red-2;
+    border: 1px solid $color-danger-light;
     padding: 7px 12px 6px 10px;
     border-left: none;
     -moz-user-select: text;
@@ -117,7 +119,7 @@
     border-radius: 4px;
 
     .alert-text {
-      border-color: $color-red-2;
+      border-color: $color-danger-light;
     }
   }
 
@@ -125,12 +127,12 @@
     border-radius: 4px;
 
     .alert-text {
-      border-color: $color-green-2;
+      border-color: $color-success-light;
     }
   }
 
   .info-in-footer {
-    border: 1px solid $primary-blue;
+    border: 1px solid $color-primary;
     border-radius: 4px;
     height: 35px;
 

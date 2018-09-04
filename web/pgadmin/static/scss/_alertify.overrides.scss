@@ -4,10 +4,10 @@
     padding: 6px 10px !important;
     min-height: 35px;
     max-height: 35px;
-    border-bottom: 2px solid darkgray;
-    background-color: #2C76B4;
+    border-bottom: 2px solid $color-gray-lighter;
+    background-color: $color-primary;
     font-weight: bold;
-    color: white;
+    color: $color-fg-inverse;
     font-size: 14px;
     font-weight: bold;
     border-radius: 0;
@@ -17,7 +17,7 @@
 
   /* Overrides alertify js headers hovering behaviour*/
   .ajs-header:hover {
-    background-color: #2C76B4;
+    background-color: $color-primary;
   }
 
   /* Removes padding from alertify footer */
@@ -28,10 +28,10 @@
 
   /* Restyling alertify buttons */
   .ajs-footer .ajs-buttons {
-    background-color: #D2D2D2;
+    background-color: $color-gray-light;
     border-width: 2px 0px 0px 0px;
     border-style: solid;
-    border-color: rgb(85, 85, 85);
+    border-color:  $color-gray-dark;
   }
 
   .ajs-footer .ajs-buttons.ajs-auxiliary .ajs-button,
@@ -73,7 +73,7 @@
 
   /* Restyling alertify dialogue panel boundaries */
   .ajs-dialog {
-    border: 3px solid #DDDDDD;
+    border: 3px solid $color-gray-lighter;
     border-radius: 0;
   }
   .ajs-content {
@@ -100,8 +100,8 @@
 .ajs-pin, .ajs-maximize, .ajs-close {
   width: 20px;
   height: 20px;
-  border: 2px solid #9E9E9E !important;
-  background-color: #ddd !important;
+  border: 2px solid $color-gray-light !important;
+  background-color: $color-gray-lighter !important;
   font-size: 12px;
   border-radius: 5px 5px 5px 5px;
   position: relative;
@@ -113,7 +113,7 @@
 }
 
 .ajs-pin:hover, .ajs-maximize:hover, .ajs-close:hover {
-  border: 2px solid #CCCCCC !important;
+  border: 2px solid $color-gray-lighter !important;
 }
 
 .alertify.ajs-modeless.ajs-pinnable .ajs-commands button.ajs-pin {
@@ -145,7 +145,7 @@
 }
 
 button.pg-alertify-button {
-  font-family: 'Open Sans';
+  font-family: $font-family-primary;
   font-size: 14px;
   -webkit-font-smoothing: auto;
 }
@@ -161,20 +161,20 @@ button.pg-alertify-button {
 }
 
 .ajs-message.ajs-error.ajs-visible {
-  @extend .bg-red-1;
-  @extend .border-red-2;
+  @extend .bg-danger-lighter;
+  @extend .border-danger;
   @extend .ajs-text-smoothing;
 }
 
 .ajs-message.ajs-success.ajs-visible {
-  @extend .bg-green-1;
-  @extend .border-green-2;
+  @extend .bg-success-lighter;
+  @extend .border-success;
   @extend .ajs-text-smoothing;
 }
 
 .ajs-message.ajs-visible {
-  @extend .bg-blue-1;
-  @extend .border-blue-2;
+  @extend .bg-primary-lighter;
+  @extend .border-primary;
   @extend .ajs-text-smoothing;
 }
 

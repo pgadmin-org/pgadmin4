@@ -80,9 +80,9 @@ define([
       var icon = this.$el.find('i');
 
 
-      span.addClass('font-gray-4');
+      span.addClass('text-gray');
       span.removeClass('font-white');
-      icon.addClass('font-gray-4');
+      icon.addClass('text-gray');
       icon.removeClass('font-white');
     },
 
@@ -91,15 +91,15 @@ define([
       var span = this.$el.find('span');
 
       span.addClass('font-white');
-      span.removeClass('font-gray-4');
+      span.removeClass('text-gray');
       element.find('i').addClass('font-white');
-      element.find('i').removeClass('font-gray-4');
+      element.find('i').removeClass('text-gray');
 
       span.on('mouseover',() => {
-        element.addClass('bg-gray-5');
+        element.addClass('bg-gray-dark');
       });
       span.on('mouseout',() => {
-        element.removeClass('bg-gray-5');
+        element.removeClass('bg-gray-dark');
       });
     },
 

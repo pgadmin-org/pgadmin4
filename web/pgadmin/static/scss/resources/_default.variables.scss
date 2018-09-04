@@ -1,0 +1,63 @@
+$enable-flex: true !default;
+
+$color-bg: #fff !default;
+$color-fg: #000 !default;
+
+$color-bg-inverse: $color-fg;
+$color-fg-inverse: $color-bg;
+
+$color-primary: #2c76b4 !default;
+$color-primary-fg: $color-fg !default;
+
+$color-danger: #d63a35 !default;
+$color-danger-fg: $color-fg !default;
+
+$color-success: #3a773a !default;
+$color-success-fg: $color-fg !default;
+
+$color-warning: #eea236 !default;
+$color-warning-fg: $color-fg !default;
+
+$color-brand: #009dcf !default;
+$color-editor-bg: $color-bg !default;
+$color-editor-keyword: #908 !default;
+$color-editor-number: #964 !default;
+$color-editor-foldmarker: #0000FF !default;
+$color-editor-activeline: #50B0F0 !default;
+
+$gray-base: #000 !default;
+
+$color-gray-darker: #333333;
+$color-gray-dark: #555555;
+$color-gray: #888888;
+$color-gray-light: #cccccc;
+$color-gray-lighter: #e8e8e8;
+$color-gray-white: #f9f9f9;
+
+$color-primary-light: lighten($color-primary, 25%);
+$color-primary-lighter: lighten($color-primary, 50%);
+$color-primary-dark: darken($color-primary, 10%);
+$color-primary-darker: darken($color-primary, 25%);
+
+$color-danger-light: lighten($color-danger, 25%);
+$color-danger-lighter: lighten($color-danger, 40%);
+$color-danger-dark: darken($color-danger, 10%);
+$color-danger-darker: darken($color-danger, 25%);
+
+$color-success-light: lighten($color-success, 30%);
+$color-success-lighter: lighten($color-success, 50%);
+$color-success-dark: darken($color-success, 10%);
+$color-success-darker: darken($color-success, 25%);
+
+$color-warning-light: lighten($color-warning, 25%);
+$color-warning-lighter: lighten($color-warning, 40%);
+$color-warning-dark: darken($color-warning, 25%);
+$color-warning-darker: darken($color-warning, 40%);
+
+/* Typography */
+/* Use absolute path as this will be used in different directories */
+$font-family-primary: "Open Sans" !default;
+$font-url-primary: '~top/static/fonts/OpenSans-Regular.ttf' !default;
+
+$font-family-editor: 'Source Code Pro' !default;
+$font-url-editor: '~top/static/fonts/SourceCodePro-Regular.ttf' !default;

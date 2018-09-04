@@ -39,9 +39,6 @@ class MiscModule(PgAdminModule):
 
     def get_own_stylesheets(self):
         stylesheets = []
-        stylesheets.append(
-            url_for('misc.static', filename='explain/css/explain.css')
-        )
         return stylesheets
 
     def register_preferences(self):

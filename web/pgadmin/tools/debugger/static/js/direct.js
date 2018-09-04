@@ -1061,8 +1061,6 @@ define([
         var stack_grid = this.stack_grid = new Backgrid.Grid({
           columns: stackGridCols,
           row: Backgrid.Row.extend({
-            highlightColor: '#D9EDF7',
-            disabledColor: '#F1F1F1',
             events: {
               click: 'rowClick',
             },

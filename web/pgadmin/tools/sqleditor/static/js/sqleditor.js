@@ -2048,7 +2048,7 @@ define('tools.querytool', [
           self.gridView.query_tool_obj.setOption('readOnly', true);
           var cm = self.gridView.query_tool_obj.getWrapperElement();
           if (cm) {
-            cm.className += ' bg-gray-1 opacity-5 hide-cursor-workaround';
+            cm.className += ' bg-gray-lighter opacity-5 hide-cursor-workaround';
           }
           self.disable_tool_buttons(true);
           self.execute_data_query();

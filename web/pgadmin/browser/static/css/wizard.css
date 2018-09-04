@@ -3,19 +3,6 @@
   padding: 0px !important;
 }
 
-.wizard-header {
-  padding: 6px 10px!important;
-  min-height: 35px;
-  max-height: 35px;
-  border-bottom: 2px solid darkgray;
-  background-color: #2C76B4;
-  font-weight: bold;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 0;
-}
-
 .wizard-header h3 {
   font-size: 14px;
   display: inline-block;
@@ -70,19 +57,6 @@
 }
 
 /* Wizard Footer CSS */
-.pgadmin-wizard .footer {
-  background-color: #D2D2D2;
-  border-width: 2px 0px 0px 0px;
-  border-style: solid;
-  border-color: rgb(85, 85, 85);
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: 0;
-  padding: 0;
-}
-
 .pgadmin-wizard .footer .row {
   margin: 0 -6px 3px -6px;
 }
@@ -135,17 +109,6 @@ div.wizard-header.wizard-badge > div > div.col-sm-2 > button.ajs-maximized.ajs-m
 /* Wizard Status bar CSS */
 .pgadmin-wizard .wizard-description {
   padding: 1.0em 0.1em;
-}
-
-/* Error message css */
-.pgadmin-wizard .error_msg_div {
-  background: #fff;
-  font-size: 13px;
-}
-
-.pgadmin-wizard .error_msg_div p {
-  background: #fff;
-  color: #b92c28;
 }
 
 /* In wizard select2 dropdown doesn't

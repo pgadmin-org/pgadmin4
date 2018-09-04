@@ -1,0 +1,69 @@
+.dashboard-icon {
+    color: $color-fg;
+}
+
+.dashboard-tab-container {
+    border-left: 1px solid $color-gray-lighter;
+    border-right: 1px solid $color-gray-lighter;
+    border-bottom: 1px solid $color-gray-lighter;
+}
+
+.dashboard-tab-btn-group {
+    background-color: $color-gray-light;
+    border: 2px solid  $color-gray;
+    left: 0px;
+    right: 0px;
+    padding: 2px;
+}
+
+.graph-error {
+    background-color: $color-gray-lighter;
+    padding-top: 20px
+}
+
+.grid-error {
+    background-color: $color-gray-lighter;
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+.dashboard-tab-container .subnode-dialog {
+  background-color: $color-bg;
+  border: 0px solid $color-gray-lighter;
+}
+
+.dashboard-tab-container .sub-node-form {
+  padding: 0px 0px 0px 1px;
+  background-color: $color-gray-lighter;
+}
+
+.dashboard-tab-container .subnode-body {
+  background-color: $color-gray-lighter;
+}
+
+.dashboard-tab-container .sub-node-form > .nav-tabs {
+  background-color: $color-gray-lighter !important;
+}
+
+.dashboard-tab-container .subnode-dialog .nav > li > a {
+  font-weight: bold;
+  border-color: $color-gray-lighter;
+}
+
+.dashboard-tab-container .subnode-dialog .nav-tabs > li.active > a,
+.dashboard-tab-container .subnode-dialog .nav-tabs > li.active > a:hover {
+  border-top: 1px solid $color-gray-lighter;
+  border-left: 1px solid $color-gray-lighter;
+  border-right: 1px solid $color-gray-lighter;
+  margin-bottom: -1px;
+  z-index: 10;
+}
+
+.dashboard-tab-container .backgrid .editor {
+  background-color: $color-gray-lighter !important;
+  border-bottom-color: $color-gray-lighter;
+}
+
+.dashboard-tab-container .subnode-dialog .tab-pane {
+  border: 1px solid $color-gray-lighter;
+}

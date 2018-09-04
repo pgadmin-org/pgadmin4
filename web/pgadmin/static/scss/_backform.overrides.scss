@@ -1,11 +1,11 @@
 .has-error {
   .pgadmin-controls > .form-control {
-    border-color: #d0021b;
+    border-color: $color-danger;
     position: relative;
   }
 
   .control-label {
-    color: #d0021b;
+    color: $color-danger;
   }
 
   .control-label:before {
@@ -13,7 +13,7 @@
     content: "\f071";
     text-decoration: inherit;
     position: absolute;
-    color: #d0021b;
+    color: $color-danger;
     right: 6px;
     padding-top: 6px;
     z-index: 1;

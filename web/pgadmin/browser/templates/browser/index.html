@@ -91,35 +91,6 @@ window.onload = function(e){
 {% endblock %}
 
 {% block body %}
-<style>
-#pg-spinner {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0.6;
-  z-index: 1056;
-}
-#pg-spinner .pg-sp-content {
-  position: absolute;
-  width: 100%;
-  top: 40%;
-}
-#pg-spinner .pg-sp-icon {
-  font-size: 50px;
-  text-align: center;
-  color: #ccc;
-}
-#pg-spinner .pg-sp-text {
-  font-size: 20px;
-  text-align: center;
-  color: #fff;
-}
-.pgadmin_header_logo {
-  cursor: default;
-}
-</style>
 <div id="pg-spinner">
   <div class="pg-sp-content">
     <div class="row"><div class="col-xs-12 pg-sp-icon fa fa-spinner fa-pulse"></div></div>

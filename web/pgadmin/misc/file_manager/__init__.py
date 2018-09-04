@@ -137,8 +137,7 @@ class FileManagerModule(PgAdminModule):
 
     def get_own_stylesheets(self):
         return [
-            url_for('static', filename='vendor/jquery.dropzone/dropzone.css'),
-            url_for('file_manager.static', filename='css/file_manager.css')
+            url_for('static', filename='vendor/jquery.dropzone/dropzone.css')
         ]
 
     def get_own_menuitems(self):

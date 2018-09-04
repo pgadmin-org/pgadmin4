@@ -1,7 +1,10 @@
+.cm-s-default .CodeMirror {
+  background: $color-editor-bg;
+}
 /* To override inbuilt Green color for matchingbracket */
 .cm-s-default .CodeMirror-matchingbracket {
-    color: #333333 !important;
-    background-color: #e8e8e8 !important;
+    color:  $color-gray-dark !important;
+    background-color: $color-gray-lighter !important;
 }
 
 /* Ensure the codemirror editor displays full height gutters when resized */
@@ -12,7 +15,7 @@
 
 /*
  * Remove border right from "CodeMirror-gutters"
- * class becuase its height doesn't increase
+ * class because its height doesn't increase
  * with every new line added, instead add border
  * right to ".CodeMirror-linenumber" class which
  * adds a new div for every new line added
@@ -22,45 +25,45 @@
 }
 
 .sql_field_layout .CodeMirror-linenumber {
-    border-right: 1px solid #ddd;
-    background-color: #f7f7f7;
+    border-right: 1px solid $color-gray-lighter;
+    background-color: $color-gray-lighter;
 }
 
 /* class to disable Codemirror editor */
 .cm_disabled {
-  background: #EEEEEE;
+  background: $color-gray-lighter;
 }
 
 /* make syntax-highlighting bold */
 .cm-s-default .cm-keyword {
   font-weight: 600;
-  color: #908;
+  color: $color-editor-keyword;
 }
 
 .cm-s-default .cm-number {
   font-weight: 600;
-  color: #964;
+  color: $color-editor-number;
 }
 
 /* Codemirror buttons */
 .CodeMirror-dialog button {
-    font-family: 'Open Sans';
-    color: white;
+    font-family: $font-family-primary;
+    color: $color-fg-inverse;
     font-size: 70%;
-    background-image: -webkit-linear-gradient(top, #337ab7 0%, #265a88 100%);
-    background-image: -o-linear-gradient(top, #337ab7 0%, #265a88 100%);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#337ab7), to(#265a88));
-    background-image: linear-gradient(to bottom, #337ab7 0%, #265a88 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff265a88', GradientType=0);
+    background-image: -webkit-linear-gradient(top, $color-primary-light 0%, $color-primary 100%);
+    background-image: -o-linear-gradient(top, $color-primary-light 0%, $color-primary 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from($color-primary-light), to($color-primary));
+    background-image: linear-gradient(to bottom, $color-primary-light 0%, $color-primary 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$color-primary-light}', endColorstr='#{$color-primary}', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
     background-repeat: repeat-x;
-    border-color: #245580;
+    border-color: $color-primary;
     border-radius: 4px;
 }
 
 #history-detail-query .CodeMirror {
-  border: 1px solid #CCCCCC;
-  background-color: #F7F7F7;
+  border: 1px solid $color-gray-light;
+  background-color: $color-gray-lighter;
   width: 100%;
   padding-left: 5px;
   position: absolute;

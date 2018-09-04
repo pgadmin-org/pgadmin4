@@ -1,0 +1,243 @@
+/* Background color */
+
+.bg-white {
+  background-color: $color-bg;
+}
+
+.bg-primary {
+  background-color: $color-primary;
+
+  &-lighter {
+    background-color: $color-primary-lighter;
+  }
+
+  &-light{
+    background-color: $color-primary-light;
+  }
+
+  &-dark{
+    background-color: $color-primary-dark;
+  }
+
+  &-darker{
+    background-color: $color-primary-darker;
+  }
+}
+
+.bg-danger {
+  background-color: $color-danger;
+
+  &-lighter {
+    background-color: $color-danger-lighter;
+  }
+
+  &-light {
+    background-color: $color-danger-light;
+  }
+
+  &-dark{
+    background-color: $color-danger-dark;
+  }
+
+  &-darker{
+    background-color: $color-danger-darker;
+  }
+}
+
+.bg-success {
+  background-color: $color-success;
+
+  &-lighter {
+    background-color: $color-success-lighter;
+  }
+
+  &-light {
+    background-color: $color-success-light;
+  }
+
+  &-dark{
+    background-color: $color-success-dark;
+  }
+
+  &-darker{
+    background-color: $color-success-darker;
+  }
+}
+
+
+.bg-warning {
+  background-color: $color-warning;
+
+  &-lighter {
+    background-color: $color-warning-lighter;
+  }
+
+  &-light {
+    background-color: $color-warning-light;
+  }
+
+  &-dark{
+    background-color: $color-warning-dark;
+  }
+
+  &-darker{
+    background-color: $color-warning-darker;
+  }
+}
+
+
+.bg-gray {
+  background-color:  $color-gray;
+
+  &-lighter {
+    background-color: $color-gray-lighter;
+  }
+
+  &-light {
+    background-color: $color-gray-light;
+  }
+
+  &-dark {
+    background-color:  $color-gray-dark;
+  }
+
+  &-darker {
+    background-color:  $color-gray-darker;
+  }
+}
+
+/* Borders */
+.border-primary {
+  border-color: $color-primary;
+
+  &-lighter {
+    border-color: $color-primary-lighter;
+  }
+
+  &-light {
+    border-color: $color-primary-light;
+  }
+
+  &-dark {
+    border-color: $color-primary-dark;
+  }
+
+  &-darker {
+    border-color: $color-primary-darker;
+  }
+}
+
+.border-danger {
+  border-color: $color-danger;
+
+  &-lighter{
+    border-color: $color-danger-lighter;
+  }
+
+  &-light {
+    border-color: $color-danger-light;
+  }
+
+  &-dark {
+    border-color: $color-danger-dark;
+  }
+
+  &-darker {
+    border-color: $color-danger-darker;
+  }
+}
+
+.border-success {
+  border-color: $color-success-light;
+
+  &-lighter {
+    border-color: $color-success-lighter;
+  }
+
+  &-light {
+    border-color: $color-success-light;
+  }
+
+  &-dark {
+    border-color: $color-success-dark;
+  }
+
+  &-darker {
+    border-color: $color-success-darker;
+  }
+}
+
+.border-gray {
+  border: 2px solid $color-gray;
+
+  &-lighter {
+    border: 2px solid $color-gray-lighter;
+  }
+
+  &-light {
+    border: 2px solid $color-gray-light;
+  }
+
+  &-dark {
+    border: 2px solid $color-gray-dark;
+  }
+
+  &-darker {
+    border: 2px solid $color-gray-darker;
+  }
+
+  &-white {
+    border: 2px solid $color-gray-white;
+  }
+}
+
+/* Typography */
+
+
+.font-white {
+  color: $color-fg-inverse;
+}
+
+.text-gray {
+  color:  $color-gray;
+
+  &-dark {
+    color:  $color-gray-dark;
+  }
+}
+
+.text-danger {
+  color: $color-danger;
+}
+
+.text-primary {
+  color: $color-primary;
+}
+
+.text-success {
+  color: $color-success;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-14 {
+  font-family: $font-family-primary;
+  font-size: 14px;
+}
+
+.text-13 {
+  font-family: $font-family-primary;
+  font-size: 13px;
+}
+
+.text-12 {
+  font-family: $font-family-primary;
+  font-size: 12px;
+}
+
+.text-11 {
+  font-family: $font-family-primary;
+  font-size: 11px;
+}

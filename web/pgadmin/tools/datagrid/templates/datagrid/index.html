@@ -18,7 +18,7 @@
         <span class="sql-editor-busy-text wcLoadingLabel"></span>
     </div>
     <div class="sql-editor">
-        <div id="btn-toolbar" class="pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
+        <div id="btn-toolbar" class="pg-prop-btn-group bg-gray-lighter border-gray-light" role="toolbar" aria-label="">
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-load-file" type="button" class="btn btn-default btn-load-file"
                         title=""
@@ -338,7 +338,7 @@
                 </i>
             </div>
             <div class="editor-title"
-                 style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% else %}{{ bgcolor or '#2C76B4' }}{% endif %}; color: {{ fgcolor or 'white' }};"></div>
+                 style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};"></div>
         </div>
         <div id="editor-panel" tabindex="0"></div>
         <iframe id="download-csv" style="display:none"></iframe>

@@ -1,0 +1,26 @@
+.debugger-container .CodeMirror-activeline-background {
+  background: $color-editor-activeline;
+}
+
+.CodeMirror-foldmarker {
+  color: $color-editor-foldmarker;
+  text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
+  font-family: $font-family-primary;
+  line-height: .3;
+  cursor: pointer;
+}
+
+/* To make font same as Query tool in messages tab */
+.messages {
+    white-space: pre-wrap;
+    font-family: $font-family-editor;
+    padding-top: 5px;
+    padding-left: 10px;
+    overflow: auto;
+    height: 100%;
+    font-size: 0.925em;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}

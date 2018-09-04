@@ -14,16 +14,6 @@
     cursor: pointer;
 }
 
-.dashboard-icon {
-    color: black;
-}
-
-.dashboard-tab-container {
-    border-left: 1px solid #E2E2E2;
-    border-right: 1px solid #E2E2E2;
-    border-bottom: 1px solid #E2E2E2;
-}
-
 .dashboard-tab-panel > li > a {
     padding: 0px 15px !important;
 }
@@ -40,14 +30,6 @@
 .dashboard-tab.active {
     margin-top: 0px;
     line-height: 30px;
-}
-
-.dashboard-tab-btn-group {
-    background-color: #D2D2D2;
-    border: 2px solid #A9A9A9;
-    left: 0px;
-    right: 0px;
-    padding: 2px;
 }
 
 .dashboard-tab-btn-group button {
@@ -70,17 +52,6 @@
 .graph-container {
     margin-top: 10px;
     height: 150px;
-}
-
-.graph-error {
-    background-color: #E2E2E2;
-    padding-top: 20px
-}
-
-.grid-error {
-    background-color: #E2E2E2;
-    padding-top: 20px;
-    padding-bottom: 40px;
 }
 
 .icon-postgres:before {
@@ -114,45 +85,8 @@
   padding: 0px;
 }
 
-.dashboard-tab-container .subnode-dialog {
-  background-color: white;
-  border: 0px solid #e8e8e8;
-}
-
 .dashboard-tab-container .subnode-dialog .control-label {
   font-weight: inherit;
-}
-
-.dashboard-tab-container .sub-node-form {
-  padding: 0px 0px 0px 1px;
-  background-color: #f8f8f8;
-}
-
-.dashboard-tab-container .subnode-body {
-  background-color: #f8f8f8;
-}
-
-.dashboard-tab-container .sub-node-form > .nav-tabs {
-  background-color: #f8f8f8 !important;
-}
-
-.dashboard-tab-container .subnode-dialog .nav > li > a {
-  font-weight: bold;
-  border-color: #f8f8f8;
-}
-
-.dashboard-tab-container .subnode-dialog .nav-tabs > li.active > a,
-.dashboard-tab-container .subnode-dialog .nav-tabs > li.active > a:hover {
-  border-top: 1px solid #cccccc;
-  border-left: 1px solid #cccccc;
-  border-right: 1px solid #cccccc;
-  margin-bottom: -1px;
-  z-index: 10;
-}
-
-.dashboard-tab-container .backgrid .editor {
-  background-color: #f8f8f8 !important;
-  border-bottom-color: #f8f8f8;
 }
 
 .dashboard-tab-container .backgrid.presentation td.editable:not(.edit-cell) {
@@ -161,10 +95,6 @@
 
 .dashboard-tab-container .subnode-dialog .pgadmin-control-group {
   padding: 5px;
-}
-
-.dashboard-tab-container .subnode-dialog .tab-pane {
-  border: 1px solid #cccccc;
 }
 
 .dashboard-container .delete-cell .fa-times-circle:before {

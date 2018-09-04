@@ -23,12 +23,6 @@
     padding-bottom: 50px /* Offset the nav bar to ensure there's enough scroll space */
 }
 
-.browser-tab-bar {
-    padding-left: 5px;
-    padding-top: 5px;
-    background-color: #E6E6E6;
-}
-
 .browser-tab-panes {
     height: 100%;
 }
@@ -50,23 +44,19 @@
   display: table !important;
 }
 
-
-code,
-kbd,
-pre,
-samp,
-.CodeMirror pre {
-  font-family: 'Source Code Pro';
-}
-
-.sql-editor-grid-container {
-  font-family: 'Open Sans' !important;
-}
-
 .pg-login-icon {
   font-size: 16px;
 }
 
 .CodeMirror {
   font-size: 1em;
+}
+
+#pg-spinner .pg-sp-content {
+  position: absolute;
+  width: 100%;
+  top: 40%;
+}
+.pgadmin_header_logo {
+  cursor: default;
 }

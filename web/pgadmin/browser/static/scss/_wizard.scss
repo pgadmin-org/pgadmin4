@@ -1,0 +1,36 @@
+.wizard-header {
+  padding: 6px 10px!important;
+  min-height: 35px;
+  max-height: 35px;
+  border-bottom: 2px solid $color-gray-light;
+  background-color: $color-primary;
+  font-weight: bold;
+  color: $color-fg-inverse;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 0;
+}
+
+.pgadmin-wizard .footer {
+  background-color: $color-gray-lighter;
+  border-width: 2px 0px 0px 0px;
+  border-style: solid;
+  border-color:  $color-gray-dark;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Error message css */
+.pgadmin-wizard .error_msg_div {
+  background: $color-bg;
+  font-size: 13px;
+}
+
+.pgadmin-wizard .error_msg_div p {
+  background: $color-bg;
+  color: $color-danger;
+}

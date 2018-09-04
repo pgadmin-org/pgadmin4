@@ -34,9 +34,7 @@ class BGProcessModule(PgAdminModule):
         Returns:
             list: the stylesheets used by this module.
         """
-        stylesheets = [
-            url_for('bgprocess.static', filename='css/bgprocess.css')
-        ]
+        stylesheets = []
         return stylesheets
 
     def get_exposed_url_endpoints(self):

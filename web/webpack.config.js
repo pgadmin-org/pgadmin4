@@ -2,6 +2,7 @@
 // Import file, libraries and plugins
 const path = require('path');
 const webpack = require('webpack');
+const fs = require('fs');
 const sourceDir = __dirname + '/pgadmin/static';
 // webpack.shim.js contains path references for resolve > alias configuration
 // and other util function used in CommonsChunksPlugin.
@@ -10,8 +11,7 @@ const PRODUCTION = process.env.NODE_ENV === 'production';
 const envType = PRODUCTION ? 'production': 'development';
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractStyle = new ExtractTextPlugin('style.css');
-const extractSass = new ExtractTextPlugin('pgadmin.css');
+const extractStyle = new ExtractTextPlugin('[name].css');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 // Extract vendor related libraries(node_modules/lib/lib.js) from bundles
@@ -100,6 +100,30 @@ const sourceMapDevToolPlugin = new webpack.SourceMapDevToolPlugin({
   columns: false,
 });
 
+/* Get all the style files recursively and store in array to
+ * give input to webpack. We are skipping pgadmin/static directory
+ * and adding it to array manually
+ */
+let pgadminStyles = [path.join(__dirname, './pgadmin/static/scss/pgadmin.scss')];
+function pushPgadminStyles(curr_path) {
+  if(path.join(__dirname, './pgadmin/static') === curr_path ||
+      curr_path.indexOf('template') > -1) {
+    return;
+  }
+
+  fs.readdirSync(curr_path).map(function(curr_file) {
+    let stats = fs.statSync(path.join(curr_path, curr_file));
+    /* if directory, dig further */
+    if(stats.isDirectory()) {
+      pushPgadminStyles(path.join(curr_path, curr_file));
+    }
+    else if(stats.isFile() && (curr_file.endsWith('.scss') || curr_file.endsWith('.css'))) {
+      pgadminStyles.push(path.join(curr_path, curr_file));
+    }
+  });
+}
+pushPgadminStyles(path.join(__dirname,'./pgadmin'));
+
 module.exports = {
   stats: { children: false },
   // The base directory, an absolute path, for resolving entry points and loaders
@@ -112,8 +136,8 @@ module.exports = {
     sqleditor: './pgadmin/tools/sqleditor/static/js/sqleditor.js',
     debugger_direct: './pgadmin/tools/debugger/static/js/direct.js',
     file_utils: './pgadmin/misc/file_manager/static/js/utility.js',
-    pgadmin_css: './pgadmin/static/scss/pgadmin.scss',
-    style_css: './pgadmin/static/css/style.css',
+    pgadmin: pgadminStyles,
+    style: './pgadmin/static/css/style.css',
   },
   // path: The output directory for generated bundles(defined in entry)
   // Ref: https://webpack.js.org/configuration/output/#output-library
@@ -252,31 +276,42 @@ module.exports = {
       },
     }, {
       test: /\.(jpe?g|png|gif|svg)$/i,
-      loaders: [
-        'file-loader?hash=sha512&digest=hex&name=img/[name].[ext]', {
-          loader: 'image-webpack-loader',
-          query: {
-            bypassOnDebug: true,
-            mozjpeg: {
-              progressive: true,
-            },
-            gifsicle: {
-              interlaced: false,
-            },
-            optipng: {
-              optimizationLevel: 7,
-            },
-            pngquant: {
-              quality: '75-90',
-              speed: 3,
-            },
+      loaders: [{
+        loader: 'url-loader',
+        options: {
+          emitFile: true,
+          name: 'img/[name].[ext]',
+          limit: 4096,
+        },
+      }, {
+        loader: 'image-webpack-loader',
+        query: {
+          bypassOnDebug: true,
+          mozjpeg: {
+            progressive: true,
+          },
+          gifsicle: {
+            interlaced: false,
+          },
+          optipng: {
+            optimizationLevel: 7,
+          },
+          pngquant: {
+            quality: '75-90',
+            speed: 3,
           },
         },
-      ],
+      }],
       exclude: /vendor/,
     }, {
       test: /\.(eot|svg|ttf|woff|woff2)$/,
-      loader: 'file-loader?name=fonts/[name].[ext]',
+      loaders: [{
+        loader: 'file-loader',
+        options: {
+          name: 'fonts/[name].[ext]',
+          emitFile: true,
+        },
+      }],
       include: [
         /node_modules/,
         path.join(sourceDir, '/css/'),
@@ -286,13 +321,18 @@ module.exports = {
       exclude: /vendor/,
     }, {
       test: /\.scss$/,
-      use: extractSass.extract({
+      use: extractStyle.extract({
         use: [{
           loader: 'css-loader',
         }, {
           loader: 'sass-loader', // compiles Sass to CSS
+        }, {
+          /* This will @import with below resources to all scss files */
+          loader: 'sass-resources-loader',
           options: {
-            includePaths: ['./pgadmin/static/scss/'],
+            resources: [
+              './pgadmin/static/scss/resources/pgadmin.resources.scss',
+            ],
           },
         }],
       }),
@@ -325,7 +365,6 @@ module.exports = {
   // Define list of Plugins used in Production or development mode
   // Ref:https://webpack.js.org/concepts/plugins/#components/sidebar/sidebar.jsx
   plugins: PRODUCTION ? [
-    extractSass,
     extractStyle,
     vendorChunks,
     pgAdminCommonChunks,
@@ -335,7 +374,6 @@ module.exports = {
     definePlugin,
     sourceMapDevToolPlugin,
   ]: [
-    extractSass,
     extractStyle,
     vendorChunks,
     pgAdminCommonChunks,

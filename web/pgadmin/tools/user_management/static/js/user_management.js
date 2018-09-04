@@ -630,7 +630,7 @@ define([
               var footerTpl = _.template([
                   '<div class="pg-prop-footer" style="visibility:hidden;">',
                   '<div class="pg-prop-status-bar">',
-                  '<div class="media error-in-footer bg-red-1 border-red-2 font-red-3 text-14">',
+                  '<div class="media error-in-footer bg-danger-lighter border-danger-light text-danger text-14">',
                   '<div class="media-body media-middle">',
                   '<div class="alert-icon error-icon">',
                   '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
@@ -645,9 +645,7 @@ define([
                 ].join('\n')),
                 $statusBar = $(footerTpl()),
                 UserRow = Backgrid.Row.extend({
-                  userInvalidColor: 'lightYellow',
-
-                  userValidColor: '#fff',
+                  userInvalidClass: 'bg-user-invalid',
 
                   initialize: function() {
                     Backgrid.Row.prototype.initialize.apply(this, arguments);
@@ -656,10 +654,10 @@ define([
                   },
                   userInvalid: function() {
                     $(this.el).removeClass('new');
-                    this.el.style.backgroundColor = this.userInvalidColor;
+                    $(this.el).addClass(this.userInvalidClass);
                   },
                   userValid: function() {
-                    this.el.style.backgroundColor = this.userValidColor;
+                    $(this.el).removeClass(this.userInvalidClass);
                   },
                 }),
                 UserCollection = Backbone.Collection.extend({

@@ -1,21 +1,21 @@
 .query-history {
   height: 100%;
   .list-item {
-    border-bottom: 1px solid $color-gray-3;
+    border-bottom: 1px solid $color-gray-light;
   }
 
   .entry {
     @extend .text-14;
-    @extend .bg-white-1;
-    font-family: 'Source Code Pro';
+    @extend .bg-white;
+    font-family: $font-family-editor;
     border: 2px solid transparent;
     margin-left: 1px;
     padding: 0 8px 0 5px;
 
     .other-info {
       @extend .text-13;
-      @extend .font-gray-4;
-      font-family: 'Source Code Pro';
+      @extend .text-gray;
+      font-family: $font-family-editor;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -34,32 +34,32 @@
   }
 
   .date-label {
-    font-family: 'Source Code Pro';
-    background: #e8e8e8;
+    font-family: $font-family-editor;
+    background: $color-gray-lighter;
     padding: 2px 9px;
     font-size: 11px;
     font-weight: bold;
-    color: #888888;
-    border-bottom: 1px solid #cccccc;
+    color:  $color-gray;
+    border-bottom: 1px solid $color-gray-light;
   }
 
   .entry.error {
-    @extend .bg-red-1;
+    @extend .bg-danger-lighter;
   }
 
   .entry.selected.error {
-    background-color: #d7d0d9;
+    background-color: $color-danger-lighter;
   }
 
   .entry.selected {
-    @extend .font-primary-blue;
-    @extend .border-primary-blue;
-    @extend .bg-blue-1;
+    @extend .text-primary;
+    @extend .border-primary;
+    @extend .bg-primary-lighter;
     font-weight: bold;
     border: 2px solid;
 
     .other-info {
-      @extend .font-primary-blue;
+      @extend .text-primary;
       font-weight: bold;
     }
   }
@@ -67,7 +67,7 @@
 
 .header-label {
   @extend .text-12;
-  @extend .font-gray-4;
+  @extend .text-gray;
   display: block;
 }
 
@@ -77,7 +77,7 @@
   flex-direction: column;
 
   .error-message-block {
-    @extend .bg-red-1;
+    @extend .bg-danger-lighter;
     flex: 0.3;
     padding-left: 20px;
 
@@ -86,7 +86,7 @@
       padding: 7px 0;
 
       span {
-        @extend .font-red-3;
+        @extend .text-danger;
         font-weight: 500;
         margin-right: 8px;
       }
@@ -129,22 +129,22 @@
       float: left;
       position: relative;
       z-index: 10;
-      border: 1px solid $color-gray-3;
-      color: $primary-blue;
+      border: 1px solid $color-gray-light;
+      color: $color-primary;
       font-size: 12px;
-      box-shadow: 1px 2px 4px 0px $color-gray-3;
+      box-shadow: 1px 2px 4px 0px $color-gray-light;
       padding: 3px 12px 3px 10px;
       font-weight: 500;
       min-width: 75px;
     }
 
     .copy-all {
-      background-color: #ffffff;
+      background-color: $color-bg;
     }
 
     .was-copied {
-      background-color: $color-blue-1;
-      border-color: $color-blue-2;
+      background-color: $color-primary-lighter;
+      border-color: $color-primary-light;
     }
 
     .CodeMirror-scroll {
@@ -153,7 +153,7 @@
   }
 
   .block-divider {
-    @extend .border-gray-3;
+    @extend .border-gray-light;
     margin-top: 11px;
     margin-bottom: 8px;
   }
@@ -181,9 +181,9 @@
         height: 100%;
 
         .content-value {
-          @extend .bg-white-1;
+          @extend .bg-white;
           @extend .text-13;
-          font-family: 'Source Code Pro';
+          font-family: $font-family-editor;
           border: 0;
           padding-left: 0;
           position: absolute;

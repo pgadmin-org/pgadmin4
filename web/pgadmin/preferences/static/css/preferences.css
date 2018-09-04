@@ -5,15 +5,6 @@
   padding-bottom: 39px;
 }
 
-.preferences_tree{
-  padding: 0px;
-  padding-top: 2px;
-  height: 100%;
-  overflow: auto;
-  border-right: 2px solid #999999;
-  background-image: #FAFAFA;
-}
-
 .preferences_content {
   padding-top: 10px;
   height: 100%;

@@ -42,7 +42,7 @@ class PreferencesModule(PgAdminModule):
         }]
 
     def get_own_stylesheets(self):
-        return [url_for('preferences.static', filename='css/preferences.css')]
+        return []
 
     def get_own_menuitems(self):
         return {
