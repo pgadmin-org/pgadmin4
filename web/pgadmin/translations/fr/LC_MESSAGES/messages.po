@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-09-05 16:59+0100\n"
-"PO-Revision-Date: 2018-03-18 14:07+0100\n"
+"POT-Creation-Date: 2018-09-05 17:05+0100\n"
+"PO-Revision-Date: 2018-09-05 17:28+0200\n"
 "Last-Translator: Fred Escallier <fred.escallier@free.fr>\n"
 "Language: fr\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -152,11 +152,11 @@ msgstr "Affichage"
 
 #: pgadmin/browser/register_browser_preferences.py:21
 msgid "Enable browser tree animation?"
-msgstr ""
+msgstr "Activer l'animation de l'arborescence du navigateur ?"
 
 #: pgadmin/browser/register_browser_preferences.py:27
 msgid "Enable dialogue/notification animation?"
-msgstr ""
+msgstr "Activer l'animation boites de dialogues / notifications ?"
 
 #: pgadmin/browser/register_browser_preferences.py:33
 msgid "Count rows if estimated less than"
@@ -170,13 +170,15 @@ msgstr "Propriétés"
 
 #: pgadmin/browser/register_browser_preferences.py:39
 msgid "Maximum job history rows"
-msgstr ""
+msgstr "Nombre de lignes max de l'historique des tâches"
 
 #: pgadmin/browser/register_browser_preferences.py:42
 msgid ""
 "The maximum number of history rows to show on the Statistics tab for "
 "pgAgent jobs"
 msgstr ""
+"Nombre maximum de lignes à afficher dans le tableau de statistiques des "
+"tâches pgAgent "
 
 #: pgadmin/browser/register_browser_preferences.py:49
 #: pgadmin/utils/__init__.py:292 pgadmin/utils/__init__.py:301
@@ -312,7 +314,7 @@ msgstr "Onglet précédent"
 
 #: pgadmin/browser/register_browser_preferences.py:298
 msgid "Refresh browser tree"
-msgstr ""
+msgstr "Actualiser l'arborescence du navigateur"
 
 #: pgadmin/browser/utils.py:254
 msgid "Unimplemented method ({0}) for this url ({1})"
@@ -372,7 +374,7 @@ msgstr "Le groupe de serveurs avec id# {0} ne peut pas être trouvé."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:393
 msgid "Could not find the server with id# {0}."
-msgstr ""
+msgstr "Impossible de trouver le serveur avec id# {0}."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:441
 msgid ""
@@ -590,7 +592,7 @@ msgstr "Merci de connecter le serveur."
 #: pgadmin/browser/server_groups/servers/__init__.py:1531
 #: pgadmin/browser/server_groups/servers/__init__.py:1567
 msgid "The saved password cleared successfully."
-msgstr ""
+msgstr "Le mot de passe enregistré a été supprimé."
 
 #: pgadmin/browser/server_groups/servers/gpdb.py:15
 msgid "Greenplum Database Binary Path"
@@ -3602,7 +3604,7 @@ msgstr "Contrainte"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:339
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:430
 msgid "Include columns"
-msgstr ""
+msgstr "Inclure les colonnes"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:919
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:232
@@ -4317,12 +4319,13 @@ msgid "In"
 msgstr "Dans"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:298
+#, fuzzy
 msgid "Modulus"
-msgstr ""
+msgstr "Moduo"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:310
 msgid "Remainder"
-msgstr ""
+msgstr "Reste"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:337
 msgid "Partition name cannot be empty."
@@ -4345,12 +4348,15 @@ msgid "For list partition In field cannot be empty."
 msgstr "Pou le partitionnement par liste, le champ \"Dans\" doit être renseigné."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:364
+#, fuzzy
 msgid "For hash partition Modulus field cannot be empty."
 msgstr ""
+"Pour le partitionnement par hachage, le champ 'Modulo' doit être "
+"renseigné."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:369
 msgid "For hash partition Remainder field cannot be empty."
-msgstr ""
+msgstr "Pour le partitionnement par hachage, le champ 'Reste' doit être renseigné."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:63
@@ -4376,7 +4382,7 @@ msgstr "Modifier \"De type\" supprimera les définitions de colonne ?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:853
 msgid "Hash"
-msgstr ""
+msgstr "Hachage"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:953
 msgid "Partition table supports two types of keys:"
@@ -4460,8 +4466,9 @@ msgstr ""
 "simples (')"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1059
+#, fuzzy
 msgid "Modulus/Remainder: Enabled for hash partition."
-msgstr ""
+msgstr "Modulo/Reste: Disponibles pour la partition par hachage."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:2
 msgid "Null fraction"
@@ -4783,14 +4790,12 @@ msgstr "Nombre de lignes"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:39
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:39
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:35
-#, fuzzy
 msgid "Tuple length"
 msgstr "Taille des lignes"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:40
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:40
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:36
-#, fuzzy
 msgid "Tuple percent"
 msgstr "Pourcentage de lignes"
 
@@ -4874,7 +4879,7 @@ msgstr "Désactiver le déclencheur"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:176
 msgid "Disable trigger failed"
-msgstr ""
+msgstr "La désactivation du déclencheur a échoué"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:196
 msgid "Trigger enabled?"
@@ -5404,7 +5409,6 @@ msgstr "Connecter la base de donnée"
 
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:3
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:3
-#, fuzzy
 msgid "Backends"
 msgstr "Clients"
 
@@ -6350,7 +6354,7 @@ msgstr "Merci de renseigner le code à exécuter."
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:308
 msgid "Please select valid on error option ."
-msgstr ""
+msgstr "Veuillez sélectionner une option valide en cas d'erreur."
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:2
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:2
@@ -6931,11 +6935,11 @@ msgstr "Relancer la restauration des journaux de transactions WAL"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:113
 msgid "Clear Saved Password"
-msgstr ""
+msgstr "Supprimer le mot de passe enregistré"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:125
 msgid "Clear SSH Tunnel Password"
-msgstr ""
+msgstr "Supprimer le mot de passe du tunnel SSH"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:253
 msgid "Disconnect server"
@@ -7030,16 +7034,18 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:636
 msgid "Clear saved password"
-msgstr ""
+msgstr "Supprimer le mot de passe enregistré"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:638
 #, python-format
 msgid "Are you sure you want to clear the saved password for server %s?"
 msgstr ""
+"Êtes vous sûr de vouloir supprimer le mot de passe enregistré pour le "
+"serveur %s ?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:676
 msgid "Clear SSH Tunnel password"
-msgstr ""
+msgstr "Supprimer le mot de passe du tunnel SSH"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:678
 #, python-format
@@ -7047,6 +7053,8 @@ msgid ""
 "Are you sure you want to clear the saved password of SSH Tunnel for "
 "server %s?"
 msgstr ""
+"Êtes vous sûr de vouloir supprimer le mot de passe enregistré du tunnel "
+"SSH pour le serveur %s ?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:752
 msgid "Server group"
@@ -7178,7 +7186,7 @@ msgstr "Compression SSL ?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:894
 msgid "Use SSH tunneling"
-msgstr ""
+msgstr "utiliser un tunnel SSH"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:895
 #: pgadmin/browser/server_groups/servers/static/js/server.js:909
@@ -7190,25 +7198,25 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/server.js:954
 #: pgadmin/browser/server_groups/servers/static/js/server.js:961
 msgid "SSH Tunnel"
-msgstr ""
+msgstr "Tunnel SSH"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:909
 msgid "Tunnel host"
-msgstr ""
+msgstr "Hôte du tunnel"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:915
 msgid "Tunnel port"
-msgstr ""
+msgstr "Port du tunnel"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:927
 msgid "Authentication"
-msgstr ""
+msgstr "Authentification"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:929
 #: pgadmin/browser/server_groups/servers/static/js/server.js:936
 #: pgadmin/browser/server_groups/servers/static/js/server.js:950
 msgid "Identity file"
-msgstr ""
+msgstr "Fichier identité"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:973
 msgid "Host address"
@@ -7229,7 +7237,7 @@ msgstr "Service"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:996
 msgid "Connection timeout (seconds)"
-msgstr ""
+msgstr "Limite de connexion (secondes)"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1121
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1975
@@ -7351,14 +7359,20 @@ msgid ""
 "SSH Tunnel password for the identity file '{0}' to connect the server "
 "\"{1}\""
 msgstr ""
+"Mot de passe du tunnel SSH pour le fichier d'identité '{0}' permettant de"
+" connecter le serveur \"{1}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:11
 msgid "SSH Tunnel password for the user '{0}' to connect the server \"{1}\""
 msgstr ""
+"Mot de passe du tunnel SSH pour l'utilisateur '{0}' se connectant au "
+"serveur \"{1}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:27
 msgid "Database server password for the user '{0}' to connect the server \"{1}\""
 msgstr ""
+"Mot de passe du serveur de données  pour l'utilisateur '{0}' se "
+"connectant au serveur \"{1}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:31
@@ -7881,9 +7895,8 @@ msgid "View the active session details"
 msgstr "Voir les détails de la session active"
 
 #: pgadmin/dashboard/static/js/dashboard.js:156
-#, fuzzy
 msgid "Backend type"
-msgstr "Type de backend"
+msgstr "Type de client"
 
 #: pgadmin/dashboard/static/js/dashboard.js:160
 #: pgadmin/dashboard/static/js/dashboard.js:170
@@ -8050,7 +8063,6 @@ msgid "Superuser privileges are required to "
 msgstr "Des droits superuser sont requis pour "
 
 #: pgadmin/dashboard/static/js/dashboard.js:1400
-#, fuzzy
 msgid " another users query."
 msgstr " une autre requête."
 
@@ -8600,11 +8612,11 @@ msgstr "Cliquer pour afficher les détails."
 
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:151
 msgid "Unknown error"
-msgstr ""
+msgstr "Erreur Inconnue"
 
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:158
 msgid "INTERNAL SERVER ERROR"
-msgstr ""
+msgstr "ERREUR INTERNE DU SERVEUR"
 
 #: pgadmin/static/js/backform.pgadmin.js:1532
 msgid "Nothing changed."
@@ -8668,12 +8680,12 @@ msgstr "Alt"
 #: pgadmin/static/js/keyboard_shortcuts.js:82
 #, python-format
 msgid "%(title)s (%(text_representation)s)"
-msgstr ""
+msgstr "%(title)s (%(text_representation)s)"
 
 #: pgadmin/static/js/keyboard_shortcuts.js:94
 #, python-format
 msgid "%(title)s (accesskey + %(key)s)"
-msgstr ""
+msgstr "%(title)s (accesskey + %(key)s)"
 
 #: pgadmin/static/js/sqleditor_utils.js:150
 msgid "An unexpected error occurred - ensure you are logged into the application."
@@ -8694,6 +8706,8 @@ msgid ""
 "Databases with = symbols in the name cannot be backed up or restored "
 "using this utility."
 msgstr ""
+"Les bases de données avec un symbole = dans leur nom ne peuvent pas être "
+"sauvegardée ou restaurée avec cet utilitaire."
 
 #: pgadmin/static/js/alertify/dialog.js:76
 msgid "Please select server or child node from the browser tree."
@@ -8746,19 +8760,19 @@ msgstr "Un port doit être renseigné."
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:47
 msgid "SSH Tunnel host must be specified."
-msgstr ""
+msgstr "L'hôte du tunnel SSH doit être renseigné."
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:48
 msgid "SSH Tunnel port must be specified."
-msgstr ""
+msgstr "Le port du tunnel SSH doit être renseigné."
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:49
 msgid "SSH Tunnel username must be specified."
-msgstr ""
+msgstr "Le nom d'utilisateur du tunnel SSH doit être renseigné."
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:51
 msgid "SSH Tunnel identity file must be specified."
-msgstr ""
+msgstr "Le fichier d'identité du tunnel SSH doit être renseigné."
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:83
 msgid "Either Host name, Address or Service must be specified."
@@ -8814,80 +8828,85 @@ msgstr "Requête exécutée avec succès en %s."
 #: pgadmin/static/js/sqleditor/filter_dialog.js:26
 #: pgadmin/static/js/sqleditor/filter_dialog.js:48
 msgid "Sort/Filter options"
-msgstr ""
+msgstr "Options de Filtre/Tri"
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:134
 msgid "Loading data..."
-msgstr ""
+msgstr "Chargement des données..."
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:226
 msgid "Filter updated successfully"
-msgstr ""
+msgstr "Filtre mis à jour avec succès"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:10
 msgid "ASC"
-msgstr ""
+msgstr "ASC"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:45
 msgid "Order"
-msgstr ""
+msgstr "Order"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:71
 msgid "Please select a column."
-msgstr ""
+msgstr "Merci de choisir une colonne."
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:77
 msgid "Please select the order."
-msgstr ""
+msgstr "Merci de choisir l'ordre."
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:92
 msgid "SQL Filter"
-msgstr ""
+msgstr "Filtre SQL"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:109
 msgid "Data Sorting"
-msgstr ""
+msgstr "Tri des données"
 
 #: pgadmin/static/js/sqleditor/geometry_viewer.js:332
 msgid "3D geometries not rendered."
-msgstr ""
+msgstr "Pas de rendu pour les géométries 3D."
 
 #: pgadmin/static/js/sqleditor/geometry_viewer.js:335
 msgid "Unsupported geometries not rendered."
-msgstr ""
+msgstr "Pas de rendu pour les géométries non supportées."
 
 #: pgadmin/static/js/sqleditor/geometry_viewer.js:375
 msgid "Geometries with non-SRID"
-msgstr ""
+msgstr "Géométries sans SRID"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:15
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:65
+#, fuzzy
 msgid "Recorded time"
-msgstr ""
+msgstr "Temps enregistré"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:31
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:77
 msgid "Process ID"
-msgstr ""
+msgstr "ID du processus"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:39
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:83
+#, fuzzy
 msgid "Payload"
-msgstr ""
+msgstr "Coût"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:108
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:116
+#, fuzzy
 msgid "Asynchronous notification \""
-msgstr ""
+msgstr "Notification asynchrone \""
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:110
+#, fuzzy
 msgid "\" with payload \""
-msgstr ""
+msgstr "\" avec coût \""
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:112
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:118
+#, fuzzy
 msgid "\" received from server process with PID "
-msgstr ""
+msgstr "\" reçue du processus serveur avec le PID"
 
 #: pgadmin/templates/security/change_password.html:2
 #, python-format
@@ -9154,7 +9173,7 @@ msgstr "Utiliser l'instruction DROP DATABASE"
 
 #: pgadmin/tools/backup/static/js/backup.js:411
 msgid "Load Via Partition Root"
-msgstr ""
+msgstr "Charger Via la partition racine"
 
 #: pgadmin/tools/backup/static/js/backup.js:443
 msgid "$ quoting"
@@ -9280,7 +9299,7 @@ msgstr " (Ctrl+F)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:75
 msgid "Find Next"
-msgstr ""
+msgstr "Trouver Suivant"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:76
 msgid " (Cmd+G)"
@@ -9292,7 +9311,7 @@ msgstr " (Ctrl+G)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:83
 msgid "Find Previous"
-msgstr ""
+msgstr "Trouver Précédent"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:84
 msgid " (Cmd+Shift+G)"
@@ -9304,7 +9323,7 @@ msgstr " (Ctrl+Shift+G)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:91
 msgid "Persistent Find"
-msgstr ""
+msgstr "Recherche persistante"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:97
 msgid "Replace"
@@ -9320,7 +9339,7 @@ msgstr " (Ctrl+Shift+F)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:105
 msgid "Replace All"
-msgstr ""
+msgstr "Remplacer tout"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:111
 msgid "Jump (Alt+G)"
@@ -9348,7 +9367,7 @@ msgstr " (Ctrl+/)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:166
 msgid "Inline Uncomment Selection"
-msgstr "Déommenter la/les ligne(s)"
+msgstr "Dé-commenter la/les ligne(s)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:167
 msgid " (Cmd+.)"
@@ -9372,19 +9391,19 @@ msgstr " (Shift+Ctrl+/)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:198
 msgid "Sort/Filter"
-msgstr ""
+msgstr "Filtre/Tri"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:199
 msgid "Filter by Selection"
-msgstr ""
+msgstr "Filtrer par sélection"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:200
 msgid "Exclude by Selection"
-msgstr ""
+msgstr "Exclure par sélection"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:201
 msgid "Remove Sort/Filter"
-msgstr ""
+msgstr "Supprimer le filtre/tri"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:210
 msgid "No limit"
@@ -9459,27 +9478,27 @@ msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:80
 msgid "Accesskey (Continue/Start)"
-msgstr ""
+msgstr "Clef d'accès (Continuer / démarrer)"
 
 #: pgadmin/tools/debugger/__init__.py:93
 msgid "Accesskey (Stop)"
-msgstr ""
+msgstr "Clef d'accès (Stop)"
 
 #: pgadmin/tools/debugger/__init__.py:106
 msgid "Accesskey (Step into)"
-msgstr ""
+msgstr "Clef d'accès (Step into)"
 
 #: pgadmin/tools/debugger/__init__.py:119
 msgid "Accesskey (Step over)"
-msgstr ""
+msgstr "Clef d'accès (Step over)"
 
 #: pgadmin/tools/debugger/__init__.py:132
 msgid "Accesskey (Toggle breakpoint)"
-msgstr ""
+msgstr "Clé d'accès (Activer/désactiver le point d'arrêt)"
 
 #: pgadmin/tools/debugger/__init__.py:145
 msgid "Accesskey (Clear all breakpoints)"
-msgstr ""
+msgstr "Clé d'accès (Effacer tous les points d'arrêts)"
 
 #: pgadmin/tools/debugger/__init__.py:159
 msgid "Edit grid values"
@@ -9560,6 +9579,8 @@ msgstr ""
 #: pgadmin/tools/debugger/__init__.py:658
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
 msgstr ""
+"Merci de mettre à jour l'extension pldbgapi vers une version 1.1 ou "
+"supérieure et essayer à nouveau."
 
 #: pgadmin/tools/debugger/__init__.py:854
 #: pgadmin/tools/debugger/__init__.py:902
@@ -9611,7 +9632,7 @@ msgstr "Erreur lors de la définition de la valeur"
 #: pgadmin/tools/debugger/__init__.py:1944
 #: pgadmin/tools/debugger/__init__.py:1978
 msgid "Execution completed with an error."
-msgstr ""
+msgstr "Exécution terminée avec erreur."
 
 #: pgadmin/tools/debugger/__init__.py:1968
 #: pgadmin/tools/debugger/__init__.py:2000
@@ -10199,13 +10220,16 @@ msgstr "Maintenance..."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:269
 msgid "Maintenance error"
-msgstr ""
+msgstr "Erreur de maintenance"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:270
 msgid ""
 "Maintenance job creation failed. Databases with = symbols in the name "
 "cannot be maintained using this utility."
 msgstr ""
+"Échec de la création de la tâche de maintenance. Les bases de données "
+"comportant un symbole = dans leur nom ne peuvent pas être maintenue avec "
+"cet utilitaire."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:400
 msgid "Maintenance job creation failed."
@@ -10278,7 +10302,7 @@ msgstr "Tâche de restauration créée"
 
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:146
 msgid "Restore job failed."
-msgstr ""
+msgstr "Échec de la tâche de restauration"
 
 #: pgadmin/tools/sqleditor/__init__.py:67
 msgid "SQL Editor"
@@ -10361,11 +10385,11 @@ msgstr "Historique"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:264
 msgid "Notifications"
-msgstr ""
+msgstr "Notifications"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:274
 msgid "Geometry Viewer"
-msgstr ""
+msgstr "Visualisation cartographique"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:313
 msgid "The data has changed. Do you want to save changes?"
@@ -10586,14 +10610,16 @@ msgstr "Erreurs d’options EXPLAIN"
 #, python-format
 msgid "Error occurred while setting %(subItem)s option in explain."
 msgstr ""
+"Une erreur est survenue lors de la définition de l'option %(subItem)s "
+"dans EXPLAIN."
 
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:95
 msgid "Data sorting object updated successfully"
-msgstr ""
+msgstr "Objet de tri des données mis à jour"
 
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:98
 msgid "Failed to update the data on server."
-msgstr ""
+msgstr "Échec de la mise à jour des données sur le serveur."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:20
 msgid "Query info notifier timeout"
@@ -10853,21 +10879,23 @@ msgstr "Options de recherche"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:541
 msgid "Toggle case of selected text"
-msgstr ""
+msgstr "Basculer la casse du texte sélectionné"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:558
 msgid "Keywords in uppercase"
-msgstr ""
+msgstr "Mots clés en majuscule"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:559
 msgid "Auto completion"
-msgstr ""
+msgstr "Auto complétion"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:560
 msgid ""
 "If set to True, Keywords will be displayed in upper case for auto "
 "completion."
 msgstr ""
+"Si vrai, les mots clés seront affichés en majuscule avec l'auto "
+"complétion."
 
 #: pgadmin/tools/user_management/__init__.py:106
 msgid "Invalid email address."
@@ -11019,6 +11047,8 @@ msgid ""
 "Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to "
 "the database server."
 msgstr ""
+"La connexion du tunnel SSH pour l'hôte '{0}' a été perdue. Reconnectez le"
+" serveur de base de données."
 
 #: pgadmin/utils/preferences.py:167
 msgid "Invalid value for a boolean option."
@@ -11132,16 +11162,20 @@ msgid "Not connected to the database server."
 msgstr "Non connecté au serveur de base de données"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1609
+#, fuzzy
 msgid ""
 "Asynchronous notification \"{0}\" with payload \"{1}\" received from "
 "server process with PID {2}\n"
 msgstr ""
+"Notification asynchrone \"{0}\" avec coût \"{1}\" \" reçue du processus "
+"serveur avec le PID  {2}\n"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1615
+#, fuzzy
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
-msgstr ""
+msgstr "Notification asynchrone \"{0}\" reçue du serveur avec le PID {1}\n"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1708
 msgid "SQL state: "
@@ -11449,13 +11483,4 @@ msgstr "Impossible de trouver la base de données."
 
 #~ msgid "Stop"
 #~ msgstr "Stop"
-
-#~ msgid "Stored Password"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Database passwords cannot be stored when"
-#~ " using SSH tunnelling. The 'Save "
-#~ "password' option has been turned off."
-#~ msgstr ""
 
