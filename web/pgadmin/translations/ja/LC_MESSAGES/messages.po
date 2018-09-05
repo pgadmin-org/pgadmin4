@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-09-03 10:08+0100\n"
-"PO-Revision-Date: 2018-08-07 01:07+0900\n"
+"POT-Creation-Date: 2018-09-05 16:59+0100\n"
+"PO-Revision-Date: 2018-09-04 08:31+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -90,7 +90,7 @@ msgid "Current User"
 msgstr "現在のユーザ"
 
 #: pgadmin/about/templates/about/index.html:29
-#: pgadmin/browser/templates/browser/index.html:139
+#: pgadmin/browser/templates/browser/index.html:110
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:9
 #: pgadmin/templates/security/watermark.html:4
 msgid "logo"
@@ -100,14 +100,14 @@ msgstr "ロゴ"
 msgid "Browser"
 msgstr "ブラウザ"
 
-#: pgadmin/browser/__init__.py:478 pgadmin/browser/collection.py:251
+#: pgadmin/browser/__init__.py:476 pgadmin/browser/collection.py:251
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:110
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:684
 msgid "Nodes"
 msgstr "ノード"
 
-#: pgadmin/browser/__init__.py:733 pgadmin/browser/__init__.py:815
-#: pgadmin/browser/__init__.py:886
+#: pgadmin/browser/__init__.py:731 pgadmin/browser/__init__.py:813
+#: pgadmin/browser/__init__.py:884
 msgid ""
 "SMTP Socket error: {}\n"
 "Your password has not been changed."
@@ -115,8 +115,8 @@ msgstr ""
 "SMTP ソケットエラー： {}\n"
 "パスワードは変更されませんでした"
 
-#: pgadmin/browser/__init__.py:744 pgadmin/browser/__init__.py:827
-#: pgadmin/browser/__init__.py:898
+#: pgadmin/browser/__init__.py:742 pgadmin/browser/__init__.py:825
+#: pgadmin/browser/__init__.py:896
 msgid ""
 "SMTP error: {}\n"
 "Your password has not been changed."
@@ -124,8 +124,8 @@ msgstr ""
 "SMTP エラー： {}\n"
 "パスワードは変更されませんでした"
 
-#: pgadmin/browser/__init__.py:753 pgadmin/browser/__init__.py:835
-#: pgadmin/browser/__init__.py:906
+#: pgadmin/browser/__init__.py:751 pgadmin/browser/__init__.py:833
+#: pgadmin/browser/__init__.py:904
 msgid ""
 "Error: {}\n"
 "Your password has not been changed."
@@ -140,7 +140,7 @@ msgstr "システムオブジェクトを表示"
 #: pgadmin/browser/register_browser_preferences.py:16
 #: pgadmin/browser/register_browser_preferences.py:22
 #: pgadmin/browser/register_browser_preferences.py:28
-#: pgadmin/dashboard/__init__.py:121 pgadmin/dashboard/__init__.py:129
+#: pgadmin/dashboard/__init__.py:119 pgadmin/dashboard/__init__.py:127
 #: pgadmin/tools/debugger/__init__.py:73
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:21
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:36
@@ -335,7 +335,7 @@ msgstr "必須のプロパティが入力されていません"
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:93
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:146
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:267
-#: pgadmin/tools/grant_wizard/__init__.py:132 pgadmin/utils/exception.py:35
+#: pgadmin/tools/grant_wizard/__init__.py:129 pgadmin/utils/exception.py:35
 msgid "Connection to the server has been lost."
 msgstr "サーバへの接続が切断されました"
 
@@ -434,7 +434,7 @@ msgstr "コメント"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:514
 #: pgadmin/browser/server_groups/servers/static/js/server.js:811
-#: pgadmin/browser/server_groups/servers/static/js/variable.js:169
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:167
 #: pgadmin/tools/user_management/static/js/user_management.js:265
 msgid "Role"
 msgstr "ロール"
@@ -816,7 +816,7 @@ msgstr "キャスト..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:284
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:347
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:118
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:256
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:254
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:313
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:190
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:313
@@ -828,7 +828,7 @@ msgstr "キャスト..."
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:74
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:398
 #: pgadmin/browser/server_groups/servers/static/js/server.js:749
-#: pgadmin/browser/server_groups/servers/static/js/variable.js:125
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:123
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:328
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/static/js/server_group.js:39
@@ -839,8 +839,8 @@ msgstr "キャスト..."
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:42
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:231
 #: pgadmin/tools/debugger/static/js/direct.js:1026
-#: pgadmin/tools/debugger/static/js/direct.js:1170
-#: pgadmin/tools/debugger/static/js/direct.js:1255
+#: pgadmin/tools/debugger/static/js/direct.js:1168
+#: pgadmin/tools/debugger/static/js/direct.js:1253
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:136
 msgid "Name"
 msgstr "名称"
@@ -877,7 +877,7 @@ msgstr "名称"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:287
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:350
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:133
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:245
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:243
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:316
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:193
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:317
@@ -1426,7 +1426,7 @@ msgstr "拡張"
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:70
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:75
 msgid "Extension..."
-msgstr "拡張"
+msgstr "拡張..."
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:183
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:93
@@ -1577,10 +1577,10 @@ msgstr "外部サーバを削除しました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:223
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:226
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:231
-#: pgadmin/misc/file_manager/__init__.py:172
-#: pgadmin/misc/file_manager/__init__.py:177
-#: pgadmin/misc/file_manager/__init__.py:182
-#: pgadmin/misc/file_manager/__init__.py:189
+#: pgadmin/misc/file_manager/__init__.py:171
+#: pgadmin/misc/file_manager/__init__.py:176
+#: pgadmin/misc/file_manager/__init__.py:181
+#: pgadmin/misc/file_manager/__init__.py:188
 #: pgadmin/tools/import_export/static/js/import_export.js:45
 #: pgadmin/tools/import_export/static/js/import_export.js:56
 #: pgadmin/tools/import_export/static/js/import_export.js:252
@@ -1608,12 +1608,12 @@ msgstr "オプション"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:172
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:238
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:34
-#: pgadmin/browser/server_groups/servers/static/js/variable.js:163
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:161
 #: pgadmin/misc/statistics/static/js/statistics.js:127
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:258
 #: pgadmin/tools/debugger/static/js/direct.js:1033
-#: pgadmin/tools/debugger/static/js/direct.js:1184
-#: pgadmin/tools/debugger/static/js/direct.js:1269
+#: pgadmin/tools/debugger/static/js/direct.js:1182
+#: pgadmin/tools/debugger/static/js/direct.js:1267
 msgid "Value"
 msgstr "値"
 
@@ -1634,8 +1634,8 @@ msgstr "外部サーバ..."
 #: pgadmin/misc/depends/static/js/depends.js:78
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:47
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:238
-#: pgadmin/tools/debugger/static/js/direct.js:1177
-#: pgadmin/tools/debugger/static/js/direct.js:1262
+#: pgadmin/tools/debugger/static/js/direct.js:1175
+#: pgadmin/tools/debugger/static/js/direct.js:1260
 msgid "Type"
 msgstr "タイプ"
 
@@ -1792,7 +1792,7 @@ msgstr "手続き言語"
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:50
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:55
 msgid "Language..."
-msgstr "手続き言語"
+msgstr "手続き言語..."
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:127
 msgid "Trusted?"
@@ -1892,11 +1892,11 @@ msgstr "指定されたカタログオブジェクトが見つかりませんで
 #: pgadmin/tools/import_export/static/js/import_export.js:226
 #: pgadmin/tools/import_export/static/js/import_export.js:236
 msgid "Columns"
-msgstr "カラム"
+msgstr "列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/__init__.py:275
 msgid "Could not find the specified column."
-msgstr "指定されたカラムが見つかりませんでした"
+msgstr "指定された列が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.js:10
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.js:21
@@ -1908,16 +1908,16 @@ msgstr "catalog_object_column"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:26
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:406
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:67
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:71
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:76
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:69
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:74
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:23
 msgid "Column"
-msgstr "カラム"
+msgstr "列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.js:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:256
 msgid "Position"
-msgstr "ポジション"
+msgstr "位置"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.js:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/static/js/edbvar.js:53
@@ -1975,7 +1975,7 @@ msgstr "照合順序が削除されました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:43
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:49
 msgid "Collation..."
-msgstr "照合順序…"
+msgstr "照合順序..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:105
 msgid "Copy collation"
@@ -2161,7 +2161,7 @@ msgstr "外部データラッパが削除されました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1435
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1269
 msgid "-- Please create column(s) first..."
-msgstr "-- まずカラムを作成してください…"
+msgstr "-- まず列を作成してください..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:73
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:36
@@ -2186,11 +2186,11 @@ msgstr "継承元"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:247
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:172
 msgid "Column Name cannot be empty."
-msgstr "カラム名は必須です"
+msgstr "列名は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:255
 msgid "Column Datatype cannot be empty."
-msgstr "カラムのデータ型は必須です"
+msgstr "列のデータ型は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:407
 msgid "No Inherit"
@@ -2311,7 +2311,7 @@ msgstr "全文検索設定"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:442
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:448
 msgid "FTS Configuration..."
-msgstr "全文検索設定…"
+msgstr "全文検索設定..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:496
 msgid "Parser"
@@ -2319,7 +2319,7 @@ msgstr "パーサ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:509
 msgid "Copy Config"
-msgstr "コピー設定…"
+msgstr "コピー設定"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:552
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:164
@@ -2384,7 +2384,7 @@ msgstr "全文検索辞書"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:87
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:92
 msgid "FTS Dictionary..."
-msgstr "全文検索辞書…"
+msgstr "全文検索辞書..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:139
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:327
@@ -2595,7 +2595,7 @@ msgstr "デフォルト値"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:119
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:125
 msgid "Function..."
-msgstr "関数…"
+msgstr "関数..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:195
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:124
@@ -2698,7 +2698,7 @@ msgstr "見積もり行数"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:303
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:230
 msgid "Leak proof?"
-msgstr "Leak proof"
+msgstr "LEAKPROOF"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:320
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:321
@@ -2710,7 +2710,7 @@ msgstr "Leak proof"
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:501
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:352
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:353
-#: pgadmin/tools/debugger/static/js/direct.js:1687
+#: pgadmin/tools/debugger/static/js/direct.js:1685
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -3302,25 +3302,25 @@ msgstr "テーブルを削除しました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:297
 msgid "Could not find the column."
-msgstr "カラムが見つかりませんでした"
+msgstr "列が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:497
 msgid "Could not find the column in the table."
-msgstr "テーブルにカラムが見つかりませんでした"
+msgstr "テーブルに列が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:663
 msgid "The specified column could not be found.\n"
-msgstr "指定されたカラムが見つかりませんでした\n"
+msgstr "指定された列が見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:682
 msgid "Column is dropped"
-msgstr "カラムは削除されています"
+msgstr "列は削除されています"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:797
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:880
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:1023
 msgid "Could not find the column on the server."
-msgstr "カラムがサーバ内に見つかりませんでした"
+msgstr "列がサーバ内に見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:44
 msgid "Please provide input for variable."
@@ -3331,7 +3331,7 @@ msgstr "変数に入力してください"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:142
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:148
 msgid "Column..."
-msgstr "カラム"
+msgstr "列..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:185
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:520
@@ -3371,15 +3371,15 @@ msgstr "継承元テーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:543
 msgid "System column?"
-msgstr "システムカラム"
+msgstr "システム列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:582
 msgid "Column name cannot be empty."
-msgstr "カラム名は必須です"
+msgstr "列名は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:589
 msgid "Column type cannot be empty."
-msgstr "カラムのデータ型は必須です"
+msgstr "列のデータ型は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:600
 msgid "Length should not be less than: "
@@ -3483,7 +3483,7 @@ msgstr "演算子クラスを選択"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:101
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:11
 msgid "DESC"
-msgstr "昇順"
+msgstr "降順"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:122
 msgid "NULLs order"
@@ -3495,7 +3495,7 @@ msgstr "演算子"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:206
 msgid "Please specify operator for column: "
-msgstr "カラムの演算子を指定してください："
+msgstr "列の演算子を指定してください："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:609
 msgid "Exclusion constraint"
@@ -3503,7 +3503,7 @@ msgstr "除外制約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:631
 msgid "Exclusion constraint..."
-msgstr "除外制約…"
+msgstr "除外制約..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:679
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:502
@@ -3526,7 +3526,7 @@ msgstr "アクセスメソッド"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:704
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:317
 msgid "Changing access method will clear columns collection"
-msgstr "アクセスメソッドを変更するとカラムコレクションが消去されます"
+msgstr "アクセスメソッドを変更すると列の一覧が消去されます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:734
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:553
@@ -3564,7 +3564,7 @@ msgstr "制約"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:339
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:430
 msgid "Include columns"
-msgstr "INCLUDEするカラム"
+msgstr "INCLUDEする列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:919
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:232
@@ -3574,7 +3574,7 @@ msgstr "INCLUDEするカラム"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:361
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:452
 msgid "Select the column(s)"
-msgstr "カラムを選択"
+msgstr "列を選択"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:1000
 msgid "Please specify name for exclusion constraint."
@@ -3582,7 +3582,7 @@ msgstr "除外制約の名前を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:1006
 msgid "Please specify columns for exclusion constraint."
-msgstr "除外制約のカラムを指定してください"
+msgstr "除外制約の列を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:56
 msgid "Foreign Keys"
@@ -3624,11 +3624,11 @@ msgstr "参照先"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:143
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:248
 msgid "Select column"
-msgstr "カラム選択"
+msgstr "列を選択"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:331
 msgid "Local column"
-msgstr "ローカルカラム"
+msgstr "ローカル列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:332
 msgid "References"
@@ -3636,7 +3636,7 @@ msgstr "参照テーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:333
 msgid "Referencing"
-msgstr "参照カラム"
+msgstr "参照列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:607
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:574
@@ -3683,7 +3683,7 @@ msgstr "DELETE 時"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:1039
 msgid "Please specify columns for Foreign key."
-msgstr "外部キーのカラムを指定してください"
+msgstr "外部キーの列を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:1048
 msgid "Please specify covering index name."
@@ -3756,7 +3756,7 @@ msgstr "インデックス"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.js:623
 #, python-format
 msgid "Please specify columns for %(node)s"
-msgstr "%(node)s のカラムを指定してください"
+msgstr "%(node)s の列を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:44
 msgid "Oid"
@@ -3838,11 +3838,11 @@ msgstr "アクセスメソッドは必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:506
 msgid "You must specify column name."
-msgstr "カラム名を指定しなければなりません"
+msgstr "列名を指定しなければなりません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:511
 msgid "You must specify at least one column."
-msgstr "少なくとも 1つはカラムを指定しなければなりません"
+msgstr "少なくとも 1つの列を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:17
@@ -4001,7 +4001,7 @@ msgstr "タイプ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:682
 msgid "Changing of table type will clear columns collection."
-msgstr "テーブルの種類を変更するとカラムコレクションが消去されます"
+msgstr "テーブルの種類を変更すると列の一覧が消去されます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:709
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:763
@@ -4092,7 +4092,7 @@ msgstr "範囲"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:773
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:846
-#: pgadmin/misc/file_manager/__init__.py:183
+#: pgadmin/misc/file_manager/__init__.py:182
 msgid "List"
 msgstr "リスト"
 
@@ -4224,83 +4224,83 @@ msgstr "システムルール"
 msgid "Please specify name."
 msgstr "名前を指定してください"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:67
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:65
 msgid "Key type"
 msgstr "キーの種類"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:73
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:182
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:71
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:180
 msgid "Expression"
 msgstr "式"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:209
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:207
 msgid "Partition key type cannot be empty."
 msgstr "パーティションキーは必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:216
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:214
 msgid "Partition key column cannot be empty."
-msgstr "パーティションカラムは必須です"
+msgstr "パーティション列は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:223
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:221
 msgid "Partition key expression cannot be empty."
 msgstr "パーティションキー表現は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:247
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:245
 msgid "Operation"
 msgstr "処理"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:248
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:246
 msgid "Attach"
 msgstr "取り付け"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:248
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:246
 #: pgadmin/browser/static/js/browser.js:241
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:15
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:129
 msgid "Create"
 msgstr "作成"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:264
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:262
 msgid "From"
 msgstr "FROM"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:276
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:274
 msgid "To"
 msgstr "TO"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:288
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:286
 msgid "In"
 msgstr "IN"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:300
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:298
 msgid "Modulus"
 msgstr "MODULUS"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:312
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:310
 msgid "Remainder"
 msgstr "REMAINDER"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:339
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:337
 msgid "Partition name cannot be empty."
 msgstr "パーティション名は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:347
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:345
 msgid "For range partition From field cannot be empty."
 msgstr "範囲パーティションではFROMフィールドが必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:352
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:350
 msgid "For range partition To field cannot be empty."
 msgstr "範囲パーティションではTOフィールドが必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:359
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:357
 msgid "For list partition In field cannot be empty."
 msgstr "リストパーティションではINフィールドが必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:366
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:364
 msgid "For hash partition Modulus field cannot be empty."
 msgstr "ハッシュパーティションではMODULUSフィールドが必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:371
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:369
 msgid "For hash partition Remainder field cannot be empty."
 msgstr "ハッシュパーティションではREMAINDERフィールドが必須です"
 
@@ -4320,11 +4320,11 @@ msgstr "継承元を取得..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:727
 msgid "Remove column definitions?"
-msgstr "カラム定義を削除しますか？"
+msgstr "列定義を削除しますか？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:728
 msgid "Changing 'Of type' will remove column definitions."
-msgstr "「Ofタイプ」を変更するカラム定義が削除されます"
+msgstr "テーブル定義の基となる複合型を変更すると、列定義が削除されます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:853
 msgid "Hash"
@@ -4336,7 +4336,7 @@ msgstr "パーティションテーブルは 2種類のキーに対応してい�
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:955
 msgid "Column: User can select any column from the list of available columns."
-msgstr "カラム： 利用可能なカラムのリストから選択することができます"
+msgstr "列： 利用可能な列の一覧から選択することができます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:957
 msgid "Expression: User can specify expression to create partition key."
@@ -4353,7 +4353,7 @@ msgid ""
 "column 'saledate', having datatype 'date/timestamp', then we need to "
 "specify the expression as 'extract(YEAR from saledate)' as partition key."
 msgstr ""
-"例えば、「date/timestamp」データ型の「saledate」カラムを "
+"例えば、「date/timestamp」データ型の「saledate」列を "
 "1年ごとのパーティションテーブルにしたい場合、パーティションキーには「extract(YEAR from "
 "saledate)」という式を指定する必要があります"
 
@@ -4413,15 +4413,15 @@ msgstr "個別値"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:5
 msgid "Most common values"
-msgstr "いちばん多い値"
+msgstr "一番多い値"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:6
 msgid "Most common frequencies"
-msgstr "いちばん多い頻度"
+msgstr "一番多い頻度"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:7
 msgid "Histogram bounds"
-msgstr "ヒストグラムバウンド"
+msgstr "度数分布の境界"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:8
 msgid "Correlation"
@@ -4963,7 +4963,7 @@ msgstr "位取りは %(value)s 以下を指定してください"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:277
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:283
 msgid "Type..."
-msgstr "データ型…"
+msgstr "データ型..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:362
 msgid "Composite Type"
@@ -5103,7 +5103,7 @@ msgstr "照合順序情報"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:715
 msgid "Alias"
-msgstr "エイリアス"
+msgstr "別名"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:723
 msgid "Members"
@@ -5237,7 +5237,7 @@ msgstr "ビューの更新中にエラーが発生しました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:70
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:76
 msgid "View..."
-msgstr "ビュー…"
+msgstr "ビュー..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:123
 msgid "Security barrier"
@@ -5257,7 +5257,7 @@ msgstr "カスケード"
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:2
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:162
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:168
-#: pgadmin/browser/server_groups/servers/static/js/variable.js:166
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:164
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:30
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:4
@@ -6019,7 +6019,7 @@ msgstr "曜日"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:362
 msgid "Select the weekdays..."
-msgstr "曜日を選択"
+msgstr "曜日を選択..."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:372
 msgid "Month Days"
@@ -6041,7 +6041,7 @@ msgstr "時刻"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:412
 msgid "Select the hours..."
-msgstr "時間を選択"
+msgstr "時間を選択..."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:427
 msgid "Select the minutes..."
@@ -6101,7 +6101,7 @@ msgid ""
 "Enter the hostname of a machine running pgAgent if you wish to ensure "
 "only that machine will run this job. Leave blank if any host may run the "
 "job."
-msgstr "pgAgent を動作させたいマシンのホスト名を入力してください。いかなるホストでも動作させる場合、空のままにしてください。"
+msgstr "pgAgent を動作させたいマシンのホスト名を入力してください。いかなるホストでも動作させる場合、空のままにしてください"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:112
 msgid "Created"
@@ -6181,7 +6181,7 @@ msgstr "リモート"
 msgid ""
 "Select <b>Local</b> if the job step will execute on the local database "
 "server, or <b>Remote</b> to specify a remote database server."
-msgstr "ジョブステップをローカルのデータベースサーバで実行する場合は「<b>ローカル</b>」、リモートのデータベースサーバで実行するには「<b>リモート</b>」を選択します。"
+msgstr "ジョブステップをローカルのデータベースサーバで実行する場合は「<b>ローカル</b>」、リモートのデータベースサーバで実行するには「<b>リモート</b>」を選択します"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:166
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:176
@@ -6206,7 +6206,7 @@ msgstr ""
 "リモートデータベースサーバの接続文字列を指定します。各パラメータは key = value 形式で設定します。= "
 "の前後のスペースはいずれでも構いません。空文字を入力するにはシングルクォートで囲ったスペースを入力します。例： keyword = \\'a "
 "value\\'. 値の中のシングルクォートとバックスラッシュは、\\' and \\\\ "
-"のようにバックスラッシュでエスケープします。詳しくはドキュメントの %s にあります。"
+"のようにバックスラッシュでエスケープします。詳しくはドキュメントの %s にあります"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:185
 msgid "On error"
@@ -6217,7 +6217,7 @@ msgid "Fail"
 msgstr "失敗"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:188
-#: pgadmin/dashboard/__init__.py:510 pgadmin/dashboard/__init__.py:537
+#: pgadmin/dashboard/__init__.py:508 pgadmin/dashboard/__init__.py:535
 #: pgadmin/dashboard/static/js/dashboard.js:95
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:36
 msgid "Success"
@@ -6755,7 +6755,7 @@ msgstr "親ロールから属性を継承"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:470
 msgid "Can initiate streaming replication and backups?"
-msgstr "ストリーミングレプリケーション、バックアップを実行しますか？"
+msgstr "ストリーミングレプリケーション、バックアップ属性"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:474
 msgid "Roles"
@@ -6767,11 +6767,11 @@ msgstr "メンバシップ"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:494
 msgid "Select the checkbox for roles to include WITH ADMIN OPTION."
-msgstr "WITH ADMIN OPTION を含めるためのロールチェックボックスを選択"
+msgstr "WITH ADMIN OPTION を含めるには、ロールにチェックを入れてください"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:496
 msgid "Roles shown with a check mark have the WITH ADMIN OPTION set."
-msgstr "WITH ADMIN OPTION セットを持ったチェックマークが表示されるロール"
+msgstr "チェックマークの付いたロールは、WITH ADMIN OPTION が設定されています"
 
 #: pgadmin/browser/server_groups/servers/static/js/privilege.js:50
 msgid "Grantee"
@@ -6911,7 +6911,7 @@ msgid "Cancel"
 msgstr "キャンセル"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:514
-#: pgadmin/browser/templates/browser/index.html:189
+#: pgadmin/browser/templates/browser/index.html:160
 #: pgadmin/templates/security/change_password.html:11
 #: pgadmin/templates/security/change_password.html:12
 #: pgadmin/tools/user_management/static/js/user_management.js:43
@@ -7133,11 +7133,11 @@ msgstr "接続タイムアウト（秒）"
 msgid "Connect to Server"
 msgstr "サーバに接続"
 
-#: pgadmin/browser/server_groups/servers/static/js/variable.js:193
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:191
 msgid "Please select a parameter name."
 msgstr "パラメータ名を選択してください"
 
-#: pgadmin/browser/server_groups/servers/static/js/variable.js:333
+#: pgadmin/browser/server_groups/servers/static/js/variable.js:331
 #: pgadmin/static/js/backform.pgadmin.js:993
 #: pgadmin/static/js/backform.pgadmin.js:1261
 msgid "Add new row"
@@ -7204,7 +7204,7 @@ msgid "Move objects to another tablespace"
 msgstr "別のテーブル空間にオブジェクトを移動"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:182
-#: pgadmin/browser/templates/browser/index.html:194
+#: pgadmin/browser/templates/browser/index.html:165
 #: pgadmin/tools/user_management/__init__.py:43
 #: pgadmin/tools/user_management/static/js/user_management.js:585
 msgid "Users"
@@ -7433,14 +7433,14 @@ msgstr "強制削除"
 #: pgadmin/browser/static/js/node.js:195
 #, python-format
 msgid "%s Script"
-msgstr "%sスクリプト"
+msgstr "%s スクリプト"
 
 #: pgadmin/browser/static/js/node.js:384
 #: pgadmin/misc/depends/static/js/depends.js:257
 #: pgadmin/misc/sql/static/js/sql.js:123
 #: pgadmin/misc/statistics/static/js/statistics.js:234
 msgid "Retrieving data from the server..."
-msgstr "サーバからデータを取得中…"
+msgstr "サーバからデータを取得中..."
 
 #: pgadmin/browser/static/js/node.js:426
 #, python-format
@@ -7449,7 +7449,7 @@ msgstr "プロパティ取得エラー - %s"
 
 #: pgadmin/browser/static/js/node.js:482
 msgid "Please wait while we fetch information about the node from the server..."
-msgstr "ノードに関する情報をサーバから取得しています。お待ちください…"
+msgstr "ノードに関する情報をサーバから取得しています。お待ちください..."
 
 #: pgadmin/browser/static/js/node.js:625
 #, python-format
@@ -7505,7 +7505,7 @@ msgid "Error dropping %s: \"%s\""
 msgstr "%s削除エラー： 「%s」"
 
 #: pgadmin/browser/static/js/node.js:1126
-#: pgadmin/browser/templates/browser/index.html:156
+#: pgadmin/browser/templates/browser/index.html:127
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:141
 msgid "Edit"
 msgstr "編集"
@@ -7588,36 +7588,36 @@ msgstr "進む"
 msgid "Finish"
 msgstr "完了"
 
-#: pgadmin/browser/templates/browser/index.html:126
+#: pgadmin/browser/templates/browser/index.html:97
 msgid "Loading {0} v{1}..."
-msgstr "{0} v{1}を読み込み中…"
+msgstr "{0} v{1}を読み込み中..."
 
-#: pgadmin/browser/templates/browser/index.html:133
+#: pgadmin/browser/templates/browser/index.html:104
 msgid "Toggle navigation"
 msgstr "ナビゲーションを切り替え"
 
-#: pgadmin/browser/templates/browser/index.html:151
+#: pgadmin/browser/templates/browser/index.html:122
 msgid "File"
 msgstr "ファイル"
 
-#: pgadmin/browser/templates/browser/index.html:161
+#: pgadmin/browser/templates/browser/index.html:132
 msgid "Object"
 msgstr "オブジェクト"
 
-#: pgadmin/browser/templates/browser/index.html:166
+#: pgadmin/browser/templates/browser/index.html:137
 msgid "Management"
 msgstr "マネジメント"
 
-#: pgadmin/browser/templates/browser/index.html:171
+#: pgadmin/browser/templates/browser/index.html:142
 msgid "Tools"
 msgstr "ツール"
 
-#: pgadmin/browser/templates/browser/index.html:176 pgadmin/help/__init__.py:75
+#: pgadmin/browser/templates/browser/index.html:147 pgadmin/help/__init__.py:75
 #: pgadmin/help/__init__.py:86 pgadmin/static/js/sqleditor/filter_dialog.js:63
 msgid "Help"
 msgstr "ヘルプ"
 
-#: pgadmin/browser/templates/browser/index.html:197
+#: pgadmin/browser/templates/browser/index.html:168
 msgid "Logout"
 msgstr "ログアウト"
 
@@ -7635,81 +7635,81 @@ msgstr ""
 "詳しい情報は <a class=\"alert-link\" href=\"{0}\" target=\"_new\">こちら</a> "
 "をクリックしてください"
 
-#: pgadmin/dashboard/__init__.py:57
+#: pgadmin/dashboard/__init__.py:55
 msgid "Dashboard"
 msgstr "ダッシュボード"
 
-#: pgadmin/dashboard/__init__.py:75
+#: pgadmin/dashboard/__init__.py:73
 msgid "Dashboards"
 msgstr "ダッシュボード"
 
-#: pgadmin/dashboard/__init__.py:80
+#: pgadmin/dashboard/__init__.py:78
 msgid "Session statistics refresh rate"
 msgstr "セッション統計更新率"
 
-#: pgadmin/dashboard/__init__.py:82 pgadmin/dashboard/__init__.py:90
-#: pgadmin/dashboard/__init__.py:98 pgadmin/dashboard/__init__.py:106
-#: pgadmin/dashboard/__init__.py:114
+#: pgadmin/dashboard/__init__.py:80 pgadmin/dashboard/__init__.py:88
+#: pgadmin/dashboard/__init__.py:96 pgadmin/dashboard/__init__.py:104
+#: pgadmin/dashboard/__init__.py:112
 msgid "Graphs"
 msgstr "グラフ"
 
-#: pgadmin/dashboard/__init__.py:83 pgadmin/dashboard/__init__.py:91
-#: pgadmin/dashboard/__init__.py:99 pgadmin/dashboard/__init__.py:107
-#: pgadmin/dashboard/__init__.py:115
+#: pgadmin/dashboard/__init__.py:81 pgadmin/dashboard/__init__.py:89
+#: pgadmin/dashboard/__init__.py:97 pgadmin/dashboard/__init__.py:105
+#: pgadmin/dashboard/__init__.py:113
 msgid "The number of seconds between graph samples."
 msgstr "グラフサンプル間の秒数"
 
-#: pgadmin/dashboard/__init__.py:88
+#: pgadmin/dashboard/__init__.py:86
 msgid "Transaction throughput refresh rate"
 msgstr "トランザクションスループット更新率"
 
-#: pgadmin/dashboard/__init__.py:96
+#: pgadmin/dashboard/__init__.py:94
 msgid "Tuples in refresh rate"
 msgstr "挿入行数の更新率"
 
-#: pgadmin/dashboard/__init__.py:104
+#: pgadmin/dashboard/__init__.py:102
 msgid "Tuples out refresh rate"
 msgstr "削除行数の更新率"
 
-#: pgadmin/dashboard/__init__.py:112
+#: pgadmin/dashboard/__init__.py:110
 msgid "Block I/O statistics refresh rate"
 msgstr "ブロックI/O統計更新率"
 
-#: pgadmin/dashboard/__init__.py:120
+#: pgadmin/dashboard/__init__.py:118
 msgid "Show graphs?"
 msgstr "グラフを表示"
 
-#: pgadmin/dashboard/__init__.py:122
+#: pgadmin/dashboard/__init__.py:120
 msgid "If set to True, graphs will be displayed on dashboards."
 msgstr "True の場合、ダッシュボードにグラフが表示されます"
 
-#: pgadmin/dashboard/__init__.py:128
+#: pgadmin/dashboard/__init__.py:126
 msgid "Show activity?"
 msgstr "アクティビティを表示"
 
-#: pgadmin/dashboard/__init__.py:130
+#: pgadmin/dashboard/__init__.py:128
 msgid "If set to True, activity tables will be displayed on dashboards."
 msgstr "True の場合、ダッシュボードにアクティビティテーブルが表示されます"
 
-#: pgadmin/dashboard/__init__.py:198 pgadmin/dashboard/__init__.py:213
+#: pgadmin/dashboard/__init__.py:196 pgadmin/dashboard/__init__.py:211
 #: pgadmin/dashboard/static/js/dashboard.js:643
 msgid "Please connect to the selected server to view the table."
-msgstr "このテーブルを表示するには選択サーバに接続してください"
+msgstr "このテーブルを表示するには、選択したサーバに接続してください"
 
-#: pgadmin/dashboard/__init__.py:203 pgadmin/dashboard/__init__.py:218
+#: pgadmin/dashboard/__init__.py:201 pgadmin/dashboard/__init__.py:216
 #: pgadmin/dashboard/static/js/dashboard.js:482
 msgid "Please connect to the selected server to view the graph."
-msgstr "このグラフを表示するには選択サーバに接続してください"
+msgstr "このグラフを表示するには、選択したサーバに接続してください"
 
-#: pgadmin/dashboard/__init__.py:228
+#: pgadmin/dashboard/__init__.py:226
 msgid "Please connect to the selected database to view the table."
-msgstr "このテーブルを表示するには選択データベースに接続してください"
+msgstr "このテーブルを表示するには、選択したデータベースに接続してください"
 
-#: pgadmin/dashboard/__init__.py:233
+#: pgadmin/dashboard/__init__.py:231
 msgid "Please connect to the selected database to view the graph."
-msgstr "このグラフを表示するには選択データベースに接続してください"
+msgstr "このグラフを表示するには、選択したデータベースに接続してください"
 
-#: pgadmin/dashboard/__init__.py:510 pgadmin/dashboard/__init__.py:537
+#: pgadmin/dashboard/__init__.py:508 pgadmin/dashboard/__init__.py:535
 msgid "Failed"
 msgstr "失敗しました"
 
@@ -7783,7 +7783,7 @@ msgstr "ダッシュボードの読み込み中にエラーが発生しました
 
 #: pgadmin/dashboard/static/js/dashboard.js:363
 msgid "Please connect to the selected server to view the dashboard."
-msgstr "このダッシュボードを表示するには選択サーバに接続してください"
+msgstr "このダッシュボードを表示するには、選択したサーバに接続してください"
 
 #: pgadmin/dashboard/static/js/dashboard.js:485
 msgid "An error occurred whilst rendering the graph."
@@ -7881,7 +7881,7 @@ msgstr "カテゴリ"
 
 #: pgadmin/dashboard/static/js/dashboard.js:1025
 msgid "Setting"
-msgstr "設置"
+msgstr "設定"
 
 #: pgadmin/dashboard/static/js/dashboard.js:1030
 msgid "Unit"
@@ -7939,12 +7939,12 @@ msgstr "秒間トランザクション"
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:27
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:27
 msgid "Tuples in"
-msgstr "挿入行数"
+msgstr "書き込み行数"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:32
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:32
 msgid "Tuples out"
-msgstr "削除行数"
+msgstr "読み取り行数"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:37
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:37
@@ -8033,7 +8033,7 @@ msgstr "新しいサーバを追加"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:34
 msgid "Configure pgAdmin"
-msgstr "pgAdminの設定"
+msgstr "pgAdmin の設定"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:45
 msgid "Getting Started"
@@ -8041,12 +8041,12 @@ msgstr "始めましょう"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:52
 msgid "PostgreSQL Documentation"
-msgstr "PostgreSQLのドキュメント"
+msgstr "PostgreSQL のドキュメント"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:58
 #: pgadmin/help/__init__.py:34
 msgid "pgAdmin Website"
-msgstr "pgAdminのサイト"
+msgstr "pgAdmin のウェブサイト"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:64
 msgid "Planet PostgreSQL"
@@ -8128,7 +8128,7 @@ msgstr "オンラインヘルプ"
 
 #: pgadmin/help/__init__.py:41
 msgid "PostgreSQL Website"
-msgstr "PostgreSQLウェブサイト"
+msgstr "PostgreSQL のウェブサイト"
 
 #: pgadmin/help/__init__.py:61
 msgid "SQL Help"
@@ -8136,7 +8136,7 @@ msgstr "SQLヘルプ"
 
 #: pgadmin/help/__init__.py:73
 msgid "PostgreSQL Help Path"
-msgstr "PostgreSQLヘルプパス"
+msgstr "PostgreSQL ヘルプパス"
 
 #: pgadmin/help/__init__.py:76
 msgid ""
@@ -8154,7 +8154,7 @@ msgid ""
 " with the major.minor version number."
 msgstr "EDB Advanced Server ドキュメントへのパス。$VERSION$ は major.minor のバージョン番号で置換されます"
 
-#: pgadmin/misc/__init__.py:52 pgadmin/tools/backup/static/js/backup.js:86
+#: pgadmin/misc/__init__.py:49 pgadmin/tools/backup/static/js/backup.js:86
 #: pgadmin/tools/backup/static/js/backup.js:92
 #: pgadmin/tools/backup/static/js/backup.js:98
 #: pgadmin/tools/backup/static/js/backup.js:451
@@ -8171,7 +8171,7 @@ msgstr "EDB Advanced Server ドキュメントへのパス。$VERSION$ は major
 msgid "Miscellaneous"
 msgstr "その他"
 
-#: pgadmin/misc/__init__.py:67 pgadmin/misc/__init__.py:68
+#: pgadmin/misc/__init__.py:64 pgadmin/misc/__init__.py:65
 msgid "User language"
 msgstr "ユーザ言語"
 
@@ -8248,7 +8248,7 @@ msgstr "現在のオブジェクトに表示できる依存情報はありませ
 
 #: pgadmin/misc/depends/static/js/depends.js:337
 msgid "Fetching dependent information from the server..."
-msgstr "サーバから依存情報を取得しています…"
+msgstr "サーバから依存情報を取得しています..."
 
 #: pgadmin/misc/depends/static/js/depends.js:392
 msgid "No dependency information is available for the current object."
@@ -8256,67 +8256,67 @@ msgstr "現在のオブジェクトに表示できる依存性情報はありま
 
 #: pgadmin/misc/depends/static/js/depends.js:393
 msgid "Fetching dependency information from the server..."
-msgstr "サーバから依存性情報を取得しています…"
+msgstr "サーバから依存性情報を取得しています..."
 
-#: pgadmin/misc/file_manager/__init__.py:171
+#: pgadmin/misc/file_manager/__init__.py:170
 msgid "Maximum file upload size (MB)"
 msgstr "最大ファイルアップロードサイズ (MB)"
 
-#: pgadmin/misc/file_manager/__init__.py:176
+#: pgadmin/misc/file_manager/__init__.py:175
 msgid "Last directory visited"
 msgstr "最終閲覧ディレクトリ"
 
-#: pgadmin/misc/file_manager/__init__.py:181
+#: pgadmin/misc/file_manager/__init__.py:180
 msgid "File dialog view"
 msgstr "ファイルダイアログの表示"
 
-#: pgadmin/misc/file_manager/__init__.py:184
+#: pgadmin/misc/file_manager/__init__.py:183
 msgid "Grid"
 msgstr "グリッド"
 
-#: pgadmin/misc/file_manager/__init__.py:188
+#: pgadmin/misc/file_manager/__init__.py:187
 msgid "Show hidden files and folders?"
 msgstr "隠しファイルとフォルダを表示"
 
-#: pgadmin/misc/file_manager/__init__.py:336
+#: pgadmin/misc/file_manager/__init__.py:335
 msgid "No permission to operate on specified path."
 msgstr "指定されたパスで実行する権限がありません"
 
-#: pgadmin/misc/file_manager/__init__.py:611
-#: pgadmin/misc/file_manager/__init__.py:800
+#: pgadmin/misc/file_manager/__init__.py:610
+#: pgadmin/misc/file_manager/__init__.py:799
 msgid "'{0}' file does not exist."
 msgstr "ファイル「{0}」は存在しません"
 
-#: pgadmin/misc/file_manager/__init__.py:673
+#: pgadmin/misc/file_manager/__init__.py:672
 msgid "Permission denied"
 msgstr "パーミッションが拒否されました"
 
-#: pgadmin/misc/file_manager/__init__.py:708
+#: pgadmin/misc/file_manager/__init__.py:707
 msgid "Access denied ({0})"
 msgstr "アクセス拒否（{0})"
 
-#: pgadmin/misc/file_manager/__init__.py:768
-#: pgadmin/misc/file_manager/__init__.py:853
-#: pgadmin/misc/file_manager/__init__.py:920
-#: pgadmin/misc/file_manager/__init__.py:985
-#: pgadmin/misc/file_manager/__init__.py:1141
-#: pgadmin/misc/file_manager/__init__.py:1200
+#: pgadmin/misc/file_manager/__init__.py:767
+#: pgadmin/misc/file_manager/__init__.py:852
+#: pgadmin/misc/file_manager/__init__.py:919
+#: pgadmin/misc/file_manager/__init__.py:984
+#: pgadmin/misc/file_manager/__init__.py:1140
+#: pgadmin/misc/file_manager/__init__.py:1199
 msgid "Error: {0}"
 msgstr "エラー： {0}"
 
-#: pgadmin/misc/file_manager/__init__.py:842
-#: pgadmin/misc/file_manager/__init__.py:907
-#: pgadmin/misc/file_manager/__init__.py:950
-#: pgadmin/misc/file_manager/__init__.py:1130
-#: pgadmin/misc/file_manager/__init__.py:1183
+#: pgadmin/misc/file_manager/__init__.py:841
+#: pgadmin/misc/file_manager/__init__.py:906
+#: pgadmin/misc/file_manager/__init__.py:949
+#: pgadmin/misc/file_manager/__init__.py:1129
+#: pgadmin/misc/file_manager/__init__.py:1182
 msgid "Not allowed"
 msgstr "許可されていません"
 
-#: pgadmin/misc/file_manager/__init__.py:881
+#: pgadmin/misc/file_manager/__init__.py:880
 msgid "Renamed successfully."
 msgstr "リネームに成功しました"
 
-#: pgadmin/misc/file_manager/__init__.py:888
+#: pgadmin/misc/file_manager/__init__.py:887
 msgid "There was an error renaming the file:"
 msgstr "ファイルのリネームでエラーが発生しました"
 
@@ -8332,9 +8332,9 @@ msgstr "選択"
 
 #: pgadmin/misc/file_manager/static/js/utility.js:473
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:41
-#: pgadmin/tools/debugger/static/js/direct.js:1853
+#: pgadmin/tools/debugger/static/js/direct.js:1851
 msgid "Loading..."
-msgstr "読み込み中…"
+msgstr "読み込み中..."
 
 #: pgadmin/misc/file_manager/static/js/utility.js:1108
 msgid "Show hidden files and folders"
@@ -8430,7 +8430,7 @@ msgstr "レイアウトを初期化"
 #: pgadmin/settings/__init__.py:85 pgadmin/tools/backup/__init__.py:208
 #: pgadmin/tools/debugger/__init__.py:236
 #: pgadmin/tools/import_export/__init__.py:155
-#: pgadmin/tools/maintenance/__init__.py:150
+#: pgadmin/tools/maintenance/__init__.py:148
 #: pgadmin/tools/restore/__init__.py:139
 #: pgadmin/tools/user_management/__init__.py:120
 msgid "This URL cannot be called directly."
@@ -8643,7 +8643,7 @@ msgstr "実行時"
 
 #: pgadmin/static/js/selection/clipboard.js:71
 #: pgadmin/tools/user_management/static/js/user_management.js:547
-#: pgadmin/tools/user_management/static/js/user_management.js:786
+#: pgadmin/tools/user_management/static/js/user_management.js:784
 msgid "Error"
 msgstr "エラー"
 
@@ -8667,7 +8667,7 @@ msgstr "ソート/フィルタのオプション"
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:134
 msgid "Loading data..."
-msgstr "データの読み込み中…"
+msgstr "データの読み込み中..."
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:226
 msgid "Filter updated successfully"
@@ -8675,7 +8675,7 @@ msgstr "フィルタは正常に更新されました"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:10
 msgid "ASC"
-msgstr "ASC"
+msgstr "昇順"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:45
 msgid "Order"
@@ -8683,7 +8683,7 @@ msgstr "順序"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:71
 msgid "Please select a column."
-msgstr "カラムを選択してください"
+msgstr "列を選択してください"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:77
 msgid "Please select the order."
@@ -8699,15 +8699,15 @@ msgstr "データの並べ替え"
 
 #: pgadmin/static/js/sqleditor/geometry_viewer.js:332
 msgid "3D geometries not rendered."
-msgstr ""
+msgstr "3次元幾何データは描画されません"
 
 #: pgadmin/static/js/sqleditor/geometry_viewer.js:335
 msgid "Unsupported geometries not rendered."
-msgstr ""
+msgstr "未対応の幾何データは描画されません"
 
 #: pgadmin/static/js/sqleditor/geometry_viewer.js:375
 msgid "Geometries with non-SRID"
-msgstr ""
+msgstr "非SRIDの幾何データ"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:15
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:65
@@ -8798,15 +8798,15 @@ msgstr "バックアップ"
 
 #: pgadmin/tools/backup/__init__.py:132 pgadmin/tools/backup/__init__.py:164
 msgid "Backing up an object on the server '{0}' from database '{1}'..."
-msgstr "データベース「{1}」からサーバ「{0}」のオブジェクトをバックアップ中…"
+msgstr "サーバ「{0}」のデータベース「{1}」からオブジェクトをバックアップ中..."
 
 #: pgadmin/tools/backup/__init__.py:142 pgadmin/tools/backup/__init__.py:176
 msgid "Backing up the global objects on the server '{0}'..."
-msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップ中…"
+msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップ中..."
 
 #: pgadmin/tools/backup/__init__.py:149 pgadmin/tools/backup/__init__.py:185
 msgid "Backing up the server '{0}'..."
-msgstr "サーバ「{0}」をバックアップ中…"
+msgstr "サーバ「{0}」をバックアップ中..."
 
 #: pgadmin/tools/backup/__init__.py:197
 #: pgadmin/tools/import_export/__init__.py:144
@@ -8819,7 +8819,7 @@ msgid "Could not find the specified server."
 msgstr "指定されたサーバが見つかりませんでした"
 
 #: pgadmin/tools/backup/__init__.py:317
-#: pgadmin/tools/maintenance/__init__.py:215
+#: pgadmin/tools/maintenance/__init__.py:213
 #: pgadmin/tools/restore/__init__.py:230
 msgid "Please connect to the server first."
 msgstr "サーバに接続してください"
@@ -8982,7 +8982,7 @@ msgstr "クエリ"
 
 #: pgadmin/tools/backup/static/js/backup.js:375
 msgid "Use Column Inserts"
-msgstr "カラム名付き INSERT を使用"
+msgstr "列名付き INSERT を使用"
 
 #: pgadmin/tools/backup/static/js/backup.js:381
 msgid "Use Insert Commands"
@@ -8999,7 +8999,7 @@ msgstr "DROP DATABASE 文を含む"
 
 #: pgadmin/tools/backup/static/js/backup.js:411
 msgid "Load Via Partition Root"
-msgstr ""
+msgstr "親テーブル経由で読み込む"
 
 #: pgadmin/tools/backup/static/js/backup.js:443
 msgid "$ quoting"
@@ -9367,51 +9367,51 @@ msgstr "デバッガプラグインが無効です。pldbgapi 拡張をデータ
 msgid "The function/procedure cannot be debugged"
 msgstr "関数/プロシージャがデバッグできません"
 
-#: pgadmin/tools/debugger/__init__.py:622
+#: pgadmin/tools/debugger/__init__.py:621
 msgid ""
 "You must be a superuser to set a global breakpoint and perform indirect "
 "debugging."
 msgstr "グローバルなブレークポイントを設定したり間接デバッグの実行をするには、スーパーユーザでなければなりません"
 
-#: pgadmin/tools/debugger/__init__.py:631
+#: pgadmin/tools/debugger/__init__.py:630
 msgid "Could not fetch debugger plugin information."
 msgstr "デバッガプラグインの情報が取得できませんでした"
 
-#: pgadmin/tools/debugger/__init__.py:637
+#: pgadmin/tools/debugger/__init__.py:636
 msgid ""
 "The debugger plugin is not enabled. Please add the plugin to the "
 "shared_preload_libraries setting in the postgresql.conf file and restart "
 "the database server for indirect debugging."
 msgstr ""
 "デバッガプラグインが無効です。間接デバッグを行うには、postgresql.conf の shared_preload_libraries "
-"設定にプラグインを追加して、データベースサーバを再起動してください。"
+"設定にプラグインを追加して、データベースサーバを再起動してください"
 
-#: pgadmin/tools/debugger/__init__.py:659
+#: pgadmin/tools/debugger/__init__.py:658
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
 msgstr "pldbgapi 拡張をバージョン1.1以上にアップグレードし、再試行してください"
 
-#: pgadmin/tools/debugger/__init__.py:855
-#: pgadmin/tools/debugger/__init__.py:903
-#: pgadmin/tools/debugger/__init__.py:1128
-#: pgadmin/tools/debugger/__init__.py:1137
-#: pgadmin/tools/debugger/__init__.py:1173
-#: pgadmin/tools/debugger/__init__.py:1230
-#: pgadmin/tools/debugger/__init__.py:1259
-#: pgadmin/tools/debugger/__init__.py:1306
-#: pgadmin/tools/debugger/__init__.py:1338
-#: pgadmin/tools/debugger/__init__.py:1422
-#: pgadmin/tools/debugger/__init__.py:1479
-#: pgadmin/tools/debugger/__init__.py:1509
-#: pgadmin/tools/debugger/__init__.py:1549
-#: pgadmin/tools/debugger/__init__.py:1578
-#: pgadmin/tools/debugger/__init__.py:1629
-#: pgadmin/tools/debugger/__init__.py:1659
-#: pgadmin/tools/debugger/__init__.py:1695
-#: pgadmin/tools/debugger/__init__.py:1926
-#: pgadmin/tools/debugger/__init__.py:2027
-#: pgadmin/tools/debugger/__init__.py:2054
-#: pgadmin/tools/debugger/__init__.py:2076
-#: pgadmin/tools/debugger/static/js/direct.js:1624
+#: pgadmin/tools/debugger/__init__.py:854
+#: pgadmin/tools/debugger/__init__.py:902
+#: pgadmin/tools/debugger/__init__.py:1127
+#: pgadmin/tools/debugger/__init__.py:1136
+#: pgadmin/tools/debugger/__init__.py:1172
+#: pgadmin/tools/debugger/__init__.py:1229
+#: pgadmin/tools/debugger/__init__.py:1258
+#: pgadmin/tools/debugger/__init__.py:1305
+#: pgadmin/tools/debugger/__init__.py:1337
+#: pgadmin/tools/debugger/__init__.py:1421
+#: pgadmin/tools/debugger/__init__.py:1478
+#: pgadmin/tools/debugger/__init__.py:1508
+#: pgadmin/tools/debugger/__init__.py:1548
+#: pgadmin/tools/debugger/__init__.py:1577
+#: pgadmin/tools/debugger/__init__.py:1628
+#: pgadmin/tools/debugger/__init__.py:1658
+#: pgadmin/tools/debugger/__init__.py:1694
+#: pgadmin/tools/debugger/__init__.py:1925
+#: pgadmin/tools/debugger/__init__.py:2026
+#: pgadmin/tools/debugger/__init__.py:2053
+#: pgadmin/tools/debugger/__init__.py:2075
+#: pgadmin/tools/debugger/static/js/direct.js:1622
 #: pgadmin/tools/sqleditor/__init__.py:1059
 #: pgadmin/tools/sqleditor/command.py:190
 #: pgadmin/tools/sqleditor/command.py:396
@@ -9420,29 +9420,29 @@ msgstr "pldbgapi 拡張をバージョン1.1以上にアップグレードし、
 msgid "Not connected to server or connection with the server has been closed."
 msgstr "サーバへの接続に失敗、あるいは切断されました"
 
-#: pgadmin/tools/debugger/__init__.py:933
+#: pgadmin/tools/debugger/__init__.py:932
 msgid "Not connected to server or connection with the server hasbeen closed."
 msgstr "サーバへの接続に失敗、あるいは切断されました"
 
-#: pgadmin/tools/debugger/__init__.py:1222
+#: pgadmin/tools/debugger/__init__.py:1221
 msgid "Debugging aborted successfully."
 msgstr "デバッグを中断しました"
 
-#: pgadmin/tools/debugger/__init__.py:1617
+#: pgadmin/tools/debugger/__init__.py:1616
 msgid "Value deposited successfully"
 msgstr "値が保存されました"
 
-#: pgadmin/tools/debugger/__init__.py:1619
+#: pgadmin/tools/debugger/__init__.py:1618
 msgid "Error while setting the value"
 msgstr "値の設定中にエラーが発生しました"
 
-#: pgadmin/tools/debugger/__init__.py:1945
-#: pgadmin/tools/debugger/__init__.py:1979
+#: pgadmin/tools/debugger/__init__.py:1944
+#: pgadmin/tools/debugger/__init__.py:1978
 msgid "Execution completed with an error."
 msgstr "実行がエラーで完了しました"
 
-#: pgadmin/tools/debugger/__init__.py:1969
-#: pgadmin/tools/debugger/__init__.py:2001
+#: pgadmin/tools/debugger/__init__.py:1968
+#: pgadmin/tools/debugger/__init__.py:2000
 msgid "Execution Completed."
 msgstr "実行が完了しました"
 
@@ -9510,11 +9510,11 @@ msgstr "ブレークポイントを設定"
 #: pgadmin/tools/debugger/static/js/direct.js:926
 #: pgadmin/tools/debugger/static/js/direct.js:933
 #: pgadmin/tools/debugger/static/js/direct.js:995
-#: pgadmin/tools/debugger/static/js/direct.js:1348
-#: pgadmin/tools/debugger/static/js/direct.js:1377
-#: pgadmin/tools/debugger/static/js/direct.js:1572
-#: pgadmin/tools/debugger/static/js/direct.js:1593
-#: pgadmin/tools/debugger/static/js/direct.js:1631
+#: pgadmin/tools/debugger/static/js/direct.js:1346
+#: pgadmin/tools/debugger/static/js/direct.js:1375
+#: pgadmin/tools/debugger/static/js/direct.js:1570
+#: pgadmin/tools/debugger/static/js/direct.js:1591
+#: pgadmin/tools/debugger/static/js/direct.js:1629
 msgid "Debugger Error"
 msgstr "デバッガエラー"
 
@@ -9583,7 +9583,7 @@ msgstr "スタック情報の取得中にエラーが発生しました"
 
 #: pgadmin/tools/debugger/static/js/direct.js:405
 msgid "Waiting for another session to invoke the target..."
-msgstr "対象を実行するために新しく接続しようとしています…"
+msgstr "対象を実行するために新しく接続しようとしています..."
 
 #: pgadmin/tools/debugger/static/js/direct.js:423
 #: pgadmin/tools/debugger/static/js/direct.js:430
@@ -9629,37 +9629,37 @@ msgstr "すべてのブレークポイントを削除する際にエラーが発
 msgid "Line No."
 msgstr "行番号"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1349
+#: pgadmin/tools/debugger/static/js/direct.js:1347
 msgid "Error while depositing variable value."
 msgstr "変数値を送信する際にエラーが発生しました"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1378
+#: pgadmin/tools/debugger/static/js/direct.js:1376
 msgid "Error while selecting frame."
 msgstr "フレームの選択中にエラーが発生しました"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1573
-#: pgadmin/tools/debugger/static/js/direct.js:1594
+#: pgadmin/tools/debugger/static/js/direct.js:1571
+#: pgadmin/tools/debugger/static/js/direct.js:1592
 msgid "Error while starting debugging listener."
 msgstr "デバッグリスナの開始中にエラーが発生しました"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1632
+#: pgadmin/tools/debugger/static/js/direct.js:1630
 msgid "Error while fetching messages information."
 msgstr "メッセージ情報の取得中にエラーが発生しました"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1698
+#: pgadmin/tools/debugger/static/js/direct.js:1696
 msgid "Local variables"
 msgstr "ローカル変数"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1709
+#: pgadmin/tools/debugger/static/js/direct.js:1707
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:244
 msgid "Messages"
 msgstr "メッセージ"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1720
+#: pgadmin/tools/debugger/static/js/direct.js:1718
 msgid "Results"
 msgstr "結果"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1731
+#: pgadmin/tools/debugger/static/js/direct.js:1729
 msgid "Stack"
 msgstr "スタック"
 
@@ -9695,7 +9695,7 @@ msgstr "オブジェクト選択 (1/3)"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:634
 msgid "Please select objects from the list below."
-msgstr "以下のリストからオブジェクトを選択してください"
+msgstr "以下の一覧からオブジェクトを選択してください"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:635
 msgid "Please wait while fetching records..."
@@ -9722,7 +9722,7 @@ msgid ""
 "The SQL below will be executed on the database server to grant the "
 "selected privileges. Please click on <b>Finish</b> to complete the "
 "process."
-msgstr "選択された権限を付与するため、データベースサーバ上で、以下のSQL文が実行されます。<b>完了</b>をクリックし、処理を終了させてください。"
+msgstr "選択された権限を付与するため、データベースサーバ上で、以下のSQL文が実行されます。<b>完了</b>をクリックし、処理を終了させてください"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1071
 msgid "Grant Wizard"
@@ -9735,20 +9735,20 @@ msgstr "インポート/エクスポート"
 
 #: pgadmin/tools/import_export/__init__.py:115
 msgid "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})..."
-msgstr "テーブルデータをコピー - ''{0}.{1}' on database '{2}' and server ({3}{4})..."
+msgstr "データベース「{2}」とサーバ（{3}:{4}）のテーブルデータ「{0}.{1}」をコピー中..."
 
 #: pgadmin/tools/import_export/__init__.py:129
 msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'..."
-msgstr "テーブルデータをコピー '{0}.{1}' on database '{2}' for the server - '{3}'"
+msgstr "データベース「{2}」のテーブルデータ「{0}.{1}」をサーバ「{3}」へコピー中..."
 
 #: pgadmin/tools/import_export/__init__.py:220
-#: pgadmin/tools/maintenance/__init__.py:203
+#: pgadmin/tools/maintenance/__init__.py:201
 msgid "Could not find the given server"
 msgstr "入力されたサーバが見つかりませんでした"
 
 #: pgadmin/tools/import_export/__init__.py:230
 msgid "Please connect to the server first..."
-msgstr "まずサーバに接続してください…"
+msgstr "まずサーバに接続してください..."
 
 #: pgadmin/tools/import_export/__init__.py:246
 #: pgadmin/tools/import_export/__init__.py:253
@@ -9773,26 +9773,26 @@ msgstr "出力ファイル"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:110
 msgid "Columns to import"
-msgstr "インポートするカラム"
+msgstr "インポートする列"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:175
 msgid "Columns for importing..."
-msgstr "インポートするカラム…"
+msgstr "インポートする列..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:179
 #: pgadmin/tools/import_export/static/js/import_export.js:220
 msgid ""
 "An optional list of columns to be copied. If no column list is specified,"
 " all columns of the table will be copied."
-msgstr "コピーするカラムのオプションリスト。カラムリストが指定されていない場合、テーブルのすべてのカラムがコピーされます"
+msgstr "コピーする列の任意の一覧。何も指定しなかった場合、テーブルのすべての列がコピーされます"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:182
 msgid "Columns to export"
-msgstr "エクスポートするカラム"
+msgstr "エクスポートする列"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:194
 msgid "Colums for exporting..."
-msgstr "エクスポートするカラム…"
+msgstr "エクスポートする列..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:223
 msgid "NULL Strings"
@@ -9809,11 +9809,11 @@ msgstr "NULL値を表す文字列を指定します。デフォルトは、テ�
 
 #: pgadmin/tools/import_export/static/js/import_export.js:232
 msgid "Not null columns"
-msgstr "NOT NULLカラム"
+msgstr "NOT NULL列"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:245
 msgid "Not null columns..."
-msgstr "NOT NULLカラム…"
+msgstr "NOT NULL列..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:247
 msgid ""
@@ -9823,7 +9823,7 @@ msgid ""
 "are not quoted. This option is allowed only in import, and only when "
 "using CSV format."
 msgstr ""
-"指定カラムの値を NULL 文字とみなしません。NULL "
+"指定した列の値を NULL 文字とみなしません。NULL "
 "文字が空文字であるデフォルトの状態では、クォートされていない場合でも、空文字はNULLではな0文字の文字列とみなされます。このオプションは、インポート時のみ、CSV"
 " 形式でのみ使用することができます"
 
@@ -9832,7 +9832,7 @@ msgstr ""
 #: pgadmin/tools/import_export/static/js/import_export.js:352
 #: pgadmin/tools/maintenance/static/js/maintenance.js:97
 msgid "Select from list..."
-msgstr "リストから選択…"
+msgstr "一覧から選択..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:300
 msgid ""
@@ -9840,7 +9840,7 @@ msgid ""
 "the file. The default is a tab character in text format, a comma in CSV "
 "format. This must be a single one-byte character. This option is not "
 "allowed when using binary format."
-msgstr "ファイルの各行の中のカラムをわける文字を指定します。デフォルトは、テキスト形式ではタブ文字です。これは単一の1バイト文字でなければなりません。このオプションはバイナリモードでは使うことができません"
+msgstr "ファイルの各行中の列を分ける文字を指定します。デフォルトは、テキスト形式ではタブ文字です。これは単一の1バイト文字でなければなりません。このオプションはバイナリモードでは使うことができません"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:304
 msgid "Quote"
@@ -9868,7 +9868,7 @@ msgstr "クォート文字と一致するデータ文字の前に使う文字を
 
 #: pgadmin/tools/import_export/static/js/import_export.js:400
 msgid "Import/Export..."
-msgstr "インポート/エクスポート…"
+msgstr "インポート/エクスポート..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:425
 #: pgadmin/tools/maintenance/static/js/maintenance.js:223
@@ -9910,11 +9910,11 @@ msgstr "データのインポート/エクスポート - テーブル「%s」"
 msgid "Maintenance"
 msgstr "メンテナンス"
 
-#: pgadmin/tools/maintenance/__init__.py:87
+#: pgadmin/tools/maintenance/__init__.py:85
 msgid "Maintenance ({0})"
 msgstr "メンテナンス ({0})"
 
-#: pgadmin/tools/maintenance/__init__.py:90
+#: pgadmin/tools/maintenance/__init__.py:88
 #: pgadmin/tools/maintenance/static/js/maintenance.js:103
 #: pgadmin/tools/maintenance/static/js/maintenance.js:107
 #: pgadmin/tools/maintenance/static/js/maintenance.js:118
@@ -9922,59 +9922,59 @@ msgstr "メンテナンス ({0})"
 msgid "Vacuum"
 msgstr "VACUUM"
 
-#: pgadmin/tools/maintenance/__init__.py:92
+#: pgadmin/tools/maintenance/__init__.py:90
 msgid "Analyze"
 msgstr "ANALYZE"
 
-#: pgadmin/tools/maintenance/__init__.py:94
+#: pgadmin/tools/maintenance/__init__.py:92
 msgid "Reindex"
 msgstr "REINDEX"
 
-#: pgadmin/tools/maintenance/__init__.py:96
+#: pgadmin/tools/maintenance/__init__.py:94
 msgid "Cluster"
 msgstr "CLUSTER"
 
-#: pgadmin/tools/maintenance/__init__.py:103
+#: pgadmin/tools/maintenance/__init__.py:101
 msgid "VACUUM ({0})"
 msgstr "VACUUM ({0})"
 
-#: pgadmin/tools/maintenance/__init__.py:107
+#: pgadmin/tools/maintenance/__init__.py:105
 #: pgadmin/tools/maintenance/static/js/maintenance.js:110
 msgid "FULL"
 msgstr "FULL"
 
-#: pgadmin/tools/maintenance/__init__.py:109
+#: pgadmin/tools/maintenance/__init__.py:107
 #: pgadmin/tools/maintenance/static/js/maintenance.js:117
 msgid "FREEZE"
 msgstr "FREEZE"
 
-#: pgadmin/tools/maintenance/__init__.py:111
-#: pgadmin/tools/maintenance/__init__.py:118
+#: pgadmin/tools/maintenance/__init__.py:109
+#: pgadmin/tools/maintenance/__init__.py:116
 msgid "VERBOSE"
 msgstr "VERBOSE"
 
-#: pgadmin/tools/maintenance/__init__.py:116
+#: pgadmin/tools/maintenance/__init__.py:114
 #: pgadmin/tools/maintenance/static/js/maintenance.js:124
 msgid "ANALYZE"
 msgstr "ANALYZE"
 
-#: pgadmin/tools/maintenance/__init__.py:125
+#: pgadmin/tools/maintenance/__init__.py:123
 msgid "REINDEX INDEX"
 msgstr "REINDEX INDEX"
 
-#: pgadmin/tools/maintenance/__init__.py:127
+#: pgadmin/tools/maintenance/__init__.py:125
 msgid "REINDEX TABLE"
 msgstr "REINDEX TABLE"
 
-#: pgadmin/tools/maintenance/__init__.py:128
+#: pgadmin/tools/maintenance/__init__.py:126
 msgid "REINDEX"
 msgstr "REINDEX"
 
-#: pgadmin/tools/maintenance/__init__.py:131
+#: pgadmin/tools/maintenance/__init__.py:129
 msgid "CLUSTER"
 msgstr "CLUSTER"
 
-#: pgadmin/tools/maintenance/__init__.py:137
+#: pgadmin/tools/maintenance/__init__.py:135
 msgid "Running Query:"
 msgstr "クエリ実行中："
 
@@ -9989,7 +9989,7 @@ msgstr "詳細メッセージ"
 #: pgadmin/tools/maintenance/static/js/maintenance.js:180
 #: pgadmin/tools/maintenance/static/js/maintenance.js:196
 msgid "Maintenance..."
-msgstr "メンテナンス…"
+msgstr "メンテナンス..."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:269
 msgid "Maintenance error"
@@ -10014,7 +10014,7 @@ msgstr "リストア"
 
 #: pgadmin/tools/restore/__init__.py:108 pgadmin/tools/restore/__init__.py:117
 msgid "Restoring backup on the server '{0}'..."
-msgstr "サーバ「{0}」のバックアップをリストア中…"
+msgstr "サーバ「{0}」のバックアップをリストア中..."
 
 #: pgadmin/tools/restore/__init__.py:205
 msgid "File could not be found."
@@ -10059,7 +10059,7 @@ msgstr "エラー終了"
 #: pgadmin/tools/restore/static/js/restore.js:347
 #: pgadmin/tools/restore/static/js/restore.js:362
 msgid "Restore..."
-msgstr "リストア…"
+msgstr "リストア..."
 
 #: pgadmin/tools/restore/static/js/restore_dialog.js:46
 #, python-format
@@ -10157,7 +10157,7 @@ msgstr "通知"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:274
 msgid "Geometry Viewer"
-msgstr ""
+msgstr "幾何データビューア"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:313
 msgid "The data has changed. Do you want to save changes?"
@@ -10243,11 +10243,11 @@ msgstr "クエリ実行を初期化中"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2150
 msgid "Waiting for the query execution to complete..."
-msgstr "クエリ実行完了を待機中…"
+msgstr "クエリ実行完了を待機中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2285
 msgid "Loading data from the database server and rendering..."
-msgstr "データベースサーバからのデータを読み込み中…"
+msgstr "データベースサーバからのデータを読み込み中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2294
 #, python-format
@@ -10271,7 +10271,7 @@ msgstr "処理に失敗しました"
 msgid ""
 "There are unsaved changes in the grid. Please save them first to avoid "
 "data inconsistencies."
-msgstr "保存されていない変更がグリッドにあります。データの一貫性を保つために、それらの変更を保存してください。"
+msgstr "保存されていない変更がグリッドにあります。データの一貫性を保つために、それらの変更を保存してください"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2627
 msgid "Delete Row(s)"
@@ -10283,7 +10283,7 @@ msgstr "選択している行を削除しますか？"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2689
 msgid "Saving the updated data..."
-msgstr "更新データを保存中…"
+msgstr "更新データを保存中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2779
 msgid "Data saved successfully."
@@ -10296,11 +10296,11 @@ msgstr "%s"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2943
 msgid "Loading the file..."
-msgstr "ファイルの読み込み中…"
+msgstr "ファイルの読み込み中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2994
 msgid "Saving the queries in the file..."
-msgstr "ファイル内のクエリを保存中…"
+msgstr "ファイル内のクエリを保存中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3006
 msgid "File saved successfully."
@@ -10309,7 +10309,7 @@ msgstr "ファイル保存に成功しました"
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3127
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3186
 msgid "Applying the new filter..."
-msgstr "新しいフィルタを適用中…"
+msgstr "新しいフィルタを適用中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3147
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3157
@@ -10323,7 +10323,7 @@ msgstr "フィルタ除外エラー"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3226
 msgid "Removing the filter..."
-msgstr "フィルタを削除中…"
+msgstr "フィルタを削除中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3244
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3254
@@ -10332,7 +10332,7 @@ msgstr "フィルタ解除エラー"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3265
 msgid "Applying the filter..."
-msgstr "フィルタを適用中…"
+msgstr "フィルタを適用中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3287
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3297
@@ -10341,7 +10341,7 @@ msgstr "フィルタ適用エラー"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3392
 msgid "Setting the limit on the result..."
-msgstr "結果の上限を設定中…"
+msgstr "結果の上限を設定中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3411
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3420
@@ -10391,7 +10391,7 @@ msgid ""
 " completed. A value of -1 disables the notifier and a value of 0 displays"
 " it until clicked. Values greater than 0 display the notifier for the "
 "number of seconds specified."
-msgstr "クエリの実行が完了した後に出現する、情報通知を表示する時間を指定します。-1にすると通知は無効化され、0にするとクリックされるまで表示します。0よりも大きい値は、通知を表示する秒数となります。"
+msgstr "クエリの実行が完了した後に出現する、情報通知を表示する時間を指定します。-1にすると通知は無効化され、0にするとクリックされるまで表示します。0よりも大きい値は、通知を表示する秒数となります"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:37
 msgid "If set to True, the Query Tool will be opened in a new browser tab."
@@ -10427,7 +10427,7 @@ msgid ""
 msgstr ""
 "SQL テキストボックスやエディタで使うフォントサイズ。「em」単位で指定し、1 "
 "がデフォルトの相対的なフォントサイズです。例えば、20パーセント大きくしたい場合には 1.2 を指定、20パーセント小さくしたい場合には 0.8 "
-"を指定します。最小は 0.1、最大は 10 です。"
+"を指定します。最小は 0.1、最大は 10 です"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:94
 msgid "Tab size"
@@ -10715,7 +10715,7 @@ msgstr "ユーザが削除できませんでした"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:507
 msgid "Cannot delete currently logged in user."
-msgstr "ユーザで現在ログに記録中のため、削除できません"
+msgstr "ログイン中のユーザは削除できません"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:525
 msgid "Delete user?"
@@ -10737,29 +10737,29 @@ msgstr "このユーザは削除できません"
 msgid "User Management"
 msgstr "ユーザ管理"
 
-#: pgadmin/tools/user_management/static/js/user_management.js:743
+#: pgadmin/tools/user_management/static/js/user_management.js:741
 #, python-format
 msgid "User '%s' saved."
 msgstr "ユーザ「%s」が保存されました"
 
-#: pgadmin/tools/user_management/static/js/user_management.js:750
+#: pgadmin/tools/user_management/static/js/user_management.js:748
 #, python-format
 msgid "Error saving user: '%s'"
 msgstr "ユーザ「%s」の保存中にエラーが発生しました"
 
-#: pgadmin/tools/user_management/static/js/user_management.js:769
+#: pgadmin/tools/user_management/static/js/user_management.js:767
 msgid "Add new user"
 msgstr "新しいユーザを追加"
 
-#: pgadmin/tools/user_management/static/js/user_management.js:787
+#: pgadmin/tools/user_management/static/js/user_management.js:785
 msgid "Cannot load user roles."
 msgstr "ユーザロールを読み込めません"
 
-#: pgadmin/tools/user_management/static/js/user_management.js:876
+#: pgadmin/tools/user_management/static/js/user_management.js:874
 msgid "Discard unsaved changes?"
 msgstr "保存していない変更を破棄"
 
-#: pgadmin/tools/user_management/static/js/user_management.js:877
+#: pgadmin/tools/user_management/static/js/user_management.js:875
 msgid ""
 "Are you sure you want to close the dialog? Any unsaved changes will be "
 "lost."
@@ -10953,10 +10953,10 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "手続き言語の情報が見つかりませんでした"
 
 #~ msgid "Column Name can not be empty!"
-#~ msgstr "カラム名は必須です"
+#~ msgstr "列名は必須です"
 
 #~ msgid "Column Datatype can not be empty!"
-#~ msgstr "カラムのデータ型は必須です"
+#~ msgstr "列のデータ型は必須です"
 
 #~ msgid "Constraint Name can not be empty!"
 #~ msgstr "制約名は必須です"
@@ -10977,7 +10977,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "ディレクトリ名は必須です"
 
 #~ msgid "Couldn't generate reversed engineered query for FTS Dictionary node!"
-#~ msgstr ""
+#~ msgstr "全文検索辞書ノードをリバースエンジニアリングしたクエリが生成できませんでした"
 
 #~ msgid "Option can not be empty!"
 #~ msgstr "オプションは必須です"
@@ -10998,7 +10998,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "全文検索テンプレート"
 
 #~ msgid "Could not generate reversed engineered Query for FTS Template node."
-#~ msgstr ""
+#~ msgstr "全文検索テンプレートノードをリバースエンジニアリングしたクエリが生成できませんでした"
 
 #~ msgid "Couldn't find the specified %s"
 #~ msgstr "指定された %s が見つかりませんでした"
@@ -11043,16 +11043,16 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "-- {0}の定義が不完全です"
 
 #~ msgid "Couldn't find the column."
-#~ msgstr "カラムが見つかりませんでした"
+#~ msgstr "列が見つかりませんでした"
 
 #~ msgid "Column name can not be empty."
-#~ msgstr "カラム名は必須です"
+#~ msgstr "列名は必須です"
 
 #~ msgid "Column type can not be empty."
 #~ msgstr "タイプは必須です"
 
 #~ msgid "Check Constraint dropped"
-#~ msgstr "CHECK制約が削除されました"
+#~ msgstr "検査制約が削除されました"
 
 #~ msgid "\" + res.info + \""
 #~ msgstr "\" + res.info + \""
@@ -11064,7 +11064,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "\" + err.errormsg + \""
 
 #~ msgid "Check can not be empty!"
-#~ msgstr "CHECK制約は必須です"
+#~ msgstr "検査制約は必須です"
 
 #~ msgid "Couldn't find required parameter (%s)."
 #~ msgstr "要求されたパラメータ（%s）が見つかりませんでした"
@@ -11073,10 +11073,10 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "要求されたパラメータ（%s）が見つかりませんでした"
 
 #~ msgid "Please specify columns for "
-#~ msgstr "カラムを指定してください"
+#~ msgstr "列を指定してください"
 
 #~ msgid "Column Name can not be empty."
-#~ msgstr "カラム名は必須です"
+#~ msgstr "列名は必須です"
 
 #~ msgid "Name can not be empty."
 #~ msgstr "名前は必須です"
@@ -11109,10 +11109,10 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "トリガコードは必須です"
 
 #~ msgid "Could not find the type in the table."
-#~ msgstr "テーブルにタイプが見つかりませんでした"
+#~ msgstr "テーブルに型が見つかりませんでした"
 
 #~ msgid "Enumeration types require at least one label."
-#~ msgstr "Enumeration typesは1つ以上のラベルが必要です"
+#~ msgstr "列挙型は1つ以上のラベルが必要です"
 
 #~ msgid "External types require both Input and Output conversion functions."
 #~ msgstr "外部タイプは入力、出力関数とも必要です"
@@ -11133,13 +11133,13 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "ラベルに値を指定してください"
 
 #~ msgid "Sub-type"
-#~ msgstr "Sub-type"
+#~ msgstr "派生元型"
 
 #~ msgid "Sub-type operator class"
-#~ msgstr "Sub-type処理クラス"
+#~ msgstr "派生元型の演算子クラス"
 
 #~ msgid "Sub-type diff function"
-#~ msgstr "Sub-type diff関数"
+#~ msgstr "派生元型の差分関数"
 
 #~ msgid "Type can not be empty."
 #~ msgstr "タイプは必須です"
@@ -11163,13 +11163,13 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "データベースサーバのロールが見つかりませんでした"
 
 #~ msgid "Could not generate reversed engineered Query for the role."
-#~ msgstr "ロールのためのリバースエンジニアリングクエリが生成できませんでした"
+#~ msgstr "ロールをリバースエンジニアリングしたクエリが生成できませんでした"
 
 #~ msgid "-- Incomplete definition"
-#~ msgstr "-- 不完全な定義"
+#~ msgstr "-- 不完全な定義です"
 
 #~ msgid "Move objects to another tablespace"
-#~ msgstr "オブジェクトを他のテーブルスペースに移動"
+#~ msgstr "オブジェクトを他のテーブル空間に移動"
 
 #~ msgid "Are you sure you wish to move objects "
 #~ msgstr "オブジェクトを本当に移動しますか？"
@@ -11193,13 +11193,13 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "スクリプト初期化エラー - "
 
 #~ msgid "Error loading script - "
-#~ msgstr "スクリプトロードエラー - "
+#~ msgstr "スクリプト読み込みエラー - "
 
 #~ msgid "Are you sure you wish to close the %(appname)s browser?"
 #~ msgstr "%(appname)s ブラウザを閉じますか？"
 
 #~ msgid "Incomplete definition"
-#~ msgstr "不完全な定義"
+#~ msgstr "不完全な定義です"
 
 #~ msgid "'%s' must be an integer."
 #~ msgstr "「%s」にはintegerを入力してください"
@@ -11217,7 +11217,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "実行中..."
 
 #~ msgid "Too many logs generated!"
-#~ msgstr "ログが多量に出力されました！"
+#~ msgstr "ログが多量に出力されました"
 
 #~ msgid "The process has already finished and can not be restarted."
 #~ msgstr "プロセスはすでに終了しているので再開できません"
@@ -11235,10 +11235,10 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "このURLは直接呼び出せません"
 
 #~ msgid "Backing up the global objects on the server - '{0}'..."
-#~ msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップ中…"
+#~ msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップ中..."
 
 #~ msgid "Backing up the global objects on the server '{0}'"
-#~ msgstr "サーバ「{0}」のグローバルオブジェクトのバックアップ中…"
+#~ msgstr "サーバ「{0}」のグローバルオブジェクトのバックアップ中"
 
 #~ msgid "Backing up the server '{0}'"
 #~ msgstr "サーバ「{0}」をバックアップ"
@@ -11265,16 +11265,16 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "行をコピー"
 
 #~ msgid "Clear query window"
-#~ msgstr "クエリウィンドウのクリア"
+#~ msgstr "クエリウィンドウの消去"
 
 #~ msgid "View All Rows"
 #~ msgstr "すべての行を表示"
 
 #~ msgid "View First 100 Rows"
-#~ msgstr "最初の100行"
+#~ msgstr "最初の 100 行"
 
 #~ msgid "View Last 100 Rows"
-#~ msgstr "最後の100行"
+#~ msgstr "最後の 100 行"
 
 #~ msgid "View Filtered Rows..."
 #~ msgstr "フィルタした行の表示..."
@@ -11283,19 +11283,19 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "データの表示"
 
 #~ msgid " untitled"
-#~ msgstr "無題"
+#~ msgstr " 無題"
 
 #~ msgid "This URL can not be called directly!"
 #~ msgstr "このURLは直接呼び出せません"
 
 #~ msgid "Target Aborted."
-#~ msgstr "対象がアボートしました"
+#~ msgstr "対象が異常終了しました"
 
 #~ msgid "Couldn't find the given server"
 #~ msgstr "入力されたサーバが見つかりませんでした"
 
 #~ msgid "Restoring the backup on the server '{0}'..."
-#~ msgstr "サーバ「{0}」のバックアップをリストア中…"
+#~ msgstr "サーバ「{0}」のバックアップをリストア中..."
 
 #~ msgid "Show timing"
 #~ msgstr "実行時間を表示"
@@ -11304,7 +11304,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "エディタ内のSQLを折り返すかどうかを指定します"
 
 #~ msgid "Either Transaction object or Session object not found."
-#~ msgstr ""
+#~ msgstr "トランザクションオブジェクト、セッションオブジェクトのいずれも見つかりませんでした"
 
 #~ msgid "History"
 #~ msgstr "履歴"
@@ -11316,7 +11316,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "%s 行を取得しました"
 
 #~ msgid "Retrieving information about the columns returned..."
-#~ msgstr "返却されたカラムの情報を取得中…"
+#~ msgstr "返却された列の情報を取得中..."
 
 #~ msgid "\"The query executed did not return any data.\""
 #~ msgstr "「クエリを実行しましたが、データが取得されませんでした」"
@@ -11349,13 +11349,13 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "セキュリティラベル"
 
 #~ msgid "Check Constraint dropped."
-#~ msgstr "CHECK 制約が削除されました"
+#~ msgstr "検査制約が削除されました"
 
 #~ msgid "Are you sure you want to reset the statistics for table %s?"
-#~ msgstr "%s テーブルの統計情報をリセットしますか？"
+#~ msgstr "テーブル「%s」の統計情報をリセットしますか？"
 
 #~ msgid "Changing of type table will clear columns collection"
-#~ msgstr "タイプテーブルを変更するとカラムコレクションがクリアされます"
+#~ msgstr "型付きテーブルを変更すると列の一覧が消去されます"
 
 #~ msgid "Scale should not be less than  %(value)s"
 #~ msgstr "スケールは %(value)s 以上を指定してください"
@@ -11367,13 +11367,13 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "オブジェクトを他のテーブルスペースに移動"
 
 #~ msgid "Session terminateed successfully."
-#~ msgstr ""
+#~ msgstr "セッションの切断に成功しました"
 
 #~ msgid "An error occurred whilst terminateing the active query."
-#~ msgstr ""
+#~ msgstr "実行中クエリの中断時にエラーが発生しました"
 
 #~ msgid "Definition incomplete"
-#~ msgstr "定義が不完全"
+#~ msgstr "定義が不完全です"
 
 #~ msgid "Nothing changed"
 #~ msgstr "変更なし"
@@ -11403,25 +11403,25 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "指定されたモジュールが見つかりません"
 
 #~ msgid "No parameters were changed!"
-#~ msgstr "変更されたパラメータがありません！"
+#~ msgstr "変更されたパラメータがありません"
 
 #~ msgid "Please connect the server!"
-#~ msgstr "サーバに接続してください！"
+#~ msgstr "サーバに接続してください"
 
 #~ msgid "Column Name cannot be empty!"
-#~ msgstr "カラム名は必須です！"
+#~ msgstr "列名は必須です"
 
 #~ msgid "Column Datatype cannot be empty!"
-#~ msgstr "カラムのデータ型は必須です！"
+#~ msgstr "列のデータ型は必須です"
 
 #~ msgid "Constraint Name cannot be empty!"
-#~ msgstr "制約名は必須です！"
+#~ msgstr "制約名は必須です"
 
 #~ msgid "Constraint Check cannot be empty!"
-#~ msgstr "チェックは必須です！"
+#~ msgstr "検査制約は必須です"
 
 #~ msgid "Token cannot be empty!"
-#~ msgstr "トークンは必須です！"
+#~ msgstr "トークンは必須です"
 
 #~ msgid "Dictionary name cannot be empty!"
 #~ msgstr "辞書名は必須です"
@@ -11436,10 +11436,10 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "スキーマは必須です"
 
 #~ msgid "Option cannot be empty!"
-#~ msgstr "オプションは必須です！"
+#~ msgstr "オプションは必須です"
 
 #~ msgid "Value cannot be empty!"
-#~ msgstr "値は必須です！"
+#~ msgstr "値は必須です"
 
 #~ msgid "Template must be selected!"
 #~ msgstr "テンプレートは必須です"
@@ -11448,22 +11448,22 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "サーバへの接続が切断されました"
 
 #~ msgid "Check cannot be empty!"
-#~ msgstr "CHECK 制約は必須です！"
+#~ msgstr "検査制約は必須です"
 
 #~ msgid "Please wait while we fetch information about the node from the server!"
 #~ msgstr "サーバからノードに関する情報を取得するまでお待ちください"
 
 #~ msgid "This URL cannot be called directly!"
-#~ msgstr "このURLは直接呼び出せません！"
+#~ msgstr "このURLは直接呼び出せません"
 
 #~ msgid "File couldn't be found!"
-#~ msgstr "ファイルが見つかりませんでした！"
+#~ msgstr "ファイルが見つかりませんでした"
 
 #~ msgid "This feature has not been implemented for object type '{0}'!"
 #~ msgstr "オブジェクトタイプ「{0}」の機能が実装されていません"
 
 #~ msgid "Initializing the query execution!"
-#~ msgstr "クエリ実行を初期化中！"
+#~ msgstr "クエリ実行を初期化中"
 
 #~ msgid "Password File"
 #~ msgstr "パスワードファイル"
@@ -11472,10 +11472,10 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "プロパティ保存エラー： %s"
 
 #~ msgid "Debugger Set Arguments Error"
-#~ msgstr ""
+#~ msgstr "デバッガ引数の設定エラー"
 
 #~ msgid "Debugger Set arguments error"
-#~ msgstr ""
+#~ msgstr "デバッガ引数の設定エラー"
 
 #~ msgid "Constraint?"
 #~ msgstr "制約"
@@ -11571,7 +11571,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "サーバの接続が切断しました。再接続してください"
 
 #~ msgid "Query Tool Initialization Error"
-#~ msgstr ""
+#~ msgstr "クエリツール初期化エラー"
 
 #~ msgid "Paste Row"
 #~ msgstr "行を貼付"
@@ -11592,7 +11592,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "スクリプトのSQL取得エラー： 「%s」"
 
 #~ msgid "Initializing query execution..."
-#~ msgstr ""
+#~ msgstr "クエリ実行を初期化中..."
 
 #~ msgid "Find next"
 #~ msgstr "次を検索"
@@ -11619,13 +11619,13 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "適用"
 
 #~ msgid "Loading the existing filter options..."
-#~ msgstr "存在するフィルタオプションをロード中…"
+#~ msgstr "存在するフィルタオプションをロード中..."
 
 #~ msgid "Get Filter Error"
-#~ msgstr ""
+#~ msgstr "フィルタ取得エラー"
 
 #~ msgid "Error occurred while getting query tool options."
-#~ msgstr ""
+#~ msgstr "クエリツールオプションの取得中にエラーが発生しました"
 
 #~ msgid "Unable to run pgagent job."
 #~ msgstr "pgAgent ジョブを実行できません"
@@ -11741,5 +11741,5 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ "Database passwords cannot be stored when"
 #~ " using SSH tunnelling. The 'Save "
 #~ "password' option has been turned off."
-#~ msgstr "SSH トンネリングを使用する場合、データベースパスワードを保存することはできません。「パスワードを保存」オプションは無効化されました。"
+#~ msgstr "SSH トンネリングを使用する場合、データベースパスワードを保存することはできません。「パスワードを保存」オプションは無効化されました"
 
