@@ -81,7 +81,7 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('The number of seconds between graph samples.')
         )
 
-        self.session_stats_refresh = self.dashboard_preference.register(
+        self.tps_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'tps_stats_refresh',
             gettext("Transaction throughput refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
@@ -89,7 +89,7 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('The number of seconds between graph samples.')
         )
 
-        self.session_stats_refresh = self.dashboard_preference.register(
+        self.ti_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'ti_stats_refresh',
             gettext("Tuples in refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
@@ -97,7 +97,7 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('The number of seconds between graph samples.')
         )
 
-        self.session_stats_refresh = self.dashboard_preference.register(
+        self.to_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'to_stats_refresh',
             gettext("Tuples out refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
@@ -105,7 +105,7 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('The number of seconds between graph samples.')
         )
 
-        self.session_stats_refresh = self.dashboard_preference.register(
+        self.bio_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'bio_stats_refresh',
             gettext("Block I/O statistics refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
@@ -127,6 +127,23 @@ class DashboardModule(PgAdminModule):
             category_label=gettext('Display'),
             help_str=gettext('If set to True, activity tables '
                              'will be displayed on dashboards.')
+        )
+
+        self.graph_data_points = self.dashboard_preference.register(
+            'display', 'graph_data_points',
+            gettext("Show graph data points?"), 'boolean', False,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, data points will be '
+                             'visible on graph lines.')
+        )
+
+        self.graph_mouse_track = self.dashboard_preference.register(
+            'display', 'graph_mouse_track',
+            gettext("Show mouse hover tooltip?"), 'boolean', True,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, tooltip will appear on mouse '
+                             'hover on the graph lines giving the data point '
+                             'details')
         )
 
     def get_exposed_url_endpoints(self):

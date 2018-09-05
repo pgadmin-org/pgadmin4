@@ -165,7 +165,8 @@ define(
 
         if (eventName == 'panelClosed') {
           pgBrowser.save_current_layout(pgBrowser);
-          pgAdmin.Dashboard.toggleVisibility(false);
+          /* Pass the closed flag also */
+          pgAdmin.Dashboard.toggleVisibility(false, true);
         } else if (eventName == 'panelVisibilityChanged') {
           if (pgBrowser.tree) {
             pgBrowser.save_current_layout(pgBrowser);
@@ -174,8 +175,10 @@ define(
               pgAdmin.Dashboard.toggleVisibility(pgBrowser.panels.dashboard.panel.isVisible());
             }
             // Explicitly trigger tree selected event when we add the tab.
-            pgBrowser.Events.trigger('pgadmin-browser:tree:selected', selectedNode,
-              pgBrowser.tree.itemData(selectedNode), pgBrowser.Node);
+            if(selectedNode.length) {
+              pgBrowser.Events.trigger('pgadmin-browser:tree:selected', selectedNode,
+                pgBrowser.tree.itemData(selectedNode), pgBrowser.Node);
+            }
           }
         }
       },

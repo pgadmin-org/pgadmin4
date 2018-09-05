@@ -1,11 +1,11 @@
 define('pgadmin.dashboard', [
   'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
-  'sources/pgadmin', 'backbone', 'backgrid', 'flotr2',
+  'sources/pgadmin', 'backbone', 'backgrid', './charting',
   'pgadmin.alertifyjs', 'pgadmin.backform',
   'sources/nodes/dashboard', 'backgrid.filter',
   'pgadmin.browser', 'bootstrap', 'wcdocker',
 ], function(
-  url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
+  url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, charting,
   Alertify, Backform, NodesDashboard
 ) {
 
@@ -210,10 +210,8 @@ define('pgadmin.dashboard', [
       // Load the default welcome dashboard
       var url = url_for('dashboard.index');
 
-      /* Store the interval ids of the graph interval functions so that we can clear
-       * them when graphs are disabled
-       */
-      this.intervalIds = {};
+      /* Store the chart objects and there interval ids in this store */
+      this.chartStore = {};
 
       var dashboardPanel = pgBrowser.panels['dashboard'].panel;
       if (dashboardPanel) {
@@ -266,7 +264,7 @@ define('pgadmin.dashboard', [
           !_.isUndefined(itemData.connected) &&
             itemData.connected !== true
         ) {
-          self.clearIntervalId();
+          self.clearChartFromStore();
         }
       } else if (itemData && itemData._type) {
         var treeHierarchy = node.getTreeNodeHierarchy(item),
@@ -331,8 +329,8 @@ define('pgadmin.dashboard', [
               ) {
                 $(div).empty();
 
-                /* Clear all the interval functions of previous dashboards */
-                self.clearIntervalId();
+                /* Clear all the charts previous dashboards */
+                self.clearChartFromStore();
 
                 $.ajax({
                   url: url,
@@ -356,8 +354,8 @@ define('pgadmin.dashboard', [
                 !_.isUndefined(itemData.connected) &&
                   itemData.connected !== true
               ) {
-                /* Clear all the interval functions of previous dashboards */
-                self.clearIntervalId();
+                /* Clear all the charts previous dashboards */
+                self.clearChartFromStore();
               }
               $(div).html(
                 '<div class="alert alert-info pg-panel-message" role="alert">' + gettext('Please connect to the selected server to view the dashboard.') + '</div>'
@@ -371,7 +369,7 @@ define('pgadmin.dashboard', [
       }
     },
 
-    renderChartLoop: function(container, sid, did, url, options, counter, refresh) {
+    renderChartLoop: function(chartObj, sid, did, url, counter, refresh) {
       var data = [],
         dataset = [];
 
@@ -386,24 +384,22 @@ define('pgadmin.dashboard', [
           dataType: 'html',
         })
         .done(function(resp) {
-          $(container).removeClass('graph-error');
+          $(chartObj.getContainer()).removeClass('graph-error');
           data = JSON.parse(resp);
-          if (!dashboardVisible)
-            return;
 
           var y = 0,
             x;
           if (dataset.length == 0) {
             if (counter == true) {
               // Have we stashed initial values?
-              if (_.isUndefined($(container).data('counter_previous_vals'))) {
-                $(container).data('counter_previous_vals', data[0]);
+              if (_.isUndefined(chartObj.getOtherData('counter_previous_vals'))) {
+                chartObj.setOtherData('counter_previous_vals', data[0]);
               } else {
                 // Create the initial data structure
                 for (x in data[0]) {
                   dataset.push({
                     'data': [
-                      [0, data[0][x] - $(container).data('counter_previous_vals')[x]],
+                      [0, data[0][x] - chartObj.getOtherData('counter_previous_vals')[x]],
                     ],
                     'label': x,
                   });
@@ -429,10 +425,10 @@ define('pgadmin.dashboard', [
               } else {
                 // Store the current value, minus the previous one we stashed.
                 // It's possible the tab has been reloaded, in which case out previous values are gone
-                if (_.isUndefined($(container).data('counter_previous_vals')))
+                if (_.isUndefined(chartObj.getOtherData('counter_previous_vals')))
                   return;
 
-                dataset[y]['data'].unshift([0, data[0][x] - $(container).data('counter_previous_vals')[x]]);
+                dataset[y]['data'].unshift([0, data[0][x] - chartObj.getOtherData('counter_previous_vals')[x]]);
               }
 
               // Reset the time index to get a proper scrolling display
@@ -442,7 +438,7 @@ define('pgadmin.dashboard', [
 
               y++;
             }
-            $(container).data('counter_previous_vals', data[0]);
+            chartObj.setOtherData('counter_previous_vals', data[0]);
           }
 
           // Remove uneeded elements
@@ -453,12 +449,9 @@ define('pgadmin.dashboard', [
             }
           }
 
-          // Draw Graph, if the container still exists and has a size
-          var dashboardPanel = pgBrowser.panels['dashboard'].panel;
-          var div = dashboardPanel.layout().scene().find('.pg-panel-content');
-          if ($(div).find(container).length) { // Exists?
-            if (container.clientHeight > 0 && container.clientWidth > 0) { // Not hidden?
-              Flotr.draw(container, dataset, options);
+          if (chartObj.isInPage()) {
+            if (chartObj.isVisible()) {
+              chartObj.draw(dataset);
             }
           } else {
             return;
@@ -487,8 +480,8 @@ define('pgadmin.dashboard', [
             }
           }
 
-          $(container).addClass('graph-error');
-          $(container).html(
+          $(chartObj.getContainer()).addClass('graph-error');
+          $(chartObj.getContainer()).html(
             '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
           );
         });
@@ -510,15 +503,41 @@ define('pgadmin.dashboard', [
       //     { data: [[0, y0], [1, y1]...], label: 'Label 3', [options] }
       // ]
 
-      let self = this;
-      if(self.intervalIds[chartName]
+      let self = this,
+        tooltipFormatter = function(refresh, currVal) {
+          return(`Seconds ago: ${parseInt(currVal.x * refresh)}</br>
+                  Value: ${currVal.y}`);
+        };
+
+      if(self.chartStore[chartName]
         && self.old_preferences[prefName] != self.preferences[prefName]) {
-        self.clearIntervalId(chartName);
+        self.clearChartFromStore(chartName);
       }
-      if(!self.intervalIds[chartName]) {
-        self.intervalIds[chartName] = self.renderChartLoop(
-          container, self.sid, self.did, url,
-          options, counter, self.preferences[prefName]
+
+      if(self.chartStore[chartName]) {
+        let chartObj = self.chartStore[chartName].chartObj;
+        chartObj.setOptions(options, false);
+        chartObj.setTooltipFormatter(
+          tooltipFormatter.bind(null, self.preferences[prefName])
+        );
+      }
+
+      if(!self.chartStore[chartName]) {
+
+        let chartObj = new charting.Chart(container, options);
+
+        chartObj.setTooltipFormatter(
+          tooltipFormatter.bind(null, self.preferences[prefName])
+        );
+
+        self.chartStore[chartName] = {
+          'chartObj' : chartObj,
+          'intervalId' : undefined,
+        };
+
+        self.chartStore[chartName]['intervalId'] = self.renderChartLoop(
+          self.chartStore[chartName]['chartObj'], self.sid, self.did, url,
+          counter, self.preferences[prefName]
         );
       }
     },
@@ -666,17 +685,17 @@ define('pgadmin.dashboard', [
       });
     },
 
-    clearIntervalId: function(intervalId) {
+    clearChartFromStore: function(chartName) {
       var self = this;
-      if(!intervalId){
-        _.each(self.intervalIds, function(id, key) {
-          clearInterval(id);
-          delete self.intervalIds[key];
+      if(!chartName){
+        _.each(self.chartStore, function(chart, key) {
+          clearInterval(chart.intervalId);
+          delete self.chartStore[key];
         });
       }
       else {
-        clearInterval(self.intervalIds[intervalId]);
-        delete self.intervalIds[intervalId];
+        clearInterval(self.chartStore[chartName].intervalId);
+        delete self.chartStore[chartName];
       }
     },
 
@@ -737,20 +756,41 @@ define('pgadmin.dashboard', [
           yaxis: {
             autoscale: 1,
           },
-          legend: {
-            position: 'nw',
-            backgroundColor: '#D2E8FF',
-          },
-          shadowSize: 0,
-          resolution : 5,
         };
+
+        if(self.preferences.graph_data_points) {
+          /* Merge data points related options */
+          options_line = {
+            ...options_line,
+            ...{
+              points: {
+                show:true,
+                radius: 1,
+                hitRadius: 3,
+              },
+            },
+          };
+        }
+
+        if(self.preferences.graph_mouse_track) {
+          /* Merge mouse track related options */
+          options_line = {
+            ...options_line,
+            ...{
+              mouse: {
+                track:true,
+                position: 'sw',
+              },
+            },
+          };
+        }
 
         if(self.preferences.show_graphs && $('#dashboard-graphs').hasClass('dashboard-hidden')) {
           $('#dashboard-graphs').removeClass('dashboard-hidden');
         }
         else if(!self.preferences.show_graphs) {
           $('#dashboard-graphs').addClass('dashboard-hidden');
-          self.clearIntervalId();
+          self.clearChartFromStore();
         }
 
         if (self.preferences.show_activity && $('#dashboard-activity').hasClass('dashboard-hidden')) {
@@ -1344,8 +1384,11 @@ define('pgadmin.dashboard', [
         });
       }
     },
-    toggleVisibility: function(flag) {
-      dashboardVisible = flag;
+    toggleVisibility: function(visible, closed=false) {
+      dashboardVisible = visible;
+      if(closed) {
+        this.clearChartFromStore();
+      }
     },
     can_take_action: function(m) {
       // We will validate if user is allowed to cancel the active query

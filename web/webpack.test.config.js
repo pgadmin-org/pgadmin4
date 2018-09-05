@@ -58,6 +58,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
+      'top': path.join(__dirname, './pgadmin'),
       'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
       'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
       'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.3.0'),
@@ -75,6 +76,8 @@ module.exports = {
       'slickgrid': nodeModulesDir + '/slickgrid/',
       'slickgrid.plugins': nodeModulesDir + '/slickgrid/plugins/',
       'slickgrid.grid': nodeModulesDir + '/slickgrid/slick.grid',
+      'bean': path.join(__dirname, './node_modules/flotr2/lib/bean'),
+      'flotr2': path.join(__dirname, './node_modules/flotr2/flotr2.amd'),
       'browser': path.resolve(__dirname, 'pgadmin/browser/static/js'),
       'pgadmin': sourcesDir + '/js/pgadmin',
       'pgadmin.sqlfoldcode': sourcesDir + '/js/codemirror/addon/fold/pgadmin-sqlfoldcode',
