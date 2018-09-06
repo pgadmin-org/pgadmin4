@@ -69,9 +69,13 @@ Use the fields on the *Graphs* panel to specify your display preferences for the
 .. image:: images/preferences_dashboard_display.png
     :alt: Preferences dialog dashboard display options
 
+* When the *Show activity?* switch is set to *True*, activity tables will be displayed on dashboards.
+
+* When the *Show graph data points?* switch is set to *True*, data points will be visible on graph lines.
+
 * When the *Show graphs?* switch is set to *True*, graphs will be displayed on dashboards.
 
-* When the *Show activity?* switch is set to *True*, activity tables will be displayed on dashboards.
+* When the *Show mouse hover tooltip?* switch is set to *True*, a tooltip will appear on mouse hover on the graph lines giving the data point details.
 
 
 **The Debugger Node**
