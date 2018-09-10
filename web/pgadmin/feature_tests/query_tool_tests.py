@@ -107,6 +107,9 @@ class QueryToolFeatureTest(BaseFeatureTest):
     def after(self):
         self.page.remove_server(self.server)
 
+        # screen shots
+        self._screenshot()
+
     def _reset_options(self):
         # this will set focus to correct iframe.
         self.page.fill_codemirror_area_with('')
@@ -136,7 +139,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
             btn.click()
 
         # close menu
-        query_op.click()
+        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
 
     def _locate_database_tree_node(self):
         self.page.toggle_open_tree_item(self.server['name'])
@@ -339,7 +342,14 @@ CREATE TABLE public.{}();""".format(table_name)
 
         self.page.find_by_id("btn-auto-commit").click()
 
+        # Close the Explain Options drop down, getting error while clicking
+        # flash button on jenkins windows platform
+        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
+        wait.until(EC.invisibility_of_element_located(
+            (By.XPATH, "//li[contains(.,'Explain Options')]")))
+
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
@@ -355,6 +365,7 @@ CREATE TABLE public.{}();""".format(table_name)
 ROLLBACK;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
@@ -371,6 +382,7 @@ SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Data Output')
         canvas = wait.until(EC.presence_of_element_located(
@@ -404,6 +416,12 @@ END;"""
         btn_query_dropdown.click()
 
         self.page.find_by_id("btn-auto-commit").click()
+
+        # Close the Explain Options drop down, getting error while clicking
+        # flash button on jenkins windows platform
+        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
+        wait.until(EC.invisibility_of_element_located(
+            (By.XPATH, "//li[contains(.,'Explain Options')]")))
 
         self.page.find_by_id("btn-flash").click()
 
@@ -439,6 +457,7 @@ CREATE TABLE public.{}();""".format(table_name)
 ROLLBACK;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
@@ -456,6 +475,7 @@ SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
+
         self.page.click_tab('Data Output')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
@@ -478,6 +498,8 @@ SELECT relname FROM pg_class
 -- 5. END transaction.
 -- 6. Check if table is *NOT* created after ending transaction.
 END;"""
+        wait = WebDriverWait(self.page.driver, 10)
+
         self.page.fill_codemirror_area_with(query)
 
         self.page.find_by_id("btn-query-dropdown").click()
@@ -486,7 +508,13 @@ END;"""
 
         self.page.find_by_id("btn-auto-commit").click()
 
+        # Close the Explain Options drop down, getting error while clicking
+        # flash button on jenkins windows platform
+        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
+        wait.until(EC.invisibility_of_element_located(
+            (By.XPATH, "//li[contains(.,'Explain Options')]")))
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self._clear_query_tool()
 
@@ -502,6 +530,7 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.fill_codemirror_area_with(query)
 
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
@@ -519,6 +548,7 @@ CREATE TABLE public.{}();""".format(table_name)
 SELECT 1/0;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
@@ -537,6 +567,7 @@ END;"""
 
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
@@ -555,6 +586,7 @@ SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Data Output')
         canvas = wait.until(EC.presence_of_element_located(
@@ -574,6 +606,7 @@ SELECT relname FROM pg_class
 -- 4. Cancel long running query execution.
 END;
 SELECT 1, pg_sleep(300)"""
+
         self.page.fill_codemirror_area_with(query)
 
         self.page.find_by_id("btn-query-dropdown").click()
@@ -604,7 +637,15 @@ SELECT 1, pg_sleep(300)"""
            auto_commit_check.get_attribute('class')):
             auto_commit_btn.click()
 
+        # Close the Explain Options drop down, getting error while clicking
+        # flash button on jenkins windows platform
+        wait = WebDriverWait(self.page.driver, 10)
+        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
+        wait.until(EC.invisibility_of_element_located(
+            (By.XPATH, "//li[contains(.,'Explain Options')]")))
+
         self.page.find_by_id("btn-flash").click()
+
         self.page.find_by_xpath("//*[@id='fetching_data']")
         self.page.find_by_id("btn-cancel-query").click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -631,6 +672,7 @@ SELECT 1, pg_sleep(300)"""
         print("\n\tListen on an event... ", file=sys.stderr, end="")
         self.page.fill_codemirror_area_with("LISTEN foo;")
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
 
@@ -643,6 +685,7 @@ SELECT 1, pg_sleep(300)"""
         print("\tNotify event without data... ", file=sys.stderr, end="")
         self.page.fill_codemirror_area_with("NOTIFY foo;")
         self.page.find_by_id("btn-flash").click()
+
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Notifications')
         wait.until(EC.text_to_be_present_in_element(
@@ -656,11 +699,13 @@ SELECT 1, pg_sleep(300)"""
             self.page.fill_codemirror_area_with("SELECT pg_notify('foo', "
                                                 "'Hello')")
             self.page.find_by_id("btn-flash").click()
+
             self.page.wait_for_query_tool_loading_indicator_to_disappear()
             self.page.click_tab('Notifications')
             wait.until(WaitForAnyElementWithText(
                 (By.CSS_SELECTOR, 'td.payload'), "Hello"))
             print("OK.", file=sys.stderr)
+            self._clear_query_tool()
         else:
             print("Skipped.", file=sys.stderr)
 
