@@ -107,9 +107,6 @@ class QueryToolFeatureTest(BaseFeatureTest):
     def after(self):
         self.page.remove_server(self.server)
 
-        # screen shots
-        self._screenshot()
-
     def _reset_options(self):
         # this will set focus to correct iframe.
         self.page.fill_codemirror_area_with('')
