@@ -12,6 +12,7 @@ Features
 
 | `Feature #2927 <https://redmine.postgresql.org/issues/2927>`_ - Move all CSS into SCSS files for consistency and ease of colour maintenance etc.
 | `Feature #3514 <https://redmine.postgresql.org/issues/3514>`_ - Add optional data point markers and mouse-over tooltips to display values on graphs.
+| `Feature #3564 <https://redmine.postgresql.org/issues/3564>`_ - Add shortcuts for View Data and the Query tool to the Browser header bar.
 
 Bug fixes
 *********

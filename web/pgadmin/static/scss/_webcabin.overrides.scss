@@ -43,6 +43,11 @@
   margin-right: 2px;
 }
 
+.wcFrameButton.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
 .wcFrameMiniButton {
   width: 8px;
 }
@@ -289,7 +294,10 @@ ul.dropdown-menu > li.menu-item > a > i.wcTabIcon {
   width: 14px;
 }
 
-.wcFrameButton .fa.fa-close {
+.wcFrameButton .fa.fa-close,
+.wcFrameButton .fa.fa-filter,
+.wcFrameButton .fa.fa-table,
+.wcFrameButton .fa.fa-bolt {
   margin-top: 3.5px;
   padding-left: 1px;
 }

@@ -74,6 +74,7 @@ Contents:
 
    browser
    pgadmin_menu_bar
+   pgadmin_toolbar
    pgadmin_tabbed_browser
    pgadmin_tree_control
    preferences

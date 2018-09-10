@@ -4,11 +4,11 @@ define('pgadmin.datagrid', [
   'sources/sqleditor_utils', 'backbone',
   'tools/datagrid/static/js/show_data',
   'tools/datagrid/static/js/get_panel_title',
-  'tools/datagrid/static/js/show_query_tool',
+  'tools/datagrid/static/js/show_query_tool', 'pgadmin.browser.toolbar',
   'wcdocker',
 ], function(
   gettext, url_for, $, _, alertify, pgAdmin, codemirror, sqlEditorUtils,
-  Backbone, showData, panelTitle, showQueryTool
+  Backbone, showData, panelTitle, showQueryTool, toolBar
 ) {
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
@@ -64,10 +64,16 @@ define('pgadmin.datagrid', [
          * otherwise disabled.
          */
           view_menu_enabled = function(obj) {
-            if (!_.isUndefined(obj) && !_.isNull(obj))
-              return (_.indexOf(supported_nodes, obj._type) !== -1 ? true : false);
-            else
-              return false;
+            var isEnabled = (() => {
+              if (!_.isUndefined(obj) && !_.isNull(obj))
+                return (_.indexOf(supported_nodes, obj._type) !== -1 ? true : false);
+              else
+                return false;
+            })();
+
+            toolBar.enable(gettext('View Data'), isEnabled);
+            toolBar.enable(gettext('Filtered Rows'), isEnabled);
+            return isEnabled;
           },
 
         /* Enable/disable Query tool menu in tools based
@@ -76,20 +82,26 @@ define('pgadmin.datagrid', [
          * otherwise enabled.
          */
           query_tool_menu_enabled = function(obj) {
-            if (!_.isUndefined(obj) && !_.isNull(obj)) {
-              if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
-                if (obj._type == 'database' && obj.allowConn)
-                  return true;
-                else if (obj._type != 'database')
-                  return true;
-                else
+            var isEnabled = (() => {
+              if (!_.isUndefined(obj) && !_.isNull(obj)) {
+                if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
+                  if (obj._type == 'database' && obj.allowConn) {
+                    return true;
+                  } else if (obj._type != 'database') {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                } else {
                   return false;
+                }
               } else {
                 return false;
               }
-            } else {
-              return false;
-            }
+            })();
+
+            toolBar.enable(gettext('Query Tool'), isEnabled);
+            return isEnabled;
           };
 
         // Define the nodes on which the menus to be appear

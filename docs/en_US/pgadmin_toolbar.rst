@@ -1,0 +1,16 @@
+.. _pgadmin_toolbar:
+
+*************************
+`pgAdmin Toolbar`:index:
+*************************
+
+The pgAdmin toolbar provides shortcut buttons for frequently used features like View Data and the Query Tool
+which are most frequently used in pgAdmin.
+This toolbar is visible on the Browser panel. Buttons get enabled/disabled based on the selected browser node.
+
+.. image:: /images/pgadmin_toolbar.png
+    :alt: pgAdmin Toolbar
+
+* Use the :ref:`Query Tool <query_tool>` button to open the Query Tool in the current database context.
+* Use the :ref:`View Data <editgrid>` button to view/edit the data stored in a selected table.
+* Use the :ref:`Filtered Rows <editgrid>` button to access the Data Filter popup to apply a filter to a set of data for viewing/editing.
