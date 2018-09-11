@@ -60,18 +60,3 @@
 .pgadmin_header_logo {
   cursor: default;
 }
-
-.pg-toolbar-btn {
-  width: 25px !important;
-  height: 23px !important;
-  border: 1px solid !important;
-  background-color: #fff !important;
-  font-size: 14px !important;
-  color: #333 !important;
-  border-color: #adadad !important;
-}
-
-.pg-toolbar-btn:hover {
-  border: 1px solid $color-gray-light !important;
-  background-color: #e6e6e6 !important;
-}

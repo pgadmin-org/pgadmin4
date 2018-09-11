@@ -43,3 +43,17 @@ samp,
   text-align: center;
   color: $color-fg-inverse;
 }
+
+.pg-toolbar-btn:hover {
+  border: 1px solid $color-gray-light !important;
+  background-color: $color-gray-lighter !important;
+}
+
+.pg-toolbar-btn {
+  width: 25px !important;
+  height: 23px !important;
+  background-color: $color-bg !important;
+  font-size: 14px !important;
+  color: $color-gray-darker !important;
+  border: 1px solid $color-gray-light !important;
+}
