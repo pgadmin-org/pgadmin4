@@ -851,3 +851,35 @@ def get_timezone_without_dst(connection):
     pg_cursor.execute(timezone_no_dst_sql)
 
     return pg_cursor.fetchone()[0]
+
+
+def create_schema(server, db_name, schema_name):
+    """
+    This function create the schema in given database name
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param schema_name: schema name
+    :type schema_name: str
+    :return: None
+    """
+    try:
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(
+            '''CREATE SCHEMA "%s"''' % schema_name)
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)

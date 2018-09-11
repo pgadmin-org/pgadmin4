@@ -18,4 +18,5 @@ Bug fixes
 *********
 
 | `Bug #3576 <https://redmine.postgresql.org/issues/3576>`_ - Ensure queries are no longer executed when dashboards are closed.
+| `Bug #3630 <https://redmine.postgresql.org/issues/3630>`_ - Ensure auto-complete works for objects in schemas other than public and pg_catalog.
 

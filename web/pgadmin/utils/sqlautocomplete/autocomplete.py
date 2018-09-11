@@ -116,15 +116,21 @@ class SQLAutoComplete(object):
 
         self.search_path = []
         schema_names = []
-        # Fetch the search path
         if self.conn.connected():
+            # Fetch the search path
             query = render_template(
                 "/".join([self.sql_path, 'schema.sql']), search_path=True)
             status, res = self.conn.execute_dict(query)
             if status:
                 for record in res['rows']:
-                    schema_names.append(record['schema'])
                     self.search_path.append(record['schema'])
+
+            # Fetch the schema names
+            query = render_template("/".join([self.sql_path, 'schema.sql']))
+            status, res = self.conn.execute_dict(query)
+            if status:
+                for record in res['rows']:
+                    schema_names.append(record['schema'])
 
             pref = Preferences.module('sqleditor')
             keywords_in_uppercase = \

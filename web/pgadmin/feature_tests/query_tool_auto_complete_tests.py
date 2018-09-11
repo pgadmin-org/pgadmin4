@@ -22,6 +22,8 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         This feature test will test the query tool auto complete feature.
     """
 
+    first_schema_name = ""
+    second_schema_name = ""
     first_table_name = ""
     second_table_name = ""
 
@@ -33,6 +35,17 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         self.page.wait_for_spinner_to_disappear()
 
         self.page.add_server(self.server)
+
+        self.first_schema_name = "test_schema" + \
+                                 str(random.randint(1000, 3000))
+        test_utils.create_schema(self.server, self.test_db,
+                                 self.first_schema_name)
+
+        self.second_schema_name = "comp_schema" + \
+                                  str(random.randint(1000, 3000))
+        test_utils.create_schema(self.server, self.test_db,
+                                 self.second_schema_name)
+
         self.first_table_name = "auto_comp_" + \
                                 str(random.randint(1000, 3000))
         test_utils.create_table(self.server, self.test_db,
@@ -84,6 +97,18 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         print("Auto complete function with argument ... ",
               file=sys.stderr, end="")
         self._auto_complete("SELECT pg_st", "pg_stat_file(filename)")
+        print("OK.", file=sys.stderr)
+        self._clear_query_tool()
+
+        print("Auto complete schema other than default start with test_ ... ",
+              file=sys.stderr, end="")
+        self._auto_complete("SELECT * FROM te", self.first_schema_name)
+        print("OK.", file=sys.stderr)
+        self._clear_query_tool()
+
+        print("Auto complete schema other than default starts with comp_ ... ",
+              file=sys.stderr, end="")
+        self._auto_complete("SELECT * FROM co", self.second_schema_name)
         print("OK.", file=sys.stderr)
         self._clear_query_tool()
 
