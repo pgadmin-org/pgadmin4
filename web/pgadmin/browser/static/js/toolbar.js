@@ -73,7 +73,7 @@ export function initializeToolbar(panel, wcDocker) {
     if ('name' in data && data.name === 'Query Tool')
       pgAdmin.DataGrid.show_query_tool('', pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === 'View Data')
-      pgAdmin.DataGrid.show_data_grid({mnuid: 1}, pgAdmin.Browser.tree.selected());
+      pgAdmin.DataGrid.show_data_grid({mnuid: 3}, pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === 'Filtered Rows')
       pgAdmin.DataGrid.show_filtered_row({mnuid: 4}, pgAdmin.Browser.tree.selected());
   });
