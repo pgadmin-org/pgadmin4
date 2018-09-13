@@ -30,6 +30,19 @@ class DataTypeJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+class ColParamsJSONDecoder(json.JSONDecoder):
+    def decode(self, obj):
+        retval = obj
+        try:
+            retval = json.JSONDecoder.decode(self, obj)
+            if type(retval) == str:
+                retVal = obj
+        except (ValueError, TypeError, KeyError):
+            retval = obj
+
+        return retval
+
+
 def get_no_cache_header():
     """
     Prevent browser from caching data every time an

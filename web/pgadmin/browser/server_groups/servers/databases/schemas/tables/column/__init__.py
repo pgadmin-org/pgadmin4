@@ -26,6 +26,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
+from pgadmin.utils.ajax import ColParamsJSONDecoder
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -427,7 +428,6 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         # we are receiving request when in edit mode
         # we will send filtered types related to current type
-        present_type = data['cltype']
         type_id = data['atttypid']
 
         SQL = render_template("/".join([self.template_path,
@@ -438,13 +438,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         edit_types_list = list()
         # We will need present type in edit mode
-        if data['typnspname'] == "pg_catalog" or \
-                data['typnspname'] == "public":
-            edit_types_list.append(present_type)
-        else:
-            t = self.qtTypeIdent(self.conn, data['typnspname'], present_type)
-            edit_types_list.append(t)
-            data['cltype'] = t
+        edit_types_list.append(data['cltype'])
 
         if int(is_reference) == 0:
             SQL = render_template(
@@ -455,8 +449,6 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
             for row in rset['rows']:
                 edit_types_list.append(row['typname'])
-        else:
-            edit_types_list.append(present_type)
 
         data['edit_types'] = edit_types_list
 
@@ -517,14 +509,6 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             sql template
         """
 
-        # We need to add this exceptional case for manually adding " in type
-        # in json.loads('"char"') is valid json hence it
-        # converts '"char"' -> 'char' as string but if we
-        # send the same in collection json.loads() handles it properly in
-        # Table & Type nodes, This handling handling is Column node specific
-        if type == 'char':
-            type = '"char"'
-
         if '[]' in type:
             type = type.replace('[]', '')
             self.hasSqrBracket = True
@@ -568,10 +552,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
         for k, v in data.items():
-            try:
-                data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data[k] = v
+            data[k] = json.loads(v, encoding='utf-8', cls=ColParamsJSONDecoder)
 
         required_args = {
             'name': 'Name',
@@ -747,10 +728,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         data = dict()
         for k, v in request.args.items():
-            try:
-                data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data[k] = v
+            data[k] = json.loads(v, encoding='utf-8', cls=ColParamsJSONDecoder)
 
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema

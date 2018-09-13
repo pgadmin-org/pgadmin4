@@ -7,7 +7,7 @@
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ADD COLUMN {{conn|qtIdent(data.name)}} {% if is_sql %}{{data.displaytypname}}{% else %}{{ GET_TYPE.CREATE_TYPE_SQL(conn, data.cltype, data.attlen, data.attprecision, data.hasSqrBracket) }}{% endif %}{% if data.collspcname %}
  COLLATE {{data.collspcname}}{% endif %}{% if data.attnotnull %}
- NOT NULL{% endif %}{% if data.defval is defined and data.defval is not none %}
+ NOT NULL{% endif %}{% if data.defval and data.defval is not none %}
  DEFAULT {{data.defval}}{% endif %};
 
 {% endif %}

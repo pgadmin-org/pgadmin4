@@ -250,7 +250,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                 # we are receiving request when in edit mode
                 # we will send filtered types related to current type
-                present_type = column['cltype']
 
                 type_id = column['atttypid']
 
@@ -290,15 +289,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                 edit_types_list = list()
                 # We will need present type in edit mode
-
-                if column['typnspname'] == "pg_catalog" \
-                        or column['typnspname'] == "public":
-                    edit_types_list.append(present_type)
-                else:
-                    t = self.qtTypeIdent(self.conn, column['typnspname'],
-                                         present_type)
-                    edit_types_list.append(t)
-                    column['cltype'] = t
+                edit_types_list.append(column['cltype'])
 
                 if int(is_reference) == 0:
                     SQL = render_template("/".join([self.column_template_path,
@@ -308,8 +299,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                     for row in rset['rows']:
                         edit_types_list.append(row['typname'])
-                else:
-                    edit_types_list.append(present_type)
 
                 column['edit_types'] = edit_types_list
                 column['cltype'] = DataTypeReader.parse_type_name(
