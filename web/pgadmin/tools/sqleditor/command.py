@@ -166,6 +166,7 @@ class SQLFilter(object):
         self.obj_id = kwargs['obj_id']
         self.__row_filter = kwargs.get('sql_filter', None)
         self.__dara_sorting = kwargs.get('data_sorting', None)
+        self.__set_sorting_from_filter_dialog = False
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
         conn = manager.connection(did=self.did)
@@ -222,12 +223,17 @@ class SQLFilter(object):
             return self.__dara_sorting
         return None
 
-    def set_data_sorting(self, data_filter):
+    def set_data_sorting(self, data_filter, set_from_filter_dialog=False):
         """
         This function validates the filter and set the
         given filter to member variable.
         """
         self.__dara_sorting = data_filter['data_sorting']
+        self.__set_sorting_from_filter_dialog = set_from_filter_dialog
+
+    def is_sorting_set_from_filter_dialog(self):
+        """This function return whether sorting is set from filter dialog"""
+        return self.__set_sorting_from_filter_dialog
 
     def is_filter_applied(self):
         """
@@ -276,21 +282,20 @@ class SQLFilter(object):
         status = True
         result = None
 
-        if row_filter is None or row_filter == '':
-            return False, gettext('Filter string is empty.')
+        if row_filter is not None and row_filter != '':
+            manager = \
+                get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
+            conn = manager.connection(did=self.did)
 
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
-        conn = manager.connection(did=self.did)
+            if conn.connected():
+                sql = render_template(
+                    "/".join([self.sql_path, 'validate.sql']),
+                    nsp_name=self.nsp_name, object_name=self.object_name,
+                    row_filter=row_filter)
 
-        if conn.connected():
-            sql = render_template(
-                "/".join([self.sql_path, 'validate.sql']),
-                nsp_name=self.nsp_name, object_name=self.object_name,
-                row_filter=row_filter)
-
-            status, result = conn.execute_scalar(sql)
-            if not status:
-                result = result.partition("\n")[0]
+                status, result = conn.execute_scalar(sql)
+                if not status:
+                    result = result.partition("\n")[0]
 
         return status, result
 
@@ -466,23 +471,35 @@ class TableCommand(GridCommand):
         sql_filter = self.get_filter()
         data_sorting = self.get_data_sorting()
 
+        # If data sorting is none and not reset from the filter dialog then
+        # set the data sorting in following conditions:
+        #   1. When command type is VIEW_FIRST_100_ROWS or VIEW_LAST_100_ROWS.
+        #   2. When command type is VIEW_ALL_ROWS and limit is greater than 0
+
+        if data_sorting is None and \
+            not self.is_sorting_set_from_filter_dialog() \
+            and (self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_LAST_100_ROWS) or
+                 (self.cmd_type == VIEW_ALL_ROWS and self.limit > 0)):
+            sorting = {'data_sorting': []}
+            for pk in primary_keys:
+                sorting['data_sorting'].append(
+                    {'name': pk, 'order': self.get_pk_order()})
+            self.set_data_sorting(sorting)
+            data_sorting = self.get_data_sorting()
+
         if sql_filter is None:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
                 object_name=self.object_name,
-                nsp_name=self.nsp_name, pk_names=pk_names,
-                cmd_type=self.cmd_type, limit=self.limit,
-                primary_keys=primary_keys, has_oids=has_oids,
+                nsp_name=self.nsp_name, limit=self.limit, has_oids=has_oids,
                 data_sorting=data_sorting
             )
         else:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
                 object_name=self.object_name,
-                nsp_name=self.nsp_name, pk_names=pk_names,
-                cmd_type=self.cmd_type, sql_filter=sql_filter,
-                limit=self.limit, primary_keys=primary_keys,
-                has_oids=has_oids, data_sorting=data_sorting
+                nsp_name=self.nsp_name, limit=self.limit, has_oids=has_oids,
+                sql_filter=sql_filter, data_sorting=data_sorting
             )
 
         return sql
@@ -563,12 +580,6 @@ class TableCommand(GridCommand):
 
         for row in result['rows']:
             all_columns.append(row['attname'])
-            all_sorted_columns.append(
-                {
-                    'name': row['attname'],
-                    'order': self.get_pk_order()
-                }
-            )
 
         # Fetch the rest of the column names
         query = render_template(
@@ -919,15 +930,13 @@ class ViewCommand(GridCommand):
         if sql_filter is None:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
-                object_name=self.object_name,
-                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                object_name=self.object_name, nsp_name=self.nsp_name,
                 limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
-                object_name=self.object_name,
-                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                object_name=self.object_name, nsp_name=self.nsp_name,
                 sql_filter=sql_filter, limit=self.limit,
                 data_sorting=data_sorting
             )
@@ -982,15 +991,13 @@ class ForeignTableCommand(GridCommand):
         if sql_filter is None:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
-                object_name=self.object_name,
-                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                object_name=self.object_name, nsp_name=self.nsp_name,
                 limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
-                object_name=self.object_name,
-                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                object_name=self.object_name, nsp_name=self.nsp_name,
                 sql_filter=sql_filter, limit=self.limit,
                 data_sorting=data_sorting
             )
@@ -1035,15 +1042,13 @@ class CatalogCommand(GridCommand):
         if sql_filter is None:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
-                object_name=self.object_name,
-                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                object_name=self.object_name, nsp_name=self.nsp_name,
                 limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
                 "/".join([self.sql_path, 'objectquery.sql']),
-                object_name=self.object_name,
-                nsp_name=self.nsp_name, cmd_type=self.cmd_type,
+                object_name=self.object_name, nsp_name=self.nsp_name,
                 sql_filter=sql_filter, limit=self.limit,
                 data_sorting=data_sorting
             )

@@ -7,9 +7,6 @@ WHERE {{ sql_filter }}
 ORDER BY {% for obj in data_sorting %}
 {{ conn|qtIdent(obj.name) }} {{ obj.order|upper }}{% if not loop.last %}, {% else %} {% endif %}
 {% endfor %}
-{% elif primary_keys %}
-ORDER BY {% for p in primary_keys %}{{conn|qtIdent(p)}}{% if cmd_type == 1 or cmd_type == 3 %} ASC{% elif cmd_type == 2 %} DESC{% endif %}
-{% if not loop.last %}, {% else %} {% endif %}{% endfor %}
 {% endif %}
 {% if limit > 0 %}
 LIMIT {{ limit }}

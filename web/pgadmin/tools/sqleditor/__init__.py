@@ -236,11 +236,12 @@ def start_view_data(trans_id):
        trans_obj is not None and session_obj is not None:
         # set fetched row count to 0 as we are executing query again.
         trans_obj.update_fetched_row_cnt(0)
-        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
 
         # Fetch the sql and primary_keys from the object
         sql = trans_obj.get_sql(default_conn)
         pk_names, primary_keys = trans_obj.get_primary_keys(default_conn)
+
+        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
 
         has_oids = False
         if trans_obj.object_type == 'table':

@@ -215,18 +215,28 @@ let FilterDialog = {
                   'trans_id': handler.transId,
                 }),
                 filterCollectionModel
-              ).then(function () {
+              ).then(function (result) {
                 // Hide Progress ...
                 $(
                   self.showFilterProgress[0]
                 ).addClass('hidden');
-                setTimeout(
-                  function() {
-                    self.close(); // Close the dialog now
-                    Alertify.success(gettext('Filter updated successfully'));
-                    queryToolActions.executeQuery(handler);
-                  }, 10
-                );
+
+                let response = result.data.data;
+
+                if (response.status) {
+                  setTimeout(
+                    function() {
+                      self.close(); // Close the dialog now
+                      Alertify.success(gettext('Filter updated successfully'));
+                      queryToolActions.executeQuery(handler);
+                    }, 10
+                  );
+                } else {
+                  Alertify.alert(
+                      gettext('Validation Error'),
+                      response.result
+                  );
+                }
 
               }).catch(function (error) {
                 // Hide Progress ...

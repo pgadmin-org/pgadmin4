@@ -86,13 +86,14 @@ class FilterDialog(object):
 
         if status and conn is not None and \
            trans_obj is not None and session_obj is not None:
-            trans_obj.set_data_sorting(data)
-            trans_obj.set_filter(data.get('sql'))
-            # As we changed the transaction object we need to
-            # restore it and update the session variable.
-            session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
-            update_session_grid_transaction(trans_id, session_obj)
-            res = gettext('Data sorting object updated successfully')
+            trans_obj.set_data_sorting(data, True)
+            status, res = trans_obj.set_filter(data.get('sql'))
+            if status:
+                # As we changed the transaction object we need to
+                # restore it and update the session variable.
+                session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
+                update_session_grid_transaction(trans_id, session_obj)
+                res = gettext('Data sorting object updated successfully')
         else:
             return internal_server_error(
                 errormsg=gettext('Failed to update the data on server.')

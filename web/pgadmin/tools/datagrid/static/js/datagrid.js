@@ -302,6 +302,8 @@ define('pgadmin.datagrid', [
                 );
 
                 this.setContent($content.get(0));
+                // Disable OK button
+                that.__internal.buttons[0].element.disabled = true;
 
                 // Apply CodeMirror to filter text area.
                 this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
@@ -324,6 +326,14 @@ define('pgadmin.datagrid', [
                   that.filter_obj.refresh();
                   that.filter_obj.focus();
                 }, 500);
+
+                that.filter_obj.on('change', function() {
+                  if (that.filter_obj.getValue() !== '') {
+                    that.__internal.buttons[0].element.disabled = false;
+                  } else {
+                    that.__internal.buttons[0].element.disabled = true;
+                  }
+                });
               },
 
               callback: function(closeEvent) {
@@ -331,6 +341,7 @@ define('pgadmin.datagrid', [
                 if (closeEvent.button.text == gettext('OK')) {
                   var sql = this.filter_obj.getValue();
                   var that = this;
+                  closeEvent.cancel = true; // Do not close dialog
 
                   // Make ajax call to include the filter by selection
                   $.ajax({
@@ -344,6 +355,7 @@ define('pgadmin.datagrid', [
                     if (res.data.status) {
                       // Initialize the data grid.
                       self.create_transaction(that.baseUrl, null, 'false', parentData.server.server_type, '', grid_title, sql, false);
+                      that.close(); // Close the dialog
                     }
                     else {
                       alertify.alert(
