@@ -8,8 +8,8 @@
 #########################################################################
 
 # First of all, build frontend with NodeJS in a separate builder container
-# Node-6 with ABI v48 is supported by all needed C++ packages
-FROM node:6 AS node-builder
+# Node-8 is supported by all needed C++ packages
+FROM node:8 AS node-builder
 
 COPY ./pgadmin4/web/ /pgadmin4/web/
 WORKDIR /pgadmin4/web
