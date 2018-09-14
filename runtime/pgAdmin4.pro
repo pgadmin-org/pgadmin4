@@ -93,14 +93,16 @@ HEADERS     =   Server.h \
                 TrayIcon.h \
                 LogWindow.h \
                 MenuActions.h \
-                FloatingWindow.h
+                FloatingWindow.h \
+                Logger.h
 SOURCES     =   pgAdmin4.cpp \
                 Server.cpp \
                 ConfigWindow.cpp \
                 TrayIcon.cpp \
                 LogWindow.cpp \
                 MenuActions.cpp \
-                FloatingWindow.cpp
+                FloatingWindow.cpp \
+                Logger.cpp
 FORMS       =   ConfigWindow.ui \
                 LogWindow.ui \
                 FloatingWindow.ui

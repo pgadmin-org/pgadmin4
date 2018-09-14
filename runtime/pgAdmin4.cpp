@@ -36,6 +36,7 @@
 #include "TrayIcon.h"
 #include "MenuActions.h"
 #include "FloatingWindow.h"
+#include "Logger.h"
 
 #include <QTime>
 
@@ -217,6 +218,7 @@ int main(int argc, char * argv[])
         menuActions->setLogFile(logFileName);
 
     splash->showMessage(QString(QWidget::tr("Checking for system tray...")), Qt::AlignBottom | Qt::AlignCenter);
+    Logger::GetLogger()->Log("Checking for system tray...");
 
     // Check system tray is available or not. If not then create one floating window.
     FloatingWindow *floatingWindow = NULL;
@@ -235,13 +237,15 @@ int main(int argc, char * argv[])
     else
     {
         splash->showMessage(QString(QWidget::tr("System tray not found, creating floating window...")), Qt::AlignBottom | Qt::AlignCenter);
+        Logger::GetLogger()->Log("System tray not found, creating floating window...");
         // Unable to find tray icon, so creating floting window
         floatingWindow = new FloatingWindow();
         if (floatingWindow == NULL)
         {
             QString error = QString(QWidget::tr("Unable to initialize either a tray icon or control window."));
             QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
-
+            Logger::GetLogger()->Log(error);
+            Logger::ReleaseLogger();
             exit(1);
         }
 
@@ -256,8 +260,11 @@ int main(int argc, char * argv[])
     bool done = false;
 
     splash->showMessage(QString(QWidget::tr("Starting pgAdmin4 server...")), Qt::AlignBottom | Qt::AlignCenter);
+    Logger::GetLogger()->Log("Starting pgAdmin4 server...");
     while (done != true)
     {
+        QString msg = QString(QWidget::tr("Initializing server object, port:%1, key:%2, logfile:%3")).arg(port).arg(key).arg(logFileName);
+        Logger::GetLogger()->Log(msg);
         server = new Server(port, key, logFileName);
 
         if (!server->Init())
@@ -269,9 +276,13 @@ int main(int argc, char * argv[])
             QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
             QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
 
+            Logger::GetLogger()->Log(error);
+            Logger::ReleaseLogger();
+
             exit(1);
         }
 
+        Logger::GetLogger()->Log("Starting Server Thread...");
         server->start();
 
         // This is a hack to give the server a chance to start and potentially fail. As
@@ -290,6 +301,7 @@ int main(int argc, char * argv[])
 
             QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
             QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+            Logger::GetLogger()->Log(error);
 
             // Allow the user to tweak the Python Path if needed
             bool ok;
@@ -315,6 +327,7 @@ int main(int argc, char * argv[])
             }
             else
             {
+                Logger::ReleaseLogger();
                 exit(1);
             }
 
@@ -329,6 +342,7 @@ int main(int argc, char * argv[])
 
     // Generate the app server URL
     QString appServerUrl = QString("http://127.0.0.1:%1/?key=%2").arg(port).arg(key);
+    Logger::GetLogger()->Log(QString(QWidget::tr("Application Server URL: %1")).arg(appServerUrl));
 
     // Read the server connection timeout from the registry or set the default timeout.
     int timeout = settings.value("ConnectionTimeout", 30).toInt();
@@ -339,6 +353,7 @@ int main(int argc, char * argv[])
     QTime endTime = QTime::currentTime().addSecs(timeout);
     bool alive = false;
 
+    Logger::GetLogger()->Log("The server should be up, we'll attempt to connect and get a response. Ping the server");
     while(QTime::currentTime() <= endTime)
     {
         alive = PingServer(QUrl(appServerUrl));
@@ -352,12 +367,14 @@ int main(int argc, char * argv[])
     }
 
     // Attempt to connect one more time in case of a long network timeout while looping
+    Logger::GetLogger()->Log("Attempt to connect one more time in case of a long network timeout while looping");
     if (!alive && !PingServer(QUrl(appServerUrl)))
     {
         splash->finish(NULL);
         QString error(QWidget::tr("The application server could not be contacted."));
         QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
 
+        Logger::ReleaseLogger();
         exit(1);
     }
 
@@ -392,6 +409,8 @@ int main(int argc, char * argv[])
             QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
             QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
 
+            Logger::GetLogger()->Log(error);
+            Logger::ReleaseLogger();
             exit(1);
         }
     }
@@ -402,6 +421,8 @@ int main(int argc, char * argv[])
     if (floatingWindow != NULL)
         floatingWindow->show();
 
+    Logger::GetLogger()->Log("Everything works fine, successfully started pgAdmin4.");
+    Logger::ReleaseLogger();
     return app.exec();
 }
 

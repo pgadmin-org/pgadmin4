@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "pgAdmin4.h"
+#include "Logger.h"
 
 // Must be before QT
 #include <Python.h>
@@ -175,6 +176,10 @@ Server::Server(quint16 port, QString key, QString logFileName)
 
     qDebug() << "Python path: " << python_path
              << "\nPython Home: " << pythonHome;
+
+    Logger::GetLogger()->Log(QString("Python Path: %1").arg(python_path));
+    Logger::GetLogger()->Log(QString("Python Home: %1").arg(pythonHome));
+
     if (!pythonHome.isEmpty())
     {
         pythonHome_utf8 = pythonHome.toUtf8();
@@ -190,12 +195,15 @@ Server::Server(quint16 port, QString key, QString logFileName)
 #endif
     }
 
+    Logger::GetLogger()->Log("Initializing Python...");
     Py_Initialize();
+    Logger::GetLogger()->Log("Python initialized.");
 
     // Get the current path
     PyObject* sysPath = PySys_GetObject((char*)"path");
 
     // Add new additional path elements
+    Logger::GetLogger()->Log("Adding new additional path elements");
     for (i = path_list.size() - 1; i >= 0 ; --i)
     {
 #ifdef PYTHON2
@@ -210,6 +218,7 @@ Server::Server(quint16 port, QString key, QString logFileName)
     }
 
     // Redirect stderr
+    Logger::GetLogger()->Log("Redirecting stderr...");
     PyObject *sys = PyImport_ImportModule("sys");
 #ifdef PYTHON2
     PyObject *err = PyFile_FromString(m_logFileName.toUtf8().data(), (char *)"w");
@@ -263,12 +272,14 @@ bool Server::Init()
         if (QFile::exists(m_appfile))
         {
             qDebug() << "Webapp path: " << m_appfile;
+            Logger::GetLogger()->Log(QString("Webapp Path: %1").arg(m_appfile));
             break;
         }
     }
 
     if (!QFile::exists(m_appfile))
     {
+        Logger::GetLogger()->Log("Failed to locate pgAdmin4.py, terminating server thread.");
         setError(tr("Failed to locate pgAdmin4.py, terminating server thread."));
         return false;
     }
@@ -279,14 +290,17 @@ bool Server::Init()
 void Server::run()
 {
     // Open the application code and run it.
+    Logger::GetLogger()->Log("Open the application code and run it.");
     FILE *cp = fopen(m_appfile.toUtf8().data(), "r");
     if (!cp)
     {
+        Logger::GetLogger()->Log(QString(tr("Failed to open the application file: %1, server thread exiting.")).arg(m_appfile));
         setError(QString(tr("Failed to open the application file: %1, server thread exiting.")).arg(m_appfile));
         return;
     }
 
     // Set the port number and key, and force SERVER_MODE off.
+    Logger::GetLogger()->Log("Set the port number and key, and force SERVER_MODE off");
     PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
     PyRun_SimpleString(QString("PGADMIN_KEY = '%1'").arg(m_key).toLatin1());
     PyRun_SimpleString(QString("SERVER_MODE = False").toLatin1());
@@ -303,10 +317,14 @@ void Server::run()
     char* n_argv[] = { m_appfile_utf8.data() };
     PySys_SetArgv(1, n_argv);
 
+    Logger::GetLogger()->Log("Server::run: PyRun_SimpleFile launching application server...");
     PyObject* PyFileObject = PyFile_FromString(m_appfile_utf8.data(), (char *)"r");
     int ret = PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile_utf8.data());
     if (ret != 0)
+    {
+        Logger::GetLogger()->Log("Failed to launch the application server, server thread exiting.");
         setError(tr("Failed to launch the application server, server thread exiting."));
+    }
 #else
     /*
      * Untrusted search path vulnerability in the PySys_SetArgv API function in Python 2.6 and earlier, and possibly later
@@ -321,8 +339,12 @@ void Server::run()
     wchar_t* n_argv[] = { wcAppName };
     PySys_SetArgv(1, n_argv);
 
+    Logger::GetLogger()->Log("Server::run: PyRun_SimpleFile launching application server...");
     if (PyRun_SimpleFile(cp, m_appfile_utf8.data()) != 0)
+    {
+        Logger::GetLogger()->Log("Failed to launch the application server, server thread exiting.");
         setError(tr("Failed to launch the application server, server thread exiting."));
+    }
 #endif
 
     fclose(cp);
