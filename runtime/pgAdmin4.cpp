@@ -263,10 +263,11 @@ int main(int argc, char * argv[])
     Logger::GetLogger()->Log("Starting pgAdmin4 server...");
     while (done != true)
     {
-        QString msg = QString(QWidget::tr("Initializing server object, port:%1, key:%2, logfile:%3")).arg(port).arg(key).arg(logFileName);
+        QString msg = QString(QWidget::tr("Creating server object, port:%1, key:%2, logfile:%3")).arg(port).arg(key).arg(logFileName);
         Logger::GetLogger()->Log(msg);
         server = new Server(port, key, logFileName);
 
+        Logger::GetLogger()->Log("Initializing server...");
         if (!server->Init())
         {
             splash->finish(NULL);
@@ -282,6 +283,7 @@ int main(int argc, char * argv[])
             exit(1);
         }
 
+        Logger::GetLogger()->Log("Server initialized.");
         Logger::GetLogger()->Log("Starting Server Thread...");
         server->start();
 

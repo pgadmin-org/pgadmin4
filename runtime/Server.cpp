@@ -201,34 +201,55 @@ Server::Server(quint16 port, QString key, QString logFileName)
 
     // Get the current path
     PyObject* sysPath = PySys_GetObject((char*)"path");
-
-    // Add new additional path elements
-    Logger::GetLogger()->Log("Adding new additional path elements");
-    for (i = path_list.size() - 1; i >= 0 ; --i)
+    if (sysPath != NULL)
     {
+        // Add new additional path elements
+        Logger::GetLogger()->Log("Adding new additional path elements");
+        for (i = path_list.size() - 1; i >= 0 ; --i)
+        {
 #ifdef PYTHON2
-        PyList_Append(sysPath, PyString_FromString(path_list.at(i).toUtf8().data()));
+            PyList_Append(sysPath, PyString_FromString(path_list.at(i).toUtf8().data()));
 #else
 #if PY_MINOR_VERSION > 2
-        PyList_Append(sysPath, PyUnicode_DecodeFSDefault(path_list.at(i).toUtf8().data()));
+            PyList_Append(sysPath, PyUnicode_DecodeFSDefault(path_list.at(i).toUtf8().data()));
 #else
-        PyList_Append(sysPath, PyBytes_FromString(path_list.at(i).toUtf8().data()));
+            PyList_Append(sysPath, PyBytes_FromString(path_list.at(i).toUtf8().data()));
 #endif
 #endif
+        }
     }
+    else
+       Logger::GetLogger()->Log("Unable to get the current path.");
 
     // Redirect stderr
     Logger::GetLogger()->Log("Redirecting stderr...");
     PyObject *sys = PyImport_ImportModule("sys");
+    if (sys != NULL)
+    {
+        PyObject *err = NULL;
 #ifdef PYTHON2
-    PyObject *err = PyFile_FromString(m_logFileName.toUtf8().data(), (char *)"w");
+        err = PyFile_FromString(m_logFileName.toUtf8().data(), (char *)"w");
 #else
-    FILE *log = fopen(m_logFileName.toUtf8().data(), (char *)"w");
-    int fd = fileno(log);
-    PyObject *err = PyFile_FromFd(fd, NULL, (char *)"w", -1, NULL, NULL, NULL, 0);
+        FILE *log = fopen(m_logFileName.toUtf8().data(), (char *)"w");
+        if (log != NULL)
+        {
+            int fd = fileno(log);
+            err = PyFile_FromFd(fd, NULL, (char *)"w", -1, NULL, NULL, NULL, 0);
+        }
+        else
+            Logger::GetLogger()->Log(QString("Failed to open log file: %1").arg(m_logFileName));
 #endif
-    QFile(m_logFileName).setPermissions(QFile::ReadOwner|QFile::WriteOwner);
-    PyObject_SetAttrString(sys, "stderr", err);
+        QFile(m_logFileName).setPermissions(QFile::ReadOwner|QFile::WriteOwner);
+        if (err != NULL)
+        {
+            PyObject_SetAttrString(sys, "stderr", err);
+            Logger::GetLogger()->Log("stderr redirected successfully.");
+        }
+        else
+            Logger::GetLogger()->Log(QString("Failed to get the file pointer of: %1 ").arg(m_logFileName));
+    }
+    else
+      Logger::GetLogger()->Log("Failed to import 'sys' module.");
 }
 
 Server::~Server()
@@ -300,7 +321,7 @@ void Server::run()
     }
 
     // Set the port number and key, and force SERVER_MODE off.
-    Logger::GetLogger()->Log("Set the port number and key, and force SERVER_MODE off");
+    Logger::GetLogger()->Log("Set the port number, key and force SERVER_MODE off");
     PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
     PyRun_SimpleString(QString("PGADMIN_KEY = '%1'").arg(m_key).toLatin1());
     PyRun_SimpleString(QString("SERVER_MODE = False").toLatin1());
@@ -317,7 +338,7 @@ void Server::run()
     char* n_argv[] = { m_appfile_utf8.data() };
     PySys_SetArgv(1, n_argv);
 
-    Logger::GetLogger()->Log("Server::run: PyRun_SimpleFile launching application server...");
+    Logger::GetLogger()->Log("PyRun_SimpleFile launching application server...");
     PyObject* PyFileObject = PyFile_FromString(m_appfile_utf8.data(), (char *)"r");
     int ret = PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile_utf8.data());
     if (ret != 0)
@@ -339,7 +360,7 @@ void Server::run()
     wchar_t* n_argv[] = { wcAppName };
     PySys_SetArgv(1, n_argv);
 
-    Logger::GetLogger()->Log("Server::run: PyRun_SimpleFile launching application server...");
+    Logger::GetLogger()->Log("PyRun_SimpleFile launching application server...");
     if (PyRun_SimpleFile(cp, m_appfile_utf8.data()) != 0)
     {
         Logger::GetLogger()->Log("Failed to launch the application server, server thread exiting.");
