@@ -230,7 +230,18 @@ Server::Server(quint16 port, QString key, QString logFileName)
 #ifdef PYTHON2
         err = PyFile_FromString(m_logFileName.toUtf8().data(), (char *)"w");
 #else
-        FILE *log = fopen(m_logFileName.toUtf8().data(), (char *)"w");
+        FILE *log = NULL;
+
+#if defined(Q_OS_WIN)
+        char *logFile = m_logFileName.toUtf8().data();
+        size_t fileSize = strlen(logFile) + 1;
+        wchar_t * wcLogFileName = new wchar_t[fileSize];
+        mbstowcs (wcLogFileName, logFile, fileSize);
+
+        log = _wfopen(wcLogFileName, (wchar_t *)"w");
+#else
+        log = fopen(m_logFileName.toUtf8().data(), (char *)"w");
+#endif
         if (log != NULL)
         {
             int fd = fileno(log);
@@ -238,6 +249,14 @@ Server::Server(quint16 port, QString key, QString logFileName)
         }
         else
             Logger::GetLogger()->Log(QString("Failed to open log file: %1").arg(m_logFileName));
+
+#if defined(Q_OS_WIN)
+        if (wcLogFileName != NULL)
+        {
+            delete wcLogFileName;
+            wcLogFileName = NULL;
+        }
+#endif
 #endif
         QFile(m_logFileName).setPermissions(QFile::ReadOwner|QFile::WriteOwner);
         if (err != NULL)

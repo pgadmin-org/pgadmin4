@@ -17,6 +17,7 @@ Features
 Bug fixes
 *********
 
+| `Bug #3464 <https://redmine.postgresql.org/issues/3464>`_ - Ensure the runtime can startup properly if there are wide characters in the logfile path on Windows.
 | `Bug #3576 <https://redmine.postgresql.org/issues/3576>`_ - Ensure queries are no longer executed when dashboards are closed.
 | `Bug #3596 <https://redmine.postgresql.org/issues/3596>`_ - Fix support for the CLOB datatype in EPAS.
 | `Bug #3607 <https://redmine.postgresql.org/issues/3607>`_ - Fix logic around validation and highlighting of Sort/Filter in the Query Tool.
