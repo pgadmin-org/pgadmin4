@@ -308,6 +308,15 @@ def start_query_tool(trans_id):
 
     connect = 'connect' in request.args and request.args['connect'] == '1'
 
+    # Preferences can be changed from outside.
+    # Get the latest preferences for auto commit, rollback,etc. before
+    # executing the query
+    error_msg = set_trans_preferences(trans_id)
+    if error_msg == gettext('Transaction ID not found in the session.'):
+        return make_json_response(success=0, errormsg=error_msg,
+                                  info='DATAGRID_TRANSACTION_REQUIRED',
+                                  status=404)
+
     return StartRunningQuery(blueprint, current_app.logger).execute(
         sql, trans_id, session, connect
     )
@@ -326,6 +335,27 @@ def extract_sql_from_network_parameters(request_data, request_arguments,
         return request_arguments or request_form_data
 
 
+def set_trans_preferences(trans_id):
+    # Check the transaction and connection status
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
+
+    if error_msg == gettext('Transaction ID not found in the session.'):
+        return error_msg
+
+    if status and conn is not None and \
+       trans_obj is not None and session_obj is not None:
+        # Call the set_auto_commit and set_auto_rollback method of
+        # transaction object
+        trans_obj.set_auto_commit(blueprint.auto_commit.get())
+        trans_obj.set_auto_rollback(blueprint.auto_rollback.get())
+
+        # As we changed the transaction object we need to
+        # restore it and update the session variable.
+        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
+        update_session_grid_transaction(trans_id, session_obj)
+
+
 @blueprint.route(
     '/query_tool/preferences/<int:trans_id>',
     methods=["GET", "PUT"], endpoint='query_tool_preferences'
@@ -339,26 +369,12 @@ def preferences(trans_id):
             trans_id: unique transaction id
     """
     if request.method == 'GET':
-        # Check the transaction and connection status
-        status, error_msg, conn, trans_obj, session_obj = \
-            check_transaction_status(trans_id)
 
+        error_msg = set_trans_preferences(trans_id)
         if error_msg == gettext('Transaction ID not found in the session.'):
             return make_json_response(success=0, errormsg=error_msg,
                                       info='DATAGRID_TRANSACTION_REQUIRED',
                                       status=404)
-
-        if status and conn is not None and \
-           trans_obj is not None and session_obj is not None:
-            # Call the set_auto_commit and set_auto_rollback method of
-            # transaction object
-            trans_obj.set_auto_commit(blueprint.auto_commit.get())
-            trans_obj.set_auto_rollback(blueprint.auto_rollback.get())
-
-            # As we changed the transaction object we need to
-            # restore it and update the session variable.
-            session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
-            update_session_grid_transaction(trans_id, session_obj)
 
         return make_json_response(
             data={

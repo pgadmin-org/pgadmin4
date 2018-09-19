@@ -22,4 +22,5 @@ Bug fixes
 | `Bug #3596 <https://redmine.postgresql.org/issues/3596>`_ - Fix support for the CLOB datatype in EPAS.
 | `Bug #3607 <https://redmine.postgresql.org/issues/3607>`_ - Fix logic around validation and highlighting of Sort/Filter in the Query Tool.
 | `Bug #3630 <https://redmine.postgresql.org/issues/3630>`_ - Ensure auto-complete works for objects in schemas other than public and pg_catalog.
+| `Bug #3657 <https://redmine.postgresql.org/issues/3657>`_ - Ensure changes to Query Tool settings from the Preferences dialogue are applied before executing queries.
 
