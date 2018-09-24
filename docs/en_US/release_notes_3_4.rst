@@ -23,4 +23,5 @@ Bug fixes
 | `Bug #3607 <https://redmine.postgresql.org/issues/3607>`_ - Fix logic around validation and highlighting of Sort/Filter in the Query Tool.
 | `Bug #3630 <https://redmine.postgresql.org/issues/3630>`_ - Ensure auto-complete works for objects in schemas other than public and pg_catalog.
 | `Bug #3657 <https://redmine.postgresql.org/issues/3657>`_ - Ensure changes to Query Tool settings from the Preferences dialogue are applied before executing queries.
+| `Bug #3658 <https://redmine.postgresql.org/issues/3658>`_ - Swap the Schema and Schemas icons and Catalog and Catalogs icons that had been used the wrong way around.
 
