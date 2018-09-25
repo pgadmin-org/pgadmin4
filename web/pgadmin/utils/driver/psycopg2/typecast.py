@@ -176,12 +176,12 @@ def register_string_typecasters(connection):
                     return None
                 return bytes(
                     value, encodings[cursor.connection.encoding]
-                ).decode('unicode_escape')
+                ).decode('raw_unicode_escape')
         else:
             def non_ascii_escape(value, cursor):
                 if value is None:
                     return None
-                return value.decode('unicode_escape')
+                return value.decode('raw_unicode_escape')
 
         unicode_type = psycopg2.extensions.new_type(
             # "char", name, text, character, character varying

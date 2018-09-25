@@ -16,6 +16,7 @@ object.
 import random
 import select
 import sys
+import six
 import datetime
 from collections import deque
 import simplejson as json
@@ -630,11 +631,18 @@ WHERE
             if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
                                       'MULE_INTERNAL', 'MULEINTERNAL')\
                and params is not None and type(params) == dict:
-                    params = dict(
-                        (key, val.encode('unicode_escape')
-                         .decode('raw_unicode_escape'))
-                        for key, val in params.items()
-                    )
+                for key, val in params.items():
+                    modified_val = val
+                    # "unicode_escape" will convert single backslash to double
+                    # backslash, so we will have to replace/revert them again
+                    # to store the correct value into the database.
+                    if isinstance(val, six.string_types):
+                        modified_val = val.encode('unicode_escape')\
+                            .decode('raw_unicode_escape')\
+                            .replace("\\\\", "\\")
+
+                    params[key] = modified_val
+
         return params
 
     def __internal_blocking_execute(self, cur, query, params):
