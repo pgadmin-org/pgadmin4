@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-09-05 17:05+0100\n"
+"POT-Creation-Date: 2018-10-01 10:22+0100\n"
 "PO-Revision-Date: 2018-07-12 01:04+0900\n"
 "Last-Translator: Ioseph Kim <ioseph@uri.sarang.net>\n"
 "Language: ko\n"
@@ -45,8 +45,8 @@ msgstr "데스크탑"
 #: pgadmin/preferences/static/js/preferences.js:411
 #: pgadmin/preferences/static/js/preferences.js:440
 #: pgadmin/static/js/sqleditor/filter_dialog.js:69
-#: pgadmin/tools/datagrid/static/js/datagrid.js:261
-#: pgadmin/tools/datagrid/static/js/datagrid.js:319
+#: pgadmin/tools/datagrid/static/js/datagrid.js:273
+#: pgadmin/tools/datagrid/static/js/datagrid.js:341
 #: pgadmin/tools/import_export/static/js/import_export.js:484
 #: pgadmin/tools/maintenance/static/js/maintenance.js:309
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1808
@@ -135,6 +135,7 @@ msgstr "시스템 객체 보기?"
 #: pgadmin/browser/register_browser_preferences.py:22
 #: pgadmin/browser/register_browser_preferences.py:28
 #: pgadmin/dashboard/__init__.py:119 pgadmin/dashboard/__init__.py:127
+#: pgadmin/dashboard/__init__.py:135 pgadmin/dashboard/__init__.py:143
 #: pgadmin/tools/debugger/__init__.py:73
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:21
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:36
@@ -158,7 +159,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:34
 #: pgadmin/browser/register_browser_preferences.py:40
-#: pgadmin/browser/static/js/browser.js:126
+#: pgadmin/browser/static/js/browser.js:129
 msgid "Properties"
 msgstr "등록정보"
 
@@ -470,7 +471,7 @@ msgstr "바뀐 매개 변수가 없습니다."
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:541
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:437
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:925
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:586
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:567
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:507
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:605
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:328
@@ -508,9 +509,9 @@ msgstr "서버 찾을 수 없음."
 #: pgadmin/browser/server_groups/servers/__init__.py:976
 #: pgadmin/browser/server_groups/servers/__init__.py:978
 #: pgadmin/browser/server_groups/servers/__init__.py:1242
-#: pgadmin/utils/driver/psycopg2/connection.py:255
-#: pgadmin/utils/driver/psycopg2/connection.py:1258
-#: pgadmin/utils/driver/psycopg2/connection.py:1540
+#: pgadmin/utils/driver/psycopg2/connection.py:256
+#: pgadmin/utils/driver/psycopg2/connection.py:1266
+#: pgadmin/utils/driver/psycopg2/connection.py:1548
 #: pgadmin/utils/driver/psycopg2/server_manager.py:405
 msgid "Unauthorized request."
 msgstr "허락 되지 않는 요청."
@@ -536,8 +537,8 @@ msgid "Server configuration reloaded."
 msgstr "서버 환경 설정 다시 반영 함."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1174
-#: pgadmin/dashboard/static/js/dashboard.js:474
-#: pgadmin/dashboard/static/js/dashboard.js:635
+#: pgadmin/dashboard/static/js/dashboard.js:467
+#: pgadmin/dashboard/static/js/dashboard.js:654
 #: pgadmin/static/js/sqleditor/execute_query.js:255
 #: pgadmin/static/js/sqleditor/query_tool_http_error_handler.js:51
 #: pgadmin/static/js/sqleditor_utils.js:164
@@ -687,7 +688,7 @@ msgstr "데이터베이스 연결 끊김."
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:447
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:432
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1084
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:660
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:641
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:612
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:734
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:775
@@ -828,9 +829,9 @@ msgstr "형변환자..."
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:328
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/static/js/server_group.js:39
-#: pgadmin/dashboard/static/js/dashboard.js:988
-#: pgadmin/dashboard/static/js/dashboard.js:1015
-#: pgadmin/dashboard/static/js/dashboard.js:1273
+#: pgadmin/dashboard/static/js/dashboard.js:1028
+#: pgadmin/dashboard/static/js/dashboard.js:1055
+#: pgadmin/dashboard/static/js/dashboard.js:1313
 #: pgadmin/misc/depends/static/js/depends.js:93
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:42
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:231
@@ -1277,8 +1278,8 @@ msgstr "이벤트 트리거..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:106
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:300
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:342
-#: pgadmin/dashboard/static/js/dashboard.js:998
-#: pgadmin/dashboard/static/js/dashboard.js:1278
+#: pgadmin/dashboard/static/js/dashboard.js:1038
+#: pgadmin/dashboard/static/js/dashboard.js:1318
 #: pgadmin/tools/backup/static/js/backup.js:331
 #: pgadmin/tools/restore/static/js/restore.js:227
 msgid "Owner"
@@ -1726,8 +1727,8 @@ msgstr "사용자 맵핑..."
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:29
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:26
-#: pgadmin/dashboard/static/js/dashboard.js:827
-#: pgadmin/dashboard/static/js/dashboard.js:1119
+#: pgadmin/dashboard/static/js/dashboard.js:867
+#: pgadmin/dashboard/static/js/dashboard.js:1159
 msgid "User"
 msgstr "사용자"
 
@@ -1866,7 +1867,7 @@ msgstr "지정한 카탈로그 객체를 찾을 수 없습니다."
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/__init__.py:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:579
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:580
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:57
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:13
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:775
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:776
@@ -2172,7 +2173,7 @@ msgstr "NOT NULL"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:211
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column.js:502
-#: pgadmin/browser/static/js/browser.js:141
+#: pgadmin/browser/static/js/browser.js:144
 #: pgadmin/misc/statistics/static/js/statistics.js:120
 msgid "Statistics"
 msgstr "통계정보"
@@ -2573,8 +2574,8 @@ msgid "Trigger Functions"
 msgstr "트리거 함수"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:47
-#: pgadmin/dashboard/static/js/dashboard.js:976
-#: pgadmin/dashboard/static/js/dashboard.js:1261
+#: pgadmin/dashboard/static/js/dashboard.js:1016
+#: pgadmin/dashboard/static/js/dashboard.js:1301
 msgid "Mode"
 msgstr "모드"
 
@@ -3246,28 +3247,28 @@ msgstr "트리거가 비활성화 되었음"
 msgid "Table rows counted"
 msgstr "테이블 자료수 계산됨"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1197
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1186
 msgid "Table statistics have been reset"
 msgstr "테이블 통계정보가 초기화 됨"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1378
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1367
 msgid "-- definition incomplete for {0} constraint"
 msgstr "-- {0} 제약조건 정의가 충분하지 않습니다"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1440
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1478
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1429
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1467
 msgid "-- definition incomplete for foreign_key constraint"
 msgstr "-- 참조키 제약조건 정의가 충분하지 않습니다"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1578
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1567
 msgid "-- definition incomplete for check_constraint"
 msgstr "-- 체크 제약조건 정의가 충분하지 않습니다"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1655
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1644
 msgid "-- definition incomplete for exclusion_constraint"
 msgstr "-- 제외 제약조건 정의가 충분하지 않습니다"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:841
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:819
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:824
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:826
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:847
@@ -3279,42 +3280,42 @@ msgstr "-- 제외 제약조건 정의가 충분하지 않습니다"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:905
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:890
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:928
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1964
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1953
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:856
 msgid "-- definition incomplete"
 msgstr "-- 정의가 충분하지 않습니다"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1974
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1963
 msgid "-- definition incomplete for {0}"
 msgstr "-- {0} 용 정의가 충분하지 않습니다"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2342
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2331
 msgid "Table truncated"
 msgstr "테이블 자료 비움"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2381
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2370
 msgid "Table dropped"
 msgstr "테이블 삭제됨"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:297
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:298
 msgid "Could not find the column."
 msgstr "해당 칼럼을 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:497
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:489
 msgid "Could not find the column in the table."
 msgstr "해당 테이블에서 그 칼럼을 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:663
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:644
 msgid "The specified column could not be found.\n"
 msgstr "지정한 칼럼을 찾을 수 없습니다.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:682
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:663
 msgid "Column is dropped"
 msgstr "칼럼 삭제됨"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:797
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:880
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:1023
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:775
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:858
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:1001
 msgid "Could not find the column on the server."
 msgstr "해당 서버에서 그 칼럼을 찾을 수 없습니다."
 
@@ -4247,7 +4248,7 @@ msgid "Attach"
 msgstr "추가"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:246
-#: pgadmin/browser/static/js/browser.js:241
+#: pgadmin/browser/static/js/browser.js:244
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:15
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:129
 msgid "Create"
@@ -5256,9 +5257,9 @@ msgstr "캐시됨"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:30
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:27
-#: pgadmin/dashboard/static/js/dashboard.js:822
-#: pgadmin/dashboard/static/js/dashboard.js:926
-#: pgadmin/dashboard/static/js/dashboard.js:993
+#: pgadmin/dashboard/static/js/dashboard.js:862
+#: pgadmin/dashboard/static/js/dashboard.js:966
+#: pgadmin/dashboard/static/js/dashboard.js:1033
 #: pgadmin/misc/depends/static/js/depends.js:239
 msgid "Database"
 msgstr "데이터베이스"
@@ -6142,7 +6143,7 @@ msgstr "종류"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:136
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:128
-#: pgadmin/browser/static/js/browser.js:152
+#: pgadmin/browser/static/js/browser.js:155
 #: pgadmin/dashboard/static/js/dashboard.js:180
 #: pgadmin/static/js/backform.pgadmin.js:1722
 msgid "SQL"
@@ -6198,7 +6199,7 @@ msgid "Fail"
 msgstr "실패"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:188
-#: pgadmin/dashboard/__init__.py:508 pgadmin/dashboard/__init__.py:535
+#: pgadmin/dashboard/__init__.py:525 pgadmin/dashboard/__init__.py:552
 #: pgadmin/dashboard/static/js/dashboard.js:95
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:36
 msgid "Success"
@@ -6780,7 +6781,7 @@ msgstr "OK"
 #: pgadmin/preferences/static/js/preferences.js:415
 #: pgadmin/static/js/sqleditor/filter_dialog.js:73
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:58
-#: pgadmin/tools/datagrid/static/js/datagrid.js:266
+#: pgadmin/tools/datagrid/static/js/datagrid.js:278
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:562
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:860
 #: pgadmin/tools/import_export/static/js/import_export.js:490
@@ -7143,8 +7144,8 @@ msgstr "해당 서버 \"{1}\" 에 접속할 '{0}' 사용자의 데이터베이�
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:31
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:28
-#: pgadmin/dashboard/static/js/dashboard.js:842
-#: pgadmin/dashboard/static/js/dashboard.js:1134
+#: pgadmin/dashboard/static/js/dashboard.js:882
+#: pgadmin/dashboard/static/js/dashboard.js:1174
 msgid "Backend start"
 msgstr "접속시각"
 
@@ -7156,8 +7157,8 @@ msgstr "접속시각"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:41
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:13
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:36
-#: pgadmin/dashboard/static/js/dashboard.js:837
-#: pgadmin/dashboard/static/js/dashboard.js:1129
+#: pgadmin/dashboard/static/js/dashboard.js:877
+#: pgadmin/dashboard/static/js/dashboard.js:1169
 msgid "Client"
 msgstr "클라이언트"
 
@@ -7169,8 +7170,8 @@ msgstr "클라이언트"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:14
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:37
-#: pgadmin/dashboard/static/js/dashboard.js:832
-#: pgadmin/dashboard/static/js/dashboard.js:1124
+#: pgadmin/dashboard/static/js/dashboard.js:872
+#: pgadmin/dashboard/static/js/dashboard.js:1164
 msgid "Application"
 msgstr "응용프로그램"
 
@@ -7232,8 +7233,8 @@ msgstr "스트리밍 복제"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:15
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:38
-#: pgadmin/dashboard/static/js/dashboard.js:856
-#: pgadmin/dashboard/static/js/dashboard.js:1148
+#: pgadmin/dashboard/static/js/dashboard.js:896
+#: pgadmin/dashboard/static/js/dashboard.js:1188
 msgid "Waiting?"
 msgstr "대기중?"
 
@@ -7256,23 +7257,35 @@ msgstr "ID는 변경될 수 없습니다."
 msgid "Please select an object in the tree view."
 msgstr "탐색기에서 한 객체를 선택하세요."
 
-#: pgadmin/browser/static/js/browser.js:162
+#: pgadmin/browser/static/js/browser.js:165
 msgid "Dependencies"
 msgstr "상위의존"
 
-#: pgadmin/browser/static/js/browser.js:173
+#: pgadmin/browser/static/js/browser.js:176
 msgid "Dependents"
 msgstr "하위의존"
 
-#: pgadmin/browser/static/js/browser.js:317
+#: pgadmin/browser/static/js/browser.js:295
+#: pgadmin/browser/static/js/toolbar.js:20
+#: pgadmin/tools/datagrid/static/js/datagrid.js:74
+msgid "View Data"
+msgstr ""
+
+#: pgadmin/browser/static/js/browser.js:296
+#: pgadmin/browser/static/js/toolbar.js:11
+#: pgadmin/tools/datagrid/static/js/datagrid.js:75
+msgid "Filtered Rows"
+msgstr ""
+
+#: pgadmin/browser/static/js/browser.js:323
 msgid "No object selected"
 msgstr "선택된 객체 없음"
 
-#: pgadmin/browser/static/js/browser.js:1607
+#: pgadmin/browser/static/js/browser.js:1613
 msgid "Error retrieving details for the node."
 msgstr "해당 노드 상세 정보 처리 중 오류 발생."
 
-#: pgadmin/browser/static/js/browser.js:1941
+#: pgadmin/browser/static/js/browser.js:1947
 #, python-format
 msgid "Are you sure you wish to close the %s browser?"
 msgstr "%s 창을 정말 닫을까요?"
@@ -7437,6 +7450,12 @@ msgstr "전체선택"
 msgid "Unselect All"
 msgstr "전체 해제"
 
+#: pgadmin/browser/static/js/toolbar.js:29
+#: pgadmin/tools/datagrid/static/js/datagrid.js:103
+#: pgadmin/tools/datagrid/static/js/datagrid.js:115
+msgid "Query Tool"
+msgstr "쿼리 도구"
+
 #: pgadmin/browser/static/js/wizard.js:79
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:236
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:419
@@ -7573,25 +7592,43 @@ msgstr "세션 정보 보임?"
 msgid "If set to True, activity tables will be displayed on dashboards."
 msgstr "True로 지정하면 대시보드에 현재 접속해 있는 세션 활동 상태가 보입니다."
 
-#: pgadmin/dashboard/__init__.py:196 pgadmin/dashboard/__init__.py:211
-#: pgadmin/dashboard/static/js/dashboard.js:643
+#: pgadmin/dashboard/__init__.py:134
+msgid "Show graph data points?"
+msgstr ""
+
+#: pgadmin/dashboard/__init__.py:136
+msgid "If set to True, data points will be visible on graph lines."
+msgstr ""
+
+#: pgadmin/dashboard/__init__.py:142
+msgid "Show mouse hover tooltip?"
+msgstr ""
+
+#: pgadmin/dashboard/__init__.py:144
+msgid ""
+"If set to True, tooltip will appear on mouse hover on the graph lines "
+"giving the data point details"
+msgstr ""
+
+#: pgadmin/dashboard/__init__.py:213 pgadmin/dashboard/__init__.py:228
+#: pgadmin/dashboard/static/js/dashboard.js:662
 msgid "Please connect to the selected server to view the table."
 msgstr "테이블을 보려면, 먼저 해당 서버로 접속하세요."
 
-#: pgadmin/dashboard/__init__.py:201 pgadmin/dashboard/__init__.py:216
-#: pgadmin/dashboard/static/js/dashboard.js:482
+#: pgadmin/dashboard/__init__.py:218 pgadmin/dashboard/__init__.py:233
+#: pgadmin/dashboard/static/js/dashboard.js:475
 msgid "Please connect to the selected server to view the graph."
 msgstr "그래프를 보려면, 먼저 해당 서버로 접속하세요."
 
-#: pgadmin/dashboard/__init__.py:226
+#: pgadmin/dashboard/__init__.py:243
 msgid "Please connect to the selected database to view the table."
 msgstr "테이블을 보려면, 먼저 해당 데이터베이스로 접속하세요."
 
-#: pgadmin/dashboard/__init__.py:231
+#: pgadmin/dashboard/__init__.py:248
 msgid "Please connect to the selected database to view the graph."
 msgstr "그래프를 보려면, 먼저 해당 데이터베이스로 접속하세요."
 
-#: pgadmin/dashboard/__init__.py:508 pgadmin/dashboard/__init__.py:535
+#: pgadmin/dashboard/__init__.py:525 pgadmin/dashboard/__init__.py:552
 msgid "Failed"
 msgstr "실패"
 
@@ -7658,154 +7695,154 @@ msgstr "쿼리 시작시간"
 msgid "Last state changed at"
 msgstr "마지막 상태 변경 시간"
 
-#: pgadmin/dashboard/static/js/dashboard.js:233
-#: pgadmin/dashboard/static/js/dashboard.js:348
+#: pgadmin/dashboard/static/js/dashboard.js:231
+#: pgadmin/dashboard/static/js/dashboard.js:346
 msgid "An error occurred whilst loading the dashboard."
 msgstr "대시보드를 불러오는 중 오류가 발생했습니다."
 
-#: pgadmin/dashboard/static/js/dashboard.js:363
+#: pgadmin/dashboard/static/js/dashboard.js:361
 msgid "Please connect to the selected server to view the dashboard."
 msgstr "대시보드를 보려는 서버로 먼저 접속하세요."
 
-#: pgadmin/dashboard/static/js/dashboard.js:485
+#: pgadmin/dashboard/static/js/dashboard.js:478
 msgid "An error occurred whilst rendering the graph."
 msgstr "그래프 그리는 중 오류가 발생했습니다."
 
-#: pgadmin/dashboard/static/js/dashboard.js:646
+#: pgadmin/dashboard/static/js/dashboard.js:665
 msgid "An error occurred whilst rendering the table."
 msgstr "테이블을 표시하는 중 오류가 발생했습니다."
 
-#: pgadmin/dashboard/static/js/dashboard.js:817
-#: pgadmin/dashboard/static/js/dashboard.js:921
-#: pgadmin/dashboard/static/js/dashboard.js:1114
-#: pgadmin/dashboard/static/js/dashboard.js:1211
+#: pgadmin/dashboard/static/js/dashboard.js:857
+#: pgadmin/dashboard/static/js/dashboard.js:961
+#: pgadmin/dashboard/static/js/dashboard.js:1154
+#: pgadmin/dashboard/static/js/dashboard.js:1251
 msgid "PID"
 msgstr "PID"
 
-#: pgadmin/dashboard/static/js/dashboard.js:847
-#: pgadmin/dashboard/static/js/dashboard.js:1139
+#: pgadmin/dashboard/static/js/dashboard.js:887
+#: pgadmin/dashboard/static/js/dashboard.js:1179
 msgid "State"
 msgstr "상태"
 
-#: pgadmin/dashboard/static/js/dashboard.js:864
-#: pgadmin/dashboard/static/js/dashboard.js:1156
+#: pgadmin/dashboard/static/js/dashboard.js:904
+#: pgadmin/dashboard/static/js/dashboard.js:1196
 msgid "Wait Event"
 msgstr "Wait 이벤트"
 
-#: pgadmin/dashboard/static/js/dashboard.js:869
-#: pgadmin/dashboard/static/js/dashboard.js:1161
+#: pgadmin/dashboard/static/js/dashboard.js:909
+#: pgadmin/dashboard/static/js/dashboard.js:1201
 msgid "Blocking PIDs"
 msgstr "잠근 PID"
 
-#: pgadmin/dashboard/static/js/dashboard.js:931
-#: pgadmin/dashboard/static/js/dashboard.js:1216
+#: pgadmin/dashboard/static/js/dashboard.js:971
+#: pgadmin/dashboard/static/js/dashboard.js:1256
 msgid "Lock type"
 msgstr "잠금 종류"
 
-#: pgadmin/dashboard/static/js/dashboard.js:936
-#: pgadmin/dashboard/static/js/dashboard.js:1221
+#: pgadmin/dashboard/static/js/dashboard.js:976
+#: pgadmin/dashboard/static/js/dashboard.js:1261
 msgid "Target relation"
 msgstr "대상 릴레이션"
 
-#: pgadmin/dashboard/static/js/dashboard.js:941
-#: pgadmin/dashboard/static/js/dashboard.js:1226
+#: pgadmin/dashboard/static/js/dashboard.js:981
+#: pgadmin/dashboard/static/js/dashboard.js:1266
 msgid "Page"
 msgstr "페이지"
 
-#: pgadmin/dashboard/static/js/dashboard.js:946
-#: pgadmin/dashboard/static/js/dashboard.js:1231
+#: pgadmin/dashboard/static/js/dashboard.js:986
+#: pgadmin/dashboard/static/js/dashboard.js:1271
 msgid "Tuple"
 msgstr "튜플"
 
-#: pgadmin/dashboard/static/js/dashboard.js:951
-#: pgadmin/dashboard/static/js/dashboard.js:1236
+#: pgadmin/dashboard/static/js/dashboard.js:991
+#: pgadmin/dashboard/static/js/dashboard.js:1276
 msgid "vXID (target)"
 msgstr "vXID (대상)"
 
-#: pgadmin/dashboard/static/js/dashboard.js:956
-#: pgadmin/dashboard/static/js/dashboard.js:1241
+#: pgadmin/dashboard/static/js/dashboard.js:996
+#: pgadmin/dashboard/static/js/dashboard.js:1281
 msgid "XID (target)"
 msgstr "XID (대상)"
 
-#: pgadmin/dashboard/static/js/dashboard.js:961
-#: pgadmin/dashboard/static/js/dashboard.js:1246
+#: pgadmin/dashboard/static/js/dashboard.js:1001
+#: pgadmin/dashboard/static/js/dashboard.js:1286
 msgid "Class"
 msgstr "클래스"
 
-#: pgadmin/dashboard/static/js/dashboard.js:966
-#: pgadmin/dashboard/static/js/dashboard.js:1251
+#: pgadmin/dashboard/static/js/dashboard.js:1006
+#: pgadmin/dashboard/static/js/dashboard.js:1291
 msgid "Object ID"
 msgstr "객체 ID"
 
-#: pgadmin/dashboard/static/js/dashboard.js:971
-#: pgadmin/dashboard/static/js/dashboard.js:1256
+#: pgadmin/dashboard/static/js/dashboard.js:1011
+#: pgadmin/dashboard/static/js/dashboard.js:1296
 msgid "vXID (owner)"
 msgstr "vXID (소유주)"
 
-#: pgadmin/dashboard/static/js/dashboard.js:981
-#: pgadmin/dashboard/static/js/dashboard.js:1266
+#: pgadmin/dashboard/static/js/dashboard.js:1021
+#: pgadmin/dashboard/static/js/dashboard.js:1306
 msgid "Granted?"
 msgstr "취득함?"
 
-#: pgadmin/dashboard/static/js/dashboard.js:1003
-#: pgadmin/dashboard/static/js/dashboard.js:1283
+#: pgadmin/dashboard/static/js/dashboard.js:1043
+#: pgadmin/dashboard/static/js/dashboard.js:1323
 msgid "XID"
 msgstr "XID"
 
-#: pgadmin/dashboard/static/js/dashboard.js:1008
-#: pgadmin/dashboard/static/js/dashboard.js:1288
+#: pgadmin/dashboard/static/js/dashboard.js:1048
+#: pgadmin/dashboard/static/js/dashboard.js:1328
 msgid "Prepared at"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1020
+#: pgadmin/dashboard/static/js/dashboard.js:1060
 msgid "Category"
 msgstr "카테고리"
 
-#: pgadmin/dashboard/static/js/dashboard.js:1025
+#: pgadmin/dashboard/static/js/dashboard.js:1065
 msgid "Setting"
 msgstr "설정"
 
-#: pgadmin/dashboard/static/js/dashboard.js:1030
+#: pgadmin/dashboard/static/js/dashboard.js:1070
 msgid "Unit"
 msgstr "유닛"
 
-#: pgadmin/dashboard/static/js/dashboard.js:1035
+#: pgadmin/dashboard/static/js/dashboard.js:1075
 msgid "Description"
 msgstr "설명"
 
-#: pgadmin/dashboard/static/js/dashboard.js:1360
+#: pgadmin/dashboard/static/js/dashboard.js:1403
 msgid "cancel"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1360
+#: pgadmin/dashboard/static/js/dashboard.js:1403
 msgid "terminate"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1369
+#: pgadmin/dashboard/static/js/dashboard.js:1412
 msgid "You cannot "
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1371
+#: pgadmin/dashboard/static/js/dashboard.js:1414
 msgid " background worker processes."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1378
+#: pgadmin/dashboard/static/js/dashboard.js:1421
 msgid "You are not allowed to "
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1380
+#: pgadmin/dashboard/static/js/dashboard.js:1423
 msgid " the main active session."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1386
+#: pgadmin/dashboard/static/js/dashboard.js:1429
 msgid "The session is already in idle state."
 msgstr "해당 세션은 이미 유휴 상태입니다."
 
-#: pgadmin/dashboard/static/js/dashboard.js:1398
+#: pgadmin/dashboard/static/js/dashboard.js:1441
 msgid "Superuser privileges are required to "
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1400
+#: pgadmin/dashboard/static/js/dashboard.js:1443
 msgid " another users query."
 msgstr ""
 
@@ -8121,7 +8158,7 @@ msgid "Failed to retrieve data from the server."
 msgstr "서버에서 관련 자료를 가져옵니다."
 
 #: pgadmin/misc/depends/static/js/depends.js:335
-#: pgadmin/tools/datagrid/static/js/datagrid.js:195
+#: pgadmin/tools/datagrid/static/js/datagrid.js:207
 #: pgadmin/tools/datagrid/static/js/show_data.js:24
 #: pgadmin/tools/datagrid/static/js/show_query_tool.js:46
 msgid "No object selected."
@@ -8422,9 +8459,9 @@ msgid "An unexpected error occurred - ensure you are logged into the application
 msgstr "예상치 못한 오류 발생 - 접속 상태를 확인 하세요."
 
 #: pgadmin/static/js/sqleditor_utils.js:162
-#: pgadmin/tools/sqleditor/__init__.py:1454
-#: pgadmin/tools/sqleditor/__init__.py:1509
-#: pgadmin/tools/sqleditor/__init__.py:1513
+#: pgadmin/tools/sqleditor/__init__.py:1471
+#: pgadmin/tools/sqleditor/__init__.py:1526
+#: pgadmin/tools/sqleditor/__init__.py:1530
 msgid "Transaction status check failed."
 msgstr "트랜잭션 상태 검사 실패."
 
@@ -8554,9 +8591,15 @@ msgstr "정렬/필터 옵션"
 msgid "Loading data..."
 msgstr "자료 로딩중..."
 
-#: pgadmin/static/js/sqleditor/filter_dialog.js:226
+#: pgadmin/static/js/sqleditor/filter_dialog.js:230
 msgid "Filter updated successfully"
 msgstr "검색 조건이 적용되었음"
+
+#: pgadmin/static/js/sqleditor/filter_dialog.js:236
+#: pgadmin/tools/datagrid/static/js/datagrid.js:362
+#: pgadmin/tools/datagrid/static/js/datagrid.js:369
+msgid "Validation Error"
+msgstr "유효성 오류"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:10
 msgid "ASC"
@@ -8929,50 +8972,41 @@ msgstr "백업 작업을 실패했습니다."
 msgid "Please provide a filename"
 msgstr "파일 이름을 지정하세요"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:103
-msgid "Query Tool"
-msgstr "쿼리 도구"
-
-#: pgadmin/tools/datagrid/static/js/datagrid.js:121
+#: pgadmin/tools/datagrid/static/js/datagrid.js:133
 msgid "All Rows"
 msgstr "모든 자료"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:134
+#: pgadmin/tools/datagrid/static/js/datagrid.js:146
 msgid "First 100 Rows"
 msgstr "처음 100개만"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:147
+#: pgadmin/tools/datagrid/static/js/datagrid.js:159
 msgid "Last 100 Rows"
 msgstr "마지막 100개만"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:160
+#: pgadmin/tools/datagrid/static/js/datagrid.js:172
 msgid "Filtered Rows..."
 msgstr "조건에 맞는 자료만..."
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:164
+#: pgadmin/tools/datagrid/static/js/datagrid.js:176
 msgid "View/Edit Data"
 msgstr "자료 보기/편집"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:194
+#: pgadmin/tools/datagrid/static/js/datagrid.js:206
 #: pgadmin/tools/datagrid/static/js/show_data.js:23
 msgid "Data Grid Error"
 msgstr "자료 그리드 오류"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:338
-#: pgadmin/tools/datagrid/static/js/datagrid.js:345
-msgid "Validation Error"
-msgstr "유효성 오류"
-
-#: pgadmin/tools/datagrid/static/js/datagrid.js:404
-#: pgadmin/tools/datagrid/static/js/datagrid.js:409
+#: pgadmin/tools/datagrid/static/js/datagrid.js:428
+#: pgadmin/tools/datagrid/static/js/datagrid.js:433
 msgid "Query Tool Initialize Error"
 msgstr "쿼리 도구 초기화 작업 오류"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:428
+#: pgadmin/tools/datagrid/static/js/datagrid.js:452
 msgid "Edit Data - "
 msgstr "자료 편집 - "
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:435
+#: pgadmin/tools/datagrid/static/js/datagrid.js:459
 msgid "Query - "
 msgstr "쿼리 - "
 
@@ -9297,11 +9331,11 @@ msgstr "pldbgapi 확장 묘듈을 1.1 이상 버전으로 업그레이드 한 �
 #: pgadmin/tools/debugger/__init__.py:2053
 #: pgadmin/tools/debugger/__init__.py:2075
 #: pgadmin/tools/debugger/static/js/direct.js:1622
-#: pgadmin/tools/sqleditor/__init__.py:1059
-#: pgadmin/tools/sqleditor/command.py:190
-#: pgadmin/tools/sqleditor/command.py:396
-#: pgadmin/tools/sqleditor/command.py:525
-#: pgadmin/tools/sqleditor/command.py:622
+#: pgadmin/tools/sqleditor/__init__.py:1076
+#: pgadmin/tools/sqleditor/command.py:191
+#: pgadmin/tools/sqleditor/command.py:401
+#: pgadmin/tools/sqleditor/command.py:542
+#: pgadmin/tools/sqleditor/command.py:633
 msgid "Not connected to server or connection with the server has been closed."
 msgstr "데이터베이스 접속 실패. 데이터베이스 연결을 확인하세요."
 
@@ -9978,20 +10012,22 @@ msgstr "쿼리 도구"
 #: pgadmin/tools/sqleditor/__init__.py:148
 #: pgadmin/tools/sqleditor/__init__.py:156
 #: pgadmin/tools/sqleditor/__init__.py:208
-#: pgadmin/tools/sqleditor/__init__.py:345
-#: pgadmin/tools/sqleditor/__init__.py:420
-#: pgadmin/tools/sqleditor/__init__.py:625
-#: pgadmin/tools/sqleditor/__init__.py:748
-#: pgadmin/tools/sqleditor/__init__.py:821
-#: pgadmin/tools/sqleditor/__init__.py:876
-#: pgadmin/tools/sqleditor/__init__.py:928
-#: pgadmin/tools/sqleditor/__init__.py:972
-#: pgadmin/tools/sqleditor/__init__.py:1012
-#: pgadmin/tools/sqleditor/__init__.py:1021
-#: pgadmin/tools/sqleditor/__init__.py:1092
-#: pgadmin/tools/sqleditor/__init__.py:1128
-#: pgadmin/tools/sqleditor/__init__.py:1176
-#: pgadmin/tools/sqleditor/__init__.py:1231
+#: pgadmin/tools/sqleditor/__init__.py:315
+#: pgadmin/tools/sqleditor/__init__.py:343
+#: pgadmin/tools/sqleditor/__init__.py:374
+#: pgadmin/tools/sqleditor/__init__.py:437
+#: pgadmin/tools/sqleditor/__init__.py:642
+#: pgadmin/tools/sqleditor/__init__.py:765
+#: pgadmin/tools/sqleditor/__init__.py:838
+#: pgadmin/tools/sqleditor/__init__.py:893
+#: pgadmin/tools/sqleditor/__init__.py:945
+#: pgadmin/tools/sqleditor/__init__.py:989
+#: pgadmin/tools/sqleditor/__init__.py:1029
+#: pgadmin/tools/sqleditor/__init__.py:1038
+#: pgadmin/tools/sqleditor/__init__.py:1109
+#: pgadmin/tools/sqleditor/__init__.py:1145
+#: pgadmin/tools/sqleditor/__init__.py:1193
+#: pgadmin/tools/sqleditor/__init__.py:1248
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:26
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:79
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:171
@@ -9999,20 +10035,20 @@ msgstr "쿼리 도구"
 msgid "Transaction ID not found in the session."
 msgstr "해당 세션에 트랜잭션 ID가 없음."
 
-#: pgadmin/tools/sqleditor/__init__.py:434
+#: pgadmin/tools/sqleditor/__init__.py:451
 msgid "******* Error *******"
 msgstr "******* 오류 *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:763
+#: pgadmin/tools/sqleditor/__init__.py:780
 msgid "No primary key found for this object, so unable to save records."
 msgstr "이 객체에는 기본키가 없어, 자료를 저장할 수는 없습니다."
 
-#: pgadmin/tools/sqleditor/__init__.py:1065
+#: pgadmin/tools/sqleditor/__init__.py:1082
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:96
 msgid "Either transaction object or session object not found."
 msgstr "트랜잭션 객체도 세션 객체도 찾을 수 없음."
 
-#: pgadmin/tools/sqleditor/__init__.py:1305
+#: pgadmin/tools/sqleditor/__init__.py:1322
 msgid "File type not supported"
 msgstr "지원하지 않는 파일 형식"
 
@@ -10020,11 +10056,7 @@ msgstr "지원하지 않는 파일 형식"
 msgid "This feature has not been implemented for object type '{0}'."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/command.py:280
-msgid "Filter string is empty."
-msgstr "검색 조건 문자열이 비어있습니다."
-
-#: pgadmin/tools/sqleditor/command.py:407
+#: pgadmin/tools/sqleditor/command.py:412
 msgid "Data cannot be saved for the current object."
 msgstr "현재 객체에 대해서 자료를 저장할 수 없습니다."
 
@@ -10266,11 +10298,11 @@ msgstr "실행계획 옵션 오류"
 msgid "Error occurred while setting %(subItem)s option in explain."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/filter_dialog.py:95
+#: pgadmin/tools/sqleditor/utils/filter_dialog.py:96
 msgid "Data sorting object updated successfully"
 msgstr "정렬 작업 완료"
 
-#: pgadmin/tools/sqleditor/utils/filter_dialog.py:98
+#: pgadmin/tools/sqleditor/utils/filter_dialog.py:99
 msgid "Failed to update the data on server."
 msgstr "자료 변경 작업 실패."
 
@@ -10655,11 +10687,11 @@ msgid ""
 "lost."
 msgstr "이 대화창을 닫을까요? 닫으면 모든 저장되지 않은 변경 사항을 버립니다."
 
-#: pgadmin/utils/ajax.py:143
+#: pgadmin/utils/ajax.py:156
 msgid "Not implemented."
 msgstr "아직 구현되지 않았음."
 
-#: pgadmin/utils/ajax.py:156
+#: pgadmin/utils/ajax.py:169
 msgid "Service Unavailable"
 msgstr "서비스 이용 가능 상태 아님"
 
@@ -10717,13 +10749,13 @@ msgstr "지정한 설정을 찾을 수 없습니다."
 msgid "Driver '{0}' has not been implemented."
 msgstr "'{0}' 드라이버는 아직 구현되지 않았습니다."
 
-#: pgadmin/utils/driver/psycopg2/connection.py:270
+#: pgadmin/utils/driver/psycopg2/connection.py:271
 msgid ""
 "Failed to decrypt the saved password.\n"
 "Error: {0}"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg2/connection.py:450
+#: pgadmin/utils/driver/psycopg2/connection.py:451
 msgid ""
 "Failed to setup the role with error message:\n"
 "{0}"
@@ -10731,7 +10763,7 @@ msgstr ""
 "롤 설정 실패, 오류 메시지:\n"
 "{0}"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:585
+#: pgadmin/utils/driver/psycopg2/connection.py:586
 msgid ""
 "Failed to create cursor for psycopg2 connection with error message for "
 "the server#{1}:{2}:\n"
@@ -10740,27 +10772,27 @@ msgstr ""
 "서버#{1}:{2}용 psycopg2 connection 객체에서 커서 만들기 실패:\n"
 "{0}"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:597
+#: pgadmin/utils/driver/psycopg2/connection.py:598
 msgid ""
 "Attempting to reconnect to the database server (#{server_id}) for the "
 "connection - '{conn_id}'."
 msgstr "연결을 위해 데이터베이스 서버(#{server_id})로 재접속 중입니다 - '{conn_id}'."
 
-#: pgadmin/utils/driver/psycopg2/connection.py:772
+#: pgadmin/utils/driver/psycopg2/connection.py:780
 msgid "The query executed did not return any data."
 msgstr "해당 쿼리가 어떤 자료로 반환하지 않았습니다."
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1201
-#: pgadmin/utils/driver/psycopg2/connection.py:1398
-#: pgadmin/utils/driver/psycopg2/connection.py:1486
+#: pgadmin/utils/driver/psycopg2/connection.py:1209
+#: pgadmin/utils/driver/psycopg2/connection.py:1406
+#: pgadmin/utils/driver/psycopg2/connection.py:1494
 msgid "Cursor could not be found for the async connection."
 msgstr "비동기식 연결용 커서를 찾을 수 없습니다."
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1206
+#: pgadmin/utils/driver/psycopg2/connection.py:1214
 msgid "Asynchronous query execution/operation underway."
 msgstr "비동기식 쿼리 실행/처리 중입니다."
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1290
+#: pgadmin/utils/driver/psycopg2/connection.py:1298
 msgid ""
 "\n"
 "Failed to reset the connection to the server due to following error:\n"
@@ -10770,39 +10802,39 @@ msgstr ""
 "서버 연결 리셋 작업 중 실패, 오류 메시지:\n"
 "{0}"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1595
+#: pgadmin/utils/driver/psycopg2/connection.py:1603
 msgid "Not connected to the database server."
 msgstr "해당 데이터베이스 서버와 접속이 끊긴 상태임."
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1609
+#: pgadmin/utils/driver/psycopg2/connection.py:1617
 msgid ""
 "Asynchronous notification \"{0}\" with payload \"{1}\" received from "
 "server process with PID {2}\n"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1615
+#: pgadmin/utils/driver/psycopg2/connection.py:1623
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1708
+#: pgadmin/utils/driver/psycopg2/connection.py:1716
 msgid "SQL state: "
 msgstr "SQL 상태: "
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1715
+#: pgadmin/utils/driver/psycopg2/connection.py:1723
 msgid "Detail: "
 msgstr "자세히: "
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1724
+#: pgadmin/utils/driver/psycopg2/connection.py:1732
 msgid "Hint: "
 msgstr "힌트: "
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1731
+#: pgadmin/utils/driver/psycopg2/connection.py:1739
 msgid "Character: "
 msgstr "위치: "
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1740
+#: pgadmin/utils/driver/psycopg2/connection.py:1748
 msgid "Context: "
 msgstr "내용: "
 
@@ -10949,4 +10981,7 @@ msgstr "지정한 데이터베이스를 찾을 수 없음."
 #~ " using SSH tunnelling. The 'Save "
 #~ "password' option has been turned off."
 #~ msgstr "SSH 터널링으로 접속할 경우 데이터베이스 비밀번호는 저장 할 수 없습니다.  '비밀번호 저장' 옵션이 비활성화 되었습니다."
+
+#~ msgid "Filter string is empty."
+#~ msgstr "검색 조건 문자열이 비어있습니다."
 
