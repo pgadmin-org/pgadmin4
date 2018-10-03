@@ -6,7 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import time
 import os
 
 from selenium.webdriver.support.ui import WebDriverWait
@@ -30,6 +29,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                     self.server['name']
                 )
             )
+
         connection = test_utils.get_db_connection(
             self.server['db'],
             self.server['username'],
@@ -56,10 +56,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.wait.until(EC.element_to_be_clickable(
             (By.CSS_SELECTOR, ".browse_file_input")))
 
-        self.page.find_by_css_selector(
-            ".ajs-dialog.pg-el-container .ajs-maximize"
-        ).click()
-
         self.wait.until(EC.element_to_be_clickable(
             (By.CSS_SELECTOR, ".browse_file_input"))).click()
 
@@ -83,14 +79,17 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         self.assertIn(self.server['name'], str(command))
         self.assertIn("from database 'pg_utility_test_db'", str(command))
-        self.assertIn("test_backup", str(command))
+
+        # On windows a modified path may be shown so skip this test
+        if os.name is not 'nt':
+            self.assertIn("test_backup", str(command))
+
         self.assertIn("pg_dump", str(command))
 
         backup_file = None
         if command:
             backup_file = command[int(command.find('--file')) +
                                   8:int(command.find('--host')) - 2]
-
         self.page.find_by_xpath("//div[contains(@class,'wcFloatingFocus')"
                                 "]//div[contains(@class,'fa-close')]").click()
 
@@ -126,7 +125,9 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         command = self.page.find_by_css_selector("p.bg-detailed-desc").text
 
         self.assertIn(self.server['name'], str(command))
-        self.assertIn("test_backup", str(command))
+        if os.name is not 'nt':
+            self.assertIn("test_backup", str(command))
+
         self.assertIn("pg_restore", str(command))
 
         self.page.find_by_xpath("//div[contains(@class,'wcFloatingFocus')]"
@@ -137,6 +138,31 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 os.remove(backup_file)
 
     def after(self):
+        self._screenshot()
+
+        # In cases where backup div is not closed (sometime due to some error)
+        try:
+            if self.driver.find_element_by_css_selector(
+                ".ajs-message.ajs-bg-bgprocess.ajs-visible > div > "
+                    "div > div > i"):
+                self.driver.find_element_by_css_selector(
+                    ".ajs-message.ajs-bg-bgprocess.ajs-visible >div >div  "
+                    ">div>i").click()
+        except Exception:
+            pass
+
+        # In cases where restore div is not closed (sometime due to some error)
+        try:
+            if self.driver.find_element_by_xpath(
+                "//div[contains(text(), 'Process Watcher - "
+                    "Restoring backup')]"):
+                self.driver.find_element_by_xpath(
+                    "//div[div[div[div[contains(text(), 'Process Watcher "
+                    "- Restoring backup')]]]]"
+                    "/following-sibling::div/div/div").click()
+        except Exception:
+            pass
+
         self.page.remove_server(self.server)
         connection = test_utils.get_db_connection(
             self.server['db'],
