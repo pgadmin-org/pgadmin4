@@ -101,7 +101,8 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         # In cases where backup div is not closed
         try:
             if self.driver.find_element_by_css_selector(
-            ".ajs-message.ajs-bg-bgprocess.ajs-visible >div >div  >div>i"):
+                    ".ajs-message.ajs-bg-bgprocess.ajs-visible"
+                    " >div >div  >div>i"):
                 self.driver.find_element_by_css_selector(
                     ".ajs-message.ajs-bg-bgprocess.ajs-visible >div >div  "
                     ">div>i").click()
