@@ -64,7 +64,7 @@ class SqlEditorModule(PgAdminModule):
         A module class for SQL Grid derived from PgAdminModule.
     """
 
-    LABEL = gettext("SQL Editor")
+    LABEL = gettext("Query Tool")
 
     def get_own_menuitems(self):
         return {'tools': [
