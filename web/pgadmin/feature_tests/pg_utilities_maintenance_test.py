@@ -12,6 +12,7 @@ import time
 from selenium.webdriver.support.ui import WebDriverWait
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
+from regression.python_test_utils import test_gui_helper
 
 
 class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
@@ -98,29 +99,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             "div.wcFloatingFocus div.fa-close").click()
 
     def after(self):
-        # In cases where backup div is not closed
-        try:
-            if self.driver.find_element_by_css_selector(
-                    ".ajs-message.ajs-bg-bgprocess.ajs-visible"
-                    " >div >div  >div>i"):
-                self.driver.find_element_by_css_selector(
-                    ".ajs-message.ajs-bg-bgprocess.ajs-visible >div >div  "
-                    ">div>i").click()
-        except Exception:
-            pass
-
-        # In cases where restore div is not closed (sometime due to some error)
-        try:
-            if self.driver.find_element_by_xpath(
-                "//div[contains(text(), 'Process Watcher - "
-                    "Restoring backup')]"):
-                self.driver.find_element_by_xpath(
-                    "//div[div[div[div[contains(text(), 'Process Watcher "
-                    "- Restoring backup')]]]]"
-                    "/following-sibling::div/div/div").click()
-        except Exception:
-            pass
-
+        test_gui_helper.close_bgprocess_popup(self)
         self.page.remove_server(self.server)
         connection = test_utils.get_db_connection(
             self.server['db'],

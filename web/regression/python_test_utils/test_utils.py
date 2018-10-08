@@ -615,57 +615,28 @@ def get_db_server(sid):
 def set_preference(default_binary_path):
     conn = sqlite3.connect(config.TEST_SQLITE_PATH)
     cur = conn.cursor()
-
     perf = Preferences.module('paths')
-    pg_path_pref = perf.preference('pg_bin_dir')
+    server_types = default_binary_path.keys()
 
-    user_pref = cur.execute(
-        'SELECT pid, uid FROM user_preferences where pid=%s' % pg_path_pref.pid
-    )
-    user_pref = user_pref.fetchone()
+    for server in server_types:
+        path_pref = perf.preference('{0}_bin_dir'.format(server))
+        user_pref = cur.execute(
+            'SELECT pid, uid FROM user_preferences '
+            'where pid=%s' % path_pref.pid
+        )
 
-    if user_pref:
-        cur.execute('UPDATE user_preferences SET value = ? WHERE pid = ?',
-                    (default_binary_path['pg'], pg_path_pref.pid))
-    else:
-        pg_pref_details = (pg_path_pref.pid, 1,
-                           default_binary_path['pg'])
-        cur.execute('INSERT INTO user_preferences(pid, uid, value)'
-                    ' VALUES (?,?,?)', pg_pref_details)
-
-    ppas_path_pref = perf.preference('ppas_bin_dir')
-
-    user_pref = cur.execute(
-        'SELECT pid, uid FROM user_preferences where pid=%s' %
-        ppas_path_pref.pid
-    )
-    user_pref = user_pref.fetchone()
-
-    if user_pref:
-        cur.execute('UPDATE user_preferences SET value = ? WHERE pid = ? ',
-                    (default_binary_path['ppas'], ppas_path_pref.pid))
-    else:
-        ppas_pref_details = (ppas_path_pref.pid, 1,
-                             default_binary_path['ppas'])
-        cur.execute('INSERT INTO user_preferences(pid, uid, value)'
-                    ' VALUES (?,?,?)', ppas_pref_details)
-
-    gpdb_path_pref = perf.preference('gpdb_bin_dir')
-
-    user_pref = cur.execute(
-        'SELECT pid, uid FROM user_preferences where pid=%s' %
-        gpdb_path_pref.pid
-    )
-    user_pref = user_pref.fetchone()
-
-    if user_pref:
-        cur.execute('UPDATE user_preferences SET value = ? WHERE pid = ? ',
-                    (default_binary_path['gpdb'], gpdb_path_pref.pid))
-    else:
-        gpdb_pref_details = (gpdb_path_pref.pid, 1,
-                             default_binary_path['gpdb'])
-        cur.execute('INSERT INTO user_preferences(pid, uid, value)'
-                    ' VALUES (?,?,?)', gpdb_pref_details)
+        user_pref_data = user_pref.fetchone()
+        if user_pref_data:
+            cur.execute(
+                'UPDATE user_preferences SET value = ? WHERE pid = ?',
+                (default_binary_path[server], path_pref.pid)
+            )
+        else:
+            params = (path_pref.pid, 1, default_binary_path[server])
+            cur.execute(
+                'INSERT INTO user_preferences(pid, uid, value)'
+                ' VALUES (?,?,?)', params
+            )
 
     conn.commit()
 
