@@ -1,11 +1,11 @@
 define('pgadmin.browser.node', [
-  'sources/tree/pgadmin_tree_node',
+  'sources/tree/pgadmin_tree_node', 'sources/url_for',
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
   'backform', 'sources/browser/generate_url', 'sources/utils', 'pgadmin.browser.utils',
   'pgadmin.backform',
 ], function(
-  pgadminTreeNode,
+  pgadminTreeNode, url_for,
   gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform, generateUrl, commonUtils
 ) {
 
@@ -849,7 +849,6 @@ define('pgadmin.browser.node', [
           }
         }
       },
-
       added: function(item, data, browser) {
         var b = browser || pgBrowser,
           t = b.tree,
@@ -876,6 +875,8 @@ define('pgadmin.browser.node', [
           );
         }
 
+        pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state',
+         item);
         pgBrowser.Node.callbacks.change_server_background(item, data);
       },
       // Callback called - when a node is selected in browser tree.
@@ -905,6 +906,8 @@ define('pgadmin.browser.node', [
           }
         }
 
+        pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
+         item);
         return true;
       },
       removed: function(item) {
@@ -957,6 +960,14 @@ define('pgadmin.browser.node', [
               self.callbacks.selected.apply(self, [_item, data, pgBrowser]);
             },
           });
+      },
+      opened: function(item) {
+        pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
+         item);
+      },
+      closed: function(item) {
+        pgBrowser.Events.trigger('pgadmin:browser:tree:remove-from-tree-state',
+         item);
       },
     },
     /**********************************************************************

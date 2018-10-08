@@ -10,13 +10,15 @@
 """Utility functions for storing and retrieving user configuration settings."""
 
 import traceback
+import json
 
-from flask import Response, request, render_template, url_for
+from flask import Response, request, render_template, url_for, current_app
 from flask_babelex import gettext
 from flask_login import current_user
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_json_response, bad_request
+from pgadmin.utils.ajax import make_json_response, bad_request,\
+    success_return, internal_server_error
 from pgadmin.utils.menu import MenuItem
 
 from pgadmin.model import db, Setting
@@ -52,7 +54,8 @@ class SettingsModule(PgAdminModule):
             list: a list of url endpoints exposed to the client.
         """
         return [
-            'settings.store', 'settings.store_bulk', 'settings.reset_layout'
+            'settings.store', 'settings.store_bulk', 'settings.reset_layout',
+            'settings.save_tree_state', 'settings.get_tree_state'
         ]
 
 
@@ -145,3 +148,48 @@ def reset_layout():
         )
 
     return make_json_response(result=request.form)
+
+
+@blueprint.route("/save_tree_state/", endpoint="save_tree_state",
+                 methods=['POST'])
+@login_required
+def save_browser_tree_state():
+    """Save the browser tree state."""
+    data = request.form if request.form else request.data.decode('utf-8')
+    old_data = get_setting('browser_tree_state')
+
+    if old_data and old_data != 'null':
+        if data:
+            data = json.loads(data)
+
+        old_data = json.loads(old_data)
+
+        old_data.update(data)
+        new_data = json.dumps(old_data)
+    else:
+        new_data = data
+
+    try:
+        store_setting('browser_tree_state', new_data)
+    except Exception as e:
+        current_app.logger.exception(e)
+        return internal_server_error(errormsg=str(e))
+
+    return success_return()
+
+
+@blueprint.route("/get_tree_state/", endpoint="get_tree_state",
+                 methods=['GET'])
+@login_required
+def get_browser_tree_state():
+    """Get the browser tree state."""
+
+    try:
+        data = get_setting('browser_tree_state')
+    except Exception as e:
+        current_app.logger.exception(e)
+        return internal_server_error(errormsg=str(e))
+
+    return Response(response=data,
+                    status=200,
+                    mimetype="application/json")

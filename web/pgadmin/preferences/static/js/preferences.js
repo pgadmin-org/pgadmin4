@@ -2,6 +2,7 @@ define('pgadmin.preferences', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.backform',
   'pgadmin.browser', 'sources/modify_animation',
+  'sources/tree/pgadmin_tree_save_state',
 ], function(
   gettext, url_for, $, _, Backbone, Alertify, pgAdmin, Backform, pgBrowser,
   modifyAnimation

@@ -585,7 +585,8 @@ class ServerNode(PGChildNodeView):
                 server_icon_and_background(connected, manager, server),
                 True,
                 self.node_type,
-                connected=False,
+                connected=connected,
+                user=manager.user_info if connected else None,
                 server_type='pg'  # default server type
             )
         )

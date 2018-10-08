@@ -28,6 +28,16 @@ def register_browser_preferences(self):
         True, category_label=gettext('Display')
     )
 
+    self.preference.register(
+        'display', 'browser_tree_state_save_interval',
+        gettext("Browser tree state saving interval"), 'integer',
+        30, category_label=gettext('Display'),
+        help_str=gettext(
+            'Browser tree state saving interval in seconds.'
+            'Use -1 to disable the tree saving mechanism.'
+        )
+    )
+
     self.table_row_count_threshold = self.preference.register(
         'properties', 'table_row_count_threshold',
         gettext("Count rows if estimated less than"), 'integer', 2000,

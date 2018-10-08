@@ -9,7 +9,7 @@ define('pgadmin.browser', [
   'pgadmin.browser.error', 'pgadmin.browser.frame',
   'pgadmin.browser.node', 'pgadmin.browser.collection',
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
-  'pgadmin.browser.keyboard',
+  'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state',
 ], function(
   tree,
   gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
@@ -513,9 +513,11 @@ define('pgadmin.browser', [
         .done(function() {})
         .fail(function() {});
       }, 300000);
+
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode, obj);
+
     },
 
     add_menu_category: function(
@@ -1942,19 +1944,10 @@ define('pgadmin.browser', [
     pgAdmin.Browser.editor_shortcut_keys.Tab = 'insertSoftTab';
   }
 
-  window.onbeforeunload = function() {
-    var e = window.event,
-      msg = S(gettext('Are you sure you wish to close the %s browser?')).sprintf(pgBrowser.utils.app_name).value();
-
-    // For IE and Firefox prior to version 4
-    if (e) {
-      e.returnValue = msg;
-    }
-
-    // For Safari
-    return msg;
-  };
-
+  $(window).on('beforeunload', function() {
+    if (pgBrowser.get_preference('browser', 'browser_tree_state_save_interval').value !== -1)
+      pgAdmin.Browser.browserTreeState.save_state();
+  });
 
   return pgAdmin.Browser;
 });

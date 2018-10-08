@@ -94,6 +94,9 @@ _.extend(pgBrowser, {
           modifyAnimation.modifyAlertifyAnimation(self);
         }
 
+        // Initialize Tree saving/reloading
+        pgBrowser.browserTreeState.init();
+
         /* Once the cache is loaded after changing the preferences,
          * notify the modules of the change
          */
