@@ -416,7 +416,7 @@ input.editor-checkbox:focus {
 /* For Filter status bar */
 .data_sorting_dialog .pg-prop-status-bar {
   position: absolute;
-  bottom: 37px;
+  bottom: 40px;
   z-index: 5;
 }
 

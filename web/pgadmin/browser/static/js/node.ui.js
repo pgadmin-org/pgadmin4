@@ -38,7 +38,7 @@ define([
       ].join(''));
 
       let $btnContainer = $(
-        '<div style="">'
+        '<div class="select2-select-all-adapter-container">'
       ).append($selectAll).append($unselectAll);
 
       if (!this.$element.prop('multiple')) {
