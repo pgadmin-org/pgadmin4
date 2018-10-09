@@ -15,4 +15,5 @@ Features
 Bug fixes
 *********
 
+| `Bug #3674 <https://redmine.postgresql.org/issues/3674>`_ - Cleanup session files periodically.
 | `Bug #3660 <https://redmine.postgresql.org/issues/3660>`_ - Rename the 'SQL Editor' section of the Preferences to 'Query Tool' as it applies to the whole tool, not just the editor.

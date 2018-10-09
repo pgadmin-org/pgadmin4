@@ -14,6 +14,7 @@ from flask import url_for, render_template, Response, request
 from flask_babelex import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.session import cleanup_session_files
 
 import config
 
@@ -99,6 +100,8 @@ def ping():
 @blueprint.route("/cleanup", methods=['POST'])
 def cleanup():
     driver.ping()
+    # Cleanup session files.
+    cleanup_session_files()
     return ""
 
 

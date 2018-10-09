@@ -32,6 +32,7 @@ from pgadmin.utils import PgAdminModule, driver
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
+from datetime import timedelta
 
 # If script is running under python3, it will not have the xrange function
 # defined
@@ -353,6 +354,10 @@ def create_app(app_name=None):
 
     # register custom unauthorised handler.
     app.login_manager.unauthorized_handler(pga_unauthorised)
+
+    # Set the permanent session lifetime to the specified value in config file.
+    app.permanent_session_lifetime = timedelta(
+        days=config.SESSION_EXPIRATION_TIME)
 
     app.session_interface = create_session_interface(
         app, config.SESSION_SKIP_PATHS

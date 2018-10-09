@@ -23,6 +23,7 @@ import os
 import random
 import string
 import time
+import config
 from uuid import uuid4
 from threading import Lock
 from flask import current_app, request, flash, redirect
@@ -52,6 +53,7 @@ def _calc_hmac(body, secret):
 
 
 sess_lock = Lock()
+LAST_CHECK_SESSION_FILES = None
 
 
 class ManagedSession(CallbackDict, SessionMixin):
@@ -68,6 +70,7 @@ class ManagedSession(CallbackDict, SessionMixin):
         self.last_write = None
         self.force_write = False
         self.hmac_digest = hmac_digest
+        self.permanent = True
 
     def sign(self, secret):
         if not self.hmac_digest:
@@ -283,14 +286,8 @@ class FileBackedSessionManager(SessionManager):
 
 
 class ManagedSessionInterface(SessionInterface):
-    def __init__(self, manager, cookie_timedelta):
+    def __init__(self, manager):
         self.manager = manager
-        self.cookie_timedelta = cookie_timedelta
-
-    def get_expiration_time(self, app, session):
-        if session.permanent:
-            return app.permanent_session_lifetime
-        return datetime.datetime.now() + self.cookie_timedelta
 
     def open_session(self, app, request):
         cookie_val = request.cookies.get(app.session_cookie_name)
@@ -341,8 +338,7 @@ def create_session_interface(app, skip_paths=[]):
             ),
             1000,
             skip_paths
-        ),
-        datetime.timedelta(days=1))
+        ))
 
 
 def pga_unauthorised():
@@ -372,3 +368,39 @@ def pga_unauthorised():
         flash(login_message, category=lm.login_message_category)
 
     return redirect(login_url(lm.login_view, request.url))
+
+
+def cleanup_session_files():
+    """
+    This function will iterate through session directory and check the last
+    modified time, if it older than (session expiration time + 1) days then
+    delete that file.
+    """
+    global LAST_CHECK_SESSION_FILES
+    if LAST_CHECK_SESSION_FILES is None:
+        LAST_CHECK_SESSION_FILES = datetime.datetime.now()
+    else:
+        if datetime.datetime.now() >= LAST_CHECK_SESSION_FILES + \
+                datetime.timedelta(hours=config.CHECK_SESSION_FILES_INTERVAL):
+
+            for root, dirs, files in os.walk(
+                    current_app.config['SESSION_DB_PATH']):
+                for file_name in files:
+                    absolute_file_name = os.path.join(root, file_name)
+                    st = os.stat(absolute_file_name)
+
+                    # Get the last modified time of the session file
+                    last_modified_time = \
+                        datetime.datetime.fromtimestamp(st.st_mtime)
+
+                    # Calculate session file expiry time.
+                    file_expiration_time = \
+                        last_modified_time + \
+                        current_app.permanent_session_lifetime + \
+                        datetime.timedelta(days=1)
+
+                    if file_expiration_time <= datetime.datetime.now():
+                        if os.path.exists(absolute_file_name):
+                            os.unlink(absolute_file_name)
+
+            LAST_CHECK_SESSION_FILES = datetime.datetime.now()

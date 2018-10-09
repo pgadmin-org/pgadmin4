@@ -388,6 +388,17 @@ SESSION_SKIP_PATHS = [
 ]
 
 ##########################################################################
+# Session expiration support
+##########################################################################
+# SESSION_EXPIRATION_TIME is the interval in Days. Session will be
+# expire after the specified number of *days*.
+SESSION_EXPIRATION_TIME = 1
+
+# CHECK_SESSION_FILES_INTERVAL is interval in Hours. Application will check
+# the session files for cleanup after specified number of *hours*.
+CHECK_SESSION_FILES_INTERVAL = 24
+
+##########################################################################
 # SSH Tunneling supports only for Python 2.7 and 3.4+
 ##########################################################################
 SUPPORT_SSH_TUNNEL = True
