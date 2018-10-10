@@ -265,7 +265,7 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
              server_min_version=110000,
-             message='Backup object with --no-comments are not supported '
+             message='Backup object with --no-comments is not supported '
                      'by EPAS/PG server less than 11.0'
          )),
         ('When backup the object with option - all queries',
@@ -532,7 +532,7 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
              server_min_version=110000,
-             message='Backup server with --no-comments are not supported '
+             message='Backup server with --no-comments is not supported '
                      'by EPAS/PG server less than 11.0'
          )),
         ('When backup the server with option - all queries',
@@ -611,7 +611,7 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
              server_min_version=110000,
-             message='Backup server with encoding are not supported '
+             message='Backup server with encoding is not supported '
                      'by EPAS/PG server less than 11.0'
          )),
         ('When backup globals',

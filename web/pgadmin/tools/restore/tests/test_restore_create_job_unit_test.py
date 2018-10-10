@@ -201,7 +201,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
              server_min_version=110000,
-             message='Restore object with --no-comments are not supported '
+             message='Restore object with --no-comments is not supported '
                      'by EPAS/PG server less than 11.0'
          )),
         ('When restore object with option - Queries',
