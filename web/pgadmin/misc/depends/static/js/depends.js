@@ -213,9 +213,9 @@ define('misc.depends', [
       $(panel[0]).data('node-prop', cache_flag);
 
       // Hide the grid container and show the default message container
-      if (!$gridContainer.hasClass('hidden'))
-        $gridContainer.addClass('hidden');
-      $msgContainer.removeClass('hidden');
+      if (!$gridContainer.hasClass('d-none'))
+        $gridContainer.addClass('d-none');
+      $msgContainer.removeClass('d-none');
 
       if (node) {
         msg = messages[1];
@@ -248,16 +248,16 @@ define('misc.depends', [
           }
 
           // Hide message container and show grid container.
-          $msgContainer.addClass('hidden');
-          $gridContainer.removeClass('hidden');
+          $msgContainer.addClass('d-none');
+          $gridContainer.removeClass('d-none');
 
           var timer = setTimeout(function() {
             // notify user if request is taking longer than 1 second
 
             $msgContainer.text(gettext('Retrieving data from the server...'));
-            $msgContainer.removeClass('hidden');
+            $msgContainer.removeClass('d-none');
             if ($gridContainer) {
-              $gridContainer.addClass('hidden');
+              $gridContainer.addClass('d-none');
             }
           }, 1000);
 
@@ -267,9 +267,9 @@ define('misc.depends', [
             reset: true,
             success: function() {
               clearTimeout(timer);
-              $gridContainer.removeClass('hidden');
-              if (!$msgContainer.hasClass('hidden')) {
-                $msgContainer.addClass('hidden');
+              $gridContainer.removeClass('d-none');
+              if (!$msgContainer.hasClass('d-none')) {
+                $msgContainer.addClass('d-none');
               }
             },
             error: function(coll, xhr, error, message) {

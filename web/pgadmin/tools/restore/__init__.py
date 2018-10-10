@@ -111,7 +111,7 @@ class RestoreMessage(IProcessDesc):
 
     def details(self, cmd, args):
         name, host, port = self.get_server_details()
-        res = '<div class="h5">'
+        res = '<div>'
 
         res += html.safe_str(
             _(
@@ -121,7 +121,7 @@ class RestoreMessage(IProcessDesc):
             )
         )
 
-        res += '</div><div class="h5"><b>'
+        res += '</div><div><b>'
         res += html.safe_str(
             _("Running command:")
         )

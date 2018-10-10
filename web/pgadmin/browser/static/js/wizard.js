@@ -101,7 +101,7 @@ define([
       '          <div class="wizard-progress-bar"><% if (show_progress_bar) { %>' +
       '            <p class="alert alert-info col-sm-12"><%= show_progress_bar %></p><% } %>' +
       '          </div>' +
-      '          <div class="wizard-right-panel_content col-xs-12">' +
+      '          <div class="wizard-right-panel_content col-12">' +
       '          </div>' +
       '        </div>' +
       '      </div>' +

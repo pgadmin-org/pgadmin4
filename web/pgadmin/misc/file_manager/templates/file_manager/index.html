@@ -1,38 +1,46 @@
 ﻿<html>
 <head>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('file_manager.static', filename='css/file_manager.css')}}"/>
 </head>
 <body>
-<div class="file_manager">
-    <div id="uploader" class='col-xs-12'>
-        <div class="btn-group filemanager-path-group col-sm-7 col-xs-12" role="group">
-            <button name="home" type="button" value="Home" title="{{ _('Home') }}" class="fa fa-home btn home"
-                    tabindex="1"><span></span>
-            </button>
-            <button name="level-up" type="button" title="{{ _('Back') }}" value="LevelUp" class="btn fa fa-level-up level-up"
-                    disabled tabindex="2"><span></span></button>
-            <input id='file-input-path' class='input-path' title='' type="text" tabindex="3" autofocus/>
-
+<div class="file_manager container-fluid">
+    <div id="uploader" class="row">
+        <div class="col-sm-7">
+            <div class="input-group" role="group">
+                <div class="input-group-prepend">
+                    <button name="home" type="button" value="Home" title="{{ _('Home') }}" class="btn fa fa-home home"
+                            tabindex="1">
+                    </button>
+                    <button name="level-up" type="button" title="{{ _('Back') }}" value="LevelUp" class="btn fa fa-level-up level-up"
+                            disabled tabindex="2">
+                    </button>
+                </div>
+                <input id="file-input-path" class="form-control input-path" title="" type="text" tabindex="3" autofocus/>
+            </div>
         </div>
-        <div class="btn-group filemanager-btn-group" role="group">
-            <div class="uploadresponse"></div>
-            <input class="mode" name="mode" type="hidden" value="add"/>
-            <input class="currentpath" name="currentpath" type="hidden"/>
-            <button type="button" title="{{ _('Refresh') }}" class="btn fa fa-refresh refresh"
-                    tabindex="4"></button>
-            <button type="button" title="{{ _('Download File') }}" class="btn fa fa-download download"
-                    disabled><span></span>
-            </button>
-            <button name="delete" type="button" title="{{ _('Delete File/Folder') }}" class="btn fa fa-trash delete"
-                    disabled>
-                <span></span></button>
-            <button name="rename" type="button" title="{{ _('Rename File/Folder') }}" class="btn fa fa-pencil-square-o rename"
-                    tabindex="5">
-                <span></span></button>
-            <button name="newfolder" type="button" title="{{ _('Create new folder') }}" value="New Folder"
-                    class="btn fa fa-folder-open create" tabindex="8"><span></span></button>
-            <button class="ON fa fa-th btn grid" type="button" title="{{ _('View as grid') }}" tabindex="9"><span></span></button>
-            <button type="button" class="btn fa fa-list list" title="{{ _('View as table') }}" tabindex="10"><span></span></button>
+        <div class="col-sm-5">
+                <div class="uploadresponse"></div>
+                <input class="mode" name="mode" type="hidden" value="add"/>
+                <input class="currentpath" name="currentpath" type="hidden"/>
+                <div class="btn-group" role="group">
+                    <button type="button" title="{{ _('Refresh') }}" class="btn fa fa-refresh refresh"
+                            tabindex="4"></button>
+                    <button type="button" title="{{ _('Download File') }}" class="btn fa fa-download download"
+                            disabled>
+                    </button>
+                    <button name="delete" type="button" title="{{ _('Delete File/Folder') }}" class="btn fa fa-trash delete"
+                            disabled>
+                    </button>
+                    <button name="rename" type="button" title="{{ _('Rename File/Folder') }}" class="btn fa fa-pencil-square-o rename"
+                            tabindex="5">
+                    </button>
+                    <button name="newfolder" type="button" title="{{ _('Create new folder') }}" value="New Folder"
+                            class="btn fa fa-folder-open create" tabindex="8">
+                    </button>
+                    <button class="ON fa fa-th btn grid" type="button" title="{{ _('View as grid') }}" tabindex="9">
+                    </button>
+                    <button type="button" class="btn fa fa-list list" title="{{ _('View as table') }}" tabindex="10">
+                    </button>
+                </div>
         </div>
     </div>
     <div class="fileinfo">

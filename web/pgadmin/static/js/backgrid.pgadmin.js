@@ -825,7 +825,7 @@ define([
             headerCell: Backgrid.Extension.CustomHeaderIconCell,
             cellHeaderClasses: 'width_percent_100',
           }],
-          gridBody = $('<div class=\'pgadmin-control-group backgrid form-group col-xs-12 object subnode\'></div>');
+          gridBody = $('<div class=\'pgadmin-control-group backgrid form-group col-12 object subnode\'></div>');
 
         this.$el.attr('tabindex', '1');
 

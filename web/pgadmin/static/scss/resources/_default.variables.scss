@@ -7,10 +7,10 @@ $color-bg-inverse: $color-fg;
 $color-fg-inverse: $color-bg;
 
 $color-primary: #2c76b4 !default;
-$color-primary-fg: $color-fg !default;
+$color-primary-fg: #fff !default;
 
 $color-danger: #d63a35 !default;
-$color-danger-fg: $color-fg !default;
+$color-danger-fg: #fff !default;
 
 $color-success: #3a773a !default;
 $color-success-fg: $color-fg !default;
@@ -55,9 +55,5 @@ $color-warning-dark: darken($color-warning, 25%);
 $color-warning-darker: darken($color-warning, 40%);
 
 /* Typography */
-/* Use absolute path as this will be used in different directories */
 $font-family-primary: "Open Sans" !default;
-$font-url-primary: '~top/static/fonts/OpenSans-Regular.ttf' !default;
-
 $font-family-editor: 'Source Code Pro' !default;
-$font-url-editor: '~top/static/fonts/SourceCodePro-Regular.ttf' !default;

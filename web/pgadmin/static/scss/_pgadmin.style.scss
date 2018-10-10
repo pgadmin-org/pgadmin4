@@ -737,6 +737,7 @@ lgg-el-container[el=md] .pg-el-lg-8,
   vertical-align: middle;
   min-height: 28px;
 }
+/*
 .pgadmin-controls {
   padding-right: 3px;
   padding-left: 3px;
@@ -764,7 +765,7 @@ lgg-el-container[el=md] .pg-el-lg-8,
 .pgadmin-controls > select.form-control,
 .pgadmin-controls > textarea.form-control {
   padding: 3px 6px;
-}
+}*/
 .pg-panel-properties-message {
   margin-top: 50px !important;
 }
@@ -816,20 +817,6 @@ lgg-el-container[el=md] .pg-el-lg-8,
 
 .Resizer.disabled:hover {
   border-color: transparent;
-}
-
-@font-face {
-  font-family: $font-family-primary;
-  src: url($font-url-primary);
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: $font-family-editor;
-  src: url($font-url-editor);
-  font-weight: normal;
-  font-style: normal;
 }
 
 .pg-icon {
@@ -909,3 +896,829 @@ lgg-el-container[el=md] .pg-el-lg-8,
 .alertify .ajs-header,
 .alertify .ajs-body {
   font-family: $font-family-primary; }
+
+
+@media (min-width: 768px) {
+  .pg-navbar {
+    height: 40px;
+  }
+
+  .pg-navbar .navbar-brand {
+    padding: 10px 15px;
+  }
+
+  .pg-navbar .navbar-nav > li > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .pg-docker {
+    top: 40px !important;
+  }
+}
+
+.pg-docker {
+  position:absolute;
+  left:0px;
+  right:0px;
+  top:50px;
+  bottom:0px;
+}
+
+.pg-panel-content {
+  position:absolute;
+  top:0px;
+  left:0px;
+  right:0px;
+  bottom:0px;
+  height: 100%!important;
+}
+
+.pg-prop-btn-group {
+  left: 0px;
+  right: 0px;
+  padding: 2px;
+}
+
+.pg-prop-btn-group button {
+  padding: 5px;
+}
+
+.pg-prop-btn-group-below {
+    text-align: right;
+    border-color: $color-gray-light;
+    border-width: 2px 1px 0px;
+    border-style: inset;
+    border-left-style: solid
+}
+
+.pg-prop-btn-group > button {
+  margin: 2px 3px 2px 0px;
+}
+
+.pg-prop-btn-group > button:first-child {
+    margin-left: 3px;
+}
+
+.pg-prop-btn-group > button:last-child {
+    margin-right: 3px;
+}
+.btn-group-sm>.btn, .btn-sm{
+  font-size: 11px;
+  padding: 3px 3px;
+}
+
+.pg-prop-btn-group > .btn {
+  min-width: 40px;
+}
+
+.pg-prop-btn-group > .btn-group > .btn {
+  min-width: 40px;
+}
+
+.pg-prop-btn-group > .btn-group > .btn + .dropdown-toggle {
+  min-width: 20px;
+}
+
+.pg-prop-btn-group button.dropdown-toggle {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
+
+.pg-prop-btn-group .dropdown-menu {
+  min-width: initial;
+}
+
+.pg-prop-btn-group .backgrid-filter.form-search {
+  position: relative;
+  width: 248px;
+  height: 30px;
+  float: right;
+  margin-top: 2px;
+  margin-right: 10px;
+}
+
+.pg-prop-content {
+    position: absolute;
+    overflow: auto;
+    min-width: 100%;
+    padding-bottom: 7px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-left: 0;
+    height: 100%;
+}
+
+/* A generic class to make the overflow hidden of a DOM element */
+.pg-no-overflow {
+    overflow: hidden;
+}
+
+
+.pg-prop-has-btn-group-below {
+    margin-bottom: 33px;
+}
+
+.has-pg-prop-btn-group {
+    top: 39px;
+    padding-top: 8px;
+    height: calc(100% - 39px);
+}
+
+.pg-prop-content > div {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.pg-prop-content .uneditable-input {
+    white-space: initial;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overow: ellipsis;
+    height: auto !important;
+}
+
+.obj_properties .backform-tab {
+    position: absolute;
+    margin: 0px 0px 75px;
+    padding: 0px;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+.obj_properties .backform-tab > .tab-content {
+    padding: 0px;
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+.obj_properties {
+    padding: 0px;
+}
+
+.obj_properties .pgadmin-control .uneditable-input {
+    border: 0px !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    -webkit-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+    background-color: transparent !important;
+    height: 20px;
+    padding: 0px;
+    margin-top: 2px;
+    vertical-align: middle;
+}
+
+.obj_properties .set-group {
+    margin-bottom: 10px;
+}
+
+/* Message panel shown on browser tabs */
+.pg-panel-message {
+    margin-top: 25px !important;
+    width: 80%;
+    margin: 0 auto;
+    position: relative;
+    text-align: center;
+}
+
+.pgadmin-control {
+    padding: 0px 15px 5px 15px;
+    margin-bottom: 0px;
+    display: inline-block;
+    height: 30px;
+}
+
+
+.pgadmin-control-group {
+    margin: 0px;
+    padding: 2px 0px;
+}
+
+.pgadmin-controls {
+    padding-right: 3px;
+    padding-left: 3px;
+}
+.pgadmin-controls.SQL {
+  padding-right: 3px;
+  padding-left: 1px;
+  height: 100%;
+}
+.pgadmin-controls > textarea.form-control,
+.pgadmin-controls > textarea.form-control:disabled {
+   min-width: 100%;
+   max-width: 100%;
+}
+.pgadmin-controls > div.checkbox, .pgadmin-controls > div.checkbox[disabled] {
+    height: 28px;
+}
+
+.pgadmin-controls > .uneditable-input, .pgadmin-controls > .pgadmin-node-select,
+.pgadmin-controls > input.form-control, .pgadmin-controls > select.form-control,
+.pgadmin-controls > .uneditable-input:disabled,
+.pgadmin-controls > .pgadmin-node-select:disabled,
+.pgadmin-controls > input.form-control:disabled,
+.pgadmin-controls > select.form-control:disabled {
+    min-height: 28px;
+    padding: 3px 6px !important;
+}
+
+.pgadmin-controls > span.select2 {
+    width: 100%;
+}
+
+.obj_properties fieldset > div > .pgadmin-control-group > label {
+    min-height: 28px;
+}
+
+.obj_properties fieldset > .fieldset-content {
+  border-radius:5px;
+  padding: 5px 10px;
+  border-color: $color-primary-lighter;
+  border-width: 2px;
+  border-style: ridge;
+}
+
+.obj_properties .badge {
+  display: block;
+  text-align: left;
+  cursor: pointer;
+  margin-bottom: 1px;
+  background-color: $color-primary;
+  border-radius:5px;
+  padding: 5px 7px;
+  color: $color-primary-fg;
+  font-size: 0.9em;
+}
+
+.obj_properties .badge .caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 5px solid;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+    margin-top: -2px;
+    margin-right: 4px;
+    color: $color-primary-fg;
+}
+
+.obj_properties .collapsed .caret {
+    border-bottom: 5px solid transparent;
+    border-top: 5px solid transparent;
+    border-left: 5px solid;
+    vertical-align: middle;
+    margin-top: -2.5px;
+    padding-right: 0px;
+}
+
+.obj_properties table {
+  display: table !important;
+}
+
+.obj_properties table tr {
+    border: 0px $color-bg solid;
+    margin: 1em;
+}
+
+.obj_properties .pgadmin-properties {
+    border: 1px  $color-gray-dark solid;
+    border-radius: 6px;
+    padding: 5px;
+    margin: 0.2px 2px 2px 2px;
+}
+
+.obj_properties table .spacer {
+    height: 2em;
+}
+
+.obj_properties table td {
+    vertical-align: middle;
+}
+
+
+fieldset.inline-fieldset {
+    margin: 0px; margin-left: 2px; margin-right: 2px;
+    padding-right: 10px; padding-left: 10px; padding-top: 6px; padding-bottom: 12px;
+    border: 1px solid; border-radius: 5px;
+    border-color: $color-gray-light; box-shadow: 0.1px 0.1px 0.1px $color-gray-lighter;
+}
+
+fieldset.inline-fieldset-without-border {
+    margin: 0px; margin-left: 0px; margin-right: 0px;
+    padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;
+    border: 0px solid; border-radius: 0px; display: inline-block;
+}
+
+fieldset.inline-fieldset > legend {
+    display: block; border: 0px solid $color-fg; box-shadow: none;
+    box-sizing: content-box; top: auto; bottom: auto; left: auto;
+    font-size: 14px; font-style: normal; font-weight: 600;
+    height: 20px; line-height: 20px; margin: 0px; padding-bottom: 0px;
+    padding-left: 5px; padding-right: 5px; padding-top: 0px;
+    vertical-align: middle; width: auto;
+}
+
+fieldset.inline-fieldset-without-border legend {
+    border: none; margin-bottom: 0px !important;
+ }
+
+fieldset.inline-fieldset > div {
+    padding: 0px; margin: 0px; border: 0px;
+}
+
+/* Override CSS for Colour Picker to match it with pgAdmin4 style */
+.sp-replacer {
+  background: $color-bg;
+  border: solid 1px $color-gray-light;
+  border-radius: 3px;
+}
+
+.sp-replacer:hover {
+  border-color: $color-gray-light;
+}
+
+.sp-replacer.sp-active {
+  border-color: $color-primary-light;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.sp-replacer.sp-disabled {
+    background-color: $color-gray-lighter;
+}
+
+.sp-container {
+  background-color: $color-bg;
+  border: solid 1px $color-gray-light;
+  border-radius: 3px !important;
+}
+
+.sp-palette-button-container button,
+.sp-palette-button-container button:hover {
+  padding: 5px;
+  background-color: $color-primary;
+  background-image: none;
+  font-family: $font-family-primary;
+  font-size: 12px;
+  color: $color-fg-inverse;
+  text-shadow: none;
+  -webkit-font-smoothing: auto;
+}
+
+.sp-container button:active {
+    border: 1px solid $color-primary;
+    border-bottom: none;
+    -webkit-box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+    -moz-box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+    -ms-box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+    -o-box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+    box-shadow: inset 0 0 5px 2px $color-primary, 0 1px 0 0 $color-primary-light;
+}
+
+.sp-dd {
+  font-size: 8px;
+  color:  $color-gray;
+}
+
+.pgadmin-control-error-message{
+  padding-left: 4px;
+}
+
+.pgadmin-control-group.sql {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+}
+
+.pgadmin-control-group span.wcTabIcon {
+  padding-left: 20px;
+}
+
+.pgadmin-controls input[type="checkbox"]{
+  margin-left: 0 !important;
+  margin-top: 10px !important;
+}
+
+.pgadmin-controls.sql_field_layout {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.pgadmin-controls.focused {
+  border-color: $color-primary-light;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color-primary, .6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color-primary, .6);
+}
+
+.dashboard-tab-container table,
+.pg-panel-statistics-container table,
+.pg-panel-depends-container table,
+.pg-panel-depends-container table {
+    font-size: 12px !important;
+}
+
+.pg-panel-statistics-container > table > thead > tr > th {
+  padding: 2px;
+  border: 1px solid $color-gray-lighter;
+}
+
+.pg-panel-statistics-container > table > thead > tr > th:first-child {
+  border-left: 0px;
+}
+
+.pg-panel-statistics-container > table > thead > tr > th:last-child {
+  border-right: 0px;
+}
+
+.pg-prop-header {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top : 0;
+}
+
+.pg-prop-footer{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom : 0;
+    z-index: 4;
+}
+
+.pg-panel-depends-container > table > thead > tr > th {
+  padding: 2px;
+  border: 1px $color-gray-lighter solid;
+}
+
+.pg-panel-depends-container > table > thead > tr > th:first-child {
+  border-left: 0px;
+}
+
+.pg-panel-depends-container > table > thead > tr > th:last-child {
+  border-right: 0px;
+}
+
+/* Overrides/fixes for pgAdmin specific styling */
+
+.highlight {
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: $color-gray-lighter;
+    border: 1px solid $color-gray-lighter;
+    border-radius: 3px;
+}
+
+.icon-fa::before {
+    font: normal normal normal 14px/1 FontAwesome;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0, 0);
+    display: inline-block;
+    margin-left: -18px;
+    margin-right: 9px;
+}
+
+
+/* Sub-Node */
+
+.table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+    border-bottom-width: 1px;
+    padding: 3px;
+}
+
+.edit-cell, .delete-cell {
+    text-align:center !important;
+    width:25px;
+    height:29px !important;
+}
+
+.subnode-header {
+    background-color: $color-primary;
+    height: 35px;
+    color: $color-fg-inverse;
+    border-radius: 3px 3px 0px 0px;
+    padding-top: 3px;
+}
+
+.subnode-header .control-label {
+    font-size: 13px;
+    font-weight: normal !important;
+}
+
+.subnode-header > button.add {
+    float: right;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    margin-top: 5px;
+}
+
+.subnode {
+    padding-top: 0px;
+}
+
+.subnode-dialog {
+    bottom: 0;
+    left: 0;
+    overflow-x: auto;
+    overflow-y: auto;
+    right: 0;
+    height: auto;
+    margin-left: 23px;
+    background-color: $color-gray-lighter;
+    margin-top: 0px;
+    border: 1px solid $color-gray-lighter;
+}
+.subnode-body {
+    height: auto;
+    overflow: inherit;
+    background-color: $color-bg;
+}
+.subnode-footer {
+    height: 38px;
+    margin: 0px, 15px;
+    min-height: 40px;
+    vertical-align: bottom;
+}
+
+.sub-node-form {
+    height: auto;
+    padding: 0px;
+}
+
+.sub-node-form > .nav-tabs {
+    background-color: $color-gray-lighter;
+}
+
+.sub-node-form > ul.tab-content{
+    background-color: $color-bg;
+    padding-left: 15px;
+    left: 1px;
+}
+
+.width_percent_5 { width: 5%; }
+.width_percent_10 { width: 10%; }
+.width_percent_15 { width: 15%; }
+.width_percent_20 { width: 20%; }
+.width_percent_25 { width: 25%; }
+.width_percent_30 { width: 30%; }
+.width_percent_35 { width: 35%; }
+.width_percent_40 { width: 40%; }
+.width_percent_45 { width: 45%; }
+.width_percent_50 { width: 50%; }
+.width_percent_55 { width: 55%; }
+.width_percent_60 { width: 60%; }
+.width_percent_65 { width: 65%; }
+.width_percent_70 { width: 70%; }
+.width_percent_75 { width: 75%; }
+.width_percent_80 { width: 80%; }
+.width_percent_85 { width: 85%; }
+.width_percent_90 { width: 90%; }
+.width_percent_95 { width: 95%; }
+.width_percent_99 { width: 99%; }
+.width_percent_100 { width: 100%; }
+
+.subnode-header-form {
+    background-color: $color-gray-lighter;
+    color: black;
+    padding: 3px 0 10px 0;
+    border-top: solid 1.5px $color-bg;
+    font-size: 12px;
+}
+
+.subnode-header-form button.add {
+    float: right;
+    margin-right: 0px;
+}
+
+.subnode-error .help-block {
+    color: $color-danger;
+}
+
+.obj_properties .nav>li>a {
+    font-size: 13px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-bottom:0px;
+    margin-top:3px;
+}
+
+.obj_properties .backform-tab > .nav-tabs {
+	background-color: $color-gray-lighter;
+}
+
+.sql_field_layout {
+    border: 1px solid rgba($color-gray-light, 1) !important;
+    border-radius: 4px;
+    padding: 0px;
+}
+
+/* This rule will stop Chrome apply highlighting to elements such as DIV's used as modals */
+*:focus {
+  outline: none;
+}
+
+div.rolmembership {
+    margin-top: 15px;
+}
+
+div.inline-tab-panel {
+    float: left; width: 100%;
+}
+
+div.inline-tab-panel > ul.nav-tabs > li {
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+}
+
+div.inline-tab-panel > ul.nav-tabs > li:first-child {
+    border-top-left-radius: 3px; border-top-right-radius: 10px;
+}
+
+div.inline-tab-panel > ul.nav-tabs > li > a,
+div.inline-tab-panel > ul.nav-tabs > li > a:active,
+div.inline-tab-panel > ul.nav-tabs > li > a:hover,
+div.inline-tab-panel > ul.nav-tabs > li > a:focus {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+div.inline-tab-panel > ul.nav-tabs > li:first-child > a,
+div.inline-tab-panel > ul.nav-tabs > li:first-child > a:active,
+div.inline-tab-panel > ul.nav-tabs > li:first-child > a:hover,
+div.inline-tab-panel > ul.nav-tabs > li:first-child > a:focus {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  margin-left: 1px;
+}
+
+div.inline-tab-panel > ul.tab-content {
+  padding-left: 5px; padding-right: 5px; border-color: $color-gray-lighter;
+  border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
+  border-width: 0px 1px 1px 1px; border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px; border-style: solid solid;
+}
+
+div.inline-tab-panel > ul.tab-content > div.tab-pane {
+  min-height: 150px; padding: 0px !important;
+}
+
+div.inline-tab-panel > ul.tab-content > div.tab-pane > *:first-child {
+  margin-top: 5px;
+}
+
+div.inline-tab-panel > ul.tab-content > div.tab-pane > *:last-child {
+  margin-bottom: 5px;
+}
+
+td.edit-cell.editable.sortable.renderable.editor {
+  outline: 0px;
+}
+
+.privilege_label{
+  font-size: 10px!important;
+}
+
+span.button-label {
+  font-family: $font-family-primary;
+  font-size: initial;
+}
+
+form[name="change_password_form"] .help-block {
+    color: $color-danger !important;
+}
+
+
+/* Fix Alertify dialog alignment for Backform controls */
+.alertify_tools_dialog_properties {
+  bottom: 0 !important;
+  left: 0 !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 35px !important;
+}
+
+/* For Backup & Restore Dialog */
+.custom_switch_label_class {
+  min-width: 0px !important;
+  padding-bottom: 10px !important;
+  font-size: 13px !important;
+  font-weight: normal !important;
+}
+
+.custom_switch_control_class {
+  min-width: 0px !important;
+  padding-bottom: 10px !important;
+}
+
+/* animate blink */
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+
+.subnode-footer {
+  text-align: right;
+  border-color: $color-gray-light;
+  border-style: inset inset inset solid;
+  border-width: 2px 1px 0;
+  margin-top: -10px;
+}
+
+.subnode-footer .ajs-button {
+  margin: 2px 2px 0;
+}
+
+.close-error-bar {
+  background: $color-danger;
+  padding: 5px;
+  border-radius: 0px 5px 5px 0px;
+}
+
+.close-error-bar a {
+  color: $color-danger-fg !important;
+  cursor: pointer;
+}
+
+.help-block {
+  white-space: normal;
+}
+
+/* Disable text selection where not wanted */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Security label's label column font size */
+.override_label_class_font_size {
+  font-size: inherit !important;
+}
+
+/* CSS for custom checkbox editor in SlickGrid */
+.multi-checkbox .check {
+  display: inline-block;
+  vertical-align: top;
+  width: 16px;
+  height: 16px;
+  border: 1px solid  $color-gray-dark;
+  margin: 3px;
+  text-align: center;
+  line-height: 16px;
+}
+
+.multi-checkbox .check.checked,
+.multi-checkbox .check.unchecked {
+  background: $color-bg;
+}
+
+.multi-checkbox .check.partial {
+  background: $color-gray-lighter;
+}
+
+.multi-checkbox .check.checked:after {
+  content: "\2713";
+}
+
+.multi-checkbox .check.partial:after {
+  content: "\003F";
+}
+
+/* This is to be changed */
+/*.navbar-nav > .nav-item > a, .navbar-inverse .navbar-nav > li > a {
+	color: $color-fg-inverse;
+}
+
+.navbar-nav > .open > a, .navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
+	background: $color-gray-dark none;
+}*/

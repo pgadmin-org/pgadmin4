@@ -1,7 +1,10 @@
 .has-error {
-  .pgadmin-controls > .form-control {
+  .pgadmin-controls .form-control {
     border-color: $color-danger;
-    position: relative;
+  }
+
+  .form-control {
+    border-color: $color-danger;
   }
 
   .control-label {
@@ -31,4 +34,29 @@
     right: 50px !important;
     z-index: 3;
   }
+}
+.backform-tab .tab-pane {
+	padding: 7px;
+	&.SQL {
+    height: 100%;
+    padding: 0px 7px 0px 0px;
+	}
+}
+
+.backform_control_notes {
+	background-color: $color-gray-lighter;
+	border: 1px solid $color-gray-light;
+	border-radius: 3px;
+	color: $color-gray-dark;
+	display: block;
+	font-family: $font-family-editor;
+	font-size: 12px;
+	line-height: 1.42857;
+	margin: 0 0 10px;
+	overflow: auto;
+	padding: 5px 10px;
+	word-wrap: break-word;
+}
+div.backform_control_notes label.control-label {
+	min-width: 0px;
 }

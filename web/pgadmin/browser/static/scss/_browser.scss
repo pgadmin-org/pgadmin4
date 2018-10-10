@@ -45,8 +45,8 @@ samp,
 }
 
 .pg-toolbar-btn:hover {
-  border: 1px solid $color-gray-light !important;
-  background-color: $color-gray-lighter !important;
+  border: none;
+  background-color: $color-bg !important;
 }
 
 .pg-toolbar-btn {
@@ -55,5 +55,5 @@ samp,
   background-color: $color-bg !important;
   font-size: 14px !important;
   color: $color-gray-darker !important;
-  border: 1px solid $color-gray-light !important;
+  border: none;
 }

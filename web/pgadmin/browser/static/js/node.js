@@ -983,7 +983,7 @@ define('pgadmin.browser.node', [
         j = panel.$container.find('.obj_properties').first(),
         view = j.data('obj-view'),
         content = $('<div tabindex="1"></div>')
-        .addClass('pg-prop-content col-xs-12');
+        .addClass('pg-prop-content col-12');
 
       // Handle key press events for Cancel, save and help button
       var handleKeyDown = function(event, context) {

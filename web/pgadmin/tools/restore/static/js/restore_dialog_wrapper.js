@@ -22,8 +22,8 @@ export class RestoreDialogWrapper extends DialogWrapper {
   setup() {
     return {
       buttons: [{
-        text: '',
-        className: 'btn btn-default pull-left fa fa-lg fa-info',
+        text: '<span class="fa fa-lg fa-info"></span>',
+        className: 'btn btn-default pull-left',
         attrs: {
           name: 'object_help',
           type: 'button',
@@ -31,9 +31,9 @@ export class RestoreDialogWrapper extends DialogWrapper {
           label: gettext('Restore'),
         },
       }, {
-        text: '',
+        text: '<span class="fa fa-lg fa-question"></span>',
         key: 112,
-        className: 'btn btn-default pull-left fa fa-lg fa-question',
+        className: 'btn btn-default pull-left',
         attrs: {
           name: 'dialog_help',
           type: 'button',

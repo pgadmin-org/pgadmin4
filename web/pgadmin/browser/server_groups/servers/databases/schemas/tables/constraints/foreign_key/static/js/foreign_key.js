@@ -309,7 +309,7 @@ define('pgadmin.node.foreign_key', [
           '   </div>',
           '   <div class="col-md-6" header="local_column"></div>',
           '   <div class="col-md-2">',
-          '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
+          '     <button class="btn btn-sm-sq btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
           '   </div>',
           '  </div>',
           '  <div class="row">',
@@ -374,7 +374,7 @@ define('pgadmin.node.foreign_key', [
             '<label class=\'control-label\'><%-label%></label>',
             '</div>'].join('\n')),
           $gridBody =
-          $('<div class=\'pgadmin-control-group backgrid form-group col-xs-12 object subnode\'></div>').append(
+          $('<div class=\'pgadmin-control-group backgrid form-group col-12 object subnode\'></div>').append(
             // Append titleTmpl only if create/edit mode
             data.mode !== 'properties' ? titleTmpl({label: data.label}) : ''
           );

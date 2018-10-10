@@ -146,7 +146,7 @@ define([
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%>>',
+      '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled readonly" : ""%>>',
       '    <%-value%>',
       '  </span>',
       '</div>',
@@ -358,7 +358,7 @@ define([
       '<% for (var i=0; i < options.length; i++) { %>',
       ' <% var option = options[i]; %>',
       ' <% if (option.value === rawValue) { %>',
-      ' <span class="<%=Backform.controlClassName%> uneditable-input" disabled><%-option.label%></span>',
+      ' <span class="<%=Backform.controlClassName%> uneditable-input" disabled readonly><%-option.label%></span>',
       ' <% } %>',
       '<% } %>',
       '<% if (helpMessage && helpMessage.length) { %>',
@@ -506,8 +506,8 @@ define([
     },
     template: {
       'header': _.template([
-        '<li role="presentation" <%=disabled ? "disabled" : ""%>>',
-        ' <a data-toggle="tab" tabindex="-1" data-tab-index="<%=tabIndex%>" href="#<%=cId%>"',
+        '<li class="nav-item" role="presentation" <%=disabled ? "disabled" : ""%>>',
+        ' <a class="nav-link" data-toggle="tab" tabindex="-1" data-tab-index="<%=tabIndex%>" href="#<%=cId%>"',
         '  id="<%=hId%>" aria-controls="<%=cId%>">',
         '<%=label%></a></li>',
       ].join(' ')),
@@ -538,7 +538,7 @@ define([
 
       var tabHead = $('<ul class="nav nav-tabs" role="tablist"></ul>')
         .appendTo(this.$el);
-      var tabContent = $('<ul class="tab-content pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12"></ul>')
+      var tabContent = $('<div class="tab-content pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12"></div>')
         .appendTo(this.$el);
 
       _.each(this.schema, function(o) {
@@ -584,12 +584,12 @@ define([
 
       var makeActive = tabHead.find('[id="' + c + '"]').first();
       if (makeActive.length == 1) {
-        makeActive.parent().addClass('active');
+        makeActive.addClass('active show');
         tabContent.find('#' + makeActive.attr('aria-controls'))
-          .addClass('in active');
+          .addClass('active show');
       } else {
-        tabHead.find('[role="presentation"]').first().addClass('active');
-        tabContent.find('[role="tabpanel"]').first().addClass('in active');
+        tabHead.find('.nav-link').first().addClass('active show');
+        tabContent.find('.tab-pane').first().addClass('active show');
       }
 
       return this;
@@ -634,7 +634,7 @@ define([
     },
     fieldsetClass: Backform.setGroupClassName,
     legendClass: 'badge',
-    contentClass: Backform.setGroupContentClassName + ' collapse in',
+    contentClass: Backform.setGroupContentClassName + ' collapse show',
     template: {
       'header': _.template([
         '<fieldset class="<%=fieldsetClass%>" <%=disabled ? "disabled" : ""%>>',
@@ -990,7 +990,7 @@ define([
         gridHeader = _.template([
           '<div class="subnode-header">',
           '  <label class="control-label pg-el-sm-10"><%-label%></label>',
-          '  <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"><%-add_label%></button>',
+          '  <button class="btn btn-sm-sq btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"><%-add_label%></button>',
           '</div>',
         ].join('\n')),
         gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode"></div>').append(
@@ -1258,7 +1258,7 @@ define([
       var self = this,
         gridHeader = ['<div class=\'subnode-header\'>',
           '  <label class=\'control-label pg-el-sm-10\'>' + data.label + '</label>',
-          '  <button class=\'btn-sm btn-default add fa fa-plus\' title=\'' + _('Add new row') + '\'></button>',
+          '  <button class=\'btn btn-sm-sq btn-default add fa fa-plus\' title=\'' + _('Add new row') + '\'></button>',
           '</div>',
         ].join('\n'),
         gridBody = $('<div class=\'pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode\'></div>').append(gridHeader);
@@ -2261,13 +2261,15 @@ define([
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '<div class="file_selection_ctrl form-control">',
-      '<input type="<%=type%>" class="browse_file_input form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '<button class="btn fa fa-ellipsis-h select_item pull-right" <%=disabled ? "disabled" : ""%> ></button>',
+      '<div class="input-group">',
+      '<input type="<%=type%>" class="form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '<div class="input-group-append">',
+      '<button class="btn btn-outline-secondary fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> ></button>',
+      '</div>',
+      '</div>',
       '<% if (helpMessage && helpMessage.length) { %>',
       '<span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
-      '</div>',
       '</div>',
     ].join('\n')),
     events: function() {

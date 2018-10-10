@@ -11,6 +11,7 @@
     min-width: 25px;
     cursor: pointer;
     border: 1px solid transparent;
+    font-size: 0.75rem;
 }
 
 .pg-explain-zoom-area:hover {
@@ -29,6 +30,7 @@
   min-width: 25px;
   border: 1px solid transparent;
   pointer-events: none;
+  font-size: 0.75rem;
 }
 
 .pg-explain-stats-area:hover {

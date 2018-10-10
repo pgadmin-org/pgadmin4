@@ -1,33 +1,27 @@
 .aciTree .aciTreeText {
-    font-family: $font-family-primary;
-    font-size: 12px;
+	font-family: $font-family-primary;
+	font-size: 12px;
 }
-
-/* Hover over an element */
-.aciTree .aciTreeLine.aciTreeHover .aciTreeItem  {
-    background-color: $color-primary-lighter;
-    border-color: $color-primary-light;
+.aciTree .aciTreeLine.aciTreeHover .aciTreeItem {
+	background-color: $color-primary-lighter;
+	border-color: $color-primary-light;
 }
-
-.aciTree .aciTreeLine.aciTreeHover .aciTreeText  {
-    color: $color-fg;
+.aciTree .aciTreeLine.aciTreeHover .aciTreeText {
+	color: $color-fg;
 }
-
-/* Selected element and in focus*/
 .aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine .aciTreeItem {
-    background-color: $color-primary-lighter;
+	background-color: $color-primary-lighter;
 }
-
 .aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine .aciTreeText {
-    color: $color-fg;
+	color: $color-fg;
 }
-
-/* Selected element but not in focus */
 .aciTree .aciTreeSelected > .aciTreeLine .aciTreeItem {
-    background-color: $color-primary-lighter;
-    border-color: $color-primary-light;
+	background-color: $color-primary-lighter;
+	border-color: $color-primary-light;
 }
-
 .aciTree .aciTreeItem {
-    white-space: nowrap !important;
+	white-space: nowrap !important;
+}
+.aciTree.aciTreeLoad {
+	background: none;
 }

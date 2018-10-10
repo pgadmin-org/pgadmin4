@@ -48,11 +48,15 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
     },
     prepare: function() {
       var self = this;
+
       self.$container.find('.storage_content').remove();
       self.$container.append('<div class=\'storage_content\'></div>');
 
       var content = self.$container.find('.storage_content');
       content.empty();
+
+      // Add our class to alertify
+      $(this.elements.body.childNodes[0]).addClass('alertify_tools_dialog_properties');
 
       $.get(url_for('file_manager.index'), function(data) {
         content.append(data);
@@ -93,6 +97,13 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
           maximizable: false,
           closable: false,
           movable: true,
+          padding: !1,
+          overflow: !1,
+          model: 0,
+          resizable: true,
+          pinnable: false,
+          modal: false,
+          autoReset: false,
         },
       };
     },
@@ -124,10 +135,11 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
     build: function() {
       this.$container = $('<div class="storage_dialog file_selection_dlg"></div>');
       this.elements.content.appendChild(this.$container.get(0));
+      Alertify.pgDialogBuild.apply(this);
     },
     hooks: {
       onshow: function() {
-        $(this.elements.body).addClass('pgadmin-storage-body');
+//        $(this.elements.body).addClass('pgadmin-storage-body');
       },
     },
   };

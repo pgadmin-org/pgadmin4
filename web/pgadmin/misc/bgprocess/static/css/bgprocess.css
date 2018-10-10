@@ -9,8 +9,7 @@
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status {
   padding: 2px;
-  margin: 5px;
-  width: calc(100% - 10px);
+  margin: 0px 5px;
   text-align: center;
   border-radius: 2px;
   -moz-border-radius: 2px;
@@ -23,11 +22,6 @@
   -moz-user-select: text;
   -ms-user-select: text;
   user-select: text;
-}
-
-.pg-bg-cmd {
-  color: #4156CC;
-  font-style: italic;
 }
 
 ol.pg-bg-process-logs {

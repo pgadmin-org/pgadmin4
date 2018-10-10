@@ -1,38 +1,39 @@
-<div class="dashboard-container">
+<div class="container-fluid">
+    <div class="dashboard-container">
     <div id="dashboard-graphs" class="dashboard-hidden">
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-6">
                 <div class="obj_properties">
                     <legend class="badge">{{ _('Database sessions') }}</legend>
                 </div>
             </div>
-            <div class="col-xs-6">
+            <div class="col-6">
                 <div class="obj_properties">
                     <legend class="badge">{{ _('Transactions per second') }}</legend>
                 </div>
             </div>
         </div>
         <div class="row dashboard-row">
-            <div class="col-xs-6">
+            <div class="col-6">
                 <div id="graph-sessions" class="graph-container"></div>
             </div>
-            <div class="col-xs-6">
+            <div class="col-6">
                 <div id="graph-tps" class="graph-container"></div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-xs-4">
+            <div class="col-4">
                 <div class="obj_properties">
                     <legend class="badge">{{ _('Tuples in') }}</legend>
                 </div>
             </div>
-            <div class="col-xs-4">
+            <div class="col-4">
                 <div class="obj_properties">
                     <legend class="badge">{{ _('Tuples out') }}</legend>
                 </div>
             </div>
-            <div class="col-xs-4">
+            <div class="col-4">
                 <div class="obj_properties">
                     <legend class="badge">{{ _('Block I/O') }}</legend>
                 </div>
@@ -40,27 +41,27 @@
         </div>
 
         <div class="row dashboard-row">
-            <div class="col-xs-4">
+            <div class="col-4">
                 <div id="graph-ti" class="graph-container"></div>
             </div>
-            <div class="col-xs-4">
+            <div class="col-4">
                 <div id="graph-to" class="graph-container"></div>
             </div>
-            <div class="col-xs-4">
+            <div class="col-4">
                 <div id="graph-bio" class="graph-container"></div>
             </div>
         </div>
     </div>
     <div id="dashboard-activity" class="dashboard-hidden">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-12">
                 <div class="obj_properties">
                     <legend class="badge">{{ _('Database activity') }}</legend>
                 </div>
             </div>
         </div>
         <div class="row dashboard-row">
-            <div class="col-xs-12">
+            <div class="col-12">
                 <div class="dashboard-tab-container">
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
@@ -107,4 +108,5 @@
     <div id="dashboard-none-show" class="alert alert-info pg-panel-message dashboard-hidden" role="alert">
         {{ _('All Dashboard elements are currently disabled.') }}
     </div>
+</div>
 </div>

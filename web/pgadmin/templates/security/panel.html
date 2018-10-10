@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 {% from "security/fields.html" import render_field_with_errors %}
 {% block body %}
-<div class="container" style="position:relative;z-index:1;">
+<div class="container-fluid" style="position:relative;z-index:1;">
     {% include "security/messages.html" %}
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{% block panel_title %}{% endblock %}</h3>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <span class="panel-title h5">{% block panel_title %}{% endblock %}</span>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     {% block panel_body %}
                     {% endblock %}
                 </div>
             </div>
         </div>
+        <div class="col-md-4"></div>
     </div>
 </div>
 {% include 'security/watermark.html' %}

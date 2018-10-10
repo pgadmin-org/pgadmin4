@@ -197,12 +197,12 @@ define('pgadmin.node.fts_configuration', [
           '<div class="subnode-header-form">',
           ' <div class="container-fluid">',
           '  <div class="row">',
-          '   <div class="col-xs-3">',
+          '   <div class="col-3">',
           '    <label class="control-label"><%-token_label%></label>',
           '   </div>',
-          '   <div class="col-xs-6" header="token"></div>',
-          '   <div class="col-xs-2">',
-          '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
+          '   <div class="col-6" header="token"></div>',
+          '   <div class="col-2">',
+          '     <button class="btn btn-sm-sq btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
           '   </div>',
           '  </div>',
           ' </div>',
@@ -257,7 +257,7 @@ define('pgadmin.node.fts_configuration', [
         var self = this,
           titleTmpl = _.template('<div class=\'subnode-header\'></div>'),
           $gridBody = $('<div></div>', {
-            class:'pgadmin-control-group backgrid form-group col-xs-12 object subnode',
+            class:'pgadmin-control-group backgrid form-group col-12 object subnode',
           }).append(
                titleTmpl({label: data.label})
           );

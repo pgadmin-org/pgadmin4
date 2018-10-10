@@ -11,6 +11,8 @@ Features
 ********
 
 | `Feature #1253 <https://redmine.postgresql.org/issues/1253>`_ - Save the treeview state periodically, and restore it automatically when reconnecting.
+| `Feature #3562 <https://redmine.postgresql.org/issues/3562>`_ - Migrate from Bootstrap 3 to Bootstrap 4.
+
 
 Bug fixes
 *********

@@ -25,6 +25,6 @@
   margin: 5px;
 }
 
-div[role=tabpanel] > .pgadmin-control-group.form-group.pg-el-xs-12.jscexceptions {
+div[role=tabpanel] > .pgadmin-control-group.form-group.c.jscexceptions {
   min-height: 400px;
 }

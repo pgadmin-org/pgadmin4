@@ -60,9 +60,9 @@ define([
             setup: function() {
               return {
                 buttons: [{
-                  text: '',
+                  text: '<span class="fa fa-lg fa-question"></span>',
                   key: 112,
-                  className: 'btn btn-default pull-left fa fa-lg fa-question',
+                  className: 'btn btn-default pull-left',
                   attrs: {
                     name: 'dialog_help',
                     type: 'button',
@@ -576,9 +576,9 @@ define([
             setup: function() {
               return {
                 buttons: [{
-                  text: '',
+                  text: '<span class="fa fa-lg fa-question"></span>',
                   key: 112,
-                  className: 'btn btn-default pull-left fa fa-lg fa-question',
+                  className: 'btn btn-default pull-left',
                   attrs: {
                     name: 'dialog_help',
                     type: 'button',
@@ -757,7 +757,7 @@ define([
                 userCollection = this.userCollection = new UserCollection(),
                 header = [
                   '<div class="subnode-header">',
-                  '  <button class="btn-sm btn-default add fa fa-plus" title="<%-add_title%>" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
+                  '  <button class="btn btn-sm-sq btn-default add fa fa-plus" title="<%-add_title%>" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
                   '  <div class="control-label search_users"></div>',
                   '</div>',
                 ].join('\n'),

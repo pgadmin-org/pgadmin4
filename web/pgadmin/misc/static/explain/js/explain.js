@@ -779,7 +779,7 @@ define('pgadmin.misc.explain', [
           role: 'group',
         }).appendTo(container),
         zoomInBtn = $('<button></button>', {
-          class: 'btn pg-explain-zoom-btn badge',
+          class: 'btn btn-secondary pg-explain-zoom-btn badge',
           title: 'Zoom in',
           tabindex: 0,
         }).appendTo(zoomArea).append(
@@ -787,7 +787,7 @@ define('pgadmin.misc.explain', [
             class: 'fa fa-search-plus',
           })),
         zoomToNormal = $('<button></button>', {
-          class: 'btn pg-explain-zoom-btn badge',
+          class: 'btn btn-secondary pg-explain-zoom-btn badge',
           title: 'Zoom to original',
           tabindex: 0,
         }).appendTo(zoomArea).append(
@@ -795,7 +795,7 @@ define('pgadmin.misc.explain', [
             class: 'fa fa-arrows-alt',
           })),
         zoomOutBtn = $('<button></button>', {
-          class: 'btn pg-explain-zoom-btn badge',
+          class: 'btn btn-secondary pg-explain-zoom-btn badge',
           title: 'Zoom out',
           tabindex: 0,
         }).appendTo(zoomArea).append(
@@ -804,13 +804,13 @@ define('pgadmin.misc.explain', [
           }));
 
       var statsArea = $('<div></div>', {
-        class: 'pg-explain-stats-area btn-group hidden',
+        class: 'pg-explain-stats-area d-none',
         role: 'group',
       }).appendTo(container);
 
       $('<button></button>', {
         id: 'btn-explain-stats',
-        class: 'btn pg-explain-stats-btn badge',
+        class: 'btn btn-secondary pg-explain-stats-btn badge',
         title: 'Statistics',
         tabindex: 0,
       }).appendTo(statsArea).append(

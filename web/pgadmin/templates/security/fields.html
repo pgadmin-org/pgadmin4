@@ -1,11 +1,11 @@
 {% macro render_field_with_errors(field, type) %}
-<div class="form-group{% if field.errors %} has-error{% endif %}">
+<div class="form-group mb-3 {% if field.errors %} has-error{% endif %}">
     <input class="form-control" placeholder="{{ field.label.text }}" name="{{ field.name }}"
            type="{% if type %}{{ type }}{% else %}{{ field.type }}{% endif %}" autofocus>
+    {% if field.errors %}
+    {% for error in field.errors %}
+    <span class="form-text text-danger">{{ error }}</span>
+    {% endfor %}
+    {% endif %}
 </div>
-{% if field.errors %}
-{% for error in field.errors %}
-<span class="help-block">{{ error }}</span>
-{% endfor %}
-{% endif %}
 {% endmacro %}

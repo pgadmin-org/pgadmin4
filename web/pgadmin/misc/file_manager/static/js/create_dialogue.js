@@ -30,6 +30,13 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
           maximizable: false,
           closable: false,
           movable: true,
+          padding: !1,
+          overflow: !1,
+          model: 0,
+          resizable: true,
+          pinnable: false,
+          modal: false,
+          autoReset: false,
         },
       };
     },

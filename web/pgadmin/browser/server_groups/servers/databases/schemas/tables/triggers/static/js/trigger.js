@@ -25,7 +25,7 @@ define('pgadmin.node.trigger', [
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
     ].join('\n')),
-    className: 'pgadmin-control-group form-group col-xs-6',
+    className: 'pgadmin-control-group form-group col-6',
   });
 
   if (!pgBrowser.Nodes['coll-trigger']) {

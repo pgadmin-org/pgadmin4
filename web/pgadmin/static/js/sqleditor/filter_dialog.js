@@ -112,7 +112,7 @@ let FilterDialog = {
             this.__internal.buttons[1].element.disabled = true;
 
             // Status bar
-            this.statusBar = $('<div class=\'pg-prop-status-bar pg-el-xs-12 hide\'>' +
+            this.statusBar = $('<div class=\'pg-prop-status-bar pg-el-xs-12 d-none\'>' +
               '  <div class=\'media error-in-footer bg-danger-lighter border-danger-light text-danger text-14\'>' +
               '    <div class=\'media-body media-middle\'>' +
               '      <div class=\'alert-icon error-icon\'>' +
@@ -128,7 +128,7 @@ let FilterDialog = {
 
             // To show progress on filter Saving/Updating on AJAX
             this.showFilterProgress = $(
-              '<div id="show_filter_progress" class="wcLoadingIconContainer busy-fetching hidden">' +
+              '<div id="show_filter_progress" class="wcLoadingIconContainer busy-fetching d-none">' +
               '<div class="wcLoadingBackground"></div>' +
               '<span class="wcLoadingIcon fa fa-spinner fa-pulse"></span>' +
               '<span class="busy-text wcLoadingLabel">' + gettext('Loading data...') + '</span>' +
@@ -136,7 +136,7 @@ let FilterDialog = {
 
             $(
               self.showFilterProgress[0]
-            ).removeClass('hidden');
+            ).removeClass('d-none');
 
             self.filterCollectionModel = filterDialogModel(response);
 
@@ -159,14 +159,14 @@ let FilterDialog = {
             // Enable/disable save button and show/hide statusbar based on session
             view.listenTo(view.model, 'pgadmin-session:start', function() {
               view.listenTo(view.model, 'pgadmin-session:invalid', function(msg) {
-                self.statusBar.removeClass('hide');
+                self.statusBar.removeClass('d-none');
                 $(self.statusBar.find('.alert-text')).html(msg);
                 // Disable Okay button
                 self.__internal.buttons[1].element.disabled = true;
               });
 
               view.listenTo(view.model, 'pgadmin-session:valid', function() {
-                self.statusBar.addClass('hide');
+                self.statusBar.addClass('d-none');
                 $(self.statusBar.find('.alert-text')).html('');
                 // Enable Okay button
                 self.__internal.buttons[1].element.disabled = false;
@@ -188,7 +188,7 @@ let FilterDialog = {
             // Hide Progress ...
             $(
               self.showFilterProgress[0]
-            ).addClass('hidden');
+            ).addClass('d-none');
 
           },
           // Callback functions when click on the buttons of the Alertify dialogs
@@ -208,7 +208,7 @@ let FilterDialog = {
               // Show Progress ...
               $(
                 self.showFilterProgress[0]
-              ).removeClass('hidden');
+              ).removeClass('d-none');
 
               axios.put(
                 url_for('sqleditor.set_filter_data', {
@@ -219,7 +219,7 @@ let FilterDialog = {
                 // Hide Progress ...
                 $(
                   self.showFilterProgress[0]
-                ).addClass('hidden');
+                ).addClass('d-none');
 
                 let response = result.data.data;
 
@@ -242,7 +242,7 @@ let FilterDialog = {
                 // Hide Progress ...
                 $(
                   self.showFilterProgress[0]
-                ).addClass('hidden');
+                ).addClass('d-none');
                 handler.onExecuteHTTPError(error);
 
                 setTimeout(

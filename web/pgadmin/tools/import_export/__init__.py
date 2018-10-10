@@ -125,7 +125,7 @@ class IEMessage(IProcessDesc):
             id=self.sid, user_id=current_user.id
         ).first()
 
-        res = '<div class="h5">'
+        res = '<div>'
         res += _(
             "Copying table data '{0}.{1}' on database '{2}' "
             "for the server '{3}'..."
@@ -140,7 +140,7 @@ class IEMessage(IProcessDesc):
             )
         )
 
-        res += '</div><div class="h5">'
+        res += '</div><div>'
         res += _("Running command:")
         res += '</b><br><span class="pg-bg-cmd enable-selection">'
         res += html.safe_str(self._cmd)

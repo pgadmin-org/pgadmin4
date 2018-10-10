@@ -34,7 +34,7 @@ require.onResourceLoad = function (context, map, depMaps) {
   if (loadingStatusEl) {
     if (!context) {
       // we will call onResourceLoad(false) by ourselves when requirejs
-      // is not loading anything hide the indicator and exit
+      // is not loading anything d-none the indicator and exit
       setTimeout(function() {
         if (panel != null) {
             try{
@@ -80,10 +80,9 @@ window.onload = function(e){
  setTimeout(function() {
    var gravatarImg = {{ IMG.PREPARE_HTML()|safe }}
    //$('#navbar-menu .navbar-right > li > a').html(gravatarImg);
-   var navbarRight = document.getElementById("navbar-menu").getElementsByClassName("navbar-right")[0];
-   if (navbarRight) {
-     var list = navbarRight.getElementsByTagName("LI")[0];
-     list.getElementsByTagName("a")[0].innerHTML = gravatarImg;
+   var navbarUser = document.getElementById("navbar-user");
+   if (navbarUser) {
+     navbarUser.innerHTML = gravatarImg;
    }
  }, 1000);
 };
@@ -93,85 +92,77 @@ window.onload = function(e){
 {% block body %}
 <div id="pg-spinner">
   <div class="pg-sp-content">
-    <div class="row"><div class="col-xs-12 pg-sp-icon fa fa-spinner fa-pulse"></div></div>
-    <div class="row"><div class="col-xs-12 pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
+    <div class="row"><div class="col-12 pg-sp-icon fa fa-spinner fa-pulse"></div></div>
+    <div class="row"><div class="col-12 pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
   </div>
 </div>
-<nav class="navbar-inverse navbar-fixed-top pg-navbar">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-menu">
-                <span class="sr-only">{{ _('Toggle navigation') }}</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand pgadmin_header_logo" onClick="return false;" href="{{ '#' }}"
-               title="{{ config.APP_NAME }} {{ _('logo') }}">
-                <i class="app-icon {{ config.APP_ICON }}"></i>
-                <span>&nbsp;{{ config.APP_NAME }}</span>
-            </a>
-        </div>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark pg-navbar">
+    <a class="navbar-brand pgadmin_header_logo" onClick="return false;" href="{{ '#' }}"
+       title="{{ config.APP_NAME }} {{ _('logo') }}">
+        <i class="app-icon {{ config.APP_ICON }}"></i>
+        <span>&nbsp;{{ config.APP_NAME }}</span>
+    </a>
+    <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu">
+        <span class="sr-only">{{ _('Toggle navigation') }}</span>
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar-menu" role="navigation">
 
-        <div class="collapse navbar-collapse" id="navbar-menu" role="navigation">
-
-            <ul class="nav navbar-nav">
-
-                <li id="mnu_file" class="dropdown hide">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
-                        _('File') }} <span class="caret"></span></a>
-                    <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
-                </li>
-                <li id="mnu_edit" class="dropdown hide">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
-                        _('Edit') }} <span class="caret"></span></a>
-                    <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
-                </li>
-                <li id="mnu_obj" class="dropdown ">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
-                        _('Object') }} <span class="caret"></span></a>
-                    <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
-                </li>
-                <li id="mnu_management" class="dropdown hide">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
-                        _('Management') }} <span class="caret"></span></a>
-                    <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
-                </li>
-                <li id="mnu_tools" class="dropdown hide">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
-                        _('Tools') }} <span class="caret"></span></a>
-                    <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
-                </li>
-                <li id="mnu_help" class="dropdown hide">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
-                        _('Help') }} <span class="caret"></span></a>
-                    <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
-                </li>
-            </ul>
-            {% if config.SERVER_MODE %}
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"></a>
-                    <ul class="dropdown-menu navbar-inverse">
-                        <li>
-                            <a href="#" onclick="pgAdmin.Browser.UserManagement.change_password(
-                              '{{ url_for('browser.change_password') }}'
-                            )">
-                                {{ _('Change Password') }}
-                            </a>
-                        </li>
-                        <li class="divider"></li>
-                        {% if is_admin %}
-                        <li><a href="#" onclick="pgAdmin.Browser.UserManagement.show_users()">{{ _('Users') }}</a></li>
-                        <li class="divider"></li>
-                        {% endif %}
-                        <li><a href="{{ url_for('security.logout') }}?next={{url_for('browser.index')}}">{{ _('Logout') }}</a></li>
-                    </ul>
-                </li>
-            </ul>
-            {% endif %}
-        </div>
-
+        <ul class="navbar-nav mr-auto">
+            <li id="mnu_file" class="nav-item active dropdown d-none">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
+                    _('File') }} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu"></ul>
+            </li>
+            <li id="mnu_edit" class="nav-item active dropdown d-none">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
+                    _('Edit') }} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu"></ul>
+            </li>
+            <li id="mnu_obj" class="nav-item active dropdown ">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
+                    _('Object') }} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu"></ul>
+            </li>
+            <li id="mnu_management" class="nav-item active dropdown d-none">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
+                    _('Management') }} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu"></ul>
+            </li>
+            <li id="mnu_tools" class="nav-item active dropdown d-none">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
+                    _('Tools') }} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu"></ul>
+            </li>
+            <li id="mnu_help" class="nav-item active dropdown d-none">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
+                    _('Help') }} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu"></ul>
+            </li>
+        </ul>
+        {% if config.SERVER_MODE %}
+        <ul class="navbar-nav mx-2">
+            <li class="nav-item active dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"
+                   role="button" aria-expanded="false" id="navbar-user"></a>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="pgAdmin.Browser.UserManagement.change_password(
+                          '{{ url_for('browser.change_password') }}'
+                        )">
+                            {{ _('Change Password') }}
+                        </a>
+                    </li>
+                    <li class="dropdown-divider"></li>
+                    {% if is_admin %}
+                    <li><a class="dropdown-item" href="#" onclick="pgAdmin.Browser.UserManagement.show_users()">{{ _('Users') }}</a></li>
+                    <li class="dropdown-divider"></li>
+                    {% endif %}
+                    <li><a class="dropdown-item" href="{{ url_for('security.logout') }}?next={{url_for('browser.index')}}">{{ _('Logout') }}</a></li>
+                </ul>
+            </li>
+        </ul>
+        {% endif %}
     </div>
 </nav>
 

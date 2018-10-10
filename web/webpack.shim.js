@@ -303,5 +303,15 @@ var webpackShimConfig = {
     if (module.rawRequest === undefined) { return false; }
     return this.pgLibs.indexOf(module.rawRequest) !== -1;
   },
+  /* These will be skipped when webpack picks css/scss files recursively to bundle */
+  css_bundle_skip: [
+    './pgadmin/static',
+  ],
+
+  /* These will be included in array formed by recursive traversing for css/scss files */
+  css_bundle_include: [
+    './pgadmin/static/scss/pgadmin.scss',
+    './pgadmin/static/css/pgadmin.css',
+  ],
 };
 module.exports = webpackShimConfig;

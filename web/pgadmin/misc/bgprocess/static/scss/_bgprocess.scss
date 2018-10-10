@@ -1,15 +1,16 @@
+$bgproc-container-pad: 2px;
+
 .ajs-bg-bgprocess > .pg-bg-bgprocess {
   background-color: $color-primary;
   color: $color-fg-inverse;
-  padding: 0px;
-  border-radius: 5px;
+  padding: $bgproc-container-pad;
   text-align: left;
+  font-size: 0.9em;
 }
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-notify-header {
   background-color:  $color-gray-dark;
-  margin-top: 0px;
-  margin-bottom: 5px;
+  margin: (-$bgproc-container-pad) (-$bgproc-container-pad) 5px;
   padding: 5px;
   padding-right: 20px;
   white-space: pre-wrap;
@@ -21,6 +22,7 @@
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-notify-body {
   font-family: $font-family-editor;
   white-space: nowrap;
+  padding: 5px 0px;
 }
 
 .pg-bg-etime {
@@ -43,6 +45,7 @@
   color: $color-gray-lighter;
   text-decoration: underline;
   cursor: pointer;
+  padding: 5px 0px;
 }
 
 .pg-bg-click:hover {
@@ -65,7 +68,7 @@
   background-color: $color-danger-light;
 }
 
-.pg-panel-content div.bg-process-watcher.col-xs-12 {
+.pg-panel-content div.bg-process-watcher {
   height: 100%;
   padding: 0px 0px 0px 0px;
   WebkitTransition: all 1s;
@@ -91,10 +94,12 @@
 
 .pg-panel-content .bg-process-footer {
   border-top: 1px solid $color-gray-light;
-  padding: 10px 15px;
+  padding: 10px 25px;
   position: absolute;
   bottom: 0;
   background-color: $color-gray-lighter;
+  right: 0px;
+  left: 0px;
 }
 
 .pg-panel-content .bg-process-footer b, .bg-process-stats span b {
@@ -103,11 +108,10 @@
 
 .pg-bg-bgprocess .bg-close {
   display: inline-block;
-  position: absolute;
+  position: relative;
   height: 25px;
   width: 25px;
   right: -12px;
-  top: 3px;
   padding: 2px;
   border: 2px solid $color-primary;
   border-radius: 4px;

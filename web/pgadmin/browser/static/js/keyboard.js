@@ -4,6 +4,7 @@ import $ from 'jquery';
 import Mousetrap from 'mousetrap';
 import * as commonUtils from '../../../static/js/utils';
 import dialogTabNavigator from '../../../static/js/dialog_tab_navigator';
+import {default as keyboardFunc} from 'sources/keyboard_shortcuts';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -37,9 +38,7 @@ _.extend(pgBrowser.keyboardNavigation, {
             this.keyboardShortcut.help_shortcut],
         }, // Main menu
         'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward]}, // Main window panels
-        'bindMainMenuLeft': {'shortcuts': 'left', 'bindElem': '.pg-navbar'}, // Main menu
-        'bindMainMenuRight': {'shortcuts': 'right', 'bindElem': '.pg-navbar'}, // Main menu
-        'bindMainMenuUpDown': {'shortcuts': ['up', 'down']}, // Main menu
+        'bindSubMenuClose': {'shortcuts': ['esc','enter']},
         'bindLeftTree': {'shortcuts': this.keyboardShortcut.left_tree_shortcut}, // Main menu,
         'bindSubMenuQueryTool': {'shortcuts': this.keyboardShortcut.sub_menu_query_tool}, // Sub menu - Open Query Tool,
         'bindSubMenuViewData': {'shortcuts': this.keyboardShortcut.sub_menu_view_data}, // Sub menu - Open View Data,
@@ -58,9 +57,37 @@ _.extend(pgBrowser.keyboardNavigation, {
     _.each(self.shortcutMethods, (keyCombo, callback) => {
       self._bindWithMousetrap(keyCombo.shortcuts, self[callback], keyCombo.bindElem);
     });
+
+
+    /* Dropdown submenu was not working properly for up/down arrow keys.
+     * So up/down/right/left events for dropdown were removed from Mousetrap and were
+     * handled manually.
+     */
+    const LEFT_KEY = 37,
+      UP_KEY = 38,
+      RIGHT_KEY = 39,
+      DOWN_KEY = 40;
+
+    $('.pg-navbar').on('keydown', (event)=> {
+      switch(event.keyCode) {
+      case LEFT_KEY:
+        self.bindMainMenuLeft(event);
+        break;
+      case UP_KEY:
+        self.bindMainMenuUpDown(event, 'up');
+        break;
+      case RIGHT_KEY:
+        self.bindMainMenuRight(event);
+        break;
+      case DOWN_KEY:
+        self.bindMainMenuUpDown(event, 'down');
+        break;
+      }
+    });
   },
   _bindWithMousetrap: function(shortcuts, callback, bindElem) {
     const self = this;
+    Mousetrap.unbind(shortcuts);
     if (bindElem) {
       const elem = document.querySelector(bindElem);
       Mousetrap(elem).bind(shortcuts, function() {
@@ -71,6 +98,15 @@ _.extend(pgBrowser.keyboardNavigation, {
         callback.apply(self, arguments);
       });
     }
+  },
+  unbindShortcuts: function() {
+    // Reset previous events on each instance
+    const self = this;
+    _.each(self.mousetrapInstances, (obj) => {
+      obj['instance'].reset();
+    });
+    // Clear already processed events
+    self.mousetrapInstances = [];
   },
   bindMainMenu: function(event, combo) {
     const shortcut_obj = this.keyboardShortcut;
@@ -106,48 +142,85 @@ _.extend(pgBrowser.keyboardNavigation, {
     }, 1000);
   },
   bindMainMenuLeft: function(event) {
-    let prevMenu;
-    if ($(event.target).hasClass('menu-link')) { // Menu items
-      prevMenu = $(event.target).parent().parent().parent().prev('.dropdown');
-    }
-    else if ($(event.target).parent().hasClass('dropdown-submenu')) { // Sub menu
-      $(event.target).parent().toggleClass('open');
-      return;
-    }
-    else { //Menu headers
-      prevMenu = $(event.target).parent().prev('.dropdown');
-    }
+    if ($(event.target).hasClass('nav-link')) { // Menu items
+      let currNavMenu = $(event.target).closest('.nav-item');
+      keyboardFunc._stopEventPropagation(event);
 
-    if (prevMenu.hasClass('hide')) prevMenu = prevMenu.prev('.dropdown'); // Skip hidden menus
+      currNavMenu = currNavMenu.prev('.nav-item');
+      // Skip hidden menus
+      while(currNavMenu.hasClass('d-none')) {
+        currNavMenu = currNavMenu.prev('.nav-item');
+      }
 
-    prevMenu.find('a:first').dropdown('toggle');
+      currNavMenu.find('.dropdown-toggle').first().dropdown('toggle');
+
+    } else if($(event.target).closest('.dropdown-menu').length > 0) {
+      let currLi = $(event.target).closest('li');
+      keyboardFunc._stopEventPropagation(event);
+      /*close submenu*/
+      let currMenu = currLi.closest('.dropdown-menu');
+      if(currMenu.closest('.dropdown-submenu').length > 0) {
+        currMenu.removeClass('show');
+        currLi = currMenu.closest('.dropdown-submenu');
+        currLi.find('.dropdown-item').trigger('focus');
+      }
+    }
   },
   bindMainMenuRight: function(event) {
-    let nextMenu;
-    if ($(event.target).hasClass('menu-link')) { // Menu items
-      nextMenu = $(event.target).parent().parent().parent().next('.dropdown');
-    }
-    else if ($(event.target).parent().hasClass('dropdown-submenu')) { // Sub menu
-      $(event.target).parent().toggleClass('open');
-      return;
-    }
-    else { //Menu headers
-      nextMenu = $(event.target).parent().next('.dropdown');
-    }
+    if ($(event.target).hasClass('nav-link')) { // Menu items
+      let currNavMenu = $(event.target).closest('.nav-item');
+      keyboardFunc._stopEventPropagation(event);
 
-    if (nextMenu.hasClass('hide')) nextMenu = nextMenu.next('.dropdown'); // Skip hidden menus
+      currNavMenu = currNavMenu.next('.nav-item');
+      // Skip hidden menus
+      while(currNavMenu.hasClass('d-none')) {
+        currNavMenu = currNavMenu.next('.nav-item');
+      }
 
-    nextMenu.find('a:first').dropdown('toggle');
+      currNavMenu.find('.dropdown-toggle').first().dropdown('toggle');
+    } else if($(event.target).closest('.dropdown-menu').length > 0) {
+      let currLi = $(event.target).closest('li');
+      keyboardFunc._stopEventPropagation(event);
+
+      /*open submenu if any*/
+      if(currLi.hasClass('dropdown-submenu')){
+        currLi.find('.dropdown-menu').addClass('show');
+        currLi = currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
+      }
+    }
   },
   bindMainMenuUpDown: function(event, combo) {
     // Handle Sub-menus
-    if (combo === 'up' && $(event.target).parent().prev().prev('.dropdown-submenu').length > 0) {
-      $(event.target).parent().prev().prev('.dropdown-submenu').find('a:first').trigger('focus');
-    } else {
-      if ($(event.target).parent().hasClass('dropdown-submenu')) {
-        $(event.target).parent().parent().parent().find('a:first').dropdown('toggle');
-        $(event.target).parent().parent().children().eq(2).find('a:first').trigger('focus');
+    if($(event.target).closest('.dropdown-menu').length > 0) {
+      keyboardFunc._stopEventPropagation(event);
+      let currLi = $(event.target).closest('li');
+      /*close all the submenus on movement*/
+      $(event.target).closest('.dropdown-menu').find('.show').removeClass('show');
+
+      if(combo === 'up') {
+        currLi = currLi.prev();
       }
+      else if(combo === 'down'){
+        currLi = currLi.next();
+      }
+
+      /*do not focus on divider and disabled */
+      while(currLi.hasClass('dropdown-divider')
+        || currLi.find('.dropdown-item').first().hasClass('disabled')) {
+        if(combo === 'up') {
+          currLi = currLi.prev();
+        }
+        else if(combo === 'down'){
+          currLi = currLi.next();
+        }
+      }
+      currLi.find('.dropdown-item').trigger('focus');
+    }
+  },
+  bindSubMenuClose: function() {
+    if($(event.target).hasClass('dropdown-item')
+        && $(event.target).closest('.dropdown-submenu').length > 0) {
+      $(event.target).closest('.dropdown').find('.dropdown-submenu .dropdown-menu').removeClass('show');
     }
   },
   bindLeftTree: function() {

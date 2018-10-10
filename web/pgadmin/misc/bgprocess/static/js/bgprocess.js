@@ -247,16 +247,16 @@ define('misc.bgprocess', [
         if (self.notify && !self.details) {
           if (!self.notifier) {
             var header = $('<div></div>', {
-                class: 'h5 pg-bg-notify-header',
+                class: 'pg-bg-notify-header',
               }).append($('<span></span>').text(_.unescape(self.desc))),
-              content = $('<div class="pg-bg-bgprocess row"></div>').append(
+              content = $('<div class="pg-bg-bgprocess"></div>').append(
                 header
               ).append(
                 $('<div></div>', {
-                  class: 'pg-bg-notify-body h6',
+                  class: 'pg-bg-notify-body',
                 }).append(
                   $('<div></div>', {
-                    class: 'pg-bg-start col-xs-12',
+                    class: 'pg-bg-start',
                   }).append(
                     $('<div></div>').text(self.stime.toString())
                   ).append(
@@ -265,7 +265,7 @@ define('misc.bgprocess', [
                 )
               ),
               for_details = $('<div></div>', {
-                class: 'col-xs-12 text-center pg-bg-click h6',
+                class: 'text-center pg-bg-click',
               }).append(
                 $('<span></span>').text(gettext('Click here for details.'))
               ).appendTo(content),
@@ -274,10 +274,12 @@ define('misc.bgprocess', [
               ).appendTo(header);
 
             $('<div></div>', {
-              class: 'pg-bg-status col-xs-12 h5 ' + ((self.exit_code === 0) ?
+              class: 'pg-bg-status ' + ((self.exit_code === 0) ?
                 'bg-success' : (self.exit_code == 1) ?
                 'bg-failed' : ''),
             }).appendTo(content);
+
+            $('<div></div>').appendTo(content);
 
             self.container = content;
             self.notifier = Alertify.notify(
@@ -534,23 +536,23 @@ define('misc.bgprocess', [
           showTitle: true,
           isCloseable: true,
           isPrivate: true,
-          content: '<div class="bg-process-details col-xs-12">' +
+          content: '<div class="bg-process-details">' +
             '<p class="bg-detailed-desc"></p>' +
             '<div class="bg-process-stats">' +
             '<span><b>' + gettext('Start time') + ': </b>' +
             '<span class="bgprocess-start-time"></span>' +
             '</span></div>' +
             '</div>' +
-            '<div class="bg-process-watcher col-xs-12">' +
+            '<div class="bg-process-watcher">' +
             '</div>' +
-            '<div class="bg-process-footer col-xs-12">' +
-            '<div class="bg-process-status col-xs-6">' +
-            '<span><b>' + gettext('Status') + ':</b></span><p></p>' +
-            '</div>' +
-            '<div class="bg-process-exec-time col-xs-6">' +
-            '<div class="exec-div pull-right">' +
-            '<span><b>' + gettext('Execution time') + ':</b></span><p></p>' +
-            '</div>' +
+            '<div class="bg-process-footer row">' +
+              '<div class="bg-process-status col-6">' +
+              '<span><b>' + gettext('Status') + ':</b></span><p></p>' +
+              '</div>' +
+              '<div class="bg-process-exec-time col-6">' +
+              '<div class="exec-div pull-right">' +
+              '<span><b>' + gettext('Execution time') + ':</b></span><p></p>' +
+              '</div>' +
             '</div>' +
             '</div>',
           onCreate: function(myPanel, $container) {

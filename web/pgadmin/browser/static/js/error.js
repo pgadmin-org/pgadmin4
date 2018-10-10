@@ -13,7 +13,7 @@ function(gettext, _, alertify, pgAdmin) {
            ' + gettext('Error message') + '</a>\
         </h4>\
         </div>\
-        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">\
+        <div id="collapseOne" class="panel-collapse collapse show" role="tabpanel" aria-labelledby="headingOne">\
         <div class="panel-body" style="overflow: auto;">' + unescape(message) + '</div>\
         </div>\
         </div>';

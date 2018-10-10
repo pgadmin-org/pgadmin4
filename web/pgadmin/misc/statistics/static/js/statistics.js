@@ -232,7 +232,7 @@ define('misc.statistics', [
                 // notify user if request is taking longer than 1 second
 
                 $msgContainer.text(gettext('Retrieving data from the server...'));
-                $msgContainer.removeClass('hidden');
+                $msgContainer.removeClass('d-none');
                 if (self.grid) {
                   self.grid.remove();
                 }
@@ -265,17 +265,17 @@ define('misc.statistics', [
               $gridContainer.empty();
               $gridContainer.append(self.grid.$el);
 
-              if (!$msgContainer.hasClass('hidden')) {
-                $msgContainer.addClass('hidden');
+              if (!$msgContainer.hasClass('d-none')) {
+                $msgContainer.addClass('d-none');
               }
-              $gridContainer.removeClass('hidden');
+              $gridContainer.removeClass('d-none');
 
             } else if (res.info) {
-              if (!$gridContainer.hasClass('hidden')) {
-                $gridContainer.addClass('hidden');
+              if (!$gridContainer.hasClass('d-none')) {
+                $gridContainer.addClass('d-none');
               }
               $msgContainer.text(res.info);
-              $msgContainer.removeClass('hidden');
+              $msgContainer.removeClass('d-none');
             }
           })
           .fail(function(xhr, error, message) {
@@ -302,9 +302,9 @@ define('misc.statistics', [
       }
       if (msg != '') {
         // Hide the grid container and show the default message container
-        if (!$gridContainer.hasClass('hidden'))
-          $gridContainer.addClass('hidden');
-        $msgContainer.removeClass('hidden');
+        if (!$gridContainer.hasClass('d-none'))
+          $gridContainer.addClass('d-none');
+        $msgContainer.removeClass('d-none');
 
         $msgContainer.text(msg);
       }

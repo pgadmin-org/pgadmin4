@@ -34,7 +34,7 @@ define([
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
     ].join('\n')),
-    className: 'pgadmin-control-group form-group col-xs-6',
+    className: 'pgadmin-control-group form-group col-6',
   });
 
   // Main model for Maintenance functionality
@@ -80,8 +80,8 @@ define([
       ],
       control: Backform.RadioControl.extend({
         template: _.template([
-          '<label class="control-label col-sm-4 col-xs-12"><%=label%></label>',
-          '<div class="pgadmin-controls col-xs-12 col-sm-8 btn-group pg-maintenance-op" data-toggle="buttons">',
+          '<label class="control-label col-sm-4 col-12"><%=label%></label>',
+          '<div class="pgadmin-controls col-12 col-sm-8 btn-group pg-maintenance-op" data-toggle="buttons">',
           ' <% for (var i=0; i < options.length; i++) { %>',
           ' <% var option = options[i]; %>',
           ' <label class="btn btn-primary<% if (i == 0) { %> active<%}%>">',
@@ -283,8 +283,8 @@ define([
             setup: function() {
               return {
                 buttons: [{
-                  text: '',
-                  className: 'btn btn-default pull-left fa fa-lg fa-info',
+                  text: '<span class="fa fa-lg fa-info"></span>',
+                  className: 'btn btn-default pull-left',
                   attrs: {
                     name: 'object_help',
                     type: 'button',
@@ -292,9 +292,9 @@ define([
                     label: gettext('Maintenance'),
                   },
                 }, {
-                  text: '',
+                  text: '<span class="fa fa-lg fa-question"></span>',
                   key: 112,
-                  className: 'btn btn-default pull-left fa fa-lg fa-question',
+                  className: 'btn btn-default pull-left',
                   attrs: {
                     name: 'dialog_help',
                     type: 'button',

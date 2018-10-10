@@ -8,7 +8,7 @@ describe('ExplainStatistics', () => {
 
   beforeEach(function() {
     statsModel = new StatisticsModel();
-    statsDiv = '<div class="pg-explain-stats-area btn-group hidden"></div>';
+    statsDiv = '<div class="pg-explain-stats-area btn-group d-none"></div>';
     tooltipContainer = $('<div></div>', {
       id: 'toolTip',
       class: 'pgadmin-explain-tooltip',
@@ -23,7 +23,7 @@ describe('ExplainStatistics', () => {
       statsModel.set('Triggers', []);
       statsModel.set_statistics(tooltipContainer);
 
-      expect($('.pg-explain-stats-area').hasClass('hidden')).toBe(true);
+      expect($('.pg-explain-stats-area').hasClass('d-none')).toBe(true);
     });
   });
 
@@ -36,7 +36,7 @@ describe('ExplainStatistics', () => {
     });
 
     it('Statistics button should be visible', () => {
-      expect($('.pg-explain-stats-area').hasClass('hidden')).toBe(false);
+      expect($('.pg-explain-stats-area').hasClass('d-none')).toBe(false);
     });
 
     it('Mouse over event should be trigger', () => {
@@ -65,7 +65,7 @@ describe('ExplainStatistics', () => {
     });
 
     it('Statistics button should be visible', () => {
-      expect($('.pg-explain-stats-area').hasClass('hidden')).toBe(false);
+      expect($('.pg-explain-stats-area').hasClass('d-none')).toBe(false);
     });
 
     it('Mouse over event should be trigger', () => {

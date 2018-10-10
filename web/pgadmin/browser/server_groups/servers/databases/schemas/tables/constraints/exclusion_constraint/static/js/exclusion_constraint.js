@@ -391,12 +391,12 @@ define('pgadmin.node.exclusion_constraint', [
           '<div class="subnode-header-form">',
           ' <div class="container-fluid">',
           '  <div class="row">',
-          '   <div class="col-xs-4">',
+          '   <div class="col-4">',
           '    <label class="control-label"><%-column_label%></label>',
           '   </div>',
-          '   <div class="col-xs-4" header="column"></div>',
-          '   <div class="col-xs-4">',
-          '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
+          '   <div class="col-4" header="column"></div>',
+          '   <div class="col-4">',
+          '     <button class="btn btn-sm-sq btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
           '   </div>',
           '  </div>',
           ' </div>',
@@ -443,7 +443,7 @@ define('pgadmin.node.exclusion_constraint', [
         var self = this,
           titleTmpl = _.template('<div class=\'subnode-header\'></div>'),
           $gridBody =
-          $('<div class=\'pgadmin-control-group backgrid form-group col-xs-12 object subnode\'></div>').append(
+          $('<div class=\'pgadmin-control-group backgrid form-group col-12 object subnode\'></div>').append(
             // Append titleTmpl only if create/edit mode
             data.mode !== 'properties' ? titleTmpl({label: data.label}) : ''
           );

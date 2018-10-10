@@ -14,7 +14,7 @@ let StatisticsModel = Backbone.Model.extend({
 
     if (Object.keys(jit_stats).length > 0 ||
         Object.keys(triggers_stats).length > 0) {
-      $('.pg-explain-stats-area').removeClass('hidden');
+      $('.pg-explain-stats-area').removeClass('d-none');
     }
 
     $('.pg-explain-stats-area').on('mouseover', () => {

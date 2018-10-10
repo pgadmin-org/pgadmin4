@@ -12,7 +12,7 @@
     {% endif %}
 </style>
 <div id="main-editor_panel">
-    <div id="fetching_data" class="wcLoadingIconContainer sql-editor-busy-fetching hide">
+    <div id="fetching_data" class="wcLoadingIconContainer sql-editor-busy-fetching d-none">
         <div class="wcLoadingBackground"></div>
         <span class="sql-editor-busy-icon wcLoadingIcon fa fa-spinner fa-pulse"></span>
         <span class="sql-editor-busy-text wcLoadingLabel"></span>
@@ -32,19 +32,19 @@
                         disabled>
                     <i class="fa fa-floppy-o" aria-hidden="true" tabindex="0"></i>
                 </button>
-                <button id="btn-file-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
+                <button id="btn-file-menu-dropdown" type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled
                         tabindex="0">
                     <span class="caret"></span> <span class="sr-only">{{ _('Toggle Dropdown') }}</span>
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a id="btn-file-menu-save" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-file-menu-save" href="#" tabindex="0">
                             <span>{{ _('Save') }}</span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-file-menu-save-as" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-file-menu-save-as" href="#" tabindex="0">
                             <span>{{ _('Save As') }}</span>
                         </a>
                     </li>
@@ -54,7 +54,7 @@
                 <button id="btn-find" type="button" class="btn btn-default" title="{{ _('Find (Ctrl/Cmd+F)') }}">
                     <i class="fa fa-search" aria-hidden="true" tabindex="0"></i>
                 </button>
-                <button id="btn-find-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
+                <button id="btn-find-menu-dropdown" type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                         title=""
                         accesskey=""
@@ -63,7 +63,7 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a id="btn-find-menu-find" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-find-menu-find" href="#" tabindex="0">
                             <span> {{ _('Find') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+F)') }}
                             {% else %}
@@ -71,7 +71,7 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-find-menu-find-next" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-find-menu-find-next" href="#" tabindex="0">
                             <span> {{ _('Find Next') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+G)') }}
                             {% else %}
@@ -79,7 +79,7 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-find-menu-find-previous" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-find-menu-find-previous" href="#" tabindex="0">
                             <span> {{ _('Find Previous') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+Shift+G)') }}
                             {% else %}
@@ -87,13 +87,13 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-find-menu-find-persistent" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-find-menu-find-persistent" href="#" tabindex="0">
                             <span>{{ _('Persistent Find') }}</span>
                         </a>
                     </li>
-                    <li class="divider"></li>
+                    <li class="dropdown-divider"></li>
                     <li>
-                        <a id="btn-find-menu-replace" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-find-menu-replace" href="#" tabindex="0">
                             <span> {{ _('Replace') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+Shift+F)') }}
                             {% else %}
@@ -101,13 +101,13 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-find-menu-replace-all" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-find-menu-replace-all" href="#" tabindex="0">
                             <span>{{ _('Replace All') }}</span>
                         </a>
                     </li>
-                    <li class="divider"></li>
+                    <li class="dropdown-divider"></li>
                     <li>
-                        <a id="btn-find-menu-jump" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-find-menu-jump" href="#" tabindex="0">
                             <span>{{ _('Jump (Alt+G)') }}</span>
                         </a>
                     </li>
@@ -144,17 +144,17 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a id="btn-indent-code" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-indent-code" href="#" tabindex="0">
                             <span> {{ _('Indent Selection (Tab)') }} </span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-unindent-code" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-unindent-code" href="#" tabindex="0">
                             <span> {{ _('Unindent Selection (Shift+Tab)') }} </span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-comment-line" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-comment-line" href="#" tabindex="0">
                             <span> {{ _('Inline Comment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+/)') }}
                             {% else %}
@@ -162,7 +162,7 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-uncomment-line" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-uncomment-line" href="#" tabindex="0">
                             <span> {{ _('Inline Uncomment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+.)') }}
                             {% else %}
@@ -170,7 +170,7 @@
                         </a>
                     </li>
                     <li>
-                        <a id="btn-toggle-comment-block" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-toggle-comment-block" href="#" tabindex="0">
                             <span> {{ _('Block Comment/Uncomment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Shift+Cmd+/)') }}
                             {% else %}
@@ -214,13 +214,13 @@
                 </select>
             </div>
 
-            <div class="btn-group" role="group" aria-label="">
+            <div class="btn-group dropdown" role="group" aria-label="">
                 <button id="btn-flash" data-test-selector="execute-refresh-button" type="button" class="btn btn-default" style="width: 40px;"
                         title=""
                         tabindex="0">
                     <i class="fa fa-bolt" aria-hidden="true"></i>
                 </button>
-                <button id="btn-query-dropdown" type="button" class="btn btn-default dropdown-toggle"
+                <button id="btn-query-dropdown" type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                         accesskey=""
                         title=""
@@ -229,59 +229,59 @@
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li>
-                        <a id="btn-flash-menu" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-flash-menu" href="#" tabindex="0">
                             <span></span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-explain" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-explain" href="#" tabindex="0">
                             <span></span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-explain-analyze" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-explain-analyze" href="#" tabindex="0">
                             <span></span>
                         </a>
                     </li>
-                    <li class="divider"></li>
+                    <li class="dropdown-divider"></li>
                     <li class="dropdown-submenu">
-                        <a href="#" tabindex="0">{{ _('Explain Options') }}</a>
+                        <a class="dropdown-item" href="#" tabindex="0">{{ _('Explain Options') }}</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a id="btn-explain-verbose" href="#" class="noclose" tabindex="0">
+                                <a class="dropdown-item" id="btn-explain-verbose" href="#" class="noclose" tabindex="0">
                                     <i class="explain-verbose fa fa-check visibility-hidden" aria-hidden="true"></i>
                                     <span> {{ _('Verbose') }} </span>
                                 </a>
                             </li>
                             <li>
-                                <a id="btn-explain-costs" href="#" class="noclose" tabindex="0">
+                                <a class="dropdown-item" id="btn-explain-costs" href="#" class="noclose" tabindex="0">
                                     <i class="explain-costs fa fa-check visibility-hidden" aria-hidden="true"></i>
                                     <span> {{ _('Costs') }} </span>
                                 </a>
                             </li>
                             <li>
-                                <a id="btn-explain-buffers" href="#" class="noclose" tabindex="0">
+                                <a class="dropdown-item" id="btn-explain-buffers" href="#" class="noclose" tabindex="0">
                                     <i class="explain-buffers fa fa-check visibility-hidden" aria-hidden="true"></i>
                                     <span> {{ _('Buffers') }} </span>
                                 </a>
                             </li>
                             <li>
-                                <a id="btn-explain-timing" href="#" class="noclose" tabindex="0">
+                                <a class="dropdown-item" id="btn-explain-timing" href="#" class="noclose" tabindex="0">
                                     <i class="explain-timing fa fa-check visibility-hidden" aria-hidden="true"></i>
                                     <span> {{ _('Timing') }} </span>
                                 </a>
                             </li>
                         </ul>
                     </li>
-                    <li class="divider"></li>
+                    <li class="dropdown-divider"></li>
                     <li>
-                        <a id="btn-auto-commit" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-auto-commit" href="#" tabindex="0">
                             <i class="auto-commit fa fa-check visibility-hidden" aria-hidden="true"></i>
                             <span> {{ _('Auto commit?') }} </span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-auto-rollback" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-auto-rollback" href="#" tabindex="0">
                             <i class="auto-rollback fa fa-check visibility-hidden" aria-hidden="true"></i>
                             <span> {{ _('Auto rollback?') }} </span>
                         </a>
@@ -305,12 +305,12 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a id="btn-clear" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-clear" href="#" tabindex="0">
                             <span> {{ _('Clear Query Window') }} </span>
                         </a>
                     </li>
                     <li>
-                        <a id="btn-clear-history" href="#" tabindex="0">
+                        <a class="dropdown-item" id="btn-clear-history" href="#" tabindex="0">
                             <span> {{ _('Clear History') }} </span>
                         </a>
                     </li>
@@ -369,12 +369,10 @@
     sqlEditorController.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
       msgDiv.text(msg);
       }).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
-        loadingDiv.removeClass('hide');
+        loadingDiv.removeClass('d-none');
         msgDiv.text(msg);
         }).on('pgadmin-sqleditor:loading-icon:hide', function() {
-          if (!loadingDiv.hasClass('hide')) {
-          loadingDiv.addClass('hide');
-          }
+            loadingDiv.addClass('d-none');
           });
     {% if script_type_url %}
         var script_type_url = '{{ script_type_url }}';

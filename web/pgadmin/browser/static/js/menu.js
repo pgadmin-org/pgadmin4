@@ -55,7 +55,7 @@ define([
         module: this.module || pgAdmin.Browser,
         cb: this.callback,
         data: this.data,
-      }).addClass('menu-link');
+      }).addClass('dropdown-item');
 
       this.is_disabled = this.disabled(node, item);
       if (this.icon) {
@@ -64,53 +64,14 @@ define([
         }));
       }
 
+      url.addClass((this.is_disabled ? ' disabled' : ''));
+
       var textSpan = $('<span data-test="menu-item-text"></span>').text('  ' + this.label);
 
       url.append(textSpan);
 
-      this.$el = $('<li/>')
-        .addClass('menu-item' + (this.is_disabled ? ' disabled' : ''))
-        .append(url);
-
-      this.applyStyle();
+      this.$el = $('<li/>').append(url);
     },
-
-    applyDisabledStyle: function() {
-      var span = this.$el.find('span');
-      var icon = this.$el.find('i');
-
-
-      span.addClass('text-gray');
-      span.removeClass('text-fg-inverse');
-      icon.addClass('text-gray');
-      icon.removeClass('text-fg-inverse');
-    },
-
-    applyEnabledStyle: function() {
-      var element = this.$el;
-      var span = this.$el.find('span');
-
-      span.addClass('text-fg-inverse');
-      span.removeClass('text-gray');
-      element.find('i').addClass('text-fg-inverse');
-      element.find('i').removeClass('text-gray');
-
-      span.on('mouseover',() => {
-        element.addClass('bg-gray-dark');
-      });
-      span.on('mouseout',() => {
-        element.removeClass('bg-gray-dark');
-      });
-    },
-
-    applyStyle: function() {
-      if (this.is_disabled) {
-        this.applyDisabledStyle();
-      } else {
-        this.applyEnabledStyle();
-      }
-    },
-
     /*
      * Updates the enable/disable state of the menu-item based on the current
      * selection using the disabled function. This also creates a object
@@ -118,17 +79,13 @@ define([
      */
     update: function(node, item) {
 
-      if (this.$el && !this.$el.hasClass('disabled')) {
-        this.$el.addClass('disabled');
+      if (this.$el && !this.$el.find('.dropdown-item').hasClass('disabled')) {
+        this.$el.find('.dropdown-item').addClass('disabled');
       }
 
       this.is_disabled = this.disabled(node, item);
       if (this.$el && !this.is_disabled) {
-        this.$el.removeClass('disabled');
-      }
-
-      if (this.$el) {
-        this.applyStyle();
+        this.$el.find('.dropdown-item').removeClass('disabled');
       }
 
       this.context = {
@@ -208,16 +165,16 @@ define([
 
   pgAdmin.Browser.MenuGroup = function(opts, items, prev, ctx) {
     var template = _.template([
-        '<% if (above) { %><hr><% } %>',
-        '<li class="menu-item dropdown dropdown-submenu">',
-        ' <a href="#" class="dropdown-toggle" data-toggle="dropdown">',
+        '<% if (above) { %><li class="dropdown-divider"></li><% } %>',
+        '<li class="dropdown-submenu">',
+        ' <a href="#" class="dropdown-item">',
         '  <% if (icon) { %><i class="<%= icon %>"></i><% } %>',
-        '  <span><%= label %></span>',
+        '  <span class="text-white"><%= label %></span>',
         ' </a>',
-        ' <ul class="dropdown-menu navbar-inverse">',
+        ' <ul class="dropdown-menu bg-dark">',
         ' </ul>',
         '</li>',
-        '<% if (below) { %><hr><% } %>',
+        '<% if (below) { %><li class="dropdown-divider"></li><% } %>',
       ].join('\n')),
       data = {
         'label': opts.label,
@@ -393,7 +350,7 @@ define([
   Menu.DEFAULTS = {};
 
   Menu.prototype.toggle = function(ev) {
-    var $parent = this.$element.closest('.menu-item');
+    var $parent = this.$element.closest('.dropdown-item');
     if ($parent.hasClass('disabled')) {
       ev.preventDefault();
       return false;
@@ -446,8 +403,8 @@ define([
   $(document)
     .on('click.pg.menu.data-api', '[data-toggle^="pg-menu"]', function(ev) {
       var $menu = $(ev.target);
-      if (!$menu.hasClass('menu-link'))
-        $menu = $menu.closest('.menu-link');
+      if (!$menu.hasClass('dropdown-item'))
+        $menu = $menu.closest('.dropdown-item');
       Plugin.call($menu, 'toggle', ev);
     })
     .on(

@@ -1,0 +1,181 @@
+.backgrid > th, .backgrid > td {
+  padding: 2px;
+  font-weight: normal!important;
+}
+
+.subnode > table.backgrid > thead > tr > th:first-child{
+  border-left-color: $color-primary;
+}
+
+.subnode > table.backgrid > thead > tr > th:last-child{
+  border-right-color: $color-primary;
+}
+
+.backgrid .textarea-cell {
+    text-align: left;
+}
+
+.backgrid .textarea-cell.editor textarea {
+    width: 100%;
+    height: auto;
+}
+
+/* Override Backgrid's default z-index */
+.dashboard-tab-container .backgrid-filter .search {
+  z-index: 10 !important;
+}
+
+.dashboard-tab-container .backgrid-filter .clear {
+  z-index: 10 !important;
+}
+
+.backgrid .string-cell.editor input[type=password] {
+  text-align: left;
+}
+
+.backgrid > tbody > td.editor input[type=password] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0 5px;
+  margin: 0;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+}
+
+.subnode > table.backgrid{
+    width: 100%;
+    margin: 0px;
+    padding: 0;
+    margin-bottom: 15px;
+}
+
+.backgrid > thead th{
+    background-color: $color-primary;
+}
+
+.backgrid > thead > th, .backgrid > tbody > td {
+  line-height: 18px;
+}
+
+.backgrid > thead > th {
+    letter-spacing:0.5px
+}
+
+.backgrid > tbody > td {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.backgrid > thead th a {
+    color: $color-fg-inverse;
+    font-size: 12px;
+}
+
+.backgrid > th.object {
+    width: 30px;
+}
+
+.backgrid.presentation {
+    background-color: $color-gray-lighter;
+}
+
+.backgrid.presentation td.renderable {
+    padding: 6px 3px 3px 3px;
+    font-size: 12px;
+}
+
+.backgrid:not(.presentation) td.renderable:not(.editable):not(.delete-cell) {
+    background-color: $color-gray-lighter;
+}
+
+.backgrid tr.header td.renderable:not(.editable):not(.delete-cell) {
+    background-color: $color-gray-light;
+}
+
+.sql-editor-grid-container .backgrid > thead > th.renderable,
+.sql-editor-grid-container .backgrid > tbody > td.renderable {
+    white-space: pre-wrap;
+}
+
+table.backgrid tr.new {
+  background-color: rgba($color-primary, 0.1) !important;
+  box-sizing: border-box;
+  outline: 1px solid rgba($color-primary, 0.8);
+  outline-offset: -1px;
+}
+
+.pg-panel-depends-container >table.backgrid.table-bordered {
+  border: 0px;
+}
+
+.alertify_tools_dialog_backgrid_properties {
+  top: 43px !important;
+}
+
+.pg-panel-statistics-container >table.backgrid.table-bordered {
+  border: 0px;
+}
+
+table.backgrid {
+  overflow: auto;
+}
+
+.backgrid td.editor input[type=password] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0 5px;
+  margin: 0;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+}
+
+.backgrid td.editor input[type=password]::-ms-clear {
+  display: none;
+}
+
+.enable-selection, .form-control, .backgrid td, .ajs-content {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.backgrid tr th button {
+  background: none;
+  border: none;
+  color: $color-fg-inverse;
+  padding: 0;
+}
+
+/* Latest backgrid adds column name like `label` to td element, override color*/
+.backgrid td.label {
+  color:  $color-gray-dark;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+span.form-control:disabled {
+  @extend .form-control:disabled
+}

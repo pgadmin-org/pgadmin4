@@ -1,0 +1,11 @@
+@font-face {
+  font-family: "Open Sans";
+  src: url("~top/static/fonts/OpenSans-Regular.ttf");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("~top/static/fonts/SourceCodePro-Regular.ttf");
+  font-weight: normal;
+  font-style: normal; }

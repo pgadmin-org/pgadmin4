@@ -106,7 +106,7 @@
   .alert-text {
     flex-grow: 1;
     border: 1px solid $color-danger-light;
-    padding: 7px 12px 6px 10px;
+    padding: 6px 12px 6px 10px;
     border-left: none;
     -moz-user-select: text;
     -khtml-user-select: text;
@@ -161,4 +161,19 @@
   .alert-info {
     width: 90%;
   }
+}
+
+/* To align 'X' in alert on login page */
+.alert-dismissable, .alert-dismissible {
+  padding-right: 35px !important;
+}
+
+.alert-info-panel {
+  border: 2px solid $color-gray-light;
+  margin-top: 2em;
+  padding: 5px 5px;
+  background: $color-gray-lighter;
+  border-radius: 5px;
+  height: 8em;
+  overflow: scroll;
 }

@@ -5,23 +5,22 @@
 <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
     {{ login_user_form.hidden_tag() }}
     {% set user_language = request.cookies.get('PGADMIN_LANGUAGE') or 'en' %}
-    <fieldset>
-        {{ render_field_with_errors(login_user_form.email, "text") }}
-        {{ render_field_with_errors(login_user_form.password, "password") }}
-        <input class="btn btn-lg btn-success btn-block" type="submit" value="{{ _('Login') }}"
-               title="{{ _('Login') }}">
-        <div class="pgadmin-control-group form-group pg-el-xs-12 user-language">
-            <label class="help-block pg-el-sm-3">{{ _("Language") }}</label>
-            <div class="pgadmin-controls pg-el-sm-9">
-                <select class="form-control" name="language" value="{{user_language}}">
-                    {% for key, lang in config.LANGUAGES.items() %}
-                    <option value="{{key}}" {% if user_language == key %}selected{% endif %}>{{lang}}</option>
-                    {% endfor %}
-                 </select>
-            </div>
+    {{ render_field_with_errors(login_user_form.email, "text") }}
+    {{ render_field_with_errors(login_user_form.password, "password") }}
+    <button class="btn btn-lg btn-primary btn-block" type="submit" value="{{ _('Login') }}">{{ _('Login') }}</button>
+    <div class="form-group row mb-3 c user-language">
+        <label class="help-block col-sm-3">{{ _("Language") }}</label>
+        <div class="col-sm-9">
+            <select class="form-control" name="language" value="{{user_language}}">
+                {% for key, lang in config.LANGUAGES.items() %}
+                <option value="{{key}}" {% if user_language == key %}selected{% endif %}>{{lang}}</option>
+                {% endfor %}
+             </select>
         </div>
-    </fieldset>
+    </div>
 </form>
-<span class="help-block">{{ _('Forgotten your <a href="%(url)s">password</a>?', url=url_for('browser.forgot_password')) }}</span>
+<div>
+    <span class="help-block">{{ _('Forgotten your <a href="%(url)s">password</a>?', url=url_for('browser.forgot_password')) }}</span>
+</div>
 {% endif %}
 {% endblock %}

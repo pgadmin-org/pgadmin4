@@ -5,14 +5,11 @@
 .file_manager #uploader {
   padding: 2px 4px;
   border-width: 1px;
-  display: block;
-  text-align: right;
   height: auto;
   min-height:30px;
   max-height: 80px;
   overflow: hidden;
   border-bottom: 1px;
-  top: 35px;
 }
 
 #uploader .input-path {
@@ -207,15 +204,10 @@ button.list span {
   top: 0;
 }
 
-.file_manager .btn-group {
-  margin: 2px 3px;
-}
-
 .file_manager .fileinfo {
-  height: calc(100% - 109px);
+  height: calc(100% - 90px);
   overflow: hidden;
   position: relative;
-  top: 35px;
 }
 
 .file_manager .fileinfo #contents{
@@ -224,7 +216,7 @@ button.list span {
   display: inline-block;
   height: 100%;
   width: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .file_manager .fileinfo #contents thead tr{
@@ -368,7 +360,7 @@ a.dz-remove {
 .file_listing .no_folder_found {
   text-align: center;
   position: absolute;
-  top: 35px;
+  top: 50px;
   width: 100%;
   font-size: 14px;
 }
@@ -414,4 +406,46 @@ div.change_file_types span {
     background-position: center center !important;
     background-repeat: no-repeat !important;
     background-image: url('data:image/gif;base64,R0lGODlhFAAUAKEAAO7u7lpaWgAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQBCgACACwAAAAAFAAUAAACQZRvoIDtu1wLQUAlqKTVxqwhXIiBnDg6Y4eyx4lKW5XK7wrLeK3vbq8J2W4T4e1nMhpWrZCTt3xKZ8kgsggdJmUFACH5BAEKAAIALAcAAAALAAcAAAIUVB6ii7jajgCAuUmtovxtXnmdUAAAIfkEAQoAAgAsDQACAAcACwAAAhRUIpmHy/3gUVQAQO9NetuugCFWAAAh+QQBCgACACwNAAcABwALAAACE5QVcZjKbVo6ck2AF95m5/6BSwEAIfkEAQoAAgAsBwANAAsABwAAAhOUH3kr6QaAcSrGWe1VQl+mMUIBACH5BAEKAAIALAIADQALAAcAAAIUlICmh7ncTAgqijkruDiv7n2YUAAAIfkEAQoAAgAsAAAHAAcACwAAAhQUIGmHyedehIoqFXLKfPOAaZdWAAAh+QQFCgACACwAAAIABwALAAACFJQFcJiXb15zLYRl7cla8OtlGGgUADs=') !important;
+}
+
+.file_selection_ctrl .create_input span {
+  padding-right: 10px;
+  font-weight: bold;
+}
+
+.file_selection_ctrl .create_input input[type="text"] {
+  height: 23px;
+  padding: 2px;
+  width: 194px;
+  border-radius: 2px;
+}
+
+.file_selection_ctrl .browse_file_input {
+  display: inline-block;
+  width: 220px;
+  margin-right: 0;
+}
+
+.file_selection_ctrl button.select_item:focus,
+.file_selection_ctrl button.select_item:active {
+  outline: none;
+  box-shadow: none;
+}
+
+.file_selection_ctrl input[type="text"] {
+  width: calc(100% - 17px);
+  border: none;
+  margin-left: -6px;
+  margin-top: -3px;
+  height: 32px;
+  padding-left: 5px;
+}
+
+/* Overriding the css for the dropzone */
+.dropzone .dz-preview .dz-progress {
+  height: initial;
+}
+
+.dropzone .dz-preview .dz-progress .dz-upload {
+  bottom: initial;
 }

@@ -1306,7 +1306,7 @@ define('tools.querytool', [
     _closeDropDown: function(ev) {
       var target = ev && (ev.currentTarget || ev.target);
       if (target) {
-        $(target).closest('.open').removeClass('open').find('.dropdown-backdrop').remove();
+        $(target).closest('.show').removeClass('show').find('.dropdown-backdrop').remove();
       }
     },
 
@@ -1480,7 +1480,7 @@ define('tools.querytool', [
 
     // Callback function for cancel button click.
     on_cancel: function() {
-      $('#filter').addClass('hidden');
+      $('#filter').addClass('d-none');
       $('#editor-panel').removeClass('sql-editor-busy-fetching');
     },
 
@@ -3279,7 +3279,7 @@ define('tools.querytool', [
           setTimeout(
             function() {
               if (res.data.status) {
-                $('#filter').addClass('hidden');
+                $('#filter').addClass('d-none');
                 $('#editor-panel').removeClass('sql-editor-busy-fetching');
                 // Refresh the sql grid
                 queryToolActions.executeQuery(self);

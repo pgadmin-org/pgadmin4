@@ -128,9 +128,9 @@ class Message(IProcessDesc):
         if self.data['op'] == "CLUSTER":
             res = _('CLUSTER')
 
-        res = '<div class="h5">' + html.safe_str(res)
+        res = '<div>' + html.safe_str(res)
 
-        res += '</div><div class="h5">'
+        res += '</div><div>'
         res += html.safe_str(
             _("Running Query:")
         )

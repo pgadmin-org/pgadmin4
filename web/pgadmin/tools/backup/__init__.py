@@ -158,7 +158,7 @@ class BackupMessage(IProcessDesc):
     def details(self, cmd, args):
         name, host, port = self.get_server_details()
 
-        res = '<div class="h5">'
+        res = '<div>'
 
         if self.backup_type == BACKUP.OBJECT:
             res += _(
@@ -193,7 +193,7 @@ class BackupMessage(IProcessDesc):
             # It should never reach here.
             res += "Backup"
 
-        res += '</div><div class="h5">'
+        res += '</div><div>'
         res += _("Running command:")
         res += '</b><br><span class="pg-bg-cmd enable-selection">'
         res += html.safe_str(cmd + self.cmd)

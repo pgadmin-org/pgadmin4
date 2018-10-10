@@ -26,12 +26,15 @@
 
 .sql_field_layout .CodeMirror-linenumber {
     border-right: 1px solid $color-gray-lighter;
-    background-color: $color-gray-lighter;
+}
+
+.CodeMirror-linenumber {
+    font-size: $font-size-base;
 }
 
 /* class to disable Codemirror editor */
 .cm_disabled {
-  background: $color-gray-lighter;
+  background: $input-disabled-bg;
 }
 
 /* make syntax-highlighting bold */

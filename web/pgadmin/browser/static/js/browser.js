@@ -146,7 +146,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container hidden"></div></div>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container d-none"></div></div>',
         events: panelEvents,
       }),
       // Reversed engineered SQL for the object
@@ -167,7 +167,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container hidden"></div></div>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container d-none"></div></div>',
         events: panelEvents,
       }),
       // Dependents of the object
@@ -178,7 +178,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container hidden"></div></div>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container d-none"></div></div>',
         events: panelEvents,
       }),
     },
@@ -279,7 +279,7 @@ define('pgadmin.browser', [
         // menu navigation bar
         navbar = $('#navbar-menu > ul').first(),
         // Drop down menu for objects
-        $obj_mnu = navbar.find('li#mnu_obj > ul.dropdown-menu').first(),
+        $obj_mnu = navbar.find('li#mnu_obj .dropdown-menu').first(),
         // data for current selected object
         d = obj.tree.itemData(item),
         update_menuitem = function(m) {
@@ -320,7 +320,7 @@ define('pgadmin.browser', [
         // Create a dummy 'no object seleted' menu
         var create_submenu = pgAdmin.Browser.MenuGroup(
           obj.menu_categories['create'], [{
-            $el: $('<li class="menu-item disabled"><a href="#">' + gettext('No object selected') + '</a></li>'),
+            $el: $('<li><a class="dropdown-item text-white disabled" href="#">' + gettext('No object selected') + '</a></li>'),
             priority: 1,
             category: 'create',
             update: function() {},
@@ -611,11 +611,11 @@ define('pgadmin.browser', [
           if (pgAdmin.Browser.MenuCreator(
             $dropdown, obj.menus[o.menu], obj.menu_categories
           )) {
-            $mnu.removeClass('hide');
+            $mnu.removeClass('d-none');
           }
         });
 
-      navbar.children('#mnu_obj').removeClass('hide');
+      navbar.children('#mnu_obj').removeClass('d-none');
       obj.enable_disable_menus();
     },
     // General function to handle callbacks for object or dialog help.

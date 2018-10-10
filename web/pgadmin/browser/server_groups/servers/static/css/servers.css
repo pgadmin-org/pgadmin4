@@ -1,0 +1,8 @@
+.icon-server-connecting {
+  background-image: url('~top/static/img/load-node.gif') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

@@ -217,6 +217,11 @@ function keyboardShortcutsQueryTool(
     queryToolActions.uncommentLineCode(sqlEditorController);
   }  else if (keyCode == ESC_KEY) {
     queryToolActions.focusOut(sqlEditorController);
+    /*Apply only for sub-dropdown*/
+    if($(event.target).hasClass('dropdown-item')
+        && $(event.target).closest('.dropdown-submenu').length > 0) {
+      $(event.target).closest('.dropdown-submenu').find('.dropdown-menu').removeClass('show');
+    }
   } else if(this.validateShortcutKeys(nextPanelKeys, event)) {
     this._stopEventPropagation(event);
     panel_id = this.getInnerPanel(sqlEditorController.container, 'right');
@@ -229,22 +234,26 @@ function keyboardShortcutsQueryTool(
       this._stopEventPropagation(event);
       let currLi = $(event.target).closest('li');
       /*close all the submenus on movement*/
-      $(event.target).closest('.dropdown-menu').find('.open').removeClass('open');
+      $(event.target).closest('.dropdown-menu').find('.show').removeClass('show');
 
-      /*do not focus on divider*/
-      let isDivider = true;
-      while(isDivider) {
+      if(keyCode === UP_KEY) {
+        currLi = currLi.prev();
+      }
+      else if(keyCode === DOWN_KEY){
+        currLi = currLi.next();
+      }
+
+      /*do not focus on divider and disabled */
+      while(currLi.hasClass('dropdown-divider')
+        || currLi.find('.dropdown-item').first().hasClass('disabled')) {
         if(keyCode === UP_KEY) {
           currLi = currLi.prev();
         }
         else if(keyCode === DOWN_KEY){
           currLi = currLi.next();
         }
-        if(!currLi.hasClass('divider')) {
-          isDivider = false;
-        }
       }
-      currLi.find('a:first').trigger('focus');
+      currLi.find('.dropdown-item').trigger('focus');
     }
   } else if(keyCode === LEFT_KEY || keyCode === RIGHT_KEY) {
     /*Apply only for dropdown*/
@@ -255,21 +264,20 @@ function keyboardShortcutsQueryTool(
       if(keyCode === RIGHT_KEY) {
         /*open submenu if any*/
         if(currLi.hasClass('dropdown-submenu')){
-          currLi.addClass('open');
-          currLi = currLi.find('.dropdown-menu li:first-child');
+          currLi.find('.dropdown-menu').addClass('show');
+          currLi = currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
         }
       } else if(keyCode === LEFT_KEY) {
         /*close submenu*/
-        let currLiMenu = currLi.closest('.dropdown-menu');
-        if(currLiMenu.closest('.dropdown-submenu').length > 0) {
-          currLiMenu.closest('.dropdown-submenu').removeClass('open');
-          currLi = currLiMenu.closest('.dropdown-submenu');
+        let currMenu = currLi.closest('.dropdown-menu');
+        if(currMenu.closest('.dropdown-submenu').length > 0) {
+          currMenu.removeClass('show');
+          currLi = currMenu.closest('.dropdown-submenu');
+          currLi.find('.dropdown-item').trigger('focus');
         }
       }
-      currLi.find('a:first').trigger('focus');
     }
   }
-
 
   return panel_id;
 }
