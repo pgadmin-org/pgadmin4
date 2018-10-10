@@ -11,14 +11,13 @@ from __future__ import print_function
 import sys
 
 from selenium.common.exceptions import StaleElementReferenceException
-
-import config
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+import config
 
 
 class QueryToolFeatureTest(BaseFeatureTest):
@@ -649,7 +648,8 @@ SELECT 1, pg_sleep(300)"""
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
             '//div[contains(@class, "sql-editor-message") and '
-            'contains(string(), "canceling statement due to user request")]'
+            '(contains(string(), "canceling statement due to user request") '
+            'or contains(string(), "Execution Cancelled!"))]'
         )
 
     def _supported_server_version(self):
