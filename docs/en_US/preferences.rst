@@ -127,9 +127,9 @@ Use the fields on the *Help* panel to specify the location of help files.
 
 Please note: the default help paths include the *VERSION* placeholder; the $VERSION$ placeholder will be replaced by the current database version.
 
-**The SQL Editor Node**
+**The Query Tool Node**
 
-Expand the *SQL Editor* node to access panels that allow you to specify your preferences for the SQL Editor tool.
+Expand the *Query Tool* node to access panels that allow you to specify your preferences for the Query Editor tool.
 
 .. image:: images/preferences_sql_auto_completion.png
     :alt: Preferences dialog sqleditor auto completion option
@@ -150,13 +150,13 @@ Use the fields on the *CSV Output* panel to control the CSV output.
 .. image:: images/preferences_sql_display.png
     :alt: Preferences dialog sqleditor display options
 
-Use the fields on the *Display* panel to specify your preferences for the SQL Editor display.
+Use the fields on the *Display* panel to specify your preferences for the Query Tool display.
 
-* When the *Connection status* switch is set to *True*, each new instance of the SQL Editor will display connection and transaction status.
+* When the *Connection status* switch is set to *True*, each new instance of the Query Tool will display connection and transaction status.
 
 * Use the *Connection status refresh rate* field to specify the number of seconds between connection/transaction status updates.
 
-* When the *Open in new browser tab* switch is set to *True*, each new instance of the SQL Editor will open in a new browser tab.
+* When the *Open in new browser tab* switch is set to *True*, each new instance of the Query Tool will open in a new browser tab.
 
 * Use the *Query info notifier timeout* field to control the behaviour of the notifier that is displayed when query execution completes. A value of *-1* will disable the notifier, and a value of 0 will display it until clicked. If a positive value above zero is specified, the notifier will be displayed for the specified number of seconds. The default is *5*.
 
@@ -207,7 +207,7 @@ Use the fields on the *Results grid* panel to specify your formatting preference
 * Use the *Result copy quote character* drop-down listbox to select the quote character for copied data.
 * Use the *Result copy quoting* drop-down listbox to select which type of fields require quoting; select *All*, *None*, or *Strings*.
 
-Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the sql editor window navigation:
+Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the query tool window navigation:
 
 .. image:: images/preferences_sql_keyboard_shortcuts.png
     :alt: Preferences dialog sql keyboard shortcuts section
