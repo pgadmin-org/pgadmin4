@@ -63,7 +63,7 @@ else:
 def _log_exception():
     type_, value_, traceback_ = info = sys.exc_info()
 
-    with open(_log_file, 'ab') as fp:
+    with open(_log_file, 'a') as fp:
         from traceback import format_exception
         res = ''.join(
             format_exception(type_, value_, traceback_)
