@@ -286,11 +286,13 @@ _.extend(pgBrowser.browserTreeState, {
       let databaseItem = treeHierarchy['database']['id'],
         topParent = treeHierarchy && treeHierarchy[this.parent]['_id'];
 
-      if (treeHierarchy['database'].connected) {
-        this.current_state[topParent]['conn_status'][databaseItem] = 1;
-      }
-      else {
-        this.current_state[topParent]['conn_status'][databaseItem] = 0;
+      if (topParent in this.current_state && 'selected' in this.current_state[topParent]) {
+        if (treeHierarchy['database'].connected) {
+          this.current_state[topParent]['conn_status'][databaseItem] = 1;
+        }
+        else {
+          this.current_state[topParent]['conn_status'][databaseItem] = 0;
+        }
       }
     }
   },
@@ -302,7 +304,8 @@ _.extend(pgBrowser.browserTreeState, {
 
       selectedItem = selectedItem ? selectedItem.id : undefined;
 
-      if (!_.isUndefined(selectedItem)) {
+      if (topParent in this.current_state && 'selected' in this.current_state[topParent]
+      && !_.isUndefined(selectedItem)) {
         this.current_state[topParent]['selected'][treeHierarchy[this.parent]['id']] = selectedItem;
         this.current_state[topParent]['selected'][databaseItem] = selectedItem;
       }
