@@ -186,7 +186,7 @@
                         tabindex="0" disabled>
                     <i class="fa fa-filter" aria-hidden="true"></i>
                 </button>
-                <button id="btn-filter-dropdown" type="button" class="btn btn-default dropdown-toggle"
+                <button id="btn-filter-dropdown" type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                         title=""
                         accesskey=""
@@ -195,10 +195,16 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li>
-                        <a id="btn-filter-menu" href="#" tabindex="0">{{ _('Sort/Filter') }}</a>
-                        <a id="btn-include-filter" href="#" tabindex="0">{{ _('Filter by Selection') }}</a>
-                        <a id="btn-exclude-filter" href="#" tabindex="0">{{ _('Exclude by Selection') }}</a>
-                        <a id="btn-remove-filter" href="#" tabindex="0">{{ _('Remove Sort/Filter') }}</a>
+                        <a id="btn-filter-menu" class="dropdown-item" href="#" tabindex="0">{{ _('Sort/Filter') }}</a>
+                    </li>
+                    <li>
+                        <a id="btn-include-filter" class="dropdown-item" href="#" tabindex="0">{{ _('Filter by Selection') }}</a>
+                    </li>
+                    <li>
+                        <a id="btn-exclude-filter" class="dropdown-item" href="#" tabindex="0">{{ _('Exclude by Selection') }}</a>
+                    </li>
+                    <li>
+                        <a id="btn-remove-filter" class="dropdown-item" href="#" tabindex="0">{{ _('Remove Sort/Filter') }}</a>
                     </li>
                 </ul>
             </div>

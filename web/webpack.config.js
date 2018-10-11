@@ -48,6 +48,8 @@ const providePlugin = new webpack.ProvidePlugin({
   Backbone: 'backbone',
   Backgrid: 'backgrid',
   pgAdmin: 'pgadmin',
+  'moment': 'moment',
+  'window.moment':'moment',
 });
 
 // Minify and omptimize JS/CSS to reduce bundle size. It is used in production

@@ -25,6 +25,7 @@ var webpackShimConfig = {
       'exports': 'jQuery.fn.datepicker',
     },
     'bootstrap.datetimepicker': {
+      'deps': ['moment'],
       'exports': 'jQuery.fn.datetimepicker',
     },
     'bootstrap.switch': {
@@ -161,7 +162,7 @@ var webpackShimConfig = {
     'backbone.undo': path.join(__dirname, './node_modules/backbone-undo/Backbone.Undo'),
     'backform': path.join(__dirname, './node_modules/backform/src/backform'),
     'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),
-    'bootstrap.datetimepicker': path.join(__dirname, './node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min'),
+    'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
     'bootstrap.switch': path.join(__dirname, './node_modules/bootstrap-switch/dist/js/bootstrap-switch'),
     'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
     'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),

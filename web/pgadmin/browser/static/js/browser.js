@@ -132,7 +132,7 @@ define('pgadmin.browser', [
         isCloseable: false,
         isPrivate: true,
         elContainer: true,
-        content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">' + select_object_msg + '</div></div>',
+        content: '<div class="obj_properties container-fluid"><div class="alert alert-info pg-panel-message">' + select_object_msg + '</div></div>',
         events: panelEvents,
         onCreate: function(myPanel, $container) {
           $container.addClass('pg-no-overflow');

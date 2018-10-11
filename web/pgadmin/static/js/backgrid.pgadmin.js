@@ -1348,9 +1348,15 @@ define([
         },
         options = _.extend({
           format: 'YYYY-MM-DD HH:mm:ss Z',
-          showClear: true,
-          showTodayButton: true,
+          icons: {
+            clear: 'fa fa-trash',
+          },
+          buttons: {
+            showClear: true,
+            showToday: true,
+          },
           toolbarPlacement: 'top',
+          keepOpen: false,
         }, evalF(this.column.get('options')), {
           keyBinds: {
             'shift tab': function(widget) {

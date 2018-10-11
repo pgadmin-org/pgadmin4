@@ -28,6 +28,7 @@ define([
     setGroupClassName: 'set-group pg-el-xs-12',
     tabClassName: 'backform-tab pg-el-xs-12',
     setGroupContentClassName: 'fieldset-content pg-el-xs-12',
+    hiddenClassName: 'd-none',
   });
 
   Backform.controlMapper = {
@@ -2340,13 +2341,19 @@ define([
         label: '',
         options: {
           format: 'YYYY-MM-DD HH:mm:ss Z',
-          showClear: true,
-          showTodayButton: true,
+          icons: {
+            clear: 'fa fa-trash',
+          },
+          buttons: {
+            showClear: true,
+            showToday: true,
+          },
           toolbarPlacement: 'top',
           widgetPositioning: {
             horizontal: 'auto',
             vertical: 'bottom',
           },
+          keepOpen: false,
         },
         placeholder: 'YYYY-MM-DD HH:mm:ss Z',
         extraClasses: [],
@@ -2362,16 +2369,16 @@ define([
       },
       openPicker: function() {
         if (this.has_datepicker) {
-          this.$el.find('input').datetimepicker('show');
+          this.$el.find('input').datetimepicker('toggle');
         }
       },
       template: _.template([
         '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
         '<div class="input-group  <%=Backform.controlsClassName%>">',
-        ' <input type="text" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-        ' <span class="input-group-addon">',
-        '  <span class="fa fa-calendar"></span>',
-        ' </span>',
+        ' <input type="text" class="<%=Backform.controlClassName%> datetimepicker-input <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> data-toggle="datetimepicker"/>',
+        ' <div class="input-group-append">',
+        '   <span class="input-group-text fa fa-calendar"></span>',
+        ' </div>',
         '</div>',
         '<% if (helpMessage && helpMessage.length) { %>',
         ' <div class="<%=Backform.controlsClassName%>">',
@@ -2464,7 +2471,6 @@ define([
           );
         }
         this.updateInvalid();
-
         return this;
       },
       clearInvalid: function() {

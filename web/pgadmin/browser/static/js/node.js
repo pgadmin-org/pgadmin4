@@ -395,7 +395,7 @@ define('pgadmin.browser.node', [
               success: function() {
                 // Clear timeout and remove message
                 clearTimeout(timer);
-                $msgDiv.addClass('hidden');
+                $msgDiv.addClass('d-none');
 
                 // We got the latest attributes of the object. Render the view
                 // now.
@@ -479,7 +479,7 @@ define('pgadmin.browser.node', [
         isCloseable: true,
         isPrivate: true,
         elContainer: true,
-        content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">' + gettext('Please wait while we fetch information about the node from the server...') + '</div></div>',
+        content: '<div class="obj_properties container-fluid"><div class="alert alert-info pg-panel-message">' + gettext('Please wait while we fetch information about the node from the server...') + '</div></div>',
         onCreate: function(myPanel, $container) {
           $container.addClass('pg-no-overflow');
         },

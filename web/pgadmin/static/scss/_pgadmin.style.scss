@@ -935,6 +935,7 @@ lgg-el-container[el=md] .pg-el-lg-8,
 }
 
 .pg-prop-btn-group {
+  min-width: 100%;
   left: 0px;
   right: 0px;
   padding: 2px;
@@ -1051,6 +1052,7 @@ lgg-el-container[el=md] .pg-el-lg-8,
 .obj_properties .backform-tab > .tab-content {
     padding: 0px;
     overflow-y: auto;
+    min-height: 100%;
     max-height: 100%;
 }
 
