@@ -1352,7 +1352,6 @@ define([
             clear: 'fa fa-trash',
           },
           buttons: {
-            showClear: true,
             showToday: true,
           },
           toolbarPlacement: 'top',
@@ -1391,7 +1390,8 @@ define([
       this.picker = this.$el.data('DateTimePicker');
     },
     events: {
-      'dp.hide': 'closeIt',
+      'hide.datetimepicker': 'closeIt',
+      'focusout':'closeIt',
     },
     closeIt: function(ev) {
       var formatter = this.formatter,

@@ -2345,7 +2345,6 @@ define([
             clear: 'fa fa-trash',
           },
           buttons: {
-            showClear: true,
             showToday: true,
           },
           toolbarPlacement: 'top',
@@ -2364,12 +2363,18 @@ define([
         'change input': 'onChange',
         'changeDate input': 'onChange',
         'focus input': 'clearInvalid',
-        'db.change': 'onChange',
-        'click': 'openPicker',
+        'focusout input': 'closePicker',
+        'change.datetimepicker': 'onChange',
+        'click': 'togglePicker',
       },
-      openPicker: function() {
+      togglePicker: function() {
         if (this.has_datepicker) {
           this.$el.find('input').datetimepicker('toggle');
+        }
+      },
+      closePicker: function() {
+        if (this.has_datepicker) {
+          this.$el.find('input').datetimepicker('hide');
         }
       },
       template: _.template([

@@ -148,7 +148,9 @@ define('pgadmin.node.pga_schedule', [
         },{
           id: 'jextime', type: 'text', placeholder: gettext('<any>'),
           label: gettext('Time'), editable: true, cell: AnyDatetimeCell,
-          options: {format: 'HH:mm'}, displayFormat: 'HH:mm',
+          options: {format: 'HH:mm', buttons: {
+            showToday: false,
+          }}, displayFormat: 'HH:mm',
           modelFormat: 'HH:mm:ss', displayInUTC: false, allowEmpty: true,
           cellHeaderClasses:'width_percent_50', modalInUTC: false,
         }],
