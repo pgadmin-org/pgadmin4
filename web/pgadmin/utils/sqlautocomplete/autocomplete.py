@@ -331,7 +331,7 @@ class SQLAutoComplete(object):
             if childtable not in meta[childschema] or \
                 parenttable not in meta[parentschema] or \
                 childcol not in meta[childschema][childtable] or \
-                parcol not in meta[parentschema][parenttable]:
+                    parcol not in meta[parentschema][parenttable]:
                 continue
 
             childcolmeta = meta[childschema][childtable][childcol]
