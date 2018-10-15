@@ -327,6 +327,13 @@ class SQLAutoComplete(object):
             parentschema, childschema = e([fk.parentschema, fk.childschema])
             parenttable, childtable = e([fk.parenttable, fk.childtable])
             childcol, parcol = e([fk.childcolumn, fk.parentcolumn])
+
+            if childtable not in meta[childschema] or \
+                parenttable not in meta[parentschema] or \
+                childcol not in meta[childschema][childtable] or \
+                parcol not in meta[parentschema][parenttable]:
+                continue
+
             childcolmeta = meta[childschema][childtable][childcol]
             parcolmeta = meta[parentschema][parenttable][parcol]
             fk = ForeignKey(
