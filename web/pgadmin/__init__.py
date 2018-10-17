@@ -550,6 +550,13 @@ def create_app(app_name=None):
     def force_session_write(app, user):
         session.force_write = True
 
+    @user_logged_out.connect_via(app)
+    def clear_current_user_connections(app, user):
+        from config import PG_DEFAULT_DRIVER
+        from pgadmin.utils.driver import get_driver
+        _driver = get_driver(PG_DEFAULT_DRIVER)
+        _driver.gc_own()
+
     ##########################################################################
     # Load plugin modules
     ##########################################################################

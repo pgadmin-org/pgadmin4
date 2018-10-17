@@ -207,6 +207,22 @@ class Driver(BaseDriver):
                 ]:
                     mgr.release()
 
+    def gc_own(self):
+        """
+        Release the connections for current session
+        This is useful when (eg. logout) we want to release all
+        connections (except dedicated connections created by utilities
+        like backup, restore etc) of all servers for current user.
+        """
+
+        sess_mgr = self.managers.get(session.sid, None)
+
+        if sess_mgr:
+            for mgr in (
+                m for m in sess_mgr.values() if isinstance(m, ServerManager)
+            ):
+                mgr.release()
+
     @staticmethod
     def qtLiteral(value):
         adapted = adapt(value)
