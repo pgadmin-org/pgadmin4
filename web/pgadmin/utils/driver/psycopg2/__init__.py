@@ -200,10 +200,10 @@ class Driver(BaseDriver):
             if sess == session.sid:
                 sess_mgr['pinged'] = curr_time
                 continue
-
             if curr_time - sess_mgr['pinged'] >= session_idle_timeout:
                 for mgr in [
-                        m for m in sess_mgr if isinstance(m, ServerManager)
+                    m for m in sess_mgr.values() if isinstance(m,
+                                                               ServerManager)
                 ]:
                     mgr.release()
 
