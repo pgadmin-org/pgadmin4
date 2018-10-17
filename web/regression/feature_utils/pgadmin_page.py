@@ -48,6 +48,9 @@ class PgadminPage:
         self.click_modal('OK')
         self.wait_for_reloading_indicator_to_disappear()
 
+    def refresh_page(self):
+        self.driver.refresh()
+
     def click_modal(self, button_text):
         time.sleep(0.5)
         # Find active alertify dialog in case of multiple alertify dialog
@@ -85,8 +88,7 @@ class PgadminPage:
         self.driver.find_element_by_link_text("Tools").click()
         tools_menu = self.driver.find_element_by_id('mnu_tools')
 
-        # Query Tool is first li
-        query_tool = tools_menu.find_element_by_tag_name('li')
+        query_tool = tools_menu.find_element_by_id('query_tool')
 
         self.enable_menu_item(query_tool, 10)
 
@@ -98,11 +100,11 @@ class PgadminPage:
         # wait until menu becomes enabled.
         while time.time() - start_time < wait_time:  # wait_time seconds
             # if menu is disabled then it will have
-            # two classes 'menu-item disabled'.
+            # two classes 'dropdown-item disabled'.
             # And if menu is enabled the it will have
-            # only one class 'menu-item'.
+            # only one class 'dropdown-item'.
 
-            if 'menu-item' == str(menu_item.get_attribute('class')):
+            if 'dropdown-item' == str(menu_item.get_attribute('class')):
                 break
             time.sleep(0.1)
         else:
@@ -136,6 +138,8 @@ class PgadminPage:
         server_to_remove = self.find_by_xpath(
             "//*[@id='tree']//*[.='" + server_config['name'] +
             "' and @class='aciTreeItem']")
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView()", server_to_remove)
         self.click_element(server_to_remove)
         object_menu_item = self.find_by_partial_link_text("Object")
         self.click_element(object_menu_item)
@@ -144,14 +148,19 @@ class PgadminPage:
         self.click_modal('OK')
 
     def select_tree_item(self, tree_item_text):
-        self.find_by_xpath(
+        item = self.find_by_xpath(
             "//*[@id='tree']//*[.='" + tree_item_text +
-            "' and @class='aciTreeItem']").click()
+            "' and @class='aciTreeItem']")
+        self.driver.execute_script("arguments[0].scrollIntoView()", item)
+        item.click()
 
     def toggle_open_tree_item(self, tree_item_text):
-        self.find_by_xpath(
+        item = self.find_by_xpath(
             "//*[@id='tree']//*[.='" + tree_item_text +
-            "']/../*[@class='aciTreeButton']").click()
+            "']/../*[@class='aciTreeButton']")
+
+        self.driver.execute_script("arguments[0].scrollIntoView()", item)
+        item.click()
 
     def toggle_open_server(self, tree_item_text):
         def check_for_password_dialog_or_tree_open(driver):
@@ -276,11 +285,12 @@ class PgadminPage:
             try:
                 element = find_method_with_args(driver)
                 if element.is_displayed() and element.is_enabled():
-                    return element
+                    return True
             except NoSuchElementException:
                 return False
 
-        return self._wait_for("element to exist", element_if_it_exists)
+        self._wait_for("element to exist", element_if_it_exists)
+        return find_method_with_args(self.driver)
 
     def wait_for_element_to_disappear(self, find_method_with_args):
         def element_if_it_disappears(driver):

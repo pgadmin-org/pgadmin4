@@ -419,6 +419,9 @@ if __name__ == '__main__':
             if server['default_binary_paths'] is not None:
                 test_utils.set_preference(server['default_binary_paths'])
 
+            # Disable tree state saving
+            test_utils.disable_tree_state_save()
+
             suite = get_suite(test_module_list,
                               server,
                               test_client,

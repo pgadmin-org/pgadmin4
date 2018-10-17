@@ -18,6 +18,7 @@ from copy import deepcopy
 import config as app_config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.feature_utils.pgadmin_page import PgadminPage
+from regression.python_test_utils import test_utils
 
 
 class BaseFeatureTest(BaseTestGenerator):
@@ -35,10 +36,11 @@ class BaseFeatureTest(BaseTestGenerator):
 
         self.page = PgadminPage(self.driver, app_config)
         try:
+            test_utils.reset_layout_db()
             self.page.driver.switch_to.default_content()
             self.page.wait_for_app()
             self.page.wait_for_spinner_to_disappear()
-            self.page.reset_layout()
+            self.page.refresh_page()
             self.page.wait_for_spinner_to_disappear()
             self.before()
         except Exception:

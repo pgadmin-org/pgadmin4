@@ -41,7 +41,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
             os.remove(self.XSS_FILE)
 
     def after(self):
-        self.page.close_query_tool('sql', False)
+        self.page.close_query_tool('.sql', False)
         self.page.remove_server(self.server)
 
     def runTest(self):
@@ -179,3 +179,5 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         if not success:
             raise Exception("Unable to sort in descending order while clicked "
                             "on 'Name' column")
+
+        self.page.click_modal('Cancel')

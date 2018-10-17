@@ -80,6 +80,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         self.page.find_by_xpath("//*[contains(@class,'wcTabIcon fa fa-bolt')]")
 
     def test_view_data_tool_button(self):
+        self.page.select_tree_item(self.test_db)
         self.page.toggle_open_tree_item('Schemas')
         self.page.toggle_open_tree_item('public')
         self.page.toggle_open_tree_item('Tables')

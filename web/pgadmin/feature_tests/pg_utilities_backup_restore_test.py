@@ -55,10 +55,10 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.find_by_partial_link_text("Backup...").click()
 
         self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".browse_file_input")))
+            (By.CSS_SELECTOR, ".file [name='file']")))
 
         self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".browse_file_input"))).click()
+            (By.CSS_SELECTOR, ".file [name='file']"))).click()
 
         self.page.fill_input_by_field_name("file", "test_backup")
 
@@ -98,15 +98,10 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.find_by_partial_link_text("Restore...").click()
 
         self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".browse_file_input")))
-
-        self.page.find_by_xpath(
-            "//button[contains(@class,'fa-info') and "
-            "contains(@label, 'Restore')]"
-        )
+            (By.CSS_SELECTOR, ".file [name='file']")))
 
         self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".browse_file_input"))).click()
+            (By.CSS_SELECTOR, ".file [name='file']"))).click()
 
         self.page.fill_input_by_field_name("file", "test_backup")
 

@@ -74,11 +74,11 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
                 EC.presence_of_element_located(
                     (By.XPATH, "//li[contains(@id, " +
                      s +
-                     ") and contains(@class, 'open')]")
+                     ") and contains(@class, 'show')]")
                 )
             )
 
-            is_open = 'open' in self.page.find_by_id(s).get_attribute('class')
+            is_open = 'show' in self.page.find_by_id(s).get_attribute('class')
 
             assert is_open is True, "Keyboard shortcut change is unsuccessful."
 

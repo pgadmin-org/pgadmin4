@@ -29,6 +29,8 @@ try:
             test_data_configuration['datatype_minimum_version']
 except Exception as e:
     print(str(e))
+    assert False, \
+        "datatype_test.json file load failed"
 
 
 class PGDataypeFeatureTest(BaseFeatureTest):
@@ -88,7 +90,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             ".ajs-dialog.pg-el-container .ajs-maximize").click()
 
         sql_editor = self.page.find_by_xpath(
-            "//*[contains(@class,'aciTreeLi') and contains(.,'SQL Editor')]")
+            "//*[contains(@class,'aciTreeLi') and contains(.,'Query Tool')]")
 
         sql_editor.find_element_by_xpath(
             "//*[contains(@class,'aciTreeText') and contains(.,'Options')]"

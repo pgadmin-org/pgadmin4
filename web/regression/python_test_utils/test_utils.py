@@ -435,6 +435,7 @@ def create_server(server):
                     ' comment) VALUES (?,?,?,?,?,?,?,?,?,?)', server_details)
         server_id = cur.lastrowid
         conn.commit()
+        conn.close()
         # Add server info to parent_node_dict
         regression.parent_node_dict["server"].append(
             {
@@ -639,6 +640,50 @@ def set_preference(default_binary_path):
             )
 
     conn.commit()
+    conn.close()
+
+
+def disable_tree_state_save():
+    conn = sqlite3.connect(config.TEST_SQLITE_PATH)
+    cur = conn.cursor()
+    pref = Preferences.module('browser')\
+        .preference('browser_tree_state_save_interval')
+
+    user_pref = cur.execute(
+        'SELECT pid, uid FROM user_preferences '
+        'where pid=?', (pref.pid,)
+    )
+
+    if len(user_pref.fetchall()) == 0:
+        cur.execute(
+            'INSERT INTO user_preferences(pid, uid, value)'
+            ' VALUES (?,?,?)', (pref.pid, 1, -1)
+        )
+    else:
+        cur.execute(
+            'UPDATE user_preferences'
+            ' SET VALUE = ?'
+            ' WHERE PID = ?', (-1, pref.pid)
+        )
+    conn.commit()
+    conn.close()
+
+
+def reset_layout_db(user_id=None):
+    conn = sqlite3.connect(config.TEST_SQLITE_PATH)
+    cur = conn.cursor()
+
+    if user_id is None:
+        cur.execute(
+            'DELETE FROM SETTING WHERE SETTING="Browser/Layout"'
+        )
+    else:
+        cur.execute(
+            'DELETE FROM SETTING WHERE SETTING="Browser/Layout"'
+            ' AND USER_ID=?', user_id
+        )
+    conn.commit()
+    conn.close()
 
 
 def remove_db_file():
