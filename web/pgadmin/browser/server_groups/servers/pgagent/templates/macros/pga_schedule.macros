@@ -23,7 +23,7 @@ INSERT INTO pgagent.pga_schedule(
     {{ data.jscmonthdays|qtLiteral }}::boolean[],
     -- Months
     {{ data.jscmonths|qtLiteral }}::boolean[]
-) RETURNING jscid {% if not jid %}INTO scid;{% endif %}{% if 'jscexceptions' in data %}
+) RETURNING jscid INTO scid;{% if 'jscexceptions' in data %}
 {% for exc in data.jscexceptions %}
 
 {{ EXCEPTIONS.INSERT(None, exc) }}{% endfor %}{% endif %}

@@ -7,18 +7,18 @@
 INSERT INTO pgagent.pga_exception (
     jexscid, jexdate, jextime
 ) VALUES (
-    {% if jscid %}{{ jscid|qtLiteral }}{% else %}scid{% endif %}, {% if data.jexdate %}to_date({{ data.jexdate|qtLiteral }}, 'MM/DD/YYYY')::date{% else %}NULL::date{% endif %}, {% if data.jextime %}{{ data.jextime|qtLiteral }}::time without time zone{% else %}NULL::time without time zone{% endif %}
+    {% if jscid %}{{ jscid|qtLiteral }}{% else %}scid{% endif %}, {% if data.jexdate %}to_date({{ data.jexdate|qtLiteral }}, 'YYYY-MM-DD')::date{% else %}NULL::date{% endif %}, {% if data.jextime %}{{ data.jextime|qtLiteral }}::time without time zone{% else %}NULL::time without time zone{% endif %}
 
 );
 {%- endmacro %}
 {% macro UPDATE(jscid, data) -%}
 -- Updating an existing schedule exception (id: {{ data.jexid|qtLiteral }}, schedule: {{ jscid|qtLiteral }})
 UPDATE pgagent.pga_exception SET
-    {% if 'jexdate' in data %}jexdate={% if data.jexdate %}to_date({{ data.jexdate|qtLiteral }}, 'MM/DD/YYYY')::date{% else %}NULL::date{% endif %}{% endif %}{% if 'jextime' in data%}{% if 'jexdate' in data %}, {% endif %}jextime={% if data.jextime %}{{ data.jextime|qtLiteral }}::time without time zone{% else %}NULL::time without time zone{% endif %}{% endif %}
+    {% if 'jexdate' in data %}jexdate={% if data.jexdate %}to_date({{ data.jexdate|qtLiteral }}, 'YYYY-MM-DD')::date{% else %}NULL::date{% endif %}{% endif %}{% if 'jextime' in data%}{% if 'jexdate' in data %}, {% endif %}jextime={% if data.jextime %}{{ data.jextime|qtLiteral }}::time without time zone{% else %}NULL::time without time zone{% endif %}{% endif %}
 
-WHERE jexid={{ data.jexid|qtLiteral }}::integer AND jscid={{ jscid|qtLiteral }}::integer;
+WHERE jexid={{ data.jexid|qtLiteral }}::integer AND jexscid={{ jscid|qtLiteral }}::integer;
 {%- endmacro %}
 {% macro DELETE(jscid, data) -%}
 -- Deleting a schedule exception (id: {{ data.jexid|qtLiteral }}, schedule: {{ jscid|qtLiteral }})
-DELETE FROM pgagent.pga_exception WHERE jexid={{ data.jexid|qtLiteral }}::integer AND jscid={{ jscid|qtLiteral }}::integer;
+DELETE FROM pgagent.pga_exception WHERE jexid={{ data.jexid|qtLiteral }}::integer AND jexscid={{ jscid|qtLiteral }}::integer;
 {%- endmacro %}
