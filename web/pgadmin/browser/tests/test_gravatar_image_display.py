@@ -43,6 +43,10 @@ class TestLoginUserImage(BaseTestGenerator):
         "Logout first if already logged in"
         utils.logout_tester_account(cls.tester)
 
+    # No need to call baseclass setup function
+    def setUp(self):
+        pass
+
     def runTest(self):
         # Login and check type of image in response
         response = self.tester.post(

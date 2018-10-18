@@ -15,6 +15,7 @@ from pgadmin import create_app
 
 class InternalVersionTestCase(BaseTestGenerator):
     """
+    This test case verifies application creation with new versions parameters
     """
     scenarios = [
         ('TestCase with INTERNAL_VERSION_PARAM none', dict(
@@ -47,12 +48,14 @@ class InternalVersionTestCase(BaseTestGenerator):
         self.config_bak = config
 
     def runTest(self):
+        # assign config file parameters new values
         config.APP_VERSION_INT = self.app_version
-        config.INTERNAL_VERSION_PARAM = self.version_param
-        config.INTERNAL_VERSION_EXTN = self.version_extn
+        config.APP_VERSION_PARAM = self.version_param
+        config.APP_VERSION_EXTN = self.version_extn
 
-        version_string = "?{0}={1}".format(config.INTERNAL_VERSION_PARAM,
-                                           config.APP_VERSION_INT)
+        version_string = "?{0}={1}".format(self.version_param,
+                                           self.app_version)
+        # create application
         app = create_app()
         with app.app_context(), app.test_request_context():
             url = url_for(self.endpoint, filename=self.filename)

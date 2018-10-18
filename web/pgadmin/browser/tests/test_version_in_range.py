@@ -57,6 +57,10 @@ class VersionInRangeTestCase(BaseTestGenerator):
     def setUpClass(cls):
         pass
 
+    # No need to call base class setup function
+    def setUp(self):
+        pass
+
     def runTest(self):
         """This function will check version in range functionality."""
         if self.scenario == 1:

@@ -42,6 +42,10 @@ class ResetPasswordTestCase(BaseTestGenerator):
     def setUpClass(cls):
         logout_tester_account(cls.tester)
 
+    # No need to call baseclass setup function
+    def setUp(self):
+        pass
+
     def runTest(self):
         """This function checks reset password functionality."""
 

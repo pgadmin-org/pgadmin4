@@ -94,13 +94,13 @@ class ChangePasswordTestCase(BaseTestGenerator):
         if 'valid_password' in dir(self):
             response = self.tester.post(
                 '/user_management/user/',
-                data=dict(
+                data=json.dumps(dict(
                     email=self.username,
                     newPassword=self.password,
                     confirmPassword=self.password,
-                    active=1,
+                    active=True,
                     role="2"
-                ),
+                )),
                 follow_redirects=True
             )
             user_id = json.loads(response.data.decode('utf-8'))['id']

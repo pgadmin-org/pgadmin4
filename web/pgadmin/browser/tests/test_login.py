@@ -86,6 +86,10 @@ class LoginTestCase(BaseTestGenerator):
         """
         utils.logout_tester_account(cls.tester)
 
+    # No need to call base class setup function
+    def setUp(self):
+        pass
+
     def runTest(self):
         """This function checks login functionality."""
         response = self.tester.post(
