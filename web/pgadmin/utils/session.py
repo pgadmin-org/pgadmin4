@@ -376,31 +376,35 @@ def cleanup_session_files():
     modified time, if it older than (session expiration time + 1) days then
     delete that file.
     """
+    iterate_session_files = False
+
     global LAST_CHECK_SESSION_FILES
     if LAST_CHECK_SESSION_FILES is None:
+        iterate_session_files = True
         LAST_CHECK_SESSION_FILES = datetime.datetime.now()
     else:
         if datetime.datetime.now() >= LAST_CHECK_SESSION_FILES + \
                 datetime.timedelta(hours=config.CHECK_SESSION_FILES_INTERVAL):
-
-            for root, dirs, files in os.walk(
-                    current_app.config['SESSION_DB_PATH']):
-                for file_name in files:
-                    absolute_file_name = os.path.join(root, file_name)
-                    st = os.stat(absolute_file_name)
-
-                    # Get the last modified time of the session file
-                    last_modified_time = \
-                        datetime.datetime.fromtimestamp(st.st_mtime)
-
-                    # Calculate session file expiry time.
-                    file_expiration_time = \
-                        last_modified_time + \
-                        current_app.permanent_session_lifetime + \
-                        datetime.timedelta(days=1)
-
-                    if file_expiration_time <= datetime.datetime.now():
-                        if os.path.exists(absolute_file_name):
-                            os.unlink(absolute_file_name)
-
+            iterate_session_files = True
             LAST_CHECK_SESSION_FILES = datetime.datetime.now()
+
+    if iterate_session_files:
+        for root, dirs, files in os.walk(
+                current_app.config['SESSION_DB_PATH']):
+            for file_name in files:
+                absolute_file_name = os.path.join(root, file_name)
+                st = os.stat(absolute_file_name)
+
+                # Get the last modified time of the session file
+                last_modified_time = \
+                    datetime.datetime.fromtimestamp(st.st_mtime)
+
+                # Calculate session file expiry time.
+                file_expiration_time = \
+                    last_modified_time + \
+                    current_app.permanent_session_lifetime + \
+                    datetime.timedelta(days=1)
+
+                if file_expiration_time <= datetime.datetime.now():
+                    if os.path.exists(absolute_file_name):
+                        os.unlink(absolute_file_name)
