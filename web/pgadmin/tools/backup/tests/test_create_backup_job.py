@@ -40,6 +40,7 @@ class BackupJobTest(BaseTestGenerator):
 
     def setUp(self):
         if 'default_binary_paths' not in self.server or \
+            self.server['default_binary_paths'] is None or \
             self.server['type'] not in self.server['default_binary_paths'] or\
                 self.server['default_binary_paths'][self.server['type']] == '':
             self.skipTest(
