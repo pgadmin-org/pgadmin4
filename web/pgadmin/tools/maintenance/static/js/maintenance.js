@@ -392,7 +392,10 @@ define([
                     Alertify.success(res.data.info);
                     pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                   } else {
-                    Alertify.error(res.data.errmsg);
+                    Alertify.alert(
+                      gettext('Maintenance job creation failed.'),
+                      res.errormsg
+                    );
                   }
                 })
                 .fail(function() {
@@ -467,8 +470,33 @@ define([
         });
       }
 
-      // Open the Alertify dialog
-      Alertify.MaintenanceDialog('Maintenance...').set('resizable', true).resizeTo('60%', '80%');
+      const baseUrl = url_for('maintenance.utility_exists', {
+        'sid': server_data._id,
+      });
+
+      // Check psql utility exists or not.
+      $.ajax({
+        url: baseUrl,
+        type:'GET',
+      })
+      .done(function(res) {
+        if (!res.success) {
+          Alertify.alert(
+            gettext('Utility not found'),
+            res.errormsg
+          );
+          return;
+        }
+        // Open the Alertify dialog
+        Alertify.MaintenanceDialog('Maintenance...').set('resizable', true).resizeTo('60%', '80%');
+      })
+      .fail(function() {
+        Alertify.alert(
+          gettext('Utility not found'),
+          gettext('Failed to fetch Utility information')
+        );
+        return;
+      });
     },
   };
 

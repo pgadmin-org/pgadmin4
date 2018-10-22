@@ -10,6 +10,8 @@
 import gettext from '../../../../static/js/gettext';
 import Backform from '../../../../static/js/backform.pgadmin';
 import {Dialog} from '../../../../static/js/alertify/dialog';
+import url_for from 'sources/url_for';
+import axios from 'axios/index';
 
 export class BackupDialog extends Dialog {
   constructor(pgBrowser, $, alertify, BackupModel, backform = Backform) {
@@ -17,6 +19,13 @@ export class BackupDialog extends Dialog {
       '<div class=\'backup_dialog\'></div>',
       pgBrowser, $, alertify, BackupModel, backform
     );
+  }
+
+  url_for_utility_exists(id, params){
+    return url_for('backup.utility_exists', {
+      'sid': id,
+      'backup_obj_type': params == null ? 'objects' : 'servers',
+    });
   }
 
   draw(action, aciTreeItem, params) {
@@ -30,17 +39,40 @@ export class BackupDialog extends Dialog {
       return;
     }
 
-    const typeOfDialog = BackupDialog.typeOfDialog(params);
+    const baseUrl = this.url_for_utility_exists(serverInformation._id, params);
+    // Check pg_dump or pg_dumpall utility exists or not.
+    let that = this;
+    let service = axios.create({});
+    service.get(
+      baseUrl
+    ).then(function(res) {
+      if (!res.data.success) {
+        that.alertify.alert(
+          gettext('Utility not found'),
+          res.data.errormsg
+        );
+        return;
+      }
 
-    if (!this.canExecuteOnCurrentDatabase(aciTreeItem)) {
+      const typeOfDialog = BackupDialog.typeOfDialog(params);
+
+      if (!that.canExecuteOnCurrentDatabase(aciTreeItem)) {
+        return;
+      }
+
+      const dialog = that.createOrGetDialog(
+        BackupDialog.dialogTitle(typeOfDialog),
+        typeOfDialog
+      );
+
+      dialog(true).resizeTo('60%', '50%');
+    }).catch(function() {
+      that.alertify.alert(
+        gettext('Utility not found'),
+        gettext('Failed to fetch Utility information')
+      );
       return;
-    }
-
-    const dialog = this.createOrGetDialog(
-      BackupDialog.dialogTitle(typeOfDialog),
-      typeOfDialog
-    );
-    dialog(true).resizeTo('60%', '50%');
+    });
   }
 
   static typeOfDialog(params) {

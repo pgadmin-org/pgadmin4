@@ -397,7 +397,7 @@ describe('RestoreDialogWrapper', () => {
           beforeEach(() => {
             networkMock.onPost('/restore/job/10').reply((request) => {
               dataSentToServer = request.data;
-              return [200, {}];
+              return [200, {'success': 1}];
             });
           });
 

@@ -385,7 +385,7 @@ describe('BackupDialogWrapper', () => {
 
               networkMock.onPost('/backup/job/10').reply((request) => {
                 dataSentToServer = request.data;
-                return [200, {}];
+                return [200, {'success': 1}];
               });
             });
 
@@ -485,7 +485,7 @@ describe('BackupDialogWrapper', () => {
 
               networkMock.onPost('/backup/job/10/object').reply((request) => {
                 dataSentToServer = request.data;
-                return [200, {}];
+                return [200, {'success': 1}];
               });
             });
 

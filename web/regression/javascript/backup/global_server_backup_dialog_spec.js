@@ -8,6 +8,8 @@
 //////////////////////////////////////////////////////////////
 import {BackupDialog} from '../../../pgadmin/tools/backup/static/js/backup_dialog';
 import {TreeFake} from '../tree/tree_fake';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios/index';
 
 const context = describe;
 
@@ -48,7 +50,9 @@ describe('GlobalServerBackupDialog', () => {
   });
 
   describe('#draw', () => {
+    let networkMock;
     beforeEach(() => {
+      networkMock = new MockAdapter(axios);
       alertifySpy = jasmine.createSpyObj('alertify', ['alert', 'dialog']);
       alertifySpy['BackupDialog_globals'] = jasmine.createSpy('BackupDialog_globals');
       alertifySpy['BackupDialog_server'] = jasmine.createSpy('BackupDialog_server');
@@ -60,6 +64,10 @@ describe('GlobalServerBackupDialog', () => {
       );
 
       pgBrowser.get_preference = jasmine.createSpy('get_preferences');
+    });
+
+    afterEach(() => {
+      networkMock.restore();
     });
 
     context('there are no ancestors of the type server', () => {
@@ -144,21 +152,29 @@ describe('GlobalServerBackupDialog', () => {
             alertifySpy['BackupDialog_server'].and
               .returnValue(serverResizeToSpy);
             pgBrowser.get_preference.and.returnValue({value: '/some/path'});
+            spyOn(backupDialog, 'url_for_utility_exists').and.returnValue('/backup/utility_exists/10/servers');
+            networkMock.onGet('/backup/utility_exists/10/servers').reply(200, {'success': 1});
           });
 
           context('dialog for global backup', () => {
-            it('displays the dialog', () => {
+            it('displays the dialog', (done) => {
               backupDialog.draw(null, [serverTreeNode], {globals: true});
-              expect(alertifySpy['BackupDialog_globals']).toHaveBeenCalledWith(true);
-              expect(globalResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+              setTimeout(() => {
+                expect(alertifySpy['BackupDialog_globals']).toHaveBeenCalledWith(true);
+                expect(globalResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+                done();
+              }, 0);
             });
           });
 
           context('dialog for server backup', () => {
-            it('displays the dialog', () => {
+            it('displays the dialog', (done) => {
               backupDialog.draw(null, [serverTreeNode], {server: true});
-              expect(alertifySpy['BackupDialog_server']).toHaveBeenCalledWith(true);
-              expect(serverResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+              setTimeout(() => {
+                expect(alertifySpy['BackupDialog_server']).toHaveBeenCalledWith(true);
+                expect(serverResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+                done();
+              }, 0);
             });
           });
         });

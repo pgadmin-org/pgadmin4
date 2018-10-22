@@ -44,7 +44,8 @@ class BGProcessModule(PgAdminModule):
         """
         return [
             'bgprocess.status', 'bgprocess.detailed_status',
-            'bgprocess.acknowledge', 'bgprocess.list'
+            'bgprocess.acknowledge', 'bgprocess.list',
+            'bgprocess.stop_process'
         ]
 
 
@@ -101,6 +102,21 @@ def acknowledge(pid):
     """
     try:
         BatchProcess.acknowledge(pid)
+        return success_return()
+    except LookupError as lerr:
+        return gone(errormsg=str(lerr))
+
+
+@blueprint.route('/stop/<pid>', methods=['PUT'], endpoint='stop_process')
+@login_required
+def stop_process(pid):
+    """
+    User has stopped the process
+
+    :param pid: Process ID
+    """
+    try:
+        BatchProcess.stop_process(pid)
         return success_return()
     except LookupError as lerr:
         return gone(errormsg=str(lerr))

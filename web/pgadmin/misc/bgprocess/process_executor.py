@@ -321,6 +321,14 @@ def execute():
         process = Popen(
             command, stdout=PIPE, stderr=PIPE, stdin=None, **kwargs
         )
+        args.update({
+            'start_time': get_current_time(),
+            'stdout': process_stdout.log,
+            'stderr': process_stderr.log,
+            'pid': process.pid
+        })
+        update_status(**args)
+        _log('Status updated after starting child process...')
 
         _log('Attaching the loggers to stdout, and stderr...')
         # Attach the stream to the process logger, and start logging.

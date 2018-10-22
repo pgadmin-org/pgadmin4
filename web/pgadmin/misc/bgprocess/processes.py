@@ -14,6 +14,7 @@ Introduce a function to run the process executor in detached mode.
 import csv
 import os
 import sys
+import psutil
 from abc import ABCMeta, abstractproperty, abstractmethod
 from datetime import datetime
 from pickle import dumps, loads
@@ -523,6 +524,10 @@ class BatchProcess(object):
                             if 'end_time' in data and data['end_time']:
                                 p.end_time = data['end_time']
 
+                    # get the pid of the utility.
+                    if 'pid' in data:
+                        p.utility_pid = data['pid']
+
                     return True, True
 
                 except ValueError as e:
@@ -657,3 +662,26 @@ class BatchProcess(object):
 
         if 'env' in kwargs:
             self.env.update(kwargs['env'])
+
+    @staticmethod
+    def stop_process(_pid):
+        """
+        """
+        p = Process.query.filter_by(
+            user_id=current_user.id, pid=_pid
+        ).first()
+
+        if p is None:
+            raise LookupError(
+                _("Could not find a process with the specified ID.")
+            )
+
+        try:
+            process = psutil.Process(p.utility_pid)
+            process.terminate()
+        except psutil.Error as e:
+            current_app.logger.warning(
+                _("Unable to kill the background process '{0}'").format(
+                    p.utility_pid)
+            )
+            current_app.logger.exception(e)

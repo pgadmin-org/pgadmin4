@@ -8,11 +8,12 @@
 ##########################################################################
 
 import sys
+import os
 import simplejson as json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils as server_utils, is_utility_exists
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 
@@ -128,12 +129,20 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
     ]
 
     def setUp(self):
-        if self.server['default_binary_paths'] is None:
+        if 'default_binary_paths' not in self.server or \
+            self.server['type'] not in self.server['default_binary_paths'] or\
+                self.server['default_binary_paths'][self.server['type']] == '':
             self.skipTest(
                 "default_binary_paths is not set for the server {0}".format(
                     self.server['name']
                 )
             )
+
+        binary_path = os.path.join(
+            self.server['default_binary_paths'][self.server['type']], 'psql')
+        retVal = is_utility_exists(binary_path)
+        if retVal is not None:
+            self.skipTest(retVal)
 
     @patch('pgadmin.tools.maintenance.Server')
     @patch('pgadmin.tools.maintenance.Message')

@@ -53,6 +53,8 @@ After completing the *Import/Export data* dialog, click the *OK* button to perfo
 .. image:: images/import_export_complete.png
     :alt: Import Export data completion notification
 
+Use the **Stop Process** button to stop the Import/Export process.
+
 Use the *Click here for details* link on the notification to open the *Process Watcher* and review detailed information about the execution of the command that performed the import or export:
 
 .. image:: images/import_export_pw.png

@@ -113,6 +113,8 @@ When you’ve specified the details that will be incorporated into the pg_dump c
 .. image:: images/backup_messages.png
     :alt: Backup success notification popup
 
+Use the **Stop Process** button to stop the Backup process.
+
 If the backup is successful, a popup window will confirm success. Click *Click here for details* on the popup window to launch the *Process Watcher*. The *Process Watcher* logs all the activity associated with the backup and provides additional information for troubleshooting.
 
 .. image:: images/backup_process_watcher.png

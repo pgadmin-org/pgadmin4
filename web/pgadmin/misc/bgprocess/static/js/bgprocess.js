@@ -95,6 +95,10 @@ define('misc.bgprocess', [
           return url_for('bgprocess.acknowledge', {
             'pid': this.id,
           });
+        case 'stop_process':
+          return url_for('bgprocess.stop_process', {
+            'pid': this.id,
+          });
         default:
           return url_for('bgprocess.list');
         }
@@ -258,7 +262,22 @@ define('misc.bgprocess', [
                   $('<div></div>', {
                     class: 'pg-bg-start',
                   }).append(
-                    $('<div></div>').text(self.stime.toString())
+                    $('<div></div>', {
+                      class: 'row align-items-center',
+                    }).append(
+                      $('<div></div>', {
+                        class: 'col-9',
+                      }).text(self.stime.toString())
+                    ).append(
+                      $('<div></div>', {
+                        class: 'col-3',
+                      }).append(
+                        $('<button></button>', {
+                          type: 'button',
+                          class: 'btn btn-danger btn-sm float-right bg-process-stop',
+                        }).text('Stop Process')
+                      )
+                    )
                   ).append(
                     $('<div class="pg-bg-etime"></div>')
                   )
@@ -313,6 +332,9 @@ define('misc.bgprocess', [
 
               return;
             });
+
+            // On Click event to stop the process.
+            content.find('.bg-process-stop').off('click').on('click', self.stop_process.bind(this));
           }
           // TODO:: Formatted execution time
           self.container.find('.pg-bg-etime').empty().append(
@@ -331,6 +353,14 @@ define('misc.bgprocess', [
             $status_bar.addClass('bg-success');
           } else if (self.exit_code == 1) {
             $status_bar.addClass('bg-failed');
+          }
+
+          // Enable/Disable stop process button
+          var $btn_stop_process = $(self.container.find('.bg-process-stop'));
+          if (isNaN(parseInt(self.exit_code))) {
+            $btn_stop_process.removeClass('disabled');
+          } else {
+            $btn_stop_process.addClass('disabled');
           }
         } else {
           self.show_detailed_view.apply(self);
@@ -359,7 +389,18 @@ define('misc.bgprocess', [
           ),
           $logs = container.find('.bg-process-watcher'),
           $header = container.find('.bg-process-details'),
-          $footer = container.find('.bg-process-footer');
+          $footer = container.find('.bg-process-footer'),
+          $btn_stop_process = container.find('.bg-process-stop');
+
+        // Enable/Disable stop process button
+        if (isNaN(parseInt(self.exit_code))) {
+          $btn_stop_process.removeClass('disabled');
+        } else {
+          $btn_stop_process.addClass('disabled');
+        }
+
+        // On Click event to stop the process.
+        $btn_stop_process.off('click').on('click', self.stop_process.bind(this));
 
         if (is_new) {
           // set logs
@@ -439,6 +480,25 @@ define('misc.bgprocess', [
           console.warn(arguments);
         });
       },
+
+      stop_process: function() {
+        var self = this;
+        $.ajax({
+          type: 'PUT',
+          timeout: 30000,
+          url: self.bgprocess_url('stop_process'),
+          cache: false,
+          async: true,
+          contentType: 'application/json',
+        })
+        .done(function() {
+          return;
+        })
+        .fail(function() {
+          console.warn(arguments);
+        });
+      },
+
     });
 
   _.extend(
@@ -538,10 +598,18 @@ define('misc.bgprocess', [
           isPrivate: true,
           content: '<div class="bg-process-details">' +
             '<p class="bg-detailed-desc"></p>' +
-            '<div class="bg-process-stats">' +
-            '<span><b>' + gettext('Start time') + ': </b>' +
-            '<span class="bgprocess-start-time"></span>' +
-            '</span></div>' +
+            '<div class="bg-process-stats" style="padding-bottom: 5px">' +
+              '<div class="row align-items-center">' +
+                '<div class="col-9">' +
+                  '<span><b>' + gettext('Start time') + ': </b>' +
+                    '<span class="bgprocess-start-time"></span>' +
+                  '</span>' +
+                '</div>' +
+                '<div class="col-3">' +
+                  '<button type="button" class="btn btn-danger btn-sm float-right bg-process-stop">' +
+                    gettext('Stop Process') + '</button>' +
+                '</div>' +
+              '</div>' +
             '</div>' +
             '<div class="bg-process-watcher">' +
             '</div>' +

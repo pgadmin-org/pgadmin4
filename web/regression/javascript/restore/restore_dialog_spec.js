@@ -8,6 +8,8 @@
 //////////////////////////////////////////////////////////////
 import {TreeFake} from '../tree/tree_fake';
 import {RestoreDialog} from '../../../pgadmin/tools/restore/static/js/restore_dialog';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios/index';
 
 const context = describe;
 
@@ -81,7 +83,9 @@ describe('RestoreDialog', () => {
   });
 
   describe('#draw', () => {
+    let networkMock;
     beforeEach(() => {
+      networkMock = new MockAdapter(axios);
       alertifySpy = jasmine.createSpyObj('alertify', ['alert', 'dialog']);
       alertifySpy['pg_restore'] = jasmine.createSpy('pg_restore');
       restoreDialog = new RestoreDialog(
@@ -92,6 +96,10 @@ describe('RestoreDialog', () => {
       );
 
       pgBrowser.get_preference = jasmine.createSpy('get_preferences');
+    });
+
+    afterEach(() => {
+      networkMock.restore();
     });
 
     context('there are no ancestors of the type server', () => {
@@ -172,28 +180,36 @@ describe('RestoreDialog', () => {
               .returnValue(spy);
             pgBrowser.get_preference.and.returnValue({value: '/some/path'});
             pgBrowser.Nodes.server.label = 'some-server-label';
+            spyOn(restoreDialog, 'url_for_utility_exists').and.returnValue('/restore/utility_exists/10/objects');
+            networkMock.onGet('/restore/utility_exists/10/objects').reply(200, {'success': 1});
           });
 
-          it('displays the dialog', () => {
+          it('displays the dialog', (done) => {
             restoreDialog.draw(null, [{id: 'serverTreeNode'}], {server: true});
-            expect(alertifySpy['pg_restore']).toHaveBeenCalledWith(
-              'Restore (some-server-label: some-tree-label)',
-              [{id: 'serverTreeNode'}],
-              {
-                _id: 10,
-                _type: 'server',
-                label: 'some-tree-label',
-              },
-              pgBrowser.Nodes.server
-            );
-            expect(spy.resizeTo).toHaveBeenCalledWith('65%', '60%');
+            setTimeout(() => {
+              expect(alertifySpy['pg_restore']).toHaveBeenCalledWith(
+                'Restore (some-server-label: some-tree-label)',
+                [{id: 'serverTreeNode'}],
+                {
+                  _id: 10,
+                  _type: 'server',
+                  label: 'some-tree-label',
+                },
+                pgBrowser.Nodes.server
+              );
+              expect(spy.resizeTo).toHaveBeenCalledWith('65%', '60%');
+              done();
+            }, 0);
           });
 
           context('database label contain "="', () => {
-            it('should create alert dialog with restore error', () => {
+            it('should create alert dialog with restore error', (done) => {
               restoreDialog.draw(null, [{id: 'database_with_equal_in_name'}], null);
-              expect(alertifySpy.alert).toHaveBeenCalledWith('Restore Error',
-                'Databases with = symbols in the name cannot be backed up or restored using this utility.');
+              setTimeout(() => {
+                expect(alertifySpy.alert).toHaveBeenCalledWith('Restore Error',
+                  'Databases with = symbols in the name cannot be backed up or restored using this utility.');
+                done();
+              }, 0);
             });
           });
         });

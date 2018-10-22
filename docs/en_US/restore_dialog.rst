@@ -84,6 +84,8 @@ When you’ve specified the details that will be incorporated into the pg_restor
 .. image:: images/restore_messages.png
     :alt: Restore dialog notifications
 
+Use the **Stop Process** button to stop the Restore process.
+
 Click *Click here for details* on the popup to launch the *Process Watcher*. The *Process Watcher* logs all the activity associated with the restore, and provides additional information for troubleshooting should the restore command encounter problems.
 
 .. image:: images/restore_process_watcher.png

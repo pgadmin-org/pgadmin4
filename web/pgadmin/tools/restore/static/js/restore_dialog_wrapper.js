@@ -136,9 +136,16 @@ export class RestoreDialogWrapper extends DialogWrapper {
       service.post(
         baseUrl,
         this.view.model.toJSON()
-      ).then(function () {
-        dialogWrapper.alertify.success(gettext('Restore job created.'), 5);
-        dialogWrapper.pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialogWrapper);
+      ).then(function (res) {
+        if (res.data.success) {
+          dialogWrapper.alertify.success(gettext('Restore job created.'), 5);
+          dialogWrapper.pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialogWrapper);
+        } else {
+          dialogWrapper.alertify.alert(
+            gettext('Restore job creation failed.'),
+            res.data.errormsg
+          );
+        }
       }).catch(function (error) {
         try {
           const err = error.response.data;

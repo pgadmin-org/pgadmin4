@@ -18,7 +18,7 @@ from flask_babelex import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir
+    fs_short_path, document_dir, is_utility_exists
 from pgadmin.utils.ajax import make_json_response, bad_request
 
 from config import PG_DEFAULT_DRIVER
@@ -56,7 +56,7 @@ class RestoreModule(PgAdminModule):
         Returns:
             list: URL endpoints for backup module
         """
-        return ['restore.create_job']
+        return ['restore.create_job', 'restore.utility_exists']
 
 
 # Create blueprint for RestoreModule class
@@ -231,6 +231,12 @@ def create_restore_job(sid):
         )
 
     utility = manager.utility('restore')
+    ret_val = is_utility_exists(utility)
+    if ret_val:
+        return make_json_response(
+            success=0,
+            errormsg=ret_val
+        )
 
     args = []
 
@@ -365,7 +371,39 @@ def create_restore_job(sid):
     )
 
 
-"""
-TODO://
-    Add browser tree
-"""
+@blueprint.route(
+    '/utility_exists/<int:sid>', endpoint='utility_exists'
+)
+@login_required
+def check_utility_exists(sid):
+    """
+    This function checks the utility file exist on the given path.
+
+    Args:
+        sid: Server ID
+    Returns:
+        None
+    """
+    server = Server.query.filter_by(
+        id=sid, user_id=current_user.id
+    ).first()
+
+    if server is None:
+        return make_json_response(
+            success=0,
+            errormsg=_("Could not find the specified server.")
+        )
+
+    from pgadmin.utils.driver import get_driver
+    driver = get_driver(PG_DEFAULT_DRIVER)
+    manager = driver.connection_manager(server.id)
+
+    utility = manager.utility('restore')
+    ret_val = is_utility_exists(utility)
+    if ret_val:
+        return make_json_response(
+            success=0,
+            errormsg=ret_val
+        )
+
+    return make_json_response(success=1)

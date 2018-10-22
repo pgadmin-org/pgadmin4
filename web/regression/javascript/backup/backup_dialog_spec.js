@@ -8,6 +8,8 @@
 //////////////////////////////////////////////////////////////
 import {BackupDialog} from '../../../pgadmin/tools/backup/static/js/backup_dialog';
 import {TreeFake} from '../tree/tree_fake';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios/index';
 
 const context = describe;
 
@@ -93,7 +95,9 @@ describe('BackupDialog', () => {
   });
 
   describe('#draw', () => {
+    let networkMock;
     beforeEach(() => {
+      networkMock = new MockAdapter(axios);
       alertifySpy = jasmine.createSpyObj('alertify', ['alert', 'dialog']);
       alertifySpy['backup_objects'] = jasmine.createSpy('backup_objects');
       backupDialog = new BackupDialog(
@@ -104,6 +108,10 @@ describe('BackupDialog', () => {
       );
 
       pgBrowser.get_preference = jasmine.createSpy('get_preferences');
+    });
+
+    afterEach(() => {
+      networkMock.restore();
     });
 
     context('there are no ancestors of the type server', () => {
@@ -183,19 +191,27 @@ describe('BackupDialog', () => {
             alertifySpy['backup_objects'].and
               .returnValue(backupDialogResizeToSpy);
             pgBrowser.get_preference.and.returnValue({value: '/some/path'});
+            spyOn(backupDialog, 'url_for_utility_exists').and.returnValue('/backup/utility_exists/10/objects');
+            networkMock.onGet('/backup/utility_exists/10/objects').reply(200, {'success': 1});
           });
 
-          it('displays the dialog', () => {
+          it('displays the dialog', (done) => {
             backupDialog.draw(null, [{id: 'serverTreeNode'}], null);
-            expect(alertifySpy['backup_objects']).toHaveBeenCalledWith(true);
-            expect(backupDialogResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+            setTimeout(() => {
+              expect(alertifySpy['backup_objects']).toHaveBeenCalledWith(true);
+              expect(backupDialogResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+              done();
+            }, 0);
           });
 
           context('database label contain "="', () => {
-            it('should create alert dialog with backup error', () => {
+            it('should create alert dialog with backup error', (done) => {
               backupDialog.draw(null, [{id: 'database_with_equal_in_name'}], null);
-              expect(alertifySpy.alert).toHaveBeenCalledWith('Backup Error',
-                'Databases with = symbols in the name cannot be backed up or restored using this utility.');
+              setTimeout(() => {
+                expect(alertifySpy.alert).toHaveBeenCalledWith('Backup Error',
+                  'Databases with = symbols in the name cannot be backed up or restored using this utility.');
+                done();
+              }, 0);
             });
           });
         });

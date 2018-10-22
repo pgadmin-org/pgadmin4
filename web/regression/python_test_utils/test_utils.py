@@ -436,6 +436,9 @@ def create_server(server):
         server_id = cur.lastrowid
         conn.commit()
         conn.close()
+
+        type = get_server_type(server)
+        server['type'] = type
         # Add server info to parent_node_dict
         regression.parent_node_dict["server"].append(
             {
@@ -897,5 +900,37 @@ def create_schema(server, db_name, schema_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
+def get_server_type(server):
+    """
+    This function will return the type of the server (PPAS, PG or GPDB)
+    :param server:
+    :return:
+    """
+    try:
+        connection = get_db_connection(
+            server['db'],
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+
+        pg_cursor = connection.cursor()
+        # Get 'version' string
+        pg_cursor.execute("SELECT version()")
+        version_string = pg_cursor.fetchone()
+        connection.close()
+
+        if "Greenplum Database" in version_string:
+            return 'gpdb'
+        elif "EnterpriseDB" in version_string:
+            return 'ppas'
+
+        return 'pg'
     except Exception:
         traceback.print_exc(file=sys.stderr)

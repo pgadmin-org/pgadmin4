@@ -28,6 +28,7 @@ speaklater==1.3
 sqlparse==0.2.4
 WTForms==2.1
 Flask-Paranoid==0.2.0
+psutil==5.4.7
 
 ################################################################
 # Modules specifically requires for Python2.7 or greater version

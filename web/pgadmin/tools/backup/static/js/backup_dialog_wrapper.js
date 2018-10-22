@@ -147,9 +147,16 @@ export class BackupDialogWrapper extends DialogWrapper {
       service.post(
         baseUrl,
         this.view.model.toJSON()
-      ).then(function () {
-        dialog.alertify.success(gettext('Backup job created.'), 5);
-        dialog.pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
+      ).then(function (res) {
+        if (res.data.success) {
+          dialog.alertify.success(gettext('Backup job created.'), 5);
+          dialog.pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
+        } else {
+          dialog.alertify.alert(
+            gettext('Backup job creation failed.'),
+            res.data.errormsg
+          );
+        }
       }).catch(function (error) {
         try {
           const err = error.response.data;

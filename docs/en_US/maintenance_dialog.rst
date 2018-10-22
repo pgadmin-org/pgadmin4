@@ -34,6 +34,8 @@ pgAdmin will inform you when the background process completes:
 .. image:: images/maintenance_complete.png
     :alt: Maintenance completion notification
 
+Use the **Stop Process** button to stop the Maintenance process.
+
 Use the *Click here for details* link on the notification to open the *Process Watcher* and review detailed information about the execution of the command that performed the import or export:
 
 .. image:: images/maintenance_pw.png

@@ -284,6 +284,18 @@ def get_complete_file_path(file):
     return file if os.path.isfile(file) else None
 
 
+def is_utility_exists(file):
+    """
+    This function will check the utility file exists on given path.
+    :return:
+    """
+    error_msg = None
+    if not os.path.exists(file):
+        error_msg = gettext(u"'%s' file not found. Please correct the Binary"
+                            u" Path in the Preferences dialog" % file)
+    return error_msg
+
+
 # Shortcut configuration for Accesskey
 ACCESSKEY_FIELDS = [
     {
