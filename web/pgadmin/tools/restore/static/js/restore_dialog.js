@@ -39,7 +39,8 @@ export class RestoreDialog extends Dialog {
       return;
     }
 
-    const baseUrl = this.url_for_utility_exists(serverInformation._id);
+    var sid = serverInformation._type == 'database' ? serverInformation._pid : serverInformation._id;
+    const baseUrl = this.url_for_utility_exists(sid);
     // Check pg_restore utility exists or not.
     let that = this;
     let service = axios.create({});

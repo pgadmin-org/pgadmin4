@@ -39,7 +39,8 @@ export class BackupDialog extends Dialog {
       return;
     }
 
-    const baseUrl = this.url_for_utility_exists(serverInformation._id, params);
+    var sid = serverInformation._type == 'database' ? serverInformation._pid : serverInformation._id;
+    const baseUrl = this.url_for_utility_exists(sid, params);
     // Check pg_dump or pg_dumpall utility exists or not.
     let that = this;
     let service = axios.create({});
