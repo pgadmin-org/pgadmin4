@@ -29,7 +29,7 @@ define('misc.bgprocess', [
           details: false,
           notify: (_.isUndefined(notify) || notify),
           curr_status: null,
-          state: 0, // 0: NOT Started, 1: Started, 2: Finished
+          state: 0, // 0: NOT Started, 1: Started, 2: Finished, 3: Terminated
           completed: false,
 
           id: info['id'],
@@ -124,6 +124,9 @@ define('misc.bgprocess', [
         if ('exit_code' in data)
           self.exit_code = data.exit_code;
 
+        if ('process_state' in data)
+          self.state = data.process_state;
+
         if ('out' in data) {
           self.out = data.out && data.out.pos;
 
@@ -183,7 +186,9 @@ define('misc.bgprocess', [
           }
 
           if (!_.isNull(self.exit_code)) {
-            if (self.exit_code == 0) {
+            if (self.state === 3) {
+              self.curr_status = gettext('Terminated by user.');
+            } else if (self.exit_code == 0) {
               self.curr_status = gettext('Successfully completed.');
             } else {
               self.curr_status = S(
@@ -349,18 +354,19 @@ define('misc.bgprocess', [
             self.curr_status
           );
 
-          if (self.exit_code === 0) {
-            $status_bar.addClass('bg-success');
-          } else if (self.exit_code == 1) {
-            $status_bar.addClass('bg-failed');
-          }
-
           // Enable/Disable stop process button
           var $btn_stop_process = $(self.container.find('.bg-process-stop'));
           if (isNaN(parseInt(self.exit_code))) {
-            $btn_stop_process.removeClass('disabled');
+            $btn_stop_process.attr('disabled', false);
           } else {
-            $btn_stop_process.addClass('disabled');
+            $btn_stop_process.attr('disabled', true);
+            if (self.exit_code === 0 && self.state != 3) {
+              $status_bar.addClass('bg-success');
+              $status_bar.removeClass('bg-failed');
+            } else {
+              $status_bar.addClass('bg-failed');
+              $status_bar.removeClass('bg-success');
+            }
           }
         } else {
           self.show_detailed_view.apply(self);
@@ -382,11 +388,7 @@ define('misc.bgprocess', [
         }
 
         var container = panel.$container,
-          status_class = (
-            (self.exit_code === 0) ?
-            'bg-bgprocess-success' : (self.exit_code == 1) ?
-            'bg-bgprocess-failed' : ''
-          ),
+          status_class = '',
           $logs = container.find('.bg-process-watcher'),
           $header = container.find('.bg-process-details'),
           $footer = container.find('.bg-process-footer'),
@@ -394,9 +396,14 @@ define('misc.bgprocess', [
 
         // Enable/Disable stop process button
         if (isNaN(parseInt(self.exit_code))) {
-          $btn_stop_process.removeClass('disabled');
+          $btn_stop_process.attr('disabled', false);
         } else {
-          $btn_stop_process.addClass('disabled');
+          $btn_stop_process.attr('disabled', true);
+          if (self.exit_code === 0 && self.state != 3) {
+            status_class = 'bg-bgprocess-success';
+          } else {
+            status_class = 'bg-bgprocess-failed';
+          }
         }
 
         // On Click event to stop the process.
@@ -483,6 +490,8 @@ define('misc.bgprocess', [
 
       stop_process: function() {
         var self = this;
+        // Set the state to terminated.
+        self.state = 3;
         $.ajax({
           type: 'PUT',
           timeout: 30000,

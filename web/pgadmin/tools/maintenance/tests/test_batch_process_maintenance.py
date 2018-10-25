@@ -15,9 +15,9 @@ from pgadmin.utils.route import BaseTestGenerator
 from pickle import dumps, loads
 
 if sys.version_info < (3, 3):
-    from mock import patch
+    from mock import patch, MagicMock
 else:
-    from unittest.mock import patch
+    from unittest.mock import patch, MagicMock
 
 
 class BatchProcessTest(BaseTestGenerator):
@@ -89,6 +89,7 @@ class BatchProcessTest(BaseTestGenerator):
         mock_result.first.return_value = mock_obj
 
         db_mock.session.add.side_effect = db_session_add_mock
+        db_mock.session.commit = MagicMock(return_value=True)
 
         maintenance_obj = Message(
             self.class_params['sid'],
@@ -106,12 +107,30 @@ class BatchProcessTest(BaseTestGenerator):
         self.assertTrue(db_mock.session.add.called)
 
         # Check start method
-        self._check_start(popen_mock, p)
+        self._check_start(popen_mock, p, maintenance_obj)
 
         # Check list method
         self._check_list(p, maintenance_obj)
 
-    def _check_start(self, popen_mock, p):
+    @patch('pgadmin.misc.bgprocess.processes.Process')
+    def _check_start(self, popen_mock, p, maintenance_obj, process_mock):
+        class TestMockProcess():
+            def __init__(self, desc, args, cmd):
+                self.pid = 1
+                self.exit_code = 1
+                self.start_time = '2018-04-17 06:18:56.315445 +0000'
+                self.end_time = None
+                self.desc = dumps(desc)
+                self.arguments = " ".join(args)
+                self.command = cmd
+                self.acknowledge = None
+                self.process_state = 0
+
+        mock_result = process_mock.query.filter_by.return_value
+        mock_result.first.return_value = TestMockProcess(
+            maintenance_obj, self.class_params['args'],
+            self.class_params['cmd'])
+
         cmd_test = self.class_params['cmd']
         assert_true = self.assertTrue
 
@@ -143,6 +162,7 @@ class BatchProcessTest(BaseTestGenerator):
                 self.arguments = " ".join(args)
                 self.command = cmd
                 self.acknowledge = None
+                self.process_state = 0
 
         process_mock.query.filter_by.return_value = [
             TestMockProcess(maintenance_obj,
