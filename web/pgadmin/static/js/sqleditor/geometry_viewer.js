@@ -25,7 +25,7 @@ let GeometryViewer = {
     if (self.panel_closed) {
       let wcDocker = window.wcDocker;
       let geometry_viewer_panel = handler.gridView.geometry_viewer =
-        handler.gridView.docker.addPanel('geometry_viewer',
+        handler.gridView.docker.addPanel('geometry_viewer'),
           wcDocker.DOCK.STACKED, handler.gridView.data_output_panel);
       $('#geometry_viewer_panel')[0].appendChild(self.map_component.mapContainer.get(0));
       self.panel_closed = false;
@@ -201,7 +201,7 @@ function initMapComponent() {
         vectorLayer.addData(geoJSONs);
       } catch (e) {
         // Invalid LatLng object: (NaN, NaN)
-        infoList.push('An error occurred while rendering data.');
+        infoList.push(gettext('An error occurred while rendering data.'));
         isEmpty = true;
       }
 
@@ -284,7 +284,7 @@ function parseData(items, columns, columnIndex) {
     tooManyGeometries = false;
 
   if (items.length === 0) {
-    infoList.push('Empty row.');
+    infoList.push(gettext('Empty row.'));
     return {
       'geoJSONs': [],
       'selectedSRID': 0,
@@ -326,7 +326,7 @@ function parseData(items, columns, columnIndex) {
 
   // generate map info content
   if (tooLargeDataSize || tooManyGeometries) {
-    infoList.push(supportedGeometries.length + ' of ' + items.length + ' geometries rendered.');
+    infoList.push(supportedGeometries.length + gettext(' of ') + items.length + gettext(' geometries rendered.'));
   }
   if (geometries3D.length > 0) {
     infoList.push(gettext('3D geometries not rendered.'));
@@ -372,7 +372,7 @@ function parseData(items, columns, columnIndex) {
   }
 
   if (mixedSRID) {
-    infoList.push(gettext('Geometries with non-SRID') + selectedSRID + ' not rendered.');
+    infoList.push(gettext('Geometries with non-SRID') + selectedSRID + gettext(' not rendered.'));
   }
 
   return {
