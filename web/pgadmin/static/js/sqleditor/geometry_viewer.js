@@ -25,7 +25,7 @@ let GeometryViewer = {
     if (self.panel_closed) {
       let wcDocker = window.wcDocker;
       let geometry_viewer_panel = handler.gridView.geometry_viewer =
-        handler.gridView.docker.addPanel('geometry_viewer'),
+        handler.gridView.docker.addPanel('geometry_viewer',
           wcDocker.DOCK.STACKED, handler.gridView.data_output_panel);
       $('#geometry_viewer_panel')[0].appendChild(self.map_component.mapContainer.get(0));
       self.panel_closed = false;
@@ -326,7 +326,7 @@ function parseData(items, columns, columnIndex) {
 
   // generate map info content
   if (tooLargeDataSize || tooManyGeometries) {
-    infoList.push(supportedGeometries.length + gettext(' of ') + items.length + gettext(' geometries rendered.'));
+    infoList.push(gettext("%d of %d geometries rendered." %(supportedGeometries.length, items.length)));
   }
   if (geometries3D.length > 0) {
     infoList.push(gettext('3D geometries not rendered.'));
@@ -373,6 +373,7 @@ function parseData(items, columns, columnIndex) {
 
   if (mixedSRID) {
     infoList.push(gettext('Geometries with non-SRID') + selectedSRID + gettext(' not rendered.'));
+      infoList.push(gettext('Geometries with non-SRID %d not rendered.' %(selectedSRID)));
   }
 
   return {
