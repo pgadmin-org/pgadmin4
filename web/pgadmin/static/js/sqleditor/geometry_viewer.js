@@ -372,7 +372,6 @@ function parseData(items, columns, columnIndex) {
   }
 
   if (mixedSRID) {
-    infoList.push(gettext('Geometries with non-SRID') + selectedSRID + gettext(' not rendered.'));
       infoList.push(gettext('Geometries with non-SRID %d not rendered.' %(selectedSRID)));
   }
 
