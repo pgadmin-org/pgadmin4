@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-10-01 10:22+0100\n"
+"POT-Creation-Date: 2018-10-29 22:18+0530\n"
 "PO-Revision-Date: 2017-11-14 23:55+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -16,9 +16,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.5.1\n"
 
-#: pgadmin/__init__.py:478 pgadmin/__init__.py:531
+#: pgadmin/__init__.py:483 pgadmin/__init__.py:536
 #, python-format
 msgid "Auto-detected %s installation with the data directory at %s"
 msgstr "自动检测到%s的安装,数据目录在%s "
@@ -42,8 +42,8 @@ msgstr "桌面"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1219
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:185
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:264
-#: pgadmin/preferences/static/js/preferences.js:411
-#: pgadmin/preferences/static/js/preferences.js:440
+#: pgadmin/preferences/static/js/preferences.js:412
+#: pgadmin/preferences/static/js/preferences.js:441
 #: pgadmin/static/js/sqleditor/filter_dialog.js:69
 #: pgadmin/tools/datagrid/static/js/datagrid.js:273
 #: pgadmin/tools/datagrid/static/js/datagrid.js:341
@@ -90,8 +90,8 @@ msgid "Current User"
 msgstr "当前用户"
 
 #: pgadmin/about/templates/about/index.html:29
-#: pgadmin/browser/templates/browser/index.html:110
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:9
+#: pgadmin/browser/templates/browser/index.html:101
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:11
 #: pgadmin/templates/security/watermark.html:4
 msgid "logo"
 msgstr ""
@@ -134,6 +134,7 @@ msgstr "显示系统对象么？"
 #: pgadmin/browser/register_browser_preferences.py:16
 #: pgadmin/browser/register_browser_preferences.py:22
 #: pgadmin/browser/register_browser_preferences.py:28
+#: pgadmin/browser/register_browser_preferences.py:34
 #: pgadmin/dashboard/__init__.py:119 pgadmin/dashboard/__init__.py:127
 #: pgadmin/dashboard/__init__.py:135 pgadmin/dashboard/__init__.py:143
 #: pgadmin/tools/debugger/__init__.py:73
@@ -154,66 +155,76 @@ msgid "Enable dialogue/notification animation?"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:33
+msgid "Browser tree state saving interval"
+msgstr ""
+
+#: pgadmin/browser/register_browser_preferences.py:35
+msgid ""
+"Browser tree state saving interval in seconds.Use -1 to disable the tree "
+"saving mechanism."
+msgstr ""
+
+#: pgadmin/browser/register_browser_preferences.py:43
 msgid "Count rows if estimated less than"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:34
-#: pgadmin/browser/register_browser_preferences.py:40
+#: pgadmin/browser/register_browser_preferences.py:44
+#: pgadmin/browser/register_browser_preferences.py:50
 #: pgadmin/browser/static/js/browser.js:129
 msgid "Properties"
 msgstr "属性"
 
-#: pgadmin/browser/register_browser_preferences.py:39
+#: pgadmin/browser/register_browser_preferences.py:49
 msgid "Maximum job history rows"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:42
+#: pgadmin/browser/register_browser_preferences.py:52
 msgid ""
 "The maximum number of history rows to show on the Statistics tab for "
 "pgAgent jobs"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:49
-#: pgadmin/utils/__init__.py:292 pgadmin/utils/__init__.py:301
+#: pgadmin/browser/register_browser_preferences.py:59
+#: pgadmin/utils/__init__.py:304 pgadmin/utils/__init__.py:313
 msgid "Key"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:50
-#: pgadmin/static/js/keyboard_shortcuts.js:75 pgadmin/utils/__init__.py:306
+#: pgadmin/browser/register_browser_preferences.py:60
+#: pgadmin/static/js/keyboard_shortcuts.js:75 pgadmin/utils/__init__.py:318
 msgid "Shift"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:51
-#: pgadmin/static/js/keyboard_shortcuts.js:78 pgadmin/utils/__init__.py:312
+#: pgadmin/browser/register_browser_preferences.py:61
+#: pgadmin/static/js/keyboard_shortcuts.js:78 pgadmin/utils/__init__.py:324
 msgid "Ctrl"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:52
-#: pgadmin/utils/__init__.py:317
+#: pgadmin/browser/register_browser_preferences.py:62
+#: pgadmin/utils/__init__.py:329
 msgid "Alt/Option"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:58
+#: pgadmin/browser/register_browser_preferences.py:68
 msgid "Browser tree"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:66
-#: pgadmin/browser/register_browser_preferences.py:81
-#: pgadmin/browser/register_browser_preferences.py:96
-#: pgadmin/browser/register_browser_preferences.py:111
-#: pgadmin/browser/register_browser_preferences.py:126
-#: pgadmin/browser/register_browser_preferences.py:141
-#: pgadmin/browser/register_browser_preferences.py:156
-#: pgadmin/browser/register_browser_preferences.py:171
-#: pgadmin/browser/register_browser_preferences.py:186
-#: pgadmin/browser/register_browser_preferences.py:201
-#: pgadmin/browser/register_browser_preferences.py:216
-#: pgadmin/browser/register_browser_preferences.py:231
-#: pgadmin/browser/register_browser_preferences.py:246
-#: pgadmin/browser/register_browser_preferences.py:261
-#: pgadmin/browser/register_browser_preferences.py:276
-#: pgadmin/browser/register_browser_preferences.py:291
-#: pgadmin/browser/register_browser_preferences.py:306
+#: pgadmin/browser/register_browser_preferences.py:76
+#: pgadmin/browser/register_browser_preferences.py:91
+#: pgadmin/browser/register_browser_preferences.py:106
+#: pgadmin/browser/register_browser_preferences.py:121
+#: pgadmin/browser/register_browser_preferences.py:136
+#: pgadmin/browser/register_browser_preferences.py:151
+#: pgadmin/browser/register_browser_preferences.py:166
+#: pgadmin/browser/register_browser_preferences.py:181
+#: pgadmin/browser/register_browser_preferences.py:196
+#: pgadmin/browser/register_browser_preferences.py:211
+#: pgadmin/browser/register_browser_preferences.py:226
+#: pgadmin/browser/register_browser_preferences.py:241
+#: pgadmin/browser/register_browser_preferences.py:256
+#: pgadmin/browser/register_browser_preferences.py:271
+#: pgadmin/browser/register_browser_preferences.py:286
+#: pgadmin/browser/register_browser_preferences.py:301
+#: pgadmin/browser/register_browser_preferences.py:316
 #: pgadmin/tools/debugger/__init__.py:87 pgadmin/tools/debugger/__init__.py:100
 #: pgadmin/tools/debugger/__init__.py:113
 #: pgadmin/tools/debugger/__init__.py:126
@@ -245,67 +256,67 @@ msgstr ""
 msgid "Keyboard shortcuts"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:73
+#: pgadmin/browser/register_browser_preferences.py:83
 msgid "Tabbed panel backward"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:88
+#: pgadmin/browser/register_browser_preferences.py:98
 msgid "Tabbed panel forward"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:103
+#: pgadmin/browser/register_browser_preferences.py:113
 msgid "File main menu"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:118
+#: pgadmin/browser/register_browser_preferences.py:128
 msgid "Object main menu"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:133
+#: pgadmin/browser/register_browser_preferences.py:143
 msgid "Tools main menu"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:148
+#: pgadmin/browser/register_browser_preferences.py:158
 msgid "Help main menu"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:163
+#: pgadmin/browser/register_browser_preferences.py:173
 msgid "Open query tool"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:178
+#: pgadmin/browser/register_browser_preferences.py:188
 msgid "View data"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:193
+#: pgadmin/browser/register_browser_preferences.py:203
 msgid "Create object"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:208
+#: pgadmin/browser/register_browser_preferences.py:218
 msgid "Edit object properties"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:223
+#: pgadmin/browser/register_browser_preferences.py:233
 msgid "Delete object"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:238
+#: pgadmin/browser/register_browser_preferences.py:248
 msgid "Open context menu"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:253
+#: pgadmin/browser/register_browser_preferences.py:263
 msgid "Direct debugging"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:268
+#: pgadmin/browser/register_browser_preferences.py:278
 msgid "Dialog tab forward"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:283
+#: pgadmin/browser/register_browser_preferences.py:293
 msgid "Dialog tab backward"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:298
+#: pgadmin/browser/register_browser_preferences.py:308
 msgid "Refresh browser tree"
 msgstr ""
 
@@ -382,11 +393,11 @@ msgid "Server deleted"
 msgstr "服务器已经被删除"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:472
-#: pgadmin/browser/server_groups/servers/__init__.py:646
-#: pgadmin/browser/server_groups/servers/__init__.py:1358
-#: pgadmin/browser/server_groups/servers/__init__.py:1442
-#: pgadmin/browser/server_groups/servers/__init__.py:1517
-#: pgadmin/browser/server_groups/servers/__init__.py:1552
+#: pgadmin/browser/server_groups/servers/__init__.py:647
+#: pgadmin/browser/server_groups/servers/__init__.py:1359
+#: pgadmin/browser/server_groups/servers/__init__.py:1443
+#: pgadmin/browser/server_groups/servers/__init__.py:1518
+#: pgadmin/browser/server_groups/servers/__init__.py:1553
 msgid "Could not find the required server."
 msgstr "找不到所需的服务器"
 
@@ -435,7 +446,7 @@ msgid "Role"
 msgstr "角色"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:530
-#: pgadmin/browser/server_groups/servers/__init__.py:744
+#: pgadmin/browser/server_groups/servers/__init__.py:745
 msgid "Host address not valid"
 msgstr ""
 
@@ -447,7 +458,7 @@ msgstr "服务器在连接时, '{0}'不允许修改。"
 msgid "No parameters were changed."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:733
+#: pgadmin/browser/server_groups/servers/__init__.py:734
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:552
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:370
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:264
@@ -485,7 +496,7 @@ msgstr ""
 msgid "Could not find the required parameter (%s)."
 msgstr "找不到所需的参数 (%s)"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:831
+#: pgadmin/browser/server_groups/servers/__init__.py:832
 #, python-format
 msgid ""
 "Unable to connect to server:\n"
@@ -496,19 +507,19 @@ msgstr ""
 "\n"
 "%s"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:904
+#: pgadmin/browser/server_groups/servers/__init__.py:905
 msgid "Server has no active connection for generating statistics."
 msgstr "服务器有没有活动的连接，所以没有生成统计信息"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:970
-#: pgadmin/browser/server_groups/servers/__init__.py:1131
-#: pgadmin/browser/server_groups/servers/__init__.py:1237
+#: pgadmin/browser/server_groups/servers/__init__.py:971
+#: pgadmin/browser/server_groups/servers/__init__.py:1132
+#: pgadmin/browser/server_groups/servers/__init__.py:1238
 msgid "Server not found."
 msgstr "服务器未找到"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:976
-#: pgadmin/browser/server_groups/servers/__init__.py:978
-#: pgadmin/browser/server_groups/servers/__init__.py:1242
+#: pgadmin/browser/server_groups/servers/__init__.py:977
+#: pgadmin/browser/server_groups/servers/__init__.py:979
+#: pgadmin/browser/server_groups/servers/__init__.py:1243
 #: pgadmin/utils/driver/psycopg2/connection.py:256
 #: pgadmin/utils/driver/psycopg2/connection.py:1266
 #: pgadmin/utils/driver/psycopg2/connection.py:1548
@@ -516,27 +527,27 @@ msgstr "服务器未找到"
 msgid "Unauthorized request."
 msgstr "未经授权的请求"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1108
+#: pgadmin/browser/server_groups/servers/__init__.py:1109
 msgid "Server connected."
 msgstr "服务器已连接"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1139
+#: pgadmin/browser/server_groups/servers/__init__.py:1140
 msgid "Server could not be disconnected."
 msgstr "服务器不能被断开"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1143
+#: pgadmin/browser/server_groups/servers/__init__.py:1144
 msgid "Server disconnected."
 msgstr "服务器已经断开连接"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1163
+#: pgadmin/browser/server_groups/servers/__init__.py:1164
 msgid "Could not reload the server configuration."
 msgstr "不可以重新加载服务器配置"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1168
+#: pgadmin/browser/server_groups/servers/__init__.py:1169
 msgid "Server configuration reloaded."
 msgstr "已经重新加载服务器配置"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1174
+#: pgadmin/browser/server_groups/servers/__init__.py:1175
 #: pgadmin/dashboard/static/js/dashboard.js:467
 #: pgadmin/dashboard/static/js/dashboard.js:654
 #: pgadmin/static/js/sqleditor/execute_query.js:255
@@ -547,41 +558,41 @@ msgid ""
 "closed."
 msgstr "未连接到服务器或与服务器的连接已关闭。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1212
+#: pgadmin/browser/server_groups/servers/__init__.py:1213
 msgid "Named restore point created: {0}"
 msgstr "命名还原点已创建: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1262
-#: pgadmin/browser/server_groups/servers/__init__.py:1274
+#: pgadmin/browser/server_groups/servers/__init__.py:1263
+#: pgadmin/browser/server_groups/servers/__init__.py:1275
 #, fuzzy
 msgid "Could not find the required parameter(s)."
 msgstr "找不到所需的参数 (%s)"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1283
+#: pgadmin/browser/server_groups/servers/__init__.py:1284
 #: pgadmin/browser/server_groups/servers/static/js/server.js:488
 #: pgadmin/tools/user_management/__init__.py:100
 msgid "Passwords do not match."
 msgstr "密码不匹配"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1299
+#: pgadmin/browser/server_groups/servers/__init__.py:1300
 msgid "Incorrect password."
 msgstr "密码不正确"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1339
+#: pgadmin/browser/server_groups/servers/__init__.py:1340
 msgid "Password changed successfully."
 msgstr "成功更改密码"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1389
+#: pgadmin/browser/server_groups/servers/__init__.py:1390
 msgid "WAL replay paused"
 msgstr "WAL 重演已暂停"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1392
-#: pgadmin/browser/server_groups/servers/__init__.py:1450
+#: pgadmin/browser/server_groups/servers/__init__.py:1393
+#: pgadmin/browser/server_groups/servers/__init__.py:1451
 msgid "Please connect the server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1531
-#: pgadmin/browser/server_groups/servers/__init__.py:1567
+#: pgadmin/browser/server_groups/servers/__init__.py:1532
+#: pgadmin/browser/server_groups/servers/__init__.py:1568
 msgid "The saved password cleared successfully."
 msgstr ""
 
@@ -818,7 +829,7 @@ msgstr "转换中..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:313
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:134
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:100
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:261
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:263
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:86
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:128
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:74
@@ -1116,9 +1127,9 @@ msgstr "系统转化?"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:377
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:386
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:63
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:50
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:57
-#: pgadmin/static/js/backform.pgadmin.js:415
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:58
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:65
+#: pgadmin/static/js/backform.pgadmin.js:416
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1598
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1628
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2116
@@ -1144,9 +1155,9 @@ msgstr "是"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:377
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:386
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:63
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:51
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:58
-#: pgadmin/static/js/backform.pgadmin.js:416
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:59
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:66
+#: pgadmin/static/js/backform.pgadmin.js:417
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1599
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1629
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2117
@@ -1193,7 +1204,7 @@ msgstr "否"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:155
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:120
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:319
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:442
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:444
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:129
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:194
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:349
@@ -1473,7 +1484,7 @@ msgstr "可重定位?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:515
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:794
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:450
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:450
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:452
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:152
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:219
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:94
@@ -1785,7 +1796,7 @@ msgstr "删除语言"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:226
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:159
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:83
-#: pgadmin/templates/security/login_user.html:14
+#: pgadmin/templates/security/login_user.html:12
 msgid "Language"
 msgstr "语言"
 
@@ -1854,7 +1865,7 @@ msgid "Schema dropped"
 msgstr "模式已被删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:773
-#: pgadmin/static/js/backform.pgadmin.js:1528
+#: pgadmin/static/js/backform.pgadmin.js:1529
 msgid "Definition incomplete."
 msgstr "定义不完整"
 
@@ -2989,7 +3000,7 @@ msgid "Increment"
 msgstr "增量"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:128
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:269
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:271
 msgid "Start"
 msgstr "起始值"
 
@@ -3075,7 +3086,7 @@ msgstr "表"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:143
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:204
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:184
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:265
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:267
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:92
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:131
 msgid "Enabled?"
@@ -4285,7 +4296,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:246
 #: pgadmin/browser/static/js/browser.js:244
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:15
-#: pgadmin/misc/file_manager/static/js/create_dialogue.js:129
+#: pgadmin/misc/file_manager/static/js/create_dialogue.js:136
 msgid "Create"
 msgstr "创建"
 
@@ -5957,25 +5968,25 @@ msgstr "<任何>"
 msgid "Time"
 msgstr "时间"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:164
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:166
 msgid "Please specify date/time."
 msgstr "请指定日期/时间"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:177
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:179
 msgid "Please specify unique set of exceptions."
 msgstr "请指定一系列独特的例外"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:196
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:198
 msgid "Schedule"
 msgstr "调度"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:208
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:213
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:218
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:210
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:215
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:220
 msgid "Schedule..."
 msgstr "调度"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:258
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:260
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:89
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:125
 #: pgadmin/browser/server_groups/servers/static/js/server.js:747
@@ -5983,51 +5994,51 @@ msgstr "调度"
 msgid "ID"
 msgstr "ID"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:278
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:280
 msgid "End"
 msgstr "结束"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:287
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:289
 msgid "Week days"
 msgstr "工作日"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:292
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:294
 msgid "Month days"
 msgstr "日期"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:297
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:387
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:299
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:389
 msgid "Months"
 msgstr "月份"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:302
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:406
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:304
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:408
 msgid "Hours"
 msgstr "小时"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:307
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:421
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:309
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:423
 msgid "Minutes"
 msgstr "分钟"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:312
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:439
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:314
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:441
 msgid "Exceptions"
 msgstr "异常"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:337
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:357
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:373
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:388
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:339
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:359
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:375
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:390
 msgid "Days"
 msgstr "天"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:337
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:404
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:339
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:406
 msgid "Repeat"
 msgstr "重复"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:348
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:350
 msgid ""
 "Schedules are specified using a <b>cron-style</b> format.<br/><ul><li>For"
 " each selected time or date element, the schedule will execute.<br/>e.g. "
@@ -6046,45 +6057,45 @@ msgstr ""
 "要在每周一和周四的12:05和14:05执行，您将单击分钟05，小时12和14，以及工作日周一和周四。</ li> "
 "<li>为了提高灵活性，月天检查清单包括额外的最后一天选项。 这与月份的最后一天相符，无论是第28，29，30或31日。</ li> </ ul>"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:356
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:358
 msgid "Week Days"
 msgstr "工作日"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:362
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:364
 msgid "Select the weekdays..."
 msgstr "选择工作日..."
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:372
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:374
 msgid "Month Days"
 msgstr "日期"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:378
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:380
 msgid "Select the month days..."
 msgstr "选择日期..."
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:393
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:395
 msgid "Select the months..."
 msgstr "选择月..."
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:403
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:407
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:422
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:405
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:409
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:424
 msgid "Times"
 msgstr "次数"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:412
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:414
 msgid "Select the hours..."
 msgstr "选择小时..."
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:427
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:429
 msgid "Select the minutes..."
 msgstr "选择分钟..."
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:460
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:462
 msgid "Please enter the start time."
 msgstr "请输入开始时间"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:492
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:494
 msgid "Start time must be less than end time"
 msgstr ""
 
@@ -6193,7 +6204,7 @@ msgstr "类型"
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:128
 #: pgadmin/browser/static/js/browser.js:155
 #: pgadmin/dashboard/static/js/dashboard.js:180
-#: pgadmin/static/js/backform.pgadmin.js:1722
+#: pgadmin/static/js/backform.pgadmin.js:1723
 msgid "SQL"
 msgstr "SQL"
 
@@ -6298,13 +6309,13 @@ msgstr "Run"
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:3
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:3
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:548
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:627
 msgid "Status"
 msgstr "Status"
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:4
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:5
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:540
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:613
 msgid "Start time"
 msgstr "Start time"
 
@@ -6873,13 +6884,13 @@ msgstr "确定"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:428
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1196
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:187
-#: pgadmin/browser/static/js/node.js:1380
+#: pgadmin/browser/static/js/node.js:1391
 #: pgadmin/browser/static/js/wizard.js:137
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:20
-#: pgadmin/misc/file_manager/static/js/create_dialogue.js:153
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:83
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:116
-#: pgadmin/preferences/static/js/preferences.js:415
+#: pgadmin/misc/file_manager/static/js/create_dialogue.js:160
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:87
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:127
+#: pgadmin/preferences/static/js/preferences.js:416
 #: pgadmin/static/js/sqleditor/filter_dialog.js:73
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:58
 #: pgadmin/tools/datagrid/static/js/datagrid.js:278
@@ -6895,7 +6906,7 @@ msgid "Cancel"
 msgstr "取消"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:514
-#: pgadmin/browser/templates/browser/index.html:160
+#: pgadmin/browser/templates/browser/index.html:153
 #: pgadmin/templates/security/change_password.html:11
 #: pgadmin/templates/security/change_password.html:12
 #: pgadmin/tools/user_management/static/js/user_management.js:43
@@ -6955,14 +6966,14 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:762
 #: pgadmin/misc/statistics/static/js/statistics.js:94
-#: pgadmin/preferences/static/js/preferences.js:203
+#: pgadmin/preferences/static/js/preferences.js:204
 #: pgadmin/static/js/backgrid.pgadmin.js:451
 msgid "True"
 msgstr "是"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:762
 #: pgadmin/misc/statistics/static/js/statistics.js:95
-#: pgadmin/preferences/static/js/preferences.js:204
+#: pgadmin/preferences/static/js/preferences.js:205
 #: pgadmin/static/js/backgrid.pgadmin.js:452
 msgid "False"
 msgstr "否"
@@ -7122,8 +7133,8 @@ msgid "Please select a parameter name."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:331
-#: pgadmin/static/js/backform.pgadmin.js:993
-#: pgadmin/static/js/backform.pgadmin.js:1261
+#: pgadmin/static/js/backform.pgadmin.js:994
+#: pgadmin/static/js/backform.pgadmin.js:1262
 msgid "Add new row"
 msgstr ""
 
@@ -7188,7 +7199,7 @@ msgid "Move objects to another tablespace"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:182
-#: pgadmin/browser/templates/browser/index.html:165
+#: pgadmin/browser/templates/browser/index.html:158
 #: pgadmin/tools/user_management/__init__.py:43
 #: pgadmin/tools/user_management/static/js/user_management.js:585
 msgid "Users"
@@ -7382,14 +7393,9 @@ msgstr ""
 msgid "No object selected"
 msgstr "没有选中的对象"
 
-#: pgadmin/browser/static/js/browser.js:1613
+#: pgadmin/browser/static/js/browser.js:1615
 msgid "Error retrieving details for the node."
 msgstr "检索节点的详细信息时出错"
-
-#: pgadmin/browser/static/js/browser.js:1947
-#, python-format
-msgid "Are you sure you wish to close the %s browser?"
-msgstr ""
 
 #: pgadmin/browser/static/js/collection.js:35
 #: pgadmin/browser/static/js/node.js:106
@@ -7500,46 +7506,46 @@ msgstr "删除%s 么？"
 msgid "Error dropping %s: \"%s\""
 msgstr "删除%s: \"%s\"时，出错"
 
-#: pgadmin/browser/static/js/node.js:1126
-#: pgadmin/browser/templates/browser/index.html:127
+#: pgadmin/browser/static/js/node.js:1137
+#: pgadmin/browser/templates/browser/index.html:119
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:141
 msgid "Edit"
 msgstr "编辑"
 
-#: pgadmin/browser/static/js/node.js:1140
-#: pgadmin/browser/static/js/node.js:1345
+#: pgadmin/browser/static/js/node.js:1151
+#: pgadmin/browser/static/js/node.js:1356
 msgid "SQL help for this object type."
 msgstr "此对象类型的SQL帮助"
 
-#: pgadmin/browser/static/js/node.js:1263
+#: pgadmin/browser/static/js/node.js:1274
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1108
 msgid "Error saving properties"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1357
+#: pgadmin/browser/static/js/node.js:1368
 #: pgadmin/browser/static/js/wizard.js:125
 msgid "Help for this dialog."
 msgstr "此对话框的帮助"
 
-#: pgadmin/browser/static/js/node.js:1367
+#: pgadmin/browser/static/js/node.js:1378
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:43
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:567
 msgid "Save"
 msgstr "保存"
 
-#: pgadmin/browser/static/js/node.js:1369
+#: pgadmin/browser/static/js/node.js:1380
 msgid "Save this object."
 msgstr "保存该对象"
 
-#: pgadmin/browser/static/js/node.js:1382
+#: pgadmin/browser/static/js/node.js:1393
 msgid "Cancel changes to this object."
 msgstr "取消对该对象的更改"
 
-#: pgadmin/browser/static/js/node.js:1394
+#: pgadmin/browser/static/js/node.js:1405
 msgid "Reset"
 msgstr "重置"
 
-#: pgadmin/browser/static/js/node.js:1396
+#: pgadmin/browser/static/js/node.js:1407
 msgid "Reset the fields on this dialog."
 msgstr "重置此对话框中的字段"
 
@@ -7554,13 +7560,14 @@ msgstr "全部取消选择"
 #: pgadmin/browser/static/js/toolbar.js:29
 #: pgadmin/tools/datagrid/static/js/datagrid.js:103
 #: pgadmin/tools/datagrid/static/js/datagrid.js:115
+#: pgadmin/tools/sqleditor/__init__.py:67
 msgid "Query Tool"
 msgstr "查询工具"
 
 #: pgadmin/browser/static/js/wizard.js:79
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:236
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:419
-#: pgadmin/templates/security/messages.html:6
+#: pgadmin/templates/security/messages.html:7
 #: pgadmin/tools/user_management/static/js/user_management.js:76
 #: pgadmin/tools/user_management/static/js/user_management.js:169
 #: pgadmin/tools/user_management/static/js/user_management.js:592
@@ -7578,7 +7585,7 @@ msgid "Left panel logo"
 msgstr ""
 
 #: pgadmin/browser/static/js/wizard.js:132
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:12
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:13
 msgid "Back"
 msgstr ""
 
@@ -7590,36 +7597,36 @@ msgstr ""
 msgid "Finish"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:97
+#: pgadmin/browser/templates/browser/index.html:96
 msgid "Loading {0} v{1}..."
 msgstr "加载{0}v{1}.."
 
-#: pgadmin/browser/templates/browser/index.html:104
+#: pgadmin/browser/templates/browser/index.html:106
 msgid "Toggle navigation"
 msgstr "切换导航"
 
-#: pgadmin/browser/templates/browser/index.html:122
+#: pgadmin/browser/templates/browser/index.html:114
 msgid "File"
 msgstr "文件"
 
-#: pgadmin/browser/templates/browser/index.html:132
+#: pgadmin/browser/templates/browser/index.html:124
 msgid "Object"
 msgstr "对象"
 
-#: pgadmin/browser/templates/browser/index.html:137
+#: pgadmin/browser/templates/browser/index.html:129
 msgid "Management"
 msgstr "管理"
 
-#: pgadmin/browser/templates/browser/index.html:142
+#: pgadmin/browser/templates/browser/index.html:134
 msgid "Tools"
 msgstr "工具"
 
-#: pgadmin/browser/templates/browser/index.html:147 pgadmin/help/__init__.py:75
+#: pgadmin/browser/templates/browser/index.html:139 pgadmin/help/__init__.py:75
 #: pgadmin/help/__init__.py:86 pgadmin/static/js/sqleditor/filter_dialog.js:63
 msgid "Help"
 msgstr "帮助"
 
-#: pgadmin/browser/templates/browser/index.html:168
+#: pgadmin/browser/templates/browser/index.html:161
 msgid "Logout"
 msgstr "注销"
 
@@ -7963,94 +7970,94 @@ msgstr ""
 msgid " another users query."
 msgstr ""
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:6
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:7
 msgid "Database sessions"
 msgstr "数据库会话"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:11
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:11
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:12
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:12
 msgid "Transactions per second"
 msgstr "每秒事务数"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:27
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:27
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:28
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:28
 msgid "Tuples in"
 msgstr "元组插入"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:32
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:32
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:33
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:33
 msgid "Tuples out"
 msgstr "元组读取"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:37
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:37
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:38
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:38
 msgid "Block I/O"
 msgstr "数据块 I/O"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:58
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:59
 msgid "Database activity"
 msgstr "数据库活动"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:69
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:69
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:70
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:70
 msgid "Sessions"
 msgstr "会话"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:73
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:73
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:74
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:74
 msgid "Locks"
 msgstr "锁"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:76
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:76
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:77
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:77
 msgid "Prepared Transactions"
 msgstr "准备事务"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:83
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:90
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:97
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:86
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:93
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:100
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:107
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:21
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:84
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:91
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:98
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:87
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:94
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:101
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:108
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:25
 msgid "Refresh"
 msgstr "刷新"
 
-#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:108
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:118
+#: pgadmin/dashboard/templates/dashboard/database_dashboard.html:109
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:119
 msgid "All Dashboard elements are currently disabled."
 msgstr ""
 
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:6
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:7
 msgid "Server sessions"
 msgstr "服务器会话"
 
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:58
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:59
 msgid "Server activity"
 msgstr "服务器活动"
 
-#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:79
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:80
 msgid "Configuration"
 msgstr "配置"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:5
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:6
 msgid "Welcome"
 msgstr ""
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:10
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:12
 msgid "Feature rich"
 msgstr "丰富特性"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:10
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:12
 msgid "Maximises PostgreSQL"
 msgstr "最强的PostgreSQL"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:10
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:12
 msgid "Open Source"
 msgstr "开源"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:12
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:14
 msgid ""
 "pgAdmin is an Open Source administration and management tool for the "
 "PostgreSQL database. It includes a graphical administration interface, an"
@@ -8059,36 +8066,36 @@ msgid ""
 "administrators alike."
 msgstr ""
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:20
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:23
 msgid "Quick Links"
 msgstr "快速链接"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:27
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:31
 msgid "Add New Server"
 msgstr "添加新的服务器"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:34
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:38
 msgid "Configure pgAdmin"
 msgstr "配置　pgAdmin"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:45
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:49
 msgid "Getting Started"
 msgstr "开始"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:52
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:57
 msgid "PostgreSQL Documentation"
 msgstr "PostgreSQL 文档"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:58
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:63
 #: pgadmin/help/__init__.py:34
 msgid "pgAdmin Website"
 msgstr "pgAdmin 主页"
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:64
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:69
 msgid "Planet PostgreSQL"
 msgstr ""
 
-#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:70
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:75
 msgid "Community Support"
 msgstr "社区支持"
 
@@ -8190,7 +8197,7 @@ msgid ""
 " with the major.minor version number."
 msgstr "EDB Advanced Server文档的路径。 $VERSION$将替换为major.minor版本号。"
 
-#: pgadmin/misc/__init__.py:49 pgadmin/tools/backup/static/js/backup.js:86
+#: pgadmin/misc/__init__.py:50 pgadmin/tools/backup/static/js/backup.js:86
 #: pgadmin/tools/backup/static/js/backup.js:92
 #: pgadmin/tools/backup/static/js/backup.js:98
 #: pgadmin/tools/backup/static/js/backup.js:451
@@ -8207,52 +8214,65 @@ msgstr "EDB Advanced Server文档的路径。 $VERSION$将替换为major.minor�
 msgid "Miscellaneous"
 msgstr "杂项"
 
-#: pgadmin/misc/__init__.py:64 pgadmin/misc/__init__.py:65
+#: pgadmin/misc/__init__.py:65 pgadmin/misc/__init__.py:66
 #, fuzzy
 msgid "User language"
 msgstr "语言"
 
-#: pgadmin/misc/bgprocess/processes.py:80
-#: pgadmin/misc/bgprocess/processes.py:628
+#: pgadmin/misc/bgprocess/processes.py:86
+#: pgadmin/misc/bgprocess/processes.py:653
+#: pgadmin/misc/bgprocess/processes.py:696
 msgid "Could not find a process with the specified ID."
 msgstr "找不到具有指定 ID 的进程"
 
-#: pgadmin/misc/bgprocess/processes.py:244
+#: pgadmin/misc/bgprocess/processes.py:254
 msgid "The process has already been started."
 msgstr "进程已被启动。"
 
-#: pgadmin/misc/bgprocess/processes.py:246
+#: pgadmin/misc/bgprocess/processes.py:256
 #, fuzzy
 msgid "The process has already finished and cannot be restarted."
 msgstr "该进程过程已经结束，不能重新启动。"
 
-#: pgadmin/misc/bgprocess/processes.py:530
+#: pgadmin/misc/bgprocess/processes.py:554
 msgid "Status for the background process '{0}' could not be loaded."
 msgstr ""
 
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:175
+#: pgadmin/misc/bgprocess/processes.py:707
+msgid "Unable to kill the background process '{0}'"
+msgstr ""
+
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:182
 msgid "Started"
 msgstr "已启动"
 
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:183
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:190
+msgid "Terminated by user."
+msgstr ""
+
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:192
 msgid "Successfully completed."
 msgstr "成功完成"
 
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:186
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:195
 #, python-format
 msgid "Failed (exit code: %s)."
 msgstr "失败(退出代码: %s)."
 
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:270
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:294
 msgid "Click here for details."
 msgstr "点击这里查看详情。"
 
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:321
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:388
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:350
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:438
 msgid "seconds"
 msgstr "秒"
 
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:552
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:619
+msgid "Stop Process"
+msgstr ""
+
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:631
 msgid "Execution time"
 msgstr "执行时间"
 
@@ -8359,19 +8379,19 @@ msgstr "已成功重命名"
 msgid "There was an error renaming the file:"
 msgstr "重命名文件时出错:"
 
-#: pgadmin/misc/file_manager/static/js/create_dialogue.js:124
+#: pgadmin/misc/file_manager/static/js/create_dialogue.js:131
 #: pgadmin/misc/file_manager/static/js/utility.js:420
 #, fuzzy
 msgid "Error occurred while checking access permission."
 msgstr "在解释设置成本选项时发生错误"
 
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:78
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:102
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:82
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:113
 msgid "Select"
 msgstr "选择"
 
 #: pgadmin/misc/file_manager/static/js/utility.js:473
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:41
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:49
 #: pgadmin/tools/debugger/static/js/direct.js:1851
 msgid "Loading..."
 msgstr "加载中..."
@@ -8392,39 +8412,39 @@ msgstr "所有文件"
 msgid "Format"
 msgstr "格式"
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:9
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:10
 msgid "Home"
 msgstr ""
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:23
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:27
 msgid "Download File"
 msgstr ""
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:26
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:30
 msgid "Delete File/Folder"
 msgstr ""
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:29
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:33
 msgid "Rename File/Folder"
 msgstr ""
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:32
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:36
 msgid "Create new folder"
 msgstr ""
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:34
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:39
 msgid "View as grid"
 msgstr ""
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:35
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:41
 msgid "View as table"
 msgstr ""
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:48
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:56
 msgid "Are you sure you want to delete this item?"
 msgstr ""
 
-#: pgadmin/misc/file_manager/templates/file_manager/index.html:55
+#: pgadmin/misc/file_manager/templates/file_manager/index.html:63
 msgid "Are you sure you want to replace this file?"
 msgstr ""
 
@@ -8437,8 +8457,8 @@ msgid "No statistics are available for the selected object."
 msgstr "没有可用于所选对象的统计数字可用于所选对象"
 
 #: pgadmin/preferences/__init__.py:55
-#: pgadmin/preferences/static/js/preferences.js:403
-#: pgadmin/preferences/static/js/preferences.js:425
+#: pgadmin/preferences/static/js/preferences.js:404
+#: pgadmin/preferences/static/js/preferences.js:426
 msgid "Preferences"
 msgstr "首选项"
 
@@ -8452,23 +8472,23 @@ msgstr "标签"
 msgid "help_str"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:212
+#: pgadmin/preferences/static/js/preferences.js:213
 msgid "Show"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:213
+#: pgadmin/preferences/static/js/preferences.js:214
 msgid "Hide"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:368
+#: pgadmin/preferences/static/js/preferences.js:369
 msgid "Category is not selected."
 msgstr ""
 
-#: pgadmin/settings/__init__.py:44
+#: pgadmin/settings/__init__.py:46
 msgid "Reset Layout"
 msgstr "重置布局"
 
-#: pgadmin/settings/__init__.py:85 pgadmin/tools/backup/__init__.py:208
+#: pgadmin/settings/__init__.py:88 pgadmin/tools/backup/__init__.py:209
 #: pgadmin/tools/debugger/__init__.py:236
 #: pgadmin/tools/import_export/__init__.py:155
 #: pgadmin/tools/maintenance/__init__.py:148
@@ -8505,29 +8525,29 @@ msgstr ""
 msgid "INTERNAL SERVER ERROR"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:1532
+#: pgadmin/static/js/backform.pgadmin.js:1533
 msgid "Nothing changed."
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:1646
+#: pgadmin/static/js/backform.pgadmin.js:1647
 msgid "General"
 msgstr "通常"
 
-#: pgadmin/static/js/backform.pgadmin.js:2225
+#: pgadmin/static/js/backform.pgadmin.js:2226
 #: pgadmin/tools/backup/static/js/backup.js:102
 #: pgadmin/tools/backup/static/js/backup.js:234
 msgid "Note"
 msgstr "注意"
 
-#: pgadmin/static/js/backform.pgadmin.js:2553
+#: pgadmin/static/js/backform.pgadmin.js:2566
 msgid "More"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:2554
+#: pgadmin/static/js/backform.pgadmin.js:2567
 msgid "Less"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:2638
+#: pgadmin/static/js/backform.pgadmin.js:2651
 msgid "Space"
 msgstr ""
 
@@ -8787,6 +8807,14 @@ msgstr ""
 msgid "\" received from server process with PID "
 msgstr ""
 
+#: pgadmin/static/js/tree/pgadmin_tree_save_state.js:92
+msgid "Error saving the tree state.\""
+msgstr ""
+
+#: pgadmin/static/js/tree/pgadmin_tree_save_state.js:120
+msgid "Error fetching the tree state.\""
+msgstr ""
+
 #: pgadmin/templates/security/change_password.html:2
 #, python-format
 msgid "%(appname)s Password Change"
@@ -8813,12 +8841,11 @@ msgstr "恢复 %(appname) 的密码"
 msgid "%(appname)s Login"
 msgstr "%(appname)s Login"
 
-#: pgadmin/templates/security/login_user.html:11
-#: pgadmin/templates/security/login_user.html:12
+#: pgadmin/templates/security/login_user.html:10
 msgid "Login"
 msgstr "登录"
 
-#: pgadmin/templates/security/login_user.html:25
+#: pgadmin/templates/security/login_user.html:23
 #, python-format
 msgid "Forgotten your <a href=\"%(url)s\">password</a>?"
 msgstr "忘记你的<a href=\"%(url)s\"> 密码</a>了吗?"
@@ -8845,30 +8872,33 @@ msgstr "此 URL 不能直接被请求"
 msgid "Backup"
 msgstr "备份"
 
-#: pgadmin/tools/backup/__init__.py:132 pgadmin/tools/backup/__init__.py:164
+#: pgadmin/tools/backup/__init__.py:133 pgadmin/tools/backup/__init__.py:165
 msgid "Backing up an object on the server '{0}' from database '{1}'..."
 msgstr "服务器'{0}'上备份数据库'{1}'的一个对象..."
 
-#: pgadmin/tools/backup/__init__.py:142 pgadmin/tools/backup/__init__.py:176
+#: pgadmin/tools/backup/__init__.py:143 pgadmin/tools/backup/__init__.py:177
 #, fuzzy
 msgid "Backing up the global objects on the server '{0}'..."
 msgstr "在服务器- '{0}' 上备份全局对象"
 
-#: pgadmin/tools/backup/__init__.py:149 pgadmin/tools/backup/__init__.py:185
+#: pgadmin/tools/backup/__init__.py:150 pgadmin/tools/backup/__init__.py:186
 msgid "Backing up the server '{0}'..."
 msgstr "备份服务器'{0}'..."
 
-#: pgadmin/tools/backup/__init__.py:197
+#: pgadmin/tools/backup/__init__.py:198
 #: pgadmin/tools/import_export/__init__.py:144
 #: pgadmin/tools/restore/__init__.py:126
 msgid "Running command:"
 msgstr "运行命令:"
 
-#: pgadmin/tools/backup/__init__.py:304 pgadmin/tools/restore/__init__.py:216
+#: pgadmin/tools/backup/__init__.py:305 pgadmin/tools/backup/__init__.py:495
+#: pgadmin/tools/import_export/__init__.py:354
+#: pgadmin/tools/maintenance/__init__.py:293
+#: pgadmin/tools/restore/__init__.py:216 pgadmin/tools/restore/__init__.py:394
 msgid "Could not find the specified server."
 msgstr "找不到指定的服务器"
 
-#: pgadmin/tools/backup/__init__.py:317
+#: pgadmin/tools/backup/__init__.py:318
 #: pgadmin/tools/maintenance/__init__.py:213
 #: pgadmin/tools/restore/__init__.py:230
 msgid "Please connect to the server first."
@@ -9066,13 +9096,13 @@ msgstr "使用设置会话授权"
 
 #: pgadmin/tools/backup/static/js/backup.js:506
 #: pgadmin/tools/backup/static/js/backup.js:525
-#: pgadmin/tools/backup/static/js/backup_dialog.js:62
+#: pgadmin/tools/backup/static/js/backup_dialog.js:95
 msgid "Backup Globals..."
 msgstr "备份全局..."
 
 #: pgadmin/tools/backup/static/js/backup.js:515
 #: pgadmin/tools/backup/static/js/backup.js:535
-#: pgadmin/tools/backup/static/js/backup_dialog.js:63
+#: pgadmin/tools/backup/static/js/backup_dialog.js:96
 msgid "Backup Server..."
 msgstr "备份服务器..."
 
@@ -9081,16 +9111,38 @@ msgstr "备份服务器..."
 msgid "Backup..."
 msgstr "备份..."
 
-#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:151
+#: pgadmin/tools/backup/static/js/backup_dialog.js:52
+#: pgadmin/tools/backup/static/js/backup_dialog.js:72
+#: pgadmin/tools/import_export/static/js/import_export.js:672
+#: pgadmin/tools/import_export/static/js/import_export.js:687
+#: pgadmin/tools/maintenance/static/js/maintenance.js:485
+#: pgadmin/tools/maintenance/static/js/maintenance.js:495
+#: pgadmin/tools/restore/static/js/restore_dialog.js:52
+#: pgadmin/tools/restore/static/js/restore_dialog.js:75
+msgid "Utility not found"
+msgstr ""
+
+#: pgadmin/tools/backup/static/js/backup_dialog.js:73
+#: pgadmin/tools/import_export/static/js/import_export.js:688
+#: pgadmin/tools/maintenance/static/js/maintenance.js:496
+#: pgadmin/tools/restore/static/js/restore_dialog.js:76
+msgid "Failed to fetch Utility information"
+msgstr ""
+
+#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:152
 msgid "Backup job created."
 msgstr "创建备份作业"
 
-#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:157
+#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:156
+msgid "Backup job creation failed."
+msgstr ""
+
+#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:164
 msgid "Backup job failed."
 msgstr "备份作业失败"
 
-#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:228
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:214
+#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:235
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:221
 msgid "Please provide a filename"
 msgstr "请输入文件名"
 
@@ -9139,8 +9191,8 @@ msgstr ""
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:38
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:143
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:194
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:228
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:304
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:234
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:310
 msgid "Toggle Dropdown"
 msgstr ""
 
@@ -9260,69 +9312,69 @@ msgstr ""
 msgid "Sort/Filter"
 msgstr ""
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:199
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:201
 msgid "Filter by Selection"
 msgstr ""
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:200
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:204
 msgid "Exclude by Selection"
 msgstr ""
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:201
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:207
 msgid "Remove Sort/Filter"
 msgstr ""
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:210
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:216
 msgid "No limit"
 msgstr ""
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:211
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:217
 msgid "1000 rows"
 msgstr ""
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:212
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:218
 msgid "500 rows"
 msgstr ""
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:213
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:219
 msgid "100 rows"
 msgstr ""
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:248
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:254
 msgid "Explain Options"
 msgstr "解释选项"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:253
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:259
 msgid "Verbose"
 msgstr "详细信息"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:259
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:265
 msgid "Costs"
 msgstr "成本"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:265
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:271
 msgid "Buffers"
 msgstr "缓冲区"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:271
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:277
 msgid "Timing"
 msgstr "计时"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:280
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:286
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:67
 msgid "Auto commit?"
 msgstr "自动提交么?"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:286
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:292
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:73
 msgid "Auto rollback?"
 msgstr "自动回滚么?"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:309
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:315
 msgid "Clear Query Window"
 msgstr "清除查询窗口"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:314
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:320
 msgid "Clear History"
 msgstr "清除历史记录"
 
@@ -9793,8 +9845,8 @@ msgstr "找不到给定的服务器"
 msgid "Please connect to the server first..."
 msgstr "请先连接到服务器..."
 
-#: pgadmin/tools/import_export/__init__.py:246
-#: pgadmin/tools/import_export/__init__.py:253
+#: pgadmin/tools/import_export/__init__.py:252
+#: pgadmin/tools/import_export/__init__.py:259
 #, fuzzy
 msgid "Please specify a valid file"
 msgstr "请指定标签的值"
@@ -9923,27 +9975,31 @@ msgstr "请在树中选择服务器或子节点"
 msgid "Import/export job created."
 msgstr "导入/导出作业创建"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:543
+#: pgadmin/tools/import_export/static/js/import_export.js:539
+msgid "Import/export job creation failed."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.js:548
 msgid "Import/export job failed."
 msgstr "导入/导出作业失败"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:625
+#: pgadmin/tools/import_export/static/js/import_export.js:630
 msgid "Escape should contain only one character"
 msgstr "逃逸应只包含一个字符"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:629
+#: pgadmin/tools/import_export/static/js/import_export.js:634
 msgid "Quote should contain only one character"
 msgstr "引用应只包含有一个字符"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:633
+#: pgadmin/tools/import_export/static/js/import_export.js:638
 msgid "Delimiter should contain only one character"
 msgstr "分隔符应仅包含一个字符"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:637
+#: pgadmin/tools/import_export/static/js/import_export.js:642
 msgid "Please provide filename"
 msgstr "请输入文件名"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:658
+#: pgadmin/tools/import_export/static/js/import_export.js:681
 #, python-format
 msgid "Import/Export data - table '%s'"
 msgstr "导入/导出数据的表 '%s'"
@@ -10045,7 +10101,8 @@ msgid ""
 "cannot be maintained using this utility."
 msgstr ""
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:400
+#: pgadmin/tools/maintenance/static/js/maintenance.js:396
+#: pgadmin/tools/maintenance/static/js/maintenance.js:403
 msgid "Maintenance job creation failed."
 msgstr "维护任务创建失败"
 
@@ -10105,22 +10162,22 @@ msgstr "退出由于错误"
 msgid "Restore..."
 msgstr "还原中..."
 
-#: pgadmin/tools/restore/static/js/restore_dialog.js:46
+#: pgadmin/tools/restore/static/js/restore_dialog.js:70
 #, python-format
 msgid "Restore (%s: %s)"
 msgstr ""
 
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:140
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:141
 msgid "Restore job created."
 msgstr "还原任务创建"
 
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:146
-msgid "Restore job failed."
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:145
+msgid "Restore job creation failed."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:67
-msgid "SQL Editor"
-msgstr "SQL 编辑器"
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:153
+msgid "Restore job failed."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/__init__.py:72
 msgid "Query tool"
@@ -10809,6 +10866,13 @@ msgid ""
 "Are you sure you want to close the dialog? Any unsaved changes will be "
 "lost."
 msgstr "确定要关闭对话框吗？任何未保存的更改将丢失。"
+
+#: pgadmin/utils/__init__.py:294
+#, python-format
+msgid ""
+"'%s' file not found. Please correct the Binary Path in the Preferences "
+"dialog"
+msgstr ""
 
 #: pgadmin/utils/ajax.py:156
 msgid "Not implemented."
@@ -11799,4 +11863,10 @@ msgstr "找不到指定的数据库"
 
 #~ msgid "Filter string is empty."
 #~ msgstr "筛选字符串为空"
+
+#~ msgid "Are you sure you wish to close the %s browser?"
+#~ msgstr ""
+
+#~ msgid "SQL Editor"
+#~ msgstr "SQL 编辑器"
 
