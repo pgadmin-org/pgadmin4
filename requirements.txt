@@ -6,7 +6,7 @@
 blinker==1.4
 extras==1.0.0
 fixtures==3.0.0
-Flask==0.12.2
+Flask==1.0.2
 Flask-Gravatar==0.5.0
 Flask-Login==0.3.2
 Flask-Mail==0.9.1
