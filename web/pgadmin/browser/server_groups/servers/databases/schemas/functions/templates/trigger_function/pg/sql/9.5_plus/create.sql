@@ -23,9 +23,7 @@ CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.proa
 AS {% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
 {% else %}
-$BODY$
-{{ data.prosrc }}
-$BODY${% endif -%};
+$BODY${{ data.prosrc }}$BODY${% endif -%};
 {% if data.funcowner %}
 
 ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args}})

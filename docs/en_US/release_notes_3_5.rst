@@ -21,6 +21,7 @@ Bug fixes
 | `Bug #3638 <https://redmine.postgresql.org/issues/3638>`_ - Fix syntax error when creating new pgAgent schedules with a start date/time and exception.
 | `Bug #3674 <https://redmine.postgresql.org/issues/3674>`_ - Cleanup session files periodically.
 | `Bug #3660 <https://redmine.postgresql.org/issues/3660>`_ - Rename the 'SQL Editor' section of the Preferences to 'Query Tool' as it applies to the whole tool, not just the editor.
+| `Bug #3676 <https://redmine.postgresql.org/issues/3676>`_ - Fix CREATE Script functionality for EDB-Wrapped functions.
 | `Bug #3700 <https://redmine.postgresql.org/issues/3700>`_ - Fix connection garbage collector.
 | `Bug #3703 <https://redmine.postgresql.org/issues/3703>`_ - Purge connections from the cache on logout.
 | `Bug #3722 <https://redmine.postgresql.org/issues/3722>`_ - Ensure that utility existence check should work for schema and other child objects while taking Backup/Restore.
