@@ -452,6 +452,7 @@ define('pgadmin.node.fts_configuration', [
 
       // Defining model for FTS Configuration node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,        // FTS Configuration name
           owner: undefined,       // FTS Configuration owner

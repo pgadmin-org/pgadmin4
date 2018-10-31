@@ -10,6 +10,8 @@ define('pgadmin.node.catalog_object_column', [
         label: gettext('catalog_object_column'),
         type: 'coll-catalog_object_column',
         columns: ['attname', 'attnum', 'cltype', 'description'],
+        canDrop: false,
+        canDropCascade: false,
       });
   }
 

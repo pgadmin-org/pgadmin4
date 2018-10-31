@@ -181,7 +181,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
@@ -609,7 +609,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, clid):
+    def delete(self, gid, sid, did, scid, tid, clid=None):
         """
         This function will updates existing the schema object
 
@@ -621,42 +621,49 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            tid: Table ID
            clid: Column ID
         """
+        if clid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [clid]}
+
         # We will first fetch the column name for current request
         # so that we create template for dropping column
         try:
-
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                tid=tid, clid=clid,
-                show_sys_objects=self.blueprint.show_system_objects
-            )
-
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified column could not be found.\n'
-                    )
+            for clid in data['ids']:
+                SQL = render_template(
+                    "/".join([self.template_path, 'properties.sql']),
+                    tid=tid, clid=clid,
+                    show_sys_objects=self.blueprint.show_system_objects
                 )
 
-            data = dict(res['rows'][0])
-            # We will add table & schema as well
-            data['schema'] = self.schema
-            data['table'] = self.table
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  data=data, conn=self.conn)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified column could not be found.\n'
+                        )
+                    )
+
+                data = dict(res['rows'][0])
+                # We will add table & schema as well
+                data['schema'] = self.schema
+                data['table'] = self.table
+
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data, conn=self.conn)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,

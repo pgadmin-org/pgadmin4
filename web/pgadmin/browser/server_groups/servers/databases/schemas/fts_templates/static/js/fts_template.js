@@ -58,6 +58,7 @@ define('pgadmin.node.fts_template', [
 
       // Defining backform model for fts template node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,      // Fts template name
           description: undefined,   // Comment on template

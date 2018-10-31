@@ -92,6 +92,7 @@ define('pgadmin.node.foreign_server', [
 
       // Defining model for foreign server node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'fsrvid',
         defaults: {
           name: undefined,
           fsrvtype: undefined,

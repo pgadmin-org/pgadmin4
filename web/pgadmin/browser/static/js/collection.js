@@ -1,7 +1,11 @@
+//import * as commonUtils from '../../../static/js/utils';
+//import Mousetrap from 'mousetrap';
+
 define([
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
-  'backbone', 'alertify', 'backform', 'backgrid', 'sources/browser/generate_url', 'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.browser.node',
+  'backbone', 'alertify', 'backform', 'backgrid', 'sources/browser/generate_url',
+  'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.browser.node', 'backgrid.select.all',
 ], function(gettext, $, _, S, pgAdmin, Backbone, Alertify, Backform, Backgrid, generateUrl) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -48,12 +52,15 @@ define([
           }
         }
       },
+
       hasId: false,
       is_collection: true,
       collection_node: true,
       // A collection will always have a collection of statistics, when the node
       // it represent will have some statistics.
       hasCollectiveStatistics: true,
+      canDrop: true,
+      canDropCascade: true,
       showProperties: function(item, data, panel) {
         var that = this,
           j = panel.$container.find('.obj_properties').first(),
@@ -71,25 +78,112 @@ define([
           gridSchema = Backform.generateGridColumnsFromModel(
             info, node.model, 'properties', that.columns
           ),
-          // Initialize a new Grid instance
-          grid = new Backgrid.Grid({
-            columns: gridSchema.columns,
-            collection: collection,
-            className: 'backgrid table-bordered',
-          }),
-          gridView = {
-            'remove': function() {
-              if (this.grid) {
-                if (this.grid.collection) {
-                  this.grid.collection.reset(null, {silent: true});
-                  delete (this.grid.collection);
-                }
-                delete (this.grid);
-                this.grid = null;
+          createButtons = function(buttons, location, extraClasses) {
+            // Arguments must be non-zero length array of type
+            // object, which contains following attributes:
+            // label, type, extraClasses, register
+            if (buttons && _.isArray(buttons) && buttons.length > 0) {
+              // All buttons will be created within a single
+              // div area.
+              var btnGroup =
+                $('<div></div>').addClass(
+                  'pg-prop-btn-group'
+                ),
+                // Template used for creating a button
+                tmpl = _.template([
+                  '<button type="<%= type %>" ',
+                  'class="btn <%=extraClasses.join(\' \')%>"',
+                  '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>">',
+                  '<span class="<%= icon %>"></span><% if (label != "") { %>&nbsp;<%-label%><% } %></button>',
+                ].join(' '));
+              if (location == 'header') {
+                btnGroup.appendTo(that.header);
+              } else {
+                btnGroup.appendTo(that.footer);
               }
-            },
-            grid: grid,
-          };
+              if (extraClasses) {
+                btnGroup.addClass(extraClasses);
+              }
+              _.each(buttons, function(btn) {
+                // Create the actual button, and append to
+                // the group div
+
+                // icon may not present for this button
+                if (!btn.icon) {
+                  btn.icon = '';
+                }
+                var b = $(tmpl(btn));
+                btnGroup.append(b);
+                // Register is a callback to set callback
+                // for certain operation for this button.
+                btn.register(b);
+              });
+              return btnGroup;
+            }
+            return null;
+          }.bind(panel);
+
+        // Add the new column for the multi-select menus
+        if (that.canDrop || that.canDropCascade) {
+          gridSchema.columns.unshift({
+            name: 'oid',
+            cell: Backgrid.Extension.SelectRowCell.extend({
+              initialize: function (options) {
+                this.column = options.column;
+                if (!(this.column instanceof Backgrid.Column)) {
+                  this.column = new Backgrid.Column(this.column);
+                }
+
+                var column = this.column, model = this.model, $el = this.$el;
+                this.listenTo(column, 'change:renderable', function (column, renderable) {
+                  $el.toggleClass('renderable', renderable);
+                });
+
+                if (Backgrid.callByNeed(column.renderable(), column, model)) $el.addClass('renderable');
+
+                this.listenTo(model, 'backgrid:select', this.toggleCheckbox);
+              },
+              toggleCheckbox: function(model, selected) {
+                if (this.checkbox().prop('disabled') === false) {
+                  this.checkbox().prop('checked', selected).change();
+                }
+              },
+              render: function() {
+                let model = this.model.toJSON();
+
+                // canDrop can be set to false for individual row from the server side to disable the checkbox
+                if ('canDrop' in model && model.canDrop === false)
+                  this.$el.empty().append('<input tabindex="-1" type="checkbox" disabled="disabled"/>');
+                else
+                  this.$el.empty().append('<input tabindex="-1" type="checkbox" />');
+
+                this.delegateEvents();
+                return this;
+              },
+            }),
+            headerCell: Backgrid.Extension.SelectAllHeaderCell,
+          });
+        }
+          // Initialize a new Grid instance
+        that.grid = new Backgrid.Grid({
+          columns: gridSchema.columns,
+          collection: collection,
+          className: 'backgrid table-bordered',
+        });
+
+        var gridView = {
+          'remove': function() {
+            if (this.grid) {
+              if (this.grid.collection) {
+                this.grid.collection.reset(null, {silent: true});
+                delete (this.grid.collection);
+              }
+              delete (this.grid);
+              this.grid = null;
+            }
+          },
+          grid: that.grid,
+        };
 
         if (view) {
           // Avoid unnecessary reloads
@@ -108,8 +202,45 @@ define([
         j.empty();
         j.data('obj-view', gridView);
 
+        that.header = $('<div></div>').addClass(
+            'pg-prop-header'
+        ).appendTo(j);
+
+         // Render the buttons
+        var buttons = [];
+
+        buttons.push({
+          label: '',
+          type: 'delete',
+          tooltip: gettext('Delete/Drop'),
+          extraClasses: ['btn-default', 'delete_multiple'],
+          icon: 'fa fa-lg fa-trash-o',
+          disabled: !that.canDrop,
+          register: function(btn) {
+            btn.on('click',() => {
+              onDrop('drop');
+            });
+          },
+        });
+
+        buttons.push({
+          label: '',
+          type: 'delete',
+          tooltip: gettext('Drop Cascade'),
+          extraClasses: ['btn-default', 'delete_multiple_cascade'],
+          icon: '',
+          disabled: !that.canDropCascade,
+          register: function(btn) {
+            btn.on('click',() => {
+              onDrop('dropCascade');
+            });
+          },
+        });
+
+        createButtons(buttons, 'header', 'pg-prop-btn-group-above bg-gray-lighter border-gray-light');
+
         // Render subNode grid
-        content.append(grid.render().$el);
+        content.append(that.grid.render().$el);
         j.append(content);
 
         // Fetch Data
@@ -131,6 +262,88 @@ define([
             }
           },
         });
+
+        var onDrop = function(type) {
+          let sel_row_models = this.grid.getSelectedModels(),
+            sel_rows = [],
+            item = pgBrowser.tree.selected(),
+            d = item ? pgBrowser.tree.itemData(item) : null,
+            node = pgBrowser.Nodes[d._type],
+            url = undefined,
+            msg = undefined,
+            title = undefined;
+
+          _.each(sel_row_models, function(r){ sel_rows.push(r.id); });
+
+          if (sel_rows.length === 0) {
+            Alertify.alert(gettext('Drop Multiple'),
+              gettext('Please select at least one object to delete.')
+            );
+            return;
+          }
+
+          if (type === 'dropCascade') {
+            url = node.generate_url(item, 'delete'),
+            msg = gettext('Are you sure you want to drop all the selected objects and all the objects that depend on them?'),
+            title = gettext('DROP CASCADE multiple objects?');
+          } else {
+            url = node.generate_url(item, 'drop');
+            msg = gettext('Are you sure you want to drop all the selected objects?');
+            title = gettext('DROP multiple objects?');
+          }
+
+
+          Alertify.confirm(title, msg,
+            function() {
+              $.ajax({
+                url: url,
+                type: 'DELETE',
+                data: JSON.stringify({'ids': sel_rows}),
+                contentType: 'application/json; charset=utf-8',
+              })
+              .done(function(res) {
+                if (res.success == 0) {
+                  pgBrowser.report_error(res.errormsg, res.info);
+                } else {
+                  $(pgBrowser.panels['properties'].panel).removeData('node-prop');
+                  pgBrowser.Events.trigger(
+                  'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                    success: function() {
+                      node.callbacks.selected.apply(node, [item]);
+                    },
+                  });
+                }
+                return true;
+              })
+              .fail(function(jqx) {
+                var msg = jqx.responseText;
+                /* Error from the server */
+                if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
+                  try {
+                    var data = JSON.parse(jqx.responseText);
+                    msg = data.errormsg;
+                  } catch (e) {
+                    console.warn(e.stack || e);
+                  }
+                }
+                pgBrowser.report_error(
+                  S(gettext('Error dropping %s'))
+                  .sprintf(d._label.toLowerCase())
+                  .value(), msg);
+
+                $(pgBrowser.panels['properties'].panel).removeData('node-prop');
+                pgBrowser.Events.trigger(
+                  'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                    success: function() {
+                      node.callbacks.selected.apply(node, [item]);
+                    },
+                  }
+                );
+              });
+            },
+            null).show();
+          return;
+        }.bind(that);
       },
       generate_url: function(item, type) {
         /*
@@ -138,7 +351,9 @@ define([
          * under the collection, and properties of the collection respectively.
          */
         var opURL = {
-            'properties': 'obj', 'children': 'nodes',
+            'properties': 'obj',
+            'children': 'nodes',
+            'drop': 'obj',
           },
           self = this;
         var collectionPickFunction = function (treeInfoValue, treeInfoKey) {

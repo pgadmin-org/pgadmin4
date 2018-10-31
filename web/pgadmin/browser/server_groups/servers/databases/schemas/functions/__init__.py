@@ -199,9 +199,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -801,7 +801,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, fnid):
+    def delete(self, gid, sid, did, scid, fnid=None):
         """
         Drop the Function.
 
@@ -812,6 +812,12 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             scid: Schema Id
             fnid: Function Id
         """
+        if fnid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [fnid]}
 
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -820,45 +826,39 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             cascade = False
 
         try:
-            # Fetch Name and Schema Name to delete the Function.
-            SQL = render_template("/".join([self.sql_template_path,
-                                            'delete.sql']), scid=scid,
-                                  fnid=fnid)
-            status, res = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+            for fnid in data['ids']:
+                # Fetch Name and Schema Name to delete the Function.
+                SQL = render_template("/".join([self.sql_template_path,
+                                                'delete.sql']), scid=scid,
+                                      fnid=fnid)
+                status, res = self.conn.execute_2darray(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified function could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified function could not be found.\n'
+                        )
                     )
-                )
 
-            SQL = render_template("/".join([self.sql_template_path,
-                                            'delete.sql']),
-                                  name=res['rows'][0]['name'],
-                                  func_args=res['rows'][0]['func_args'],
-                                  nspname=res['rows'][0]['nspname'],
-                                  cascade=cascade)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                SQL = render_template("/".join([self.sql_template_path,
+                                                'delete.sql']),
+                                      name=res['rows'][0]['name'],
+                                      func_args=res['rows'][0]['func_args'],
+                                      nspname=res['rows'][0]['nspname'],
+                                      cascade=cascade)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Function dropped."),
-                data={
-                    'id': fnid,
-                    'scid': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=gettext("Function dropped.")
             )
 
         except Exception as e:

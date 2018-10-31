@@ -173,9 +173,9 @@ class CheckConstraintView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -585,7 +585,7 @@ class CheckConstraintView(PGChildNodeView):
             )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, cid):
+    def delete(self, gid, sid, did, scid, tid, cid=None):
         """
         Drops the Check Constraint object.
 
@@ -597,45 +597,47 @@ class CheckConstraintView(PGChildNodeView):
             tid: Check Id
             cid: Check Constraint Id
         """
+        if cid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [cid]}
+
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  tid=tid, cid=cid)
-            status, res = self.conn.execute_dict(SQL)
+            for cid in data['ids']:
+                SQL = render_template("/".join([self.template_path,
+                                                'properties.sql']),
+                                      tid=tid, cid=cid)
+                status, res = self.conn.execute_dict(SQL)
 
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified check constraint could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=_(
+                            'Error: Object not found.'
+                        ),
+                        info=_(
+                            'The specified check constraint '
+                            'could not be found.\n'
+                        )
                     )
-                )
 
-            data = res['rows'][0]
+                data = res['rows'][0]
 
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  data=data)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=_("Check constraint dropped."),
-                data={
-                    'id': tid,
-                    'scid': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=_("Check constraint dropped.")
             )
 
         except Exception as e:

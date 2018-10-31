@@ -13,6 +13,8 @@ define('pgadmin.node.database', [
         type: 'coll-database',
         columns: ['name', 'datowner', 'comments'],
         hasStatistics: true,
+        canDrop: true,
+        canDropCascade: false,
         statsPrettifyFields: ['Size', 'Size of temporary files'],
       });
   }
@@ -257,6 +259,7 @@ define('pgadmin.node.database', [
         },
       },
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'did',
         defaults: {
           name: undefined,
           owner: undefined,

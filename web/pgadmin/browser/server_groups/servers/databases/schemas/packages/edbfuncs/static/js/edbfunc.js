@@ -12,6 +12,8 @@ define('pgadmin.node.edbfunc', [
         label: gettext('Functions'),
         type: 'coll-edbfunc',
         columns: ['name', 'funcowner', 'description'],
+        canDrop: false,
+        canDropCascade: false,
       });
   }
 
@@ -37,6 +39,7 @@ define('pgadmin.node.edbfunc', [
       canDrop: false,
       canDropCascade: false,
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

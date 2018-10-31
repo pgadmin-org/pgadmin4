@@ -99,9 +99,9 @@ class PackageView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -412,7 +412,7 @@ class PackageView(PGChildNodeView):
         )
 
     @check_precondition(action='delete')
-    def delete(self, gid, sid, did, scid, pkgid):
+    def delete(self, gid, sid, did, scid, pkgid=None):
         """
         This function will drop the object
 
@@ -426,6 +426,14 @@ class PackageView(PGChildNodeView):
         Returns:
 
         """
+
+        if pkgid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [pkgid]}
+
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -434,44 +442,40 @@ class PackageView(PGChildNodeView):
             cascade = False
 
         try:
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']), scid=scid,
-                pkgid=pkgid)
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+            for pkgid in data['ids']:
+                SQL = render_template(
+                    "/".join([self.template_path, 'properties.sql']),
+                    scid=scid,
+                    pkgid=pkgid)
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified package could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=_(
+                            'Error: Object not found.'
+                        ),
+                        info=_(
+                            'The specified package could not be found.\n'
+                        )
                     )
-                )
 
-            res['rows'][0]['schema'] = self.schema
+                res['rows'][0]['schema'] = self.schema
 
-            SQL = render_template("/".join([self.template_path, 'delete.sql']),
-                                  data=res['rows'][0],
-                                  cascade=cascade)
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=res['rows'][0],
+                                      cascade=cascade)
 
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=_("Package dropped"),
-                data={
-                    'id': pkgid,
-                    'scid': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=_("Package dropped")
             )
 
         except Exception as e:

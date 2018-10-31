@@ -263,6 +263,7 @@ define('pgadmin.node.table', [
         },
       },
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

@@ -188,7 +188,7 @@ class LanguageView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -198,7 +198,7 @@ class LanguageView(PGChildNodeView):
         'dependent': [{'get': 'dependents'}],
         'get_functions': [{}, {'get': 'get_functions'}],
         'get_templates': [{}, {'get': 'get_templates'}],
-        'delete': [{'delete': 'delete'}]
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}]
     })
 
     def _init_(self, **kwargs):
@@ -490,7 +490,7 @@ class LanguageView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, lid):
+    def delete(self, gid, sid, did, lid=None):
         """
         This function will drop the language object
 
@@ -500,6 +500,13 @@ class LanguageView(PGChildNodeView):
             did: Database ID
             lid: Language ID
         """
+        if lid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [lid]}
+
         if self.cmd == 'delete':
             # This is a cascade operation
             cascade = True
@@ -507,35 +514,30 @@ class LanguageView(PGChildNodeView):
             cascade = False
 
         try:
-            # Get name for language from lid
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                lid=lid, conn=self.conn
-            )
-            status, lname = self.conn.execute_scalar(sql)
+            for lid in data['ids']:
+                # Get name for language from lid
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    lid=lid, conn=self.conn
+                )
+                status, lname = self.conn.execute_scalar(sql)
 
-            if not status:
-                return internal_server_error(errormsg=lname)
+                if not status:
+                    return internal_server_error(errormsg=lname)
 
-            # drop language
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                lname=lname, cascade=cascade, conn=self.conn
-            )
-            status, res = self.conn.execute_scalar(sql)
+                # drop language
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    lname=lname, cascade=cascade, conn=self.conn
+                )
+                status, res = self.conn.execute_scalar(sql)
 
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Language dropped"),
-                data={
-                    'id': lid,
-                    'did': did,
-                    'sid': sid,
-                    'gid': gid,
-                }
+                info=gettext("Language dropped")
             )
 
         except Exception as e:

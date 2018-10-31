@@ -12,6 +12,8 @@ define('pgadmin.node.pga_job', [
         type: 'coll-pga_job',
         columns: ['jobid', 'jobname', 'jobenabled', 'jlgstatus', 'jobnextrun', 'joblastrun', 'jobdesc'],
         hasStatistics: false,
+        canDrop: true,
+        canDropCascade: false,
       });
   }
 

@@ -200,9 +200,9 @@ class ExclusionConstraintView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -713,6 +713,13 @@ class ExclusionConstraintView(PGChildNodeView):
         Returns:
 
         """
+        if exid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [exid]}
+
         # Below code will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -720,46 +727,42 @@ class ExclusionConstraintView(PGChildNodeView):
         else:
             cascade = False
         try:
-            sql = render_template(
-                "/".join([self.template_path, 'get_name.sql']),
-                cid=exid
-            )
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified exclusion constraint could not '
-                        'be found.\n'
-                    )
+            for exid in data['ids']:
+                sql = render_template(
+                    "/".join([self.template_path, 'get_name.sql']),
+                    cid=exid
                 )
+                status, res = self.conn.execute_dict(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            data = res['rows'][0]
-            data['schema'] = self.schema
-            data['table'] = self.table
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=_(
+                            'Error: Object not found.'
+                        ),
+                        info=_(
+                            'The specified exclusion constraint could not '
+                            'be found.\n'
+                        )
+                    )
 
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
-                                  data=data,
-                                  cascade=cascade)
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                data = res['rows'][0]
+                data['schema'] = self.schema
+                data['table'] = self.table
+
+                sql = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data,
+                                      cascade=cascade)
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=_("Exclusion constraint dropped."),
-                data={
-                    'id': exid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=_("Exclusion constraint dropped.")
             )
 
         except Exception as e:

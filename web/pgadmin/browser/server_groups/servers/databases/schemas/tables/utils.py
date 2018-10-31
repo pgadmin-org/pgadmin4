@@ -2363,16 +2363,12 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         )
         status, res = self.conn.execute_scalar(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return status, res
 
-        return make_json_response(
-            success=1,
-            info=gettext("Table dropped"),
-            data={
-                'id': tid,
-                'scid': scid
-            }
-        )
+        return True, {
+            'id': tid,
+            'scid': scid
+        }
 
     def get_schema_and_table_name(self, tid):
         """

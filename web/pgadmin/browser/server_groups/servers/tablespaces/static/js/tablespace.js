@@ -16,6 +16,8 @@ define('pgadmin.node.tablespace', [
         columns: ['name', 'spcuser', 'description'],
         hasStatistics: true,
         statsPrettifyFields: ['Size'],
+        canDrop: true,
+        canDropCascade: false,
       });
   }
 
@@ -303,6 +305,7 @@ define('pgadmin.node.tablespace', [
         },
       },
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           owner: undefined,

@@ -238,9 +238,9 @@ class TriggerView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -671,7 +671,7 @@ class TriggerView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, trid):
+    def delete(self, gid, sid, did, scid, tid, trid=None):
         """
         This function will updates existing the trigger object
 
@@ -683,6 +683,13 @@ class TriggerView(PGChildNodeView):
            tid: Table ID
            trid: Trigger ID
         """
+        if trid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [trid]}
+
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -691,44 +698,44 @@ class TriggerView(PGChildNodeView):
             cascade = False
 
         try:
-            # We will first fetch the trigger name for current request
-            # so that we create template for dropping trigger
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  tid=tid, trid=trid,
-                                  datlastsysoid=self.datlastsysoid)
+            for trid in data['ids']:
+                # We will first fetch the trigger name for current request
+                # so that we create template for dropping trigger
+                SQL = render_template("/".join([self.template_path,
+                                                'properties.sql']),
+                                      tid=tid, trid=trid,
+                                      datlastsysoid=self.datlastsysoid)
 
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified trigger could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified trigger could not be found.\n'
+                        )
                     )
-                )
 
-            data = dict(res['rows'][0])
+                data = dict(res['rows'][0])
 
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  data=data, conn=self.conn, cascade=cascade)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data,
+                                      conn=self.conn,
+                                      cascade=cascade
+                                      )
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Trigger is dropped"),
-                data={
-                    'id': trid,
-                    'tid': tid
-                }
+                info=gettext("Trigger is dropped")
             )
 
         except Exception as e:

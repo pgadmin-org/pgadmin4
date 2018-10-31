@@ -180,12 +180,12 @@ class FtsDictionaryView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'children': [{
             'get': 'children'
         }],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -526,7 +526,7 @@ class FtsDictionaryView(PGChildNodeView):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, dcid):
+    def delete(self, gid, sid, did, scid, dcid=None):
         """
         This function will drop the FTS Dictionary object
         :param gid: group id
@@ -535,6 +535,13 @@ class FtsDictionaryView(PGChildNodeView):
         :param scid: schema id
         :param dcid: FTS Dictionary id
         """
+        if dcid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [dcid]}
+
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -543,46 +550,43 @@ class FtsDictionaryView(PGChildNodeView):
             cascade = False
 
         try:
-            # Get name for FTS Dictionary from dcid
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
-                                  dcid=dcid)
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+            for dcid in data['ids']:
+                # Get name for FTS Dictionary from dcid
+                sql = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      dcid=dcid)
+                status, res = self.conn.execute_dict(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified FTS dictionary could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=_(
+                            'Error: Object not found.'
+                        ),
+                        info=_(
+                            'The specified FTS dictionary '
+                            'could not be found.\n'
+                        )
                     )
-                )
 
-            # Drop FTS Dictionary
-            result = res['rows'][0]
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
-                                  name=result['name'],
-                                  schema=result['schema'],
-                                  cascade=cascade
-                                  )
+                # Drop FTS Dictionary
+                result = res['rows'][0]
+                sql = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      name=result['name'],
+                                      schema=result['schema'],
+                                      cascade=cascade
+                                      )
 
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=_("FTS Dictionary dropped"),
-                data={
-                    'id': dcid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did,
-                    'scid': scid
-                }
+                info=_("FTS Dictionary dropped")
             )
 
         except Exception as e:

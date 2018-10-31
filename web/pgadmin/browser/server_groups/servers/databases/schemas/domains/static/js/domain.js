@@ -120,6 +120,7 @@ define('pgadmin.node.domain', [
       },
       // Domain Node Model
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {

@@ -12,6 +12,8 @@ define('pgadmin.node.edbvar', [
         label: gettext('Variables'),
         type: 'coll-edbvar',
         columns: ['name', 'funcowner', 'description'],
+        canDrop: false,
+        canDropCascade: false,
       });
   }
 
@@ -36,6 +38,7 @@ define('pgadmin.node.edbvar', [
       canDrop: false,
       canDropCascade: false,
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

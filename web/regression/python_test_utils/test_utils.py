@@ -405,6 +405,36 @@ def drop_database(connection, database_name):
             connection.close()
 
 
+def drop_database_multiple(connection, database_names):
+    """This function used to drop the database"""
+    for database_name in database_names:
+        if database_name not in ["postgres", "template1", "template0"]:
+            pg_cursor = connection.cursor()
+            if connection.server_version >= 90100:
+                pg_cursor.execute(
+                    "SELECT pg_terminate_backend(pg_stat_activity.pid) "
+                    "FROM pg_stat_activity "
+                    "WHERE pg_stat_activity.datname ='%s' AND "
+                    "pid <> pg_backend_pid();" % database_name
+                )
+            else:
+                pg_cursor.execute(
+                    "SELECT pg_terminate_backend(procpid) "
+                    "FROM pg_stat_activity "
+                    "WHERE pg_stat_activity.datname ='%s' "
+                    "AND current_query='<IDLE>';" % database_name
+                )
+            pg_cursor.execute("SELECT * FROM pg_database db WHERE"
+                              " db.datname='%s'" % database_name)
+            if pg_cursor.fetchall():
+                old_isolation_level = connection.isolation_level
+                connection.set_isolation_level(0)
+                pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
+                connection.set_isolation_level(old_isolation_level)
+                connection.commit()
+    connection.close()
+
+
 def drop_tablespace(connection):
     """This function used to drop the tablespace"""
     pg_cursor = connection.cursor()

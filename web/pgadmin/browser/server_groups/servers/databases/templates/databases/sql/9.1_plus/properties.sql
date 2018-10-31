@@ -1,5 +1,5 @@
 SELECT
-    db.oid AS did, db.datname AS name, db.dattablespace AS spcoid,
+    db.oid AS did, db.oid, db.datname AS name, db.dattablespace AS spcoid,
     spcname, datallowconn, pg_encoding_to_char(encoding) AS encoding,
     pg_get_userbyid(datdba) AS datowner, datcollate, datctype, datconnlimit,
     has_database_privilege(db.oid, 'CREATE') AS cancreate,

@@ -244,6 +244,36 @@ def register_browser_preferences(self):
 
     self.preference.register(
         'keyboard_shortcuts',
+        'grid_menu_drop_multiple',
+        gettext('Delete/Drop multiple objects'),
+        'keyboardshortcut',
+        {
+            'alt': True,
+            'shift': True,
+            'control': False,
+            'key': {'key_code': 77, 'char': 'm'}
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'grid_menu_drop_cascade_multiple',
+        gettext('Drop Cascade multiple objects'),
+        'keyboardshortcut',
+        {
+            'alt': True,
+            'shift': True,
+            'control': False,
+            'key': {'key_code': 85, 'char': 'u'}
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
         'context_menu',
         gettext('Open context menu'),
         'keyboardshortcut',

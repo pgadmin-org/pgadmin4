@@ -10,7 +10,7 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
-
+| `Feature #1513 <https://redmine.postgresql.org/issues/1513>`_ - Add support for dropping multiple objects at once from the collection Properties panel.
 
 Bug fixes
 *********

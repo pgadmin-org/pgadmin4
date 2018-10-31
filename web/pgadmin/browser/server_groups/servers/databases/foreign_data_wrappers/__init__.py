@@ -186,11 +186,9 @@ class ForeignDataWrapperView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{
-            'delete': 'delete'
-        }],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
         'sql': [{'get': 'sql'}],
@@ -478,7 +476,7 @@ class ForeignDataWrapperView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, fid):
+    def delete(self, gid, sid, did, fid=None):
         """
         This function will delete the selected foreign data wrapper node.
 
@@ -488,56 +486,59 @@ class ForeignDataWrapperView(PGChildNodeView):
             did: Database ID
             fid: foreign data wrapper ID
         """
+        if fid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [fid]}
+
         if self.cmd == 'delete':
             # This is a cascade operation
             cascade = True
         else:
             cascade = False
 
-        try:
-            # Get name of foreign data wrapper from fid
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
-                                  fid=fid, conn=self.conn
-                                  )
-            status, name = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=name)
+        for fid in data['ids']:
+            try:
+                # Get name of foreign data wrapper from fid
+                sql = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      fid=fid, conn=self.conn
+                                      )
+                status, name = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=name)
 
-            if name is None:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified foreign data'
-                        ' wrapper could not be found.\n'
+                if name is None:
+                    return make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified foreign data'
+                            ' wrapper could not be found.\n'
+                        )
                     )
-                )
-            # drop foreign data wrapper node
-            sql = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  name=name,
-                                  cascade=cascade,
-                                  conn=self.conn)
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                # drop foreign data wrapper node
+                sql = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      name=name,
+                                      cascade=cascade,
+                                      conn=self.conn)
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            return make_json_response(
-                success=1,
-                info=gettext("Foreign Data Wrapper dropped"),
-                data={
-                    'id': fid,
-                    'did': did,
-                    'sid': sid,
-                    'gid': gid,
-                }
-            )
+            except Exception as e:
+                return internal_server_error(errormsg=str(e))
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return make_json_response(
+            success=1,
+            info=gettext("Foreign Data Wrapper dropped")
+        )
 
     @check_precondition
     def msql(self, gid, sid, did, fid=None):

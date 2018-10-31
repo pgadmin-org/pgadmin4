@@ -23,7 +23,7 @@ class DomainDeleteTestCase(BaseTestGenerator):
     """ This class will delete new domain under schema node. """
     scenarios = [
         # Fetching default URL for domain node.
-        ('Fetch domain Node URL', dict(url='/browser/domain/delete/'))
+        ('Fetch domain Node URL', dict(url='/browser/domain/obj/'))
     ]
 
     def setUp(self):
@@ -61,8 +61,12 @@ class DomainDeleteTestCase(BaseTestGenerator):
             str(db_id) + '/' +
             str(self.schema_id) + '/' +
             str(domain_id),
-            content_type='html/json')
+            content_type='html/json',
+            follow_redirects=True
+        )
+
         self.assertEquals(get_response.status_code, 200)
+
         # Disconnect the database
         database_utils.disconnect_database(self, server_id, db_id)
 

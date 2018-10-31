@@ -58,6 +58,7 @@ define('pgadmin.node.cast', [
 
         // Define the backform model for cast node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,            // Name of the cast
           encoding: 'UTF8',

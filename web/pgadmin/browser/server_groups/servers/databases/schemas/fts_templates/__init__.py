@@ -175,12 +175,12 @@ class FtsTemplateView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'children': [{
             'get': 'children'
         }],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -433,7 +433,7 @@ class FtsTemplateView(PGChildNodeView):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid):
+    def delete(self, gid, sid, did, scid, tid=None):
         """
         This function will drop the fts_template object
         :param gid: group id
@@ -442,6 +442,13 @@ class FtsTemplateView(PGChildNodeView):
         :param scid: schema id
         :param tid: fts tempate id
         """
+        if tid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [tid]}
+
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -449,46 +456,40 @@ class FtsTemplateView(PGChildNodeView):
         else:
             cascade = False
 
-        # Get name for template from tid
-        sql = render_template("/".join([self.template_path, 'delete.sql']),
-                              tid=tid)
-        status, res = self.conn.execute_dict(sql)
-        if not status:
-            return internal_server_error(errormsg=res)
+        for tid in data['ids']:
+            # Get name for template from tid
+            sql = render_template("/".join([self.template_path, 'delete.sql']),
+                                  tid=tid)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-        if not res['rows']:
-            return make_json_response(
-                success=0,
-                errormsg=gettext(
-                    'Error: Object not found.'
-                ),
-                info=gettext(
-                    'The specified FTS template could not be found.\n'
+            if not res['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified FTS template could not be found.\n'
+                    )
                 )
-            )
 
-        # Drop fts template
-        result = res['rows'][0]
-        sql = render_template("/".join([self.template_path, 'delete.sql']),
-                              name=result['name'],
-                              schema=result['schema'],
-                              cascade=cascade
-                              )
+            # Drop fts template
+            result = res['rows'][0]
+            sql = render_template("/".join([self.template_path, 'delete.sql']),
+                                  name=result['name'],
+                                  schema=result['schema'],
+                                  cascade=cascade
+                                  )
 
-        status, res = self.conn.execute_scalar(sql)
-        if not status:
-            return internal_server_error(errormsg=res)
+            status, res = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
         return make_json_response(
             success=1,
-            info=gettext("FTS Template dropped"),
-            data={
-                'id': tid,
-                'sid': sid,
-                'gid': gid,
-                'did': did,
-                'scid': scid
-            }
+            info=gettext("FTS Template dropped")
         )
 
     @check_precondition

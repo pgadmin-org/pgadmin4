@@ -128,6 +128,6 @@ def delete_fdw(server, db_name, fdw_name):
                                    server['port'],
                                    server['sslmode'])
     pg_cursor = connection.cursor()
-    pg_cursor.execute("DROP FOREIGN DATA WRAPPER %s" % fdw_name)
+    pg_cursor.execute("DROP FOREIGN DATA WRAPPER %s CASCADE" % fdw_name)
     connection.commit()
     connection.close()

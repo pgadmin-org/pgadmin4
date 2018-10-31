@@ -85,6 +85,7 @@ define('pgadmin.node.view', [
         properties of the model in schema.
         */
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
             // Set Selected Schema and, Current User

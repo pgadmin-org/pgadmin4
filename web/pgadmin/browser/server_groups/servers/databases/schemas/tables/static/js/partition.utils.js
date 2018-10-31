@@ -228,6 +228,7 @@ define('pgadmin.node.table_partition_utils', [
   });
 
   Backform.PartitionsModel = pgBrowser.Node.Model.extend({
+    idAttribute: 'oid',
     defaults: {
       oid: undefined,
       is_attach: false,

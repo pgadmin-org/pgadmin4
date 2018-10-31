@@ -16,6 +16,8 @@ define('pgadmin.node.edbproc', [
         type: 'coll-edbproc',
         columns: ['name', 'funcowner', 'description'],
         hasStatistics: true,
+        canDrop: false,
+        canDropCascade: false,
       });
   }
 

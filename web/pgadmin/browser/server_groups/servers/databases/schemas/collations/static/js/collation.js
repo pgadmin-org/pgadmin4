@@ -54,6 +54,7 @@ define('pgadmin.node.collation', [
 
       },
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

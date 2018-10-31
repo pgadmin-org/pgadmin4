@@ -200,11 +200,9 @@ class UserMappingView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{
-            'delete': 'delete'
-        }],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
         'sql': [{'get': 'sql'}],
@@ -506,7 +504,7 @@ class UserMappingView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, fid, fsid, umid):
+    def delete(self, gid, sid, did, fid, fsid, umid=None):
         """
         This function will delete the selected user mapping node.
 
@@ -518,6 +516,12 @@ class UserMappingView(PGChildNodeView):
             fsid: foreign server ID
             umid: User mapping ID
         """
+        if umid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [umid]}
 
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -526,64 +530,59 @@ class UserMappingView(PGChildNodeView):
             cascade = False
 
         try:
-            # Get name of foreign server from fsid
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
-                                  fsid=fsid, conn=self.conn)
-            status, name = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=name)
+            for umid in data['ids']:
+                # Get name of foreign server from fsid
+                sql = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      fsid=fsid, conn=self.conn)
+                status, name = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=name)
 
-            if name is None:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified foreign server could not be found.\n'
+                if name is None:
+                    return make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified foreign server '
+                            'could not be found.\n'
+                        )
                     )
-                )
 
-            sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  umid=umid, conn=self.conn)
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                sql = render_template("/".join([self.template_path,
+                                                'properties.sql']),
+                                      umid=umid, conn=self.conn)
+                status, res = self.conn.execute_dict(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        'The specified user mapping could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=gettext(
+                            'The specified user mapping could not be found.\n'
+                        )
                     )
-                )
 
-            data = res['rows'][0]
+                data = res['rows'][0]
 
-            # drop user mapping
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
-                                  data=data, name=name, cascade=cascade,
-                                  conn=self.conn)
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                # drop user mapping
+                sql = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data, name=name, cascade=cascade,
+                                      conn=self.conn)
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("User Mapping dropped"),
-                data={
-                    'id': umid,
-                    'fsid': fsid,
-                    'fid': fid,
-                    'did': did,
-                    'sid': sid,
-                    'gid': gid,
-                }
+                info=gettext("User Mapping dropped")
             )
-
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 

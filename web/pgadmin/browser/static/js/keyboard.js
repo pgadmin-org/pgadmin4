@@ -30,6 +30,9 @@ _.extend(pgBrowser.keyboardNavigation, {
         'sub_menu_refresh': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_refresh').value),
         'context_menu': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'context_menu').value),
         'direct_debugging': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'direct_debugging').value),
+        'drop_multiple_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'grid_menu_drop_multiple').value),
+        'drop_cascade_multiple_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'grid_menu_drop_cascade_multiple').value),
+
       };
       this.shortcutMethods = {
         'bindMainMenu': {
@@ -48,6 +51,8 @@ _.extend(pgBrowser.keyboardNavigation, {
         'bindSubMenuRefresh': {'shortcuts': this.keyboardShortcut.sub_menu_refresh, 'bindElem': '#tree'}, // Sub menu - Refresh object,
         'bindContextMenu': {'shortcuts': this.keyboardShortcut.context_menu}, // Sub menu - Open context menu,
         'bindDirectDebugging': {'shortcuts': this.keyboardShortcut.direct_debugging}, // Sub menu - Direct Debugging
+        'bindDropMultipleObjects': {'shortcuts': this.keyboardShortcut.drop_multiple_objects}, // Grid Menu Drop Multiple
+        'bindDropCascadeMultipleObjects': {'shortcuts': this.keyboardShortcut.drop_cascade_multiple_objects}, // Grid Menu Drop Cascade Multiple
       };
       this.bindShortcuts();
     }
@@ -307,6 +312,26 @@ _.extend(pgBrowser.keyboardNavigation, {
       // Call debugger callback
       pgAdmin.Tools.Debugger.get_function_information(pgAdmin.Browser.Nodes[type]);
     }
+  },
+  bindDropMultipleObjects: function() {
+    let isPropertyPanelVisible = this.isPropertyPanelVisible();
+    if (isPropertyPanelVisible === true && $('button.delete_multiple').length > 0) {
+      $('button.delete_multiple').click();
+    }
+  },
+  bindDropCascadeMultipleObjects: function() {
+    let isPropertyPanelVisible = this.isPropertyPanelVisible();
+    if (isPropertyPanelVisible === true && $('button.delete_multiple_cascade').length > 0) {
+      $('button.delete_multiple_cascade').click();
+    }
+  },
+  isPropertyPanelVisible: function() {
+    let isPanelVisible = false;
+    _.each(pgAdmin.Browser.docker.findPanels(), (panel) => {
+      if (panel._type === 'properties')
+        isPanelVisible = panel.isVisible();
+    });
+    return isPanelVisible;
   },
   getTreeDetails: function() {
     const aciTree = pgAdmin.Browser.tree;

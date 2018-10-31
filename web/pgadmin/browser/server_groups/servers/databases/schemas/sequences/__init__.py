@@ -104,9 +104,9 @@ class SequenceView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -396,7 +396,7 @@ class SequenceView(PGChildNodeView):
         )
 
     @check_precondition(action='delete')
-    def delete(self, gid, sid, did, scid, seid):
+    def delete(self, gid, sid, did, scid, seid=None):
         """
         This function will drop the object
 
@@ -410,6 +410,13 @@ class SequenceView(PGChildNodeView):
         Returns:
 
         """
+        if seid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [seid]}
+
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -418,43 +425,37 @@ class SequenceView(PGChildNodeView):
             cascade = False
 
         try:
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                scid=scid, seid=seid
-            )
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified sequence could not be found.\n'
-                    )
+            for seid in data['ids']:
+                SQL = render_template(
+                    "/".join([self.template_path, 'properties.sql']),
+                    scid=scid, seid=seid
                 )
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            SQL = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                data=res['rows'][0], cascade=cascade
-            )
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=_(
+                            'Error: Object not found.'
+                        ),
+                        info=_(
+                            'The specified sequence could not be found.\n'
+                        )
+                    )
+
+                SQL = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    data=res['rows'][0], cascade=cascade
+                )
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=_("Sequence dropped"),
-                data={
-                    'id': seid,
-                    'scid': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=_("Sequence dropped")
             )
 
         except Exception as e:

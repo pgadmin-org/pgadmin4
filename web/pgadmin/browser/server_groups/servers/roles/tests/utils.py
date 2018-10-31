@@ -150,7 +150,7 @@ def write_role_id(response_data):
     db_output.close()
 
 
-def delete_role(connection, role_name):
+def delete_role(connection, role_names):
     """
     This function use to delete the existing roles in the servers
 
@@ -160,18 +160,23 @@ def delete_role(connection, role_name):
     :type role_name: str
     :return: None
     """
+    if not isinstance(role_names, list):
+        role_names = [role_names]
+
     try:
-        pg_cursor = connection.cursor()
-        pg_cursor.execute(
-            "SELECT * FROM pg_catalog.pg_roles WHERE rolname='%s'" % role_name)
-        role_count = pg_cursor.fetchone()
-        if role_count:
-            old_isolation_level = connection.isolation_level
-            connection.set_isolation_level(0)
+        for role_name in role_names:
             pg_cursor = connection.cursor()
-            pg_cursor.execute("DROP ROLE %s" % role_name)
-            connection.set_isolation_level(old_isolation_level)
-            connection.commit()
+            pg_cursor.execute(
+                "SELECT * FROM pg_catalog.pg_roles WHERE rolname='%s'" %
+                role_name)
+            role_count = pg_cursor.fetchone()
+            if role_count:
+                old_isolation_level = connection.isolation_level
+                connection.set_isolation_level(0)
+                pg_cursor = connection.cursor()
+                pg_cursor.execute("DROP ROLE %s" % role_name)
+                connection.set_isolation_level(old_isolation_level)
+                connection.commit()
         connection.close()
     except Exception as exception:
         exception = "Error while deleting role: %s: line:%s %s" % (

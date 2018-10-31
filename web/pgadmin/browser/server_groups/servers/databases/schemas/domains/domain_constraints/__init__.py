@@ -167,9 +167,8 @@ class DomainConstraintView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -450,7 +449,7 @@ class DomainConstraintView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, doid, coid):
+    def delete(self, gid, sid, did, scid, doid, coid=None):
         """
         Drops the Domain Constraint object.
 
@@ -462,45 +461,47 @@ class DomainConstraintView(PGChildNodeView):
             doid: Domain Id
             coid: Domain Constraint Id
         """
+        if coid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [coid]}
+
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  doid=doid, coid=coid)
-            status, res = self.conn.execute_dict(SQL)
+            for coid in data['ids']:
+                SQL = render_template("/".join([self.template_path,
+                                                'properties.sql']),
+                                      doid=doid, coid=coid)
+                status, res = self.conn.execute_dict(SQL)
 
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified domain constraint could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified domain constraint '
+                            'could not be found.\n'
+                        )
                     )
-                )
 
-            data = res['rows'][0]
+                data = res['rows'][0]
 
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  data=data)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Domain Constraint dropped"),
-                data={
-                    'id': doid,
-                    'scid': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=gettext("Domain Constraint dropped")
             )
 
         except Exception as e:

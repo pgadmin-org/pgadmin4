@@ -207,9 +207,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -756,6 +756,13 @@ class ForeignKeyConstraintView(PGChildNodeView):
         Returns:
 
         """
+        if fkid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [fkid]}
+
         # Below code will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -763,43 +770,38 @@ class ForeignKeyConstraintView(PGChildNodeView):
         else:
             cascade = False
         try:
-            sql = render_template(
-                "/".join([self.template_path, 'get_name.sql']), fkid=fkid)
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+            for fkid in data['ids']:
+                sql = render_template(
+                    "/".join([self.template_path, 'get_name.sql']), fkid=fkid)
+                status, res = self.conn.execute_dict(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified foreign key could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=_(
+                            'Error: Object not found.'
+                        ),
+                        info=_(
+                            'The specified foreign key could not be found.\n'
+                        )
                     )
-                )
 
-            data = res['rows'][0]
-            data['schema'] = self.schema
-            data['table'] = self.table
+                data = res['rows'][0]
+                data['schema'] = self.schema
+                data['table'] = self.table
 
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                data=data, cascade=cascade)
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    data=data, cascade=cascade)
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=_("Foreign key dropped."),
-                data={
-                    'id': fkid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=_("Foreign key dropped.")
             )
 
         except Exception as e:

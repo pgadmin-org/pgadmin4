@@ -31,10 +31,16 @@ You can use icons in the *Sessions* table to review or control the state of a se
 .. image:: images/main_properties_table.png
     :alt: Properties panel
 
-The *Properties* tab displays information about the object selected. Click the *Edit* icon in the toolbar under the browser tabs to launch the *Properties* dialog for the selected object.
+The *Properties* tab displays information about the object selected.
+
+Click the *Delete* icon in the toolbar under the browser tab to delete the selected objects in the Properties panel.
+
+Click the *Drop Cascade* icon in the toolbar under the browser tab to delete the selected objects and all dependent objects in the Properties panel.
 
 .. image:: images/main_properties_icons.png
     :alt: Object editor icon
+
+Click the *Edit* icon in the toolbar under the browser tabs to launch the *Properties* dialog for the selected object.
 
 To preserve any changes to the *Properties* dialog, click the *Save* icon; your modifications will be displayed in the updated *Properties* tab.
 

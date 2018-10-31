@@ -13,6 +13,7 @@
 {% else %}
     SELECT
         ca.oid,
+        ca.oid as id,
     CASE
         WHEN {{datlastsysoid}}::OID > ca.oid then True ELSE False
     END AS syscast,

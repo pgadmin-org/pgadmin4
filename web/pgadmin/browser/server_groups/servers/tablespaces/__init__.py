@@ -80,7 +80,7 @@ class TablespaceView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
@@ -395,51 +395,54 @@ class TablespaceView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, tsid):
+    def delete(self, gid, sid, tsid=None):
         """
         This function will drop the tablespace object
         """
-        try:
-            # Get name for tablespace from tsid
-            status, rset = self.conn.execute_dict(
-                render_template(
-                    "/".join([self.template_path, 'nodes.sql']),
-                    tsid=tsid, conn=self.conn
-                )
+        if tsid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
             )
+        else:
+            data = {'ids': [tsid]}
 
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            if not rset['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified tablespace could not be found.\n'
+        try:
+            for tsid in data['ids']:
+                # Get name for tablespace from tsid
+                status, rset = self.conn.execute_dict(
+                    render_template(
+                        "/".join([self.template_path, 'nodes.sql']),
+                        tsid=tsid, conn=self.conn
                     )
                 )
 
-            # drop tablespace
-            SQL = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                tsname=(rset['rows'][0])['name'], conn=self.conn
-            )
+                if not status:
+                    return internal_server_error(errormsg=rset)
 
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not rset['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified tablespace could not be found.\n'
+                        )
+                    )
+
+                # drop tablespace
+                SQL = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    tsname=(rset['rows'][0])['name'], conn=self.conn
+                )
+
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Tablespace dropped"),
-                data={
-                    'id': tsid,
-                    'sid': sid,
-                    'gid': gid,
-                }
+                info=gettext("Tablespace dropped")
             )
 
         except Exception as e:

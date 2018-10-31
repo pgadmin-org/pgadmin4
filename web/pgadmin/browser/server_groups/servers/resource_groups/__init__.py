@@ -184,7 +184,7 @@ class ResourceGroupView(NodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -497,7 +497,7 @@ class ResourceGroupView(NodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, rg_id):
+    def delete(self, gid, sid, rg_id=None):
         """
         This function will drop the resource group object
 
@@ -506,44 +506,48 @@ class ResourceGroupView(NodeView):
             sid: Server ID
             rg_id: Resource Group ID
         """
+        if rg_id is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [rg_id]}
+
         try:
-            # Get name for resource group from rg_id
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                rgid=rg_id, conn=self.conn
-            )
-            status, rgname = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=rgname)
-
-            if rgname is None:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified resource group could not be found.\n'
-                    )
+            for rg_id in data['ids']:
+                # Get name for resource group from rg_id
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    rgid=rg_id, conn=self.conn
                 )
+                status, rgname = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=rgname)
 
-            # drop resource group
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                rgname=rgname, conn=self.conn
-            )
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                if rgname is None:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified resource group '
+                            'could not be found.\n'
+                        )
+                    )
+
+                # drop resource group
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    rgname=rgname, conn=self.conn
+                )
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Resource Group dropped"),
-                data={
-                    'id': rg_id,
-                    'sid': sid,
-                    'gid': gid,
-                }
+                info=gettext("Resource Group dropped")
             )
 
         except Exception as e:

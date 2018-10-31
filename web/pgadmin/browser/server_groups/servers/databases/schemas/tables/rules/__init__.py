@@ -163,12 +163,12 @@ class RuleView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'children': [{
             'get': 'children'
         }],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -382,54 +382,56 @@ class RuleView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, rid):
+    def delete(self, gid, sid, did, scid, tid, rid=None):
         """
         This function will drop a rule object
         """
+        if rid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [rid]}
+
         # Below will decide if it's simple drop or drop with cascade call
         cascade = True if self.cmd == 'delete' else False
 
         try:
-            # Get name for rule from did
-            SQL = render_template("/".join(
-                [self.template_path, 'delete.sql']), rid=rid)
-            status, res_data = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res_data)
+            for rid in data['ids']:
+                # Get name for rule from did
+                SQL = render_template("/".join(
+                    [self.template_path, 'delete.sql']), rid=rid)
+                status, res_data = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res_data)
 
-            if not res_data['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified rule could not be found.\n'
+                if not res_data['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified rule could not be found.\n'
+                        )
                     )
-                )
 
-            # drop rule
-            rset = res_data['rows'][0]
-            SQL = render_template("/".join(
-                [self.template_path, 'delete.sql']),
-                rulename=rset['rulename'],
-                relname=rset['relname'],
-                nspname=rset['nspname'],
-                cascade=cascade
-            )
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                # drop rule
+                rset = res_data['rows'][0]
+                SQL = render_template("/".join(
+                    [self.template_path, 'delete.sql']),
+                    rulename=rset['rulename'],
+                    relname=rset['relname'],
+                    nspname=rset['nspname'],
+                    cascade=cascade
+                )
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Rule dropped"),
-                data={
-                    'id': tid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=gettext("Rule dropped")
             )
 
         except Exception as e:

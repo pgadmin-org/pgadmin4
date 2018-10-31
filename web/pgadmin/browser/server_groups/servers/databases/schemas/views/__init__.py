@@ -270,12 +270,12 @@ class ViewNode(PGChildNodeView, VacuumSettings):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'children': [{
             'get': 'children'
         }],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -557,60 +557,61 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, vid):
+    def delete(self, gid, sid, did, scid, vid=None):
         """
         This function will drop a view object
         """
+        if vid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [vid]}
 
         # Below will decide if it's simple drop or drop with cascade call
         cascade = True if self.cmd == 'delete' else False
 
         try:
-            # Get name for view from vid
-            SQL = render_template(
-                "/".join([
-                    self.template_path, 'sql/properties.sql'
-                ]),
-                did=did,
-                vid=vid,
-                datlastsysoid=self.datlastsysoid
-            )
-            status, res_data = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res_data)
-
-            if not res_data['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified view could not be found.\n'
-                    )
+            for vid in data['ids']:
+                # Get name for view from vid
+                SQL = render_template(
+                    "/".join([
+                        self.template_path, 'sql/properties.sql'
+                    ]),
+                    did=did,
+                    vid=vid,
+                    datlastsysoid=self.datlastsysoid
                 )
+                status, res_data = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res_data)
 
-            # drop view
-            SQL = render_template(
-                "/".join([
-                    self.template_path, 'sql/delete.sql'
-                ]),
-                nspname=res_data['rows'][0]['schema'],
-                name=res_data['rows'][0]['name'], cascade=cascade
-            )
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not res_data['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified view could not be found.\n'
+                        )
+                    )
+
+                # drop view
+                SQL = render_template(
+                    "/".join([
+                        self.template_path, 'sql/delete.sql'
+                    ]),
+                    nspname=res_data['rows'][0]['schema'],
+                    name=res_data['rows'][0]['name'], cascade=cascade
+                )
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("View dropped"),
-                data={
-                    'id': vid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=gettext("View dropped")
             )
 
         except Exception as e:

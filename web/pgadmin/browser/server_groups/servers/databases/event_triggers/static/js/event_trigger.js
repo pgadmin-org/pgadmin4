@@ -12,6 +12,8 @@ define('pgadmin.node.event_trigger', [
         label: gettext('Event Trigger'),
         type: 'coll-event_trigger',
         columns: ['name', 'eventowner', 'comment'],
+        canDrop: true,
+        canDropCascade: false,
       });
   }
 
@@ -55,6 +57,7 @@ define('pgadmin.node.event_trigger', [
       },
       // Define the model for event trigger node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           oid: undefined,
           name: undefined,

@@ -84,6 +84,7 @@ define('pgadmin.node.extension', [
        * of the model in schema.
        */
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'eid',
         schema: [
           {
             id: 'name', label: gettext('Name'), first_empty: true,

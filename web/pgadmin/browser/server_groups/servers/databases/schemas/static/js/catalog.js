@@ -11,6 +11,8 @@ define('pgadmin.node.catalog', [
         label: gettext('Catalogs'),
         type: 'coll-catalog',
         columns: ['name', 'namespaceowner', 'description'],
+        canDrop: false,
+        canDropCascade: false,
       });
   }
   // Extend the browser's node class for catalog node

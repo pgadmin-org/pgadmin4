@@ -306,6 +306,7 @@ define('pgadmin.node.schema', [
         return pgBrowser.Nodes['database'].is_conn_allow.call(this, node);
       },
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           namespaceowner: undefined,

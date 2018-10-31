@@ -212,9 +212,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -1056,7 +1056,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def delete(self, gid, sid, did, scid, tid):
+    def delete(self, gid, sid, did, scid, tid=None):
         """
         This function will deletes the table object
 
@@ -1067,29 +1067,45 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
            scid: Schema ID
            tid: Table ID
         """
+        if tid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [tid]}
 
         try:
-            SQL = render_template(
-                "/".join([self.table_template_path, 'properties.sql']),
-                did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
-            )
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified table could not be found.\n'
-                    )
+            for tid in data['ids']:
+                SQL = render_template(
+                    "/".join([self.table_template_path, 'properties.sql']),
+                    did=did, scid=scid, tid=tid,
+                    datlastsysoid=self.datlastsysoid
                 )
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            return super(TableView, self).delete(gid, sid, did, scid, tid, res)
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified table could not be found.\n'
+                        )
+                    )
+
+                status, res = super(TableView, self).delete(gid, sid, did,
+                                                            scid, tid, res)
+
+                if not status:
+                    return internal_server_error(errormsg=res)
+
+            return make_json_response(
+                success=1,
+                info=gettext("Table dropped")
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))

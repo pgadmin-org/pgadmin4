@@ -11,8 +11,6 @@ from __future__ import print_function
 
 import uuid
 
-from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
-    utils as extension_utils
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
     tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
@@ -39,11 +37,9 @@ class ForeignServerDeleteTestCase(BaseTestGenerator):
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
-        self.extension_name = "cube"
         self.fdw_name = "test_fdw_%s" % (str(uuid.uuid4())[1:8])
         self.fsrv_name = "test_fsrv_%s" % (str(uuid.uuid4())[1:8])
-        self.extension_id = extension_utils.create_extension(
-            self.server, self.db_name, self.extension_name, self.schema_name)
+
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
         self.fsrv_id = fsrv_utils.create_fsrv(self.server, self.db_name,
@@ -75,8 +71,9 @@ class ForeignServerDeleteTestCase(BaseTestGenerator):
         self.assertEquals(delete_response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database and drop added extension
-         and dependant objects."""
-        extension_utils.drop_extension(self.server, self.db_name,
-                                       self.extension_name)
-        database_utils.disconnect_database(self, self.server_id, self.db_id)
+        """This function disconnect the test database and drop
+         added foreign data server and dependant objects."""
+        fdw_utils.delete_fdw(self.server, self.db_name,
+                             self.fdw_name)
+        database_utils.disconnect_database(self, self.server_id,
+                                           self.db_id)

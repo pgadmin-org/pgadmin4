@@ -104,7 +104,7 @@ class DatabaseView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'nodes': [
             {'get': 'node'},
@@ -221,6 +221,15 @@ class DatabaseView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        for row in res['rows']:
+            if self.manager.db == row['name']:
+                connected = True
+                row['canDrop'] = False
+            else:
+                conn = self.manager.connection(row['name'], did=row['did'])
+                connected = conn.connected()
+                row['canDrop'] = True
 
         return ajax_response(
             response=res['rows'],
@@ -733,44 +742,54 @@ class DatabaseView(PGChildNodeView):
         )
 
     @check_precondition(action="drop")
-    def delete(self, gid, sid, did):
+    def delete(self, gid, sid, did=None):
         """Delete the database."""
-        default_conn = self.manager.connection()
-        SQL = render_template(
-            "/".join([self.template_path, 'delete.sql']),
-            did=did, conn=self.conn
-        )
-        status, res = default_conn.execute_scalar(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
 
-        if res is None:
-            return make_json_response(
-                status=410,
-                success=0,
-                errormsg=_(
-                    'Error: Object not found.'
-                ),
-                info=_(
-                    'The specified database could not be found.\n'
-                )
+        if did is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
             )
         else:
+            data = {'ids': [did]}
 
-            status = self.manager.release(did=did)
-
+        for did in data['ids']:
+            default_conn = self.manager.connection()
             SQL = render_template(
                 "/".join([self.template_path, 'delete.sql']),
-                datname=res, conn=self.conn
+                did=did, conn=self.conn
             )
-
-            status, msg = default_conn.execute_scalar(SQL)
+            status, res = default_conn.execute_scalar(SQL)
             if not status:
-                # reconnect if database drop failed.
-                conn = self.manager.connection(did=did, auto_reconnect=True)
-                status, errmsg = conn.connect()
+                return internal_server_error(errormsg=res)
 
-                return internal_server_error(errormsg=msg)
+            if res is None:
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=_(
+                        'Error: Object not found.'
+                    ),
+                    info=_(
+                        'The specified database could not be found.\n'
+                    )
+                )
+            else:
+
+                status = self.manager.release(did=did)
+
+                SQL = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    datname=res, conn=self.conn
+                )
+
+                status, msg = default_conn.execute_scalar(SQL)
+                if not status:
+                    # reconnect if database drop failed.
+                    conn = self.manager.connection(did=did,
+                                                   auto_reconnect=True)
+                    status, errmsg = conn.connect()
+
+                    return internal_server_error(errormsg=msg)
 
         return make_json_response(success=1)
 

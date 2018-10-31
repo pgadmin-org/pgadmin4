@@ -130,7 +130,7 @@ class JobView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'properties', 'post': 'create'}
+            {'get': 'properties', 'post': 'create', 'delete': 'delete'}
         ],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -368,17 +368,25 @@ SELECT EXISTS(
         )
 
     @check_precondition
-    def delete(self, gid, sid, jid):
+    def delete(self, gid, sid, jid=None):
         """Delete the pgAgent Job."""
 
-        status, res = self.conn.execute_void(
-            render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                jid=jid, conn=self.conn
+        if jid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
             )
-        )
-        if not status:
-            return internal_server_error(errormsg=res)
+        else:
+            data = {'ids': [jid]}
+
+        for jid in data['ids']:
+            status, res = self.conn.execute_void(
+                render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    jid=jid, conn=self.conn
+                )
+            )
+            if not status:
+                return internal_server_error(errormsg=res)
 
         return make_json_response(success=1)
 

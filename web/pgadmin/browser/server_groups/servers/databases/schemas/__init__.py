@@ -214,7 +214,7 @@ class SchemaView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
@@ -223,7 +223,8 @@ class SchemaView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'delete': [{'delete': 'delete'}]
+        'delete': [{'delete': 'delete'},
+                   {'delete': 'delete'}]
     })
 
     def __init__(self, *args, **kwargs):
@@ -645,7 +646,7 @@ It may have been removed by another user.
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid):
+    def delete(self, gid, sid, did, scid=None):
         """
         This function will delete an existing schema object
 
@@ -656,54 +657,56 @@ It may have been removed by another user.
            scid: Schema ID
         """
 
-        try:
-            # Get name for schema from did
-            SQL = render_template(
-                "/".join([self.template_path, 'sql/get_name.sql']),
-                _=gettext,
-                scid=scid
+        if scid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
             )
+        else:
+            data = {'ids': [scid]}
 
-            status, name = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=name)
-
-            if name is None:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified schema could not be found.\n'
-                    )
+        for scid in data['ids']:
+            try:
+                # Get name for schema from did
+                SQL = render_template(
+                    "/".join([self.template_path, 'sql/get_name.sql']),
+                    _=gettext,
+                    scid=scid
                 )
 
-            # drop schema
-            SQL = render_template(
-                "/".join([self.template_path, 'sql/delete.sql']),
-                _=gettext, name=name, conn=self.conn,
-                cascade=True if self.cmd == 'delete' else False
-            )
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                status, name = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=name)
 
-            return make_json_response(
-                success=1,
-                info=gettext("Schema dropped"),
-                data={
-                    'id': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
-            )
+                if name is None:
+                    return make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified schema could not be found.\n'
+                        )
+                    )
 
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+                # drop schema
+                SQL = render_template(
+                    "/".join([self.template_path, 'sql/delete.sql']),
+                    _=gettext, name=name, conn=self.conn,
+                    cascade=True if self.cmd == 'delete' else False
+                )
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
+
+            except Exception as e:
+                current_app.logger.exception(e)
+                return internal_server_error(errormsg=str(e))
+
+        return make_json_response(
+            success=1,
+            info=gettext("Schema dropped")
+        )
 
     @check_precondition
     def msql(self, gid, sid, did, scid=None):

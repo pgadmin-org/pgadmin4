@@ -73,6 +73,7 @@ define('pgadmin.node.package', [
       },
       // Define the model for package node.
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

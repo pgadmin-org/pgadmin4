@@ -165,9 +165,9 @@ class SynonymView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -468,7 +468,7 @@ class SynonymView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, syid):
+    def delete(self, gid, sid, did, scid, syid=None):
         """
         This function will delete existing the synonym object
 
@@ -479,42 +479,44 @@ class SynonymView(PGChildNodeView):
            scid: Schema ID
            syid: Synonym ID
         """
+        if syid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [syid]}
 
         # Below will decide if it's simple drop or drop with cascade call
 
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  scid=scid, syid=syid)
+            for syid in data['ids']:
+                SQL = render_template("/".join([self.template_path,
+                                                'properties.sql']),
+                                      scid=scid, syid=syid)
 
-            status, res = self.conn.execute_dict(SQL)
+                status, res = self.conn.execute_dict(SQL)
 
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if len(res['rows']) > 0:
-                data = res['rows'][0]
-            else:
-                return gone(
-                    gettext('The specified synonym could not be found.')
-                )
+                if len(res['rows']) > 0:
+                    data = res['rows'][0]
+                else:
+                    return gone(
+                        gettext('The specified synonym could not be found.')
+                    )
 
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  data=data,
-                                  conn=self.conn)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data,
+                                      conn=self.conn)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Synonym dropped"),
-                data={
-                    'id': syid,
-                    'scid': scid,
-                    'did': did
-                }
+                info=gettext("Synonym dropped")
             )
 
         except Exception as e:

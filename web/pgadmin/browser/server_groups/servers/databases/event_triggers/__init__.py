@@ -164,7 +164,7 @@ class EventTriggerView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
@@ -478,7 +478,7 @@ class EventTriggerView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, etid):
+    def delete(self, gid, sid, did, etid=None):
         """
         This function will delete an existing event trigger object.
 
@@ -497,48 +497,51 @@ class EventTriggerView(PGChildNodeView):
             cascade = True
         else:
             cascade = False
+
+        if etid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [etid]}
+
         try:
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                etid=etid
-            )
-            status, name = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=name)
-
-            if name is None:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified event trigger could not be found.\n'
-                    )
+            for etid in data['ids']:
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    etid=etid
                 )
+                status, name = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=name)
 
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                name=name, cascade=cascade
-            )
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                if name is None:
+                    return make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified event trigger could not be found.\n'
+                        )
+                    )
+
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    name=name, cascade=cascade
+                )
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Event trigger dropped"),
-                data={
-                    'id': etid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=gettext("Event trigger dropped")
             )
 
         except Exception as e:
-            return internal_server_error(errormsg=str(e))
+                return internal_server_error(errormsg=str(e))
 
     @check_precondition
     def msql(self, gid, sid, did, etid=None):

@@ -97,6 +97,7 @@ define('pgadmin.node.fts_dictionary', [
 
       // Defining backform model for FTS Dictionary node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,        // FTS Dictionary name
           owner: undefined,       // FTS Dictionary owner

@@ -211,9 +211,9 @@ class IndexesView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -704,7 +704,7 @@ class IndexesView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, idx):
+    def delete(self, gid, sid, did, scid, tid, idx=None):
         """
         This function will updates existing the schema object
 
@@ -716,6 +716,13 @@ class IndexesView(PGChildNodeView):
            tid: Table ID
            idx: Index ID
         """
+        if idx is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [idx]}
+
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -724,45 +731,42 @@ class IndexesView(PGChildNodeView):
             cascade = False
 
         try:
-            # We will first fetch the index name for current request
-            # so that we create template for dropping index
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
-            )
-
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified index could not be found.\n'
-                    )
+            for idx in data['ids']:
+                # We will first fetch the index name for current request
+                # so that we create template for dropping index
+                SQL = render_template(
+                    "/".join([self.template_path, 'properties.sql']),
+                    did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
                 )
 
-            data = dict(res['rows'][0])
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            SQL = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                data=data, conn=self.conn, cascade=cascade
-            )
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified index could not be found.\n'
+                        )
+                    )
+
+                data = dict(res['rows'][0])
+
+                SQL = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    data=data, conn=self.conn, cascade=cascade
+                )
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Index is dropped"),
-                data={
-                    'id': idx,
-                    'tid': tid
-                }
+                info=gettext("Index is dropped")
             )
 
         except Exception as e:

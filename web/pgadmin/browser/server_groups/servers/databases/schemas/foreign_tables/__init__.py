@@ -194,9 +194,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -708,7 +708,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, foid):
+    def delete(self, gid, sid, did, scid, foid=None):
         """
         Drops the Foreign Table.
 
@@ -719,6 +719,13 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             scid: Schema Id
             foid: Foreign Table Id
         """
+        if foid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [foid]}
+
         if self.cmd == 'delete':
             # This is a cascade operation
             cascade = True
@@ -726,47 +733,41 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             cascade = False
 
         try:
-            # Fetch Name and Schema Name to delete the foreign table.
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']), scid=scid,
-                                  foid=foid)
-            status, res = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+            for foid in data['ids']:
+                # Fetch Name and Schema Name to delete the foreign table.
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']), scid=scid,
+                                      foid=foid)
+                status, res = self.conn.execute_2darray(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified foreign table could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified foreign table could not be found.\n'
+                        )
                     )
-                )
 
-            name = res['rows'][0]['name']
-            basensp = res['rows'][0]['basensp']
+                name = res['rows'][0]['name']
+                basensp = res['rows'][0]['basensp']
 
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  name=name,
-                                  basensp=basensp,
-                                  cascade=cascade)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      name=name,
+                                      basensp=basensp,
+                                      cascade=cascade)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Foreign Table dropped"),
-                data={
-                    'id': foid,
-                    'scid': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                info=gettext("Foreign Table dropped")
             )
 
         except Exception as e:

@@ -182,12 +182,12 @@ class FtsParserView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'children': [{
             'get': 'children'
         }],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -453,7 +453,7 @@ class FtsParserView(PGChildNodeView):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, pid):
+    def delete(self, gid, sid, did, scid, pid=None):
         """
         This function will drop the fts_parser object
         :param gid: group id
@@ -462,6 +462,13 @@ class FtsParserView(PGChildNodeView):
         :param scid: schema id
         :param pid: fts tempate id
         """
+        if pid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [pid]}
+
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -470,49 +477,43 @@ class FtsParserView(PGChildNodeView):
             cascade = False
 
         try:
-            # Get name for Parser from pid
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                pid=pid
-            )
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+            for pid in data['ids']:
+                # Get name for Parser from pid
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    pid=pid
+                )
+                status, res = self.conn.execute_dict(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified FTS parser could not be found.\n'
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=_(
+                            'Error: Object not found.'
+                        ),
+                        info=_(
+                            'The specified FTS parser could not be found.\n'
+                        )
                     )
+
+                # Drop fts Parser
+                result = res['rows'][0]
+                sql = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    name=result['name'],
+                    schema=result['schema'],
+                    cascade=cascade
                 )
 
-            # Drop fts Parser
-            result = res['rows'][0]
-            sql = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                name=result['name'],
-                schema=result['schema'],
-                cascade=cascade
-            )
-
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=_("FTS Parser dropped"),
-                data={
-                    'id': pid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did,
-                    'scid': scid
-                }
+                info=_("FTS Parser dropped")
             )
 
         except Exception as e:

@@ -161,9 +161,9 @@ class CollationView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -482,7 +482,7 @@ class CollationView(PGChildNodeView):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, coid):
+    def delete(self, gid, sid, did, scid, coid=None):
         """
         This function will delete existing the collation object
 
@@ -493,6 +493,12 @@ class CollationView(PGChildNodeView):
            scid: Schema ID
            coid: Collation ID
         """
+        if coid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [coid]}
 
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
@@ -502,40 +508,36 @@ class CollationView(PGChildNodeView):
             cascade = False
 
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'get_name.sql']),
-                                  scid=scid, coid=coid)
-            status, name = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=name)
+            for coid in data['ids']:
+                SQL = render_template("/".join([self.template_path,
+                                                'get_name.sql']),
+                                      scid=scid, coid=coid)
+                status, name = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=name)
 
-            if name is None:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified collation could not be found.\n'
+                if name is None:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified collation could not be found.\n'
+                        )
                     )
-                )
 
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  name=name, cascade=cascade,
-                                  conn=self.conn)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      name=name, cascade=cascade,
+                                      conn=self.conn)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Collation dropped"),
-                data={
-                    'id': coid,
-                    'scid': scid,
-                    'did': did
-                }
+                info=gettext("Collation dropped")
             )
 
         except Exception as e:

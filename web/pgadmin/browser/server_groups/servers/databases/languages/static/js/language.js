@@ -59,6 +59,7 @@ define('pgadmin.node.language', [
 
       // Define the model for language node
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           lanowner: undefined,

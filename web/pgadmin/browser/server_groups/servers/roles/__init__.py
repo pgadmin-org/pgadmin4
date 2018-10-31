@@ -100,7 +100,7 @@ class RoleView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'drop', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'drop'}
         ],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -494,8 +494,10 @@ rolmembership:{
                 forbidden_msg = None
 
                 if action in ['drop', 'update']:
-                    check_permission = True
-                    fetch_name = True
+                    if 'rid' in kwargs:
+                        fetch_name = True
+                        check_permission = True
+
                     if action == 'drop':
                         forbidden_msg = _(
                             "The current user does not have permission to drop"
@@ -696,15 +698,47 @@ rolmembership:{
         )
 
     @check_precondition(action='drop')
-    def drop(self, gid, sid, rid):
+    def drop(self, gid, sid, rid=None):
 
-        status, res = self.conn.execute_2darray(
-            u"DROP ROLE {0};".format(self.qtIdent(self.conn, self.role))
-        )
-        if not status:
-            return internal_server_error(
-                _("Could not drop the role.\n{0}").format(res)
+        if rid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
             )
+        else:
+            data = {'ids': [rid]}
+
+        for rid in data['ids']:
+            status, res = self.conn.execute_dict(
+                render_template(
+                    self.sql_path + 'permission.sql',
+                    rid=rid,
+                    conn=self.conn
+                )
+            )
+
+            if not status:
+                return internal_server_error(
+                    _(
+                        "Error retrieving the role information.\n{0}"
+                    ).format(res)
+                )
+
+            if len(res['rows']) == 0:
+                return gone(
+                    _("Could not find the role on the database "
+                      "server.")
+                )
+
+            row = res['rows'][0]
+
+            status, res = self.conn.execute_2darray(
+                u"DROP ROLE {0};".format(self.qtIdent(self.conn,
+                                                      row['rolname']))
+            )
+            if not status:
+                return internal_server_error(
+                    _("Could not drop the role.\n{0}").format(res)
+                )
 
         return success_return()
 

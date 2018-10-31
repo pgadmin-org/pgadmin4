@@ -13,6 +13,8 @@ define('pgadmin.node.domain_constraints', [
         label: gettext('Domain Constraints'),
         type: 'coll-domain_constraints',
         columns: ['name', 'description'],
+        canDrop: true,
+        canDropCascade: false,
       });
   }
 
@@ -59,6 +61,7 @@ define('pgadmin.node.domain_constraints', [
       },
       canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

@@ -153,20 +153,20 @@ _.extend(pgBrowser.browserTreeState, {
       let index = _.find(this.current_state[topParent]['paths'], function(tData) {
         return (tData.search(path) !== -1);
       });
-      if(!_.isUndefined(index))
-        return;
+      if(_.isUndefined(index)) {
 
-      // Add / Update the current item into the tree path
-      if (!_.isUndefined(this.current_state[topParent]['paths'])) {
-        tmpIndex = this.current_state[topParent]['paths'].indexOf(oldPath);
-      } else {
-        this.current_state[topParent]['paths'] = [];
-      }
-      if (tmpIndex !== -1) {
-        this.current_state[topParent]['paths'][tmpIndex] = path;
-      }
-      else {
-        this.current_state[topParent]['paths'].push(path);
+        // Add / Update the current item into the tree path
+        if (!_.isUndefined(this.current_state[topParent]['paths'])) {
+          tmpIndex = this.current_state[topParent]['paths'].indexOf(oldPath);
+        } else {
+          this.current_state[topParent]['paths'] = [];
+        }
+        if (tmpIndex !== -1) {
+          this.current_state[topParent]['paths'][tmpIndex] = path;
+        }
+        else {
+          this.current_state[topParent]['paths'].push(path);
+        }
       }
 
     }
@@ -297,19 +297,27 @@ _.extend(pgBrowser.browserTreeState, {
     }
   },
   update_current_selected_item(treeHierarchy) {
+    if (!(this.parent in treeHierarchy))
+      return;
+
+    let topParent = treeHierarchy && treeHierarchy[this.parent]['_id'],
+      selectedItem = pgBrowser.tree.itemData(pgBrowser.tree.selected()),
+      databaseItem = undefined;
+
+    selectedItem = selectedItem ? selectedItem.id : undefined;
+
     if ('database' in treeHierarchy) {
-      let databaseItem = treeHierarchy['database']['id'],
-        topParent = treeHierarchy && treeHierarchy[this.parent]['_id'],
-        selectedItem = pgBrowser.tree.itemData(pgBrowser.tree.selected());
-
-      selectedItem = selectedItem ? selectedItem.id : undefined;
-
-      if (topParent in this.current_state && 'selected' in this.current_state[topParent]
-      && !_.isUndefined(selectedItem)) {
-        this.current_state[topParent]['selected'][treeHierarchy[this.parent]['id']] = selectedItem;
-        this.current_state[topParent]['selected'][databaseItem] = selectedItem;
-      }
+      databaseItem = treeHierarchy['database']['id'];
     }
+
+    if (topParent in this.current_state && 'selected' in this.current_state[topParent]
+    && !_.isUndefined(selectedItem)) {
+      this.current_state[topParent]['selected'][treeHierarchy[this.parent]['id']] = selectedItem;
+
+      if (!_.isUndefined(databaseItem))
+        this.current_state[topParent]['selected'][databaseItem] = selectedItem;
+    }
+
   },
   select_tree_item(item) {
     let treeData = this.stored_state || {},

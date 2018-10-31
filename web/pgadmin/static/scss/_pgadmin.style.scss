@@ -1346,7 +1346,7 @@ fieldset.inline-fieldset > div {
 }
 
 .pg-prop-header {
-    position: absolute;
+    position: relative;
     left: 0px;
     right: 0px;
     top : 0;
@@ -1400,6 +1400,7 @@ fieldset.inline-fieldset > div {
 .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
     border-bottom-width: 1px;
     padding: 3px;
+    vertical-align: middle;
 }
 
 .edit-cell, .delete-cell {
@@ -1724,3 +1725,14 @@ body {
 .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
 	background: $color-gray-dark none;
 }*/
+
+.delete_multiple_cascade {
+  align-content: center;
+  vertical-align: middle;
+  height: 33px;
+  background-image: url(/static/img/drop_cascade.svg) !important;
+  background-size: 25px !important;
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
+}

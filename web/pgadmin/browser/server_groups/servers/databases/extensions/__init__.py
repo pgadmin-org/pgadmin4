@@ -123,9 +123,9 @@ class ExtensionView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -327,49 +327,53 @@ class ExtensionView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, eid):
+    def delete(self, gid, sid, did, eid=None):
         """
         This function will drop/drop cascade a extension object
         """
+
+        if eid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [eid]}
+
         cascade = True if self.cmd == 'delete' else False
+
         try:
-            # check if extension with eid exists
-            SQL = render_template("/".join(
-                [self.template_path, 'delete.sql']), eid=eid)
-            status, name = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=name)
+            for eid in data['ids']:
+                # check if extension with eid exists
+                SQL = render_template("/".join(
+                    [self.template_path, 'delete.sql']), eid=eid)
+                status, name = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=name)
 
-            if name is None:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified extension could not be found.\n'
+                if name is None:
+                    return make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified extension could not be found.\n'
+                        )
                     )
-                )
 
-            # drop extension
-            SQL = render_template("/".join(
-                [self.template_path, 'delete.sql']
-            ), name=name, cascade=cascade)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                # drop extension
+                SQL = render_template("/".join(
+                    [self.template_path, 'delete.sql']
+                ), name=name, cascade=cascade)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,
-                info=gettext("Extension dropped"),
-                data={
-                    'id': did,
-                    'sid': sid,
-                    'gid': gid,
-                }
+                info=gettext("Extension dropped")
             )
-
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 

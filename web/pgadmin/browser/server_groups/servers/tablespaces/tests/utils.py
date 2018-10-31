@@ -44,7 +44,7 @@ def get_tablespace_data(tablespace_path, db_owner):
     return data
 
 
-def create_tablespace(server, test_tablespace_name):
+def create_tablespace(server, test_tablespace_name, test_tablespace_dir=None):
     try:
         connection = utils.get_db_connection(server['db'],
                                              server['username'],
@@ -55,8 +55,10 @@ def create_tablespace(server, test_tablespace_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
+        if test_tablespace_dir is None:
+            test_tablespace_dir = server['tablespace_path']
         pg_cursor.execute("CREATE TABLESPACE %s LOCATION '%s'" %
-                          (test_tablespace_name, server['tablespace_path']))
+                          (test_tablespace_name, test_tablespace_dir))
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 

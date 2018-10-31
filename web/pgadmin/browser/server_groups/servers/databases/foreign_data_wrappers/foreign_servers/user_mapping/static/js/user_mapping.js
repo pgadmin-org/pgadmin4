@@ -96,6 +96,7 @@ define('pgadmin.node.user_mapping', [
 
       // Defining model for user mapping node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'um_oid',
         defaults: {
           name: undefined,
           um_options: [],

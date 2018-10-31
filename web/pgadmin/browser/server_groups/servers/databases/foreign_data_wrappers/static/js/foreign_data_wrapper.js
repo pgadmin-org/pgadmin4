@@ -95,6 +95,7 @@ define('pgadmin.node.foreign_data_wrapper', [
 
       // Defining model for foreign data wrapper node
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'fdwoid',
         defaults: {
           name: undefined,
           fdwowner: undefined,

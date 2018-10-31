@@ -158,9 +158,9 @@ class DomainView(PGChildNodeView, DataTypeReader):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -581,7 +581,7 @@ AND relkind != 'c'))"""
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, doid):
+    def delete(self, gid, sid, did, scid, doid=None):
         """
         Drops the Domain object.
 
@@ -592,6 +592,12 @@ AND relkind != 'c'))"""
             scid: Schema Id
             doid: Domain Id
         """
+        if doid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [doid]}
 
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -599,45 +605,39 @@ AND relkind != 'c'))"""
         else:
             cascade = False
 
-        SQL = render_template("/".join([self.template_path,
-                                        'delete.sql']),
-                              scid=scid, doid=doid)
-        status, res = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
+        for doid in data['ids']:
+            SQL = render_template("/".join([self.template_path,
+                                            'delete.sql']),
+                                  scid=scid, doid=doid)
+            status, res = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-        if not res['rows']:
-            return make_json_response(
-                status=410,
-                success=0,
-                errormsg=gettext(
-                    'Error: Object not found.'
-                ),
-                info=gettext(
-                    'The specified domain could not be found.\n'
+            if not res['rows']:
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified domain could not be found.\n'
+                    )
                 )
-            )
 
-        name = res['rows'][0]['name']
-        basensp = res['rows'][0]['basensp']
+            name = res['rows'][0]['name']
+            basensp = res['rows'][0]['basensp']
 
-        SQL = render_template("/".join([self.template_path,
-                                        'delete.sql']),
-                              name=name, basensp=basensp, cascade=cascade)
-        status, res = self.conn.execute_scalar(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
+            SQL = render_template("/".join([self.template_path,
+                                            'delete.sql']),
+                                  name=name, basensp=basensp, cascade=cascade)
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
         return make_json_response(
             success=1,
-            info=gettext("Domain dropped"),
-            data={
-                'id': doid,
-                'scid': scid,
-                'sid': sid,
-                'gid': gid,
-                'did': did
-            }
+            info=gettext("Domain dropped")
         )
 
     @check_precondition

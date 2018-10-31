@@ -190,9 +190,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
-        'delete': [{'delete': 'delete'}],
+        'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -1063,7 +1063,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid):
+    def delete(self, gid, sid, did, scid, tid=None):
         """
         This function will updates existing the type object
 
@@ -1074,6 +1074,12 @@ class TypeView(PGChildNodeView, DataTypeReader):
            scid: Schema ID
            tid: Type ID
         """
+        if tid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [tid]}
 
         # Below will decide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
@@ -1083,37 +1089,40 @@ class TypeView(PGChildNodeView, DataTypeReader):
             cascade = False
 
         try:
-
-            SQL = render_template(
-                "/".join([self.template_path,
-                          'properties.sql']),
-                scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid,
-                show_system_objects=self.blueprint.show_system_objects
-            )
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified type could not be found.\n'
-                    )
+            for tid in data['ids']:
+                SQL = render_template(
+                    "/".join([self.template_path,
+                              'properties.sql']),
+                    scid=scid, tid=tid,
+                    datlastsysoid=self.datlastsysoid,
+                    show_system_objects=self.blueprint.show_system_objects
                 )
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            # Making copy of output for future use
-            data = dict(res['rows'][0])
+                if not res['rows']:
+                    return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            'Error: Object not found.'
+                        ),
+                        info=gettext(
+                            'The specified type could not be found.\n'
+                        )
+                    )
 
-            SQL = render_template("/".join([self.template_path, 'delete.sql']),
-                                  data=data, cascade=cascade, conn=self.conn)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+                # Making copy of output for future use
+                data = dict(res['rows'][0])
+
+                SQL = render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data,
+                                      cascade=cascade,
+                                      conn=self.conn)
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return make_json_response(
                 success=1,

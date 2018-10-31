@@ -61,6 +61,7 @@ define('pgadmin.node.sequence', [
       },
       // Define the model for sequence node.
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

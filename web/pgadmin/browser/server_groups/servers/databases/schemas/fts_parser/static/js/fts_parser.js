@@ -58,6 +58,7 @@ define('pgadmin.node.fts_parser', [
 
       // Defining backform model for fts parser node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,          // Fts parser name
           description: undefined,   // Comment on parser

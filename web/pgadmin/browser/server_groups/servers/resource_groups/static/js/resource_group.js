@@ -11,6 +11,8 @@ define('pgadmin.node.resource_group', [
         label: gettext('Resource Groups'),
         type: 'coll-resource_group',
         columns: ['name', 'cpu_rate_limit', 'dirty_rate_limit'],
+        canDrop: true,
+        canDropCascade: false,
       });
   }
 
@@ -63,7 +65,9 @@ define('pgadmin.node.resource_group', [
 
       // Defining model for resource group node
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
+          oid: undefined,
           name: undefined,
           cpu_rate_limit: 0.0,
           dirty_rate_limit: 0.0,
@@ -71,6 +75,9 @@ define('pgadmin.node.resource_group', [
 
         // Defining schema for the resource group node
         schema: [{
+          id: 'oid', label: gettext('OID'), type: 'text',
+          editable: false, disabled: true, mode:['properties'],
+        },{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text',
         },{
