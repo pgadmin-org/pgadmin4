@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2018-10-29 22:18+0530\n"
-"PO-Revision-Date: 2018-10-02 19:48+0900\n"
+"PO-Revision-Date: 2018-10-30 05:23+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.6.0\n"
 
 #: pgadmin/__init__.py:483 pgadmin/__init__.py:536
 #, python-format
@@ -162,13 +162,13 @@ msgstr "ダイアログと通知のアニメーションを有効化"
 
 #: pgadmin/browser/register_browser_preferences.py:33
 msgid "Browser tree state saving interval"
-msgstr ""
+msgstr "ブラウザツリー状態の保存間隔"
 
 #: pgadmin/browser/register_browser_preferences.py:35
 msgid ""
 "Browser tree state saving interval in seconds.Use -1 to disable the tree "
 "saving mechanism."
-msgstr ""
+msgstr "ブラウザツリーの状態を何秒おきに保存するかを指定します。-1にすると、この機構を無効化します"
 
 #: pgadmin/browser/register_browser_preferences.py:43
 msgid "Count rows if estimated less than"
@@ -547,11 +547,11 @@ msgstr "サーバへの接続を切断しました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1164
 msgid "Could not reload the server configuration."
-msgstr "サーバ設定をリロードできませんでした"
+msgstr "サーバ設定を再読み込みできませんでした"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1169
 msgid "Server configuration reloaded."
-msgstr "サーバ設定をリロードしました"
+msgstr "サーバ設定を再読み込みしました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1175
 #: pgadmin/dashboard/static/js/dashboard.js:467
@@ -3888,12 +3888,12 @@ msgstr "パーティション"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:53
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:75
 msgid "Truncate"
-msgstr "トランケート"
+msgstr "消去"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:80
 msgid "Truncate Cascade"
-msgstr "強制トランケート"
+msgstr "強制消去"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:64
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:86
@@ -6822,7 +6822,7 @@ msgstr "サーバから切断"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:88
 msgid "Reload Configuration"
-msgstr "設定をリロード"
+msgstr "設定を再読み込み"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:93
 msgid "Add Named Restore Point..."
@@ -6859,12 +6859,12 @@ msgstr "サーバ %(server)s から切断しますか？"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:303
 msgid "Reload server configuration"
-msgstr "サーバ設定をリロード"
+msgstr "サーバ設定を再読み込み"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:305
 #, python-format
 msgid "Are you sure you want to reload the server configuration on %s?"
-msgstr "%s のサーバ設定をリロードしますか？"
+msgstr "%s のサーバ設定を再読み込みしますか？"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:342
 msgid "Enter the name of the restore point to add"
@@ -7671,7 +7671,7 @@ msgstr "ダッシュボード"
 
 #: pgadmin/dashboard/__init__.py:78
 msgid "Session statistics refresh rate"
-msgstr "セッション統計更新率"
+msgstr "セッション統計更新速度"
 
 #: pgadmin/dashboard/__init__.py:80 pgadmin/dashboard/__init__.py:88
 #: pgadmin/dashboard/__init__.py:96 pgadmin/dashboard/__init__.py:104
@@ -7683,23 +7683,23 @@ msgstr "グラフ"
 #: pgadmin/dashboard/__init__.py:97 pgadmin/dashboard/__init__.py:105
 #: pgadmin/dashboard/__init__.py:113
 msgid "The number of seconds between graph samples."
-msgstr "グラフサンプル間の秒数"
+msgstr "グラフデータをサンプリングする間隔（秒）"
 
 #: pgadmin/dashboard/__init__.py:86
 msgid "Transaction throughput refresh rate"
-msgstr "トランザクションスループット更新率"
+msgstr "トランザクションスループット更新速度"
 
 #: pgadmin/dashboard/__init__.py:94
 msgid "Tuples in refresh rate"
-msgstr "挿入行数の更新率"
+msgstr "書き込み行数の更新速度"
 
 #: pgadmin/dashboard/__init__.py:102
 msgid "Tuples out refresh rate"
-msgstr "削除行数の更新率"
+msgstr "読み取り行数の更新速度"
 
 #: pgadmin/dashboard/__init__.py:110
 msgid "Block I/O statistics refresh rate"
-msgstr "ブロックI/O統計更新率"
+msgstr "ブロックI/O統計更新速度"
 
 #: pgadmin/dashboard/__init__.py:118
 msgid "Show graphs?"
@@ -8239,7 +8239,7 @@ msgstr "バックエンドプロセス「{0}」の状態を読み込めません
 
 #: pgadmin/misc/bgprocess/processes.py:707
 msgid "Unable to kill the background process '{0}'"
-msgstr ""
+msgstr "バックエンドプロセス「{0}」を終了できませんでした"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:182
 msgid "Started"
@@ -8247,7 +8247,7 @@ msgstr "開始時刻"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:190
 msgid "Terminated by user."
-msgstr ""
+msgstr "ユーザにより終了されました"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:192
 msgid "Successfully completed."
@@ -8269,7 +8269,7 @@ msgstr "秒数"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:619
 msgid "Stop Process"
-msgstr ""
+msgstr "プロセスの停止"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:631
 msgid "Execution time"
@@ -8350,7 +8350,7 @@ msgstr "パーミッションが拒否されました"
 
 #: pgadmin/misc/file_manager/__init__.py:707
 msgid "Access denied ({0})"
-msgstr "アクセス拒否（{0})"
+msgstr "アクセスが拒否されました（{0})"
 
 #: pgadmin/misc/file_manager/__init__.py:767
 #: pgadmin/misc/file_manager/__init__.py:852
@@ -8371,11 +8371,11 @@ msgstr "許可されていません"
 
 #: pgadmin/misc/file_manager/__init__.py:880
 msgid "Renamed successfully."
-msgstr "リネームに成功しました"
+msgstr "名前が変更されました"
 
 #: pgadmin/misc/file_manager/__init__.py:887
 msgid "There was an error renaming the file:"
-msgstr "ファイルのリネームでエラーが発生しました"
+msgstr "ファイル名変更の際にエラーが発生しました："
 
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:131
 #: pgadmin/misc/file_manager/static/js/utility.js:420
@@ -8501,7 +8501,7 @@ msgstr "レイアウトを初期化"
 msgid ""
 "Are you sure you want to reset the current layout? This will cause the "
 "application to reload and any un-saved data will be lost."
-msgstr "現在のレイアウトを初期化しますか？アプリケーションをリロードし、保存していないデータを破棄します"
+msgstr "現在のレイアウトを初期化しますか？アプリケーションを再読み込みし、保存していないデータを破棄します"
 
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:94
 msgid "Connection Lost"
@@ -8803,11 +8803,11 @@ msgstr "」を受信しました。送信元サーバプロセスのPID："
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:92
 msgid "Error saving the tree state.\""
-msgstr ""
+msgstr "ツリー状態の保存中にエラーが発生しました\""
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:120
 msgid "Error fetching the tree state.\""
-msgstr ""
+msgstr "ツリー状態の取得中にエラーが発生しました\""
 
 #: pgadmin/templates/security/change_password.html:2
 #, python-format
@@ -9113,26 +9113,26 @@ msgstr "バックアップ..."
 #: pgadmin/tools/restore/static/js/restore_dialog.js:52
 #: pgadmin/tools/restore/static/js/restore_dialog.js:75
 msgid "Utility not found"
-msgstr ""
+msgstr "ユーティリティが存在しません"
 
 #: pgadmin/tools/backup/static/js/backup_dialog.js:73
 #: pgadmin/tools/import_export/static/js/import_export.js:688
 #: pgadmin/tools/maintenance/static/js/maintenance.js:496
 #: pgadmin/tools/restore/static/js/restore_dialog.js:76
 msgid "Failed to fetch Utility information"
-msgstr ""
+msgstr "ユーティリティ情報を取得できませんでした"
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:152
 msgid "Backup job created."
-msgstr "バックアップジョブを作成しました"
+msgstr "バックアップジョブが作成されました"
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:156
 msgid "Backup job creation failed."
-msgstr ""
+msgstr "バックアップジョブの作成に失敗しました"
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:164
 msgid "Backup job failed."
-msgstr "バックアップジョブに失敗しました"
+msgstr "バックアップジョブが失敗しました"
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:235
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:221
@@ -9891,7 +9891,7 @@ msgid ""
 " You might prefer an empty string even in text format for cases where you"
 " don't want to distinguish nulls from empty strings. This option is not "
 "allowed when using binary format."
-msgstr "NULL値を表す文字列を指定します。デフォルトは、テキスト形式では\\N（バックスラッシュN）、CSV形式ではクォートのない空文字です。NULLと空文字を同じものとみなしたい場合には、テキスト形式でも空文字とすることができます。このオプションはバイナリ形式では使用できません"
+msgstr "NULL値を表す文字列を指定します。デフォルトは、テキスト形式では\\N（バックスラッシュN）、CSV形式では引用符のない空文字です。NULLと空文字を同じものとみなしたい場合には、テキスト形式でも空文字とすることができます。このオプションはバイナリ形式では使用できません"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:232
 msgid "Not null columns"
@@ -9908,10 +9908,7 @@ msgid ""
 " will be read as zero-length strings rather than nulls, even when they "
 "are not quoted. This option is allowed only in import, and only when "
 "using CSV format."
-msgstr ""
-"指定した列の値を NULL 文字とみなしません。NULL "
-"文字が空文字であるデフォルトの状態では、クォートされていない場合でも、空文字はNULLではな0文字の文字列とみなされます。このオプションは、インポート時のみ、CSV"
-" 形式でのみ使用することができます"
+msgstr "指定した列の値をNULL文字とみなしません。NULL文字が空文字であるデフォルトの状態では、引用符付けされていない場合でも、空文字はNULLではなく0文字の文字列とみなされます。このオプションはインポート時、かつCSV形式でのみ使用することができます"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:298
 #: pgadmin/tools/import_export/static/js/import_export.js:325
@@ -9930,18 +9927,18 @@ msgstr "ファイルの各行中の列を分ける文字を指定します。デ
 
 #: pgadmin/tools/import_export/static/js/import_export.js:304
 msgid "Quote"
-msgstr "クォート"
+msgstr "引用符"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:327
 msgid ""
 "Specifies the quoting character to be used when a data value is quoted. "
 "The default is double-quote. This must be a single one-byte character. "
 "This option is allowed only when using CSV format."
-msgstr "データ値がクォートされているときのクォート文字を指定します。デフォルトではダブルクォートです。単一の1バイト文字でなければなりません。このオプションはCSV形式でのみ使うことができます"
+msgstr "データ値が引用符付けされているときの引用符を指定します。デフォルトではダブルクォートです。単一の1バイト文字でなければなりません。このオプションはCSV形式でのみ使うことができます"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:331
 msgid "Escape"
-msgstr "エスケープ"
+msgstr "エスケープ文字"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:354
 msgid ""
@@ -9950,7 +9947,7 @@ msgid ""
 "that the quoting character is doubled if it appears in the data). This "
 "must be a single one-byte character. This option is allowed only when "
 "using CSV format."
-msgstr "クォート文字と一致するデータ文字の前に使う文字を指定します。デフォルトではクォート文字と同じです（そのため、クォート文字がデータ内にあると二重になります）。これは単一の1バイト文字でなければなりません。このオプションはCSV形式でのみ使うことができます"
+msgstr "引用符と一致するデータ文字の前に使う文字を指定します。デフォルトでは引用符と同じです（そのため、引用符がデータ内にあると二重になります）。これは単一の1バイト文字でなければなりません。このオプションはCSV形式でのみ使うことができます"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:400
 msgid "Import/Export..."
@@ -9963,15 +9960,15 @@ msgstr "ツリーからサーバか子ノードを選択してください"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:535
 msgid "Import/export job created."
-msgstr "ジョブのインポート/エクスポートが作成されました"
+msgstr "インポート/エクスポートジョブが作成されました"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:539
 msgid "Import/export job creation failed."
-msgstr ""
+msgstr "インポート/エクスポートジョブの作成に失敗しました"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:548
 msgid "Import/export job failed."
-msgstr "ジョブのインポート/エクスポートが失敗しました"
+msgstr "インポート/エクスポートジョブが失敗しました"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:630
 msgid "Escape should contain only one character"
@@ -9979,7 +9976,7 @@ msgstr "エスケープは1文字しか指定できません"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:634
 msgid "Quote should contain only one character"
-msgstr "クォートは1文字しか指定できません"
+msgstr "引用符は1文字しか指定できません"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:638
 msgid "Delimiter should contain only one character"
@@ -10113,7 +10110,7 @@ msgstr "ファイルが見つかりませんでした"
 
 #: pgadmin/tools/restore/static/js/restore.js:102
 msgid "Custom or tar"
-msgstr "カスタム or Tar"
+msgstr "カスタムまたはTar"
 
 #: pgadmin/tools/restore/static/js/restore.js:148
 #: pgadmin/tools/restore/static/js/restore.js:190
@@ -10163,7 +10160,7 @@ msgstr "リストアジョブが作成されました"
 
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:145
 msgid "Restore job creation failed."
-msgstr ""
+msgstr "リストアジョブの作成に失敗しました"
 
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:153
 msgid "Restore job failed."
@@ -10859,7 +10856,7 @@ msgstr "ダイアログを閉じますか？保存されていない変更は破
 msgid ""
 "'%s' file not found. Please correct the Binary Path in the Preferences "
 "dialog"
-msgstr ""
+msgstr "ファイル「%s」が見つかりませんでした。設定ダイアログでバイナリパスを修正してください"
 
 #: pgadmin/utils/ajax.py:156
 msgid "Not implemented."
