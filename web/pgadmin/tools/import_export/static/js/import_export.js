@@ -174,6 +174,7 @@ Backform, commonUtils, supportedNodes
         allowClear: false,
         placeholder: gettext('Columns for importing...'),
         first_empty: false,
+        preserveSelectionOrder: true,
       },
       visible: 'importing',
       helpMessage: gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.'),
@@ -192,6 +193,7 @@ Backform, commonUtils, supportedNodes
         multiple: true,
         allowClear: true,
         placeholder: gettext('Colums for exporting...'),
+        preserveSelectionOrder: true,
       },
       visible: 'exporting',
       transform: function(rows) {

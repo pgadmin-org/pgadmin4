@@ -1781,8 +1781,29 @@ define([
         first_empty: true,
         multiple: false,
         emptyOptions: false,
+        preserveSelectionOrder: false,
       },
     }),
+
+    events: function() {
+      // Inherit all default events of InputControl
+      return _.extend({}, Backform.SelectControl.prototype.events, {
+        'select2:select': 'onSelect',
+      });
+    },
+
+    onSelect: function (evt) {
+      var sel2Options = this.field.get('select2');
+      if (sel2Options.multiple && sel2Options.preserveSelectionOrder) {
+        var element = evt.params.data.element;
+        var $element = $(element);
+
+        $element.detach();
+        $(this.$sel).append($element);
+        $(this.$sel).trigger('change');
+      }
+    },
+
     formatter: Select2Formatter,
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -1836,6 +1857,7 @@ define([
         first_empty: true,
         multiple: false,
         emptyOptions: false,
+        preserveSelectionOrder: false,
       });
 
       // Evaluate the disabled, visible, and required option
