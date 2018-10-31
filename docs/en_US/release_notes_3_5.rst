@@ -25,3 +25,4 @@ Bug fixes
 | `Bug #3700 <https://redmine.postgresql.org/issues/3700>`_ - Fix connection garbage collector.
 | `Bug #3703 <https://redmine.postgresql.org/issues/3703>`_ - Purge connections from the cache on logout.
 | `Bug #3722 <https://redmine.postgresql.org/issues/3722>`_ - Ensure that utility existence check should work for schema and other child objects while taking Backup/Restore.
+| `Bug #3730 <https://redmine.postgresql.org/issues/3730>`_ - Fixed fatal error while launching the pgAdmin4 3.5. Update the version of the Flask to 0.12.4 for release.
