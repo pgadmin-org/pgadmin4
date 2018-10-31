@@ -62,7 +62,7 @@ class ExtensionsDeleteMultipleTestCase(BaseTestGenerator):
         data = {'ids': self.extension_ids}
         delete_response = self.tester.delete(
             self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id),
+            str(self.server_id) + '/' + str(self.db_id) + '/',
             follow_redirects=True,
             data=json.dumps(data),
             content_type='html/json'

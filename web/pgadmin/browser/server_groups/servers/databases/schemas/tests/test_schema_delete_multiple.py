@@ -78,7 +78,7 @@ class SchemaDeleteMultipleTestCase(BaseTestGenerator):
         data = {'ids': [self.schema_details[0], self.schema_details_1[0]]}
         response = self.tester.delete(self.url + str(utils.SERVER_GROUP) +
                                       '/' + str(server_id) + '/' +
-                                      str(db_id),
+                                      str(db_id) + '/',
                                       follow_redirects=True,
                                       data=json.dumps(data),
                                       content_type='html/json')

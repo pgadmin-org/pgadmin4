@@ -40,7 +40,7 @@ class DatabaseMultipleDeleteTestCase(BaseTestGenerator):
             data = {'ids': self.db_ids}
             response = self.tester.delete(
                 self.url + str(utils.SERVER_GROUP) + '/' +
-                str(self.server_id),
+                str(self.server_id) + '/',
                 follow_redirects=True,
                 data=json.dumps(data),
                 content_type='html/json')

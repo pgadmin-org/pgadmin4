@@ -67,7 +67,7 @@ class CollationDeleteMultipleTestCase(BaseTestGenerator):
         get_response = self.tester.delete(
             self.url + str(utils.SERVER_GROUP) + '/' + str(
                 server_id) + '/' +
-            str(db_id) + '/' + str(schema_id),
+            str(db_id) + '/' + str(schema_id) + '/',
             content_type='html/json',
             data=json.dumps(data),
             follow_redirects=True,
