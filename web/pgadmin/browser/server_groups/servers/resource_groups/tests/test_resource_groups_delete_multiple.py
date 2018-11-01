@@ -81,4 +81,12 @@ class ResourceGroupsDeleteTestCase(BaseTestGenerator):
                                              self.server['port'],
                                              self.server['sslmode'])
         resource_groups_utils.delete_resource_group(connection,
-                                                    self.resource_group)
+                                                    self.resource_groups[0])
+        connection = utils.get_db_connection(self.server['db'],
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'],
+                                             self.server['sslmode'])
+        resource_groups_utils.delete_resource_group(connection,
+                                                    self.resource_groups[1])
