@@ -1806,17 +1806,18 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
             # handle the Array list sent from the client
             array_string = ''
-            if data[i]['value'].__class__.__name__ in (
-                    'list') and data[i]['value']:
-                for k in range(0, len(data[i]['value'])):
-                    array_string += data[i]['value'][k]['value']
-                    if k != (len(data[i]['value']) - 1):
-                        array_string += ','
-            elif data[i]['value'].__class__.__name__ in (
-                    'list') and not data[i]['value']:
-                array_string = ''
-            else:
-                array_string = data[i]['value']
+            if 'value' in data[i]:
+                if data[i]['value'].__class__.__name__ in (
+                        'list') and data[i]['value']:
+                    for k in range(0, len(data[i]['value'])):
+                        array_string += data[i]['value'][k]['value']
+                        if k != (len(data[i]['value']) - 1):
+                            array_string += ','
+                elif data[i]['value'].__class__.__name__ in (
+                        'list') and not data[i]['value']:
+                    array_string = ''
+                else:
+                    array_string = data[i]['value']
 
             # Check if data is already available in database then update the
             # existing value otherwise add the new value

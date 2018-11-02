@@ -901,8 +901,7 @@ define([
                       }
                       // TODO: Need to check the "Expression" column value to
                       // enable/disable the "Debug" button
-                      if (this.collection.models[i].get('value') == '' ||
-                        this.collection.models[i].get('value') == null ||
+                      if (this.collection.models[i].get('value') == null ||
                         this.collection.models[i].get('value') == undefined) {
                         enable_btn = true;
 

@@ -16,3 +16,4 @@ Bug fixes
 *********
 
 | `Bug #3029 <https://redmine.postgresql.org/issues/3029>`_ - Allow the selection order to be preserved in the Select2 control to fix column ordering in data Import/Export.
+| `Bug #3629 <https://redmine.postgresql.org/issues/3629>`_ - Allow use of 0 (integer) and empty strings as parameters in the debugger.
