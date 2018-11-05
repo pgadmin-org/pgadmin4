@@ -118,7 +118,7 @@ NODE_BLACKLIST = []
 #       from it, notably various paths such as LOG_FILE and anything
 #       using DATA_DIR.
 
-if builtins.SERVER_MODE is None:
+if (not hasattr(builtins, 'SERVER_MODE')) or builtins.SERVER_MODE is None:
     SERVER_MODE = True
 else:
     SERVER_MODE = builtins.SERVER_MODE
