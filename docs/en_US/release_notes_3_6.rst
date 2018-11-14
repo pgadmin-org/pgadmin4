@@ -15,5 +15,6 @@ Features
 Bug fixes
 *********
 
+| `Bug #3016 <https://redmine.postgresql.org/issues/3016>`_ - Ensure previous notices are not removed from the Messages tab in the Query Tool if an error occurs during query execution.
 | `Bug #3029 <https://redmine.postgresql.org/issues/3029>`_ - Allow the selection order to be preserved in the Select2 control to fix column ordering in data Import/Export.
 | `Bug #3629 <https://redmine.postgresql.org/issues/3629>`_ - Allow use of 0 (integer) and empty strings as parameters in the debugger.
