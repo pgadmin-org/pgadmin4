@@ -1565,11 +1565,18 @@ define([
             controller.poll_result(trans_id);
           }
         })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while starting debugging listener.')
-          );
+        .fail(function(xhr) {
+          try {
+            var err = JSON.parse(xhr.responseText);
+            if (err.success == 0) {
+              Alertify.alert(gettext('Debugger Error'), err.errormsg);
+            }
+          } catch (e) {
+            Alertify.alert(
+              gettext('Debugger Error'),
+              gettext('Error while starting debugging listener.')
+            );
+          }
         });
       } else if (trans_id != undefined && debug_type) {
         // Make ajax call to execute the and start the target for execution
@@ -1586,11 +1593,18 @@ define([
             self.messages(trans_id);
           }
         })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while starting debugging listener.')
-          );
+        .fail(function(xhr) {
+          try {
+            var err = JSON.parse(xhr.responseText);
+            if (err.success == 0) {
+              Alertify.alert(gettext('Debugger Error'), err.errormsg);
+            }
+          } catch (e) {
+            Alertify.alert(
+              gettext('Debugger Error'),
+              gettext('Error while starting debugging listener.')
+            );
+          }
         });
       } else
         this.intializePanels();
