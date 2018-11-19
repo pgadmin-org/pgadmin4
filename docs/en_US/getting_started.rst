@@ -81,10 +81,5 @@ Contents:
    keyboard_shortcuts
 
 Before using pgAdmin to manage objects that reside on a server, you must define a
-connection to the server; for more information please see *Connecting to a Server*:
-
-Contents:
-
-.. toctree::
-
-   connecting
+connection to the server; for more information please see *Connecting to a Server*
+in the next section.
