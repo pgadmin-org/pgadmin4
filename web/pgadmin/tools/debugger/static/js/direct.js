@@ -129,6 +129,7 @@ define([
       },
 
       setActiveLine: function(lineNo) {
+        var self = this;
         let editor = pgTools.DirectDebug.editor;
 
         /* If lineNo sent, remove active line */
