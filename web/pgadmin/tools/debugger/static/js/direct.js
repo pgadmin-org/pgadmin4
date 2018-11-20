@@ -391,12 +391,15 @@ define([
                   }
 
                   // Enable all the buttons as we got the results
-                  self.enable('stop', true);
-                  self.enable('step_over', true);
-                  self.enable('step_into', true);
-                  self.enable('continue', true);
-                  self.enable('toggle_breakpoint', true);
-                  self.enable('clear_all_breakpoints', true);
+                  // TODO: Fix this properly so a timeout isn't required.
+                  setTimeout(function() {
+                    self.enable('stop', true);
+                    self.enable('step_over', true);
+                    self.enable('step_into', true);
+                    self.enable('continue', true);
+                    self.enable('toggle_breakpoint', true);
+                    self.enable('clear_all_breakpoints', true);
+                  }, 500);
                 }
               } else if (res.data.status === 'Busy') {
                 pgTools.DirectDebug.polling_timeout_idle = true;
@@ -519,12 +522,15 @@ define([
                   // Execution completed so disable the buttons other than
                   // "Continue/Start" button because user can still
                   // start the same execution again.
-                  self.enable('stop', false);
-                  self.enable('step_over', false);
-                  self.enable('step_into', false);
-                  self.enable('toggle_breakpoint', false);
-                  self.enable('clear_all_breakpoints', false);
-                  self.enable('continue', true);
+                  setTimeout(function() {
+                    self.enable('stop', false);
+                    self.enable('step_over', false);
+                    self.enable('step_into', false);
+                    self.enable('toggle_breakpoint', false);
+                    self.enable('clear_all_breakpoints', false);
+                    self.enable('continue', true);
+                  }, 500);
+
                   // Stop further polling
                   pgTools.DirectDebug.is_polling_required = false;
                 } else {
@@ -550,12 +556,14 @@ define([
                     // Execution completed so disable the buttons other than
                     // "Continue/Start" button because user can still
                     // start the same execution again.
-                    self.enable('stop', false);
-                    self.enable('step_over', false);
-                    self.enable('step_into', false);
-                    self.enable('toggle_breakpoint', false);
-                    self.enable('clear_all_breakpoints', false);
-                    self.enable('continue', true);
+                    setTimeout(function() {
+                      self.enable('stop', false);
+                      self.enable('step_over', false);
+                      self.enable('step_into', false);
+                      self.enable('toggle_breakpoint', false);
+                      self.enable('clear_all_breakpoints', false);
+                      self.enable('continue', true);
+                    }, 500);
 
                     // Stop further pooling
                     pgTools.DirectDebug.is_polling_required = false;
