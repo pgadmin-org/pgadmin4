@@ -1,0 +1,41 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "Minimally Defined Server",
+            "Group": "Server Group 1",
+            "Port": 5432,
+            "Username": "postgres",
+            "Host": "localhost",
+            "SSLMode": "prefer",
+            "MaintenanceDB": "postgres"
+        },
+        "2": {
+            "Name": "Fully Defined Server",
+            "Group": "Server Group 2",
+            "Host": "host.domain.com",
+            "HostAddr": "192.168.1.2",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "postgres",
+            "Role": "my_role_name",
+            "SSLMode": "require",
+            "Comment": "This server has every option configured in the JSON",
+            "DBRestriction": "live_db test_db",
+            "PassFile": "/path/to/pgpassfile",
+            "SSLCert": "/path/to/sslcert.crt",
+            "SSLKey": "/path/to/sslcert.key",
+            "SSLRootCert": "/path/to/sslroot.crt",
+            "SSLCrl": "/path/to/sslcrl.crl",
+            "SSLCompression": 1,
+            "BGColor": "#ff9900",
+            "FGColor": "#000000",
+            "Service": "postgresql-10",
+            "Timeout": 60,
+            "UseSSHTunnel": 1,
+            "TunnelHost": "192.168.1.253",
+            "TunnelPort": "22",
+            "TunnelUsername": "username",
+            "TunnelAuthentication": 0
+        }
+    }
+}

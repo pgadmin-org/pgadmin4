@@ -11,6 +11,8 @@ Features
 ********
 
 | `Feature #1513 <https://redmine.postgresql.org/issues/1513>`_ - Add support for dropping multiple objects at once from the collection Properties panel.
+| `Feature #3772 <https://redmine.postgresql.org/issues/3772>`_ - Add the ability to import and export server definitions from a config database.
+
 
 Bug fixes
 *********
