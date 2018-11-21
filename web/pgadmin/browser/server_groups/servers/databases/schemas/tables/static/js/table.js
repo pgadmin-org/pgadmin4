@@ -42,8 +42,7 @@ define('pgadmin.node.table', [
       sqlCreateHelp: 'sql-createtable.html',
       dialogHelp: url_for('help.static', {'filename': 'table_dialog.html'}),
       hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
-      height: '95%',
-      width: '85%',
+      width: '60%',
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
