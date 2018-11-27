@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2018-11-26 15:27+0530\n"
-"PO-Revision-Date: 2018-10-30 05:23+0900\n"
+"PO-Revision-Date: 2018-11-27 04:10+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.6.0\n"
 
 #: pgadmin/__init__.py:483 pgadmin/__init__.py:536
 #, python-format
@@ -218,7 +218,7 @@ msgstr "ジョブ履歴の最大行数"
 msgid ""
 "The maximum number of history rows to show on the Statistics tab for "
 "pgAgent jobs"
-msgstr "統計タブに表示するpgAgentジョブ履歴の最大行数"
+msgstr "統計タブに表示する pgAgent ジョブ履歴の最大行数"
 
 #: pgadmin/browser/register_browser_preferences.py:59
 #: pgadmin/utils/__init__.py:304 pgadmin/utils/__init__.py:313
@@ -340,11 +340,11 @@ msgstr "オブジェクトの削除"
 
 #: pgadmin/browser/register_browser_preferences.py:248
 msgid "Delete/Drop multiple objects"
-msgstr ""
+msgstr "複数のオブジェクトを削除"
 
 #: pgadmin/browser/register_browser_preferences.py:263
 msgid "Drop Cascade multiple objects"
-msgstr ""
+msgstr "複数のオブジェクトを強制削除"
 
 #: pgadmin/browser/register_browser_preferences.py:278
 msgid "Open context menu"
@@ -368,7 +368,7 @@ msgstr "ブラウザツリーを再読み込みする"
 
 #: pgadmin/browser/utils.py:254
 msgid "Unimplemented method ({0}) for this url ({1})"
-msgstr "この URL（{1}）ではメソッド（{0}）が実装されていません"
+msgstr "この URL （{1}）ではメソッド（{0}）が実装されていません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:208
 #: pgadmin/browser/utils.py:324
@@ -430,7 +430,7 @@ msgstr "指定された ID# {0} のサーバグループが見つかりません
 
 #: pgadmin/browser/server_groups/servers/__init__.py:393
 msgid "Could not find the server with id# {0}."
-msgstr "id# {0}のサーバが見つかりませんでした"
+msgstr "id# {0} のサーバが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:441
 msgid ""
@@ -451,7 +451,7 @@ msgstr "サーバが削除されました"
 #: pgadmin/browser/server_groups/servers/__init__.py:1518
 #: pgadmin/browser/server_groups/servers/__init__.py:1553
 msgid "Could not find the required server."
-msgstr "要求されたサーバが見つかりませんでしつぁ"
+msgstr "必要なサーバが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:507
 msgid "name"
@@ -665,7 +665,7 @@ msgstr "パスワードの変更に成功しました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1390
 msgid "WAL replay paused"
-msgstr "WALの再生を一時停止しました"
+msgstr "WAL の再生を一時停止しました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1393
 #: pgadmin/browser/server_groups/servers/__init__.py:1451
@@ -713,7 +713,7 @@ msgstr "PostgreSQL バイナリパス"
 msgid ""
 "Path to the directory containing the PostgreSQL utility programs "
 "(pg_dump, pg_restore etc)."
-msgstr "PostgreSQLユーティリティプログラム（pg_dump, pg_restore 等）を含むディレクトリのパス"
+msgstr "PostgreSQL ユーティリティプログラム（pg_dump, pg_restore 等）を含むディレクトリのパス"
 
 #: pgadmin/browser/server_groups/servers/types.py:59
 #: pgadmin/help/__init__.py:69
@@ -833,13 +833,13 @@ msgid ""
 "\n"
 "{0}"
 msgstr ""
-"キャストをリバースエンジニアリングしたSQLが生成できませんでした\n"
+"キャストをリバースエンジニアリングした SQL が生成できませんでした\n"
 "\n"
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:672
 msgid "Could not generate reversed engineered SQL for the cast node.\n"
-msgstr "キャストノードをリバースエンジニアリングしたSQLが生成できませんでした\n"
+msgstr "キャストノードをリバースエンジニアリングした SQL が生成できませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:11
 #: pgadmin/static/js/generated/app.bundle.js:13575
@@ -3191,21 +3191,21 @@ msgstr "検証"
 #: pgadmin/static/js/generated/app.bundle.js:14772
 #: pgadmin/static/js/generated/sqleditor.js:12332
 msgid "Languages"
-msgstr "手続き言語"
+msgstr "言語"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:324
 msgid "Could not find the specified language."
-msgstr "指定された手続き言語が見つかりませんでした"
+msgstr "指定された言語が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:348
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:601
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:699
 msgid "Could not find the language information."
-msgstr "手続き言語の情報が見つかりませんでした"
+msgstr "言語の情報が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:540
 msgid "Language dropped"
-msgstr "手続き言語を削除しました"
+msgstr "言語を削除しました"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:26
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:227
@@ -3221,7 +3221,7 @@ msgstr "手続き言語を削除しました"
 #: pgadmin/static/js/generated/sqleditor.js:16518
 #: pgadmin/templates/security/login_user.html:12
 msgid "Language"
-msgstr "手続き言語"
+msgstr "言語"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:44
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:50
@@ -3233,7 +3233,7 @@ msgstr "手続き言語"
 #: pgadmin/static/js/generated/sqleditor.js:12368
 #: pgadmin/static/js/generated/sqleditor.js:12373
 msgid "Language..."
-msgstr "手続き言語..."
+msgstr "言語..."
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:128
 #: pgadmin/static/js/generated/app.bundle.js:14885
@@ -4371,7 +4371,7 @@ msgstr "関数"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:403
 #, python-format
 msgid "Could not find the specified %s."
-msgstr "指定された%s が見つかりませんでした"
+msgstr "指定された %s が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:455
 msgid "Could not find the function node in the database."
@@ -5160,7 +5160,7 @@ msgstr "カタログ"
 #: pgadmin/static/js/generated/sqleditor.js:13222
 #: pgadmin/static/js/generated/sqleditor.js:13282
 msgid "Custom auto-vacuum?"
-msgstr "自動VACUUM のカスタマイズ"
+msgstr "自動バキュームのカスタマイズ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:124
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:144
@@ -5202,7 +5202,7 @@ msgstr "有効"
 #: pgadmin/static/js/generated/app.bundle.js:15698
 #: pgadmin/static/js/generated/sqleditor.js:13258
 msgid "Vacuum Table"
-msgstr "テーブルをVACUUM"
+msgstr "テーブルをバキューム"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:167
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:233
@@ -5238,13 +5238,13 @@ msgstr "デフォルト値"
 #: pgadmin/static/js/generated/sqleditor.js:13297
 #: pgadmin/static/js/generated/sqleditor.js:13319
 msgid "Toast Table"
-msgstr "TOASTテーブル"
+msgstr "TOAST テーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:224
 #: pgadmin/static/js/generated/app.bundle.js:15755
 #: pgadmin/static/js/generated/sqleditor.js:13315
 msgid "Vacuum Toast Table"
-msgstr "TOASTテーブルをVACUUM"
+msgstr "TOAST テーブルをバキューム"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:289
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:294
@@ -5510,7 +5510,7 @@ msgstr "-- 検査制約の定義が不完全です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1644
 msgid "-- definition incomplete for exclusion_constraint"
-msgstr "-- 除外制約の定義が不完全です"
+msgstr "-- 排他制約の定義が不完全です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:826
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:826
@@ -5739,18 +5739,18 @@ msgstr "検証しない"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:56
 msgid "Exclusion Constraints"
-msgstr "除外制約"
+msgstr "排他制約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:295
 msgid "Could not find the exclusion constraint in the table."
-msgstr "テーブルに除外制約が見つかりませんでした"
+msgstr "テーブルに排他制約が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:439
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:835
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:884
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:986
 msgid "Could not find the exclusion constraint."
-msgstr "除外制約が見つかりませんでした"
+msgstr "排他制約が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:571
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:579
@@ -5762,11 +5762,11 @@ msgstr "要求されたパラメータ（%s）が見つかりません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:745
 msgid "The specified exclusion constraint could not be found.\n"
-msgstr "指定された除外制約が見つかりませんでした\n"
+msgstr "指定された排他制約が見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:765
 msgid "Exclusion constraint dropped."
-msgstr "除外制約が削除されました"
+msgstr "排他制約が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:29
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:88
@@ -5812,13 +5812,13 @@ msgstr "列の演算子を指定してください："
 #: pgadmin/static/js/generated/app.bundle.js:26717
 #: pgadmin/static/js/generated/sqleditor.js:24277
 msgid "Exclusion constraint"
-msgstr "除外制約"
+msgstr "排他制約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:631
 #: pgadmin/static/js/generated/app.bundle.js:26738
 #: pgadmin/static/js/generated/sqleditor.js:24298
 msgid "Exclusion constraint..."
-msgstr "除外制約..."
+msgstr "排他制約..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:679
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:502
@@ -5981,13 +5981,13 @@ msgstr "列を選択"
 #: pgadmin/static/js/generated/app.bundle.js:27078
 #: pgadmin/static/js/generated/sqleditor.js:24638
 msgid "Please specify name for exclusion constraint."
-msgstr "除外制約の名前を指定してください"
+msgstr "排他制約の名前を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:1006
 #: pgadmin/static/js/generated/app.bundle.js:27082
 #: pgadmin/static/js/generated/sqleditor.js:24642
 msgid "Please specify columns for exclusion constraint."
-msgstr "除外制約の列を指定してください"
+msgstr "排他制約の列を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:56
 msgid "Foreign Keys"
@@ -6542,7 +6542,7 @@ msgstr "パーティションテーブル"
 #: pgadmin/static/js/generated/sqleditor.js:25661
 #: pgadmin/static/js/generated/sqleditor.js:26081
 msgid "Partition Scheme"
-msgstr "パーテキションスキーマ"
+msgstr "パーティションスキーム"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:408
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:539
@@ -6644,7 +6644,7 @@ msgstr "一意"
 #: pgadmin/static/js/generated/sqleditor.js:20515
 #: pgadmin/static/js/generated/sqleditor.js:25892
 msgid "Exclude constraint"
-msgstr "除外制約"
+msgstr "排他制約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:638
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:684
@@ -7156,31 +7156,31 @@ msgstr "パーティション名は必須です"
 #: pgadmin/static/js/generated/app.bundle.js:4215
 #: pgadmin/static/js/generated/sqleditor.js:4386
 msgid "For range partition From field cannot be empty."
-msgstr "範囲パーティションではFROMフィールドが必須です"
+msgstr "範囲パーティションでは FROM フィールドが必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:351
 #: pgadmin/static/js/generated/app.bundle.js:4219
 #: pgadmin/static/js/generated/sqleditor.js:4390
 msgid "For range partition To field cannot be empty."
-msgstr "範囲パーティションではTOフィールドが必須です"
+msgstr "範囲パーティションでは TO フィールドが必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:358
 #: pgadmin/static/js/generated/app.bundle.js:4225
 #: pgadmin/static/js/generated/sqleditor.js:4396
 msgid "For list partition In field cannot be empty."
-msgstr "リストパーティションではINフィールドが必須です"
+msgstr "リストパーティションでは IN フィールドが必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:365
 #: pgadmin/static/js/generated/app.bundle.js:4231
 #: pgadmin/static/js/generated/sqleditor.js:4402
 msgid "For hash partition Modulus field cannot be empty."
-msgstr "ハッシュパーティションではMODULUSフィールドが必須です"
+msgstr "ハッシュパーティションでは MODULUS フィールドが必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:370
 #: pgadmin/static/js/generated/app.bundle.js:4235
 #: pgadmin/static/js/generated/sqleditor.js:4406
 msgid "For hash partition Remainder field cannot be empty."
-msgstr "ハッシュパーティションではREMAINDERフィールドが必須です"
+msgstr "ハッシュパーティションでは REMAINDER フィールドが必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:62
@@ -7228,7 +7228,7 @@ msgstr "ハッシュ"
 #: pgadmin/static/js/generated/app.bundle.js:23204
 #: pgadmin/static/js/generated/sqleditor.js:20764
 msgid "Partition table supports two types of keys:"
-msgstr "パーティションテーブルは 2種類のキーに対応しています："
+msgstr "パーティションテーブルは2種類のキーに対応しています："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:955
 #: pgadmin/static/js/generated/app.bundle.js:23204
@@ -7290,7 +7290,7 @@ msgstr ""
 msgid ""
 "From/To/In input: Values for these fields must be quoted with single "
 "quote. For more than one partition key values must be comma(,) separated."
-msgstr "FROM/TO/IN入力： これらのフィールドはシングルクォートで囲わなければなりません。1つ以上の処理を指定するには、コンマ区切りで指定します"
+msgstr "FROM/TO/IN 入力： これらのフィールドはシングルクォートで囲わなければなりません。1つ以上の処理を指定するには、コンマ区切りで指定します"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1055
 #: pgadmin/static/js/generated/app.bundle.js:23270
@@ -7319,7 +7319,7 @@ msgstr "MODULUS/REMAINDER： ハッシュパーティションを有効化しま
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:2
 msgid "Null fraction"
-msgstr "NULL断片"
+msgstr "NULL 断片"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:3
 msgid "Average width"
@@ -7479,7 +7479,7 @@ msgstr "シーケンシャルタプル読み取り"
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:10
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:10
 msgid "Tuples inserted"
-msgstr "INSERTされたタプル"
+msgstr "挿入されたタプル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:7
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:7
@@ -7488,7 +7488,7 @@ msgstr "INSERTされたタプル"
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:11
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:11
 msgid "Tuples updated"
-msgstr "UPDATEされたタプル"
+msgstr "更新されたタプル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:8
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:8
@@ -7497,14 +7497,14 @@ msgstr "UPDATEされたタプル"
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:12
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:12
 msgid "Tuples deleted"
-msgstr "DELETEされたタプル"
+msgstr "削除されたタプル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:9
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:9
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:6
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:9
 msgid "Tuples HOT updated"
-msgstr "HOT UPDATEされたタプル"
+msgstr "更新されたタプル（HOT）"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:10
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:10
@@ -7518,7 +7518,7 @@ msgstr "有効なタプル"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:8
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:11
 msgid "Dead tuples"
-msgstr "削除されたタプル"
+msgstr "不要なタプル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:12
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:12
@@ -7536,25 +7536,25 @@ msgstr "ヒープブロックヒット"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:16
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:16
 msgid "Toast blocks read"
-msgstr "TOASTブロック読み取り"
+msgstr "TOAST ブロック読み取り"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:17
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:17
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:17
 msgid "Toast blocks hit"
-msgstr "TOASTブロックヒット"
+msgstr "TOAST ブロックヒット"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:18
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:18
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:18
 msgid "Toast index blocks read"
-msgstr "TOASTインデックスブロック読み取り"
+msgstr "TOAST インデックスブロック読み取り"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:19
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:19
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:19
 msgid "Toast index blocks hit"
-msgstr "TOASTインデックスブロックヒット"
+msgstr "TOAST インデックスブロックヒット"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:20
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:20
@@ -7562,14 +7562,14 @@ msgstr "TOASTインデックスブロックヒット"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:20
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/gpdb_5.0_plus/stats.sql:2
 msgid "Last vacuum"
-msgstr "最終VACUUM"
+msgstr "最終バキューム"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:21
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:21
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:10
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:21
 msgid "Last autovacuum"
-msgstr "最終自動VACUUM"
+msgstr "最終自動バキューム"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:22
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:22
@@ -7577,38 +7577,38 @@ msgstr "最終自動VACUUM"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:22
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/gpdb_5.0_plus/stats.sql:3
 msgid "Last analyze"
-msgstr "最終ANALYZE"
+msgstr "最終アナライズ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:23
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:23
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:12
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:23
 msgid "Last autoanalyze"
-msgstr "最終自動ANALYZE"
+msgstr "最終自動アナライズ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:24
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:24
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:13
 msgid "Vacuum counter"
-msgstr "VACUUM回数"
+msgstr "バキューム回数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:25
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:25
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:14
 msgid "Autovacuum counter"
-msgstr "自動VACUUUM回数"
+msgstr "自動バキューム回数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:26
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:26
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:15
 msgid "Analyze counter"
-msgstr "ANALYZE回数"
+msgstr "アナライズ回数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:27
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:27
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:16
 msgid "Autoanalyze counter"
-msgstr "自動ANALYZE回数"
+msgstr "自動アナライズ回数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:28
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:28
@@ -7620,7 +7620,7 @@ msgstr "テーブルサイズ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:32
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/stats.sql:28
 msgid "Toast table size"
-msgstr "TOASTテーブルサイズ"
+msgstr "TOAST テーブルサイズ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:35
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.2_plus/stats.sql:35
@@ -8659,7 +8659,7 @@ msgstr "ジョブスケジュールの更新に失敗しました"
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:542
 #: pgadmin/browser/server_groups/servers/pgagent/steps/__init__.py:604
 msgid "-- No SQL could be generated for the selected object."
-msgstr "-- 選択されたオブジェクトからSQLが生成できませんでした"
+msgstr "-- 選択されたオブジェクトから SQL が生成できませんでした"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:24
 #: pgadmin/static/js/generated/app.bundle.js:34924
@@ -9397,8 +9397,8 @@ msgid ""
 "option. This matches the last day of the month, whether it happens to be "
 "the 28th, 29th, 30th or 31st.</li></ul>"
 msgstr ""
-"スケジュールは<b>cron-"
-"style</b>形式で指定します。<br/><ul><li>選択された時刻、日付要素ごとにスケジュールが実行されます。<br/>例： "
+"スケジュールは <b>cron-style</b> "
+"形式で指定します。<br/><ul><li>選択された時刻、日付要素ごとにスケジュールが実行されます。<br/>例： "
 "毎時5分に実行するには、単純に分のリストボックスから「05」を選択します。<br/></li><li>さらにスケジュールを制御したい場合には、1つ以上のフィールドから値を指定します。<br/>例："
 " 月曜日と火曜日の12:05 ～ "
 "14:05に実行するには、分「05」、時「12」「14」、曜日「月曜日」「火曜日」を選択します。</li><li>年月チェックリストに最終日オプションを含めると、さらに柔軟な設定ができます。月の最終日が月によって28日、29日、30日、31日でも、正しく判定されます。</li></ul>"
@@ -9855,7 +9855,7 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"ロールのメンバシップ情報は、以下の形式のJSONオブジェクトを配列として渡す必要があります\n"
+"ロールのメンバシップ情報は、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
 "rolmembership:[{\n"
 "    role: [ロール名],\n"
 "    admin: True/False\n"
@@ -9890,7 +9890,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"ロールのメンバシップ情報は、以下の形式のJSONオブジェクトを配列として渡す必要があります\n"
+"ロールのメンバシップ情報は、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
 "rolmembership:{\n"
 "    'added': [{\n"
 "        role: [ロール名],\n"
@@ -9925,7 +9925,7 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"セキュリティラベルは、以下の形式のJSONオブジェクトを配列として渡す必要があります\n"
+"セキュリティラベルは、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
 "seclabels:[{\n"
 "    provider: <プロバイダ>,\n"
 "    label: <ラベル>\n"
@@ -9960,7 +9960,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"セキュリティラベルは、以下の形式のJSONオブジェクトを配列として渡す必要があります\n"
+"セキュリティラベルは、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
 "seclabels:{\n"
 "    'added': [{\n"
 "        provider: <プロバイダ>,\n"
@@ -9996,7 +9996,7 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"作成モードの設定パラメータと変数は、以下の形式のJSONオブジェクトを配列として渡す必要があります\n"
+"作成モードの設定パラメータと変数は、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
 "variables:[{\n"
 "    database: <データベース> または null,\n"
 "    name: <設定>,\n"
@@ -10035,7 +10035,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"更新モードの設定パラメータと変数は、以下の形式のJSONオブジェクトを配列として渡す必要があります\n"
+"更新モードの設定パラメータと変数は、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
 "rolmembership:{\n"
 "    'added': [{\n"
 "        database: <データベース> または null,\n"
@@ -10337,7 +10337,7 @@ msgstr "付与対象は必須です"
 #: pgadmin/static/js/generated/pgadmin_commons.js:2719
 #: pgadmin/static/js/generated/pgadmin_commons.js:2720
 msgid "At least one privilege should be selected."
-msgstr "権限を少なくとも 1つは指定してください"
+msgstr "権限を少なくとも1つは指定してください"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:37
 #: pgadmin/static/js/generated/app.bundle.js:1982
@@ -10388,13 +10388,13 @@ msgstr "パスワードを変更..."
 #: pgadmin/static/js/generated/app.bundle.js:2047
 #: pgadmin/static/js/generated/sqleditor.js:2218
 msgid "Pause Replay of WAL"
-msgstr "WALの適用を一時停止"
+msgstr "WAL の適用を一時停止"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:108
 #: pgadmin/static/js/generated/app.bundle.js:2052
 #: pgadmin/static/js/generated/sqleditor.js:2223
 msgid "Resume Replay of WAL"
-msgstr "WALの適用を再開"
+msgstr "WAL の適用を再開"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:113
 #: pgadmin/static/js/generated/app.bundle.js:2057
@@ -10575,7 +10575,7 @@ msgstr "SSH トンネルパスワードの消去"
 msgid ""
 "Are you sure you want to clear the saved password of SSH Tunnel for "
 "server %s?"
-msgstr "サーバ %s に対するSSH トンネルの保存されたパスワードを消去しますか？"
+msgstr "サーバ %s に対する SSH トンネルの保存されたパスワードを消去しますか？"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:752
 #: pgadmin/static/js/generated/app.bundle.js:2620
@@ -11070,11 +11070,11 @@ msgstr "ユーザ「{0}」のサーバ「{1}」に接続するためのパスワ
 msgid ""
 "SSH Tunnel password for the identity file '{0}' to connect the server "
 "\"{1}\""
-msgstr "サーバ「{1}」に接続するための識別情報ファイル「{0}」に対するSSH トンネルパスワード"
+msgstr "サーバ「{1}」に接続するための識別情報ファイル「{0}」に対する SSH トンネルパスワード"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:11
 msgid "SSH Tunnel password for the user '{0}' to connect the server \"{1}\""
-msgstr "サーバ「{1}」に接続するためのユーザ「{0}」に対するSSH トンネルパスワード"
+msgstr "サーバ「{1}」に接続するためのユーザ「{0}」に対する SSH トンネルパスワード"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:27
 msgid "Database server password for the user '{0}' to connect the server \"{1}\""
@@ -11215,7 +11215,7 @@ msgstr "サーバグループ..."
 #: pgadmin/static/js/generated/app.bundle.js:12496
 #: pgadmin/static/js/generated/sqleditor.js:10056
 msgid "The ID cannot be changed."
-msgstr "IDは変更できません"
+msgstr "ID は変更できません"
 
 #: pgadmin/browser/static/js/browser.js:27
 #: pgadmin/misc/depends/static/js/depends.js:392
@@ -11303,40 +11303,40 @@ msgstr "プロパティ %s 取得中にエラーが発生しました"
 #: pgadmin/browser/static/js/collection.js:279
 #: pgadmin/static/js/generated/pgadmin_commons.js:13249
 msgid "Drop Multiple"
-msgstr ""
+msgstr "複数削除"
 
 #: pgadmin/browser/static/js/collection.js:280
 #: pgadmin/static/js/generated/pgadmin_commons.js:13249
 msgid "Please select at least one object to delete."
-msgstr ""
+msgstr "削除するオブジェクトを少なくとも1つ指定してください"
 
 #: pgadmin/browser/static/js/collection.js:287
 #: pgadmin/static/js/generated/pgadmin_commons.js:13254
 msgid ""
 "Are you sure you want to drop all the selected objects and all the "
 "objects that depend on them?"
-msgstr ""
+msgstr "選択したオブジェクトと、それに依存するオブジェクトすべてを削除しますか？"
 
 #: pgadmin/browser/static/js/collection.js:288
 #: pgadmin/static/js/generated/pgadmin_commons.js:13254
 msgid "DROP CASCADE multiple objects?"
-msgstr ""
+msgstr "複数オブジェクトを強制削除しますか？"
 
 #: pgadmin/browser/static/js/collection.js:291
 #: pgadmin/static/js/generated/pgadmin_commons.js:13257
 msgid "Are you sure you want to drop all the selected objects?"
-msgstr ""
+msgstr "選択したオブジェクトすべてを削除しますか？"
 
 #: pgadmin/browser/static/js/collection.js:292
 #: pgadmin/static/js/generated/pgadmin_commons.js:13258
 msgid "DROP multiple objects?"
-msgstr ""
+msgstr "選択したオブジェクトを削除しますか？"
 
 #: pgadmin/browser/static/js/collection.js:330
 #: pgadmin/static/js/generated/pgadmin_commons.js:13290
 #, python-format
 msgid "Error dropping %s"
-msgstr ""
+msgstr "%s の削除エラー"
 
 #: pgadmin/browser/static/js/error.js:13
 #: pgadmin/static/js/generated/pgadmin_commons.js:5563
@@ -11460,7 +11460,7 @@ msgstr "編集"
 #: pgadmin/static/js/generated/pgadmin_commons.js:4427
 #: pgadmin/static/js/generated/pgadmin_commons.js:4612
 msgid "SQL help for this object type."
-msgstr "このオブジェクトタイプのSQLヘルプ"
+msgstr "このオブジェクトタイプの SQL ヘルプ"
 
 #: pgadmin/browser/static/js/node.js:1274
 #: pgadmin/static/js/generated/app.bundle.js:32729
@@ -11580,7 +11580,7 @@ msgstr "完了"
 
 #: pgadmin/browser/templates/browser/index.html:96
 msgid "Loading {0} v{1}..."
-msgstr "{0} v{1}を読み込み中..."
+msgstr "{0} v{1} を読み込み中..."
 
 #: pgadmin/browser/templates/browser/index.html:106
 msgid "Toggle navigation"
@@ -11615,15 +11615,15 @@ msgstr "ログアウト"
 msgid ""
 "You are currently running version {0} of {1}, however the current version"
 " is {2}."
-msgstr "現在{1}のバージョン{0}を実行中ですが、最新バージョンは{2}です"
+msgstr "現在 {1} のバージョン{0}を実行中ですが、最新バージョンは{2}です"
 
 #: pgadmin/browser/templates/browser/upgrade.html:3
 msgid ""
 "Please click <a class=\"alert-link\" href=\"{0}\" "
 "target=\"_new\">here</a> for more information."
 msgstr ""
-"詳しい情報は <a class=\"alert-link\" href=\"{0}\" target=\"_new\">こちら</a> "
-"をクリックしてください"
+"詳しい情報は<a class=\"alert-link\" href=\"{0}\" "
+"target=\"_new\">こちら</a>をクリックしてください"
 
 #: pgadmin/dashboard/__init__.py:55
 msgid "Dashboard"
@@ -11891,7 +11891,7 @@ msgstr "待機イベント"
 #: pgadmin/static/js/generated/sqleditor.js:7819
 #: pgadmin/static/js/generated/sqleditor.js:8099
 msgid "Blocking PIDs"
-msgstr "ブロックしているPID"
+msgstr "ブロックしている PID"
 
 #: pgadmin/dashboard/static/js/dashboard.js:971
 #: pgadmin/dashboard/static/js/dashboard.js:1256
@@ -11936,7 +11936,7 @@ msgstr "タプル"
 #: pgadmin/static/js/generated/sqleditor.js:7899
 #: pgadmin/static/js/generated/sqleditor.js:8172
 msgid "vXID (target)"
-msgstr "vXID（対象）"
+msgstr "vXID （対象）"
 
 #: pgadmin/dashboard/static/js/dashboard.js:996
 #: pgadmin/dashboard/static/js/dashboard.js:1281
@@ -11945,7 +11945,7 @@ msgstr "vXID（対象）"
 #: pgadmin/static/js/generated/sqleditor.js:7904
 #: pgadmin/static/js/generated/sqleditor.js:8177
 msgid "XID (target)"
-msgstr "XID（対象）"
+msgstr "XID （対象）"
 
 #: pgadmin/dashboard/static/js/dashboard.js:1001
 #: pgadmin/dashboard/static/js/dashboard.js:1286
@@ -11963,7 +11963,7 @@ msgstr "クラス"
 #: pgadmin/static/js/generated/sqleditor.js:7914
 #: pgadmin/static/js/generated/sqleditor.js:8187
 msgid "Object ID"
-msgstr "オブジェクトID"
+msgstr "オブジェクト ID"
 
 #: pgadmin/dashboard/static/js/dashboard.js:1011
 #: pgadmin/dashboard/static/js/dashboard.js:1296
@@ -11972,7 +11972,7 @@ msgstr "オブジェクトID"
 #: pgadmin/static/js/generated/sqleditor.js:7919
 #: pgadmin/static/js/generated/sqleditor.js:8192
 msgid "vXID (owner)"
-msgstr "vXID（所有者）"
+msgstr "vXID （所有者）"
 
 #: pgadmin/dashboard/static/js/dashboard.js:1021
 #: pgadmin/dashboard/static/js/dashboard.js:1306
@@ -12160,7 +12160,7 @@ msgstr "豊富な機能"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:12
 msgid "Maximises PostgreSQL"
-msgstr "PostgreSQLの最大利用"
+msgstr "PostgreSQL の最大利用"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:12
 msgid "Open Source"
@@ -12173,7 +12173,9 @@ msgid ""
 " SQL query tool, a procedural code debugger and much more. The tool is "
 "designed to answer the needs of developers, DBAs and system "
 "administrators alike."
-msgstr "pgAdminはオープンソースで開発されている、PostgreSQLデータベース用の管理ツールです。グラフィカルな管理インタフェース、SQLクエリツール、手続き言語コードのデバッガなど、数多くの機能を備えています。このツールは開発者、データベース管理者、システム管理者などのニーズに応えられるように設計されました。"
+msgstr ""
+"pgAdmin はオープンソースで開発されている、PostgreSQL データベース用の管理ツールです。グラフィカルな管理インタフェース、SQL "
+"クエリツール、手続き言語コードのデバッガなど、数多くの機能を備えています。このツールは開発者、データベース管理者、システム管理者などのニーズに応えられるように設計されました。"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:23
 msgid "Quick Links"
@@ -12246,15 +12248,15 @@ msgstr "アイドル"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/ti_stats.sql:3
 msgid "Inserts"
-msgstr "INSERT"
+msgstr "挿入"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/ti_stats.sql:4
 msgid "Updates"
-msgstr "UPDATE"
+msgstr "更新"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/ti_stats.sql:5
 msgid "Deletes"
-msgstr "DELETE"
+msgstr "削除"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/to_stats.sql:3
 msgid "Fetched"
@@ -12286,7 +12288,7 @@ msgstr "PostgreSQL のウェブサイト"
 
 #: pgadmin/help/__init__.py:61
 msgid "SQL Help"
-msgstr "SQLヘルプ"
+msgstr "SQL ヘルプ"
 
 #: pgadmin/help/__init__.py:73
 msgid "PostgreSQL Help Path"
@@ -12347,7 +12349,7 @@ msgstr "ユーザ言語"
 #: pgadmin/misc/bgprocess/processes.py:653
 #: pgadmin/misc/bgprocess/processes.py:696
 msgid "Could not find a process with the specified ID."
-msgstr "指定された IDのプロセスが見つかりませんでした"
+msgstr "指定された ID のプロセスが見つかりませんでした"
 
 #: pgadmin/misc/bgprocess/processes.py:254
 msgid "The process has already been started."
@@ -12628,7 +12630,7 @@ msgstr "このファイルを置き換えますか？"
 #: pgadmin/static/js/generated/app.bundle.js:11847
 #: pgadmin/static/js/generated/sqleditor.js:9407
 msgid "No SQL could be generated for the selected object."
-msgstr "選択されたオブジェクトに対して生成できるSQLはありません"
+msgstr "選択されたオブジェクトに対して生成できる SQL はありません"
 
 #: pgadmin/misc/statistics/static/js/statistics.js:205
 #: pgadmin/static/js/generated/app.bundle.js:11133
@@ -12798,12 +12800,12 @@ msgstr "Alt"
 #: pgadmin/static/js/keyboard_shortcuts.js:82
 #, python-format
 msgid "%(title)s (%(text_representation)s)"
-msgstr "%(title)s (%(text_representation)s)"
+msgstr "%(title)s （%(text_representation)s）"
 
 #: pgadmin/static/js/keyboard_shortcuts.js:94
 #, python-format
 msgid "%(title)s (accesskey + %(key)s)"
-msgstr "%(title)s (アクセスキー + %(key)s)"
+msgstr "%(title)s （アクセスキー + %(key)s）"
 
 #: pgadmin/static/js/generated/app.bundle.js:687
 #: pgadmin/static/js/generated/debugger_direct.js:4117
@@ -12866,11 +12868,11 @@ msgstr "設定が必要です"
 #: pgadmin/tools/maintenance/static/js/maintenance.js:250
 #, python-format
 msgid "Failed to load preference %s of module %s"
-msgstr "設定 %s（モジュール %s）の読み込みに失敗しました"
+msgstr "設定 %s （モジュール %s）の読み込みに失敗しました"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:38
 msgid "Maintenance database must be specified."
-msgstr "メンテナンス DB は必須です"
+msgstr "メンテナンスデータベースは必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:43
 msgid "Username must be specified."
@@ -12902,7 +12904,7 @@ msgstr "ホスト名、アドレスもしくはサービスのいずれかを指
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:95
 msgid "Host address must be valid IPv4 or IPv6 address."
-msgstr "ホストアドレスは有効なIPv4かIPv6を指定してください"
+msgstr "ホストアドレスは有効な IPv4 か IPv6 アドレスを指定してください"
 
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:25
 #: pgadmin/static/js/generated/app.bundle.js:35470
@@ -13651,14 +13653,14 @@ msgstr "詳細メッセージ"
 #: pgadmin/tools/backup/static/js/backup.js:95
 #: pgadmin/tools/backup/static/js/backup.js:474
 msgid "Force double quote on identifiers"
-msgstr "IDでダブルクォートを強制"
+msgstr "識別子でダブルクォートを強制"
 
 #: pgadmin/static/js/generated/app.bundle.js:29904
 #: pgadmin/tools/backup/static/js/backup.js:103
 msgid ""
 "Only objects global to the entire database will be backed up in PLAIN "
 "format"
-msgstr "PLAIN形式では、データベース全体のグローバルオブジェクトしかバックアップできません"
+msgstr "PLAIN 形式では、データベース全体のグローバルオブジェクトしかバックアップできません"
 
 #: pgadmin/static/js/generated/app.bundle.js:29959
 #: pgadmin/tools/backup/static/js/backup.js:159
@@ -13697,7 +13699,7 @@ msgstr "ジョブ数"
 #: pgadmin/static/js/generated/app.bundle.js:30031
 #: pgadmin/tools/backup/static/js/backup.js:235
 msgid "The backup format will be PLAIN"
-msgstr "バックアップ形式はPLAINが使われます"
+msgstr "バックアップ形式は PLAIN が使われます"
 
 #: pgadmin/static/js/generated/app.bundle.js:30039
 #: pgadmin/static/js/generated/app.bundle.js:30045
@@ -13885,7 +13887,7 @@ msgstr "$ 引用符付け"
 #: pgadmin/static/js/generated/app.bundle.js:30243
 #: pgadmin/tools/backup/static/js/backup.js:455
 msgid "With OID(s)"
-msgstr "OID付き"
+msgstr "OID 付き"
 
 #: pgadmin/static/js/generated/app.bundle.js:30270
 #: pgadmin/static/js/generated/app.bundle.js:31486
@@ -13920,7 +13922,7 @@ msgstr "バックアップ..."
 #: pgadmin/static/js/generated/app.bundle.js:31296
 #: pgadmin/tools/restore/static/js/restore.js:102
 msgid "Custom or tar"
-msgstr "カスタムまたはTar"
+msgstr "カスタムまたは Tar"
 
 #: pgadmin/static/js/generated/app.bundle.js:31339
 #: pgadmin/static/js/generated/app.bundle.js:31372
@@ -14045,7 +14047,7 @@ msgid ""
 "The SQL below will be executed on the database server to grant the "
 "selected privileges. Please click on <b>Finish</b> to complete the "
 "process."
-msgstr "選択された権限を付与するため、データベースサーバ上で、以下のSQL文が実行されます。<b>完了</b>をクリックし、処理を終了させてください"
+msgstr "選択された権限を付与するため、データベースサーバ上で、以下の SQL 文が実行されます。<b>完了</b>をクリックし、処理を終了させてください"
 
 #: pgadmin/static/js/generated/app.bundle.js:32696
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1071
@@ -14229,7 +14231,7 @@ msgstr "エクスポートする列..."
 #: pgadmin/static/js/generated/app.bundle.js:33452
 #: pgadmin/tools/import_export/static/js/import_export.js:225
 msgid "NULL Strings"
-msgstr "NULL文字列"
+msgstr "NULL 文字列"
 
 #: pgadmin/static/js/generated/app.bundle.js:33458
 #: pgadmin/tools/import_export/static/js/import_export.js:231
@@ -14239,17 +14241,20 @@ msgid ""
 " You might prefer an empty string even in text format for cases where you"
 " don't want to distinguish nulls from empty strings. This option is not "
 "allowed when using binary format."
-msgstr "NULL値を表す文字列を指定します。デフォルトは、テキスト形式では\\N（バックスラッシュN）、CSV形式では引用符のない空文字です。NULLと空文字を同じものとみなしたい場合には、テキスト形式でも空文字とすることができます。このオプションはバイナリ形式では使用できません"
+msgstr ""
+"NULL 値を表す文字列を指定します。デフォルトは、テキスト形式では \\N （バックスラッシュN）、CSV "
+"形式では引用符のない空文字です。NULL "
+"と空文字を同じものとみなしたい場合には、テキスト形式でも空文字とすることができます。このオプションはバイナリ形式では使用できません"
 
 #: pgadmin/static/js/generated/app.bundle.js:33461
 #: pgadmin/tools/import_export/static/js/import_export.js:234
 msgid "Not null columns"
-msgstr "NOT NULL列"
+msgstr "NOT NULL 列"
 
 #: pgadmin/static/js/generated/app.bundle.js:33474
 #: pgadmin/tools/import_export/static/js/import_export.js:247
 msgid "Not null columns..."
-msgstr "NOT NULL列..."
+msgstr "NOT NULL 列..."
 
 #: pgadmin/static/js/generated/app.bundle.js:33476
 #: pgadmin/tools/import_export/static/js/import_export.js:249
@@ -14259,7 +14264,9 @@ msgid ""
 " will be read as zero-length strings rather than nulls, even when they "
 "are not quoted. This option is allowed only in import, and only when "
 "using CSV format."
-msgstr "指定した列の値をNULL文字とみなしません。NULL文字が空文字であるデフォルトの状態では、引用符付けされていない場合でも、空文字はNULLではなく0文字の文字列とみなされます。このオプションはインポート時、かつCSV形式でのみ使用することができます"
+msgstr ""
+"指定した列の値を NULL 文字とみなしません。NULL 文字が空文字であるデフォルトの状態では、引用符付けされていない場合でも、空文字は "
+"NULL ではなく0文字の文字列とみなされます。このオプションはインポート時、かつ CSV 形式でのみ使用することができます"
 
 #: pgadmin/static/js/generated/app.bundle.js:33525
 #: pgadmin/tools/import_export/static/js/import_export.js:302
@@ -14281,7 +14288,9 @@ msgid ""
 "Specifies the quoting character to be used when a data value is quoted. "
 "The default is double-quote. This must be a single one-byte character. "
 "This option is allowed only when using CSV format."
-msgstr "データ値が引用符付けされているときの引用符を指定します。デフォルトではダブルクォートです。単一の1バイト文字でなければなりません。このオプションはCSV形式でのみ使うことができます"
+msgstr ""
+"データ値が引用符付けされているときの引用符を指定します。デフォルトではダブルクォートです。単一の1バイト文字でなければなりません。このオプションは"
+" CSV 形式でのみ使うことができます"
 
 #: pgadmin/static/js/generated/app.bundle.js:33552
 #: pgadmin/tools/import_export/static/js/import_export.js:333
@@ -14296,7 +14305,9 @@ msgid ""
 "that the quoting character is doubled if it appears in the data). This "
 "must be a single one-byte character. This option is allowed only when "
 "using CSV format."
-msgstr "引用符と一致するデータ文字の前に使う文字を指定します。デフォルトでは引用符と同じです（そのため、引用符がデータ内にあると二重になります）。これは単一の1バイト文字でなければなりません。このオプションはCSV形式でのみ使うことができます"
+msgstr ""
+"引用符と一致するデータ文字の前に使う文字を指定します。デフォルトでは引用符と同じです（そのため、引用符がデータ内にあると二重になります）。これは単一の1バイト文字でなければなりません。このオプションは"
+" CSV 形式でのみ使うことができます"
 
 #: pgadmin/static/js/generated/app.bundle.js:33617
 #: pgadmin/tools/import_export/static/js/import_export.js:402
@@ -14506,7 +14517,7 @@ msgstr "続行"
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2038
 #, python-format
 msgid "Error fetching SQL for script: %s."
-msgstr "SQLスクリプトの取得中にエラーが発生しました： %s."
+msgstr "SQL スクリプトの取得中にエラーが発生しました： %s."
 
 #: pgadmin/static/js/generated/sqleditor.js:29316
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2106
@@ -14689,7 +14700,7 @@ msgstr "EXPLAIN オプションエラー"
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3658
 #, python-format
 msgid "Error occurred while setting %(subItem)s option in explain."
-msgstr "EXPLAIN の%(subItem)s オプション設定中にエラーが発生しました"
+msgstr "EXPLAIN の %(subItem)s オプション設定中にエラーが発生しました"
 
 #: pgadmin/static/js/generated/sqleditor.js:31844
 #: pgadmin/static/js/selection/grid_selector.js:42
@@ -14732,7 +14743,7 @@ msgstr "順序を選択してください"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:92
 msgid "SQL Filter"
-msgstr "SQLフィルタ"
+msgstr "SQL フィルタ"
 
 #: pgadmin/static/js/sqleditor/filter_dialog_model.js:109
 msgid "Data Sorting"
@@ -14748,7 +14759,7 @@ msgstr "未対応の幾何データは描画されません"
 
 #: pgadmin/static/js/sqleditor/geometry_viewer.js:375
 msgid "Geometries with non-SRID"
-msgstr "非SRIDの幾何データ"
+msgstr "非 SRID の幾何データ"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:15
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:65
@@ -14758,7 +14769,7 @@ msgstr "記録時刻"
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:31
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:77
 msgid "Process ID"
-msgstr "プロセスID"
+msgstr "プロセス ID"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:39
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:83
@@ -14777,7 +14788,7 @@ msgstr "」とペイロード「"
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:112
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:118
 msgid "\" received from server process with PID "
-msgstr "」を受信しました。送信元サーバプロセスのPID："
+msgstr "」を受信しました。送信元サーバのプロセス ID："
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:92
 msgid "Error saving the tree state.\""
@@ -14820,7 +14831,7 @@ msgstr "ログイン"
 #: pgadmin/templates/security/login_user.html:23
 #, python-format
 msgid "Forgotten your <a href=\"%(url)s\">password</a>?"
-msgstr "<a href=\"%(url)s\">パスワード</a> をお忘れですか？"
+msgstr "<a href=\"%(url)s\">パスワード</a>をお忘れですか？"
 
 #: pgadmin/templates/security/reset_password.html:2
 #, python-format
@@ -14835,7 +14846,7 @@ msgstr "パスワードのリセット"
 #: pgadmin/tools/__init__.py:59 pgadmin/tools/datagrid/__init__.py:77
 #: pgadmin/tools/sqleditor/__init__.py:130
 msgid "This URL cannot be requested directly."
-msgstr "このURLは直接呼び出せません"
+msgstr "この URL は直接呼び出せません"
 
 #: pgadmin/tools/backup/__init__.py:42
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:38
@@ -15097,27 +15108,27 @@ msgstr "True の場合、デバッガは新しいブラウザタブで開きま�
 
 #: pgadmin/tools/debugger/__init__.py:80
 msgid "Accesskey (Continue/Start)"
-msgstr "アクセスキー (続行/開始)"
+msgstr "アクセスキー （続行/開始）"
 
 #: pgadmin/tools/debugger/__init__.py:93
 msgid "Accesskey (Stop)"
-msgstr "アクセスキー (停止)"
+msgstr "アクセスキー （停止）"
 
 #: pgadmin/tools/debugger/__init__.py:106
 msgid "Accesskey (Step into)"
-msgstr "アクセスキー (詳細ステップ実行)"
+msgstr "アクセスキー （詳細ステップ実行）"
 
 #: pgadmin/tools/debugger/__init__.py:119
 msgid "Accesskey (Step over)"
-msgstr "アクセスキー (ステップ実行)"
+msgstr "アクセスキー （ステップ実行）"
 
 #: pgadmin/tools/debugger/__init__.py:132
 msgid "Accesskey (Toggle breakpoint)"
-msgstr "アクセスキー (ブレークポイントの設定/解除)"
+msgstr "アクセスキー （ブレークポイントの設定/解除）"
 
 #: pgadmin/tools/debugger/__init__.py:145
 msgid "Accesskey (Clear all breakpoints)"
-msgstr "アクセスキー (すべてのブレークポイントを削除)"
+msgstr "アクセスキー （すべてのブレークポイントを削除）"
 
 #: pgadmin/tools/debugger/__init__.py:159
 msgid "Edit grid values"
@@ -15441,7 +15452,7 @@ msgstr "スぺースを使用"
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
 "key or auto-indent are used."
-msgstr "Tabキー、もしくは自動インデントによってタブを挿入する時、代わりにスペースで埋めるかどうかを指定します"
+msgstr "Tab キー、もしくは自動インデントによってタブを挿入する時、代わりにスペースで埋めるかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:115
 msgid "Line wrapping?"
@@ -15449,7 +15460,7 @@ msgstr "行の折り返し"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:117
 msgid "Specifies whether or not to wrap SQL code in the editor."
-msgstr "エディタ内のSQLを折り返すかどうかを指定します"
+msgstr "エディタ内の SQL を折り返すかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:124
 msgid "Insert bracket pairs?"
@@ -15489,24 +15500,24 @@ msgstr "データグリッドを閉じる時、未保存のデータを保存す
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:164
 msgid "CSV quoting"
-msgstr "CSVの引用符付け"
+msgstr "CSV の引用符付け"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:165
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:178
 msgid "CSV Output"
-msgstr "CSV出力"
+msgstr "CSV 出力"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:177
 msgid "CSV quote character"
-msgstr "CSVの引用符文字"
+msgstr "CSV の引用符文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:189
 msgid "CSV field separator"
-msgstr "CSVフィールドの区切り文字"
+msgstr "CSV フィールドの区切り文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:190
 msgid "CSV output"
-msgstr "CSV出力"
+msgstr "CSV 出力"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:203
 msgid "Result copy quoting"
@@ -15558,59 +15569,59 @@ msgstr "EXPLAIN ANALYZE 実行"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:317
 msgid "Download CSV"
-msgstr "CSVをダウンロード"
+msgstr "CSV をダウンロード"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:371
 msgid "Accesskey (Open file)"
-msgstr "アクセスキー (ファイルを開く)"
+msgstr "アクセスキー （ファイルを開く）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:384
 msgid "Accesskey (Save file)"
-msgstr "アクセスキー (ファイルを保存)"
+msgstr "アクセスキー （ファイルを保存）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:397
 msgid "Accesskey (Copy rows)"
-msgstr "アクセスキー (行をコピー)"
+msgstr "アクセスキー （行をコピー）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:410
 msgid "Accesskey (Paste rows)"
-msgstr "アクセスキー (行を貼り付け)"
+msgstr "アクセスキー （行を貼り付け）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:423
 msgid "Accesskey (Delete rows)"
-msgstr "アクセスキー (行を削除)"
+msgstr "アクセスキー （行を削除）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:436
 msgid "Accesskey (Filter dialog)"
-msgstr "アクセスキー (フィルタダイアログ)"
+msgstr "アクセスキー （フィルタダイアログ）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:449
 msgid "Accesskey (Filter options)"
-msgstr "アクセスキー (フィルタオプション)"
+msgstr "アクセスキー （フィルタオプション）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:462
 msgid "Accesskey (Rows limit)"
-msgstr "アクセスキー (行数制限)"
+msgstr "アクセスキー （行数制限）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:475
 msgid "Accesskey (Execute options)"
-msgstr "アクセスキー (実行オプション)"
+msgstr "アクセスキー （実行オプション）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:488
 msgid "Accesskey (Cancel query)"
-msgstr "アクセスキー (クエリのキャンセル)"
+msgstr "アクセスキー （クエリのキャンセル）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:501
 msgid "Accesskey (Clear editor options)"
-msgstr "アクセスキー (エディタオプションの消去)"
+msgstr "アクセスキー （エディタオプションの消去）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:514
 msgid "Accesskey (Connection status)"
-msgstr "アクセスキー (接続状態)"
+msgstr "アクセスキー （接続状態）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:527
 msgid "Accesskey (Find options)"
-msgstr "アクセスキー (検索オプション)"
+msgstr "アクセスキー （検索オプション）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:541
 msgid "Toggle case of selected text"
@@ -15657,7 +15668,7 @@ msgstr "サービスが利用できません"
 msgid ""
 "Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to "
 "the database server."
-msgstr "ホスト「{0}」に対するSSH トンネルへの接続が失われました。データベースサーバに再接続してください"
+msgstr "ホスト「{0}」に対する SSH トンネルへの接続が失われました。データベースサーバに再接続してください"
 
 #: pgadmin/utils/preferences.py:167
 msgid "Invalid value for a boolean option."
@@ -15697,7 +15708,7 @@ msgstr "モジュール「{0}」はもう利用できません"
 
 #: pgadmin/utils/preferences.py:599
 msgid "Module '{0}' does not have category with id '{1}'"
-msgstr "モジュール「{0}」は ID「{1}」のカテゴリではありません"
+msgstr "モジュール「{0}」は ID 「{1}」のカテゴリではありません"
 
 #: pgadmin/utils/preferences.py:613
 msgid "Could not find the specified preference."
@@ -15736,7 +15747,7 @@ msgstr ""
 msgid ""
 "Attempting to reconnect to the database server (#{server_id}) for the "
 "connection - '{conn_id}'."
-msgstr "接続「{conn_id}'」でデータベースサーバ (#{server_id}) に再接続中"
+msgstr "接続「{conn_id}」でデータベースサーバ（#{server_id}）に再接続中"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:780
 msgid "The query executed did not return any data."
@@ -15770,13 +15781,13 @@ msgstr "データベースサーバに接続できません"
 msgid ""
 "Asynchronous notification \"{0}\" with payload \"{1}\" received from "
 "server process with PID {2}\n"
-msgstr "非同期通知「{0}」とペイロード「{1}」を受信しました。送信元サーバプロセスのPID：{2}\n"
+msgstr "非同期通知「{0}」とペイロード「{1}」を受信しました。送信元サーバのプロセス ID：{2}\n"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1623
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
-msgstr "非同期通知「{0}」を受信しました。送信元サーバプロセスのPID：{1}\n"
+msgstr "非同期通知「{0}」を受信しました。送信元サーバのプロセス ID：{1}\n"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1717
 msgid "SQL state: "
@@ -15809,7 +15820,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "要求されたパラメータが見つかりません"
 
 #~ msgid "{0} Binary Path"
-#~ msgstr "{0}バイナリパス"
+#~ msgstr "{0} バイナリパス"
 
 #~ msgid ""
 #~ msgstr ""
@@ -15830,7 +15841,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "ユーザマッピングの情報が見つかりませんでした"
 
 #~ msgid "Couldnot find the language information."
-#~ msgstr "手続き言語の情報が見つかりませんでした"
+#~ msgstr "言語の情報が見つかりませんでした"
 
 #~ msgid "Column Name can not be empty!"
 #~ msgstr "列名は必須です"
@@ -15905,7 +15916,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "指定されたシノニムが見つかりませんでした\n"
 
 #~ msgid "-- incomplete definition for {0} constraint"
-#~ msgstr "-- {0}制約の定義が不完全です"
+#~ msgstr "-- {0} 制約の定義が不完全です"
 
 #~ msgid "-- incomplete definition for foreign_key constraint"
 #~ msgstr "-- 外部キー制約の定義が不完全です"
@@ -15914,13 +15925,13 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "-- 検査制約の定義が不完全です"
 
 #~ msgid "-- incomplete definition for exclusion_constraint"
-#~ msgstr "-- 除外制約の定義が不完全です"
+#~ msgstr "-- 排他制約の定義が不完全です"
 
 #~ msgid "-- incomplete definition"
 #~ msgstr "-- 定義が不完全です"
 
 #~ msgid "-- incomplete definition for {0}"
-#~ msgstr "-- {0}の定義が不完全です"
+#~ msgstr "-- {0} の定義が不完全です"
 
 #~ msgid "Couldn't find the column."
 #~ msgstr "列が見つかりませんでした"
@@ -16064,7 +16075,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "ユーザ名"
 
 #~ msgid "The ID can not be changed."
-#~ msgstr "IDは変更できません"
+#~ msgstr "ID は変更できません"
 
 #~ msgid "Hostname or address must be specified."
 #~ msgstr "ホスト名かアドレスは必須です"
@@ -16082,10 +16093,10 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "不完全な定義です"
 
 #~ msgid "'%s' must be an integer."
-#~ msgstr "「%s」はintegerにしてください"
+#~ msgstr "「%s」は integer にしてください"
 
 #~ msgid "'%s' must be a numeric."
-#~ msgstr "「%s」はnumericにしてください"
+#~ msgstr "「%s」は numeric にしてください"
 
 #~ msgid "'%s' must be greater than or equal to %d."
 #~ msgstr "「%s」は「%d」以上にしてください"
@@ -16112,7 +16123,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "アクセス拒否（{}）"
 
 #~ msgid "This URL can not be called directly."
-#~ msgstr "このURLは直接呼び出せません"
+#~ msgstr "この URL は直接呼び出せません"
 
 #~ msgid "Backing up the global objects on the server - '{0}'..."
 #~ msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップ中..."
@@ -16124,13 +16135,13 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "サーバ「{0}」をバックアップ"
 
 #~ msgid "Please set binary path for EDB Advanced Server from preferences."
-#~ msgstr "設定からEDB Advanced Server のバイナリパスを指定してください"
+#~ msgstr "設定から EDB Advanced Server のバイナリパスを指定してください"
 
 #~ msgid "Server disconnected, Please connect and try again"
 #~ msgstr "サーバへの接続が切断されました。再接続してください"
 
 #~ msgid "Save as"
-#~ msgstr "名前をつけて保存"
+#~ msgstr "名前を付けて保存"
 
 #~ msgid "Find next (Ctrl/Cmd+G)"
 #~ msgstr "次を検索 (Ctrl/Cmd+G)"
@@ -16166,7 +16177,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr " 無題"
 
 #~ msgid "This URL can not be called directly!"
-#~ msgstr "このURLは直接呼び出せません"
+#~ msgstr "この URL は直接呼び出せません"
 
 #~ msgid "Target Aborted."
 #~ msgstr "対象が異常終了しました"
@@ -16181,7 +16192,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "実行時間を表示"
 
 #~ msgid "Specifies whether or not to wrap SQL code in editor."
-#~ msgstr "エディタ内のSQLを折り返すかどうかを指定します"
+#~ msgstr "エディタ内の SQL を折り返すかどうかを指定します"
 
 #~ msgid "Either Transaction object or Session object not found."
 #~ msgstr "トランザクションオブジェクト、セッションオブジェクトのいずれも見つかりませんでした"
@@ -16334,7 +16345,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "サーバからノードに関する情報を取得するまでお待ちください"
 
 #~ msgid "This URL cannot be called directly!"
-#~ msgstr "このURLは直接呼び出せません"
+#~ msgstr "この URL は直接呼び出せません"
 
 #~ msgid "File couldn't be found!"
 #~ msgstr "ファイルが見つかりませんでした"
@@ -16378,7 +16389,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ "]"
 #~ msgstr ""
 #~ "\n"
-#~ "設定パラメータ/変数は、以下の形式でのJSON配列でなければなりません（作成モード）\n"
+#~ "設定パラメータ/変数は、以下の形式での JSON 配列でなければなりません（作成モード）\n"
 #~ "variables:[{\n"
 #~ "    database: <database> or null,\n"
 #~ "    name: <configuration>,\n"
@@ -16417,7 +16428,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ "        ]\n"
 #~ msgstr ""
 #~ "\n"
-#~ "設定パラメータ/変数は、以下の形式でのJSON配列でなければなりません（更新モード）\n"
+#~ "設定パラメータ/変数は、以下の形式での JSON 配列でなければなりません（更新モード）\n"
 #~ "rolmembership:{\n"
 #~ "    'added': [{\n"
 #~ "        database: <database> or null,\n"
@@ -16469,7 +16480,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "CSV としてダウンロード (F8)"
 
 #~ msgid "Error fetching SQL for script: \"%s\""
-#~ msgstr "スクリプトのSQL取得エラー： 「%s」"
+#~ msgstr "スクリプトの SQL 取得エラー： 「%s」"
 
 #~ msgid "Initializing query execution..."
 #~ msgstr "クエリ実行を初期化中..."
@@ -16573,7 +16584,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "削除"
 
 #~ msgid "Download as CSV"
-#~ msgstr "CSV形式でダウンロード"
+#~ msgstr "CSV 形式でダウンロード"
 
 #~ msgid "Execution completed with error"
 #~ msgstr "実行は完了しましたがエラーが発生しました"
@@ -16630,5 +16641,5 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "%s ブラウザを閉じますか？"
 
 #~ msgid "SQL Editor"
-#~ msgstr "SQLエディタ"
+#~ msgstr "SQL エディタ"
 
