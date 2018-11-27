@@ -25,7 +25,7 @@ let GeometryViewer = {
     if (self.panel_closed) {
       let wcDocker = window.wcDocker;
       let geometry_viewer_panel = handler.gridView.geometry_viewer =
-        handler.gridView.docker.addPanel('geometry_viewer'),
+        handler.gridView.docker.addPanel('geometry_viewer',
           wcDocker.DOCK.STACKED, handler.gridView.data_output_panel);
       $('#geometry_viewer_panel')[0].appendChild(self.map_component.mapContainer.get(0));
       self.panel_closed = false;
