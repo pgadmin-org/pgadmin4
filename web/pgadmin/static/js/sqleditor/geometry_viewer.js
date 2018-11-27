@@ -326,7 +326,7 @@ function parseData(items, columns, columnIndex) {
 
   // generate map info content
   if (tooLargeDataSize || tooManyGeometries) {
-    infoList.push(supportedGeometries.length + ' of ' + items.length + ' geometries rendered.');
+    infoList.push(gettext("%d of %d geometries rendered." %(supportedGeometries.length, items.length)));
   }
   if (geometries3D.length > 0) {
     infoList.push(gettext('3D geometries not rendered.'));
@@ -372,7 +372,7 @@ function parseData(items, columns, columnIndex) {
   }
 
   if (mixedSRID) {
-    infoList.push(gettext('Geometries with non-SRID') + selectedSRID + ' not rendered.');
+    infoList.push(gettext('Geometries with non-SRID %d not rendered.' %(selectedSRID)));
   }
 
   return {
