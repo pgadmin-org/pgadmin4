@@ -94,11 +94,11 @@
 
 /** Custom styling for Codemirror field **/
 .wizard-right-panel_content {
-  border: 1px solide #ccc;
+  border: 1px $color-gray-light;
 }
 
 .wizard-right-panel_content .CodeMirror {
-  border: 1px solid #ccc;
+  border: 1px solid $color-gray-light;
   height: 285px !important;
   min-height: 285px !important;
 }

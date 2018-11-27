@@ -164,6 +164,7 @@ iframe {
 }
 .checkbox label {
 	padding-left: 0px !important;
+	margin-bottom: 0px !important;
 }
 .bootstrap-switch > .bootstrap-switch-container > input {
 	border: 0px solid $color-fg;
@@ -252,4 +253,8 @@ td.switch-cell > div.bootstrap-switch {
 
 .btn-toolbar {
   min-width: 100%;
+}
+
+.bootstrap-datetimepicker-widget thead th {
+  background-color: $color-fg-inverse;
 }

@@ -121,3 +121,12 @@ div.wizard-header.wizard-badge > div > div.col-sm-2 > button.ajs-maximized.ajs-m
 .select2-container--open {
   z-index: 10000;
 }
+
+.wizard-content h3 {
+  margin-top: 20px !important;
+  margin-bottom: 10px !important;
+}
+
+.wizard-right-panel_content .collapse.in {
+  display: block;
+}
