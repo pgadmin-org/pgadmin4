@@ -11,7 +11,7 @@
 {% if data %}
 {% for dict_item in data %}
 {% if 'type' in dict_item and 'value' in dict_item %}
-{% if dict_item['value'] != 'NULL' %}
+{% if dict_item['value'] != 'NULL' and '[]' not in dict_item['type'] %}
 {{ dict_item['value']|qtLiteral }}::{{ dict_item['type'] }}{% if not loop.last %}, {% endif %}
 {% elif dict_item['value'] == 'NULL' %}
 {{ dict_item['value'] }}::{{ dict_item['type'] }}{% if not loop.last %}, {% endif %}

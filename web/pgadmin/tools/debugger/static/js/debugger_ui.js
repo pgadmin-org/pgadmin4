@@ -17,42 +17,76 @@ define([
 
     // if variable type is an array then we need to render the custom control to take the input from user.
     if (variable_type.indexOf('[]') != -1) {
-      if (variable_type.indexOf('integer') != -1) {
+      var data_type = variable_type.replace('[]' ,'');
+
+      switch (data_type) {
+      case 'boolean':
+        return Backgrid.Extension.InputBooleanArrayCell;
+      case 'integer':
+      case 'smallint':
+      case 'bigint':
+      case 'serial':
+      case 'smallserial':
+      case 'bigserial':
+      case 'oid':
+      case 'cid':
+      case 'xid':
+      case 'tid':
         return Backgrid.Extension.InputIntegerArrayCell;
+      case 'real':
+      case 'numeric':
+      case 'double precision':
+      case 'decimal':
+        return Backgrid.Extension.InputNumberArrayCell;
+      default:
+        return Backgrid.Extension.InputStringArrayCell;
       }
-      return Backgrid.Extension.InputStringArrayCell;
-    }
-
-    switch (variable_type) {
-    case 'bool':
-      return Backgrid.BooleanCell;
-    case 'integer':
-        // As we are getting this value as text from sqlite database so we need to type cast it.
-      if (model.get('value') != undefined) {
-        model.set({
-          'value': parseInt(model.get('value')),
-        }, {
-          silent: true,
+    } else {
+      switch (variable_type) {
+      case 'boolean':
+        return Backgrid.BooleanCell.extend({
+          formatter: Backgrid.BooleanCellFormatter,
         });
-      }
+      case 'integer':
+      case 'smallint':
+      case 'bigint':
+      case 'serial':
+      case 'smallserial':
+      case 'bigserial':
+      case 'oid':
+      case 'cid':
+      case 'xid':
+      case 'tid':
+          // As we are getting this value as text from sqlite database so we need to type cast it.
+        if (model.get('value') != undefined) {
+          model.set({
+            'value': parseInt(model.get('value')),
+          }, {
+            silent: true,
+          });
+        }
 
-      return Backgrid.IntegerCell;
-    case 'real':
-        // As we are getting this value as text from sqlite database so we need to type cast it.
-      if (model.get('value') != undefined) {
-        model.set({
-          'value': parseFloat(model.get('value')),
-        }, {
-          silent: true,
-        });
+        return Backgrid.IntegerCell;
+      case 'real':
+      case 'numeric':
+      case 'double precision':
+      case 'decimal':
+          // As we are getting this value as text from sqlite database so we need to type cast it.
+        if (model.get('value') != undefined) {
+          model.set({
+            'value': parseFloat(model.get('value')),
+          }, {
+            silent: true,
+          });
+        }
+        return Backgrid.NumberCell;
+      case 'string':
+        return Backgrid.StringCell;
+      case 'date':
+        return Backgrid.DateCell;
+      default:
+        return Backgrid.Cell;
       }
-      return Backgrid.NumberCell;
-    case 'string':
-      return Backgrid.StringCell;
-    case 'date':
-      return Backgrid.DateCell;
-    default:
-      return Backgrid.Cell;
     }
   };
 
@@ -378,13 +412,6 @@ define([
                   values = [];
                   if (argtype[index].indexOf('[]') != -1) {
                     vals = func_args_data[i]['value'].split(',');
-                    if (argtype[index].indexOf('integer') != -1) {
-                      _.each(vals, function(val) {
-                        values.push({
-                          'value': parseInt(val),
-                        });
-                      });
-                    }
                     _.each(vals, function(val) {
                       values.push({
                         'value': val,
@@ -485,13 +512,6 @@ define([
                   values = [];
                   if (argtype[index].indexOf('[]') != -1) {
                     vals = func_args_data[i]['value'].split(',');
-                    if (argtype[index].indexOf('integer') != -1) {
-                      _.each(vals, function(val) {
-                        values.push({
-                          'value': parseInt(val),
-                        });
-                      });
-                    }
                     _.each(vals, function(val) {
                       values.push({
                         'value': val,
@@ -917,6 +937,14 @@ define([
                       obj.__internal.buttons[0].element.disabled = false;
                   };
                 })(this)
+            );
+
+            this.grid.listenTo(this.debuggerInputArgsColl, 'backgrid:error',
+              (function(obj) {
+                return function() {
+                  obj.__internal.buttons[0].element.disabled = true;
+                };
+              })(this)
             );
           },
         };

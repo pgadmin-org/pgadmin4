@@ -1810,7 +1810,10 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                 if data[i]['value'].__class__.__name__ in (
                         'list') and data[i]['value']:
                     for k in range(0, len(data[i]['value'])):
-                        array_string += data[i]['value'][k]['value']
+                        if data[i]['value'][k]['value'] is None:
+                            array_string += 'NULL'
+                        else:
+                            array_string += str(data[i]['value'][k]['value'])
                         if k != (len(data[i]['value']) - 1):
                             array_string += ','
                 elif data[i]['value'].__class__.__name__ in (

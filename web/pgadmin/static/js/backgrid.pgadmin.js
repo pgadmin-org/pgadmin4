@@ -799,7 +799,7 @@ define([
 
   var arrayCellModel = Backbone.Model.extend({
     defaults: {
-      value: undefined,
+      value: null,
     },
   });
 
@@ -817,11 +817,41 @@ define([
       render: function() {
         var self = this,
           arrayValuesCol = this.model.get(this.column.get('name')),
-          gridCols = [{
+          cell_type = 'string';
+
+        var data_type = this.model.get('type').replace('[]' ,'');
+        switch (data_type) {
+        case 'boolean':
+          cell_type = 'boolean';
+          break;
+        case 'integer':
+        case 'smallint':
+        case 'bigint':
+        case 'serial':
+        case 'smallserial':
+        case 'bigserial':
+        case 'oid':
+        case 'cid':
+        case 'xid':
+        case 'tid':
+          cell_type = 'integer';
+          break;
+        case 'real':
+        case 'numeric':
+        case 'double precision':
+        case 'decimal':
+          cell_type = 'number';
+          break;
+        case 'date':
+          cell_type = 'date';
+          break;
+        }
+
+        var gridCols = [{
             name: 'value',
             label: gettext('Array Values'),
             type: 'text',
-            cell: 'string',
+            cell: cell_type,
             headerCell: Backgrid.Extension.CustomHeaderIconCell,
             cellHeaderClasses: 'width_percent_100',
           }],
@@ -843,6 +873,22 @@ define([
           columns: gridCols,
           collection: arrayValuesCol,
         });
+
+        this.grid.listenTo(arrayValuesCol, 'backgrid:error',
+          (function(obj) {
+            return function(ev) {
+              obj.model.trigger('backgrid:error', obj.model, obj.column, new Backgrid.Command(ev));
+            };
+          })(this)
+        );
+
+        this.grid.listenTo(arrayValuesCol, 'backgrid:edited',
+          (function(obj) {
+            return function(ev) {
+              obj.model.trigger('backgrid:edited', obj.model, obj.column, new Backgrid.Command(ev));
+            };
+          })(this)
+        );
 
         grid.render();
 
@@ -893,8 +939,6 @@ define([
                 self.grid = null;
               }
             }, 10);
-
-
           }
         }, 10);
         return;
@@ -944,8 +988,8 @@ define([
       var values = [];
       rawData.each(function(m) {
         var val = m.get('value');
-        if (_.isUndefined(val)) {
-          values.push('null');
+        if (_.isUndefined(val) || _.isNull(val)) {
+          values.push('NULL');
         } else {
           values.push(m.get('value'));
         }
@@ -955,6 +999,40 @@ define([
     toRaw: function(formattedData) {
       formattedData.each(function(m) {
         m.set('value', parseInt(m.get('value')), {
+          silent: true,
+        });
+      });
+
+      return formattedData;
+    },
+  });
+
+  /*
+   * This will help us transform the user input numeric array values in proper format to be
+   * displayed in the cell.
+   */
+  var InputNumberArrayCellFormatter= Backgrid.Extension.InputNumberArrayCellFormatter =
+    function() {};
+  _.extend(InputNumberArrayCellFormatter.prototype, {
+    /**
+     * Takes a raw value from a model and returns an optionally formatted
+     * string for display.
+     */
+    fromRaw: function(rawData) {
+      var values = [];
+      rawData.each(function(m) {
+        var val = m.get('value');
+        if (_.isUndefined(val) || _.isNull(val)) {
+          values.push('NULL');
+        } else {
+          values.push(m.get('value'));
+        }
+      });
+      return values.toString();
+    },
+    toRaw: function(formattedData) {
+      formattedData.each(function(m) {
+        m.set('value', parseFloat(m.get('value')), {
           silent: true,
         });
       });
@@ -982,7 +1060,6 @@ define([
       }
 
       this.model.set(this.column.get('name'), this.collection);
-
       this.listenTo(this.collection, 'remove', this.render);
     },
   });
@@ -990,13 +1067,70 @@ define([
   /*
    *  InputIntegerArrayCell for rendering and taking input for integer array type in debugger
    */
-  Backgrid.Extension.InputIntegerArrayCell = Backgrid.Cell.extend({
+  Backgrid.Extension.InputIntegerArrayCell = Backgrid.IntegerCell.extend({
     className: 'width_percent_25',
     formatter: InputIntegerArrayCellFormatter,
     editor: InputArrayCellEditor,
 
     initialize: function() {
-      Backgrid.Cell.prototype.initialize.apply(this, arguments);
+      Backgrid.IntegerCell.prototype.initialize.apply(this, arguments);
+      // set value to empty array.
+      var m = arguments[0].model;
+      _.each(m.get('value'), function(arrVal) {
+        if (arrVal.value === 'NULL') {
+          arrVal.value = null;
+        }
+      });
+
+      if (_.isUndefined(this.collection)) {
+        this.collection = new(Backbone.Collection.extend({
+          model: arrayCellModel,
+        }))(m.get('value'));
+      }
+
+      this.model.set(this.column.get('name'), this.collection);
+      this.listenTo(this.collection, 'remove', this.render);
+    },
+  });
+
+  /*
+   *  InputNumberArrayCell for rendering and taking input for numeric array type in debugger
+   */
+  Backgrid.Extension.InputNumberArrayCell = Backgrid.NumberCell.extend({
+    className: 'width_percent_25',
+    formatter: InputNumberArrayCellFormatter,
+    editor: InputArrayCellEditor,
+
+    initialize: function() {
+      Backgrid.NumberCell.prototype.initialize.apply(this, arguments);
+      // set value to empty array.
+      var m = arguments[0].model;
+      _.each(m.get('value'), function(arrVal) {
+        if (arrVal.value === 'NULL') {
+          arrVal.value = null;
+        }
+      });
+
+      if (_.isUndefined(this.collection)) {
+        this.collection = new(Backbone.Collection.extend({
+          model: arrayCellModel,
+        }))(m.get('value'));
+      }
+
+      this.model.set(this.column.get('name'), this.collection);
+      this.listenTo(this.collection, 'remove', this.render);
+    },
+  });
+
+  /*
+   *  InputBooleanArrayCell for rendering and taking input for boolean array type in debugger
+   */
+  Backgrid.Extension.InputBooleanArrayCell = Backgrid.BooleanCell.extend({
+    className: 'width_percent_25',
+    editor: InputArrayCellEditor,
+
+    initialize: function() {
+      Backgrid.BooleanCell.prototype.initialize.apply(this, arguments);
       // set value to empty array.
       var m = arguments[0].model;
       if (_.isUndefined(this.collection)) {
@@ -1005,9 +1139,7 @@ define([
         }))(m.get('value'));
       }
 
-
       this.model.set(this.column.get('name'), this.collection);
-
       this.listenTo(this.collection, 'remove', this.render);
     },
   });
@@ -1477,6 +1609,22 @@ define([
       return this;
     },
     remove: Backgrid.Extension.DependentCell.prototype.remove,
+  });
+
+  Backgrid.BooleanCellFormatter = _.extend(Backgrid.CellFormatter.prototype, {
+    fromRaw: function (rawValue) {
+      if (_.isUndefined(rawValue) || _.isNull(rawValue)) {
+        return false;
+      } else if (rawValue === '1' || rawValue === 'True') {
+        return true;
+      } else if (rawValue === '0' || rawValue === 'False') {
+        return false;
+      }
+      return rawValue;
+    },
+    toRaw: function (formattedData) {
+      return formattedData;
+    },
   });
 
   return Backgrid;
