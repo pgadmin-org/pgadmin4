@@ -173,7 +173,7 @@ define('tools.querytool', [
 
       var sql_panel = new pgAdmin.Browser.Panel({
         name: 'sql_panel',
-        title: false,
+        title: gettext('Query Editor'),
         width: '100%',
         height: '20%',
         isCloseable: false,
@@ -292,7 +292,7 @@ define('tools.querytool', [
       self.explain_panel = main_docker.addPanel('explain', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.messages_panel = main_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.notifications_panel = main_docker.addPanel('notifications', wcDocker.DOCK.STACKED, self.data_output_panel);
-      self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, self.data_output_panel);
+      self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, sql_panel_obj);
 
       self.render_history_grid();
       queryToolNotifications.renderNotificationsGrid(self.notifications_panel);

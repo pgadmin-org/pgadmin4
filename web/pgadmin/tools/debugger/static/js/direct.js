@@ -1521,7 +1521,7 @@ define([
 
   _.extend(DirectDebug.prototype, {
     /* We should get the transaction id from the server during initialization here */
-    init: function(trans_id, debug_type) {
+    init: function(trans_id, debug_type, function_name_with_arguments) {
       // We do not want to initialize the module multiple times.
       var self = this;
       _.bindAll(pgTools.DirectDebug, 'messages');
@@ -1540,6 +1540,7 @@ define([
       this.debug_restarted = false;
       this.is_user_aborted_debugging = false;
       this.is_polling_required = true; // Flag to stop unwanted ajax calls
+      this.function_name_with_arguments = function_name_with_arguments;
 
       let browser = window.opener ?
               window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
@@ -1699,7 +1700,7 @@ define([
     intializePanels: function() {
       var self = this;
       this.registerPanel(
-        'code', false, '100%', '50%',
+        'code', self.function_name_with_arguments, '100%', '50%',
         function() {
 
           // Create the parameters panel to display the arguments of the functions
