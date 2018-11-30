@@ -964,3 +964,15 @@ def get_server_type(server):
         return 'pg'
     except Exception:
         traceback.print_exc(file=sys.stderr)
+
+
+def check_binary_path_or_skip_test(cls):
+    if 'default_binary_paths' not in cls.server or \
+        cls.server['default_binary_paths'] is None or \
+        cls.server['type'] not in cls.server['default_binary_paths'] or \
+            cls.server['default_binary_paths'][cls.server['type']] == '':
+        cls.skipTest(
+            "default_binary_paths is not set for the server {0}".format(
+                cls.server['name']
+            )
+        )
