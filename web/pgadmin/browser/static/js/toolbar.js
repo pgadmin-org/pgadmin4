@@ -41,7 +41,11 @@ let _otherToolbarButtons = [];
 
 // This function is used to add button into the browser panel.
 function registerToolBarButton(btn) {
-  if (!(btn.label in _toolbarButtons)) {
+  /* Sometimes the panel onCreate is called two times.
+   * Add buttons if not present in the panel also.
+   */
+  if (!(btn.label in _toolbarButtons)
+        || (_.findIndex(_browserPanel._buttonList,{name:btn.label}) < 0)) {
     _browserPanel.addButton(
       btn.label, btn.btnClass, btn.text, btn.label, btn.toggled,
       btn.toggleClass, btn.parentClass, btn.enabled
