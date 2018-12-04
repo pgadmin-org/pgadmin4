@@ -36,7 +36,7 @@ from .cursor import DictCursor
 from .typecast import register_global_typecasters, \
     register_string_typecasters, register_binary_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
-
+from .encoding import getEncoding
 
 if sys.version_info < (3,):
     # Python2 in-built csv module do not handle unicode
@@ -402,20 +402,13 @@ class Connection(BaseConnection):
         if self.use_binary_placeholder:
             register_binary_typecasters(self.conn)
 
-        if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
-                                  'MULE_INTERNAL', 'MULEINTERNAL'):
-            status = _execute(cur, "SET DateStyle=ISO;"
-                                   "SET client_min_messages=notice;"
-                                   "SET bytea_output=escape;"
-                                   "SET client_encoding='{0}';"
-                              .format(self.conn.encoding))
-            self.python_encoding = 'raw_unicode_escape'
-        else:
-            status = _execute(cur, "SET DateStyle=ISO;"
-                                   "SET client_min_messages=notice;"
-                                   "SET bytea_output=escape;"
-                                   "SET client_encoding='UNICODE';")
-            self.python_encoding = 'utf-8'
+        postgres_encoding, self.python_encoding = getEncoding(self.conn.encoding)
+
+        status = _execute(cur, "SET DateStyle=ISO; "
+                               "SET client_min_messages=notice;"
+                               "SET bytea_output=escape;"
+                               "SET client_encoding='{0}';"
+                          .format(postgres_encoding))
 
         # Replace the python encoding for original name and renamed encodings
         # psycopg2 removes the underscore in conn.encoding

@@ -51,6 +51,21 @@ class TestEncodingCharset(BaseTestGenerator):
                 lc_collate='C',
                 test_str='\\255'
             )),
+        (
+            'With Encoding LATIN1',
+            dict(
+                db_encoding='LATIN1',
+                lc_collate='C',
+                test_str='Ň'
+            )),
+        (
+            'With Encoding LATIN2',
+            dict(
+                db_encoding='LATIN2',
+                lc_collate='C',
+                test_str='§'
+            )),
+
     ]
 
     def setUp(self):
