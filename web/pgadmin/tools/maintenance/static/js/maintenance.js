@@ -81,7 +81,7 @@ define([
       control: Backform.RadioControl.extend({
         template: _.template([
           '<label class="control-label col-sm-4 col-12"><%=label%></label>',
-          '<div class="pgadmin-controls col-12 col-sm-8 btn-group pg-maintenance-op" data-toggle="buttons">',
+          '<div class="pgadmin-controls col-12 col-sm-8 btn-group pg-maintenance-op pgadmin-controls-radio-none" data-toggle="buttons">',
           ' <% for (var i=0; i < options.length; i++) { %>',
           ' <% var option = options[i]; %>',
           ' <label class="btn btn-primary<% if (i == 0) { %> active<%}%>">',
