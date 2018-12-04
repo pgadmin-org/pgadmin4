@@ -30,7 +30,7 @@ class TestUtilityCheckRouteCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        check_binary_path_or_skip_test(self)
+        check_binary_path_or_skip_test(self, 'pg_dump')
 
     @patch('pgadmin.tools.backup.is_utility_exists')
     def runTest(self, is_utility_exists_mock):

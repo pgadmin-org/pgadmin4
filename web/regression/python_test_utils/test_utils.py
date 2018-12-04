@@ -966,7 +966,7 @@ def get_server_type(server):
         traceback.print_exc(file=sys.stderr)
 
 
-def check_binary_path_or_skip_test(cls):
+def check_binary_path_or_skip_test(cls, utility_name):
     if 'default_binary_paths' not in cls.server or \
         cls.server['default_binary_paths'] is None or \
         cls.server['type'] not in cls.server['default_binary_paths'] or \
@@ -976,3 +976,12 @@ def check_binary_path_or_skip_test(cls):
                 cls.server['name']
             )
         )
+
+        from pgadmin.utils import is_utility_exists
+        binary_path = os.path.join(
+            cls.server['default_binary_paths'][cls.server['type']],
+            utility_name
+        )
+        retVal = is_utility_exists(binary_path)
+        if retVal is not None:
+            cls.skipTest(retVal)

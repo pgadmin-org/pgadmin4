@@ -30,7 +30,7 @@ class TestUtilityCheckRouteCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        check_binary_path_or_skip_test(self)
+        check_binary_path_or_skip_test(self, 'psql')
 
     @patch('pgadmin.tools.import_export.is_utility_exists')
     def runTest(self, is_utility_exists_mock):
