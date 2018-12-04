@@ -402,7 +402,8 @@ class Connection(BaseConnection):
         if self.use_binary_placeholder:
             register_binary_typecasters(self.conn)
 
-        postgres_encoding, self.python_encoding = getEncoding(self.conn.encoding)
+        postgres_encoding, self.python_encoding = \
+            getEncoding(self.conn.encoding)
 
         status = _execute(cur, "SET DateStyle=ISO; "
                                "SET client_min_messages=notice;"
