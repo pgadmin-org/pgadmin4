@@ -35,7 +35,8 @@ class TestUtilityCheckRouteCase(BaseTestGenerator):
     @patch('pgadmin.tools.backup.is_utility_exists')
     def runTest(self, is_utility_exists_mock):
         is_utility_exists_mock.return_value = False
-        response = self.tester.get(self.url.format(1))
+        server_id = self.server_information['server_id']
+        response = self.tester.get(self.url.format(server_id))
         self.assertEquals(response.status_code, 200)
         response = json.loads(response.data.decode('utf-8'))
         self.assertEquals(self.expected_success_value, response['success'])
