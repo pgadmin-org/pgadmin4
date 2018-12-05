@@ -1947,6 +1947,8 @@ define('pgadmin.browser', [
   $(window).on('beforeunload', function() {
     if (pgBrowser.get_preference('browser', 'browser_tree_state_save_interval').value !== -1)
       pgAdmin.Browser.browserTreeState.save_state();
+    
+    return "Are you sure? You will lose any unsaved work!";
   });
 
   return pgAdmin.Browser;
