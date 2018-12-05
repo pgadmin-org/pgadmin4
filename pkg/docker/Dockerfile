@@ -36,7 +36,7 @@ RUN LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 make -C /pgadmin4/docs/en_US -f Makefile
 FROM python:3.6-alpine3.7
 
 RUN pip --no-cache-dir install gunicorn
-RUN apk add --no-cache postgresql-client postgresql-libs
+RUN apk add --no-cache postfix postgresql-client postgresql-libs
 
 WORKDIR /pgadmin4
 ENV PYTHONPATH=/pgadmin4

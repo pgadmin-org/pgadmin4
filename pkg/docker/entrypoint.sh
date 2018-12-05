@@ -16,6 +16,9 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
     python run_pgadmin.py
 fi
 
+# Start Postfix to handle password resets etc.
+/usr/sbin/postfix start
+
 # NOTE: currently pgadmin can run only with 1 worker due to sessions implementation
 # Using --threads to have multi-threaded single-process worker
 
