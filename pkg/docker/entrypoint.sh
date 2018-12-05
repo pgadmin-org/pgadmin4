@@ -14,6 +14,11 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
     # Initialize DB before starting Gunicorn
     # Importing pgadmin4 (from this script) is enough
     python run_pgadmin.py
+
+    # Pre-load any required servers
+    if [ -f /pgadmin4/servers.json ]; then
+        /usr/local/bin/python /pgadmin4/setup.py --load-servers /pgadmin4/servers.json --user ${PGADMIN_DEFAULT_EMAIL}
+    fi
 fi
 
 # Start Postfix to handle password resets etc.
