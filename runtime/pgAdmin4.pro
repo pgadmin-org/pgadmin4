@@ -7,11 +7,9 @@ QMAKE_TARGET_COPYRIGHT = "Copyright 2013 - 2018, The pgAdmin Development Team"
 # Configure QT modules for the appropriate version of QT
 greaterThan(QT_MAJOR_VERSION, 4) {
     message(Building for QT5+...)
-    message()
     QT += network widgets
 } else { 
     message(Building for QT4...)
-    message()
     QT += network
 }
 win32 {
