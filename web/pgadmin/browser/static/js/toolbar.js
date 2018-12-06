@@ -74,11 +74,11 @@ export function initializeToolbar(panel, wcDocker) {
 
   // Listen on button click event.
   panel.on(wcDocker.EVENT.BUTTON, function(data) {
-    if ('name' in data && data.name === 'Query Tool')
+    if ('name' in data && data.name === gettext('Query Tool'))
       pgAdmin.DataGrid.show_query_tool('', pgAdmin.Browser.tree.selected());
-    else if ('name' in data && data.name === 'View Data')
+    else if ('name' in data && data.name === gettext('View Data'))
       pgAdmin.DataGrid.show_data_grid({mnuid: 3}, pgAdmin.Browser.tree.selected());
-    else if ('name' in data && data.name === 'Filtered Rows')
+    else if ('name' in data && data.name === gettext('Filtered Rows'))
       pgAdmin.DataGrid.show_filtered_row({mnuid: 4}, pgAdmin.Browser.tree.selected());
   });
 }
