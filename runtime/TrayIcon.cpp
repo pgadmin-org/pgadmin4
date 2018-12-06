@@ -45,7 +45,7 @@ void TrayIcon::createTrayIcon()
     if (m_trayIconMenu)
     {
         delete m_trayIconMenu;
-        m_trayIconMenu = NULL;
+        m_trayIconMenu = nullptr;
     }
 
     m_trayIconMenu = new QMenu(this);
@@ -95,7 +95,7 @@ void TrayIcon::createActions()
 
 void TrayIcon::enableShutdownMenu()
 {
-    if (m_quitAction != NULL)
+    if (m_quitAction != nullptr)
     {
         m_quitAction->setEnabled(true);
     }
