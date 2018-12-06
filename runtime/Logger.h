@@ -13,6 +13,7 @@
 #define LOGGER_H
 
 #include <QObject>
+#include <QFile>
 
 class Logger : public QObject
 {

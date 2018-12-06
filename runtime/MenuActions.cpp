@@ -17,7 +17,7 @@
 
 MenuActions::MenuActions()
 {
-    m_logWindow = NULL;
+    m_logWindow = nullptr;
     m_logFile = "";
     m_appServerUrl = "";
 }
@@ -52,7 +52,7 @@ void MenuActions::onNew()
         if (!QDesktopServices::openUrl(m_appServerUrl))
         {
             QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
-            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+            QMessageBox::critical(nullptr, QString(QWidget::tr("Fatal Error")), error);
 
             exit(1);
         }
@@ -105,7 +105,7 @@ void MenuActions::onConfig()
 
         if (needRestart)
         {
-            if (QMessageBox::Yes == QMessageBox::question(NULL, tr("Shut down server?"), QString(tr("The %1 server must be restarted for changes to take effect. Do you want to shut down the server now?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
+            if (QMessageBox::Yes == QMessageBox::question(nullptr, tr("Shut down server?"), QString(tr("The %1 server must be restarted for changes to take effect. Do you want to shut down the server now?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
             {
                 exit(0);
             }
@@ -121,7 +121,7 @@ void MenuActions::onLog()
 
     if (!m_logWindow)
     {
-        m_logWindow = new LogWindow(NULL, m_logFile);
+        m_logWindow = new LogWindow(nullptr, m_logFile);
         m_logWindow->setWindowTitle(QString(tr("%1 Log")).arg(PGA_APP_NAME));
     }
 
@@ -138,7 +138,7 @@ void MenuActions::onLog()
 // Exit
 void MenuActions::onQuit()
 {
-    if (QMessageBox::Yes == QMessageBox::question(NULL, tr("Shut down server?"), QString(tr("Are you sure you want to shut down the %1 server?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
+    if (QMessageBox::Yes == QMessageBox::question(nullptr, tr("Shut down server?"), QString(tr("Are you sure you want to shut down the %1 server?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
     {
         // Emit the signal to shut down the python server.
         emit shutdownSignal(m_appServerUrl);

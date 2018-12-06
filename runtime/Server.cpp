@@ -61,8 +61,8 @@ Server::Server(quint16 port, QString key, QString logFileName)
     m_port = port;
     m_key = key;
     m_logFileName = logFileName;
-    m_wcAppName = NULL;
-    m_wcPythonHome = NULL;
+    m_wcAppName = nullptr;
+    m_wcPythonHome = nullptr;
 
     // Initialise Python
     Py_NoSiteFlag=1;
@@ -201,7 +201,7 @@ Server::Server(quint16 port, QString key, QString logFileName)
 
     // Get the current path
     PyObject* sysPath = PySys_GetObject((char*)"path");
-    if (sysPath != NULL)
+    if (sysPath != nullptr)
     {
         // Add new additional path elements
         Logger::GetLogger()->Log("Adding new additional path elements");
@@ -224,13 +224,13 @@ Server::Server(quint16 port, QString key, QString logFileName)
     // Redirect stderr
     Logger::GetLogger()->Log("Redirecting stderr...");
     PyObject *sys = PyImport_ImportModule("sys");
-    if (sys != NULL)
+    if (sys != nullptr)
     {
-        PyObject *err = NULL;
+        PyObject *err = nullptr;
 #ifdef PYTHON2
         err = PyFile_FromString(m_logFileName.toUtf8().data(), (char *)"w");
 #else
-        FILE *log = NULL;
+        FILE *log = nullptr;
 
 #if defined(Q_OS_WIN)
         char *logFile = m_logFileName.toUtf8().data();
@@ -242,10 +242,10 @@ Server::Server(quint16 port, QString key, QString logFileName)
 #else
         log = fopen(m_logFileName.toUtf8().data(), (char *)"w");
 #endif
-        if (log != NULL)
+        if (log != nullptr)
         {
             int fd = fileno(log);
-            err = PyFile_FromFd(fd, NULL, (char *)"w", -1, NULL, NULL, NULL, 0);
+            err = PyFile_FromFd(fd, nullptr, (char *)"w", -1, nullptr, nullptr, nullptr, 0);
         }
         else
             Logger::GetLogger()->Log(QString("Failed to open log file: %1").arg(m_logFileName));
@@ -259,7 +259,7 @@ Server::Server(quint16 port, QString key, QString logFileName)
 #endif
 #endif
         QFile(m_logFileName).setPermissions(QFile::ReadOwner|QFile::WriteOwner);
-        if (err != NULL)
+        if (err != nullptr)
         {
             PyObject_SetAttrString(sys, "stderr", err);
             Logger::GetLogger()->Log("stderr redirected successfully.");

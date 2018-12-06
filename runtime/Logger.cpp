@@ -24,7 +24,7 @@ Logger::~Logger()
 
 Logger* Logger::GetLogger()
 {
-    if (m_pThis == NULL)
+    if (m_pThis == nullptr)
     {
         m_pThis = new Logger();
         m_sFileName = QDir::homePath() + (QString("/.%1.startup.log").arg(PGA_APP_NAME)).remove(" ");
@@ -40,7 +40,7 @@ Logger* Logger::GetLogger()
 void Logger::Log(const QString& sMessage)
 {
     QString text = QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss ") + sMessage + "\n";
-    if (m_Logfile != NULL)
+    if (m_Logfile != nullptr)
     {
         QTextStream out(m_Logfile);
         out << text;
@@ -49,11 +49,11 @@ void Logger::Log(const QString& sMessage)
 
 void Logger::ReleaseLogger()
 {
-    if (m_pThis != NULL)
+    if (m_pThis != nullptr)
     {
-        if(m_Logfile != NULL)
+        if(m_Logfile != nullptr)
             m_Logfile->close();
         delete m_pThis;
-        m_pThis = NULL;
+        m_pThis = nullptr;
     }
 }

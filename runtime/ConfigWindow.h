@@ -23,7 +23,7 @@ class ConfigWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit ConfigWindow(QWidget *parent = 0);
+    explicit ConfigWindow(QWidget *parent = nullptr);
     ~ConfigWindow();
 
     QString getBrowserCommand();
