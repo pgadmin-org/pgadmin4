@@ -14,14 +14,14 @@
 
 TrayIcon::TrayIcon()
 {
-    m_trayIcon = NULL;
-    m_trayIconMenu = NULL;
+    m_trayIcon = Q_NULLPTR;
+    m_trayIconMenu = Q_NULLPTR;
 
-    m_newAction = NULL;
-    m_configAction = NULL;
-    m_logAction = NULL;
-    m_quitAction = NULL;
-    m_menuActions = NULL;
+    m_newAction = Q_NULLPTR;
+    m_configAction = Q_NULLPTR;
+    m_logAction = Q_NULLPTR;
+    m_quitAction = Q_NULLPTR;
+    m_menuActions = Q_NULLPTR;
 }
 
 TrayIcon::~TrayIcon()
@@ -45,7 +45,7 @@ void TrayIcon::createTrayIcon()
     if (m_trayIconMenu)
     {
         delete m_trayIconMenu;
-        m_trayIconMenu = nullptr;
+        m_trayIconMenu = Q_NULLPTR;
     }
 
     m_trayIconMenu = new QMenu(this);
@@ -95,7 +95,7 @@ void TrayIcon::createActions()
 
 void TrayIcon::enableShutdownMenu()
 {
-    if (m_quitAction != nullptr)
+    if (m_quitAction != Q_NULLPTR)
     {
         m_quitAction->setEnabled(true);
     }

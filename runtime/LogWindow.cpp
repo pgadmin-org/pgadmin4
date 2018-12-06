@@ -55,7 +55,7 @@ void LogWindow::ReadLog()
 
     // Attempt to open the file
     log = fopen(m_logFile.toUtf8().data(), "r");
-    if (log == nullptr)
+    if (log == Q_NULLPTR)
     {
             ui->textLog->setPlainText(QString(tr("The log file (%1) could not be opened.")).arg(m_logFile));
             this->setDisabled(false);

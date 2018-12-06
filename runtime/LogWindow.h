@@ -23,7 +23,7 @@ class LogWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit LogWindow(QWidget *parent = nullptr, QString logFile = "");
+    explicit LogWindow(QWidget *parent = Q_NULLPTR, QString logFile = "");
     ~LogWindow();
 
     void ReadLog();

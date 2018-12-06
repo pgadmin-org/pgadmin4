@@ -16,12 +16,12 @@ FloatingWindow::FloatingWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::FloatingWindow)
 {
-    m_newAction = nullptr;
-    m_configAction = nullptr;
-    m_logAction = nullptr;
-    m_quitAction = nullptr;
-    m_menuActions = nullptr;
-    m_floatingWindowMenu = nullptr;
+    m_newAction = Q_NULLPTR;
+    m_configAction = Q_NULLPTR;
+    m_logAction = Q_NULLPTR;
+    m_quitAction = Q_NULLPTR;
+    m_menuActions = Q_NULLPTR;
+    m_floatingWindowMenu = Q_NULLPTR;
 
     ui->setupUi(this);
 }
@@ -87,7 +87,7 @@ void FloatingWindow::createActions()
 
 void FloatingWindow::enableShutdownMenu()
 {
-    if (m_quitAction != nullptr)
+    if (m_quitAction != Q_NULLPTR)
     {
         m_quitAction->setEnabled(true);
     }
