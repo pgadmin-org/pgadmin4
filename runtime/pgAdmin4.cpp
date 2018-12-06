@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
 
     // Create a hash of the executable path so we can run copies side-by-side
     QString homeDir = QDir::homePath();
-    unsigned long exeHash = sdbm((unsigned char *)argv[0]);
+    unsigned long exeHash = sdbm(reinterpret_cast<unsigned char *>(argv[0]));
 
     // Create the address file, that will be used to store the appserver URL for this instance
     addrFileName = homeDir + (QString("/.%1.%2.addr").arg(PGA_APP_NAME).arg(exeHash)).remove(" ");

@@ -200,7 +200,7 @@ Server::Server(quint16 port, QString key, QString logFileName)
     Logger::GetLogger()->Log("Python initialized.");
 
     // Get the current path
-    PyObject* sysPath = PySys_GetObject((char*)"path");
+    PyObject* sysPath = PySys_GetObject(const_cast<char *>("path"));
     if (sysPath != nullptr)
     {
         // Add new additional path elements
@@ -240,12 +240,12 @@ Server::Server(quint16 port, QString key, QString logFileName)
 
         log = _wfopen(wcLogFileName, (wchar_t *)"w");
 #else
-        log = fopen(m_logFileName.toUtf8().data(), (char *)"w");
+        log = fopen(m_logFileName.toUtf8().data(), const_cast<char *>("w"));
 #endif
         if (log != nullptr)
         {
             int fd = fileno(log);
-            err = PyFile_FromFd(fd, nullptr, (char *)"w", -1, nullptr, nullptr, nullptr, 0);
+            err = PyFile_FromFd(fd, nullptr, const_cast<char *>("w"), -1, nullptr, nullptr, nullptr, 0);
         }
         else
             Logger::GetLogger()->Log(QString("Failed to open log file: %1").arg(m_logFileName));

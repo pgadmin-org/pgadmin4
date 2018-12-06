@@ -67,7 +67,7 @@ void LogWindow::ReadLog()
     fseek(log, 0, SEEK_END);
     len = ftell(log);
     rewind(log);
-    buffer = (char *)malloc((len + 1) * sizeof(char));
+    buffer = static_cast<char *>(malloc((len + 1) * sizeof(char)));
 
     for (i = 0; i < len; i++) {
         if (fread(buffer + i, 1, 1, log) > 0)
