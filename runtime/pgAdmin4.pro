@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 } else { 
     message(Building for QT4...)
     QT += network
+    DEFINES += Q_NULLPTR=NULL
 }
 win32 {
   RC_ICONS += pgAdmin4.ico
