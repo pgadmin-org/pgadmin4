@@ -11,9 +11,9 @@
 
 #include "pgAdmin4.h"
 #include "Logger.h"
-Logger* Logger::m_pThis = NULL;
+Logger* Logger::m_pThis = nullptr;
 QString Logger::m_sFileName = "";
-QFile* Logger::m_Logfile = NULL;
+QFile* Logger::m_Logfile = nullptr;
 
 Logger::Logger()
 {
