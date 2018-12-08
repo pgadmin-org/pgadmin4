@@ -30,13 +30,13 @@ let GeometryViewer = {
       $('#geometry_viewer_panel')[0].appendChild(self.map_component.mapContainer.get(0));
       self.panel_closed = false;
 
-      geometry_viewer_panel.on(wcDocker.EVENT.CLOSED, function () {
+      geometry_viewer_panel.on(wcDocker.EVENT.CLOSED, function (visible) {
         $('#geometry_viewer_panel').empty();
         self.map_component.clearMap();
         self.panel_closed = true;
       });
 
-      geometry_viewer_panel.on(wcDocker.EVENT.RESIZE_ENDED, function () {
+      geometry_viewer_panel.on(wcDocker.EVENT.RESIZE_ENDED, function (visible) {
         if (geometry_viewer_panel.isVisible()) {
           self.map_component.resizeMap();
         }
@@ -72,7 +72,7 @@ let GeometryViewer = {
   parse_data: parseData,
 };
 
-function initMapComponent() {
+function initMapComponent(visible) {
   const geojsonMarkerOptions = {
     radius: 4,
     weight: 3,
@@ -260,9 +260,9 @@ function initMapComponent() {
       }
     },
 
-    'resizeMap': function () {
-      setTimeout(function () {
-        lmap.invalidateSize();
+    'resizeMap': function (visible) {
+      setTimeout(function (visible) {
+        lmap.invalidateSize(visible);
       }, 10);
     },
 
