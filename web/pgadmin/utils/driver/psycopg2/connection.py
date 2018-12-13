@@ -1335,9 +1335,11 @@ Failed to reset the connection to the server due to following error:
             if state == psycopg2.extensions.POLL_OK:
                 break
             elif state == psycopg2.extensions.POLL_WRITE:
-                select.select([], [conn.fileno()], [])
+                select.select([], [conn.fileno()], [],
+                              self.ASYNC_WAIT_TIMEOUT)
             elif state == psycopg2.extensions.POLL_READ:
-                select.select([conn.fileno()], [], [])
+                select.select([conn.fileno()], [], [],
+                              self.ASYNC_WAIT_TIMEOUT)
             else:
                 raise psycopg2.OperationalError(
                     "poll() returned %s from _wait function" % state)
