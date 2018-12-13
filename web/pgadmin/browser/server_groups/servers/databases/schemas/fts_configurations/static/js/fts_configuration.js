@@ -1,10 +1,11 @@
 define('pgadmin.node.fts_configuration', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
+  'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection',
 ], function(
   gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid,
-  schemaChild
+  schemaChild, schemaChildTreeNode
 ) {
 
   // Model for tokens control
@@ -406,6 +407,8 @@ define('pgadmin.node.fts_configuration', [
         label: gettext('FTS Configurations'),
         type: 'coll-fts_configuration',
         columns: ['name', 'description'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

@@ -2,10 +2,10 @@ define('pgadmin.node.mview', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser',
   'pgadmin.backform', 'pgadmin.node.schema.dir/child',
-  'pgadmin.browser.server.privilege',
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.server.privilege',
 ], function(
   gettext, url_for, $, _, pgAdmin, Alertify, pgBrowser, Backform,
-  schemaChild
+  schemaChild, schemaChildTreeNode
 ) {
 
   /**
@@ -22,6 +22,8 @@ define('pgadmin.node.mview', [
         label: gettext('Materialized Views'),
         type: 'coll-mview',
         columns: ['name', 'owner'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

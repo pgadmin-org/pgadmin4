@@ -124,7 +124,10 @@ define([
           }.bind(panel);
 
         // Add the new column for the multi-select menus
-        if (that.canDrop || that.canDropCascade) {
+        if((_.isFunction(that.canDrop) ?
+              that.canDrop.apply(that, [data, item]) : that.canDrop) ||
+              (_.isFunction(that.canDropCascade) ?
+              that.canDropCascade.apply(that, [data, item]) : that.canDropCascade)) {
           gridSchema.columns.unshift({
             name: 'oid',
             cell: Backgrid.Extension.SelectRowCell.extend({
@@ -215,7 +218,10 @@ define([
           tooltip: gettext('Delete/Drop'),
           extraClasses: ['btn-default', 'delete_multiple'],
           icon: 'fa fa-lg fa-trash-o',
-          disabled: !that.canDrop,
+          disabled:  _.isFunction(that.canDrop) ?
+            function() {
+              return !(that.canDrop.apply(self, arguments));
+            } : (!that.canDrop),
           register: function(btn) {
             btn.on('click',() => {
               onDrop('drop');
@@ -229,7 +235,10 @@ define([
           tooltip: gettext('Drop Cascade'),
           extraClasses: ['btn-default', 'delete_multiple_cascade'],
           icon: '',
-          disabled: !that.canDropCascade,
+          disabled: _.isFunction(that.canDropCascade) ?
+            function() {
+              return !(that.canDropCascade.apply(self, arguments));
+            } : (!that.canDropCascade),
           register: function(btn) {
             btn.on('click',() => {
               onDrop('dropCascade');

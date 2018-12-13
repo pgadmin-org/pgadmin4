@@ -2,7 +2,7 @@ define('pgadmin.node.rule', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
   'pgadmin.node.schema.dir/schema_child_tree_node',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChildTreeNode) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode) {
 
   /**
     Create and add a rule collection into nodes
@@ -18,6 +18,8 @@ define('pgadmin.node.rule', [
         label: gettext('Rules'),
         type: 'coll-rule',
         columns: ['name', 'owner', 'comment'],
+        canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 
@@ -45,7 +47,7 @@ define('pgadmin.node.rule', [
       hasSQL:  true,
       hasDepends: true,
       canDrop: function(itemData, item){
-        schemaChildTreeNode.isTreeItemOfChildOfSchema.apply(this, [itemData, item]);
+        SchemaChildTreeNode.isTreeItemOfChildOfSchema.apply(this, [itemData, item]);
         if(_.has(itemData, 'label') && itemData.label === '_RETURN')
           return false;
         else {
@@ -53,7 +55,7 @@ define('pgadmin.node.rule', [
         }
       },
       canDropCascade: function(itemData, item){
-        schemaChildTreeNode.isTreeItemOfChildOfSchema.apply(this, [itemData, item]);
+        SchemaChildTreeNode.isTreeItemOfChildOfSchema.apply(this, [itemData, item]);
         if(_.has(itemData, 'label') && itemData.label === '_RETURN')
           return false;
         else {

@@ -2,10 +2,11 @@
 define('pgadmin.node.function', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege',
+  'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, schemaChild
+  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, schemaChild,
+  schemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-function']) {
@@ -16,6 +17,8 @@ define('pgadmin.node.function', [
         type: 'coll-function',
         columns: ['name', 'funcowner', 'description'],
         hasStatistics: true,
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

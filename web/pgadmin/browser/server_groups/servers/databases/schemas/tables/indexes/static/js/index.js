@@ -21,6 +21,8 @@ define('pgadmin.node.index', [
         columns: ['name', 'description'],
         hasStatistics: true,
         statsPrettifyFields: ['Size', 'Index size'],
+        canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

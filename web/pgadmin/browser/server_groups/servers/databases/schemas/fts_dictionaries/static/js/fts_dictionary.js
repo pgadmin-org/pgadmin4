@@ -1,9 +1,11 @@
 define('pgadmin.node.fts_dictionary', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
+  'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, schemaChild
+  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, schemaChild,
+   schemaChildTreeNode
 ) {
 
   // Extend the browser's node model class to create a option/value pair
@@ -52,6 +54,8 @@ define('pgadmin.node.fts_dictionary', [
         label: gettext('FTS Dictionaries'),
         type: 'coll-fts_dictionary',
         columns: ['name', 'description'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

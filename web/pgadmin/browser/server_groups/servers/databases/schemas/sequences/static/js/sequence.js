@@ -1,9 +1,11 @@
 define('pgadmin.node.sequence', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
+  'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, schemaChild
+  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, schemaChild,
+   schemaChildTreeNode
 ) {
 
   // Extend the browser's collection class for sequence collection
@@ -15,6 +17,8 @@ define('pgadmin.node.sequence', [
         type: 'coll-sequence',
         columns: ['name', 'seqowner', 'comment'],
         hasStatistics: true,
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

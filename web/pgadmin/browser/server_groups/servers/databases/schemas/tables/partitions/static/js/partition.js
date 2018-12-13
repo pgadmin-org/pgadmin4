@@ -19,6 +19,8 @@ function(
         columns: [
           'name', 'schema', 'partition_value', 'is_partitioned', 'description',
         ],
+        canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

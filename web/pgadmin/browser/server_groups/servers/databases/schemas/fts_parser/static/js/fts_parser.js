@@ -1,8 +1,8 @@
 define('pgadmin.node.fts_parser', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
-  'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild) {
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode) {
 
   // Extend the collection class for fts parser
   if (!pgBrowser.Nodes['coll-fts_parser']) {
@@ -12,6 +12,8 @@ define('pgadmin.node.fts_parser', [
         label: gettext('FTS Parsers'),
         type: 'coll-fts_parser',
         columns: ['name', 'description'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

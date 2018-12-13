@@ -2,10 +2,11 @@
 define('pgadmin.node.domain', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
+  'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection',
 ], function(
   gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid,
-  schemaChild
+  schemaChild, schemaChildTreeNode
 ) {
 
   // Define Domain Collection Node
@@ -16,6 +17,8 @@ define('pgadmin.node.domain', [
         label: gettext('Domains'),
         type: 'coll-domain',
         columns: ['name', 'owner', 'description'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

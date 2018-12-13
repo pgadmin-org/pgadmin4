@@ -13,7 +13,7 @@ define('pgadmin.node.domain_constraints', [
         label: gettext('Domain Constraints'),
         type: 'coll-domain_constraints',
         columns: ['name', 'description'],
-        canDrop: true,
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: false,
       });
   }

@@ -1,8 +1,8 @@
 define('pgadmin.node.fts_template', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
-  'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild) {
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode) {
 
   // Extend the collection class for fts template
   if (!pgBrowser.Nodes['coll-fts_template']) {
@@ -12,6 +12,8 @@ define('pgadmin.node.fts_template', [
         label: gettext('FTS Templates'),
         type: 'coll-fts_template',
         columns: ['name', 'description'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

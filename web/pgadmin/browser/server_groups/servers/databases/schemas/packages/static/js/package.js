@@ -1,8 +1,10 @@
 define('pgadmin.node.package', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild) {
+  'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild,
+ schemaChildTreeNode) {
 
   // Extend the browser's collection class for package collection
   if (!pgBrowser.Nodes['coll-package']) {
@@ -12,6 +14,8 @@ define('pgadmin.node.package', [
         label: gettext('Packages'),
         type: 'coll-package',
         columns: ['name' ,'owner', 'description'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

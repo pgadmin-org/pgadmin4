@@ -2,10 +2,10 @@ define('pgadmin.node.type', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
   'pgadmin.backgrid', 'pgadmin.node.schema.dir/child',
-  'pgadmin.browser.collection',
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
 ], function(
   gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, Backgrid,
-  schemaChild
+  schemaChild, schemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-type']) {
@@ -15,6 +15,8 @@ define('pgadmin.node.type', [
         label: gettext('Types'),
         type: 'coll-type',
         columns: ['name', 'typeowner', 'description'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

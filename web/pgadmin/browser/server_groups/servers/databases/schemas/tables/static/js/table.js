@@ -4,13 +4,13 @@ define('pgadmin.node.table', [
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.tables.js/show_advanced_tab',
-  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
-  'pgadmin.node.column', 'pgadmin.node.constraints',
-  'pgadmin.browser.table.partition.utils',
+  'pgadmin.node.schema.dir/child','pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection', 'pgadmin.node.column',
+  'pgadmin.node.constraints', 'pgadmin.browser.table.partition.utils',
 ], function(
   tableFunctions,
   gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
-  ShowAdvancedTab, SchemaChild
+  ShowAdvancedTab, SchemaChild, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-table']) {
@@ -24,6 +24,8 @@ define('pgadmin.node.table', [
         statsPrettifyFields: ['Size', 'Indexes size', 'Table size',
           'Toast table size', 'Tuple length',
           'Dead tuple length', 'Free space'],
+        canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

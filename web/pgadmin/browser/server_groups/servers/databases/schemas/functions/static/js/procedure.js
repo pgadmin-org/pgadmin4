@@ -3,8 +3,10 @@ define('pgadmin.node.procedure', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.node.function', 'pgadmin.node.schema.dir/child',
+  'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Function, schemaChild) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Function,
+ schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {
     pgAdmin.Browser.Nodes['coll-procedure'] =
@@ -14,6 +16,8 @@ define('pgadmin.node.procedure', [
         type: 'coll-procedure',
         columns: ['name', 'funcowner', 'description'],
         hasStatistics: true,
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

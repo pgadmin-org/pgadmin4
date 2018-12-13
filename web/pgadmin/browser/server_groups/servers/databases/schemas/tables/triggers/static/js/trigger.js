@@ -35,6 +35,8 @@ define('pgadmin.node.trigger', [
         label: gettext('Triggers'),
         type: 'coll-trigger',
         columns: ['name', 'description'],
+        canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

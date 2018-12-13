@@ -1,8 +1,10 @@
 define('pgadmin.node.collation', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, schemaChild) {
+  'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.browser.collection',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, schemaChild,
+ schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-collation']) {
     pgAdmin.Browser.Nodes['coll-collation'] =
@@ -11,6 +13,8 @@ define('pgadmin.node.collation', [
         label: gettext('Collations'),
         type: 'coll-collation',
         columns: ['name', 'owner', 'description'],
+        canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 

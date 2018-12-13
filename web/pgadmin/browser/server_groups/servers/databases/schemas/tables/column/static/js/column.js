@@ -1,9 +1,10 @@
 define('pgadmin.node.column', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.browser.collection',
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid
+  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid,
+  SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-column']) {
@@ -13,6 +14,8 @@ define('pgadmin.node.column', [
         label: gettext('Columns'),
         type: 'coll-column',
         columns: ['name', 'atttypid', 'description'],
+        canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
   }
 
