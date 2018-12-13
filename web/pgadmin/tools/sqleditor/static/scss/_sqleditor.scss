@@ -195,3 +195,7 @@ li.CodeMirror-hint-active {
   color: $color-fg-inverse;
   background-color: $color-primary;
 }
+
+.pg_text_editor textarea {
+  resize: both;
+}
