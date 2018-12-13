@@ -14,7 +14,9 @@
     font-size: 0.75rem;
 }
 
-.pg-explain-zoom-area:hover {
+.pg-explain-zoom-area:hover,
+.pg-explain-stats-area:hover,
+.pg-explain-download-area:hover {
    opacity: 1;
 }
 
@@ -31,10 +33,6 @@
   border: 1px solid transparent;
   pointer-events: none;
   font-size: 0.75rem;
-}
-
-.pg-explain-stats-area:hover {
-  opacity: 1;
 }
 
 .explain-tooltip {
@@ -66,4 +64,18 @@ td.explain-tooltip-val {
   height: 100%;
   width: 100%;
   overflow: auto;
+}
+
+.pg-explain-download-area {
+    position: absolute;
+    top: 5px;
+    left: 79px;
+    opacity: 0.5;
+}
+
+.pg-explain-download-btn {
+    top: 5px;
+    min-width: 25px;
+    border: 1px solid transparent;
+    font-size: 0.75rem;
 }

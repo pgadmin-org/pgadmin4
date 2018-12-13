@@ -10,7 +10,8 @@ This release contains a number of features and fixes reported since the release 
 Features
 ********
 
-| `Bug #3801 <https://redmine.postgresql.org/issues/3801>`_ - Allow servers to be pre-loaded into container deployments.
+| `Feature #3589 <https://redmine.postgresql.org/issues/3589>`_ - Allow query plans to be downloaded as an SVG file.
+| `Feature #3801 <https://redmine.postgresql.org/issues/3801>`_ - Allow servers to be pre-loaded into container deployments.
 
 Bug fixes
 *********

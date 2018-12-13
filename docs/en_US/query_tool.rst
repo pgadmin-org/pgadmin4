@@ -178,6 +178,9 @@ Use the *Explain* tab to view a graphical representation of a query:
 
 To generate a graphical explain diagram, open the *Explain* tab, and select *Explain*, *Explain Analyze*, or one or more options from the *Explain options* menu on the *Execute/Refresh* drop-down. Please note that *EXPLAIN VERBOSE* cannot be displayed graphically. Hover over an icon on the *Explain* tab to review information about that item; a popup window will display information about the selected object:
 
+Use the download button on top left corner of the *Explain* canvas to download the plan as an SVG file.
+**Note:** Download as SVG is not supported on Internet Explorer.
+
 .. image:: images/query_output_explain_details.png
     :alt: Query tool graphical explain plan
 

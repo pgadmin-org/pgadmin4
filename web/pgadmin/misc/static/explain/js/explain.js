@@ -1,9 +1,11 @@
 define('pgadmin.misc.explain', [
   'sources/url_for', 'jquery', 'underscore', 'underscore.string',
   'sources/pgadmin', 'backbone', 'snapsvg', 'explain_statistics',
-], function(url_for, $, _, S, pgAdmin, Backbone, Snap, StatisticsModel) {
+  'svg_downloader',
+], function(url_for, $, _, S, pgAdmin, Backbone, Snap, StatisticsModel, svgDownloader) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
+  svgDownloader = svgDownloader.default;
 
   // Snap.svg plug-in to write multitext as image name
   Snap.plugin(function(Snap, Element, Paper) {
@@ -565,9 +567,97 @@ define('pgadmin.misc.explain', [
         });
       }
 
+      /* Check the current browser, if it is Internet Explorer then we will not
+       * embed the SVG files for download feature as we are not bale to figure
+       * out the solution for IE.
+       */
+      var current_browser = pgAdmin.Browser.get_browser();
+      if (current_browser.name === 'IE' ||
+        (current_browser.name === 'Safari' && parseInt(current_browser.version) < 10)) {
+        this.draw_image(g, pgExplain.prefix + this.get('image'), currentXpos, currentYpos, graphContainer, toolTipContainer);
+      } else {
+        /* This function is a callback function called when we load any svg file
+         * using Snap. In this function we append the SVG binary data to the new
+         * temporary Snap object and then embedded it to the original Snap() object.
+         */
+        var that = this;
+        var onSVGLoaded = function(data) {
+          var svg_image = Snap();
+          svg_image.append(data);
+
+          that.draw_image(g, svg_image.toDataURL(), currentXpos, currentYpos, graphContainer, toolTipContainer);
+
+          // This attribute is required to download the file as SVG image.
+          s.parent().attr({'xmlns:xlink':'http://www.w3.org/1999/xlink'});
+        };
+
+        var svg_file = pgExplain.prefix + this.get('image');
+        // Load the SVG file for explain plan
+        Snap.load(svg_file, onSVGLoaded);
+      }
+
+      // Draw text below the node
+      var node_label = this.get('Schema') == undefined ?
+        this.get('image_text') :
+        (this.get('Schema') + '.' + this.get('image_text'));
+      g.multitext(
+        currentXpos + (pWIDTH / 2) + TXT_ALIGN,
+        currentYpos + pHEIGHT - TXT_ALIGN,
+        node_label,
+        150, {
+          'font-size': TXT_SIZE,
+          'text-anchor': 'middle',
+        }
+      );
+
+      // Draw Arrow to parent only its not the first node
+      if (!_.isUndefined(pYpos)) {
+        var startx = currentXpos + pWIDTH;
+        var starty = currentYpos + (pHEIGHT / 2);
+        var endx = pXpos - ARROW_WIDTH;
+        var endy = pYpos + (pHEIGHT / 2);
+        var start_cost = this.get('Startup Cost'),
+          total_cost = this.get('Total Cost');
+        var arrow_size = DEFAULT_ARROW_SIZE;
+
+        // Calculate arrow width according to cost of a particular plan
+        if (start_cost != undefined && total_cost != undefined) {
+          arrow_size = Math.round(Math.log((start_cost + total_cost) / 2 + start_cost));
+          arrow_size = arrow_size < 1 ? 1 : arrow_size > 10 ? 10 : arrow_size;
+        }
+
+        var arrow_view_box = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT];
+        var opts = {
+            stroke: '#000000',
+            strokeWidth: arrow_size + 2,
+          },
+          subplanOpts = {
+            stroke: '#866486',
+            strokeWidth: arrow_size + 2,
+          },
+          arrowOpts = {
+            viewBox: arrow_view_box.join(' '),
+          };
+
+        // Draw an arrow from current node to its parent
+        this.drawPolyLine(
+          g, startx, starty, endx, endy,
+          isSubPlan ? subplanOpts : opts, arrowOpts
+        );
+      }
+
+      var plans = this.get('Plans');
+
+      // Draw nodes for current plan's children
+      _.each(plans, function(p) {
+        p.draw(s, xpos, ypos, currentXpos, currentYpos, graphContainer, toolTipContainer);
+      });
+    },
+
+    draw_image: function(g, image_content, currentXpos, currentYpos, graphContainer, toolTipContainer) {
       // Draw the actual image for current node
       var image = g.image(
-        pgExplain.prefix + this.get('image'),
+        image_content,
         currentXpos + (pWIDTH - IMAGE_WIDTH) / 2,
         currentYpos + (pHEIGHT - IMAGE_HEIGHT) / 2,
         IMAGE_WIDTH,
@@ -576,10 +666,28 @@ define('pgadmin.misc.explain', [
 
       // Draw tooltip
       var image_data = this.toJSON();
-      image.mouseover(() => {
+      var title = '<title>';
+      _.each(image_data, function(value, key) {
+        if (key !== 'image' && key !== 'Plans' &&
+          key !== 'level' && key !== 'image' &&
+          key !== 'image_text' && key !== 'xpos' &&
+          key !== 'ypos' && key !== 'width' &&
+          key !== 'height') {
+          title += key + ': ' + value + '\n';
+        }
+      });
 
+      title += '</title>';
+      // this.title = Snap.parse(title);
+      image.append(Snap.parse(title));
+
+      image.mouseover(() => {
         // Empty the tooltip content if it has any and add new data
         toolTipContainer.empty();
+
+        // Remove the title content so that we can show our custom build tooltips.
+        image.node.textContent = '';
+
         var tooltip = $('<table></table>', {
           class: 'pgadmin-tooltip-table',
         }).appendTo(toolTipContainer);
@@ -622,70 +730,16 @@ define('pgadmin.misc.explain', [
 
       // Remove tooltip when mouse is out from node's area
       image.mouseout(() => {
+        /* Append the title again which we have removed on mouse over event, so
+         * that our custom tooltip should be visible.
+         */
+        image.append(Snap.parse(title));
         toolTipContainer.empty();
         toolTipContainer.css({
           'opacity': '0',
         });
         toolTipContainer.css('left', 0);
         toolTipContainer.css('top', 0);
-      });
-
-      // Draw text below the node
-      var node_label = this.get('Schema') == undefined ?
-        this.get('image_text') :
-        (this.get('Schema') + '.' + this.get('image_text'));
-      g.multitext(
-        currentXpos + (pWIDTH / 2) + TXT_ALIGN,
-        currentYpos + pHEIGHT - TXT_ALIGN,
-        node_label,
-        150, {
-          'font-size': TXT_SIZE,
-          'text-anchor': 'middle',
-        }
-      );
-
-      // Draw Arrow to parent only its not the first node
-      if (!_.isUndefined(pYpos)) {
-        var startx = currentXpos + pWIDTH;
-        var starty = currentYpos + (pHEIGHT / 2);
-        var endx = pXpos - ARROW_WIDTH;
-        var endy = pYpos + (pHEIGHT / 2);
-        var start_cost = this.get('Startup Cost'),
-          total_cost = this.get('Total Cost');
-        var arrow_size = DEFAULT_ARROW_SIZE;
-
-        // Calculate arrow width according to cost of a particular plan
-        if (start_cost != undefined && total_cost != undefined) {
-          arrow_size = Math.round(Math.log((start_cost + total_cost) / 2 + start_cost));
-          arrow_size = arrow_size < 1 ? 1 : arrow_size > 10 ? 10 : arrow_size;
-        }
-
-
-        var arrow_view_box = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT];
-        var opts = {
-            stroke: '#000000',
-            strokeWidth: arrow_size + 1,
-          },
-          subplanOpts = {
-            stroke: '#866486',
-            strokeWidth: arrow_size + 1,
-          },
-          arrowOpts = {
-            viewBox: arrow_view_box.join(' '),
-          };
-
-        // Draw an arrow from current node to its parent
-        this.drawPolyLine(
-          g, startx, starty, endx, endy,
-          isSubPlan ? subplanOpts : opts, arrowOpts
-        );
-      }
-
-      var plans = this.get('Plans');
-
-      // Draw nodes for current plan's children
-      _.each(plans, function(p) {
-        p.draw(s, xpos, ypos, currentXpos, currentYpos, graphContainer, toolTipContainer);
       });
     },
   });
@@ -803,6 +857,33 @@ define('pgadmin.misc.explain', [
             class: 'fa fa-search-minus',
           }));
 
+      var downloadArea = $('<div></div>', {
+          class: 'pg-explain-download-area btn-group',
+          role: 'group',
+        }).appendTo(container),
+        downloadBtn = $('<button></button>', {
+          id: 'btn-explain-download',
+          class: 'btn btn-secondary pg-explain-download-btn badge',
+          title: 'Download',
+          tabindex: 0,
+          disabled: function() {
+            var current_browser = pgAdmin.Browser.get_browser();
+            if (current_browser.name === 'IE') {
+              this.title = 'Not supported for Internet Explorer';
+              return true;
+            }
+            if (current_browser.name === 'Safari' &&
+              parseInt(current_browser.version) < 10) {
+              this.title = 'Not supported for Safari version less than 10.1';
+              return true;
+            }
+            return false;
+          },
+        }).appendTo(downloadArea).append(
+          $('<i></i>', {
+            class: 'fa fa-download',
+          }));
+
       var statsArea = $('<div></div>', {
         class: 'pg-explain-stats-area d-none',
         role: 'group',
@@ -918,6 +999,14 @@ define('pgadmin.misc.explain', [
           });
           planDiv.data('zoom-factor', curr_zoom_factor);
           zoomToNormal.trigger('blur');
+        });
+
+        downloadBtn.on('click', function() {
+          var s = Snap('.pgadmin-explain-container svg');
+          var today  = new Date();
+          var filename = 'explain_plan_' + today.getTime() + '.svg';
+          svgDownloader.downloadSVG(s.toString(), filename);
+          downloadBtn.trigger('blur');
         });
       });
 
