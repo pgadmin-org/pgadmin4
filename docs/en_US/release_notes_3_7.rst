@@ -23,6 +23,6 @@ Bug fixes
 | `Bug #3619 <https://redmine.postgresql.org/issues/3619>`_ - Add titles to the code areas of the Query Tool and Debugger to ensure that panels can be re-docked within them.
 | `Bug #3711 <https://redmine.postgresql.org/issues/3711>`_ - Fix an encoding issue in the query tool.
 | `Bug #3757 <https://redmine.postgresql.org/issues/3757>`_ - Hide Radio buttons that should not be shown on the maintenance dialogue.
-| `Bug #3805 <https://redmine.postgresql.org/issues/3805>`_ - Prevent attempts to bulk-drop schema objects.
+| `Bug #3797 <https://redmine.postgresql.org/issues/3797>`_ - Prevent attempts to bulk-drop schema objects.
 | `Bug #3798 <https://redmine.postgresql.org/issues/3798>`_ - Ensure the browser toolbar buttons work in languages other than English.
 | `Bug #3805 <https://redmine.postgresql.org/issues/3805>`_ - Allow horizontal sizing of the edit grid text pop-out.
