@@ -764,8 +764,8 @@ define('pgadmin.node.exclusion_constraint', [
             }
           },
         },{
-          id: 'constraint', label: gettext('Constraint'), cell: 'string',
-          type: 'multiline', mode: ['create', 'edit'], editable: false,
+          id: 'indconstraint', label: gettext('Constraint'), cell: 'string',
+          type: 'multiline', mode: ['create', 'edit', 'properties'], editable: false,
           group: gettext('Definition'), disabled: function(m) {
             return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&

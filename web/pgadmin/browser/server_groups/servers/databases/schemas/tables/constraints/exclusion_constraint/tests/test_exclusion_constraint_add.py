@@ -59,6 +59,7 @@ class ExclusionConstraintAddTestCase(BaseTestGenerator):
                 "columns": [
                     {"column": "id", "sort_order": False, "nulls": False,
                      "operator": "="}],
+                "indconstraint": "(1=2)",
                 "include": ["name"]
                 }
         response = self.tester.post(

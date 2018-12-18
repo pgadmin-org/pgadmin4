@@ -8,12 +8,12 @@ ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
 
     WITH (FILLFACTOR={{data.fillfactor}}){% endif %}{% if data.spcname and data.spcname != "pg_default" %}
 
-    USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}
+    USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}{% if data.indconstraint %}
+    WHERE ({{data.indconstraint}}){% endif%}
 {% if data.condeferrable %}
 
     DEFERRABLE{% if data.condeferred %}
- INITIALLY DEFERRED{% endif%}
-{% endif%}{% if data.constraint %} WHERE ({{data.constraint}}){% endif%};
+ INITIALLY DEFERRED{% endif%}{% endif%};
 {% if data.comment and data.name %}
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}

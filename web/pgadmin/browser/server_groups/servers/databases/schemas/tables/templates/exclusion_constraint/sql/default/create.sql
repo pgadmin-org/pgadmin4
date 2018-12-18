@@ -4,12 +4,13 @@ ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
     {% endif %}{{ conn|qtIdent(col.column)}}{% if col.oper_class and col.oper_class != '' %} {{col.oper_class}}{% endif%}{% if col.order is defined and col.is_sort_nulls_applicable %}{% if col.order %} ASC{% else %} DESC{% endif %} NULLS{% endif %} {% if col.nulls_order is defined and col.is_sort_nulls_applicable %}{% if col.nulls_order %}FIRST {% else %}LAST {% endif %}{% endif %}WITH {{col.operator}}{% endfor %}){% if data.fillfactor %}
     WITH (FILLFACTOR={{data.fillfactor}}){% endif %}{% if data.spcname and data.spcname != "pg_default" %}
 
-    USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}
+    USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}{% if data.indconstraint %}
+
+    WHERE ({{data.indconstraint}}){% endif%}
 {% if data.condeferrable %}
 
     DEFERRABLE{% if data.condeferred %}
- INITIALLY DEFERRED{% endif%}
-{% endif%}{% if data.constraint %} WHERE ({{data.constraint}}){% endif%};
+ INITIALLY DEFERRED{% endif%}{% endif%};
 {% if data.comment and data.name %}
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}

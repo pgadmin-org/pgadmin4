@@ -22,6 +22,7 @@ Bug fixes
 | `Bug #3599 <https://redmine.postgresql.org/issues/3599>`_ - Run Postfix in the container build so passwords can be reset etc.
 | `Bug #3619 <https://redmine.postgresql.org/issues/3619>`_ - Add titles to the code areas of the Query Tool and Debugger to ensure that panels can be re-docked within them.
 | `Bug #3711 <https://redmine.postgresql.org/issues/3711>`_ - Fix an encoding issue in the query tool.
+| `Bug #3726 <https://redmine.postgresql.org/issues/3726>`_ - Include the WHERE clause on EXCLUDE constraints in RE-SQL.
 | `Bug #3757 <https://redmine.postgresql.org/issues/3757>`_ - Hide Radio buttons that should not be shown on the maintenance dialogue.
 | `Bug #3797 <https://redmine.postgresql.org/issues/3797>`_ - Prevent attempts to bulk-drop schema objects.
 | `Bug #3798 <https://redmine.postgresql.org/issues/3798>`_ - Ensure the browser toolbar buttons work in languages other than English.

@@ -15,7 +15,8 @@ SELECT cls.oid,
     END AS comment,
     condeferrable,
     condeferred,
-    substring(array_to_string(cls.reloptions, ',') from 'fillfactor=([0-9]*)') AS fillfactor
+    substring(array_to_string(cls.reloptions, ',') from 'fillfactor=([0-9]*)') AS fillfactor,
+    pg_get_expr(idx.indpred, idx.indrelid) AS indconstraint
 FROM pg_index idx
 JOIN pg_class cls ON cls.oid=indexrelid
 JOIN pg_class tab ON tab.oid=indrelid
