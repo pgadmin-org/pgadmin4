@@ -5,7 +5,7 @@ SELECT
     WHEN 1 THEN ARRAY['DESC', 'NULLS FIRST']
     WHEN 2 THEN ARRAY['ASC', 'NULLS FIRST']
     WHEN 3 THEN ARRAY['DESC', 'NULLS  ']
-    ELSE ARRAY['UNKNOWN OPTION' || i.indoption[i.attnum - 1], '']
+    ELSE ARRAY['UNKNOWN OPTION' || i.indoption[i.attnum - 1]::text, '']
     END::text[] AS options,
     i.attnum,
     pg_get_indexdef(i.indexrelid, i.attnum, true) as attdef,
