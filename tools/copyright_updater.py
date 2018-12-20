@@ -4,7 +4,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2019 The pgAdmin Development Team
+# Copyright (C) 2013 - 2018 The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -57,7 +57,7 @@ def findReplace(directory, find, replace):
 
                 is_update_required = False
                 new_content = COPYRIGHT_PATTERN.sub(
-                    r'\g<1>{}'.format(replace), content
+                    r'\g<1>{},'.format(replace), content
                 )
                 if new_content != content:
                     is_update_required = True
