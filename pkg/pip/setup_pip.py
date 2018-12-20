@@ -110,7 +110,7 @@ setup(
         ]
     },
 
-    # Specify data files to be included. For Python 2.6 include them in MANIFEST.in
+    # Specify data files to be included.
     ##package_data="",
 
     # To package data files outside package directory.

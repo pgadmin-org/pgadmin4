@@ -4,7 +4,7 @@
 To generate a pgAdmin 4 installer for Windows bit, the following packages must be installed:
 
 1. Python installation
-  - Python 2.6 or above from https://www.python.org/
+  - Python 2.7 or 3.4+ or above from https://www.python.org/
 
 2. QT installation
   - Qt 4.6 through 5.5 from http://www.qt.io/

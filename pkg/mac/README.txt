@@ -4,7 +4,7 @@ Building pgAdmin4.dmg on Mac OS X
 Required Packages (Either build the sources or get them from macports or similar):
 
 1. Python installation
-  - Python 2.6 or above from https://www.python.org/
+  - Python 2.7 or 3.4+ or above from https://www.python.org/
 
 2. QT installation
   - Qt 4 or 5 from http://www.qt.io/
