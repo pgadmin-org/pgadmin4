@@ -631,7 +631,7 @@ define([
                 page_title: _('Object Selection (step 1 of 3)'),
                 disable_prev: true,
                 disable_next: true,
-                show_description: _('Please select objects from the list below.'),
+                show_description: _('Please select the objects to grant privileges to from the list below.'),
                 show_progress_bar: _('Please wait while fetching records...'),
                 model: newModel,
                 view: new(function() {
@@ -740,8 +740,8 @@ define([
               // Wizard for Privelege control
               var privilegePage = self.privilegePage = new pgBrowser.WizardPage({
                 id: 2,
-                page_title: _('Privileges Selection (step 2 of 3)'),
-                show_description: _('Please select privileges for the selected objects.'),
+                page_title: _('Privilege Selection (step 2 of 3)'),
+                show_description: _('Please add the required privileges for the selected objects.'),
                 disable_next: true,
                 model: newModel,
 
