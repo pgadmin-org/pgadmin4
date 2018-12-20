@@ -673,12 +673,12 @@ define('pgadmin.misc.explain', [
           key !== 'image_text' && key !== 'xpos' &&
           key !== 'ypos' && key !== 'width' &&
           key !== 'height') {
-          title += key + ': ' + value + '\n';
+          title += `${key}: ${value}\n`;
         }
       });
 
       title += '</title>';
-      // this.title = Snap.parse(title);
+
       image.append(Snap.parse(title));
 
       image.mouseover(() => {
@@ -697,7 +697,14 @@ define('pgadmin.misc.explain', [
             key !== 'image_text' && key !== 'xpos' &&
             key !== 'ypos' && key !== 'width' &&
             key !== 'height') {
-            tooltip.append('<tr><td class="label explain-tooltip">' + key + '</td><td class="label explain-tooltip-val">' + value + '</td></tr>');
+            key = _.escape(key);
+            value = _.escape(value);
+            tooltip.append(`
+              <tr>
+                <td class="label explain-tooltip">${key}</td>
+                <td class="label explain-tooltip-val">${value}</td>
+              </tr>
+            `);
           }
         });
 

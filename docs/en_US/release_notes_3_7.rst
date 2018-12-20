@@ -28,3 +28,4 @@ Bug fixes
 | `Bug #3797 <https://redmine.postgresql.org/issues/3797>`_ - Prevent attempts to bulk-drop schema objects.
 | `Bug #3798 <https://redmine.postgresql.org/issues/3798>`_ - Ensure the browser toolbar buttons work in languages other than English.
 | `Bug #3805 <https://redmine.postgresql.org/issues/3805>`_ - Allow horizontal sizing of the edit grid text pop-out.
+| `Bug #3821 <https://redmine.postgresql.org/issues/3821>`_ - Ensure identifiers are properly displayed in the plan viewer.

@@ -9,6 +9,8 @@
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+from selenium.webdriver import ActionChains
+import sys
 
 
 class CheckForXssFeatureTest(BaseFeatureTest):
@@ -55,6 +57,10 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self._check_xss_in_query_tool()
         self.page.close_query_tool()
 
+        # Explain module
+        self._check_xss_in_explain_module()
+        self.page.close_query_tool()
+
     def after(self):
         self.page.remove_server(self.server)
 
@@ -68,6 +74,10 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.select_tree_item(self.test_table_name)
 
     def _check_xss_in_browser_tree(self):
+        print(
+            "\n\tChecking the Browser tree for the XSS",
+            file=sys.stderr, end=""
+        )
         # Fetch the inner html & check for escaped characters
         source_code = self.page.find_by_xpath(
             "//*[@id='tree']"
@@ -80,6 +90,10 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         )
 
     def _check_xss_in_properties_tab(self):
+        print(
+            "\n\tChecking the Properties tab for the XSS",
+            file=sys.stderr, end=""
+        )
         self.page.click_tab("Properties")
         source_code = self.page.find_by_xpath(
             "//span[contains(@class,'uneditable-input')]"
@@ -91,6 +105,10 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         )
 
     def _check_xss_in_sql_tab(self):
+        print(
+            "\n\tChecking the SQL tab for the XSS",
+            file=sys.stderr, end=""
+        )
         self.page.click_tab("SQL")
         # Fetch the inner html & check for escaped characters
         source_code = self.page.find_by_xpath(
@@ -106,6 +124,10 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     # Create any constraint with xss name to test this
     def _check_xss_in_dependents_tab(self):
+        print(
+            "\n\tChecking the Dependents tab for the XSS",
+            file=sys.stderr, end=""
+        )
         self.page.click_tab("Dependents")
 
         source_code = self.page.find_by_xpath(
@@ -119,10 +141,17 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "Dependents tab (BackGrid)"
         )
 
-    def _check_xss_in_query_tool(self):
+    def _open_query_tool(self):
         self.page.driver.find_element_by_link_text("Tools").click()
         self.page.find_by_partial_link_text("Query Tool").click()
         self.page.click_tab('Query -')
+
+    def _check_xss_in_query_tool(self):
+        print(
+            "\n\tChecking the SlickGrid cell for the XSS",
+            file=sys.stderr, end=""
+        )
+        self._open_query_tool()
         self.page.fill_codemirror_area_with(
             "select '<img src=\"x\" onerror=\"console.log(1)\">'"
         )
@@ -142,6 +171,52 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             source_code,
             '&lt;img src="x" onerror="console.log(1)"&gt;',
             "Query tool (SlickGrid)"
+        )
+
+    def _check_xss_in_explain_module(self):
+        print(
+            "\n\tChecking the Graphical Explain plan for the XSS ...",
+            file=sys.stderr, end=""
+        )
+        self._open_query_tool()
+        self.page.fill_codemirror_area_with(
+            'select * from "{0}"'.format(self.test_table_name)
+        )
+
+        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op.click()
+
+        self.page.find_by_id("btn-explain").click()
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.click_tab('Explain')
+
+        for idx in range(3):
+            # Re-try logic
+            try:
+                ActionChains(self.driver).move_to_element(
+                    self.driver.find_element_by_css_selector(
+                        'div.pgadmin-explain-container > svg > g > g > image'
+                    )
+                ).perform()
+                break
+            except Exception as e:
+                if idx != 2:
+                    continue
+                else:
+                    print(
+                        "\n\tUnable to locate the explain container to check"
+                        " the image tooltip for XSS",
+                        file=sys.stderr, end=""
+                    )
+                    raise
+
+        source_code = self.driver.find_element_by_id(
+            'toolTip').get_attribute('innerHTML')
+
+        self._check_escaped_characters(
+            source_code,
+            "&lt;h1&gt;X",
+            "Explain tab (Graphical explain plan)"
         )
 
     def _check_escaped_characters(self, source_code, string_to_find, source):

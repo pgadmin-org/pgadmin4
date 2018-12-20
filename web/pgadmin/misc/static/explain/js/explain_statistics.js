@@ -18,7 +18,6 @@ let StatisticsModel = Backbone.Model.extend({
     }
 
     $('.pg-explain-stats-area').on('mouseover', () => {
-
       // Empty the tooltip content if it has any and add new data
       toolTipContainer.empty();
       if (Object.keys(jit_stats).length == 0 &&
@@ -33,9 +32,14 @@ let StatisticsModel = Backbone.Model.extend({
       if (Object.keys(jit_stats).length > 0){
         tooltip.append('<tr><td class="label explain-tooltip">JIT:</td></tr>');
         _.each(jit_stats, function(value, key) {
-          tooltip.append('<tr><td class="label explain-tooltip">&nbsp&nbsp'
-          + key + '</td><td class="label explain-tooltip-val">'
-          + value + '</td></tr>');
+          key = _.escape(key);
+          value = _.escape(value);
+          tooltip.append(`
+            <tr>
+              <td class="label explain-tooltip">  ${key}</td>
+              <td class="label explain-tooltip-val">${value}</td>
+            </tr>
+          `);
         });
       }
 
@@ -45,20 +49,35 @@ let StatisticsModel = Backbone.Model.extend({
           if (triggers instanceof Object) {
             _.each(triggers, function(value, key) {
               if (key === 'Trigger Name') {
-                tooltip.append('<tr><td class="label explain-tooltip">&nbsp;&nbsp;'
-                + key + '</td><td class="label explain-tooltip-val">'
-                + value + '</td></tr>');
+                key = _.escape(key);
+                value = _.escape(value);
+                tooltip.append(`
+                  <tr>
+                    <td class="label explain-tooltip">  ${key}</td>
+                    <td class="label explain-tooltip-val">${value}</td>
+                  </tr>
+                `);
               } else {
-                tooltip.append('<tr><td class="label explain-tooltip">&nbsp;&nbsp;&nbsp;&nbsp;'
-                + key + '</td><td class="label explain-tooltip-val">'
-                + value + '</td></tr>');
+                key = _.escape(key);
+                value = _.escape(value);
+                tooltip.append(`
+                  <tr>
+                    <td class="label explain-tooltip">    ${key}</td>
+                    <td class="label explain-tooltip-val">${value}</td>
+                  </tr>
+                `);
               }
             });
           }
           else {
-            tooltip.append('<tr><td class="label explain-tooltip">&nbsp;&nbsp;'
-            + key_id + '</td><td class="label explain-tooltip-val">'
-            + triggers + '</td></tr>');
+            key_id = _.escape(key_id);
+            triggers = _.escape(triggers);
+            tooltip.append(`
+              <tr>
+                <td class="label explain-tooltip">  ${key_id}</td>
+                <td class="label explain-tooltip-val">${triggers}</td>
+              </tr>
+            `);
           }
         });
       }
