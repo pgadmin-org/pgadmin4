@@ -219,8 +219,11 @@ td.switch-cell > div.bootstrap-switch {
   }
 }
 
-.nav-tabs>.nav-item>.nav-link.active {
+/* If Bootstrap tab is already active then don't show pointer cursor */
+.nav-tabs > .nav-item > .nav-link.active {
 	color: $color-fg;
+	background-color: $color-fg-inverse;
+	cursor: default;
 }
 
 .bootstrap-datetimepicker-widget td, .bootstrap-datetimepicker-widget th {
@@ -257,4 +260,12 @@ td.switch-cell > div.bootstrap-switch {
 
 .bootstrap-datetimepicker-widget thead th {
   background-color: $color-fg-inverse;
+}
+
+.nav-tabs {
+  background-color: $color-gray-lighter;
+}
+
+.nav-tabs > .nav-item > .nav-link:hover:not(.active) {
+  background-color: $color-gray-white;
 }
