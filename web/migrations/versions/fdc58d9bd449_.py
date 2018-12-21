@@ -40,6 +40,8 @@ def upgrade():
     if get_version() != -1:
         return
 
+    email, password = user_info()
+
     op.create_table('version',
                     sa.Column('name', sa.String(length=32), nullable=False),
                     sa.Column('value', sa.Integer(), nullable=False),
@@ -109,7 +111,6 @@ INSERT INTO "servergroup"
 VALUES(1, 1, 'Servers')
 """)
 
-    email, password = user_info()
     current_salt = getattr(
         config, 'SECURITY_PASSWORD_SALT', base64.urlsafe_b64encode(
             os.urandom(32)

@@ -33,6 +33,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
 from datetime import timedelta
+from pgadmin.setup import get_version, set_version
 
 # If script is running under python3, it will not have the xrange function
 # defined
@@ -304,11 +305,13 @@ def create_app(app_name=None):
     with app.app_context():
         # Run migration for the first time i.e. create database
         from config import SQLITE_PATH
-        if not os.path.exists(SQLITE_PATH):
+
+        # If version not available, user must have aborted. Tables are not
+        # created and so its an empty db
+        if not os.path.exists(SQLITE_PATH) or get_version() == -1:
             db_upgrade(app)
         else:
-            version = Version.query.filter_by(name='ConfigDB').first()
-            schema_version = version.value
+            schema_version = get_version()
 
             # Run migration if current schema version is greater than the
             # schema version stored in version table
@@ -317,8 +320,7 @@ def create_app(app_name=None):
 
             # Update schema version to the latest
             if CURRENT_SCHEMA_VERSION > schema_version:
-                version = Version.query.filter_by(name='ConfigDB').first()
-                version.value = CURRENT_SCHEMA_VERSION
+                set_version(CURRENT_SCHEMA_VERSION)
                 db.session.commit()
 
     Mail(app)

@@ -17,3 +17,8 @@ def get_version():
         return -1
 
     return version.value
+
+
+def set_version(new_version):
+    version = Version.query.filter_by(name='ConfigDB').first()
+    version.value = new_version
