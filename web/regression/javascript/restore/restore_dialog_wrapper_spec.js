@@ -61,7 +61,7 @@ describe('RestoreDialogWrapper', () => {
     restoreNode = {
       __internal: {
         buttons: [
-          {}, {},
+          {}, {}, {},
           {
             element: {
               disabled: false,
@@ -115,7 +115,7 @@ describe('RestoreDialogWrapper', () => {
 
       it('disables the button "submit button" until a filename is selected', () => {
         restoreDialogWrapper.prepare();
-        expect(restoreDialogWrapper.__internal.buttons[2].element.disabled).toBe(true);
+        expect(restoreDialogWrapper.__internal.buttons[3].element.disabled).toBe(true);
       });
     });
 
@@ -131,7 +131,7 @@ describe('RestoreDialogWrapper', () => {
 
       it('disables the button "submit button" until a filename is selected', () => {
         restoreDialogWrapper.prepare();
-        expect(restoreDialogWrapper.__internal.buttons[2].element.disabled).toBe(true);
+        expect(restoreDialogWrapper.__internal.buttons[3].element.disabled).toBe(true);
       });
     });
 
@@ -177,7 +177,7 @@ describe('RestoreDialogWrapper', () => {
 
       it('disables the button submit button until a filename is selected', () => {
         restoreDialogWrapper.prepare();
-        expect(restoreNode.__internal.buttons[2].element.disabled).toBe(true);
+        expect(restoreNode.__internal.buttons[3].element.disabled).toBe(true);
       });
 
       it('generates a new restore model', () => {

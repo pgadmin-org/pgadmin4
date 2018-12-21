@@ -1,126 +1,121 @@
-<div class="container-fluid">
-    <div class="dashboard-container">
-        <div id="dashboard-graphs" class="dashboard-hidden">
-            <div class="row">
-                <div class="col-6">
-                    <div class="obj_properties">
-                        <legend class="badge">{{ _('Server sessions') }}</legend>
+<div class="container-fluid dashboard-container negative-space">
+    <div id="dashboard-graphs" class="dashboard-hidden">
+        <div class="row dashboard-row">
+            <div class="col-md-6 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        {{ _('Server sessions') }}
                     </div>
-                </div>
-                <div class="col-6">
-                    <div class="obj_properties">
-                        <legend class="badge">{{ _('Transactions per second') }}</legend>
-                    </div>
-                </div>
-            </div>
-            <div class="row dashboard-row">
-                <div class="col-6">
-                    <div id="graph-sessions" class="graph-container"></div>
-                </div>
-                <div class="col-6">
-                    <div id="graph-tps" class="graph-container"></div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-4">
-                    <div class="obj_properties">
-                        <legend class="badge">{{ _('Tuples in') }}</legend>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="obj_properties">
-                        <legend class="badge">{{ _('Tuples out') }}</legend>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="obj_properties">
-                        <legend class="badge">{{ _('Block I/O') }}</legend>
+                    <div class="card-body dashboard-graph-body">
+                        <div id="graph-sessions" class="graph-container"></div>
                     </div>
                 </div>
             </div>
-
-            <div class="row dashboard-row">
-                <div class="col-4">
-                    <div id="graph-ti" class="graph-container"></div>
-                </div>
-                <div class="col-4">
-                    <div id="graph-to" class="graph-container"></div>
-                </div>
-                <div class="col-4">
-                    <div id="graph-bio" class="graph-container"></div>
+            <div class="col-md-6 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        {{ _('Transactions per second') }}
+                    </div>
+                    <div class="card-body dashboard-graph-body">
+                        <div id="graph-tps" class="graph-container"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="dashboard-activity" class="dashboard-hidden">
-            <div class="row">
-                <div class="col-12">
-                    <div class="obj_properties">
-                        <legend class="badge">{{ _('Server activity') }}</legend>
+        <div class="row dashboard-row">
+            <div class="col-md-4 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        {{ _('Tuples in') }}
+                    </div>
+                    <div class="card-body dashboard-graph-body">
+                        <div id="graph-ti" class="graph-container"></div>
                     </div>
                 </div>
             </div>
-            <div class="row dashboard-row">
-                <div class="col-12">
-                    <div class="dashboard-tab-container">
-                        <!-- Nav tabs -->
-                        <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
-                            <li role="presentation" class="nav-item dashboard-tab"><a href="#tab_panel_server_activity"
-                                                                                    class="nav-link active"
-                                                                                    aria-controls="tab_server_activity"
-                                                                                    role="tab" data-toggle="tab">{{ _('Sessions') }}</a>
-                            </li>
-                            <li role="presentation" class="nav-item dashboard-tab"><a href="#tab_panel_server_locks"
-                                                                             class="nav-link"
-                                                                             aria-controls="tab_server_locks" role="tab"
-                                                                             data-toggle="tab">{{ _('Locks') }}</a></li>
-                            <li role="presentation" class="nav-item dashboard-tab"><a href="#tab_panel_server_prepared"
-                                                                             class="nav-link"
-                                                                             aria-controls="tab_server_prepared" role="tab"
-                                                                             data-toggle="tab">{{ _('Prepared Transactions') }}</a></li>
-                            <li role="presentation" class="nav-item dashboard-tab"><a href="#tab_panel_server_config"
-                                                                             class="nav-link"
-                                                                             aria-controls="tab_server_config" role="tab"
-                                                                             data-toggle="tab">{{ _('Configuration') }}</a></li>
-                        </ul>
-
-                        <!-- Tab panes -->
-                        <div class="tab-content">
-                            <div role="tabpanel" class="tab-pane active" id="tab_panel_server_activity">
-                                <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                                    <button id="btn_server_activity_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
-                                    <div id="server_activity_filter"></div>
-                                </div>
-                                <div id="server_activity" class="grid-container"></div>
+            <div class="col-md-4 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        {{ _('Tuples out') }}
+                    </div>
+                    <div class="card-body dashboard-graph-body">
+                        <div id="graph-to" class="graph-container"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        {{ _('Block I/O') }}
+                    </div>
+                    <div class="card-body dashboard-graph-body">
+                        <div id="graph-bio" class="graph-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dashboard-activity" class="card dashboard-row dashboard-hidden">
+        <div class="card-header">
+            {{ _('Server activity') }}
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-9 col-12 pr-0">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active show" href="#tab_panel_server_activity" aria-controls="tab_server_activity"
+                                role="tab" data-toggle="tab">{{_('Sessions') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#tab_panel_server_locks" aria-controls="tab_server_locks"
+                                role="tab" data-toggle="tab">{{ _('Locks') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#tab_panel_server_prepared" aria-controls="tab_server_prepared"
+                                role="tab" data-toggle="tab">{{ _('Prepared Transactions') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#tab_panel_server_config" aria-controls="tab_server_config"
+                                role="tab" data-toggle="tab">{{ _('Configuration') }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-12 pl-0 text-right">
+                    <div class="navtab-inline-controls">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text fa fa-search" id="labelSearch"></span>
                             </div>
-                            <div role="tabpanel" class="tab-pane" id="tab_panel_server_locks">
-                                <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                                    <button id="btn_server_locks_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
-                                    <div id="server_locks_filter"></div>
-                                </div>
-                                <div id="server_locks" class="grid-container"></div>
-                            </div>
-                            <div role="tabpanel" class="tab-pane" id="tab_panel_server_prepared">
-                                <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                                    <button id="btn_server_prepared_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
-                                    <div id="server_prepared_filter"></div>
-                                </div>
-                                <div id="server_prepared" class="grid-container"></div>
-                            </div>
-                            <div role="tabpanel" class="tab-pane" id="tab_panel_server_config">
-                                <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                                    <button id="btn_server_config_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
-                                    <div id="server_config_filter"></div>
-                                </div>
-                                <div id="server_config" class="grid-container"></div>
-                            </div>
+                            <input type="search" class="form-control" id="txtGridSearch" placeholder="Search" aria-label="Search" aria-describedby="labelSearch">
                         </div>
+                        <button id="btn_refresh" type="button" class="btn btn-secondary btn-navtab-inline" title="{{ _('Refresh') }}">
+                            <span class="fa fa-refresh"></span>
+                        </button>
                     </div>
                 </div>
             </div>
+            <!-- Nav tabs -->
+
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane negative-space p-2 active show" id="tab_panel_server_activity">
+                    <div id="server_activity" class="grid-container"></div>
+                </div>
+                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_locks">
+                    <div id="server_locks" class="grid-container"></div>
+                </div>
+                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_prepared">
+                    <div id="server_prepared" class="grid-container"></div>
+                </div>
+                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_config">
+                    <div id="server_config" class="grid-container"></div>
+                </div>
+            </div>
         </div>
-        <div id="dashboard-none-show" class="alert alert-info pg-panel-message dashboard-hidden" role="alert">
-            {{ _('All Dashboard elements are currently disabled.') }}
-        </div>
+    </div>
+    <div id="dashboard-none-show" class="alert alert-info pg-panel-message dashboard-hidden" role="alert">
+        {{ _('All Dashboard elements are currently disabled.') }}
     </div>
 </div>

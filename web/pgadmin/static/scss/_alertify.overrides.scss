@@ -2,49 +2,80 @@
 .alertify {
   .ajs-header {
     padding: 6px 10px !important;
-    min-height: 35px;
-    max-height: 35px;
-    border-bottom: 2px solid $color-gray-lighter;
+    //margin is calculated with -$alertify-borderremove-margin, adjust the header
+    min-height: $title-height + $alertify-borderremove-margin !important;
+    max-height: $title-height + $alertify-borderremove-margin !important;
     background-color: $color-primary;
+    font-size: $font-size-base;
     font-weight: bold;
-    color: $color-fg-inverse;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 0;
+    color: $color-primary-fg;
     overflow: hidden;
     white-space: nowrap;
+    border-radius: 0rem;
+    border-top-left-radius: $panel-border-radius;
+    border-top-right-radius: $panel-border-radius;
+    border-bottom: none;
+    margin: -24px - $alertify-borderremove-margin; //-24px is default by alertify
+    margin-bottom: 0px;
+    &:hover {
+      background-color: $color-primary;
+    }
   }
 
-  /* Overrides alertify js headers hovering behaviour*/
-  .ajs-header:hover {
-    background-color: $color-primary;
+  &.ajs-resizable,
+  &.ajs-maximized {
+    & .ajs-body {
+      & .ajs-content {
+        top: $title-height;
+      }
+      &.pgadmin_grant_wizard_body {
+        border-top-left-radius: $panel-border-radius;
+        border-top-right-radius: $panel-border-radius;
+        & .ajs-content {
+          top: 0;
+          border-radius: inherit;
+        }
+      }
+    }
+
+    & .ajs-header{
+      //default is 0, to override the borders
+      margin: -$alertify-borderremove-margin;
+    }
+
+    & .ajs-handle {
+      z-index: 5;
+    }
+  }
+  .ajs-body .ajs-content {
+    top: $title-height;
   }
 
   /* Removes padding from alertify footer */
   .ajs-footer {
     padding: 0;
-    min-height: 35px;
-  }
+    min-height: $footer-min-height;
+    border-top: $panel-border;
+    & .ajs-buttons {
+      border: none;
+      border-radius: 0rem;
+      border-bottom-left-radius: $panel-border-radius;
+      border-bottom-right-radius: $panel-border-radius;
+      padding: $footer-padding;
 
-  /* Restyling alertify buttons */
-  .ajs-footer .ajs-buttons {
-    background-color: $color-gray-light;
-    border-width: 2px 0px 0px 0px;
-    border-style: solid;
-    border-color:  $color-gray-dark;
-  }
+      &.ajs-auxiliary .ajs-button,
+      &.ajs-primary .ajs-button {
+        margin: 0px 2px;
+      }
 
-  .ajs-footer .ajs-buttons.ajs-auxiliary .ajs-button,
-  .ajs-footer .ajs-buttons.ajs-primary .ajs-button {
-    margin-left: 2px;
-    margin-right: 2px;
-    margin-top: 2px;
-    margin-bottom: 0px;
-  }
-
-  .ajs-footer .ajs-buttons .ajs-button {
-    min-width: 40px;
-    min-height: 30px;
+      & .ajs-button {
+        font-family: $font-family-primary;
+        font-size: $font-size-base;
+        -webkit-font-smoothing: auto;
+        min-width: 0;
+        min-height: 0;
+      }
+    }
   }
 
   .ajs-commands {
@@ -73,17 +104,13 @@
 
   /* Restyling alertify dialogue panel boundaries */
   .ajs-dialog {
-    border: 3px solid $color-gray-lighter;
-    border-radius: 0;
+    border: $panel-border;
+    border-radius: $panel-border-radius;
+    box-shadow: $dialog-box-shadow;
   }
   .ajs-content {
     padding-left: 0 !important;
     padding-right: 0 !important;
-  }
-
-  .ajs-handle {
-    right: -4px;
-    bottom: -4px;
   }
 }
 
@@ -100,12 +127,11 @@
 .ajs-pin, .ajs-maximize, .ajs-close {
   width: 20px;
   height: 20px;
-  border: 2px solid $color-gray-light !important;
-  background-color: $color-gray-lighter !important;
+  border: $input-btn-border-width solid $btn-secondary-border !important;
+  background-color: $color-secondary !important;
   font-size: 12px;
-  border-radius: 5px 5px 5px 5px;
+  border-radius: $btn-border-radius;
   position: relative;
-  //float: right;
   cursor: pointer;
   text-align: center;
   overflow: hidden;
@@ -113,7 +139,7 @@
 }
 
 .ajs-pin:hover, .ajs-maximize:hover, .ajs-close:hover {
-  border: 2px solid $color-gray-lighter !important;
+  background-color: $btn-secondary-hover-bg !important;
 }
 
 .alertify.ajs-modeless.ajs-pinnable .ajs-commands button.ajs-pin {
@@ -141,18 +167,26 @@
 }
 
 .alertify-notifier .ajs-message {
-  border-radius: 4px;
+  border-radius: $card-border-radius;
+  width: 100%;
 }
 
-button.pg-alertify-button {
-  font-family: $font-family-primary;
-  font-size: 14px;
-  -webkit-font-smoothing: auto;
+.pg-alertify-button:before {
+  font-size: $font-size-base;
+  @at-root .ajs-button#{&} {
+    font-family: $font-family-icon;
+    margin-right: 5px;
+  }
 }
 
-.fa.pg-alertify-button:before {
-  font: normal normal normal 18px/1 FontAwesome;
-  margin-right: 5px;
+.pg-alertify-icon-button {
+  //refered - $input-btn-padding-y, $input-btn-padding-x
+  padding: 0.275rem $input-btn-padding-x;
+  &:before {
+    font-size: 1.3em !important;
+    line-height: 1.3;
+    font-family: $font-family-icon;
+  }
 }
 
 .ajs-text-smoothing {
@@ -161,20 +195,20 @@ button.pg-alertify-button {
 }
 
 .ajs-message.ajs-error.ajs-visible {
-  @extend .bg-danger-lighter;
-  @extend .border-danger;
+  background: $color-danger-light;
+  border: $border-width solid $color-danger;
   @extend .ajs-text-smoothing;
 }
 
 .ajs-message.ajs-success.ajs-visible {
-  @extend .bg-success-lighter;
-  @extend .border-success;
+  background: $color-success-light;
+  border: $border-width solid $color-success;
   @extend .ajs-text-smoothing;
 }
 
 .ajs-message.ajs-visible {
-  @extend .bg-primary-lighter;
-  @extend .border-primary;
+  background: $color-primary-light;
+  border: $border-width solid $color-primary;
   @extend .ajs-text-smoothing;
 }
 

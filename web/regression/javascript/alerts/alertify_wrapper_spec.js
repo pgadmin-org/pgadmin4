@@ -21,7 +21,7 @@ describe('alertify_wrapper', function () {
       var calledWithMessage = alertify.orig_success.calls.mostRecent().args[0];
 
       expect(calledWithMessage).toContain('Yay, congrats!');
-      expect(calledWithMessage).toContain('class="fa fa-check"');
+      expect(calledWithMessage).toContain('class="fa fa-check text-success"');
     });
   });
 
@@ -34,7 +34,7 @@ describe('alertify_wrapper', function () {
       var calledWithMessage = alertify.orig_error.calls.mostRecent().args[0];
 
       expect(calledWithMessage).toContain('bad, very bad');
-      expect(calledWithMessage).toContain('class="fa fa-exclamation-triangle"');
+      expect(calledWithMessage).toContain('class="fa fa-exclamation-triangle text-danger"');
     });
   });
 

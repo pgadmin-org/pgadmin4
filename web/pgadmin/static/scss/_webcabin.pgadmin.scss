@@ -1,0 +1,250 @@
+.wcDocker {
+  background-color: $color-bg-theme;
+}
+
+.wcModalBlocker {
+  background-color: $color-bg-theme;
+}
+
+.wcPanelBackground {
+  background-color: $color-bg-theme;
+}
+
+.wcPanelBackground .wcCenter {
+  background-color: $color-bg-theme;
+}
+
+.wcFrameFlasher {
+  background-color: $color-bg-theme;
+}
+
+.wcFrameShadower {
+  background-color: $color-bg-theme;
+}
+
+.wcFrameTitleBar {
+  height: $title-height;
+  background-color: $color-bg-theme;
+  border-bottom: $panel-border;
+}
+
+.wcFrameButton {
+  width: 25px;
+  height: 20px;
+  display: flex;
+  border-radius: $btn-border-radius;
+  margin: auto;
+}
+
+/* darken % taken from bootstrap - button_variant */
+.wcFrameButton:hover, .wcFrameButtonHover {
+  background-color: $btn-secondary-hover-bg;
+}
+
+.wcFrameButton.disabled {
+  pointer-events: none;
+  color: $color-gray;
+}
+
+.wcFrameButton .fa {
+  margin: auto;
+}
+
+.wcFrameButtonBar {
+  height: $title-height;
+  background-color: $color-bg-theme;
+  border-bottom: $panel-border;
+  padding: 0rem 0.25rem;
+
+  display: -webkit-flex; /* Safari */
+  -webkit-flex-direction: row-reverse; /* Safari 6.1+ */
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+
+.wcLayoutGrid, .wcLayoutGrid tr, .wcLayoutGrid td {
+  border: 1px solid $panel-border-color;
+}
+
+.wcFrameCenter {
+  top: $title-height;
+}
+
+.wcLayoutGrid, .wcLayoutGrid tr, .wcLayoutGrid td {
+  border: 1px solid $panel-border-color;
+}
+
+.wcPanelTab, .wcFrameTitle{
+  color: $color-fg-theme;
+  padding: $tabs-padding;
+  margin: 0px;
+  font-weight: bold;
+}
+
+.wcFloating {
+  box-shadow: $box-shadow;
+  z-index: 1050 !important;
+}
+
+.wcFloating .wcPanelTabActive {
+  border-bottom: none;
+  color: $color-fg-theme;
+  font-weight: bold;
+}
+
+.wcFloating .wcPanelTabActive:hover {
+  background-color: $color-primary-light;
+}
+
+.wcFloating .wcFrameTitleBar {
+  height: $title-height;
+  background-color: $color-bg-theme;
+  border-bottom: $panel-border;
+}
+
+.wcTabIcon {
+  background-position: center;
+  padding: 0px 10px;
+
+  &.fa{
+    padding: 0rem 0.25rem 0rem 0rem
+  }
+}
+
+.wcFloating .wcPanelTab .wcTabIcon {
+  color: $color-primary;
+  padding: 0px 10px;
+}
+
+.wcPanelTabActive {
+  border-bottom: $active-border;
+  color: $color-primary;
+}
+
+.wcFrameEdge {
+  background-color: $panel-border-color;
+  border: none;
+}
+
+.wcFrameEdgeH {
+  height: $panel-border-width;
+}
+
+.wcFrameEdgeV {
+  width: $panel-border-width;
+}
+
+.wcFrameCornerNW,
+.wcFrameCornerNE,
+.wcFrameCornerSW,
+.wcFrameCornerSE {
+  height: $panel-border-width;
+  width: $panel-border-width;
+}
+
+
+.wcSplitterBar {
+  background-color: $panel-border-color;
+  border: none;
+}
+
+.wcSplitterBarV {
+  width: $panel-border-width;
+}
+
+.wcSplitterBarH {
+  height: $panel-border-width;
+}
+
+.wcSplitterBarV.wcSplitterBarStatic {
+  width: 0px;
+}
+.wcSplitterBarH.wcSplitterBarStatic {
+  height: 0px;
+}
+
+
+.wcGhost {
+  background-color: $color-primary-light;
+  border-radius: 6px;
+}
+
+.wcMenuList, .context-menu-list {
+  border: 1px solid $dropdown-border-color;
+  z-index: 999 !important;
+  background-color: $dropdown-bg;
+  box-shadow: $dropdown-box-shadow;
+  border-radius: $dropdown-border-radius;
+}
+
+.wcMenuItem, .context-menu-item {
+  color: $dropdown-link-color;
+  background-color: $dropdown-bg;
+}
+
+.wcMenuItemHover, .wcMenuItem:hover, .context-menu-item:not(.context-menu-not-selectable).hover, .context-menu-item:not(.context-menu-not-selectable):hover {
+  color: $dropdown-link-hover-color;
+  background-color: $dropdown-link-hover-bg !important;
+}
+
+.wcMenuItem.disabled, .context-menu-item.disabled {
+  color: $text-muted;
+  background-color: $dropdown-bg;
+}
+
+.wcMenuSeparator, .context-menu-separator {
+  border: 0.5px solid $dropdown-border-color;
+}
+
+.wcLoadingBackground {
+  background: $loading-bg;
+}
+
+.wcLoadingLabel {
+  top: 50%;
+  left: 0;
+  color: $loading-fg;
+  width: 100%;
+  font-size: 20px;
+  position: absolute;
+  text-align: center;
+}
+
+.wcLoadingIcon.pg-sp-icon {
+  left: 0;
+  top: calc(50% - 75px);
+}
+
+.wcPanelTab > div {
+  // display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 125px;
+}
+
+.wcPanelTabActive > div {
+  width: auto !important;
+  max-width: 100%;
+}
+
+
+.context-menu-item.context-menu-disabled {
+  color: $text-muted;
+  background-color: $dropdown-bg;
+}
+
+.context-menu-submenu::after {
+  font-family: 'FontAwesome';
+  content: "\f054" !important;
+  right: 15px;
+  top: unset;
+  font-size: 0.6rem;
+  line-height: 2;
+  border-style: none;
+}
+
+.wcMenuSubMenu::before{
+  content: none;
+}

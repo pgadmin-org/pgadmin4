@@ -1,6 +1,9 @@
 #main-editor_panel {
-  height: 100%;
-  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top : 0;
+  bottom: 0;
 }
 
 .sql-editor {
@@ -11,25 +14,7 @@
   bottom: 0;
 }
 
-.sql-editor-busy-fetching {
-  position:absolute;
-  left: 0;
-  top: 65px;
-  bottom: 0;
-  right: 0;
-  margin:0;
-  padding: 0;
-  background: black;
-  opacity: 0.6;
-  z-index: 100;
-}
-
 #editor-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top : 65px;
-  bottom: 0;
   z-index: 0;
 }
 
@@ -71,24 +56,9 @@
   min-width: 35px !important;
 }
 
-.sql-editor-message {
-  white-space:pre-wrap;
-  font-family: "Source Code Pro";
-  padding-top: 5px;
-  padding-left: 10px;
-  overflow: auto;
-  height: 100%;
-  font-size: 0.925em;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
 .sql-editor-history-container {
   height: 100%;
   overflow: auto;
-  border-top: 1px solid #cccccc;
 }
 
 .sql-status-cell {
@@ -119,27 +89,9 @@
   height: 100%;
 }
 
-#editor-panel .CodeMirror-gutter {
-  min-width: 1em;
-}
-
 #output-panel {
   height: 100% !important;
 }
-
-.CodeMirror-foldgutter-open,
-.CodeMirror-foldgutter-folded {
-  cursor: pointer;
-}
-
-.CodeMirror-foldgutter-open:after {
-  content: "\25BC";
-}
-
-.CodeMirror-foldgutter-folded:after {
-  content: "\25B6";
-}
-
 
 .sql-editor-explain {
   height: 100%;
@@ -147,28 +99,6 @@
   overflow: auto;
 }
 
-.CodeMirror-hints {
-  position: absolute;
-  z-index: 10;
-  overflow: hidden;
-  list-style: none;
-
-  margin: 0;
-  padding: 2px;
-
-  -webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  -moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  border-radius: 3px;
-  border: 1px solid #ccc;
-
-  background: white;
-  font-size: 90%;
-  font-family: "Source Code Pro";
-
-  max-height: 20em;
-  overflow-y: auto;
-}
 
 .sqleditor-hint {
   padding-left: 20px;
@@ -330,14 +260,8 @@ input.editor-checkbox:focus {
   right: 0;
 }
 
-.slick-cell, .slick-headerrow-column {
-  border-right: 1px solid #ccc;
-  z-index: 0;
-}
-
 /* Style for text editor */
 .pg_textarea {
-  backround:#fff;
   width:250px;
   height:80px;
   border:0;
@@ -352,32 +276,7 @@ input.editor-checkbox:focus {
 }
 
 /* CSS for connection status icon */
-#output-panel .CodeMirror {
-  border-top: 1px solid #ddd;
-}
-
-.editor-title {
-  padding: 4px 5px;
-  font-size: 13px;
-  display: inline-block;
-}
-
-.connection_status {
-  width: 11px;
-  position: relative;
-  display: inline-block;
-  margin-top: 2px;
-  margin-left: 12px;
-  margin-right: 16px;
-}
-
-.connection_status .fa {
-  font-size: 16px;
-  margin-left: 2px;
-}
-
 .connection_status .fa-custom {
-  margin-bottom: -4px;
   height: 18px;
   width: 18px;
   display: block;
@@ -391,11 +290,6 @@ input.editor-checkbox:focus {
 
 .connection_status .fa-query-tool-disconnected {
   background-image: url('../img/disconnect.svg');
-}
-
-.sql-editor .dropdown-toggle:focus,
-.sql-editor .copy-all:focus {
-  outline: 5px auto -webkit-focus-ring-color;
 }
 
 .ajs-body .warn-header {
@@ -440,12 +334,8 @@ input.editor-checkbox:focus {
   width:100%;
 }
 
-.connection-status-show {
-  display: inline-block;
-}
-
 .connection-status-hide {
-  display: none;
+  display: none !important;
 }
 
 /* For geometry data viewer panel */
@@ -460,10 +350,6 @@ input.editor-checkbox:focus {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAANElEQVQoU2O8e/fuf2VlZUYGLAAkB5bApggmBteJrAiZjWI0SAJkIrKVxCvAawVeRxLyJgB+Ajc1cwux9wAAAABJRU5ErkJggg==);
  }
 
-/* For leaflet map background */
-.geometry-viewer-container-plain-background {
-  background: #ffffff;
-}
 
 /* For geometry column button */
 .div-view-geometry-column {
@@ -502,10 +388,6 @@ input.editor-checkbox:focus {
 .view-geometry-property-table td {
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.view-geometry-property-table .td-disabled{
-  color: #999999;
 }
 
 /* For geometry viewer info control */

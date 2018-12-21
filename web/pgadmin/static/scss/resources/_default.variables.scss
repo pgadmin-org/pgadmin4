@@ -1,59 +1,186 @@
+/** Dividing a pixel var with 1px or rem var with 1rem removes the unit px/rem **/
 $enable-flex: true !default;
 
-$color-bg: #fff !default;
-$color-fg: #000 !default;
+$white: #fff;
+$black: #000;
 
-$color-bg-inverse: $color-fg;
-$color-fg-inverse: $color-bg;
+$color-bg: $white !default;
+$color-fg: #222222 !default;
 
-$color-primary: #2c76b4 !default;
-$color-primary-fg: #fff !default;
+$color-bg-theme: $white !default;
+$color-fg-theme: #222222 !default;
 
-$color-danger: #d63a35 !default;
-$color-danger-fg: #fff !default;
+$color-primary: #326690 !default;
+$color-primary-fg: $white !default;
+$color-primary-light: #d6effc;
+$color-primary-dark: #295c85;
 
-$color-success: #3a773a !default;
-$color-success-fg: $color-fg !default;
+$color-secondary: $white !default;
+
+$color-danger: #e53935 !default;
+$color-danger-fg: $white !default;
+$color-danger-light: #FBE1E1;
+
+$color-success: #43a047 !default;
+$color-success-fg: $black !default;
+$color-success-light: #DDF1DE;
 
 $color-warning: #eea236 !default;
-$color-warning-fg: $color-fg !default;
+$color-warning-fg: $black !default;
+$color-warning-light: #fce5c5;
 
-$color-brand: #009dcf !default;
+$color-gray-darker: #5b6d7c;
+$color-gray-dark: #848ea0;
+$color-gray: #bac1cd;
+$color-gray-light: #ebeef3;
+$color-gray-lighter: #f3f5f9;
+
+$color-brand: $white !default;
+$color-brand-bg: #222222;
+
 $color-editor-bg: $color-bg !default;
 $color-editor-keyword: #908 !default;
 $color-editor-number: #964 !default;
 $color-editor-foldmarker: #0000FF !default;
 $color-editor-activeline: #50B0F0 !default;
 
-$gray-base: #000 !default;
-
-$color-gray-darker: #333333;
-$color-gray-dark: #555555;
-$color-gray: #888888;
-$color-gray-light: #cccccc;
-$color-gray-lighter: #e8e8e8;
-$color-gray-white: #f9f9f9;
-
-$color-primary-light: lighten($color-primary, 25%);
-$color-primary-lighter: lighten($color-primary, 50%);
-$color-primary-dark: darken($color-primary, 10%);
-$color-primary-darker: darken($color-primary, 25%);
-
-$color-danger-light: lighten($color-danger, 25%);
-$color-danger-lighter: lighten($color-danger, 40%);
-$color-danger-dark: darken($color-danger, 10%);
-$color-danger-darker: darken($color-danger, 25%);
-
-$color-success-light: lighten($color-success, 30%);
-$color-success-lighter: lighten($color-success, 50%);
-$color-success-dark: darken($color-success, 10%);
-$color-success-darker: darken($color-success, 25%);
-
-$color-warning-light: lighten($color-warning, 25%);
-$color-warning-lighter: lighten($color-warning, 40%);
-$color-warning-dark: darken($color-warning, 25%);
-$color-warning-darker: darken($color-warning, 40%);
-
 /* Typography */
-$font-family-primary: "Open Sans" !default;
+$font-family-primary: "Roboto" !default;
+$font-family-semibold: "Roboto Medium" !default;
 $font-family-editor: 'Source Code Pro' !default;
+$font-family-icon: 'FontAwesome' !default;
+
+$border-width: 1px;
+$border-color: rgba($color-gray, 0.5);
+$border-color-dark: $color-gray;
+$box-shadow: 0 0.5rem 3rem $color-gray-dark;
+
+/** Bootstrap Variable Changes **/
+$gray-600: $color-gray-dark;
+$gray-900: $color-fg-theme;
+$body-color: $color-fg-theme;
+$font-size-base: 0.815rem;
+$grid-gutter-width: 15px;
+$border-radius: 0.25rem; //no change
+
+$text-color: $color-fg-theme;
+$text-muted: $color-gray-dark;
+$navbar-dark-color: #fff;
+$navbar-dark-hover-color: #fff;
+$navbar-dark-active-color: #fff;
+$navbar-dark-disabled-color: $color-gray;
+
+$navbar-toggler-padding-y: 0.25rem; //no-change
+
+$form-group-margin-bottom:  0.5rem;
+$btn-active-box-shadow: none;
+
+$dropdown-link-hover-color: $white;
+$dropdown-link-hover-bg: $color-primary;
+$dropdown-border-color: $border-color;
+$dropdown-box-shadow: 0 0.125rem 0.5rem rgba($color-gray-dark, .175);
+$dropdown-divider-bg: $dropdown-border-color;
+$dropdown-padding-y: 0.25rem;
+$dropdown-item-padding-x: 1rem;
+$dropdown-spacer: .125rem; //no-change
+$nav-divider-margin-y: .25rem;
+
+$input-btn-focus-width: 0.1rem;
+$btn-disabled-opacity: 0.5;
+$btn-transition: color .05s ease-in-out, background-color .05s ease-in-out, border-color .05s ease-in-out, box-shadow .05s ease-in-out;
+
+$card-spacer-y: 0rem;
+$card-spacer-x: 0rem;
+$card-border-radius: $border-radius;
+$card-border-color: $border-color;
+$card-cap-bg: $color-bg-theme;
+$card-bg: $color-bg-theme;
+
+
+$navbar-brand-padding-y: 0rem;
+
+$nav-tabs-border-color: $border-color;
+$nav-tabs-border-width: 1px;
+$nav-tabs-border-radius: 0px;
+$nav-tabs-link-hover-border-color: none;
+$nav-tabs-link-active-color: $color-primary;
+$nav-tabs-link-active-bg: none;
+$nav-tabs-link-active-border-color: none;
+
+$table-cell-padding: 0.25rem;
+$table-hover-bg: none; //we will use our own classes
+$table-active-bg: $color-primary-light;
+$table-border-width: $border-width !default;
+$table-border-color: $border-color !default;
+$table-head-bg: $color-primary !default;
+$table-head-color: $color-primary-fg !default;
+
+$input-bg: $white; //no change
+$input-color: $color-fg-theme;
+$input-border-color: $border-color;
+$input-border-radius: $border-radius; //no change
+$input-disabled-bg: $color-gray-lighter;
+$input-btn-border-width: $border-width; //no change
+$input-border-width: $input-btn-border-width; //no change
+$input-btn-padding-y: .375rem; //no change
+$input-btn-padding-x: .75rem; //no change
+
+$btn-border-radius: $border-radius; //no change
+
+/***************/
+
+$active-border: 3px solid $color-primary;
+$panel-border-width: $border-width;
+$panel-border-color: $border-color;
+$panel-border-radius: $border-radius;
+$panel-border: $panel-border-width solid $panel-border-color !important;
+$panel-border-dark: $panel-border-width solid $border-color-dark !important;
+$tabs-padding: 5px 10px 2px;
+$title-height: 37px * $font-size-base/1rem;
+$footer-padding: 0.5rem;
+$footer-min-height: 2.18rem;
+$footer-height-calc: $footer-min-height+$footer-padding*2;
+$navbar-font-size: 0.875rem;
+$navbar-user-font-size: 0.815rem;
+
+$navbar-dropdown-top: 100%;
+$dropdown-submenu-top: -$dropdown-spacer;
+
+$table-bg: $color-bg-theme;
+$table-bg-selected: $color-primary-light;
+$table-hover-border-color: #4fc2f8;
+$table-hover-border: $panel-border-width solid #4fc2f8 !important;
+$table-hover-bg-color: $color-primary-light;
+$datagrid-bg: $color-gray-light;
+
+$sql-title-padding: 3px;
+$sql-title-bg: $color-gray-darker;
+$sql-title-fg: $white;
+$sql-gutters-bg: $color-gray-light;
+$sql-history-detail-bg: $color-gray-lighter;
+$sql-history-success-bg: $color-primary-light;
+$sql-history-success-fg: $color-primary;
+$sql-history-error-bg: $color-danger-light;
+$sql-history-error-fg: $color-danger;
+
+$negative-bg: $color-gray-light;
+$dialog-box-shadow: $box-shadow;
+
+$alert-icon-color: $white;
+$alertify-borderremove-margin: $panel-border-width;
+
+$btn-secondary-border: $color-gray;
+$btn-secondary-hover-bg: $color-gray-light;
+
+$card-header-padding : 0.25rem 0.5rem;
+$no-border-radius: 0px !important;
+
+$btn-checkbox-padding: 0.3rem 0.8rem;
+
+$security-text-color: $white;
+$security-btn-color: #038bba;
+
+$loading-bg : rgba($black,0.6);
+$loading-fg : $white;
+
+$loader-icon : url("data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='utf-8'?%3e%3csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 38 38' style='enable-background:new 0 0 38 38;' xml:space='preserve'%3e%3cstyle type='text/css'%3e .st0%7bfill:none;stroke:%23ebeef3;stroke-width:2;%7d .st1%7bfill:none;stroke:%23326690;stroke-width:2;%7d %3c/style%3e%3cg%3e%3cg transform='translate(1 1)'%3e%3ccircle class='st0' cx='18' cy='18' r='18'/%3e%3cpath class='st1' d='M36,18c0-9.9-8.1-18-18-18 '%3e%3canimateTransform accumulate='none' additive='replace' attributeName='transform' calcMode='linear' dur='0.7s' fill='remove' from='0 18 18' repeatCount='indefinite' restart='always' to='360 18 18' type='rotate'%3e%3c/animateTransform%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/svg%3e ");

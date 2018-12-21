@@ -1,19 +1,16 @@
-$font-size-base: 0.875rem;
-$navbar-padding-y: 0 rem;
-$form-group-margin-bottom:  0.5rem;
-$btn-active-box-shadow: none;
+@import './resources/pgadmin.resources.scss';
+
 
 $theme-colors: (
   "primary": $color-primary,
   "danger": $color-danger,
   "success": $color-success,
   "warning": $color-warning,
-  "dark": #000
 );
 
 @import "node_modules/bootstrap/scss/bootstrap";
 
-@import 'webcabin.overrides';
+@import 'webcabin.pgadmin';
 @import 'bootstrap.overrides';
 @import 'backgrid.overrides';
 @import 'aci_tree.overrides';
@@ -22,4 +19,5 @@ $theme-colors: (
 @import 'alert';
 @import 'alertify.overrides';
 @import 'backform.overrides';
+@import 'pgadmin.grid';
 @import 'pgadmin.style';

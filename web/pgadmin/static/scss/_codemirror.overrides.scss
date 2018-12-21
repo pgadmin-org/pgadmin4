@@ -7,6 +7,10 @@
     background-color: $color-gray-lighter !important;
 }
 
+.CodeMirror {
+  font-size: 1em;
+}
+
 /* Ensure the codemirror editor displays full height gutters when resized */
 .CodeMirror, .CodeMirror-gutter {
     height: 100% !important;
@@ -28,10 +32,6 @@
     border-right: 1px solid $color-gray-lighter;
 }
 
-.CodeMirror-linenumber {
-    font-size: $font-size-base;
-}
-
 /* class to disable Codemirror editor */
 .cm_disabled {
   background: $input-disabled-bg;
@@ -51,7 +51,7 @@
 /* Codemirror buttons */
 .CodeMirror-dialog button {
     font-family: $font-family-primary;
-    color: $color-fg-inverse;
+    color: $color-primary-fg;
     font-size: 70%;
     background-image: -webkit-linear-gradient(top, $color-primary-light 0%, $color-primary 100%);
     background-image: -o-linear-gradient(top, $color-primary-light 0%, $color-primary 100%);
@@ -64,27 +64,81 @@
     border-radius: 4px;
 }
 
-#history-detail-query .CodeMirror {
-  border: 1px solid $color-gray-light;
-  background-color: $color-gray-lighter;
-  width: 100%;
-  padding-left: 5px;
-  position: absolute;
-}
-
 .CodeMirror-gutters {
   z-index: 2;
-}
-
-.sql_textarea {
-  height: 100%;
-}
-
-.sql_textarea .CodeMirror-scroll {
-  z-index: 0;
+  background-color: $sql-gutters-bg;
+  border-right: none;
 }
 
 /* workaround for codemirrors 'readOnly' option which is set to true instead of 'noCursor' */
 .hide-cursor-workaround .CodeMirror-cursors {
   display: none;
+}
+
+.CodeMirror-foldmarker {
+  color: $color-primary;
+  text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
+  line-height: .3;
+  cursor: pointer;
+}
+
+.CodeMirror-linenumber {
+  color: $color-fg-theme;
+}
+
+.debugger-container .breakpoints {
+  width: 0.9em;
+}
+
+.CodeMirror, .CodeMirror-gutters {
+  min-height: 100%;
+}
+
+.CodeMirror-foldgutter {
+  width: .9em;
+}
+
+.CodeMirror-foldgutter-open,
+.CodeMirror-foldgutter-folded {
+  cursor: pointer;
+}
+
+.CodeMirror-foldgutter-open:after {
+  content: "\25BC";
+}
+
+.CodeMirror-foldgutter-folded:after {
+  content: "\25B6";
+}
+
+
+.CodeMirror-foldmarker {
+  color: $color-editor-foldmarker;
+  text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
+  font-family: $font-family-primary;
+  line-height: .3;
+  cursor: pointer;
+}
+
+.CodeMirror-hints {
+  position: absolute;
+  z-index: 10;
+  overflow: hidden;
+  list-style: none;
+
+  margin: 0;
+  padding: 2px;
+
+  -webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  -moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  border-radius: 3px;
+  border: 1px solid $border-color;
+
+  background: $color-bg-theme;
+  font-size: 90%;
+  font-family: $font-family-editor;
+
+  max-height: 20em;
+  overflow-y: auto;
 }

@@ -76,14 +76,13 @@ function updateUIPreferences(sqlEditor) {
     .attr('title',
       shortcut_title('Execute/Refresh',preferences.execute_query));
 
-  $el.find('#btn-flash-menu span')
-    .text(shortcut_title('Execute/Refresh',preferences.execute_query));
+  $el.find('#btn-explain')
+    .attr('title',
+      shortcut_title('Explain',preferences.explain_query));
 
-  $el.find('#btn-explain span')
-    .text(shortcut_title('Explain',preferences.explain_query));
-
-  $el.find('#btn-explain-analyze span')
-    .text(shortcut_title('Explain Analyze',preferences.explain_analyze_query));
+  $el.find('#btn-explain-analyze')
+    .attr('title',
+      shortcut_title('Explain Analyze',preferences.explain_analyze_query));
 
   $el.find('#btn-download')
     .attr('title',
@@ -144,7 +143,6 @@ function updateUIPreferences(sqlEditor) {
     $conn_status.popover();
 
     $conn_status.removeClass('connection-status-hide');
-    $el.find('.editor-title').addClass('editor-title-connection');
 
     // To set initial connection
     SqlEditorUtils.fetchConnectionStatus(sqlEditor.handler, $conn_status, $status_el);
@@ -157,7 +155,6 @@ function updateUIPreferences(sqlEditor) {
   }
   else {
     $el.find('#btn-conn-status').addClass('connection-status-hide');
-    $el.find('.editor-title').removeClass('editor-title-connection');
   }
 
   /* Code Mirror Preferences */

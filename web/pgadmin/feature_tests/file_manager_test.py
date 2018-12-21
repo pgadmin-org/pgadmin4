@@ -66,29 +66,19 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
     def _create_new_file(self):
         self.page.find_by_id("btn-save").click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.wait.until(EC.presence_of_element_located(
-            (
-                By.XPATH,
-                "//*[contains(string(), 'Show hidden files and folders? ')]"
-            )
-        ))
+        self.page.find_by_css_selector('.change_file_types')
         # Set the XSS value in input
         self.page.find_by_id("file-input-path").clear()
         self.page.find_by_id("file-input-path").send_keys(
             self.XSS_FILE
         )
         # Save the file
-        self.page.click_modal('Save')
+        self.page.click_modal('Create')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
     def _open_file_manager_and_check_xss_file(self):
         self.page.find_by_id("btn-load-file").click()
-        self.wait.until(EC.presence_of_element_located(
-            (
-                By.XPATH,
-                "//*[contains(string(), 'Show hidden files and folders? ')]"
-            )
-        ))
+        self.page.find_by_css_selector('.change_file_types')
         self.page.find_by_id("file-input-path").clear()
         self.page.find_by_id("file-input-path").send_keys(
             '/tmp/'
@@ -124,12 +114,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
 
     def _check_file_sorting(self):
         self.page.find_by_id("btn-load-file").click()
-        self.wait.until(
-            EC.element_to_be_clickable((
-                By.CSS_SELECTOR,
-                "#contents th[data-column='0']")
-            )
-        )
+        self.page.find_by_css_selector("#contents th[data-column='0']")
 
         # Added time.sleep so that the element to be clicked.
         time.sleep(0.05)

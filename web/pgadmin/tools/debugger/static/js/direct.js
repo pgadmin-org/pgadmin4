@@ -1068,6 +1068,7 @@ define([
 
         // Initialize a new Grid instance
         var stack_grid = this.stack_grid = new Backgrid.Grid({
+          emptyText: 'No data found',
           columns: stackGridCols,
           row: Backgrid.Row.extend({
             events: {
@@ -1084,7 +1085,7 @@ define([
             },
           }),
           collection: stackColl,
-          className: 'backgrid table-bordered',
+          className: 'backgrid table table-bordered table-noouter-border table-bottom-border',
         });
 
         stack_grid.render();
@@ -1132,9 +1133,10 @@ define([
 
         // Initialize a new Grid instance
         var result_grid = this.result_grid = new Backgrid.Grid({
+          emptyText: 'No data found',
           columns: resultGridCols,
           collection: new ResultsCollection(result),
-          className: 'backgrid table-bordered',
+          className: 'backgrid table table-bordered table-noouter-border table-bottom-border',
         });
 
         result_grid.render();
@@ -1209,9 +1211,10 @@ define([
 
         // Initialize a new Grid instance
         var variable_grid = this.variable_grid = new Backgrid.Grid({
+          emptyText: 'No data found',
           columns: gridCols,
           collection: new VariablesCollection(my_obj),
-          className: 'backgrid table-bordered',
+          className: 'backgrid table table-bordered table-noouter-border table-bottom-border',
         });
 
         variable_grid.collection.on(
@@ -1294,9 +1297,10 @@ define([
 
         // Initialize a new Grid instance
         var param_grid = this.param_grid = new Backgrid.Grid({
+          emptyText: 'No data found',
           columns: paramGridCols,
           collection: new ParametersCollection(param_obj),
-          className: 'backgrid table-bordered',
+          className: 'backgrid table table-bordered table-noouter-border table-bottom-border',
         });
 
         param_grid.collection.on(
@@ -1550,6 +1554,7 @@ define([
         '#container', {
           allowContextMenu: false,
           allowCollapse: false,
+          loadingClass: 'pg-sp-icon',
           themePath: url_for('static', {
             'filename': 'css',
           }),

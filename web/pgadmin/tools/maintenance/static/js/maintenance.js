@@ -102,6 +102,7 @@ define([
       control: 'fieldset',
       label: gettext('Vacuum'),
       group: gettext('Options'),
+      contentClass: 'row',
       schema: [{
         id: 'vacuum_full',
         group: gettext('Vacuum'),
@@ -283,8 +284,8 @@ define([
             setup: function() {
               return {
                 buttons: [{
-                  text: '<span class="fa fa-lg fa-info"></span>',
-                  className: 'btn btn-default pull-left',
+                  text: '',
+                  className: 'btn btn-secondary pull-left fa fa-info pg-alertify-icon-button',
                   attrs: {
                     name: 'object_help',
                     type: 'button',
@@ -292,9 +293,9 @@ define([
                     label: gettext('Maintenance'),
                   },
                 }, {
-                  text: '<span class="fa fa-lg fa-question"></span>',
+                  text: '',
                   key: 112,
-                  className: 'btn btn-default pull-left',
+                  className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
                   attrs: {
                     name: 'dialog_help',
                     type: 'button',
@@ -306,19 +307,22 @@ define([
                     ),
                   },
                 }, {
-                  text: gettext('OK'),
-                  key: 13,
-                  className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
-                  'data-btn-name': 'ok',
-                }, {
                   text: gettext('Cancel'),
                   key: 27,
-                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                  className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
                   'data-btn-name': 'cancel',
+                }, {
+                  text: gettext('OK'),
+                  key: 13,
+                  className: 'btn btn-primary fa fa-lg fa-check pg-alertify-button',
+                  'data-btn-name': 'ok',
                 }],
                 options: {
                   modal: 0,
                   pinnable: false,
+                  //disable both padding and overflow control.
+                  padding: !1,
+                  overflow: !1,
                 },
               };
             },

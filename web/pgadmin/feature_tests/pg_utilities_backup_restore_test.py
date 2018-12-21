@@ -50,6 +50,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.toggle_open_server(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('pg_utility_test_db')
+
+        # Backup
         self.driver.find_element_by_link_text("Tools").click()
 
         self.page.find_by_partial_link_text("Backup...").click()
@@ -65,18 +67,16 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.find_by_xpath("//button[contains(@class,'fa-save') "
                                 "and contains(.,'Backup')]").click()
 
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".ajs-modal")
-        )
+        self.page.find_by_css_selector('.ajs-bg-bgprocess')
 
         status = self.page.find_by_css_selector(
-            ".pg-bg-bgprocess .bg-success").text
-
+            ".pg-bg-status .bg-success-light .pg-bg-status-text").text
         self.assertEquals(status, "Successfully completed.")
 
         self.page.find_by_css_selector(
-            ".pg-bg-bgprocess .pg-bg-click > span").click()
-        command = self.page.find_by_css_selector("p.bg-detailed-desc").text
+            ".pg-bg-more-details").click()
+        command = self.page.find_by_css_selector(
+            ".bg-process-details .bg-detailed-desc").text
 
         self.assertIn(self.server['name'], str(command))
         self.assertIn("from database 'pg_utility_test_db'", str(command))
@@ -94,6 +94,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.find_by_xpath("//div[contains(@class,'wcFloatingFocus')"
                                 "]//div[contains(@class,'fa-close')]").click()
 
+        # Restore
         self.driver.find_element_by_link_text("Tools").click()
         self.page.find_by_partial_link_text("Restore...").click()
 
@@ -108,17 +109,16 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.find_by_xpath("//button[contains(@class,'fa-upload')"
                                 " and contains(.,'Restore')]").click()
 
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".ajs-modal")
-        )
+        self.page.find_by_css_selector('.ajs-bg-bgprocess')
 
         status = self.page.find_by_css_selector(
-            ".pg-bg-bgprocess .bg-success").text
-
+            ".pg-bg-status .bg-success-light .pg-bg-status-text").text
         self.assertEquals(status, "Successfully completed.")
+
         self.page.find_by_css_selector(
-            ".pg-bg-bgprocess .pg-bg-click > span").click()
-        command = self.page.find_by_css_selector("p.bg-detailed-desc").text
+            ".pg-bg-more-details").click()
+        command = self.page.find_by_css_selector(
+            ".bg-process-details .bg-detailed-desc").text
 
         self.assertIn(self.server['name'], str(command))
         if os.name is not 'nt':

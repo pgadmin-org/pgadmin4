@@ -1,27 +1,76 @@
+.aciTree .aciTreeLi {
+  display: grid !important;
+}
 .aciTree .aciTreeText {
 	font-family: $font-family-primary;
 	font-size: 12px;
 }
-.aciTree .aciTreeLine.aciTreeHover .aciTreeItem {
-	background-color: $color-primary-lighter;
+.aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine  {
+  background-color: $color-primary-light;
+	border-right: $active-border;
+}
+.aciTree .aciTreeSelected > .aciTreeLine {
+	background-color: $color-primary-light;
 	border-color: $color-primary-light;
-}
-.aciTree .aciTreeLine.aciTreeHover .aciTreeText {
-	color: $color-fg;
-}
-.aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine .aciTreeItem {
-	background-color: $color-primary-lighter;
-}
-.aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine .aciTreeText {
-	color: $color-fg;
+	border-right: $active-border;
+	border-left: none !important;
+	border-top: none !important;
+	border-bottom: none !important;
+	-webkit-border-radius: none !important;
+  -moz-border-radius: none !important;
+  border-radius: none !important;
 }
 .aciTree .aciTreeSelected > .aciTreeLine .aciTreeItem {
-	background-color: $color-primary-lighter;
-	border-color: $color-primary-light;
+  background-color: $color-primary-light;
+  border: 1px solid transparent;
+  -webkit-border-radius: none !important;
+  -moz-border-radius: none !important;
+  border-radius: none !important;
 }
 .aciTree .aciTreeItem {
 	white-space: nowrap !important;
 }
 .aciTree.aciTreeLoad {
 	background: none;
+}
+.aciTree .aciTreeLine.aciTreeHover {
+  background-color: $color-gray-light;
+  -webkit-border-radius: none !important;
+  -moz-border-radius: none !important;
+  border-radius: none !important;
+}
+.aciTree .aciTreeLine.aciTreeHover .aciTreeItem {
+  background-color: $color-gray-light;
+  border: 1px solid transparent;
+  -webkit-border-radius: none !important;
+  -moz-border-radius: none !important;
+  border-radius: none !important;
+}
+.aciTree.aciTreeFocus .aciTreeSelected >.aciTreeLine .aciTreeItem {
+  background-color: $color-primary-light;
+}
+.aciTree.aciTreeFocus .aciTreeFocus >.aciTreeLine .aciTreeItem,
+.aciTree.aciTreeFocus .aciTreeSelected.aciTreeFocus >.aciTreeLine .aciTreeItem {
+  border: 1px solid transparent;
+}
+.aciTree .aciTreeButton {
+  background: none;
+}
+.aciTree .aciTreePush {
+  width: 30px;
+  background: url(../img/collapse_expand.svg) 12px 7px no-repeat;
+}
+.aciTree .aciTreeEntry,
+.aciTree .aciTreeBranch,
+.aciTree[dir=rtl] .aciTreeBranch {
+    overflow:hidden;
+    background: none !important;
+}
+.aciTree .aciTreeInode >.aciTreeLine .aciTreePush,
+.aciTree .aciTreeInode >.aciTreeLine .aciTreePush.aciTreeHover {
+  background-position: 6px 6px !important;
+}
+.aciTree .aciTreeOpen >.aciTreeLine .aciTreePush,
+.aciTree .aciTreeOpen >.aciTreeLine .aciTreePush.aciTreeHover {
+  background-position: -14px 5px !important;
 }

@@ -18,11 +18,6 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
       self.dialog_type = params['dialog_type'];
 
       this.set('title', params['dialog_title']);
-      if (_.isUndefined(params['btn_primary'])) {
-        params['btn_primary'] = 'Select';
-      }
-      this.set('label', params['btn_primary']);
-
       this.params = JSON.stringify(params);
 
       this.elements.dialog.style.minWidth = '630px';
@@ -74,21 +69,19 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
           $($(self.elements.footer).find('.file_manager_ok')).trigger('click');
         });
       }, 200);
-      self.__internal.buttons[0].element.disabled = true;
+      self.__internal.buttons[1].element.disabled = true;
     },
     setup: function() {
       return {
         buttons: [{
+          text: gettext('Cancel'),
+          key: 27,
+          className: 'btn btn-secondary fa fa-times pg-alertify-button',
+        },{
           text: gettext('Select'),
           key: 13,
           className: 'btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled',
-        },
-        {
-          text: gettext('Cancel'),
-          key: 27,
-          className: 'btn btn-danger fa fa-times pg-alertify-button',
-        },
-        ],
+        }],
         focus: {
           element: 0,
         },

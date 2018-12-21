@@ -2,8 +2,8 @@ define([
   'sources/gettext', 'alertify', 'jquery',
 ], function(gettext, alertify, $) {
   alertify.defaults.transition = 'zoom';
-  alertify.defaults.theme.ok = 'btn btn-primary';
-  alertify.defaults.theme.cancel = 'btn btn-danger';
+  alertify.defaults.theme.ok = 'btn btn-primary fa fa-lg fa-check pg-alertify-button';
+  alertify.defaults.theme.cancel = 'btn btn-secondary fa fa-lg fa-times pg-alertify-button';
   alertify.defaults.theme.input = 'form-control';
   alertify.defaults.closable = false;
   alertify.pgIframeDialog || alertify.dialog('pgIframeDialog', function() {
@@ -196,14 +196,21 @@ define([
 
         this.pgResizeTimeout = null;
 
-        if (w <= 480) {
+        /** Calculations based on https://getbootstrap.com/docs/4.1/layout/grid/#grid-options **/
+        if (w < 576) {
           w = 'xs';
-        } else if (w < 600) {
+        }
+        if (w >= 576) {
           w = 'sm';
-        } else if (w < 768) {
+        }
+        if (w >= 768) {
           w = 'md';
-        } else {
+        }
+        if (w >= 992) {
           w = 'lg';
+        }
+        if (w >=1200) {
+          w = 'xl';
         }
 
         $el.attr('el', w);
@@ -376,49 +383,50 @@ define([
 
   _.extend(alertify, {
     success: function(message, timeout, callback) {
-      var alertMessage = '\
-      <div class="media text-success text-14">\
-        <div class="media-body media-middle">\
-          <div class="alert-icon success-icon">\
-            <i class="fa fa-check" aria-hidden="true"></i>\
-          </div>\
-            <div class="alert-text">' + message + '</div>\
-        </div>\
-      </div>';
+      var alertMessage =
+      `<div class="d-flex px-3 py-2">
+        <div class="pr-2">
+          <i class="fa fa-check text-success" aria-hidden="true"></i>
+        </div>
+        <div class="text-body">${message}</div>
+      </div>`;
       return alertify.orig_success(alertMessage, timeout, callback);
     },
     error: function(message, timeout, callback) {
-      var alertMessage = '\
-      <div class="media text-danger text-14">\
-        <div class="media-body media-middle">\
-          <div class="alert-icon error-icon">\
-            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\
-          </div>\
-            <div class="alert-text">' + message + '</div>\
-        </div>\
-      </div>';
+      var alertMessage =
+      `<div class="d-flex px-3 py-2">
+        <div class="pr-2">
+          <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
+        </div>
+        <div class="text-body">${message}</div>
+      </div>`;
       return alertify.orig_error(alertMessage, timeout, callback);
     },
     info: function(message, timeout) {
-      var alertMessage = '\
-      <div class="media alert-info font-blue text-14">\
-        <div class="media-body media-middle">\
-          <div class="alert-icon info-icon">\
-            <i class="fa fa-info" aria-hidden="true"></i>\
-          </div>\
-            <div class="alert-text">' + message + '</div>\
-        </div>\
-      </div>';
+      var alertMessage =
+      `<div class="d-flex px-3 py-2">
+        <div class="mr-3">
+          <i class="fa fa-info text-primary" aria-hidden="true"></i>
+        </div>
+        <div class="text-body">${message}</div>
+      </div>`;
       var alert = alertify.notify(alertMessage, timeout);
       return alert;
     },
   });
 
   // Confirm dialogue: Set title attribute
-  alertify.confirm().set({onshow:function() {
-    $(this.elements.commands.close).attr('title', gettext('Close'));
-    $(this.elements.commands.maximize).attr('title', gettext('Maximize'));
-  }});
+  alertify.confirm().set({
+    onshow:function() {
+      $(this.elements.commands.close).attr('title', gettext('Close'));
+      $(this.elements.commands.maximize).attr('title', gettext('Maximize'));
+    },
+    reverseButtons: true,
+  });
+
+  alertify.prompt().set({
+    reverseButtons: true,
+  });
 
   return alertify;
 });

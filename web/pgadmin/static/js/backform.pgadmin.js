@@ -22,12 +22,13 @@ define([
   // HTML markup global class names. More can be added by individual controls
   // using _.extend. Look at RadioControl as an example.
   _.extend(Backform, {
-    controlLabelClassName: 'control-label pg-el-sm-3 pg-el-xs-12',
-    controlsClassName: 'pgadmin-controls pg-el-sm-9 pg-el-xs-12',
-    groupClassName: 'pgadmin-control-group form-group pg-el-xs-12',
-    setGroupClassName: 'set-group pg-el-xs-12',
-    tabClassName: 'backform-tab pg-el-xs-12',
-    setGroupContentClassName: 'fieldset-content pg-el-xs-12',
+    controlLabelClassName: 'control-label pg-el-sm-3 pg-el-12',
+    controlsClassName: 'pgadmin-controls pg-el-sm-9 pg-el-12',
+    controlContainerClassName: 'pgadmin-controls pg-el-sm-9 pg-el-12',
+    groupClassName: 'pgadmin-control-group form-group row pg-el-12',
+    setGroupClassName: 'set-group pg-el-12',
+    tabClassName: 'backform-tab pg-el-12',
+    setGroupContentClassName: 'fieldset-content pg-el-12',
     hiddenClassName: 'd-none',
   });
 
@@ -402,7 +403,7 @@ define([
             '[type="radio"]'
           ).append(
             $('<div></div>').addClass(
-              'pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 pg-el-xs-8 help-block'
+              'pgadmin-control-error-message pg-el-offset-4 pg-el-8 pg-el-8 help-block'
             ).text(error));
         });
       },
@@ -481,7 +482,7 @@ define([
     tagName: 'div',
     legend: true,
     className: function() {
-      return 'pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12';
+      return 'pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-12';
     },
     tabPanelClassName: function() {
       return Backform.tabClassName;
@@ -513,7 +514,7 @@ define([
         '<%=label%></a></li>',
       ].join(' ')),
       'panel': _.template(
-        '<div role="tabpanel" tabindex="-1" class="tab-pane <%=label%> pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
+        '<div role="tabpanel" tabindex="-1" class="tab-pane <%=label%> pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
       ),
     },
     render: function() {
@@ -539,7 +540,7 @@ define([
 
       var tabHead = $('<ul class="nav nav-tabs" role="tablist"></ul>')
         .appendTo(this.$el);
-      var tabContent = $('<div class="tab-content pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12"></div>')
+      var tabContent = $('<div class="tab-content pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-12"></div>')
         .appendTo(this.$el);
 
       _.each(this.schema, function(o) {
@@ -628,7 +629,7 @@ define([
 
   Backform.Fieldset = Backform.Dialog.extend({
     className: function() {
-      return 'set-group pg-el-xs-12';
+      return 'set-group pg-el-12';
     },
     tabPanelClassName: function() {
       return Backform.tabClassName;
@@ -640,7 +641,7 @@ define([
       'header': _.template([
         '<fieldset class="<%=fieldsetClass%>" <%=disabled ? "disabled" : ""%>>',
         ' <% if (legend != false) { %>',
-        '  <legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
+        '  <div><legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend></div>',
         ' <% } %>',
         '</fieldset>',
       ].join('\n')),
@@ -991,10 +992,10 @@ define([
         gridHeader = _.template([
           '<div class="subnode-header">',
           '  <label class="control-label pg-el-sm-10"><%-label%></label>',
-          '  <button class="btn btn-sm-sq btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"><%-add_label%></button>',
+          '  <button class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"><%-add_label%></button>',
           '</div>',
         ].join('\n')),
-        gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode"></div>').append(
+        gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-12 object subnode "></div>').append(
           gridHeader(data)
         );
 
@@ -1073,7 +1074,7 @@ define([
       self.grid = new Backgrid.Grid({
         columns: gridSchema.columns,
         collection: collection,
-        className: 'backgrid table-bordered',
+        className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
       });
 
       // Render subNode grid
@@ -1169,7 +1170,7 @@ define([
 
         self.$el.addClass('subnode-error').append(
           $('<div></div>').addClass(
-            'pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block'
+            'pgadmin-control-error-message pg-el-offset-4 pg-el-8 help-block'
           ).text(error)
         );
       });
@@ -1235,7 +1236,7 @@ define([
 
       if (self.field.get('showError')) {
         self.$el.addClass('subnode-error').append(
-          $('<div></div>').addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
+          $('<div></div>').addClass('pgadmin-control-error-message pg-el-offset-4 pg-el-8 help-block').text(error)
         );
       }
     },
@@ -1259,10 +1260,10 @@ define([
       var self = this,
         gridHeader = ['<div class=\'subnode-header\'>',
           '  <label class=\'control-label pg-el-sm-10\'>' + data.label + '</label>',
-          '  <button class=\'btn btn-sm-sq btn-default add fa fa-plus\' title=\'' + _('Add new row') + '\'></button>',
+          '  <button class=\'btn btn-sm-sq btn-secondary add fa fa-plus\' title=\'' + _('Add new row') + '\'></button>',
           '</div>',
         ].join('\n'),
-        gridBody = $('<div class=\'pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode\'></div>').append(gridHeader);
+        gridBody = $('<div class=\'pgadmin-control-group backgrid form-group pg-el-12 object subnode\'></div>').append(gridHeader);
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
         gridSchema = Backform.generateGridColumnsFromModel(
@@ -1353,7 +1354,7 @@ define([
         columns: gridSchema.columns,
         collection: collection,
         row: this.row,
-        className: 'backgrid table-bordered',
+        className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
       });
 
       // Render subNode grid
@@ -1968,6 +1969,7 @@ define([
       );
       this.dialog = opts.dialog;
       this.tabIndex = opts.tabIndex;
+      this.contentClass = opts.field.get('contentClass')?opts.field.get('contentClass'):'';
 
       // Listen to the dependent fields in the model for any change
       var deps = this.field.get('deps');
@@ -2014,7 +2016,6 @@ define([
     },
     fieldsetClass: 'inline-fieldset',
     legendClass: '',
-    contentClass: '',
     collapse: false,
   });
 
@@ -2046,7 +2047,7 @@ define([
       'header': _.template([
         '<fieldset class="<%=fieldsetClass%>" <%=disabled ? "disabled" : ""%>>',
         ' <% if (legend != false) { %>',
-        '  <legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %></legend>',
+        '  <div><legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %></legend></div>',
         ' <% } %>',
         '</fieldset>',
       ].join('\n')),
@@ -2251,7 +2252,7 @@ define([
       noteClass: 'backform_control_notes',
     },
     template: _.template([
-      '<div class="<%=noteClass%> pg-el-xs-12 <%=extraClasses.join(\' \')%>">',
+      '<div class="<%=noteClass%> pg-el-12 <%=extraClasses.join(\' \')%>">',
       '<label class="control-label"><%=label%>:</label>',
       '<span><%=text%></span></div>',
     ].join('\n')),
@@ -2725,7 +2726,7 @@ define([
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%>">',
+      '<div class="<%=Backform.controlsClassName%> d-flex flex-row">',
       '</div>',
     ].join('\n')),
 
@@ -2771,7 +2772,7 @@ define([
           _.extend({}, {
             id: fld['name'],
             name: fld['name'],
-            control: fld['type'],
+            control: fld['type'] == 'checkbox' ? 'checkboxWithBox' : fld['type'],
             label: fld['label'],
           })
           ),
@@ -2790,13 +2791,13 @@ define([
             cntr.$el.find('label.control-label').remove();
           }
 
-          if (fld['name'] == 'alt_option') {
-            $container.append($('<div class="pg-el-sm-3 pg-el-xs-12"></div>').append(cntr.$el));
+          if (fld['name'] == 'alt') {
+            $container.append($('<div class="pg-el-sm-3 pg-el-12"></div>').append(cntr.$el));
           } else {
-            $container.append($('<div class="pg-el-sm-2 pg-el-xs-12"></div>').append(cntr.$el));
+            $container.append($('<div class="pg-el-sm-2 pg-el-12"></div>').append(cntr.$el));
           }
         } else {
-          $container.append($('<div class="pg-el-sm-5 pg-el-xs-12"></div>').append(cntr.$el));
+          $container.append($('<div class="pg-el-sm-5 pg-el-12"></div>').append(cntr.$el));
         }
 
         // We will keep track of all the controls rendered at the
@@ -2811,6 +2812,27 @@ define([
       /* First do the clean up */
       this.cleanup();
       Backform.Control.prototype.remove.apply(this, arguments);
+    },
+  });
+
+  Backform.CheckboxWithBoxControl = Backform.CheckboxControl.extend({
+    events: _.extend({}, Backform.CheckboxControl.prototype.events, {
+      'click button': 'onButtonClick',
+    }),
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=controlLabel%></label>',
+      '<div class="<%=Backform.controlContainerClassName%>">',
+      '  <button class="btn btn-secondary btn-checkbox">',
+      '    <input type="<%=type%>" class="<%=extraClasses.join(\' \')%>" id="<%=id%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '    <%=label%>',
+      '  </button>',
+      '</div>',
+    ].join('\n')),
+    onButtonClick: function(e) {
+      if (e.target.nodeName !== 'BUTTON')
+        return;
+      var $el = this.$el.find('input[type=checkbox]');
+      $el.prop('checked', !$el.prop('checked'));
     },
   });
 

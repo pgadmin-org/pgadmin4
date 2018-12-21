@@ -41,7 +41,6 @@ _.extend(pgBrowser.keyboardNavigation, {
             this.keyboardShortcut.help_shortcut],
         }, // Main menu
         'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward]}, // Main window panels
-        'bindSubMenuClose': {'shortcuts': ['esc','enter']},
         'bindLeftTree': {'shortcuts': this.keyboardShortcut.left_tree_shortcut}, // Main menu,
         'bindSubMenuQueryTool': {'shortcuts': this.keyboardShortcut.sub_menu_query_tool}, // Sub menu - Open Query Tool,
         'bindSubMenuViewData': {'shortcuts': this.keyboardShortcut.sub_menu_view_data}, // Sub menu - Open View Data,
@@ -166,6 +165,7 @@ _.extend(pgBrowser.keyboardNavigation, {
       let currMenu = currLi.closest('.dropdown-menu');
       if(currMenu.closest('.dropdown-submenu').length > 0) {
         currMenu.removeClass('show');
+        currMenu.closest('.dropdown-submenu').removeClass('dropdown-submenu-visible');
         currLi = currMenu.closest('.dropdown-submenu');
         currLi.find('.dropdown-item').trigger('focus');
       }
@@ -189,6 +189,7 @@ _.extend(pgBrowser.keyboardNavigation, {
 
       /*open submenu if any*/
       if(currLi.hasClass('dropdown-submenu')){
+        currLi.addClass('dropdown-submenu-visible');
         currLi.find('.dropdown-menu').addClass('show');
         currLi = currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
       }
@@ -200,8 +201,9 @@ _.extend(pgBrowser.keyboardNavigation, {
       keyboardFunc._stopEventPropagation(event);
       let currLi = $(event.target).closest('li');
       /*close all the submenus on movement*/
-      $(event.target).closest('.dropdown-menu').find('.show').removeClass('show');
-
+      let dropMenu = $(event.target).closest('.dropdown-menu');
+      dropMenu.find('.show').removeClass('show');
+      dropMenu.find('.dropdown-submenu').removeClass('dropdown-submenu-visible');
       if(combo === 'up') {
         currLi = currLi.prev();
       }
@@ -220,12 +222,6 @@ _.extend(pgBrowser.keyboardNavigation, {
         }
       }
       currLi.find('.dropdown-item').trigger('focus');
-    }
-  },
-  bindSubMenuClose: function() {
-    if($(event.target).hasClass('dropdown-item')
-        && $(event.target).closest('.dropdown-submenu').length > 0) {
-      $(event.target).closest('.dropdown').find('.dropdown-submenu .dropdown-menu').removeClass('show');
     }
   },
   bindLeftTree: function() {

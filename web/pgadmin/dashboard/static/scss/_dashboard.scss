@@ -1,11 +1,19 @@
 .dashboard-icon {
-    color: $color-fg;
+    color: $color-primary;
 }
 
-.dashboard-tab-container {
-    border-left: 1px solid $color-gray-lighter;
-    border-right: 1px solid $color-gray-lighter;
-    border-bottom: 1px solid $color-gray-lighter;
+.dashboard-container {
+    padding-top: $grid-gutter-width/2;
+    padding-bottom: $grid-gutter-width/2;
+    min-height: 100%;
+}
+
+.dashboard-graph-body {
+    padding: 0.25rem 0.5rem;
+}
+
+.dashboard-row {
+    margin-bottom: $grid-gutter-width/2;
 }
 
 .dashboard-tab-btn-group {
@@ -27,25 +35,9 @@
     padding-bottom: 40px;
 }
 
-.dashboard-tab-container .sub-node-form {
-  padding: 0px 0px 0px 1px;
-  background-color: $color-gray-lighter;
-}
-
-.dashboard-tab-container .subnode-dialog .nav > li > a {
-  font-weight: bold;
-}
-
-.dashboard-tab-container .subnode-dialog .nav-tabs > li.active > a,
-.dashboard-tab-container .subnode-dialog .nav-tabs > li.active > a:hover {
-  border-top: 1px solid $color-gray-lighter;
-  border-left: 1px solid $color-gray-lighter;
-  border-right: 1px solid $color-gray-lighter;
-  margin-bottom: -1px;
-  z-index: 10;
-}
-
-.dashboard-tab-container .backgrid .editor {
-  background-color: $color-gray-lighter !important;
-  border-bottom-color: $color-gray-lighter;
+.grid-container {
+    width: 100%;
+    overflow: auto;
+    border-radius: $card-border-radius;
+    border: $panel-border;
 }

@@ -30,7 +30,7 @@ define('pgadmin.preferences', [
           controls = [], // Keep tracking of all the backform controls
           // created by the dialog.
           // Dialog containter
-          $container = $('<div class=\'preferences_dialog\'></div>');
+          $container = $('<div class=\'preferences_dialog d-flex flex-row\'></div>');
 
 
         /*
@@ -94,6 +94,7 @@ define('pgadmin.preferences', [
            * Clear the existing html in the preferences content
            */
           var content = $container.find('.preferences_content');
+
           /*
            * We should clean up the existing controls.
            */
@@ -306,6 +307,14 @@ define('pgadmin.preferences', [
                   /*
                    * Clear the existing html in the preferences content
                    */
+                // Keyboard short cuts and nodes wiull have striped divs
+                if (d.label.toLowerCase() == 'keyboard shortcuts' || d.label.toLowerCase() == 'nodes')
+                  $container.find('.preferences_content').addClass('striped-divs');
+                else
+                  $container.find('.preferences_content').removeClass('striped-divs');
+
+                $container.find('.preferences_content');
+
                 renderPreferencePanel(d.preferences);
 
                 return true;
@@ -363,9 +372,9 @@ define('pgadmin.preferences', [
             dialogContentCleanup();
 
             $container.append(
-              '<div class=\'pg-el-xs-3 preferences_tree aciTree\'></div>'
+              '<div class=\'pg-el-3 preferences_tree aciTree\'></div>'
             ).append(
-              '<div class=\'pg-el-xs-9 preferences_content\'>' +
+              '<div class=\'pg-el-9 preferences_content\'>' +
               gettext('Category is not selected.') +
               '</div>'
             );
@@ -397,7 +406,7 @@ define('pgadmin.preferences', [
               buttons: [{
                 text: '',
                 key: 112,
-                className: 'btn btn-default pull-left fa fa-lg fa-question',
+                className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
                 attrs: {
                   name: 'dialog_help',
                   type: 'button',
@@ -409,13 +418,13 @@ define('pgadmin.preferences', [
                   ),
                 },
               }, {
-                text: gettext('OK'),
-                key: 13,
-                className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
-              }, {
                 text: gettext('Cancel'),
                 key: 27,
-                className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
+              }, {
+                text: gettext('Save'),
+                key: 13,
+                className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
               }],
               focus: {
                 element: 0,
@@ -438,7 +447,7 @@ define('pgadmin.preferences', [
               return;
             }
 
-            if (e.button.text == gettext('OK')) {
+            if (e.button.text == gettext('Save')) {
               preferences.updateAll();
 
               /* Find the modules changed */
@@ -460,7 +469,7 @@ define('pgadmin.preferences', [
           },
           hooks: {
             onshow: function() {
-              $(this.elements.body).addClass('pgadmin-preference-body');
+              // $(this.elements.body).addClass('pgadmin-preference-body');
             },
           },
         };

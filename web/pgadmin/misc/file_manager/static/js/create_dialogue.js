@@ -12,14 +12,13 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
     setup: function() {
       return {
         buttons: [{
+          text: gettext('Cancel'),
+          key: 27,
+          className: 'btn btn-secondary fa fa-times file_manager_create_cancel pg-alertify-button',
+        },{
           text: gettext('Create'),
           key: 13,
           className: 'btn btn-primary fa fa-file file_manager_create file_manager_ok pg-alertify-button disabled',
-        },
-        {
-          text: gettext('Cancel'),
-          key: 27,
-          className: 'btn btn-danger fa fa-times file_manager_create_cancel pg-alertify-button',
         },
         ],
         focus: {

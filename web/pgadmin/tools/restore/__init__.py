@@ -121,15 +121,11 @@ class RestoreMessage(IProcessDesc):
             )
         )
 
-        res += '</div><div><b>'
-        res += html.safe_str(
-            _("Running command:")
-        )
-        res += '</b><br><span class="pg-bg-cmd enable-selection">'
-        res += html.safe_str(cmd)
-        res += self.cmd
-        res += '</span></div>'
-
+        res += '</div><div class="py-1">'
+        res += _("Running command:")
+        res += '<div class="pg-bg-cmd enable-selection p-1">'
+        res += html.safe_str(cmd + self.cmd)
+        res += '</div></div>'
         return res
 
 

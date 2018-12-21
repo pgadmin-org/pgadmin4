@@ -147,7 +147,6 @@ def initialize_datagrid(cmd_type, obj_type, sgid, sid, did, obj_id):
     if not status:
         app.logger.error(msg)
         return internal_server_error(errormsg=str(msg))
-
     try:
         # if object type is partition then it is nothing but a table.
         if obj_type == 'partition':

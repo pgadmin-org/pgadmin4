@@ -110,10 +110,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_element(newly_selected_history_entry)
         selected_history_detail_pane = self.page.find_by_id("query_detail")
         self.assertIn("SELECT * FROM table_that_doesnt_exist",
-                      selected_history_detail_pane.text)
+                      selected_history_detail_pane.get_attribute('innerHTML'))
 
+        self.page.click_tab("Query Editor")
         self.__clear_query_tool()
-
         self.page.click_element(editor_input)
 
         self.page.fill_codemirror_area_with("SELECT * FROM hats")
@@ -135,6 +135,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self._assert_clickable(query_we_need_to_scroll_to)
 
+        self.page.click_tab("Query Editor")
         self.__clear_query_tool()
         self.page.click_element(editor_input)
         self.page.fill_codemirror_area_with("SELECT * FROM hats")

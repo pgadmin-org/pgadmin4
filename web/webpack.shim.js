@@ -160,7 +160,7 @@ var webpackShimConfig = {
     // Backbone and Backgrid
     'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
     'backbone.undo': path.join(__dirname, './node_modules/backbone-undo/Backbone.Undo'),
-    'backform': path.join(__dirname, './node_modules/backform/src/backform'),
+    'backform': path.join(__dirname, './pgadmin/static/vendor/backform/backform'),
     'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),
     'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
     'bootstrap.switch': path.join(__dirname, './node_modules/bootstrap-switch/dist/js/bootstrap-switch'),

@@ -1,10 +1,3 @@
-#container {
-  position: absolute;
-  top: 40px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-}
 
 .full-container {
   position: absolute;
@@ -29,29 +22,4 @@
   width: 100%;
   position: absolute;
   top: 0; bottom: 0; right: 0; left: 0;
-}
-
-.debugger-container .breakpoints {
-  width: 0.9em;
-}
-
-.CodeMirror, .CodeMirror-gutters {
-  min-height: 100%;
-}
-
-.CodeMirror-foldgutter {
-  width: .9em;
-}
-
-.CodeMirror-foldgutter-open,
-.CodeMirror-foldgutter-folded {
-  cursor: pointer;
-}
-
-.CodeMirror-foldgutter-open:after {
-  content: "\25BC";
-}
-
-.CodeMirror-foldgutter-folded:after {
-  content: "\25B6";
 }

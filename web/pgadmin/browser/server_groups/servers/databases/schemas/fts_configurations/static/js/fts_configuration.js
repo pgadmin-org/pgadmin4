@@ -203,7 +203,7 @@ define('pgadmin.node.fts_configuration', [
           '   </div>',
           '   <div class="col-6" header="token"></div>',
           '   <div class="col-2">',
-          '     <button class="btn btn-sm-sq btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
+          '     <button class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
           '   </div>',
           '  </div>',
           ' </div>',

@@ -68,7 +68,7 @@ define([
         errmsg,
         node = this.get('objects').toJSON();
       if (_.isEmpty(node)) {
-        err['selected'] = gettext('Please select any database object type.');
+        err['selected'] = gettext('Please select any database object.');
         errmsg = errmsg || err['selected'];
         this.errorModel.set('selected', errmsg);
         return errmsg;
@@ -631,7 +631,7 @@ define([
                 page_title: _('Object Selection (step 1 of 3)'),
                 disable_prev: true,
                 disable_next: true,
-                show_description: _('Please select the objects to grant privileges to from the list below.'),
+                show_description: '',
                 show_progress_bar: _('Please wait while fetching records...'),
                 model: newModel,
                 view: new(function() {
@@ -663,7 +663,21 @@ define([
 
                       // Create a grid container
                       var gridBody =
-                        $('<div class="db_objects_container pg-el-xs-12"></div>');
+                        $(`
+                        <div class="db_objects_container pg-el-xs-12">
+                          <div class="db_objects_header d-flex py-1">
+                            <div>${_('Please select the objects to grant privileges to from the list below.')}</div>
+                            <div class="db_objects_filter ml-auto">
+                              <div class="input-group">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text fa fa-search" id="labelSearch"></span>
+                                </div>
+                                <input type="search" class="form-control" id="txtGridSearch" placeholder="Search" aria-label="Search" aria-describedby="labelSearch">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="db_objects_grid"></div>
+                        </div>`);
 
                       // Remove grid if exits before render
                       if (this.grid) {
@@ -674,15 +688,14 @@ define([
                       this.grid = new Backgrid.Grid({
                         columns: _.clone(columns),
                         collection: coll,
-                        className: 'backgrid table-bordered object_type_table pg-el-xs-12',
+                        className: 'backgrid presentation table table-bordered table-hover object_type_table',
                       });
 
                       // Render selection Type grid and paginator
-                      gridBody.append(this.grid.render().$el);
+                      gridBody.find('.db_objects_grid').append(this.grid.render().$el);
 
                       // Render Search Filter
-                      gridBody.prepend(
-                        self.clientSideFilter.render().el);
+                      self.clientSideFilter.setCustomSearchBox(gridBody.find('#txtGridSearch'));
 
                       // Assign gridBody content to page element
                       this.el = gridBody;

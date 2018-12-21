@@ -1,5 +1,5 @@
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: $color-primary-lighter;
+  background-color: $color-primary-light;
   color:  $color-gray-dark;
 }
 
@@ -15,8 +15,19 @@
     width: 100% !important;
 }
 
-.select2-container .select2-selection--single .select2-selection__rendered{
-  padding-left: 5px;
+.select2-container .select2-selection--single  {
+  height: unset;
+  min-height: 28px;
+  & .select2-selection__rendered{
+    line-height: inherit;
+    padding: $input-padding-y $input-padding-x;
+    padding-right: 1.5rem;
+  }
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  top: 0px;
+  height: 100%;
 }
 
 
@@ -36,7 +47,6 @@
 
 .select2-results span.wcTabIcon {
   padding-left: 20px;
-  background-position: 0px 2px;
 }
 
 .select2-selection {
@@ -49,11 +59,17 @@
 .select2-container--default.select2-container--disabled .select2-selection--multiple {
     background-color: $input-disabled-bg !important;
     opacity: 1;
+    color: $text-muted;
 }
 
 .select2-container--default.select2-container--disabled .select2-selection--single {
     background-color: $input-disabled-bg !important;
     opacity: 1;
+    color: $text-muted;
+}
+
+.select2-container--default.select2-container--disabled .select2-selection__rendered {
+  color: $text-muted;
 }
 
 .select2-select-all-adapter-container {

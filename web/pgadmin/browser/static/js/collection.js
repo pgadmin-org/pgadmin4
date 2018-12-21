@@ -66,7 +66,7 @@ define([
           j = panel.$container.find('.obj_properties').first(),
           view = j.data('obj-view'),
           content = $('<div></div>')
-          .addClass('pg-prop-content col-12'),
+          .addClass('pg-prop-content col-12 has-pg-prop-btn-group'),
           node = pgBrowser.Nodes[that.node],
           // This will be the URL, used for object manipulation.
           urlBase = this.generate_url(item, 'properties', data),
@@ -169,9 +169,10 @@ define([
         }
           // Initialize a new Grid instance
         that.grid = new Backgrid.Grid({
+          emptyText: 'No data found',
           columns: gridSchema.columns,
           collection: collection,
-          className: 'backgrid table-bordered',
+          className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
         });
 
         var gridView = {
@@ -216,7 +217,7 @@ define([
           label: '',
           type: 'delete',
           tooltip: gettext('Delete/Drop'),
-          extraClasses: ['btn-default', 'delete_multiple'],
+          extraClasses: ['btn-secondary m-1', 'delete_multiple'],
           icon: 'fa fa-lg fa-trash-o',
           disabled:  (_.isFunction(that.canDrop)) ? !(that.canDrop.apply(self, [data, item])) : (!that.canDrop),
           register: function(btn) {
@@ -230,8 +231,8 @@ define([
           label: '',
           type: 'delete',
           tooltip: gettext('Drop Cascade'),
-          extraClasses: ['btn-default', 'delete_multiple_cascade'],
-          icon: '',
+          extraClasses: ['btn-secondary m-1', 'delete_multiple_cascade'],
+          icon: 'icon-delete_multiple_cascade',
           disabled: (_.isFunction(that.canDropCascade)) ? !(that.canDropCascade.apply(self, [data, item])) : (!that.canDropCascade),
           register: function(btn) {
             btn.on('click',() => {
@@ -240,10 +241,11 @@ define([
           },
         });
 
-        createButtons(buttons, 'header', 'pg-prop-btn-group-above bg-gray-lighter border-gray-light');
+        createButtons(buttons, 'header', 'pg-prop-btn-group-above');
 
         // Render subNode grid
-        content.append(that.grid.render().$el);
+        content.append('<div class="pg-prop-coll-container"></div>');
+        content.find('.pg-prop-coll-container').append(that.grid.render().$el);
         j.append(content);
 
         // Fetch Data

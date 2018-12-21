@@ -52,7 +52,7 @@ describe('BackupDialogWrapper', () => {
     jquerySpy = jasmine.createSpy('jquerySpy');
     backupNode = {
       __internal: {
-        buttons: [{}, {}, {
+        buttons: [{}, {}, {}, {
           element: {
             disabled: false,
           },
@@ -114,7 +114,7 @@ describe('BackupDialogWrapper', () => {
 
       it('disables the button "submit button" until a filename is selected', () => {
         backupDialogWrapper.prepare();
-        expect(backupDialogWrapper.__internal.buttons[2].element.disabled).toBe(true);
+        expect(backupDialogWrapper.__internal.buttons[3].element.disabled).toBe(true);
       });
     });
 
@@ -130,7 +130,7 @@ describe('BackupDialogWrapper', () => {
 
       it('disables the button "submit button" until a filename is selected', () => {
         backupDialogWrapper.prepare();
-        expect(backupDialogWrapper.__internal.buttons[2].element.disabled).toBe(true);
+        expect(backupDialogWrapper.__internal.buttons[3].element.disabled).toBe(true);
       });
     });
 
@@ -178,7 +178,7 @@ describe('BackupDialogWrapper', () => {
 
       it('disables the button submit button until a filename is selected', () => {
         backupDialogWrapper.prepare();
-        expect(backupNode.__internal.buttons[2].element.disabled).toBe(true);
+        expect(backupNode.__internal.buttons[3].element.disabled).toBe(true);
       });
 
       it('generates a new backup model', () => {

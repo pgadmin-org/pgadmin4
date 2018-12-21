@@ -141,14 +141,21 @@ define(
               var w = p.width();
               p.pgResizeTimeout = null;
 
-              if (w <= 480) {
+              /** Calculations based on https://getbootstrap.com/docs/4.1/layout/grid/#grid-options **/
+              if (w < 576) {
                 w = 'xs';
-              } else if (w < 600) {
+              }
+              if (w >= 576) {
                 w = 'sm';
-              } else if (w < 768) {
+              }
+              if (w >= 768) {
                 w = 'md';
-              } else {
+              }
+              if (w >= 992) {
                 w = 'lg';
+              }
+              if (w >=1200) {
+                w = 'xl';
               }
 
               p.pgElContainer.attr('el', w);

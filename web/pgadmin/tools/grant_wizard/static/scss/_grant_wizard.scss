@@ -11,10 +11,23 @@
   padding: 0;
 }
 
+.db_objects_grid {
+  height: 100%;
+}
+
+.db_objects_filter {
+  & .input-group-text {
+    background: $input-bg;
+  }
+
+  & .form-control {
+    border-left: none;
+  }
+}
+
 .object_type_table {
-  height: calc(100% - 16px);
-  border: 0 !important;
-  display: inline;
+  height: calc(100% - 15px);
+  display: block;
   padding: 0;
 }
 
@@ -27,18 +40,18 @@
   position: relative;
   display: block;
   width: 100%;
+  border-bottom: $panel-border;
 }
 
 .object_type_table tbody {
   display: block;
   overflow: auto;
-  border: 1px solid #ddd;
   width: 100%;
-  height: calc(100% - 41px);
+  /* 100% minus thead height */
+  height: calc(100% - 28px);
 }
 
 .object_type_table tbody tr {
-  display: table;
   max-width: 100%;
   width: 100%;
 }
@@ -95,6 +108,8 @@
 /** Custom styling for Codemirror field **/
 .wizard-right-panel_content {
   border: 1px $color-gray-light;
+  padding: 0.5rem 0rem;
+  height: calc(100% - #{$footer-height-calc});
 }
 
 .wizard-right-panel_content .CodeMirror {
@@ -104,8 +119,8 @@
 }
 
 .wizard-right-panel_content .CodeMirror-linenumber {
-  background: #F7F7F7;
-  border-right: 1px solid #DDDDDD;
+  background: $color-gray-light;
+  border-right: none;
 }
 
 .wizard-right-panel_content .CodeMirror-gutters {

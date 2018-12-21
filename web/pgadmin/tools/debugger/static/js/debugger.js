@@ -179,7 +179,7 @@ define([
         width: 500,
         isCloseable: true,
         isPrivate: true,
-        icon: 'fa fa-arrow-circle-right',
+        icon: 'fa fa-bug',
         url: 'about:blank',
       });
 

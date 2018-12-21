@@ -56,12 +56,8 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
 
     def runTest(self):
         self._open_maintenance_dialogue()
-        self.page.find_by_css_selector(
-            "button.fa-save.btn-primary.pg-alertify-button"). \
-            click()
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".ajs-modal")
-        )
+        self.page.click_modal('OK')
+        self.page.find_by_css_selector('.ajs-bg-bgprocess')
         self._verify_command()
 
     def _open_maintenance_dialogue(self):
@@ -80,11 +76,11 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
 
     def _verify_command(self):
         status = self.page.find_by_css_selector(
-            ".pg-bg-bgprocess .bg-success").text
+            ".pg-bg-status .bg-success-light .pg-bg-status-text").text
         self.assertEquals(status, "Successfully completed.")
-        self.page.find_by_css_selector(
-            ".pg-bg-bgprocess .pg-bg-click > span").click()
-        command = self.page.find_by_css_selector("p.bg-detailed-desc").text
+        self.page.find_by_css_selector(".pg-bg-more-details").click()
+        command = self.page.find_by_css_selector(
+            ".bg-process-details .bg-detailed-desc").text
         if self.test_level == 'database':
             self.assertEquals(command, "VACUUM "
                                        "(VERBOSE)\nRunning Query:"

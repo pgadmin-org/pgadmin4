@@ -22,8 +22,8 @@ export class RestoreDialogWrapper extends DialogWrapper {
   setup() {
     return {
       buttons: [{
-        text: '<span class="fa fa-lg fa-info"></span>',
-        className: 'btn btn-default pull-left',
+        text: '',
+        className: 'btn btn-secondary pull-left fa fa-info pg-alertify-icon-button',
         attrs: {
           name: 'object_help',
           type: 'button',
@@ -31,9 +31,9 @@ export class RestoreDialogWrapper extends DialogWrapper {
           label: gettext('Restore'),
         },
       }, {
-        text: '<span class="fa fa-lg fa-question"></span>',
+        text: '',
         key: 112,
-        className: 'btn btn-default pull-left',
+        className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
         attrs: {
           name: 'dialog_help',
           type: 'button',
@@ -43,17 +43,17 @@ export class RestoreDialogWrapper extends DialogWrapper {
           }),
         },
       }, {
+        text: gettext('Cancel'),
+        key: 27,
+        className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
+        restore: false,
+        'data-btn-name': 'cancel',
+      }, {
         text: gettext('Restore'),
         key: 13,
         className: 'btn btn-primary fa fa-upload pg-alertify-button',
         restore: true,
         'data-btn-name': 'restore',
-      }, {
-        text: gettext('Cancel'),
-        key: 27,
-        className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
-        restore: false,
-        'data-btn-name': 'cancel',
       }],
       // Set options for dialog
       options: {
@@ -177,11 +177,11 @@ export class RestoreDialogWrapper extends DialogWrapper {
   }
 
   disableRestoreButton() {
-    this.__internal.buttons[2].element.disabled = true;
+    this.__internal.buttons[3].element.disabled = true;
   }
 
   enableRestoreButton() {
-    this.__internal.buttons[2].element.disabled = false;
+    this.__internal.buttons[3].element.disabled = false;
   }
 
   createDialog(node, treeInfo, $container) {

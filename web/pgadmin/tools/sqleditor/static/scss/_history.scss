@@ -1,20 +1,18 @@
 .query-history {
   height: 100%;
   .list-item {
-    border-bottom: 1px solid $color-gray-light;
+    border-bottom: $panel-border;
   }
 
   .entry {
-    @extend .text-14;
-    @extend .bg-white;
     font-family: $font-family-editor;
-    border: 2px solid transparent;
+    border: $panel-border-width solid transparent;
     margin-left: 1px;
-    padding: 0 8px 0 5px;
+    padding: 0 5px;
 
     .other-info {
-      @extend .text-13;
-      @extend .text-gray;
+      @extend .text-12;
+      color: $text-muted;
       font-family: $font-family-editor;
       display: flex;
       flex-direction: row;
@@ -40,29 +38,36 @@
     font-size: 11px;
     font-weight: bold;
     color:  $color-gray;
-    border-bottom: 1px solid $color-gray-light;
+    border-bottom: $panel-border;
   }
 
   .entry.error {
-    @extend .bg-danger-lighter;
+    background: $sql-history-error-bg;
   }
 
   .entry.selected.error {
-    background-color: $color-danger-lighter;
+    background-color: $sql-history-error-bg;
   }
 
   .entry.selected {
-    @extend .text-primary;
-    @extend .border-primary;
-    @extend .bg-primary-lighter;
+    color: $sql-history-success-fg;
+    border: $table-hover-border;
+    background: $sql-history-success-bg;
     font-weight: bold;
-    border: 2px solid;
 
     .other-info {
-      @extend .text-primary;
+      color: $sql-history-success-fg;
       font-weight: bold;
     }
   }
+}
+
+#history-detail-query .CodeMirror {
+  border: $panel-border;
+  background-color: $sql-history-detail-bg;
+  width: 100%;
+  padding-left: 5px;
+  position: absolute;
 }
 
 .header-label {
@@ -77,7 +82,7 @@
   flex-direction: column;
 
   .error-message-block {
-    @extend .bg-danger-lighter;
+    background: $sql-history-error-bg;
     flex: 0.3;
     padding-left: 20px;
 
@@ -86,7 +91,7 @@
       padding: 7px 0;
 
       span {
-        @extend .text-danger;
+        color:$sql-history-error-fg;
         font-weight: 500;
         margin-right: 8px;
       }
@@ -143,7 +148,7 @@
     }
 
     .was-copied {
-      background-color: $color-primary-lighter;
+      background-color: $color-primary-light;
       border-color: $color-primary-light;
     }
 
@@ -153,7 +158,6 @@
   }
 
   .block-divider {
-    @extend .border-gray-light;
     margin-top: 11px;
     margin-bottom: 8px;
   }

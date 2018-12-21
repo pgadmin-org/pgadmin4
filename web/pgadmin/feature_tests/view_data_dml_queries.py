@@ -169,7 +169,7 @@ CREATE TABLE public.defaults_{0}
             (By.XPATH, xpath)), CheckForViewDataTest.TIMEOUT_STRING
         )
         cell_el = self.page.find_by_xpath(xpath)
-        self.page.driver.execute_script("arguments[0].scrollIntoView()",
+        self.page.driver.execute_script("arguments[0].scrollIntoView(false)",
                                         cell_el)
         ActionChains(self.driver).move_to_element(cell_el).double_click(
             cell_el
@@ -189,10 +189,8 @@ CREATE TABLE public.defaults_{0}
             ActionChains(self.driver).send_keys(value).perform()
 
             # Click on editor's Save button
-            self.page.find_by_xpath(
-                "//*[contains(@class, 'pg_text_editor')]"
-                "//button[contains(@class, 'fa-save')]"
-            ).click()
+            self.page.find_by_css_selector(
+                '.pg_text_editor button[data-label="Save"]').click()
         else:
             # Boolean editor test for to True click
             if data[1] == 'true':
@@ -306,8 +304,8 @@ CREATE TABLE public.defaults_{0}
             # row 2(being primary keys) won't match
             # see if cell values matched to actual value
             element = result_row.find_element_by_class_name("r" + str(idx))
-            self.page.driver.execute_script("arguments[0].scrollIntoView()",
-                                            element)
+            self.page.driver.execute_script(
+                "arguments[0].scrollIntoView(false)", element)
 
             if (idx != 1 and not is_new_row) or is_new_row:
                 self.assertEquals(element.text, config_data[str(idx)][1])
@@ -316,5 +314,5 @@ CREATE TABLE public.defaults_{0}
         # to reset position so other assertions can succeed
         for idx in range(len(config_data.keys()), 1, -1):
             element = result_row.find_element_by_class_name("r" + str(idx))
-            self.page.driver.execute_script("arguments[0].scrollIntoView()",
-                                            element)
+            self.page.driver.execute_script(
+                "arguments[0].scrollIntoView(false)", element)

@@ -389,15 +389,12 @@ define('pgadmin.node.exclusion_constraint', [
       generateHeader: function(data) {
         var header = [
           '<div class="subnode-header-form">',
-          ' <div class="container-fluid">',
+          ' <div>',
           '  <div class="row">',
           '   <div class="col-4">',
           '    <label class="control-label"><%-column_label%></label>',
           '   </div>',
           '   <div class="col-4" header="column"></div>',
-          '   <div class="col-4">',
-          '     <button class="btn btn-sm-sq btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
-          '   </div>',
           '  </div>',
           ' </div>',
           '</div>'].join('\n');
@@ -441,11 +438,15 @@ define('pgadmin.node.exclusion_constraint', [
 
       showGridControl: function(data) {
         var self = this,
-          titleTmpl = _.template('<div class=\'subnode-header\'></div>'),
+          titleTmpl = _.template([
+            '<div class="subnode-header">',
+            '  <label class="control-label pg-el-sm-10"><%-label%></label>',
+            '  <button class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"></button>',
+            '</div>'].join('\n')),
           $gridBody =
           $('<div class=\'pgadmin-control-group backgrid form-group col-12 object subnode\'></div>').append(
             // Append titleTmpl only if create/edit mode
-            data.mode !== 'properties' ? titleTmpl({label: data.label}) : ''
+            data.mode !== 'properties' ? titleTmpl({label: data.label, canAdd: data.canAdd}) : ''
           );
 
         $gridBody.append(self.generateHeader(data));
@@ -469,7 +470,7 @@ define('pgadmin.node.exclusion_constraint', [
         var grid = self.grid = new Backgrid.Grid({
           columns: gridColumns,
           collection: self.collection,
-          className: 'backgrid table-bordered',
+          className: 'backgrid table-bordered table-noouter-border table-hover',
         });
         self.$grid = grid.render().$el;
 
@@ -489,6 +490,7 @@ define('pgadmin.node.exclusion_constraint', [
           $gridBody.find('.subnode-header-form').removeClass('subnode-header-form');
 
         // Render node grid
+        self.$gridBody = $gridBody;
         return $gridBody;
       },
 
@@ -522,7 +524,7 @@ define('pgadmin.node.exclusion_constraint', [
           inSelected = true;
         }
 
-        self.$header.find('button.add').prop('disabled', inSelected);
+        self.$gridBody.find('button.add').prop('disabled', inSelected);
       },
 
       addColumns: function(ev) {

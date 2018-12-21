@@ -104,9 +104,7 @@ class FunctionModule(SchemaChildModule):
         """
         Returns a snippet of css
         """
-        snippets = [
-            render_template("function/css/function.css")
-        ]
+        snippets = []
         snippets.extend(
             super(SchemaChildModule, self).csssnippets
         )

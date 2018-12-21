@@ -1,12 +1,10 @@
-<div class="container-fluid">
+<div class="container-fluid negative-space">
     <div class="dashboard-container">
         <div class="row mb-2">
             <div class="col-12">
-                <div class="obj_properties">
-                    <legend class="badge">{{ _('Welcome') }}</legend>
-                </div>
-                <div class="card bg-light">
-                    <div class="card-body">
+                <div class="card">
+                    <div class="card-header">{{ _('Welcome') }}</div>
+                    <div class="card-body p-2">
                         <img src="{{ url_for('dashboard.static', filename='img/welcome_logo.png') }}"
                              alt="{{ config.APP_NAME }} {{ _('logo') }}">
                         <h4>{{ _('Feature rich') }} | {{ _('Maximises PostgreSQL') }} | {{ _('Open Source') }} </h4>
@@ -19,20 +17,18 @@
         </div>
         <div class="row mb-2">
             <div class="col-12">
-                <div class="obj_properties">
-                    <legend class="badge">{{ _('Quick Links') }}</legend>
-                </div>
-                <div class="card bg-light">
-                    <div class="card-body">
+                <div class="card ">
+                    <div class="card-header">{{ _('Quick Links') }}</div>
+                    <div class="card-body p-2">
                         <div class="row">
                             <div class="col-6 dashboard-link">
-                                <a onclick="pgAdmin.Dashboard.add_new_server()">
+                                <a href="#" onclick="pgAdmin.Dashboard.add_new_server()">
                                     <span class="fa fa-4x dashboard-icon fa-server" aria-hidden="true"></span><br/>
                                     {{ _('Add New Server') }}
                                 </a>
                             </div>
                             <div class="col-6 dashboard-link">
-                                <a onclick="pgAdmin.Preferences.show()">
+                                <a href="#" onclick="pgAdmin.Preferences.show()">
                                     <span id="mnu_preferences" class="fa fa-4x dashboard-icon fa-cogs"
                                           aria-hidden="true"></span><br/>
                                     {{ _('Configure pgAdmin') }}
@@ -45,11 +41,9 @@
         </div>
         <div class="row mb-2">
             <div class="col-12">
-                <div class="obj_properties">
-                    <legend class="badge">{{ _('Getting Started') }}</legend>
-                </div>
-                <div class="card bg-light">
-                    <div class="card-body">
+                <div class="card ">
+                    <div class="card-header">{{ _('Getting Started') }}</div>
+                    <div class="card-body p-2">
                         <div class="row">
                         <div class="col-3 dashboard-link">
                             <a href="http://www.postgresql.org/docs" target="_blank">

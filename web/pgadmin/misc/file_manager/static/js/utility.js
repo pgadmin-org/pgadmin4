@@ -576,7 +576,7 @@ define([
 
           result += '</ul>';
         } else {
-          result += '<table id="contents" class="list tablesorter">';
+          result += '<table id="contents" class="table table-bordered table-noouter-border table-hover tablesorter">';
           result += '<thead><tr><th>';
           result += '<span>' + lg.name + '</span></th>';
           result += '<th><span>' + lg.size + '</span></th><th>';
@@ -589,7 +589,7 @@ define([
             var path = _.escape((data[key]).Path),
               props = (data[key]).Properties,
               cap_classes = '',
-              cap, class_type;
+              cap, class_type, icon_type;
 
             for (cap in capabilities) {
               if (has_capability(data[key], capabilities[cap])) {
@@ -601,11 +601,14 @@ define([
             bindToolbar(data[key]);
 
             if ((data[key]).file_type == 'dir') {
-              class_type = 'fa fa-folder-open tbl_folder';
+              class_type = 'tbl_folder';
+              icon_type = 'fa fa-folder-open';
             } else if ((data[key]).file_type == 'drive') {
-              class_type = 'fa fa-hdd-o tbl_drive';
+              class_type = 'tbl_drive';
+              icon_type = 'fa fa-hdd-o';
             } else {
-              class_type = 'fa fa-file-text tbl_file';
+              class_type = 'tbl_file';
+              icon_type = 'fa fa-file-text';
             }
 
             result += '<tr class="' + cap_classes + '">';
@@ -617,16 +620,21 @@ define([
             fm_filename = _.escape(fm_filename);
 
             result += '<td title="' + path + '" class="' + class_type + '">';
+
+            let data_protected = '';
             if ((data[key]).Protected == 1) {
-              result +=
-                '<i class="fa fa-lock tbl_lock_icon" data-protected="protected"></i>';
+              data_protected = '<i class="fa fa-lock tbl_lock_icon" data-protected="protected"></i>';
             }
             if (!has_capability(data[key], 'rename')) {
+              result += data_protected;
               result += '<span title="' + (data[key]).Filename + '">' +
                 fm_filename + '</span></td>';
             } else {
-              result += '<p><input type="text" class="fm_file_rename"/><span class="less_text" title="' +
-                fm_filename + '">' + fm_filename + '</span></p></td>';
+              result += '<p><input type="text" class="fm_file_rename"/>'+
+                        '<span class="'+icon_type+'"></span>' +
+                        data_protected +
+                        '<span class="less_text ml-2" title="' + fm_filename + '">' + fm_filename + '</span>' +
+                        '</p></td>';
             }
             if (props.Size && props.Size != '') {
               result += '<td><span title="' + props.Size + '">' +
@@ -1104,20 +1112,15 @@ define([
             selected = false,
             have_all_types = false;
 
-          select_box = '<div class=\'change_file_types\'>' +
-            gettext('Show hidden files and folders') +
-            '? <input type=\'checkbox\' id=\'show_hidden\' onclick=\'pgAdmin.FileUtils.handleClick(this)\' tabindex=\'11\'>' +
-            '<span></span>' +
-            '<select name=\'type\' tabindex=\'12\'>';
-
+          let fileFormats = '';
           while (i < types_len) {
             t = allowed_types[i];
             if (!selected && (types_len == 1 || t != '*')) {
-              select_box += '<option value=' + t + ' selected>' + t + '</option>';
+              fileFormats += '<option value=' + t + ' selected>' + t + '</option>';
               selected = true;
               have_all_types = (have_all_types || (t == '*'));
             } else {
-              select_box += '<option value="' + t + '">' +
+              fileFormats += '<option value="' + t + '">' +
                 (t == '*' ? gettext('All Files') : t) + '</option>';
               have_all_types = (have_all_types || (t == '*'));
             }
@@ -1125,9 +1128,18 @@ define([
           }
 
           if (!have_all_types) {
-            select_box += '<option value="*">' + gettext('All Files') + '</option>';
+            fileFormats += '<option value="*">' + gettext('All Files') + '</option>';
           }
-          select_box += '</select><label>' + gettext('Format') + ': </label></div>';
+
+          select_box = `<div class='change_file_types d-flex align-items-center p-1'>
+          <div>
+            ${gettext('Show hidden files and folders')} ?
+            <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='11'>
+          </div>
+          <div class="ml-auto">
+            <label>${gettext('Format')}</label>
+            <select name='type' tabindex='12'>${fileFormats}</select>
+          <div>`;
         }
 
         $('.allowed_file_types').html(select_box);
@@ -1399,10 +1411,12 @@ define([
 
         $('#uploader .upload').off().on('click', function() {
           // we create prompt
-          var msg = '<div id="dropzone-container">' +
-            '<button class="fa fa-times dz_cross_btn" tabindex="7"></button>' +
-            '<div id="multiple-uploads" class="dropzone"></div>' +
-            '<div class="prompt-info">' + lg.file_size_limit +
+          var msg = '<div id="dropzone-container" class="d-flex flex-column flex-grow-1">' +
+            '<button class="fa fa-times fa-lg dz_cross_btn ml-auto" tabindex="7"></button>' +
+            '<div id="multiple-uploads" class="dropzone flex-grow-1 d-flex p-1">'+
+            '<div class="dz-default dz-message d-none"></div>'+
+            '</div>' +
+            '<div class="prompt-info">Drop files here to upload. ' + lg.file_size_limit +
             config.upload.fileSizeLimit + ' ' + lg.mb + '.</div>',
             path = $('.currentpath').val(),
             filesizelimit = config.upload.fileSizeLimit,
@@ -1419,10 +1433,10 @@ define([
             acceptFiles = null;
           }
 
-          $('.file_manager .upload_file').toggle();
+          $('.file_manager .upload_file').toggleClass('d-none');
+          $('.file_manager .file_listing').toggleClass('d-none');
           $('.file_manager .upload_file').html(msg);
 
-          //var previewTemplate = '<div id="dropzone-container">';
           var previewTemplate = '<div class="file_upload_main dz-preview dz-file-preview">' +
             '<div class="show_error">' +
             '<p class="size dz-size" data-dz-size></p>' +
@@ -1454,7 +1468,8 @@ define([
             autoProcessQueue: true,
             init: function() {
               $('.dz_cross_btn').off().on('click', function() {
-                $('.file_manager .upload_file').toggle();
+                $('.file_manager .upload_file').toggleClass('d-none');
+                $('.file_manager .file_listing').toggleClass('d-none');
               });
             },
             sending: function(file, xhr, formData) {
@@ -1594,10 +1609,12 @@ define([
           // template to create new folder in table view
           folder_div = $(
             '<tr class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
-            '<td title=\'\' class=\'fa fa-folder-open tbl_folder\'>' +
-            '<p><input type=\'text\' class=\'fm_file_rename\'><span>' +
-            lg.new_folder + '</span></p>' +
-            '</td><td><span title=\'\'></span></td>' +
+            '<td title=\'\' class=\' tbl_folder\'>' +
+            '<input type=\'text\' class=\'fm_file_rename\'>'+
+            '<span class="fa fa-folder-open"></span>' +
+            '<span>' + lg.new_folder + '</span>' +
+            '</td>'+
+            '<td><span title=\'\'></span></td>' +
             '<td></td>' +
             '</tr>'
           );

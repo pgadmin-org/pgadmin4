@@ -68,13 +68,13 @@ define([
       '    <div class="pgadmin-wizard" style="height: <%= this.options.height %>px;' +
       '    width: <%= this.options.width %>px">' +
       '      <div class="wizard-header wizard-badge">' +
-      '        <div class="row">' +
-      '          <div class="col-sm-10">' +
+      '        <div class="d-flex">' +
+      '          <div>' +
       '              <h3><span id="main-title"><%= this.options.title %></span> -' +
       '              <span id="step-title"><%= page_title %></span></h3>' +
       '          </div>' +
       '          <% if (this.options.show_header_cancel_btn) { %>' +
-      '            <div class="col-sm-2">' +
+      '            <div class="ml-auto">' +
       '              <button class="ajs-close wizard-cancel-event pull-right"' +
       '                title="' + gettext('Close') + '></button>' +
       '              <% if (this.options.show_header_maximize_btn) { %>' +
@@ -85,7 +85,7 @@ define([
       '          <% } %>' +
       '        </div>' +
       '      </div>' +
-      '      <div class="wizard-content col-sm-12">' +
+      '      <div class="wizard-content row m-0">' +
       '        <% if (this.options.show_left_panel) { %>' +
       '          <div class="col-sm-3 wizard-left-panel">' +
       '              <img src="<%= this.options.image %>"' +
@@ -101,43 +101,41 @@ define([
       '          <div class="wizard-progress-bar"><% if (show_progress_bar) { %>' +
       '            <p class="alert alert-info col-sm-12"><%= show_progress_bar %></p><% } %>' +
       '          </div>' +
-      '          <div class="wizard-right-panel_content col-12">' +
+      '          <div class="wizard-right-panel_content">' +
       '          </div>' +
       '        </div>' +
       '      </div>' +
-      '      <div class="col-sm-12 pg-prop-status-bar" style="visibility:hidden">' +
-      '        <div class="media error-in-footer bg-danger-lighter border-danger-light text-danger text-14">' +
-      '          <div class="media-body media-middle">' +
-      '            <div class="alert-icon error-icon">' +
-      '              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>' +
-      '            </div>' +
-      '            <div class="alert-text">' +
-      '            </div>' +
-      '            <div class="close-error-bar">' +
-      '              <a class="close-error">x</a>' +
-      '            </div>' +
-      '          </div>' +
-      '        </div>' +
-      '      </div>' +
-      '      <div class="footer col-sm-12">' +
-      '        <div class="row">' +
-      '          <div class="col-sm-4 wizard-buttons pull-left">' +
+      '      <div class="wizard-footer pg-prop-footer">' +
+        '      <div class="pg-prop-status-bar" style="visibility:hidden">' +
+        '        <div class="media error-in-footer bg-danger-light border-danger text-danger text-14">' +
+        '          <div class="media-body media-middle">' +
+        '            <div class="alert-icon error-icon">' +
+        '              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>' +
+        '            </div>' +
+        '            <div class="alert-text">' +
+        '            </div>' +
+        '            <div class="close-error-bar">' +
+        '              <a class="close-error">x</a>' +
+        '            </div>' +
+        '          </div>' +
+        '        </div>' +
+        '      </div>' +
+      '        <div class="wizard-buttons d-flex">' +
+      '          <div>' +
       '            <button title = "' + gettext('Help for this dialog.') + '"' +
-      '              class="btn btn-default pull-left wizard-help" <%=this.options.wizard_help ? "" : "disabled" %>>' +
+      '              class="btn btn-secondary pull-left wizard-help" <%=this.options.wizard_help ? "" : "disabled" %>>' +
       '              <span class="fa fa-lg fa-question"></span></button>' +
       '          </div>' +
-      '          <div class="col-sm-8">' +
-      '            <div class="wizard-buttons">' +
-      '              <button class="btn btn-primary wizard-back" <%=this.options.disable_prev ? "disabled" : ""%>>' +
+      '          <div class="ml-auto">' +
+      '              <button class="btn btn-secondary wizard-cancel" <%=this.options.disable_cancel ? "disabled" : ""%>>' +
+      '                <i class="fa fa-lg fa-close"></i>' + gettext('Cancel') + '</button>' +
+      '              <button class="btn btn-secondary wizard-back" <%=this.options.disable_prev ? "disabled" : ""%>>' +
       '                <i class="fa fa-backward"></i>' + gettext('Back') + '</button>' +
-      '              <button class="btn btn-primary wizard-next" <%=this.options.disable_next ? "disabled" : ""%>>' +
+      '              <button class="btn btn-secondary wizard-next" <%=this.options.disable_next ? "disabled" : ""%>>' +
       '                ' + gettext('Next') +
       '                <i class="fa fa-forward"></i></button>' +
-      '              <button class="btn btn-danger wizard-cancel" <%=this.options.disable_cancel ? "disabled" : ""%>>' +
-      '                <i class="fa fa-lg fa-close"></i>' + gettext('Cancel') + '</button>' +
       '              <button class="btn btn-primary wizard-finish" <%=this.options.disable_finish ? "disabled" : ""%>>' +
       '                ' + gettext('Finish') + '</button>' +
-      '            </div>' +
       '          </div>' +
       '        </div>' +
       '      </div>' +

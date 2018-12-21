@@ -69,15 +69,14 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         retry_count = 0
         while retry_count < 5:
             try:
-                self.page.find_by_xpath(
-                    "//*[contains(@class,'pg-toolbar-btn') and "
-                    "contains(@title, 'Query Tool')]").click()
+                self.page.find_by_css_selector(
+                    ".wcFrameButton[title='Query Tool']").click()
                 break
             except StaleElementReferenceException:
                 retry_count += 1
 
         time.sleep(0.5)
-        self.page.find_by_xpath("//*[contains(@class,'wcTabIcon fa fa-bolt')]")
+        self.page.find_by_css_selector(".wcPanelTab .wcTabIcon.fa.fa-bolt")
 
     def test_view_data_tool_button(self):
         self.page.select_tree_item(self.test_db)
@@ -89,28 +88,26 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         retry_count = 0
         while retry_count < 5:
             try:
-                self.page.find_by_xpath(
-                    "//*[contains(@class,'pg-toolbar-btn') and "
-                    "contains(@title, 'View Data')]").click()
+                self.page.find_by_css_selector(
+                    ".wcFrameButton[title='View Data']").click()
                 break
             except StaleElementReferenceException:
                 retry_count += 1
 
         time.sleep(0.5)
-        self.page.find_by_xpath("//*[contains(@class,'wcTabIcon fa fa-bolt')]")
+        self.page.find_by_css_selector(".wcPanelTab .wcTabIcon.fa.fa-bolt")
 
     def test_filtered_rows_tool_button(self):
         retry_count = 0
         while retry_count < 5:
             try:
-                self.page.find_by_xpath(
-                    "//*[contains(@class,'pg-toolbar-btn') and "
-                    "contains(@title, 'Filtered Rows')]").click()
+                self.page.find_by_css_selector(
+                    ".wcFrameButton[title='Filtered Rows']").click()
                 break
             except StaleElementReferenceException:
                 retry_count += 1
 
         time.sleep(0.5)
-        self.page.find_by_xpath("//*[contains(@class, 'ajs-header') and "
-                                "contains(., 'Data Filter')]")
+        self.page.find_by_css_selector(
+            ".alertify .ajs-header[data-title='Data Filter']")
         self.page.click_modal('Cancel')

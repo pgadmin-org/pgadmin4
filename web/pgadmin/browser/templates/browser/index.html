@@ -90,18 +90,19 @@ window.onload = function(e){
 {% endblock %}
 
 {% block body %}
-<div id="pg-spinner">
+<div id="pg-spinner" class="pg-sp-container">
   <div class="pg-sp-content">
-    <div class="row"><div class="col-12 pg-sp-icon fa fa-spinner fa-pulse"></div></div>
+    <div class="row"><div class="col-12 pg-sp-icon"></div></div>
     <div class="row"><div class="col-12 pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
   </div>
 </div>
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark pg-navbar">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary pg-navbar">
     <a class="navbar-brand pgadmin_header_logo" onClick="return false;" href="{{ '#' }}"
        title="{{ config.APP_NAME }} {{ _('logo') }}">
         <i class="app-icon {{ config.APP_ICON }}"></i>
         <span>&nbsp;{{ config.APP_NAME }}</span>
     </a>
+    <div class="pg-navbar-brand-arrow"></div>
     <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu">
         <span class="sr-only">{{ _('Toggle navigation') }}</span>
         <span class="navbar-toggler-icon"></span>
@@ -141,7 +142,7 @@ window.onload = function(e){
             </li>
         </ul>
         {% if config.SERVER_MODE %}
-        <ul class="navbar-nav mx-2">
+        <ul class="navbar-nav">
             <li class="nav-item active dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"
                    role="button" aria-expanded="false" id="navbar-user"></a>

@@ -483,16 +483,16 @@ Backform, commonUtils, supportedNodes
             setup: function() {
               return {
                 buttons: [{
+                  text: gettext('Cancel'),
+                  key: 27,
+                  'data-btn-name': 'cancel',
+                  className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
+                }, {
                   text: gettext('OK'),
                   key: 13,
                   disable: true,
                   'data-btn-name': 'ok',
-                  className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
-                }, {
-                  text: gettext('Cancel'),
-                  key: 27,
-                  'data-btn-name': 'cancel',
-                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                  className: 'btn btn-primary fa fa-lg fa-check pg-alertify-button',
                 }],
                 options: {
                   modal: true,
@@ -588,7 +588,7 @@ Backform, commonUtils, supportedNodes
               var self = this;
 
               // Disable OK button until user provides valid Filename
-              this.__internal.buttons[0].element.disabled = true;
+              this.__internal.buttons[1].element.disabled = true;
 
               var $container = $('<div class=\'import_dlg\'></div>'),
                 n = this.settings.pg_node,
@@ -626,21 +626,21 @@ Backform, commonUtils, supportedNodes
                       if (!_.isUndefined(this.get('escape')) && this.get('escape') !== '' &&
                         this.get('escape').length == 1) {
                         this.errorModel.clear();
-                        self.__internal.buttons[0].element.disabled = false;
+                        self.__internal.buttons[1].element.disabled = false;
                       } else {
-                        self.__internal.buttons[0].element.disabled = true;
+                        self.__internal.buttons[1].element.disabled = true;
                         this.errorModel.set('escape', gettext('Escape should contain only one character'));
                       }
                     } else {
-                      self.__internal.buttons[0].element.disabled = true;
+                      self.__internal.buttons[1].element.disabled = true;
                       this.errorModel.set('quote', gettext('Quote should contain only one character'));
                     }
                   } else {
-                    self.__internal.buttons[0].element.disabled = true;
+                    self.__internal.buttons[1].element.disabled = true;
                     this.errorModel.set('delimiter', gettext('Delimiter should contain only one character'));
                   }
                 } else {
-                  self.__internal.buttons[0].element.disabled = true;
+                  self.__internal.buttons[1].element.disabled = true;
                   this.errorModel.set('filename', gettext('Please provide filename'));
                 }
               });

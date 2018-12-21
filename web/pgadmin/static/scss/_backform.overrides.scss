@@ -60,3 +60,11 @@
 div.backform_control_notes label.control-label {
 	min-width: 0px;
 }
+
+.subnode-header label {
+  max-width: 90% !important;
+}
+
+.set-group {
+  margin-bottom: $form-group-margin-bottom;
+}

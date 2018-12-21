@@ -22,38 +22,27 @@ samp,
     margin-bottom: 3px;
 }
 
-#pg-spinner {
+.pg-sp-container {
   position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: $color-bg-inverse;
-  opacity: 0.6;
+  min-width: 100%;
+  min-height: 100%;
+  background: $loading-bg;
   z-index: 1056;
-}
 
-#pg-spinner .pg-sp-icon {
-  font-size: 50px;
+  .pg-sp-content {
+    position: absolute;
+    width: 100%;
+    top: 40%;
+  }
+}
+.pg-sp-icon {
+  background: $loader-icon center center no-repeat;
+  height: 75px;
+  width: 100%;
   text-align: center;
-  color: $color-gray-light;
 }
-
-#pg-spinner .pg-sp-text {
+.pg-sp-text {
   font-size: 20px;
   text-align: center;
-  color: $color-fg-inverse;
-}
-
-.pg-toolbar-btn:hover {
-  border: none;
-  background-color: $color-bg !important;
-}
-
-.pg-toolbar-btn {
-  width: 25px !important;
-  height: 23px !important;
-  background-color: $color-bg !important;
-  font-size: 14px !important;
-  color: $color-gray-darker !important;
-  border: none;
+  color: $loading-fg;
 }

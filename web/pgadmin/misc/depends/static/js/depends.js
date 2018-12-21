@@ -73,6 +73,7 @@ define('misc.depends', [
         var $container = panel[0].layout().scene().find('.pg-panel-content'),
           $gridContainer = $container.find('.pg-panel-depends-container'),
           grid = new Backgrid.Grid({
+            emptyText: 'No data found',
             columns: [{
               name: 'type',
               label: gettext('Type'),
@@ -103,7 +104,7 @@ define('misc.depends', [
             ],
 
             collection: collection,
-            className: 'backgrid presentation table backgrid-striped table-bordered table-hover',
+            className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
           });
 
         // Condition is used to save grid object to change the label of the header.

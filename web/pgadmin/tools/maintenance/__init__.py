@@ -130,13 +130,11 @@ class Message(IProcessDesc):
 
         res = '<div>' + html.safe_str(res)
 
-        res += '</div><div>'
-        res += html.safe_str(
-            _("Running Query:")
-        )
-        res += '</b><br><i>'
+        res += '</div><div class="py-1">'
+        res += _("Running Query:")
+        res += '<div class="pg-bg-cmd enable-selection p-1">'
         res += html.safe_str(self.query)
-        res += '</i></div>'
+        res += '</div></div>'
 
         return res
 

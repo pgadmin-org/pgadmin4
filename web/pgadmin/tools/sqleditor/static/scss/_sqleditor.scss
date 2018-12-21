@@ -1,13 +1,31 @@
 .filter-title {
   background-color: $color-primary;
   padding: 2px;
-  color: $color-fg-inverse;
+  color: $color-primary-fg;
   font-size: 13px;
 }
 
-#editor-panel .CodeMirror-activeline-background {
-  background: $color-primary-lighter;
+.sql-icon-lg {
+  font-size: 0.875rem;
+  line-height: 1.3;
 }
+
+.sql_textarea {
+  height: 100%;
+}
+
+.sql_textarea .CodeMirror-scroll {
+  z-index: 0;
+}
+
+#editor-panel .CodeMirror-activeline-background {
+  background: $color-primary-light;
+}
+
+.connection_status {
+  width: 40px;
+}
+
 
 .ajs-body .warn-icon {
   color: $color-warning;
@@ -18,7 +36,8 @@
 
 .connection_status_wrapper {
   width: 100%;
-  background-color: $color-gray-white;
+  border-top: $panel-border;
+  border-bottom: $panel-border;
 }
 
 .connection_status .fa-clock-o,
@@ -39,8 +58,7 @@ li.CodeMirror-hint-active {
 .filter-container {
   position: relative;
   background-color: $color-bg;
-  border: 1px solid black;
-  box-shadow: 0.5px 0.5px 5px #000;
+  border: 1px solid $border-color;
   padding-bottom: 30px;
   top: 10px;
   z-index: 1;
@@ -51,6 +69,8 @@ li.CodeMirror-hint-active {
 .limit-enabled {
   background-color: $color-bg;
 }
+
+
 
 .CodeMirror-hint {
   margin: 0;
@@ -67,14 +87,14 @@ li.CodeMirror-hint-active {
 }
 
 .slick-cell.selected span[data-cell-type="row-header-selector"] {
-  color: $color-fg-inverse;
+  color: $color-primary-fg;
 }
 
 .slick-cell.cell-move-handle {
   font-weight: bold;
   text-align: right;
   border-right: solid  $color-gray;
-  background: $color-gray-white;
+  background: $color-gray-lighter;
   cursor: move;
 }
 
@@ -87,7 +107,7 @@ li.CodeMirror-hint-active {
 }
 
 .slick-row.complete {
-  background-color: $color-success-lighter;
+  background-color: $color-success-light;
   color:  $color-gray-dark;
 }
 
@@ -103,20 +123,41 @@ li.CodeMirror-hint-active {
 #datagrid .slick-header .slick-header-columns {
   background: $color-bg;
   height: 40px;
-  border-bottom: none;
+  border-bottom: $panel-border;
 }
 
 #datagrid .slick-header .slick-header-column.ui-state-default {
-  color:  $color-gray-dark;
   padding: 4px 0 3px 6px;
-  background-color: $color-gray-lighter;
-  border-bottom: 1px solid $color-gray-light !important;
-  border-right: 1px solid $color-gray-light !important;
+  border-bottom: $panel-border;
+  border-right: $panel-border;
+}
+
+.slick-row:hover .slick-cell{
+  border-top: $table-hover-border;
+  border-bottom: $table-hover-border;
+  background-color: $table-hover-bg-color;
 }
 
 #datagrid .slick-header .slick-header-column.selected {
   background-color: $color-primary;
-  color: $color-fg-inverse;
+  color: $color-primary-fg;
+}
+.slick-row .slick-cell {
+  border-bottom: $panel-border;
+  border-right: $panel-border;
+  z-index: 0;
+}
+
+#datagrid {
+  background: none;
+  background-color: $datagrid-bg;
+}
+
+.ui-widget-content.slick-row {
+  &.even,  &.odd {
+    background: none;
+    background-color: $table-bg;
+  }
 }
 
 /* Remove active cell border */
@@ -128,7 +169,7 @@ li.CodeMirror-hint-active {
 
 /* To highlight all newly inserted rows */
 .grid-canvas .new_row {
-  background: $color-success-lighter !important;
+  background: $color-success-light !important;
 }
 
 /* To highlight all the updated rows */
@@ -138,7 +179,7 @@ li.CodeMirror-hint-active {
 
 /* To highlight row at fault */
 .grid-canvas .new_row.error, .grid-canvas .updated_row.error {
-  background: $color-danger-lighter !important;
+  background: $color-danger-light !important;
 }
 
 /* Disabled row */
@@ -148,28 +189,30 @@ li.CodeMirror-hint-active {
 
 /* Disabled cell */
 .grid-canvas .disabled_cell {
-  color: $color-gray-light;
+  color: $text-muted;
 }
 
 /* Override selected row color */
 #datagrid .slick-row .slick-cell.selected {
-    background-color: $color-primary-lighter;
+    background-color: $table-bg-selected;
 }
 
 /* color the first column */
-#datagrid .slick-row .slick-cell.l0.r0 {
-  background-color: $color-gray-lighter;
-}
-
 #datagrid .slick-row .slick-cell.l0.r0.selected {
   background-color: $color-primary;
+}
+
+#datagrid .slick-row > .slick-cell:not(.l0):not(.r0).selected {
+  background-color: $table-hover-bg-color;
+  border-top: $table-hover-border;
+  border-bottom: $table-hover-border;
 }
 
 #datagrid div.slick-header.ui-state-default {
   background: $color-bg;
   border-bottom: none;
   border-right: none;
-  border-top: 1px solid  $color-gray;
+  border-top: none;
 }
 
 .pg_text_editor {
@@ -182,20 +225,35 @@ li.CodeMirror-hint-active {
   border-radius:10px;
 }
 
-.CodeMirror-foldmarker {
-  color: $color-primary;
-  text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
-  font-family: "Open Sans";
-  line-height: .3;
-  cursor: pointer;
-}
-
-.editor-title-connection {
-  width:calc(100% - 43px);
-  color: $color-fg-inverse;
-  background-color: $color-primary;
+.editor-title {
+  padding: $sql-title-padding;
+  background: $sql-title-bg;
+  color: $sql-title-fg;
 }
 
 .pg_text_editor textarea {
   resize: both;
+}
+
+.sql-editor-message {
+  white-space:pre-wrap;
+  font-family: $font-family-editor;
+  padding-top: 5px;
+  padding-left: 10px;
+  overflow: auto;
+  height: 100%;
+  font-size: 0.925em;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.view-geometry-property-table .td-disabled{
+  color: $color-gray-lighter;
+}
+
+/* For leaflet map background */
+.geometry-viewer-container-plain-background {
+  background: $color-bg;
 }

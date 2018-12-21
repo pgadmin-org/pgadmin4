@@ -1,8 +1,6 @@
 .preferences_dialog {
   height: 100%;
   width: 100%;
-  padding-top: 34px;
-  padding-bottom: 39px;
 }
 
 .preferences_content {
@@ -32,16 +30,4 @@ div.pgadmin-preference-body div.ajs-content {
   font-weight: normal !important;
 }
 
-.preferences_content input[type="checkbox"]:focus {
-  outline: 5px auto -webkit-focus-ring-color;
-}
 
-.preferences_content .pgadmin-controls input[type="checkbox"] {
-  margin-left: -20px !important;
-}
-
-.preferences_content .pgadmin-controls .shift,
-.preferences_content .pgadmin-controls .control,
-.preferences_content .pgadmin-controls .alt {
-  margin-left: 15px !important;
-}

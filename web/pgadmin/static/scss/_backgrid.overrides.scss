@@ -1,14 +1,29 @@
-.backgrid > th, .backgrid > td {
-  padding: 2px;
+.backgrid th, .backgrid td {
   font-weight: normal!important;
+  text-align: left;
 }
 
-.subnode > table.backgrid > thead > tr > th:first-child{
-  border-left-color: $color-primary;
-}
+.backgrid.backgrid-striped tbody {
+  & tr:nth-child(even) {
+    background: $table-bg;
 
-.subnode > table.backgrid > thead > tr > th:last-child{
-  border-right-color: $color-primary;
+    & td.editor {
+      background: $table-bg;
+      outline: none;
+    }
+  }
+  & tr:nth-child(odd) {
+    background: $table-bg;
+    & td.editor {
+      background: $table-bg;
+      outline: none;
+    }
+  }
+}
+.backgrid tbody tr.empty td {
+  display: table-cell;
+  font-style: normal;
+  color: $text-muted;
 }
 
 .backgrid .textarea-cell {
@@ -52,52 +67,21 @@
      -moz-appearance: none;
 }
 
-.subnode > table.backgrid{
-    width: 100%;
-    margin: 0px;
-    padding: 0;
-    margin-bottom: 15px;
+.backgrid {
+  border-radius: inherit;
 }
 
-.backgrid > thead th{
-    background-color: $color-primary;
-}
-
-.backgrid > thead > th, .backgrid > tbody > td {
-  line-height: 18px;
-}
-
-.backgrid > thead > th {
-    letter-spacing:0.5px
-}
-
-.backgrid > tbody > td {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 2px;
-    padding-right: 2px;
-}
-
-.backgrid > thead th a {
-    color: $color-fg-inverse;
-    font-size: 12px;
-}
-
-.backgrid > th.object {
-    width: 30px;
-}
-
-.backgrid.presentation {
-    background-color: $color-gray-lighter;
-}
-
-.backgrid.presentation td.renderable {
-    padding: 6px 3px 3px 3px;
-    font-size: 12px;
+.backgrid thead td,
+.backgrid thead th{
+  background: $color-bg-theme;
+  background-color: $color-bg-theme !important;
+  text-align: left;
 }
 
 .backgrid:not(.presentation) td.renderable:not(.editable):not(.delete-cell) {
     background-color: $color-gray-lighter;
+    // if transparent border then setting color will help
+    border-bottom-color: $color-gray-lighter;
 }
 
 .backgrid tr.header td.renderable:not(.editable):not(.delete-cell) {
@@ -109,27 +93,8 @@
     white-space: pre-wrap;
 }
 
-table.backgrid tr.new {
-  background-color: rgba($color-primary, 0.1) !important;
-  box-sizing: border-box;
-  outline: 1px solid rgba($color-primary, 0.8);
-  outline-offset: -1px;
-}
-
-.pg-panel-depends-container >table.backgrid.table-bordered {
-  border: 0px;
-}
-
-.alertify_tools_dialog_backgrid_properties {
-  top: 43px !important;
-}
-
-.pg-panel-statistics-container >table.backgrid.table-bordered {
-  border: 0px;
-}
-
 table.backgrid {
-  overflow: auto;
+  position: initial;
 }
 
 .backgrid td.editor input[type=password] {
@@ -162,13 +127,6 @@ table.backgrid {
   user-select: text;
 }
 
-.backgrid tr th button {
-  background: none;
-  border: none;
-  color: $color-fg-inverse;
-  padding: 0;
-}
-
 /* Latest backgrid adds column name like `label` to td element, override color*/
 .backgrid td.label {
   color:  $color-gray-dark;
@@ -178,4 +136,149 @@ table.backgrid {
 
 span.form-control:disabled {
   @extend .form-control:disabled
+}
+
+.subnode {
+  border: $panel-border;
+  background: $color-bg-theme;
+}
+
+.subnode-noouter-border {
+  border: none !important;
+}
+
+.subnode > table.backgrid > thead > tr > th:last-child {
+  border-right-color: $color-primary;
+}
+
+.subnode > table.backgrid {
+    width: 100%;
+    margin: 0px;
+    padding: 0;
+}
+
+.subnode-header button {
+  border-left: 1px solid $border-color;
+  border-bottom-width: 0px !important;
+  border-top-width: 0px !important;
+  border-right-width: 0px !important;
+  border-radius: 0px !important;
+  text-align: center !important;
+  padding: 8px 8px !important;
+  min-height: 31px !important;
+  margin: 0px !important;
+}
+
+.subnode-header .control-label {
+  min-height: 31px;
+  font-weight: bold;
+}
+
+.subnode-footer {
+  text-align: right;
+  border-color: $color-gray-light;
+  border-style: inset inset inset solid;
+  border-width: 2px 1px 0;
+  margin-top: -10px;
+}
+
+.subnode-footer .ajs-button {
+  margin: 2px 2px 0;
+}
+
+
+/* Sub-Node */
+
+.edit-cell, .delete-cell {
+    text-align:center !important;
+    width:25px;
+    height:29px !important;
+}
+
+.subnode-header {
+    background-color: $color-bg-theme;
+    color: $color-fg-theme;
+    border-bottom: $panel-border;
+}
+
+.subnode-header > button.add {
+    float: right;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    margin-top: 5px;
+}
+
+.subnode-dialog {
+    bottom: 0;
+    left: 0;
+    overflow-x: auto;
+    overflow-y: auto;
+    right: 0;
+    height: auto;
+    margin-top: 0px;
+}
+.subnode-body {
+    height: auto;
+    overflow: inherit;
+    background-color: $color-bg;
+    border: 1px solid $border-color;
+    border-radius: $panel-border-radius;
+}
+.subnode-footer {
+    height: 38px;
+    margin: 0px, 15px;
+    min-height: 40px;
+    vertical-align: bottom;
+}
+
+.sub-node-form {
+    height: auto;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+}
+
+.sub-node-form > ul.tab-content{
+    background-color: $color-bg;
+    padding-left: 15px;
+    left: 1px;
+}
+
+.subnode-header-form {
+    background-color: $color-gray-lighter;
+    padding: 7px;
+    border-bottom: $panel-border;
+}
+
+.subnode-header-form button.add {
+    float: right;
+    margin-right: 0px;
+}
+
+.subnode-error .help-block {
+    color: $color-danger;
+}
+
+table.backgrid {
+  overflow: auto;
+}
+
+.backgrid tbody {
+  & td.editor {
+    background-color: $color-gray-light !important;
+    border-bottom-color: $color-gray-light !important;
+    outline: none !important;
+  }
+
+  tr.editor-row  {
+    & > td {
+      padding: 15px !important;
+      background-color: $color-gray-light !important;
+      border-top: none !important;
+      border-bottom-color: $color-gray-light !important;
+    }
+  }
+}
+
+table tr th button {
+  font-weight: bold;
 }

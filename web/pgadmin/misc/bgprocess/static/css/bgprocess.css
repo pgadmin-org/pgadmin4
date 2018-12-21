@@ -1,6 +1,3 @@
-.ajs-bg-bgprocess.ajs-visible {
-  padding: 0px !important;
-}
 
 .ajs-bg-bgprocess .col-xs-12 {
   padding-right: 5px;
@@ -25,17 +22,9 @@
 }
 
 ol.pg-bg-process-logs {
-  padding: 5px 10px 5px 60px;
   height: 100%;
   overflow: auto;
   width: 100%;
-  font-style: italic;
-  font-size: small;
-}
-
-.pg-bg-res-out, .pg-bg-res-err {
-  padding-left: 10px;
-  white-space: pre-wrap;
 }
 
 .pg-panel-content .bg-process-stats p{

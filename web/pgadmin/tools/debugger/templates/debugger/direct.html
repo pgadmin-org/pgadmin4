@@ -32,56 +32,53 @@ try {
     .alertify-notifier{-webkit-transform: none;}
     .alertify-notifier .ajs-message{-webkit-transform: none;}
     .alertify .ajs-dialog.ajs-shake{-webkit-animation-name: none;}
-    .debugger-container .wcLoadingIcon.fa-pulse{-webkit-animation: none;}
 </style>
 {% endif %}
 <div class="debugger_main_container" tabindex="0">
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div id="btn-toolbar" class="pg-prop-btn-group bg-gray-lighter border-gray-light" role="toolbar" aria-label="">
-            <div class="btn-group" role="group" aria-label="">
-                <button type="button" class="btn btn-default btn-step-into" id="btn-step-into"
-                        title=""
-                        accesskey=""
-                        tabindex="0" autofocus="autofocus">
-                    <i class="fa fa-indent"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-step-over" id="btn-step-over"
-                        title=""
-                        accesskey=""
-                        tabindex="0">
-                    <i class="fa fa-outdent"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-continue" id="btn-continue"
-                        title=""
-                        accesskey=""
-                        tabindex="0">
-                    <i class="fa fa-play-circle"></i>
-                </button>
-            </div>
-            <div class="btn-group" role="group" aria-label="">
-                <button type="button" class="btn btn-default btn-toggle-breakpoint" id="btn-toggle-breakpoint"
-                        title=""
-                        accesskey=""
-                        tabindex="0">
-                    <i class="fa fa-circle"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-clear-breakpoint" id="btn-clear-breakpoint"
-                        title=""
-                        accesskey=""
-                        tabindex="0">
-                    <i class="fa fa-ban"></i>
-                </button>
-            </div>
-            <div class="btn-group" role="group" aria-label="">
-                <button type="button" class="btn btn-default btn-stop" id="btn-stop"
-                        accesskey=""
-                        title=""
-                        tabindex="0">
-                    <i class="fa fa-stop-circle"></i>
-                </button>
-            </div>
+    <div id="btn-toolbar" class="editor-toolbar" role="toolbar" aria-label="">
+        <div class="btn-group" role="group" aria-label="">
+            <button type="button" class="btn btn-sm btn-secondary btn-step-into" id="btn-step-into"
+                    title=""
+                    accesskey=""
+                    tabindex="0" autofocus="autofocus">
+                <i class="fa fa-indent sql-icon-lg"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary btn-step-over" id="btn-step-over"
+                    title=""
+                    accesskey=""
+                    tabindex="0">
+                <i class="fa fa-outdent sql-icon-lg"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary btn-continue" id="btn-continue"
+                    title=""
+                    accesskey=""
+                    tabindex="0">
+                <i class="fa fa-play-circle sql-icon-lg"></i>
+            </button>
         </div>
-    </nav>
+        <div class="btn-group" role="group" aria-label="">
+            <button type="button" class="btn btn-sm btn-secondary btn-toggle-breakpoint" id="btn-toggle-breakpoint"
+                    title=""
+                    accesskey=""
+                    tabindex="0">
+                <i class="fa fa-circle sql-icon-lg"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary btn-clear-breakpoint" id="btn-clear-breakpoint"
+                    title=""
+                    accesskey=""
+                    tabindex="0">
+                <i class="fa fa-ban sql-icon-lg"></i>
+            </button>
+        </div>
+        <div class="btn-group" role="group" aria-label="">
+            <button type="button" class="btn btn-sm btn-secondary btn-stop" id="btn-stop"
+                    accesskey=""
+                    title=""
+                    tabindex="0">
+                <i class="fa fa-stop-circle sql-icon-lg"></i>
+            </button>
+        </div>
+    </div>
     <div id="container" class="debugger-container" tabindex="0"></div>
 </div>
 {% endblock %}

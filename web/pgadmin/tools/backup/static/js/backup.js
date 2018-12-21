@@ -50,7 +50,7 @@ define([
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
     ].join('\n')),
-    className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-xs-12',
+    className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-xs-12 row',
   });
 
   //Backup Model (Server Node)
@@ -242,6 +242,7 @@ define([
       control: 'fieldset',
       label: gettext('Sections'),
       group: gettext('Dump options'),
+      contentClass: 'row',
       schema: [{
         id: 'pre_data',
         label: gettext('Pre-data'),
@@ -283,6 +284,7 @@ define([
       control: 'fieldset',
       label: gettext('Type of objects'),
       group: gettext('Dump options'),
+      contentClass: 'row',
       schema: [{
         id: 'only_data',
         label: gettext('Only data'),
@@ -326,6 +328,7 @@ define([
       control: 'fieldset',
       label: gettext('Do not save'),
       group: gettext('Dump options'),
+      contentClass: 'row',
       schema: [{
         id: 'dns_owner',
         label: gettext('Owner'),
@@ -370,6 +373,7 @@ define([
       control: 'fieldset',
       label: gettext('Queries'),
       group: gettext('Dump options'),
+      contentClass: 'row',
       schema: [{
         id: 'use_column_inserts',
         label: gettext('Use Column Inserts'),
@@ -429,6 +433,7 @@ define([
       control: 'fieldset',
       label: gettext('Disable'),
       group: gettext('Dump options'),
+      contentClass: 'row',
       schema: [{
         id: 'disable_trigger',
         label: gettext('Trigger'),
@@ -450,6 +455,7 @@ define([
       control: 'fieldset',
       label: gettext('Miscellaneous'),
       group: gettext('Dump options'),
+      contentClass: 'row',
       schema: [{
         id: 'with_oids',
         label: gettext('With OID(s)'),

@@ -19,10 +19,6 @@ define([
       return (new Backgrid.Extension.ClientSideFilter({
         collection: collection,
         placeholder: _('Filter by email'),
-
-        // The model fields to search for matches
-        fields: ['email'],
-
         // How long to wait after typing has stopped before searching can start
         wait: 150,
       }));
@@ -60,9 +56,9 @@ define([
             setup: function() {
               return {
                 buttons: [{
-                  text: '<span class="fa fa-lg fa-question"></span>',
+                  text: '',
                   key: 112,
-                  className: 'btn btn-default pull-left',
+                  className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
                   attrs: {
                     name: 'dialog_help',
                     type: 'button',
@@ -75,7 +71,7 @@ define([
                 }, {
                   text: gettext('Close'),
                   key: 27,
-                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                  className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
                   attrs: {
                     name: 'close',
                     type: 'button',
@@ -126,7 +122,7 @@ define([
         });
       }
 
-      alertify.ChangePassword(title, url).resizeTo('75%', '70%');
+      alertify.ChangePassword(title, url).resizeTo('55%', '60%');
     },
 
     isPgaLoginRequired(xhr) {
@@ -167,7 +163,7 @@ define([
               return {
                 buttons: [{
                   text: gettext('Close'), key: 27,
-                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                  className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
                   attrs:{name:'close', type:'button'},
                 }],
                 // Set options for dialog
@@ -576,9 +572,9 @@ define([
             setup: function() {
               return {
                 buttons: [{
-                  text: '<span class="fa fa-lg fa-question"></span>',
+                  text: '',
                   key: 112,
-                  className: 'btn btn-default pull-left',
+                  className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
                   attrs: {
                     name: 'dialog_help',
                     type: 'button',
@@ -591,7 +587,7 @@ define([
                 }, {
                   text: gettext('Close'),
                   key: 27,
-                  className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button user_management_pg-alertify-button',
+                  className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button user_management_pg-alertify-button',
                   attrs: {
                     name: 'close',
                     type: 'button',
@@ -630,7 +626,7 @@ define([
               var footerTpl = _.template([
                   '<div class="pg-prop-footer" style="visibility:hidden;">',
                   '<div class="pg-prop-status-bar">',
-                  '<div class="media error-in-footer bg-danger-lighter border-danger-light text-danger text-14">',
+                  '<div class="media error-in-footer bg-danger-light border-danger text-danger text-14">',
                   '<div class="media-body media-middle">',
                   '<div class="alert-icon error-icon">',
                   '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
@@ -755,12 +751,20 @@ define([
                   },
                 }),
                 userCollection = this.userCollection = new UserCollection(),
-                header = [
-                  '<div class="subnode-header">',
-                  '  <button class="btn btn-sm-sq btn-default add fa fa-plus" title="<%-add_title%>" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
-                  '  <div class="control-label search_users"></div>',
-                  '</div>',
-                ].join('\n'),
+                header =
+                  `<div class="navtab-inline-controls">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text fa fa-search" id="labelSearch"></span>
+                        </div>
+                          <input type="search" class="form-control" id="txtGridSearch" placeholder="Search" aria-label="Search" aria-describedby="labelSearch" />
+                        </div>
+                        <button id="btn_refresh" type="button" class="btn btn-secondary btn-navtab-inline add" title="Add">
+                          <span class="fa fa-plus "></span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>`,
                 headerTpl = _.template(header),
                 data = {
                   canAdd: true,
@@ -791,23 +795,18 @@ define([
                 row: UserRow,
                 columns: gridSchema.columns,
                 collection: userCollection,
-                className: 'backgrid table-bordered',
+                className: 'backgrid table table-bordered table-noouter-border table-hover',
               });
 
               $gridBody.append(view.render().$el[0]);
 
-              this.$content = $('<div class=\'user_management object subnode\'></div>').append(
+              this.$content = $('<div class=\'user_management object subnode subnode-noouter-border\'></div>').append(
                 headerTpl(data)).append($gridBody).append($statusBar);
-
-              $(this.elements.body.childNodes[0]).addClass(
-                'alertify_tools_dialog_backgrid_properties');
 
               this.elements.content.appendChild(this.$content[0]);
 
               // Render Search Filter
-              $('.search_users').append(
-                userFilter(userCollection).render().el);
-
+              userFilter(userCollection).setCustomSearchBox($('#txtGridSearch'));
               userCollection.fetch();
 
               this.$content.find('a.close-error').on('click',() => {

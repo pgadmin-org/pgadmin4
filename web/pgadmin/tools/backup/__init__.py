@@ -194,11 +194,11 @@ class BackupMessage(IProcessDesc):
             # It should never reach here.
             res += "Backup"
 
-        res += '</div><div>'
+        res += '</div><div class="py-1">'
         res += _("Running command:")
-        res += '</b><br><span class="pg-bg-cmd enable-selection">'
+        res += '<div class="pg-bg-cmd enable-selection p-1">'
         res += html.safe_str(cmd + self.cmd)
-        res += '</span></div>'
+        res += '</div></div>'
 
         return res
 

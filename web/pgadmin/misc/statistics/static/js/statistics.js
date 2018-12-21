@@ -86,7 +86,7 @@ define('misc.statistics', [
             includeDate: false, includeTime: true, includeMilli: true
           }) */
     },
-    GRID_CLASSES = 'backgrid presentation table backgrid-striped table-bordered table-hover',
+    GRID_CLASSES = 'backgrid presentation table table-bordered table-noouter-border table-hover',
     wcDocker = window.wcDocker;
 
   _.extend(
@@ -257,6 +257,7 @@ define('misc.statistics', [
               }
 
               self.grid = new Backgrid.Grid({
+                emptyText: 'No data found',
                 columns: self.columns,
                 collection: self.collection,
                 className: GRID_CLASSES,

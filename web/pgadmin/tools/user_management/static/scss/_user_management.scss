@@ -1,10 +1,12 @@
 .bg-user-invalid {
-  @extend .bg-warning-lighter;
+  @extend .bg-warning-light;
+}
+
+.user_container {
+  border-bottom: $panel-border;
 }
 
 .user_management {
-  margin: 0 10px !important;
-  width: calc(100% - 20px);
   height: 100%;
   overflow: hidden;
 }
@@ -33,10 +35,6 @@
 .user_management .search_users input{
   height:15px;
   margin-top: 3px;
-}
-
-.user_management .user_container {
-height: calc(100% - 35px);
 }
 
 .user_management input[placeholder] {

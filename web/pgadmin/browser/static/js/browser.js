@@ -117,7 +117,7 @@ define('pgadmin.browser', [
         showTitle: true,
         isCloseable: false,
         isPrivate: true,
-        icon: 'fa fa-binoculars',
+        icon: '',
         content: '<div id="tree" class="aciTree"></div>',
         onCreate: function(panel) {
           toolBar.initializeToolbar(panel, wcDocker);
@@ -127,7 +127,7 @@ define('pgadmin.browser', [
       'properties': new pgAdmin.Browser.Panel({
         name: 'properties',
         title: gettext('Properties'),
-        icon: 'fa fa-cogs',
+        icon: '',
         width: 500,
         isCloseable: false,
         isPrivate: true,
@@ -142,18 +142,18 @@ define('pgadmin.browser', [
       'statistics': new pgAdmin.Browser.Panel({
         name: 'statistics',
         title: gettext('Statistics'),
-        icon: 'fa fa-line-chart',
+        icon: '',
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container d-none"></div></div>',
+        content: '<div class="negative-space p-2"><div class="alert alert-info pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container d-none"></div></div>',
         events: panelEvents,
       }),
       // Reversed engineered SQL for the object
       'sql': new pgAdmin.Browser.Panel({
         name: 'sql',
         title: gettext('SQL'),
-        icon: 'fa fa-file-text-o',
+        icon: '',
         width: 500,
         isCloseable: false,
         isPrivate: true,
@@ -163,22 +163,22 @@ define('pgadmin.browser', [
       'dependencies': new pgAdmin.Browser.Panel({
         name: 'dependencies',
         title: gettext('Dependencies'),
-        icon: 'fa fa-hand-o-up',
+        icon: '',
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container d-none"></div></div>',
+        content: '<div class="negative-space p-2"><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container d-none"></div></div>',
         events: panelEvents,
       }),
       // Dependents of the object
       'dependents': new pgAdmin.Browser.Panel({
         name: 'dependents',
         title: gettext('Dependents'),
-        icon: 'fa fa-hand-o-down',
+        icon: '',
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container d-none"></div></div>',
+        content: '<div class="negative-space p-2"><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container d-none"></div></div>',
         events: panelEvents,
       }),
     },
@@ -320,13 +320,14 @@ define('pgadmin.browser', [
         // Create a dummy 'no object seleted' menu
         var create_submenu = pgAdmin.Browser.MenuGroup(
           obj.menu_categories['create'], [{
-            $el: $('<li><a class="dropdown-item text-white disabled" href="#">' + gettext('No object selected') + '</a></li>'),
+            $el: $('<li><a class="dropdown-item disabled" href="#">' + gettext('No object selected') + '</a></li>'),
             priority: 1,
             category: 'create',
             update: function() {},
           }], false);
         $obj_mnu.append(create_submenu.$el);
       }
+      pgAdmin.Browser.SubmenuEvents($obj_mnu);
     },
     save_current_layout: function(obj) {
       if(obj.docker) {
@@ -354,7 +355,10 @@ define('pgadmin.browser', [
         '#dockerContainer', {
           allowContextMenu: true,
           allowCollapse: false,
-          themePath: '../static/css',
+          loadingClass: 'pg-sp-icon',
+          themePath: url_for('static', {
+            'filename': 'css',
+          }),
           theme: 'webcabin.overrides.css',
         });
       if (obj.docker) {

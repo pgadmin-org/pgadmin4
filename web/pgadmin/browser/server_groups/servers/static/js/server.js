@@ -422,11 +422,11 @@ define('pgadmin.node.server', [
                 setup:function() {
                   return {
                     buttons: [{
-                      text: gettext('Ok'), key: 13, className: 'btn btn-primary',
-                      attrs: {name:'submit'},
-                    },{
                       text: gettext('Cancel'), key: 27,
-                      className: 'btn btn-danger', attrs: {name: 'cancel'},
+                      className: 'btn btn-secondary fa fa-times pg-alertify-button', attrs: {name: 'cancel'},
+                    },{
+                      text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
+                      attrs: {name:'submit'},
                     }],
                     // Set options for dialog
                     options: {
@@ -451,7 +451,7 @@ define('pgadmin.node.server', [
                 prepare: function() {
                   var self = this;
                   // Disable Ok button until user provides input
-                  this.__internal.buttons[0].element.disabled = true;
+                  this.__internal.buttons[1].element.disabled = true;
 
                   var $container = $('<div class=\'change_password\'></div>'),
                     newpasswordmodel = new newPasswordModel(
@@ -479,9 +479,9 @@ define('pgadmin.node.server', [
                       (_.isUndefined(password) || _.isNull(password) || password == '')) ||
                         _.isUndefined(newPassword) || _.isNull(newPassword) || newPassword == '' ||
                         _.isUndefined(confirmPassword) || _.isNull(confirmPassword) || confirmPassword == '') {
-                      self.__internal.buttons[0].element.disabled = true;
+                      self.__internal.buttons[1].element.disabled = true;
                     } else if (newPassword != confirmPassword) {
-                      self.__internal.buttons[0].element.disabled = true;
+                      self.__internal.buttons[1].element.disabled = true;
 
                       this.errorTimeout && clearTimeout(this.errorTimeout);
                       this.errorTimeout = setTimeout(function() {
@@ -489,7 +489,7 @@ define('pgadmin.node.server', [
                       } ,400);
                     }else {
                       that.errorModel.clear();
-                      self.__internal.buttons[0].element.disabled = false;
+                      self.__internal.buttons[1].element.disabled = false;
                     }
                   });
                 },
@@ -1191,10 +1191,10 @@ define('pgadmin.node.server', [
             setup:function() {
               return {
                 buttons:[{
-                  text: gettext('OK'), key: 13, className: 'btn btn-primary',
-                },{
-                  text: gettext('Cancel'), className: 'btn btn-danger',
+                  text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
                   key: 27,
+                },{
+                  text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
                 }],
                 focus: {element: '#password', select: true},
                 options: {

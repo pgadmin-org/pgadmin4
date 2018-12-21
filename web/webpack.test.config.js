@@ -72,6 +72,7 @@ module.exports = {
       'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
       'backform': path.join(__dirname, './node_modules/backform/src/backform'),
       'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),
+      'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),
       'sources': sourcesDir + '/js',
       'translations': regressionDir + '/javascript/fake_translations',
       'pgadmin.browser.endpoints': regressionDir + '/javascript/fake_endpoints',

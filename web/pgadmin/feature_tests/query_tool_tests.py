@@ -110,23 +110,25 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # this will set focus to correct iframe.
         self.page.fill_codemirror_area_with('')
 
-        query_op = self.page.find_by_id("btn-query-dropdown")
-        query_op.click()
-        ActionChains(self.driver).move_to_element(
-            query_op.find_element_by_xpath(
-                "//li[contains(.,'Explain Options')]")).perform()
-        self.page.driver.execute_script(
-            "arguments[0].scrollIntoView()",
-            self.page.find_by_xpath(
-                "//span[normalize-space(text())='Verbose']"))
+        explain_op = self.page.find_by_id("btn-explain-options-dropdown")
+        explain_op.click()
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in ('explain-verbose', 'explain-costs',
-                   'explain-buffers', 'explain-timing', 'auto-rollback'):
+                   'explain-buffers', 'explain-timing'):
             btn = self.page.find_by_id("btn-{}".format(op))
             check = btn.find_element_by_tag_name('i')
             if 'visibility-hidden' not in check.get_attribute('class'):
                 btn.click()
+
+        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op.click()
+
+        # disable auto rollback only if they are enabled
+        btn = self.page.find_by_id("btn-auto-rollback")
+        check = btn.find_element_by_tag_name('i')
+        if 'visibility-hidden' not in check.get_attribute('class'):
+            btn.click()
 
         # enable autocommit only if it's disabled
         btn = self.page.find_by_id("btn-auto-commit")
@@ -135,7 +137,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
             btn.click()
 
         # close menu
-        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
+        query_op.click()
 
     def _locate_database_tree_node(self):
         self.page.toggle_open_tree_item(self.server['name'])
@@ -249,20 +251,15 @@ SELECT generate_series(1, 1000) as id order by id desc"""
         wait = WebDriverWait(self.page.driver, 10)
 
         self.page.fill_codemirror_area_with(query)
-        query_op = self.page.find_by_id("btn-query-dropdown")
-        query_op.click()
-        ActionChains(self.driver).move_to_element(
-            query_op.find_element_by_xpath(
-                "//li[contains(.,'Explain Options')]")).perform()
 
-        self.page.driver.execute_script(
-            "arguments[0].scrollIntoView()",
-            self.page.find_by_xpath(
-                "//span[normalize-space(text())='Verbose']"))
+        explain_op = self.page.find_by_id("btn-explain-options-dropdown")
+        explain_op.click()
 
-        self.page.find_by_id("btn-explain-verbose").click()
+        # disable Explain options and auto rollback only if they are enabled.
+        for op in ('explain-verbose', 'explain-costs'):
+            self.page.find_by_id("btn-{}".format(op)).click()
 
-        self.page.find_by_id("btn-explain-costs").click()
+        explain_op.click()
 
         self.page.find_by_id("btn-explain").click()
 
@@ -288,21 +285,14 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
 
-        query_op = self.page.find_by_id("btn-query-dropdown")
-        query_op.click()
+        explain_op = self.page.find_by_id("btn-explain-options-dropdown")
+        explain_op.click()
 
-        ActionChains(self.driver).move_to_element(
-            query_op.find_element_by_xpath(
-                "//li[contains(.,'Explain Options')]")).perform()
+        # disable Explain options and auto rollback only if they are enabled.
+        for op in ('explain-buffers', 'explain-timing'):
+            self.page.find_by_id("btn-{}".format(op)).click()
 
-        self.page.driver.execute_script(
-            "arguments[0].scrollIntoView()",
-            self.page.find_by_xpath(
-                "//span[normalize-space(text())='Verbose']"))
-
-        self.page.find_by_id("btn-explain-buffers").click()
-
-        self.page.find_by_id("btn-explain-timing").click()
+        explain_op.click()
 
         self.page.find_by_id("btn-explain-analyze").click()
 
@@ -334,15 +324,12 @@ CREATE TABLE public.{}();""".format(table_name)
 
         self.page.fill_codemirror_area_with(query)
 
-        self.page.find_by_id("btn-query-dropdown").click()
+        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op.click()
 
         self.page.find_by_id("btn-auto-commit").click()
 
-        # Close the Explain Options drop down, getting error while clicking
-        # flash button on jenkins windows platform
-        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
-        wait.until(EC.invisibility_of_element_located(
-            (By.XPATH, "//li[contains(.,'Explain Options')]")))
+        query_op.click()
 
         self.page.find_by_id("btn-flash").click()
 
@@ -406,18 +393,12 @@ END;"""
 
         wait = WebDriverWait(self.page.driver, 10)
 
-        btn_query_dropdown = wait.until(EC.presence_of_element_located(
-            (By.ID, "btn-query-dropdown")))
-
-        btn_query_dropdown.click()
+        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op.click()
 
         self.page.find_by_id("btn-auto-commit").click()
 
-        # Close the Explain Options drop down, getting error while clicking
-        # flash button on jenkins windows platform
-        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
-        wait.until(EC.invisibility_of_element_located(
-            (By.XPATH, "//li[contains(.,'Explain Options')]")))
+        query_op.click()
 
         self.page.find_by_id("btn-flash").click()
 
@@ -498,17 +479,15 @@ END;"""
 
         self.page.fill_codemirror_area_with(query)
 
-        self.page.find_by_id("btn-query-dropdown").click()
+        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op.click()
 
         self.page.find_by_id("btn-auto-rollback").click()
 
         self.page.find_by_id("btn-auto-commit").click()
 
-        # Close the Explain Options drop down, getting error while clicking
-        # flash button on jenkins windows platform
-        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
-        wait.until(EC.invisibility_of_element_located(
-            (By.XPATH, "//li[contains(.,'Explain Options')]")))
+        query_op.click()
+
         self.page.find_by_id("btn-flash").click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -605,7 +584,8 @@ SELECT 1, pg_sleep(300)"""
 
         self.page.fill_codemirror_area_with(query)
 
-        self.page.find_by_id("btn-query-dropdown").click()
+        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op.click()
 
         auto_rollback_btn = self.page.find_by_id("btn-auto-rollback")
 
@@ -633,12 +613,7 @@ SELECT 1, pg_sleep(300)"""
            auto_commit_check.get_attribute('class')):
             auto_commit_btn.click()
 
-        # Close the Explain Options drop down, getting error while clicking
-        # flash button on jenkins windows platform
-        wait = WebDriverWait(self.page.driver, 10)
-        self.page.find_by_xpath("//li[contains(.,'Explain Options')]").click()
-        wait.until(EC.invisibility_of_element_located(
-            (By.XPATH, "//li[contains(.,'Explain Options')]")))
+        query_op.click()
 
         self.page.find_by_id("btn-flash").click()
 
@@ -737,14 +712,16 @@ SELECT 1, pg_sleep(300)"""
         self._clear_query_tool()
 
         self.page.fill_codemirror_area_with("SELECT count(*) FROM pg_class;")
-        query_op = self.page.find_by_id("btn-query-dropdown")
-        query_op.click()
-        ActionChains(self.driver).move_to_element(
-            query_op.find_element_by_xpath(
-                "//li[contains(.,'Explain Options')]")).perform()
 
-        self.page.find_by_id("btn-explain-verbose").click()
-        self.page.find_by_id("btn-explain-costs").click()
+        explain_op = self.page.find_by_id("btn-explain-options-dropdown")
+        explain_op.click()
+
+        # disable Explain options and auto rollback only if they are enabled.
+        for op in ('explain-verbose', 'explain-costs', 'explain-analyze'):
+            self.page.find_by_id("btn-{}".format(op)).click()
+
+        explain_op.click()
+
         self.page.find_by_id("btn-explain-analyze").click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()

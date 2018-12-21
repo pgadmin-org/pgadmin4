@@ -29,7 +29,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
     ].join('\n')),
-    className: 'pgadmin-control-group form-group pg-el-xs-4',
+    className: 'pgadmin-control-group form-group pg-el-4 row',
   });
 
   //Restore Model (Objects like Database/Schema/Table)
@@ -146,6 +146,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       control: 'fieldset',
       label: gettext('Sections'),
       group: gettext('Restore options'),
+      contentClass: 'row',
       schema: [{
         id: 'pre_data',
         label: gettext('Pre-data'),
@@ -188,6 +189,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       control: 'fieldset',
       label: gettext('Type of objects'),
       group: gettext('Restore options'),
+      contentClass: 'row',
       schema: [{
         id: 'only_data',
         label: gettext('Only data'),
@@ -222,6 +224,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       control: 'fieldset',
       label: gettext('Do not save'),
       group: gettext('Restore options'),
+      contentClass: 'row',
       schema: [{
         id: 'dns_owner',
         label: gettext('Owner'),
@@ -260,6 +263,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       control: 'fieldset',
       label: gettext('Queries'),
       group: gettext('Restore options'),
+      contentClass: 'row',
       schema: [{
         id: 'include_create_database',
         label: gettext('Include CREATE DATABASE statement'),
@@ -287,6 +291,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       control: 'fieldset',
       label: gettext('Disable'),
       group: gettext('Restore options'),
+      contentClass: 'row',
       schema: [{
         id: 'disable_trigger',
         label: gettext('Trigger'),
@@ -304,6 +309,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       control: 'fieldset',
       label: gettext('Miscellaneous / Behavior'),
       group: gettext('Restore options'),
+      contentClass: 'row',
       schema: [{
         id: 'verbose',
         label: gettext('Verbose messages'),

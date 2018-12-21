@@ -163,6 +163,7 @@ define('tools.querytool', [
         '#editor-panel', {
           allowContextMenu: false,
           allowCollapse: false,
+          loadingClass: 'pg-sp-icon',
           themePath: url_for('static', {
             'filename': 'css',
           }),
@@ -564,16 +565,16 @@ define('tools.querytool', [
           setup: function() {
             return {
               buttons: [{
-                text: gettext('Save'),
-                className: 'btn btn-primary',
-              }, {
-                text: gettext('Don\'t save'),
-                className: 'btn btn-danger',
-              }, {
                 text: gettext('Cancel'),
                 key: 27, // ESC
                 invokeOnClose: true,
-                className: 'btn btn-warning',
+                className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
+              }, {
+                text: gettext('Don\'t save'),
+                className: 'btn btn-secondary fa fa-lg fa-trash-o pg-alertify-button',
+              }, {
+                text: gettext('Save'),
+                className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
               }],
               focus: {
                 element: 0,
@@ -587,16 +588,16 @@ define('tools.querytool', [
           },
           callback: function(closeEvent) {
             switch (closeEvent.index) {
-            case 0: // Save
-              that.handler.close_on_save = true;
-              that.handler._save(that, that.handler);
+            case 0: // Cancel
+              //Do nothing.
               break;
             case 1: // Don't Save
               that.handler.close_on_save = false;
               that.handler.close();
               break;
-            case 2: //Cancel
-                //Do nothing.
+            case 2: //Save
+              that.handler.close_on_save = true;
+              that.handler._save(that, that.handler);
               break;
             }
           },
@@ -2170,19 +2171,19 @@ define('tools.querytool', [
             self.query = res.data.sql;
 
 
-            /* If filter is applied then remove class 'btn-default'
+            /* If filter is applied then remove class 'btn-secondary'
              * and add 'btn-warning' to change the colour of the button.
              */
             if (self.can_filter && res.data.filter_applied) {
-              $('#btn-filter').removeClass('btn-default');
-              $('#btn-filter-dropdown').removeClass('btn-default');
+              $('#btn-filter').removeClass('btn-secondary');
+              $('#btn-filter-dropdown').removeClass('btn-secondary');
               $('#btn-filter').addClass('btn-primary');
               $('#btn-filter-dropdown').addClass('btn-primary');
             } else {
               $('#btn-filter').removeClass('btn-primary');
               $('#btn-filter-dropdown').removeClass('btn-primary');
-              $('#btn-filter').addClass('btn-default');
-              $('#btn-filter-dropdown').addClass('btn-default');
+              $('#btn-filter').addClass('btn-secondary');
+              $('#btn-filter-dropdown').addClass('btn-secondary');
             }
             $('#btn-save').prop('disabled', true);
             $('#btn-file-menu-dropdown').prop('disabled', true);

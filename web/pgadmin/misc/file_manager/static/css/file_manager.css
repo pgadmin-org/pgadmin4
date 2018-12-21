@@ -1,30 +1,6 @@
 /*
  * CSS for Storage Manager Dialog
  */
-
-.file_manager #uploader {
-  padding: 2px 4px;
-  border-width: 1px;
-  height: auto;
-  min-height:30px;
-  max-height: 80px;
-  overflow: hidden;
-  border-bottom: 1px;
-}
-
-#uploader .input-path {
-  font-size: 14px;
-  margin: 0;
-  padding: 0;
-  display: block;
-  float: left;
-  text-align: left;
-  line-height:1.6em;
-  width: calc(100% - 72px);
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
 .uploadresponse {
   display: none;
 }
@@ -47,12 +23,10 @@
 .fileinfo #contents li p > span.less_text,
 .fileinfo table#contents tr td:first-child p span.less_text {
   width: 100%;
-  display: inline-block;
   text-overflow: ellipsis;
   overflow: hidden;
   text-align: center;
   white-space: nowrap;
-  padding: 0 10px;
 }
 
 .fileinfo table#contents tr td p {
@@ -108,7 +82,6 @@ x:-o-prefocus, .file-input-container {top:16px;width:198px;}
 
 /** Input file Replacement - end */
 .file_listing #contents.grid {
-  padding: 25px;
   text-align: left;
 }
 
@@ -168,6 +141,11 @@ button.list span {
   position: relative;
 }
 
+
+#dropzone-container {
+  min-height: 100%;
+}
+
 #dropzone-container h2 {
   font-size: 20px;
   margin-top: 0;
@@ -184,97 +162,6 @@ button.list span {
   right: 0 !important;
   height: 100% !important;
   width: 100% !important;
-}
-
-.storage_dialog {
-  height: 100%;
-  width: 100%;
-}
-
-.storage_content {
-  height: 100%;
-  width: 100%;
-}
-
-.file_manager {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.file_manager .fileinfo {
-  height: calc(100% - 90px);
-  overflow: hidden;
-  position: relative;
-}
-
-.file_manager .fileinfo #contents{
-  padding: 5px;
-  text-align: left;
-  display: inline-block;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-.file_manager .fileinfo #contents thead tr{
-  position: relative;
-  display: block;
-  width: 100%;
-}
-
-.file_manager .fileinfo #contents thead tr th:nth-child(1),
-.file_manager .fileinfo #contents tbody tr td:nth-child(1) {
-  position: relative;
-  width: 100%;
-  min-width: 100%;
-  max-width: 100%;
-}
-
-.file_manager .fileinfo #contents thead tr th:nth-child(2) {
-  width: 152px;
-  min-width: 152px;
-  max-width: 152px;
-  padding-left: 10px;
-}
-
-.file_manager .fileinfo #contents tbody tr td:nth-child(2) {
-  width: 150px;
-  min-width: 150px;
-  max-width: 150px;
-}
-
-.file_manager .fileinfo #contents thead tr th:nth-child(3) {
-  width: 197px;
-  min-width: 197px;
-  max-width: 197px;
-  padding-left: 10px;
-}
-
-.file_manager .fileinfo #contents tbody tr td:nth-child(3) {
-  width: 177px;
-  min-width: 177px;
-  max-width: 177px;
-}
-
-.file_manager .fileinfo #contents tbody {
-  display: block;
-  overflow: auto;
-  width: 100%;
-  height: calc(100% - 30px);
-}
-
-.file_manager .fileinfo #contents tbody tr{
-  /*display: table;*/
-  max-width: 100%;
-  width: 100%;
-  cursor: pointer;
-}
-
-.file_manager .upload_file #dropzone-container {
-  height: 100%;
 }
 
 .file_manager .upload_file #multiple-uploads .dz-message {
@@ -313,21 +200,11 @@ button.list span {
   width: 150px;
 }
 
-.allowed_file_types .change_file_types {
-  position: absolute;
-  top: 4px;
-  right: 0;
-}
-
 .allowed_file_types .change_file_types select {
   width: 75px;
   margin-left: 10px;
   float: right;
   height: 22px;
-}
-
-.allowed_file_types .change_file_types label {
-  float: right;
 }
 
 .upload_file .file_upload_main .show_error p.size {
@@ -442,8 +319,16 @@ div.change_file_types span {
 }
 
 /* Overriding the css for the dropzone */
+.dropzone {
+  text-align: center;
+}
+
 .dropzone .dz-preview .dz-progress {
   height: initial;
+}
+
+.dropzone.dz-clickable {
+  cursor: move;
 }
 
 .dropzone .dz-preview .dz-progress .dz-upload {

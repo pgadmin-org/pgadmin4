@@ -4,7 +4,7 @@
   background-size: 20px !important;
   align-content: center;
   vertical-align: middle;
-  height: 20px;
+  height: 15px;
 }
 
 .pgadmin-node-select option[node="{{node_type}}"] {

@@ -116,10 +116,7 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
             field.send_keys(key)
 
         # save and close the preference dialog.
-        self.page.find_by_xpath(
-            "//*[contains(@class,'pg-alertify-button') and "
-            "contains(.,'OK')]"
-        ).click()
+        self.page.click_modal('Save')
 
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element_by_css_selector(".ajs-modal")

@@ -3,12 +3,15 @@
   color:  $color-gray;
 }
 
-.file_listing #contents.grid li.selected {
-  border: 1px solid $color-primary-lighter;
+.file_listing {
+  min-width: 100%;
 }
 
-.file_listing #contents.grid li.selected, .fileinfo #contents tbody tr.selected {
-  background: $color-primary-lighter !important;
+.file_listing #contents.grid li:hover,
+.file_listing #contents.grid li.selected {
+  cursor: pointer;
+  border: $table-hover-border;
+  background: $table-hover-bg-color;
 }
 
 .fileinfo table#contents tr td p {
@@ -23,10 +26,6 @@
 .fm_drive {
   font-size: xx-large !important;
   color:  $color-gray;
-}
-
-.file_manager button {
-  background-color: $color-gray-light;
 }
 
 .newfile {
@@ -87,38 +86,21 @@
   width: 100%;
 }
 
-.file_listing #contents.list th {
-  font-weight: bold;
-  cursor: pointer;
-  color: $color-fg-inverse;
-}
-
-
-.file_listing #contents.list td.tbl_folder:first-child:before {
-  margin-right: 5px;
-  color: $color-warning;
-}
-
-.file_listing #contents.list td.tbl_drive:first-child:before {
-  color: $color-gray-light;
-  margin-right: 5px;
-}
-
-.file_listing #contents.list tbody tr:nth-child(even):hover {
-  background-color: $color-gray-lighter !important;
-}
-
-.file_listing #contents.grid li:hover {
-  border: 1px solid $color-gray-lighter;
-  background-color: $color-gray-lighter;
-  cursor: pointer;
-  height: 80px;
-}
-
-
 .btn-group.filemanager-btn-group .btn:not(:first-child):not(:last-child),
 .btn-group.filemanager-path-group .btn:not(:first-child):not(:last-child) {
   border-left: 1px solid $color-gray-light;
+}
+
+.file_manager {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.file_manager #uploader {
+  border-bottom: $panel-border;
 }
 
 .file_manager #uploader .filemanager-path-group {
@@ -149,65 +131,21 @@
   overflow: hidden;
 }
 
-.file_manager .fileinfo #contents tbody tr:nth-child(even) {
-  background: $color-gray-lighter;
-}
-
-.file_manager .fileinfo #contents thead tr th:not(:first-child) {
-  border-left: 1px solid $color-bg;
-}
-
-.file_manager .upload_file {
-  display: none;
-  z-index: 1;
-  margin-bottom: auto;
-  top: 0;
-  margin-top: 0;
-  height: calc(100% - 5px);
-  width: 100%;
-  border: none;
-  position: absolute;
-  bottom: 0;
-  background-color: $color-bg-inverse;
-  padding: 0px;
-  padding-top: 22px;
-  padding-left: 10px;
-}
-
-
-.file_manager .upload_file #multiple-uploads {
-  height: calc(100% - 20px);
-  background: $color-bg-inverse;
-  color: $color-fg-inverse;
-  padding: 0px !important;
-  overflow: auto;
-  width: 100%;
+.file_manager .upload_file #dropzone-container {
+  background: $color-gray-light;
 }
 
 .fileinfo .prompt-info {
   text-align: center;
-  color: $color-fg-inverse;
+  color: $color-fg-theme;
 }
 
-.fileinfo .file_listing {
-  display: block;
-  height: calc(100% - 35px);
-  border: 1px solid $color-gray-lighter;
-  border-bottom: none;
-  font-size: 12px;
+.allowed_file_types {
+  border-top: $panel-border;
 }
 
-.fileinfo .allowed_file_types {
-  display: block;
-  height: 25px;
-  position: absolute;
-  right: 0;
-  border-top: 1px solid $color-gray-lighter;
-  padding-top: 4px;
-  bottom: 4px;
-  width: 100%;
-  background: $color-bg;
-  white-space: nowrap;
+.upload_file{
+  min-width: 100%;
 }
 
 .upload_file .file_upload_main {
@@ -242,7 +180,7 @@
 }
 
 .file_upload_main .dz-progress .dz-upload {
-  background: $color-primary-lighter !important;
+  background: $color-primary-light !important;
   text-align: center;
 }
 
@@ -268,6 +206,10 @@
   border: 1px solid $color-fg;
 }
 
+.dropzone .dz-message {
+  color: $color-gray;
+}
+
 .fileinfo .fm_dimmer {
   height: calc(100% - 32px);
   display: none;
@@ -282,14 +224,10 @@
 .fileinfo .delete_item, .fileinfo .replace_file {
   display: none;
   padding: 15px 15px;
-  opacity: 0.8;
-  color: $color-fg-inverse;
   border: 1px solid $color-gray-light;
   border-left: 0;
   border-right: 0;
-  background: $color-bg-inverse;
-  box-shadow: 1px 0px 3px 1px $color-bg;
-  font-weight: bold;
+  background: $color-bg-theme;
   position: absolute;
   top: 0;
   left: 0;
@@ -307,17 +245,15 @@
 }
 
 .upload_file .dz_cross_btn {
-  color: $color-fg-inverse;
-  font-size: x-large;
-  right: -4px;
+  color: $color-fg-theme;
+  right: 0px;
   position: absolute;
-  top: -1px;
   background: transparent;
   border: none;
 }
 
 .file_manager .fileinfo #contents .fm_lock_icon {
-  color: $color-danger-lighter;
+  color: $color-danger;
   position: absolute;
   top: 6px;
   right: 0;
@@ -326,16 +262,16 @@
 }
 
 .file_manager .fileinfo #contents .fa-lock.tbl_lock_icon {
-  color: $color-danger-lighter;
-  position: absolute;
-  left: 19px;
-  top: 5px;
+  color: $color-danger;
+  position: relative;
+  left: -5px;
+  top: -5px;
   font-size: 10px;
 }
 
 .file_manager button.ON {
-  background: $color-gray-lighter;
-  border: 1px inset $color-gray-lighter;
+  background: $color-primary;
+  color: $color-primary-fg;
 }
 
 .fileinfo .is_file_replace {
@@ -346,17 +282,16 @@
 
 .file_selection_ctrl button.select_item {
   display: inline;
-  background:  $color-gray;
-  background: -webkit-linear-gradient( $color-gray,  $color-gray);
-  background: -o-linear-gradient( $color-gray, $color-gray-light);
-  background: -moz-linear-gradient( $color-gray, $color-gray-light);
-  background: linear-gradient( $color-gray, $color-gray-light);
-  color: $color-fg-inverse;
+  background:  $color-bg-theme;
   padding: 9px 0px 9px 0px;
   margin-left: 0px;
   margin-right: -7px;
-  margin-top: -4px;
   min-width: 30px;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+
+.cap_select_file {
+  cursor: pointer;
 }

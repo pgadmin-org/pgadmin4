@@ -314,7 +314,7 @@ define('pgadmin.browser.node', [
 
           var onSessionInvalid = function(msg) {
             var alertMessage = '\
-              <div class="media error-in-footer bg-danger-lighter border-danger-light text-danger text-14">\
+              <div class="media error-in-footer bg-danger-light border-danger text-danger text-14">\
                 <div class="media-body media-middle">\
                   <div class="alert-icon error-icon">\
                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\
@@ -1121,6 +1121,7 @@ define('pgadmin.browser.node', [
           that.footer = $('<div></div>').addClass(
             'pg-prop-footer'
           ).appendTo(j);
+
           // Create a view to show the properties in fieldsets
           view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
           if (view) {
@@ -1132,11 +1133,11 @@ define('pgadmin.browser.node', [
             var buttons = [];
 
             buttons.push({
-              label: '',
+              label: gettext('Edit'),
               type: 'edit',
               tooltip: gettext('Edit'),
-              extraClasses: ['btn-default'],
-              icon: 'fa fa-lg fa-pencil-square-o',
+              extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
+              icon: 'fa fa-sm fa-pencil',
               disabled: !that.canEdit,
               register: function(btn) {
                 btn.on('click',() => {
@@ -1149,7 +1150,7 @@ define('pgadmin.browser.node', [
               label: '',
               type: 'help',
               tooltip: gettext('SQL help for this object type.'),
-              extraClasses: ['btn-default', 'pull-right'],
+              extraClasses: ['btn-secondary', 'btn-secondary', 'm-1'],
               icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
@@ -1159,7 +1160,7 @@ define('pgadmin.browser.node', [
               },
             });
 
-            createButtons(buttons, 'header', 'pg-prop-btn-group-above bg-gray-lighter border-gray-light');
+            createButtons(buttons, 'header', 'pg-prop-btn-group-above');
           }
           j.append(content);
         }.bind(panel),
@@ -1354,7 +1355,7 @@ define('pgadmin.browser.node', [
               label: '',
               type: 'help',
               tooltip: gettext('SQL help for this object type.'),
-              extraClasses: ['btn-default', 'pull-left'],
+              extraClasses: ['btn-secondary', 'pull-left', 'mx-1'],
               icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
@@ -1366,7 +1367,7 @@ define('pgadmin.browser.node', [
               label: '',
               type: 'help',
               tooltip: gettext('Help for this dialog.'),
-              extraClasses: ['btn-default', 'pull-left'],
+              extraClasses: ['btn-secondary', 'pull-left', 'mx-1'],
               icon: 'fa fa-lg fa-question',
               disabled: (that.dialogHelp == '') ? true : false,
               register: function(btn) {
@@ -1375,24 +1376,11 @@ define('pgadmin.browser.node', [
                 });
               },
             }, {
-              label: gettext('Save'),
-              type: 'save',
-              tooltip: gettext('Save this object.'),
-              extraClasses: ['btn-primary'],
-              icon: 'fa fa-lg fa-save',
-              disabled: true,
-              register: function(btn) {
-                // Save the changes
-                btn.on('click',() => {
-                  onSave.call(this, view, btn);
-                });
-              },
-            }, {
               label: gettext('Cancel'),
               type: 'cancel',
               tooltip: gettext('Cancel changes to this object.'),
-              extraClasses: ['btn-danger'],
-              icon: 'fa fa-lg fa-close',
+              extraClasses: ['btn-secondary', 'mx-1'],
+              icon: 'fa fa-close pg-alertify-button',
               disabled: false,
               register: function(btn) {
                 btn.on('click',() => {
@@ -1405,8 +1393,8 @@ define('pgadmin.browser.node', [
               label: gettext('Reset'),
               type: 'reset',
               tooltip: gettext('Reset the fields on this dialog.'),
-              extraClasses: ['btn-warning'],
-              icon: 'fa fa-lg fa-recycle',
+              extraClasses: ['btn-secondary', 'mx-1'],
+              icon: 'fa fa-recycle pg-alertify-button',
               disabled: true,
               register: function(btn) {
                 btn.on('click',() => {
@@ -1415,7 +1403,20 @@ define('pgadmin.browser.node', [
                   }, 0);
                 });
               },
-            }], 'footer', 'pg-prop-btn-group-below bg-gray-lighter border-gray-light');
+            }, {
+              label: gettext('Save'),
+              type: 'save',
+              tooltip: gettext('Save this object.'),
+              extraClasses: ['btn-primary', 'mx-1'],
+              icon: 'fa fa-save pg-alertify-button',
+              disabled: true,
+              register: function(btn) {
+                // Save the changes
+                btn.on('click',() => {
+                  onSave.call(this, view, btn);
+                });
+              },
+            }], 'footer', 'pg-prop-btn-group-below');
           }
 
           // Create status bar.

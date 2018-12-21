@@ -1,8 +1,32 @@
 $bgproc-container-pad: 2px;
 
+
+.ajs-bg-bgprocess.ajs-visible {
+  border: none;
+  padding: 0px !important;
+  text-align: left;
+  color: $color-fg-theme;
+  .card {
+    border:none;
+    & .card-header {
+      border: $border-width solid $color-primary;
+      background: $color-primary;
+      color: $color-primary-fg;
+    }
+
+    & .card-body {
+      padding: 5px;
+      border: $border-width solid $card-border-color;
+      border-bottom-left-radius: $card-border-radius;
+      border-bottom-right-radius: $card-border-radius;
+    }
+  }
+}
+
+
 .ajs-bg-bgprocess > .pg-bg-bgprocess {
   background-color: $color-primary;
-  color: $color-fg-inverse;
+  color: $color-primary-fg;
   padding: $bgproc-container-pad;
   text-align: left;
   font-size: 0.9em;
@@ -25,22 +49,6 @@ $bgproc-container-pad: 2px;
   padding: 5px 0px;
 }
 
-.pg-bg-etime {
-  width: 100%;
-  display: block;
-  font-size: 95%;
-  padding: 5px;
-  font-weight: bold;
-  color: $color-fg;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: .25em;
-  background-color: $color-gray-lighter;
-  margin-top: 10px;
-  margin-bottom: 5px;
-}
-
 .pg-bg-click {
   color: $color-gray-lighter;
   text-decoration: underline;
@@ -51,6 +59,15 @@ $bgproc-container-pad: 2px;
 .pg-bg-click:hover {
   color:  $color-gray-dark;
 }
+
+.pg-bg-res-out, .pg-bg-res-err {
+  white-space: pre-wrap;
+}
+
+.pg-bg-res-err {
+  color: $color-danger;
+}
+
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status.bg-success,
 .bg-process-status .bg-bgprocess-success {
@@ -71,39 +88,25 @@ $bgproc-container-pad: 2px;
 .pg-panel-content div.bg-process-watcher {
   height: 100%;
   padding: 0px 0px 0px 0px;
-  WebkitTransition: all 1s;
-  transition: all 1s;
-  background-color: $color-primary-lighter;
 }
 
-.pg-bg-res-out {
-  color: $color-primary;
+.pg-bg-process-logs {
+  border: $border-width solid $input-border-color;
+  border-radius: $input-border-radius;
+  padding-inline-start: 1rem;
 }
 
-.pg-bg-res-err {
-  color: rgba($color-danger, 0.81);
+.pg-bg-cmd {
+  border: $border-width solid $input-border-color;
+  border-radius: $input-border-radius;
+  background: $input-disabled-bg;
 }
-
-.pg-panel-content .bg-process-details {
-  padding: 10px 15px;
-  min-height: 70px;
-  color: $color-fg;
-  background-color: $color-gray-lighter;
-}
-
 
 .pg-panel-content .bg-process-footer {
-  border-top: 1px solid $color-gray-light;
-  padding: 10px 25px;
   position: absolute;
   bottom: 0;
-  background-color: $color-gray-lighter;
   right: 0px;
   left: 0px;
-}
-
-.pg-panel-content .bg-process-footer b, .bg-process-stats span b {
-  color:  $color-gray-dark;
 }
 
 .pg-bg-bgprocess .bg-close {

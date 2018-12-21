@@ -53,7 +53,7 @@ class DashboardModule(PgAdminModule):
                 name='dashboard',
                 priority=1,
                 title=gettext('Dashboard'),
-                icon='fa fa-tachometer',
+                icon='',
                 content='',
                 isCloseable=True,
                 isPrivate=False,

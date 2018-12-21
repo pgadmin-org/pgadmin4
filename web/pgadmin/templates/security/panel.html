@@ -1,23 +1,18 @@
 {% extends "base.html" %}
 {% from "security/fields.html" import render_field_with_errors %}
 {% block body %}
-<div class="container-fluid" style="position:relative;z-index:1;">
+<div class="container-fluid h-100 login_page">
     {% include "security/messages.html" %}
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <span class="panel-title h5">{% block panel_title %}{% endblock %}</span>
-                </div>
-                <div class="card-body">
-                    {% block panel_body %}
-                    {% endblock %}
-                </div>
+    <div class="row h-100 align-items-center justify-content-center">
+        <div class="col-md-6">{% block panel_image %}{% endblock %}</div>
+        <div class="col-md-3">
+            <div class="panel-header text-color h4"><i class="app-icon pg-icon"></i> {{ _('%(appname)s', appname=config.APP_NAME) }}</div>
+            <div class="panel-body">
+                <div class="d-block text-color pb-3 h5">{% block panel_title %}{% endblock %}</div>
+                {% block panel_body %}
+                {% endblock %}
             </div>
         </div>
-        <div class="col-md-4"></div>
     </div>
 </div>
-{% include 'security/watermark.html' %}
 {% endblock %}

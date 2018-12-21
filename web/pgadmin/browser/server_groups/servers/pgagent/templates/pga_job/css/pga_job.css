@@ -15,16 +15,3 @@
   vertical-align: middle;
   height: 1.3em;
 }
-
-.pg-el-container[el=sm] .pga-round-border {
-  border: 1px solid darkgray;
-  border-radius: 12px;
-}
-
-.pg-el-container[el=sm] .pga-round-border {
-  margin: 5px;
-}
-
-div[role=tabpanel] > .pgadmin-control-group.form-group.c.jscexceptions {
-  min-height: 400px;
-}

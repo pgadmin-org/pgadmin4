@@ -1,12 +1,3 @@
-.dashboard-container {
-    padding-top: 15px;
-    padding-bottom: 15px;
-}
-
-.dashboard-row {
-    margin-bottom: 15px;
-}
-
 .dashboard-link {
     text-align: center;
 }
@@ -15,8 +6,8 @@
     cursor: pointer;
 }
 
-.dashboard-tab-panel > li > a {
-    padding: 0px 15px !important;
+.dashboard-tab-container {
+    padding: 0px;
 }
 
 .dashboard-tab {
@@ -108,4 +99,12 @@
 
 .dashboard-hidden {
   display: none;
+}
+
+div#dashboard-activity div.tab-content > div.tab-pane table.backgrid.table-bordered {
+  border: none;
+}
+
+div#dashboard-activity div.tab-content > div.tab-pane table.backgrid.table-bordered tr > td:first-child {
+  border-left: none !important;
 }

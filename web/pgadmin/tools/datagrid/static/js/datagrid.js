@@ -45,13 +45,14 @@ define('pgadmin.datagrid', [
           self.preferences = pgBrowser.get_preferences_for_module('sqleditor');
         });
 
-
-        this.spinner_el = '<div class="wcLoadingContainer">'+
-              '<div class="wcLoadingBackground"></div>'+
-                '<div class="wcLoadingIconContainer">'+
-                  '<i class="wcLoadingIcon fa fa-spinner fa-pulse"></i>'+
-                '</div>'+
-              '</div>';
+        this.spinner_el =
+          `<div class="pg-sp-container">
+              <div class="pg-sp-content">
+                  <div class="row">
+                      <div class="col-12 pg-sp-icon"></div>
+                  </div>
+              </div>
+          </div>`;
         // Define list of nodes on which view data option appears
         var supported_nodes = [
             'table', 'view', 'mview',
@@ -270,16 +271,14 @@ define('pgadmin.datagrid', [
               setup:function() {
                 return {
                   buttons:[{
-                    text: gettext('OK'),
-                    key: 13,
-                    className: 'btn btn-primary',
-                  },
-                  {
                     text: gettext('Cancel'),
                     key: 27,
-                    className: 'btn btn-danger',
-                  },
-                  ],
+                    className: 'btn btn-secondary fa fa-times pg-alertify-button',
+                  },{
+                    text: gettext('OK'),
+                    key: 13,
+                    className: 'btn btn-primary fa fa-check pg-alertify-button',
+                  }],
                   options: {
                     modal: 0,
                     resizable: true,
@@ -297,13 +296,14 @@ define('pgadmin.datagrid', [
                   $content = $(this.message),
                   $sql_filter = $content.find('#sql_filter');
 
+                $(this.elements.header).attr('data-title', this.get('title'));
                 $(this.elements.body.childNodes[0]).addClass(
                   'dataview_filter_dialog'
                 );
 
                 this.setContent($content.get(0));
                 // Disable OK button
-                that.__internal.buttons[0].element.disabled = true;
+                that.__internal.buttons[1].element.disabled = true;
 
                 // Apply CodeMirror to filter text area.
                 this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
@@ -329,9 +329,9 @@ define('pgadmin.datagrid', [
 
                 that.filter_obj.on('change', function() {
                   if (that.filter_obj.getValue() !== '') {
-                    that.__internal.buttons[0].element.disabled = false;
+                    that.__internal.buttons[1].element.disabled = false;
                   } else {
-                    that.__internal.buttons[0].element.disabled = true;
+                    that.__internal.buttons[1].element.disabled = true;
                   }
                 });
               },
@@ -503,7 +503,7 @@ define('pgadmin.datagrid', [
                 var frame = $(j).data('embeddedFrame');
                 if (frame) {
                   frame.openURL(baseUrl);
-                  frame.$container.find('.wcLoadingContainer').delay(1000).hide(1);
+                  frame.$container.find('.pg-sp-container').delay(1000).hide(1);
                 }
               } else {
                 openQueryToolURL(j);

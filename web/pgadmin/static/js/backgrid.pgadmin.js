@@ -1,6 +1,6 @@
 define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-  'moment', 'bignumber', 'bootstrap.datetimepicker', 'bootstrap.switch',
+  'moment', 'bignumber', 'bootstrap.datetimepicker', 'bootstrap.switch', 'backgrid.filter',
 ], function(
   gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber
 ) {
@@ -236,7 +236,7 @@ define([
       var $dialog = this.$dialog = $(this.modalTemplate({
           title: '',
         })),
-        tr = $('<tr>'),
+        tr = $('<tr class="nohover editor-row">'),
         td = $('<td>', {
           class: 'editable sortable renderable',
           style: 'height: auto',
@@ -790,8 +790,7 @@ define([
     },
     render: function() {
       this.$el.empty();
-      //this.$el.html("<i class='fa fa-plus-circle'></i>");
-      this.$el.html('<label><a><span style=\'font-weight:normal;\'>Array Values</a></span></label> <button class=\'btn-sm btn-default add\'>Add</button>');
+      this.$el.html('<label><a><span style=\'font-weight:normal;\'>Array Values</a></span></label> <button class=\'btn-sm btn-secondary add\'>Add</button>');
       this.delegateEvents();
       return this;
     },
@@ -1609,6 +1608,32 @@ define([
       return this;
     },
     remove: Backgrid.Extension.DependentCell.prototype.remove,
+  });
+
+  /* Custom search box was added to give user defined text box for search
+   * instead of backgrid rendered textbox
+   */
+  Backgrid.Extension.ClientSideFilter = Backgrid.Extension.ClientSideFilter.extend({
+    $customSearchBox: null,
+
+    searchBox: function() {
+      if(this.$customSearchBox) {
+        return this.$customSearchBox;
+      } else {
+        return this.$el.find('input[type=search]');
+      }
+    },
+
+    setCustomSearchBox: function($el) {
+      this.$customSearchBox = $el;
+      this.$customSearchBox.attr('type','search');
+      this.$customSearchBox.on('keydown', this.search.bind(this));
+    },
+
+    unsetCustomSearchBox: function() {
+      this.$customSearchBox.off('keydown', this.search.bind(this));
+      this.$customSearchBox = null;
+    },
   });
 
   Backgrid.BooleanCellFormatter = _.extend(Backgrid.CellFormatter.prototype, {

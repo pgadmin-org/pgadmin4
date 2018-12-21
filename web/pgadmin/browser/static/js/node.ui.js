@@ -21,7 +21,7 @@ define([
       let $rendered = decorated.call(this);
 
       let $selectAll = $([
-        '<button class="btn btn-default btn-sm" type="button"',
+        '<button class="btn btn-secondary btn-sm" type="button"',
         ' style="width: 49%;margin: 0 0.5%;">',
         '<i class="fa fa-check-square-o"></i>',
         '<span style="padding: 0px 5px;">',
@@ -30,7 +30,7 @@ define([
       ].join(''));
 
       let $unselectAll = $([
-        '<button class="btn btn-default btn-sm" type="button"',
+        '<button class="btn btn-secondary btn-sm" type="button"',
         ' style="width: 49%;margin: 0 0.5%;">',
         '<i class="fa fa-square-o"></i><span style="padding: 0px 5px;">',
         gettext('Unselect All'),

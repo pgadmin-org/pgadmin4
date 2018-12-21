@@ -6,3 +6,19 @@
   border-right: 2px solid $color-gray-light;
   background-image: $color-gray-lighter;
 }
+
+.preferences_content {
+  &.striped-divs > {
+    div.pgadmin-control-group:nth-of-type(odd) {
+      background: $color-gray-light;
+      padding-top: 6px;
+    }
+    div.pgadmin-control-group:nth-of-type(even) {
+      background: $color-bg-theme;
+    }
+  }
+}
+
+.btn-checkbox {
+  padding: $btn-checkbox-padding;
+}

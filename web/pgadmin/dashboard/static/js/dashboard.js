@@ -2,8 +2,7 @@ define('pgadmin.dashboard', [
   'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
   'sources/pgadmin', 'backbone', 'backgrid', './charting',
   'pgadmin.alertifyjs', 'pgadmin.backform',
-  'sources/nodes/dashboard', 'backgrid.filter',
-  'pgadmin.browser', 'bootstrap', 'wcdocker',
+  'sources/nodes/dashboard', 'pgadmin.browser', 'bootstrap', 'wcdocker',
 ], function(
   url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, charting,
   Alertify, Backform, NodesDashboard
@@ -39,7 +38,7 @@ define('pgadmin.dashboard', [
         );
       } else {
         this.$el.html(
-          '<i class=\'fa fa-times-circle\' data-toggle=\'tooltip\' ' +
+          '<i class=\'fa fa-times-circle text-danger\' data-toggle=\'tooltip\' ' +
           'title=\'' + gettext('Terminate the session') +
           '\'></i>'
         );
@@ -590,9 +589,10 @@ define('pgadmin.dashboard', [
 
       // Set up the grid
       var grid = new Backgrid.Grid({
+        emptyText: 'No data found',
         columns: columns,
         collection: data,
-        className: 'backgrid table-bordered presentation table backgrid-striped',
+        className: 'backgrid presentation table table-bordered table-noouter-border table-hover',
       });
 
       // Render the grid
@@ -605,17 +605,7 @@ define('pgadmin.dashboard', [
         collection: data,
       });
 
-      // Render the filter
-      $('#' + container.id + '_filter').before(filter.render().el);
-
-      // Add some space to the filter and move it to the right
-      $(filter.el).css({
-        float: 'right',
-        margin: '5px',
-        'margin-right': '2px',
-        'margin-top': '3px',
-      });
-
+      filter.setCustomSearchBox($('#txtGridSearch'));
       // Stash objects for future use
       $(container).data('data', data);
       $(container).data('grid', grid);
@@ -849,6 +839,13 @@ define('pgadmin.dashboard', [
       var div_server_locks = $dashboardContainer.find('#server_locks').get(0);
       var div_server_prepared = $dashboardContainer.find('#server_prepared').get(0);
       var div_server_config = $dashboardContainer.find('#server_config').get(0);
+
+      var tab_grid_map = {
+        'tab_server_activity': div_server_activity,
+        'tab_server_locks': div_server_locks,
+        'tab_server_prepared': div_server_prepared,
+        'tab_server_config': div_server_config,
+      };
 
       // Display server activity
       if (self.preferences.show_activity) {
@@ -1099,45 +1096,17 @@ define('pgadmin.dashboard', [
 
         // (Re)render the appropriate tab
         $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-          switch ($(e.target).attr('aria-controls')) {
-          case 'tab_server_activity':
-            pgAdmin.Dashboard.render_grid_data(div_server_activity);
-            break;
+          let prevGrid = tab_grid_map[$(e.relatedTarget).attr('aria-controls')];
+          $(prevGrid).data('filtertext', $('#txtGridSearch').val());
 
-          case 'tab_server_locks':
-            pgAdmin.Dashboard.render_grid_data(div_server_locks);
-            break;
-
-          case 'tab_server_prepared':
-            pgAdmin.Dashboard.render_grid_data(div_server_prepared);
-            break;
-
-          case 'tab_server_config':
-            pgAdmin.Dashboard.render_grid_data(div_server_config);
-            break;
-          }
+          let currGrid = tab_grid_map[$(e.target).attr('aria-controls')];
+          $('#txtGridSearch').val($(currGrid).data('filtertext'));
+          pgAdmin.Dashboard.render_grid_data(currGrid);
         });
 
-        $('button').off('click').on('click', (e) => {
-          let $this = $(e.currentTarget);
-          let targetID = $this.length ? $this[0].id : undefined;
-          switch (targetID) {
-          case 'btn_server_activity_refresh':
-            pgAdmin.Dashboard.render_grid_data(div_server_activity);
-            break;
-
-          case 'btn_server_locks_refresh':
-            pgAdmin.Dashboard.render_grid_data(div_server_locks);
-            break;
-
-          case 'btn_server_prepared_refresh':
-            pgAdmin.Dashboard.render_grid_data(div_server_prepared);
-            break;
-
-          case 'btn_server_config_refresh':
-            pgAdmin.Dashboard.render_grid_data(div_server_config);
-            break;
-          }
+        $('#btn_refresh').off('click').on('click', () => {
+          let currGrid = tab_grid_map[$('#dashboard-activity .nav-tabs .active').attr('aria-controls')];
+          pgAdmin.Dashboard.render_grid_data(currGrid);
         });
       }
     },
@@ -1146,6 +1115,12 @@ define('pgadmin.dashboard', [
       var div_database_activity = document.getElementById('database_activity');
       var div_database_locks = document.getElementById('database_locks');
       var div_database_prepared = document.getElementById('database_prepared');
+
+      var tab_grid_map = {
+        'tab_database_activity': div_database_activity,
+        'tab_database_locks': div_database_locks,
+        'tab_database_prepared': div_database_prepared,
+      };
 
       // Display server activity
       if (self.preferences.show_activity) {
@@ -1348,39 +1323,18 @@ define('pgadmin.dashboard', [
         pgAdmin.Dashboard.render_grid_data(div_database_activity);
 
         // (Re)render the appropriate tab
-        $('a[data-toggle="tab"]').off('shown.bs.tab').on('shown.bs.tab', function(e) {
-          switch ($(e.target).attr('aria-controls')) {
-          case 'tab_database_activity':
-            pgAdmin.Dashboard.render_grid_data(div_database_activity);
-            break;
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+          let prevGrid = tab_grid_map[$(e.relatedTarget).attr('aria-controls')];
+          $(prevGrid).data('filtertext', $('#txtGridSearch').val());
 
-          case 'tab_database_locks':
-            pgAdmin.Dashboard.render_grid_data(div_database_locks);
-            break;
-
-          case 'tab_database_prepared':
-            pgAdmin.Dashboard.render_grid_data(div_database_prepared);
-            break;
-          }
+          let currGrid = tab_grid_map[$(e.target).attr('aria-controls')];
+          $('#txtGridSearch').val($(currGrid).data('filtertext'));
+          pgAdmin.Dashboard.render_grid_data(currGrid);
         });
 
-        // Handle button clicks
-        $('button').off('click').on('click', (e) => {
-          let $this = $(e.currentTarget);
-          let targetID = $this.length ? $this[0].id : undefined;
-          switch (targetID) {
-          case 'btn_database_activity_refresh':
-            pgAdmin.Dashboard.render_grid_data(div_database_activity);
-            break;
-
-          case 'btn_database_locks_refresh':
-            pgAdmin.Dashboard.render_grid_data(div_database_locks);
-            break;
-
-          case 'btn_database_prepared_refresh':
-            pgAdmin.Dashboard.render_grid_data(div_database_prepared);
-            break;
-          }
+        $('#btn_refresh').off('click').on('click', () => {
+          let currGrid = tab_grid_map[$('#dashboard-activity .nav-tabs .active').attr('aria-controls')];
+          pgAdmin.Dashboard.render_grid_data(currGrid);
         });
       }
     },

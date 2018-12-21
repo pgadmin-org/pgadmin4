@@ -56,7 +56,7 @@ let FilterDialog = {
               buttons: [{
                 text: '',
                 key: 112,
-                className: 'btn btn-default pull-left fa fa-lg fa-question',
+                className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
                 attrs: {
                   name: 'dialog_help',
                   type: 'button',
@@ -66,14 +66,14 @@ let FilterDialog = {
                   }),
                 },
               }, {
-                text: gettext('OK'),
-                className: 'btn btn-primary pg-alertify-button',
-                'data-btn-name': 'ok',
-              }, {
                 text: gettext('Cancel'),
                 key: 27,
-                className: 'btn btn-danger pg-alertify-button',
+                className: 'btn btn-secondary fa fa-times pg-alertify-button',
                 'data-btn-name': 'cancel',
+              }, {
+                text: gettext('OK'),
+                className: 'btn btn-primary fa fa-check pg-alertify-button',
+                'data-btn-name': 'ok',
               }],
               // Set options for dialog
               options: {
@@ -109,11 +109,11 @@ let FilterDialog = {
             let self = this;
             $container.html('');
             // Disable Ok button
-            this.__internal.buttons[1].element.disabled = true;
+            this.__internal.buttons[2].element.disabled = true;
 
             // Status bar
             this.statusBar = $('<div class=\'pg-prop-status-bar pg-el-xs-12 d-none\'>' +
-              '  <div class=\'media error-in-footer bg-danger-lighter border-danger-light text-danger text-14\'>' +
+              '  <div class=\'media error-in-footer bg-danger-light border-danger text-danger text-14\'>' +
               '    <div class=\'media-body media-middle\'>' +
               '      <div class=\'alert-icon error-icon\'>' +
               '        <i class=\'fa fa-exclamation-triangle\' aria-hidden=\'true\'></i>' +
@@ -128,12 +128,13 @@ let FilterDialog = {
 
             // To show progress on filter Saving/Updating on AJAX
             this.showFilterProgress = $(
-              '<div id="show_filter_progress" class="wcLoadingIconContainer busy-fetching d-none">' +
-              '<div class="wcLoadingBackground"></div>' +
-              '<span class="wcLoadingIcon fa fa-spinner fa-pulse"></span>' +
-              '<span class="busy-text wcLoadingLabel">' + gettext('Loading data...') + '</span>' +
-              '</div>').appendTo($container);
-
+              `<div id="show_filter_progress" class="pg-sp-container sql-editor-busy-fetching d-none">
+                  <div class="pg-sp-content">
+                      <div class="row"><div class="col-12 pg-sp-icon sql-editor-busy-icon"></div></div>
+                      <div class="row"><div class="col-12 pg-sp-text sql-editor-busy-text">${gettext('Loading data...')}</div></div>
+                  </div>
+              </div>`
+              ).appendTo($container);
             $(
               self.showFilterProgress[0]
             ).removeClass('d-none');
@@ -162,14 +163,14 @@ let FilterDialog = {
                 self.statusBar.removeClass('d-none');
                 $(self.statusBar.find('.alert-text')).html(msg);
                 // Disable Okay button
-                self.__internal.buttons[1].element.disabled = true;
+                self.__internal.buttons[2].element.disabled = true;
               });
 
               view.listenTo(view.model, 'pgadmin-session:valid', function() {
                 self.statusBar.addClass('d-none');
                 $(self.statusBar.find('.alert-text')).html('');
                 // Enable Okay button
-                self.__internal.buttons[1].element.disabled = false;
+                self.__internal.buttons[2].element.disabled = false;
               });
             });
 
