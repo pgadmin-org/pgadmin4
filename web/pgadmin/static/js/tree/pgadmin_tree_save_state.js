@@ -145,8 +145,7 @@ _.extend(pgBrowser.browserTreeState, {
       path = pathIDs.join();
 
       if (!(topParent in this.current_state)) {
-        this.current_state = {};
-        this.current_state[topParent] = {'paths': [], 'selected': {}, 'conn_status': {}};
+        this.current_state[topParent] = {'paths': [], 'selected': {}, 'conn_status': {}, 'is_opened': {}};
       }
 
       // IF the current path is already saved then return
@@ -172,7 +171,7 @@ _.extend(pgBrowser.browserTreeState, {
     }
 
     // Store current selected item and database connection status
-    this.update_database_conn_status(treeHierarchy);
+    this.update_database_status(item);
     this.update_current_selected_item(treeHierarchy);
 
   },
@@ -189,7 +188,7 @@ _.extend(pgBrowser.browserTreeState, {
     let topParent = treeHierarchy && treeHierarchy[self.parent]['_id'],
       origParent = treeHierarchy && treeHierarchy[self.orig_parent]['id'];
 
-    this.update_database_conn_status(treeHierarchy);
+    this.update_database_status(item);
 
     if (data._type == self.parent || data._type == 'database') {
       if (topParent in treeData && 'paths' in treeData[topParent]) {
@@ -200,7 +199,12 @@ _.extend(pgBrowser.browserTreeState, {
     }
 
     if (pgBrowser.tree.isClosed(item)) {
-      let tmpTreeData =  self.current_state[topParent]['paths'];
+      let tmpTreeData =  self.current_state[topParent]['paths'],
+        databaseId = undefined;
+
+      if ('database' in treeHierarchy)
+        databaseId = treeHierarchy['database']['id'];
+
       if (!_.isUndefined(tmpTreeData) && !_.isUndefined(tmpTreeData.length)) {
         let tcnt = 0,
           tmpItemDataStr = undefined;
@@ -211,26 +215,20 @@ _.extend(pgBrowser.browserTreeState, {
           let tmpItemData = tData.split(',');
 
           if (tmpItemData.indexOf(data.id) !== -1 ) {
-            let index = tmpItemData.indexOf(data.id);
-            tmpItemData.splice(index);
-            tmpItemDataStr = tmpItemData.join();
+            if (databaseId === undefined || (databaseId !== undefined && tmpItemData.indexOf(databaseId) !== -1)) {
 
-            if (tmpItemDataStr == origParent)
-              self.current_state[topParent]['paths'].splice(tData, 1);
-            else
-              self.current_state[topParent]['paths'][tcnt] = tmpItemDataStr;
+              let index = tmpItemData.indexOf(data.id);
+              tmpItemData.splice(index);
+              tmpItemDataStr = tmpItemData.join();
+
+              if (tmpItemDataStr == origParent)
+                self.current_state[topParent]['paths'].splice(tData, 1);
+              else
+                self.current_state[topParent]['paths'][tcnt] = tmpItemDataStr;
+            }
           }
           tcnt ++;
         });
-
-        if (tmpItemDataStr !== undefined) {
-          let tmpIndex = _.find(tmpTreeData, function(tData) {
-            return (tData.search(tmpItemDataStr) !== -1);
-          });
-
-          if(tmpIndex && tmpIndex !== tmpTreeData.indexOf(tmpItemDataStr))
-            self.current_state[topParent]['paths'].splice(tmpIndex, 1);
-        }
       }
     }
   },
@@ -240,6 +238,7 @@ _.extend(pgBrowser.browserTreeState, {
       data = item && pgBrowser.tree.itemData(item),
       node = data && pgBrowser.Nodes[data._type],
       treeHierarchy = node && node.getTreeNodeHierarchy(item);
+
 
     if (!pgBrowser.tree.hasParent(item) || !(self.parent in treeHierarchy))
       return;
@@ -252,26 +251,37 @@ _.extend(pgBrowser.browserTreeState, {
 
 
     // If the server node is open then only we should populate the tree
-    if (data['_type'] == 'database' && tmpTreeData && 'conn_status' in tmpTreeData &&
-     tmpTreeData['conn_status'][data['id']] === 0 )
+    if (data['_type'] == 'database' && tmpTreeData && 'conn_status' in tmpTreeData && 'is_opened' in tmpTreeData &&
+     (tmpTreeData['conn_status'][data['id']] === 0 || tmpTreeData['is_opened'][data['id']] === 0 ||
+      !(data['id'] in tmpTreeData['is_opened'])))
       return;
 
 
     if (!_.isUndefined(tmpTreeData) && ('paths' in tmpTreeData) && !_.isUndefined(tmpTreeData['paths'].length)) {
-      _.each(tmpTreeData['paths'], function(tData) {
+      let tmpTreeDataPaths = [...tmpTreeData['paths']],
+        databaseId = undefined;
+
+      if ('database' in treeHierarchy)
+        databaseId = treeHierarchy['database']['id'];
+
+      _.each(tmpTreeDataPaths, function(tData) {
         if (_.isUndefined(tData))
           return;
 
         let tmpItemData = tData.split(',');
 
         // If the item is in the lastTreeState then open it
-        if (tmpItemData.indexOf(data.id) !== -1 ) {
-          let index = tmpItemData.indexOf(data.id);
-          pgBrowser.tree.toggle(item);
+        if (tmpItemData.indexOf(data.id) !== -1) {
+          if (databaseId === undefined ||  (databaseId !== undefined && tmpItemData.indexOf(databaseId) !== -1)) {
 
-          if (index == (tmpItemData.length - 1 )) {
-            let tIndex = treeData[treeHierarchy[self.parent]['_id']]['paths'].indexOf(tData);
-            treeData[treeHierarchy[self.parent]['_id']]['paths'].splice(tIndex, 1);
+            let index = tmpItemData.indexOf(data.id);
+
+            pgBrowser.tree.toggle(item);
+
+            if (index == (tmpItemData.length - 1 )) {
+              let tIndex = treeData[treeHierarchy[self.parent]['_id']]['paths'].indexOf(tData);
+              treeData[treeHierarchy[self.parent]['_id']]['paths'].splice(tIndex, 1);
+            }
           }
         }
       });
@@ -281,7 +291,11 @@ _.extend(pgBrowser.browserTreeState, {
     this.select_tree_item(item);
 
   },
-  update_database_conn_status: function(treeHierarchy) {
+  update_database_status: function(item) {
+    let data = item && pgBrowser.tree.itemData(item),
+      node = data && pgBrowser.Nodes[data._type],
+      treeHierarchy = node.getTreeNodeHierarchy(item);
+
     if ('database' in treeHierarchy) {
       let databaseItem = treeHierarchy['database']['id'],
         topParent = treeHierarchy && treeHierarchy[this.parent]['_id'];
@@ -292,6 +306,15 @@ _.extend(pgBrowser.browserTreeState, {
         }
         else {
           this.current_state[topParent]['conn_status'][databaseItem] = 0;
+        }
+
+        if(data._type == 'database') {
+          if (pgBrowser.tree.isOpen(item)) {
+            this.current_state[topParent]['is_opened'][databaseItem] = 1;
+          }
+          else {
+            this.current_state[topParent]['is_opened'][databaseItem] = 0;
+          }
         }
       }
     }
