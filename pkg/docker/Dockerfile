@@ -25,7 +25,7 @@ FROM python:3.6-alpine3.7 as docs-builder
 RUN apk add --no-cache make
 RUN pip install --no-cache-dir \
     sphinx flask_security flask_paranoid python-dateutil flask_sqlalchemy \
-    flask_gravatar simplejson
+    flask_gravatar flask_migrate simplejson
 
 COPY ./pgadmin4/ /pgadmin4
 
