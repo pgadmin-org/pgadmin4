@@ -37,16 +37,13 @@ from .typecast import register_global_typecasters, \
     register_string_typecasters, register_binary_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
 from .encoding import getEncoding
+from pgadmin.utils import csv
 
 if sys.version_info < (3,):
-    # Python2 in-built csv module do not handle unicode
-    # backports.csv module ported from PY3 csv module for unicode handling
-    from backports import csv
     from StringIO import StringIO
     IS_PY2 = True
 else:
     from io import StringIO
-    import csv
     IS_PY2 = False
 
 _ = gettext
@@ -765,7 +762,31 @@ WHERE
                 )
             return new_results
 
-        def gen(quote='strings', quote_char="'", field_separator=','):
+        def handle_null_values(results, replace_nulls_with):
+            """
+            This function is used to replace null values with the given string
+
+            :param results:
+            :param replace_nulls_with: null values will be replaced by this
+            string.
+            :return: modified result
+            """
+
+            temp_results = []
+            for row in results:
+                res = dict()
+                for k, v in row.items():
+                    if v is None:
+                        res[k] = replace_nulls_with
+                    else:
+                        res[k] = v
+                temp_results.append(res)
+            results = temp_results
+
+            return results
+
+        def gen(quote='strings', quote_char="'", field_separator=',',
+                replace_nulls_with=None):
 
             results = cur.fetchmany(records)
             if not results:
@@ -815,11 +836,15 @@ WHERE
             csv_writer = csv.DictWriter(
                 res_io, fieldnames=header, delimiter=field_separator,
                 quoting=quote,
-                quotechar=quote_char
+                quotechar=quote_char,
+                replace_nulls_with=replace_nulls_with
             )
 
             csv_writer.writeheader()
             results = handle_json_data(json_columns, results)
+            # Replace the null values with given string if configured.
+            if replace_nulls_with is not None:
+                results = handle_null_values(results, replace_nulls_with)
             csv_writer.writerows(results)
 
             yield res_io.getvalue()
@@ -836,13 +861,17 @@ WHERE
                 csv_writer = csv.DictWriter(
                     res_io, fieldnames=header, delimiter=field_separator,
                     quoting=quote,
-                    quotechar=quote_char
+                    quotechar=quote_char,
+                    replace_nulls_with=replace_nulls_with
                 )
 
                 if IS_PY2:
                     results = convert_keys_to_unicode(results, conn_encoding)
 
                 results = handle_json_data(json_columns, results)
+                # Replace the null values with given string if configured.
+                if replace_nulls_with is not None:
+                    results = handle_null_values(results, replace_nulls_with)
                 csv_writer.writerows(results)
                 yield res_io.getvalue()
 

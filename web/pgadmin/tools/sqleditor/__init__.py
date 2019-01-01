@@ -1434,7 +1434,8 @@ def start_query_download_tool(trans_id):
                     gen(
                         quote=blueprint.csv_quoting.get(),
                         quote_char=blueprint.csv_quote_char.get(),
-                        field_separator=blueprint.csv_field_separator.get()
+                        field_separator=blueprint.csv_field_separator.get(),
+                        replace_nulls_with=blueprint.replace_nulls_with.get()
                     ),
                     mimetype='text/csv'
                 )

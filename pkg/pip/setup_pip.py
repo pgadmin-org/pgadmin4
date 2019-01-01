@@ -96,7 +96,6 @@ setup(
             "Flask-BabelEx==0.9.3"
         ],
         ":python_version<='2.7'": [
-            "backports.csv==1.0.5",
             "importlib==1.0.3"
         ],
         ":python_version>='2.7'": [

@@ -198,6 +198,17 @@ def RegisterQueryToolPreferences(self):
         }
     )
 
+    self.replace_nulls_with = self.preference.register(
+        'CSV_output', 'csv_replace_nulls_with',
+        gettext("Replace null values with"), 'text', 'NULL',
+        category_label=gettext('CSV output'),
+        help_str=gettext('Specifies the string that represents a null value '
+                         'while downloading query results as CSV. You can '
+                         'specify any arbitrary string to represent a '
+                         'null value, with quotes if desired.'),
+        allow_blanks=True
+    )
+
     self.results_grid_quoting = self.preference.register(
         'Results_grid', 'results_grid_quoting',
         gettext("Result copy quoting"), 'options', 'strings',

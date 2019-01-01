@@ -26,6 +26,7 @@ Bug fixes
 | `Bug #3726 <https://redmine.postgresql.org/issues/3726>`_ - Include the WHERE clause on EXCLUDE constraints in RE-SQL.
 | `Bug #3753 <https://redmine.postgresql.org/issues/3753>`_ - Fix an issue when user define Cast from smallint->text is created.
 | `Bug #3757 <https://redmine.postgresql.org/issues/3757>`_ - Hide Radio buttons that should not be shown on the maintenance dialogue.
+| `Bug #3780 <https://redmine.postgresql.org/issues/3780>`_ - Ensure that null values handled properly in CSV download.
 | `Bug #3796 <https://redmine.postgresql.org/issues/3796>`_ - Tweak the wording on the Grant Wizard.
 | `Bug #3797 <https://redmine.postgresql.org/issues/3797>`_ - Prevent attempts to bulk-drop schema objects.
 | `Bug #3798 <https://redmine.postgresql.org/issues/3798>`_ - Ensure the browser toolbar buttons work in languages other than English.

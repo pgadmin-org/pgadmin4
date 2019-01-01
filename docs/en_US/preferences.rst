@@ -146,6 +146,7 @@ Use the fields on the *CSV Output* panel to control the CSV output.
 * Use the *CSV field separator* drop-down listbox to specify the separator character that will be used in CSV output.
 * Use the *CSV quote character* drop-down listbox to specify the quote character that will be used in CSV output.
 * Use the *CSV quoting* drop-down listbox to select the fields that will be quoted in the CSV output; select *Strings*, *All*, or *None*.
+* Use the *Replace null values with* option to replace null values with specified string in the output file. Default is set to 'NULL'.
 
 .. image:: images/preferences_sql_display.png
     :alt: Preferences dialog sqleditor display options

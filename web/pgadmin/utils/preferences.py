@@ -32,7 +32,8 @@ class _Preference(object):
 
     def __init__(
         self, cid, name, label, _type, default, help_str=None,
-        min_val=None, max_val=None, options=None, select2=None, fields=None
+        min_val=None, max_val=None, options=None, select2=None, fields=None,
+        allow_blanks=None
     ):
         """
         __init__
@@ -57,6 +58,7 @@ class _Preference(object):
         :param select2: select2 options (object)
         :param fields: field schema (if preference has more than one field to
                         take input from user e.g. keyboardshortcut preference)
+        :param allow_blanks: Flag specify whether to allow blank value.
 
         :returns: nothing
         """
@@ -71,6 +73,7 @@ class _Preference(object):
         self.options = options
         self.select2 = select2
         self.fields = fields
+        self.allow_blanks = allow_blanks
 
         # Look into the configuration table to find out the id of the specific
         # preference.
@@ -139,7 +142,8 @@ class _Preference(object):
                 return res.value
             return self.default
         if self._type == 'text':
-            if res.value == '':
+            if res.value == '' and (self.allow_blanks is None or
+                                    not self.allow_blanks):
                 return self.default
         if self._type == 'keyboardshortcut':
             try:
@@ -390,7 +394,7 @@ class Preferences(object):
     def register(
             self, category, name, label, _type, default, min_val=None,
             max_val=None, options=None, help_str=None, category_label=None,
-            select2=None, fields=None
+            select2=None, fields=None, allow_blanks=None
     ):
         """
         register
@@ -414,6 +418,7 @@ class Preferences(object):
         :param select2: select2 control extra options
         :param fields: field schema (if preference has more than one field to
                         take input from user e.g. keyboardshortcut preference)
+        :param allow_blanks: Flag specify whether to allow blank value.
         """
         cat = self.__category(category, category_label)
         if name in cat['preferences']:
@@ -429,7 +434,7 @@ class Preferences(object):
 
         (cat['preferences'])[name] = res = _Preference(
             cat['id'], name, label, _type, default, help_str, min_val,
-            max_val, options, select2, fields
+            max_val, options, select2, fields, allow_blanks
         )
 
         return res

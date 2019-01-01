@@ -144,11 +144,6 @@ _create_python_virtualenv() {
     if test -d $DIR_PYMODULES_PATH; then
         ln -s $(basename $DIR_PYMODULES_PATH) $DIR_PYMODULES_PATH/../python
     fi
-
-    # Fix the backports module which will have no __init__.py file
-    if [ "$PYTHON_VERSION" -lt "30" ]; then
-        touch $BUILDROOT/$VIRTUALENV/lib/python/site-packages/backports/__init__.py
-    fi
 }
 
 _build_runtime() {
