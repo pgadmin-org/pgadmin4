@@ -18,6 +18,10 @@ iframe {
 	border-width: 0;
 }
 
+legend {
+	margin-bottom: 0rem;
+}
+
 /* Padding for the treeview */
 .browser-browser-pane {
 	padding-left: 0;
@@ -134,11 +138,17 @@ iframe {
 	border-left: 5px solid;
 	border-top: 5px solid transparent;
 }
+/* 25px is for showing error icon */
 .control-label {
 	display: inline-block;
 	margin: 0px;
-	padding: 5px 25px 5px 5px;
+	padding: 5px 25px 5px 5px !important;
 	vertical-align: middle;
+}
+
+.form-check {
+	padding-left: 0rem;
+	padding-right: 0.5rem;
 }
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
@@ -259,6 +269,7 @@ td.switch-cell > div.bootstrap-switch {
 			font-weight: bold;
 			&.active {
 				border-bottom: $active-border !important;
+				color: $color-primary;
 			}
 		}
 	}
@@ -310,4 +321,18 @@ td.switch-cell > div.bootstrap-switch {
 
 .bootstrap-datetimepicker-widget thead th {
   background-color: $color-bg;
+}
+
+.input-group {
+    & .input-group-text {
+      background: $input-bg;
+	}
+}
+
+/* bootstrap-switch */
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+	background: $color-primary;
+}
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-success, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-success {
+	background: $color-success;
 }

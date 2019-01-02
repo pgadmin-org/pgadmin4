@@ -220,14 +220,14 @@ define('pgadmin.node.language', [
           },
         }, {
           id: 'lanacl', label: gettext('Privileges'), type: 'collection',
-          group: 'security', control: 'unique-col-collection', mode: ['edit', 'create'],
+          group: gettext('Security'), control: 'unique-col-collection', mode: ['edit', 'create'],
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['U'],
           }), canAdd: true, canDelete: true, uniqueCol : ['grantee'],
         },{
           id: 'seclabels', label: gettext('Security Labels'), mode: ['edit', 'create'],
           model: pgBrowser.SecLabelModel, editable: false,
-          type: 'collection', group: 'security', min_version: 90200,
+          type: 'collection', group: gettext('Security'), min_version: 90200,
           canAdd: true, canEdit: false, canDelete: true,
           control: 'unique-col-collection',
         },

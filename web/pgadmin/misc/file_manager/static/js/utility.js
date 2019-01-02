@@ -576,7 +576,7 @@ define([
 
           result += '</ul>';
         } else {
-          result += '<table id="contents" class="table table-bordered table-noouter-border table-hover tablesorter">';
+          result += '<table id="contents" class="table table-bordered table-noouter-border table-bottom-border table-hover tablesorter">';
           result += '<thead><tr><th>';
           result += '<span>' + lg.name + '</span></th>';
           result += '<th><span>' + lg.size + '</span></th><th>';
@@ -659,16 +659,15 @@ define([
         if ($('.fileinfo').data('view') == 'grid') {
           result += '<ul id="contents" class="grid"></ul>';
         } else {
-          result += '<table id="contents" class="list tablesorter">';
-          result += '<thead><tr><th><span>' +
-            lg.name + '</span></th><th><span>' + lg.size +
-            '</span></th><th><span>' + lg.modified +
-            '</span></th></tr></thead>';
-          result += '<tbody>';
+          result += '<table id="contents" class="table table-bordered table-noouter-border table-empty-rows ablesorter">';
+          result += '<thead><tr><th><span>' + lg.name + '</span></th>' +
+                    '<th><span>' + lg.size + '</span></th>' +
+                    '<th><span>' + lg.modified + '</span></th>' +
+                    '</tr></thead>';
+          result += '</tbody>';
+          result += '</table>';
         }
-        result += '<h1 class="no_folder_found">' +
-          lg.could_not_retrieve_folder + '</h1>';
-
+        result += '<div class="no_folder_found">' + lg.could_not_retrieve_folder + '</div>';
         var cap_no_folders = ['upload', 'create'];
 
         data.Capabilities = cap_no_folders;
@@ -691,7 +690,7 @@ define([
         if ($('.fileinfo').data('view') == 'grid') {
           e.stopPropagation();
           $this = $('.file_manager').find('#contents li.selected p');
-          orig_value = decodeURI($this.find('span').attr('title'));
+          orig_value = decodeURI($this.find('span.less_text').attr('title'));
           newvalue = orig_value.substring(0, orig_value.indexOf('.'));
 
           if (newvalue === '') {
@@ -715,7 +714,7 @@ define([
           $this = $('.fileinfo').find(
             'table#contents tbody tr.selected td:first-child p'
           );
-          orig_value = decodeURI($this.find('span').html()),
+          orig_value = decodeURI($this.find('span.less_text').html()),
             newvalue = orig_value.substring(0, orig_value.lastIndexOf('.'));
 
           if (orig_value.lastIndexOf('/') == orig_value.length - 1 || newvalue === '') {
@@ -1137,7 +1136,7 @@ define([
             <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='11'>
           </div>
           <div class="ml-auto">
-            <label>${gettext('Format')}</label>
+            <label class="my-auto">${gettext('Format')}</label>
             <select name='type' tabindex='12'>${fileFormats}</select>
           <div>`;
         }

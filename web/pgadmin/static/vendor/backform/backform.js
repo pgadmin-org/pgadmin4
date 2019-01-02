@@ -404,7 +404,6 @@
 
   var SpacerControl = Backform.SpacerControl = Control.extend({
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>">&nbsp;</label>',
       '<div class="<%=Backform.controlsClassName%>"></div>'
     ].join("\n"))
   });
@@ -558,7 +557,7 @@
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=Backform.controlContainerClassName%> form-check-inline">',
+      '<div class="<%=Backform.controlContainerClassName%> d-flex">',
       '  <% for (var i=0; i < options.length; i++) { %>',
       '    <% var option = options[i]; %>',
       '    <% var id = _.uniqueId("bf_"); %>',

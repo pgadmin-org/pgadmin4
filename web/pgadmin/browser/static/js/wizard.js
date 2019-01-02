@@ -106,20 +106,19 @@ define([
       '        </div>' +
       '      </div>' +
       '      <div class="wizard-footer pg-prop-footer">' +
-        '      <div class="pg-prop-status-bar" style="visibility:hidden">' +
-        '        <div class="media error-in-footer bg-danger-light border-danger text-danger text-14">' +
-        '          <div class="media-body media-middle">' +
-        '            <div class="alert-icon error-icon">' +
-        '              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>' +
-        '            </div>' +
-        '            <div class="alert-text">' +
-        '            </div>' +
-        '            <div class="close-error-bar">' +
-        '              <a class="close-error">x</a>' +
-        '            </div>' +
-        '          </div>' +
-        '        </div>' +
-        '      </div>' +
+      '        <div class="pg-prop-status-bar" style="visibility:hidden">' +
+      '          <div class="error-in-footer"> ' +
+      '            <div class="d-flex px-2 py-1"> ' +
+      '              <div class="pr-2"> ' +
+      '                <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ' +
+      '              </div> ' +
+      '              <div class="alert-text"></div> ' +
+      '              <div class="ml-auto close-error-bar"> ' +
+      '                <a class="close-error fa fa-times text-danger"></a> ' +
+      '              </div> ' +
+      '            </div> ' +
+      '          </div> ' +
+      '        </div>' +
       '        <div class="wizard-buttons d-flex">' +
       '          <div>' +
       '            <button title = "' + gettext('Help for this dialog.') + '"' +
@@ -128,14 +127,14 @@ define([
       '          </div>' +
       '          <div class="ml-auto">' +
       '              <button class="btn btn-secondary wizard-cancel" <%=this.options.disable_cancel ? "disabled" : ""%>>' +
-      '                <i class="fa fa-lg fa-close"></i>' + gettext('Cancel') + '</button>' +
+      '                <i class="fa fa-close"></i>&nbsp;' + gettext('Cancel') + '</button>' +
       '              <button class="btn btn-secondary wizard-back" <%=this.options.disable_prev ? "disabled" : ""%>>' +
-      '                <i class="fa fa-backward"></i>' + gettext('Back') + '</button>' +
+      '                <i class="fa fa-backward"></i>&nbsp;' + gettext('Back') + '</button>' +
       '              <button class="btn btn-secondary wizard-next" <%=this.options.disable_next ? "disabled" : ""%>>' +
       '                ' + gettext('Next') +
-      '                <i class="fa fa-forward"></i></button>' +
+      '                &nbsp;<i class="fa fa-forward"></i></button>' +
       '              <button class="btn btn-primary wizard-finish" <%=this.options.disable_finish ? "disabled" : ""%>>' +
-      '                ' + gettext('Finish') + '</button>' +
+      '                <i class="fa fa-check"></i>&nbsp;' + gettext('Finish') + '</button>' +
       '          </div>' +
       '        </div>' +
       '      </div>' +

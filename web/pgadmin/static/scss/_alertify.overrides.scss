@@ -32,7 +32,7 @@
         border-top-left-radius: $panel-border-radius;
         border-top-right-radius: $panel-border-radius;
         & .ajs-content {
-          top: 0;
+          top: 0 !important;
           border-radius: inherit;
         }
       }
@@ -48,7 +48,8 @@
     }
   }
   .ajs-body .ajs-content {
-    top: $title-height;
+    top: $title-height !important;
+    bottom: $footer-height-calc !important;
   }
 
   /* Removes padding from alertify footer */
@@ -112,6 +113,10 @@
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
+}
+
+.alertify.ajs-frameless .ajs-body .ajs-content {
+  bottom: 0px !important;
 }
 
 .alertify.ajs-maximized .ajs-commands,
@@ -180,11 +185,9 @@
 }
 
 .pg-alertify-icon-button {
-  //refered - $input-btn-padding-y, $input-btn-padding-x
-  padding: 0.275rem $input-btn-padding-x;
   &:before {
     font-size: 1.3em !important;
-    line-height: 1.3;
+    line-height: 1.2;
     font-family: $font-family-icon;
   }
 }
@@ -195,7 +198,7 @@
 }
 
 .ajs-message.ajs-error.ajs-visible {
-  background: $color-danger-light;
+  background: $color-danger-lighter;
   border: $border-width solid $color-danger;
   @extend .ajs-text-smoothing;
 }
@@ -214,4 +217,8 @@
 
 .ajs-message > .media > .media-body.media-middle {
   display: flex;
+}
+
+.alertify .ajs-dimmer {
+  background-color: $loading-bg;
 }

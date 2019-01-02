@@ -24,9 +24,6 @@
 .user-language div{
   float:left;
 }
-.user-language select{
-  height: 25px !important;
-}
 
 .Resizer {
   background: $color-gray-lighter;
@@ -142,7 +139,7 @@
 }
 
 .alertify .ajs-body {
-  min-height: $footer-height-calc*2;
+  min-height: $footer-height-calc*1.5;
 }
 
 
@@ -248,6 +245,10 @@
     margin-bottom: 33px;
 }
 
+.pg-prop-btn-group-above {
+  border-bottom: $panel-border;
+}
+
 .has-pg-prop-btn-group {
     top: 45px;
     height: calc(100% - 45px);
@@ -323,9 +324,10 @@
 }
 
 .pgadmin-controls {
-    padding-right: 3px;
-    padding-left: 3px;
+    padding-right: 0px;
+    padding-left: 0px;
 }
+
 .pgadmin-controls.SQL {
   padding-right: 3px;
   padding-left: 1px;
@@ -372,6 +374,11 @@
   border-radius: 0rem;
   border-top-left-radius: $card-border-radius;
   border-top-right-radius: $card-border-radius;
+
+  &.collapsed {
+    border-bottom: none !important;
+    border-radius: $card-border-radius;
+  }
 }
 
 .obj_properties .badge .caret {
@@ -502,15 +509,17 @@ fieldset.inline-fieldset > div {
   padding: 15px;
 }
 
-.pgadmin-control-group.sql {
-  margin: 0px;
-  padding: 0px;
-  height: 100%;
+.pgadmin-control-group{
+  &.sql, &.sqltab {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+  }
 }
 
 .pgadmin-controls input[type="checkbox"]{
   margin-left: 0 !important;
-  margin-top: 0px !important;
+  margin-top: 10px !important;
 }
 
 .pgadmin-controls.sql_field_layout {
@@ -520,13 +529,13 @@ fieldset.inline-fieldset > div {
   z-index: 1;
 }
 
-.pgadmin-controls.focused {
-  border-color: $color-primary-light;
+.pgadmin-controls.focused,
+.pgadmin-controls:focus {
+  border-color: $input-focus-border-color !important;
   outline: 0;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color-primary, .6);
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color-primary, .6);
+  -webkit-box-shadow: $input-focus-box-shadow;
+  box-shadow: $input-focus-box-shadow;
 }
-
 
 .dashboard-tab-container,
 .pg-panel-statistics-container,
@@ -742,14 +751,7 @@ form[name="change_password_form"] .help-block {
   }
 }
 
-.close-error-bar {
-  background: $color-danger;
-  padding: 5px;
-  border-radius: 0px 4px 4px 0px;
-}
-
-.close-error-bar a {
-  color: $color-danger-fg !important;
+.close-error {
   cursor: pointer;
 }
 
@@ -831,6 +833,15 @@ table.table-bottom-border {
   }
 }
 
+table.table-empty-rows{
+  thead th:last-of-type,tr:last-of-type{
+    & td, & th {
+      border-bottom: $panel-border;
+    }
+  }
+}
+
+
 .context-menu-list .context-menu-submenu:after {
   font-family: $font-family-icon;
   content: "\f054" !important;
@@ -852,14 +863,21 @@ table.table-bottom-border {
     padding-bottom: 1.0rem;
   }
   & .panel-body {
-    padding-botttom: 0.8rem;
+    padding-bottom: 0.8rem;
   }
   & .btn-login {
     background-color: $security-btn-color;
   }
-  & .user-language select {
-    background-color: transparent;
-    color: $security-text-color;
+  & .user-language {
+    & select{
+      background-color: $color-primary;
+      color: $security-text-color;
+
+      & option{
+        background-color: $color-primary;
+        color: $security-text-color;
+      }
+    }
   }
   & .pg-icon {
     width: 28px;
@@ -917,7 +935,6 @@ table.table-bottom-border {
   }
 }
 
-
 .backform-tab{
   & > .nav.nav-tabs {
     position: absolute;
@@ -928,7 +945,7 @@ table.table-bottom-border {
   & > .tab-content {
     position: absolute;
     top: $title-height;
-    bottom: 50px;
+    bottom: $footer-height-calc;
   }
 }
 .ajs-content {

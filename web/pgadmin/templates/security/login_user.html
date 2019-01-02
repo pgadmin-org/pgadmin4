@@ -14,8 +14,8 @@
     {{ render_field_with_errors(login_user_form.password, "password") }}
     <button class="btn btn-primary btn-block btn-login" type="submit" value="{{ _('Login') }}">{{ _('Login') }}</button>
     <div class="form-group row mb-3 c user-language">
-        <div class="col-8"><span class="help-block">{{ _('<a href="%(url)s" class="text-white">Forgotten your password</a>?', url=url_for('browser.forgot_password')) }}</span></div>
-        <div class="col-4">
+        <div class="col-7"><span class="help-block">{{ _('<a href="%(url)s" class="text-white">Forgotten your password</a>?', url=url_for('browser.forgot_password')) }}</span></div>
+        <div class="col-5">
             <select class="form-control" name="language" value="{{user_language}}">
                 {% for key, lang in config.LANGUAGES.items() %}
                 <option value="{{key}}" {% if user_language == key %}selected{% endif %}>{{lang}}</option>

@@ -29,6 +29,7 @@
   height: calc(100% - 15px);
   display: block;
   padding: 0;
+  overflow-y: hidden !important;
 }
 
 .object_type_table thead {
@@ -114,17 +115,13 @@
 
 .wizard-right-panel_content .CodeMirror {
   border: 1px solid $color-gray-light;
-  height: 285px !important;
-  min-height: 285px !important;
+  height: 100% !important;
+  min-height: 100% !important;
 }
 
 .wizard-right-panel_content .CodeMirror-linenumber {
   background: $color-gray-light;
   border-right: none;
-}
-
-.wizard-right-panel_content .CodeMirror-gutters {
-  min-height: 285px !important;
 }
 
 .grant_wizard_container {

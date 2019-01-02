@@ -313,18 +313,19 @@ define('pgadmin.browser.node', [
           }
 
           var onSessionInvalid = function(msg) {
-            var alertMessage = '\
-              <div class="media error-in-footer bg-danger-light border-danger text-danger text-14">\
-                <div class="media-body media-middle">\
-                  <div class="alert-icon error-icon">\
-                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\
-                  </div>\
-                    <div class="alert-text">' + msg + '</div>\
-                    <div class="close-error-bar">\
-                      <a class="close-error">x</a>\
-                    </div>\
-                </div>\
-              </div>';
+            var alertMessage = `
+            <div class="error-in-footer">
+              <div class="d-flex px-2 py-1">
+                <div class="pr-2">
+                  <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
+                </div>
+                <div class="alert-text">${msg}</div>
+                <div class="ml-auto close-error-bar">
+                  <a class="close-error fa fa-times text-danger"></a>
+                </div>
+              </div>
+            </div>`;
+
             if (!_.isUndefined(that.statusBar)) {
               that.statusBar.html(alertMessage).css('visibility', 'visible');
               that.statusBar.find('a.close-error').bind('click', function() {
@@ -558,12 +559,43 @@ define('pgadmin.browser.node', [
 
             d.body.insertBefore(el, d.body.firstChild);
 
-            var pW = screen.width < 800 ? '95%' : '500px',
-              pH = screen.height < 600 ? '95%' : '550px',
-              w = pgAdmin.toPx(el, self.width || pW, 'width', true),
-              h = pgAdmin.toPx(el, self.height || pH, 'height', true),
-              x = (b.offsetWidth - w) / 2,
-              y = (b.offsetHeight - h) / 2;
+            let w, h, x, y;
+            if(screen.width < 800) {
+              w= pgAdmin.toPx(el, '95%', 'width', true);
+            } else {
+              w= pgAdmin.toPx(el, self.width || pgBrowser.stdW.default+'px', 'width', true);
+
+              /* Fit to standard sizes */
+              if(w <= pgBrowser.stdW.sm) {
+                w = pgBrowser.stdW.sm;
+              } else {
+                if(w <= pgBrowser.stdW.md) {
+                  w = pgBrowser.stdW.md;
+                } else {
+                  w = pgBrowser.stdW.lg;
+                }
+              }
+            }
+
+            if(screen.height < 600) {
+              h = pgAdmin.toPx(el, '95%', 'height', true);
+            } else {
+              h = pgAdmin.toPx(el, self.height || pgBrowser.stdH.default+'px', 'height', true);
+
+              /* Fit to standard sizes */
+              if(h <= pgBrowser.stdH.sm) {
+                h = pgBrowser.stdH.sm;
+              } else {
+                if(h <= pgBrowser.stdH.md) {
+                  h = pgBrowser.stdH.md;
+                } else {
+                  h = pgBrowser.stdH.lg;
+                }
+              }
+            }
+
+            x = (b.offsetWidth - w) / 2,
+            y = (b.offsetHeight - h) / 4;
 
             var p = pgBrowser.docker.addPanel(
               'node_props', wcDocker.DOCK.FLOAT, undefined, {
@@ -1319,7 +1351,7 @@ define('pgadmin.browser.node', [
 
             var btnGroup = this.find('.pg-prop-btn-group'),
               btnSave = btnGroup.find('button.btn-primary'),
-              btnReset = btnGroup.find('button.btn-warning');
+              btnReset = btnGroup.find('button.btn-secondary[type="reset"]');
 
             if (hasError || !modified) {
               btnSave.prop('disabled', true);

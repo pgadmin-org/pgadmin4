@@ -142,6 +142,9 @@
 
 .allowed_file_types {
   border-top: $panel-border;
+  background: $color-bg-theme;
+  z-index: 5;
+  padding: 0.25rem;
 }
 
 .upload_file{
@@ -211,10 +214,10 @@
 }
 
 .fileinfo .fm_dimmer {
-  height: calc(100% - 32px);
   display: none;
-  top: 0px;
-  background:$color-fg;
+  top: 0;
+  bottom: 0;
+  background: $loading-bg;
   opacity: 0.5;
   width: 100%;
   position: absolute;
@@ -223,25 +226,14 @@
 
 .fileinfo .delete_item, .fileinfo .replace_file {
   display: none;
-  padding: 15px 15px;
-  border: 1px solid $color-gray-light;
-  border-left: 0;
-  border-right: 0;
+  padding: 1rem;
+  border-bottom: $panel-border;
   background: $color-bg-theme;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 4;
-}
-
-.fileinfo .delete_item span.pull-right .btn,
-.fileinfo .replace_file span.pull-right .btn {
-  padding: 0px 5px;
-  color: $color-fg;
-  background: $color-bg;
-  font-size: 12px;
-  margin-right: 4px;
 }
 
 .upload_file .dz_cross_btn {

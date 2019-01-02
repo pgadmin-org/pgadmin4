@@ -46,3 +46,8 @@ samp,
   text-align: center;
   color: $loading-fg;
 }
+
+.pg-toolbar-btn {
+  margin-left: 0.25rem;
+  border: $input-btn-border-width solid $btn-secondary-border;
+}

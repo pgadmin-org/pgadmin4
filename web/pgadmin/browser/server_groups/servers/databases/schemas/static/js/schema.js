@@ -72,7 +72,7 @@ define('pgadmin.node.schema', [
         var grid = self.grid = new Backgrid.Grid({
           columns: self.grid_columns,
           collection: self.model.get(self.field.get('name')),
-          className: 'backgrid table-bordered',
+          className: 'backgrid table-bordered table-noouter-border table-hover',
         });
 
       // render grid
@@ -120,6 +120,8 @@ define('pgadmin.node.schema', [
 
    // Extend the browser's collection class for VacuumSettingsModel
   Backform.VacuumSettingsSchema = [{
+    id: 'spacer_ctrl', group: gettext('Table'), mode: ['edit', 'create'], type: 'spacer',
+  },{
     id: 'autovacuum_custom', label: gettext('Custom auto-vacuum?'),
     group: gettext('Table'), mode: ['edit', 'create'],
     type: 'switch',
@@ -184,6 +186,8 @@ define('pgadmin.node.schema', [
       ],
     }),
     deps: ['autovacuum_enabled'],
+  },{
+    id: 'spacer_ctrl', group: gettext('Toast Table'), mode: ['edit', 'create'], type: 'spacer',
   },{
     id: 'toast_autovacuum', label: gettext('Custom auto-vacuum?'),
     group: gettext('Toast Table'), mode: ['edit', 'create'],

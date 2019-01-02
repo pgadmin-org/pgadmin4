@@ -218,11 +218,10 @@ li.CodeMirror-hint-active {
 .pg_text_editor {
   z-index:10000;
   position:absolute;
-  background: $color-bg;
-  padding: 7px 5px 5px 1px;
-  border:2px solid  $color-gray;
-  -moz-border-radius:10px;
-  border-radius:10px;
+  background: $color-bg-theme;
+  padding: 0.25rem;
+  border: $panel-border;
+  box-shadow: $dropdown-box-shadow;
 }
 
 .editor-title {

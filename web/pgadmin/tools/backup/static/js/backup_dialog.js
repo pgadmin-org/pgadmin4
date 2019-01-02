@@ -28,7 +28,7 @@ export class BackupDialog extends Dialog {
     });
   }
 
-  draw(action, aciTreeItem, params) {
+  draw(action, aciTreeItem, params, width=0, height=0) {
     const serverInformation = this.retrieveAncestorOfTypeServer(aciTreeItem);
 
     if (!serverInformation) {
@@ -66,7 +66,7 @@ export class BackupDialog extends Dialog {
         typeOfDialog
       );
 
-      dialog(true).resizeTo('60%', '50%');
+      dialog(true).resizeTo(width, height);
     }).catch(function() {
       that.alertify.alert(
         gettext('Utility not found'),

@@ -496,6 +496,8 @@ Backform, commonUtils, supportedNodes
                 }],
                 options: {
                   modal: true,
+                  padding: !1,
+                  overflow: !1,
                 },
               };
             },
@@ -645,10 +647,6 @@ Backform, commonUtils, supportedNodes
                 }
               });
 
-              // Give the dialog initial height & width
-              this.elements.dialog.style.minHeight = '80%';
-              this.elements.dialog.style.minWidth = '70%';
-
               view.$el.attr('tabindex', -1);
               // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
               pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
@@ -682,7 +680,7 @@ Backform, commonUtils, supportedNodes
           S(
             gettext('Import/Export data - table \'%s\'')
           ).sprintf(treeInfo.table.label).value(), node, i, d
-        ).set('resizable', true).resizeTo('70%', '80%');
+        ).set('resizable', true).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
       })
       .fail(function() {
         Alertify.alert(

@@ -112,19 +112,17 @@ let FilterDialog = {
             this.__internal.buttons[2].element.disabled = true;
 
             // Status bar
-            this.statusBar = $('<div class=\'pg-prop-status-bar pg-el-xs-12 d-none\'>' +
-              '  <div class=\'media error-in-footer bg-danger-light border-danger text-danger text-14\'>' +
-              '    <div class=\'media-body media-middle\'>' +
-              '      <div class=\'alert-icon error-icon\'>' +
-              '        <i class=\'fa fa-exclamation-triangle\' aria-hidden=\'true\'></i>' +
-              '      </div>' +
-              '      <div class=\'alert-text\'>' +
-              '      </div>' +
-              '    </div>' +
-              '  </div>' +
-              '</div>', {
-                text: '',
-              }).appendTo($container);
+            this.statusBar = $(
+              '<div class=\'pg-prop-status-bar pg-el-xs-12 d-none\'>' +
+              '  <div class="error-in-footer"> ' +
+              '    <div class="d-flex px-2 py-1"> ' +
+              '      <div class="pr-2"> ' +
+              '        <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ' +
+              '      </div> ' +
+              '      <div class="alert-text"></div> ' +
+              '    </div> ' +
+              '  </div> ' +
+              '</div>').appendTo($container);
 
             // To show progress on filter Saving/Updating on AJAX
             this.showFilterProgress = $(
@@ -259,7 +257,7 @@ let FilterDialog = {
         };
       });
 
-      Alertify.filterDialog(title).resizeTo('65%', '60%');
+      Alertify.filterDialog(title).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.md);
     })
     .fail(function(e) {
       handleQueryToolAjaxError(pgAdmin, handler, e, '_show_filter', [], true);

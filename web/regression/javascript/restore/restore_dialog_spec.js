@@ -27,6 +27,18 @@ describe('RestoreDialog', () => {
         server: jasmine.createSpyObj('Node[server]', ['getTreeNodeHierarchy']),
         database: jasmine.createSpyObj('Node[database]', ['getTreeNodeHierarchy']),
       },
+      stdW: {
+        sm: 500,
+        md: 700,
+        lg: 900,
+        default: 500,
+      },
+      stdH: {
+        sm: 200,
+        md: 400,
+        lg: 550,
+        default: 550,
+      },
     };
     pgBrowser.Nodes.server.hasId = true;
     pgBrowser.Nodes.database.hasId = true;
@@ -185,7 +197,7 @@ describe('RestoreDialog', () => {
           });
 
           it('displays the dialog', (done) => {
-            restoreDialog.draw(null, [{id: 'serverTreeNode'}], {server: true});
+            restoreDialog.draw(null, [{id: 'serverTreeNode'}], pgBrowser.stdW.md, pgBrowser.stdH.md);
             setTimeout(() => {
               expect(alertifySpy['pg_restore']).toHaveBeenCalledWith(
                 'Restore (some-server-label: some-tree-label)',
@@ -197,7 +209,7 @@ describe('RestoreDialog', () => {
                 },
                 pgBrowser.Nodes.server
               );
-              expect(spy.resizeTo).toHaveBeenCalledWith('65%', '60%');
+              expect(spy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
               done();
             }, 0);
           });

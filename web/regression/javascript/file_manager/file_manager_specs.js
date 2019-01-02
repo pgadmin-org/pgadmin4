@@ -17,6 +17,21 @@ describe('fileSelectDialog', function () {
 
   let params;
 
+  pgAdmin.Browser = {
+    stdW: {
+      sm: 500,
+      md: 700,
+      lg: 900,
+      default: 500,
+    },
+    stdH: {
+      sm: 200,
+      md: 400,
+      lg: 550,
+      default: 550,
+    },
+  };
+
   describe('When dialog is called for select file', () => {
     it('Select file dialog', function() {
       params = {

@@ -27,7 +27,7 @@ export class RestoreDialog extends Dialog {
     });
   }
 
-  draw(action, aciTreeItem) {
+  draw(action, aciTreeItem, width, height) {
 
     const serverInformation = this.retrieveAncestorOfTypeServer(aciTreeItem);
 
@@ -69,7 +69,8 @@ export class RestoreDialog extends Dialog {
 
       let title = sprintf(gettext('Restore (%s: %s)'), node.label, data.label);
       that.createOrGetDialog(title, 'restore');
-      that.alertify.pg_restore(title, aciTreeItem1, data, node).resizeTo('65%', '60%');
+      that.alertify.pg_restore(title, aciTreeItem1, data, node)
+        .resizeTo(width, height);
     }).catch(function() {
       that.alertify.alert(
         gettext('Utility not found'),

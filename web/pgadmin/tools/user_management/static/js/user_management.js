@@ -122,7 +122,7 @@ define([
         });
       }
 
-      alertify.ChangePassword(title, url).resizeTo('55%', '60%');
+      alertify.ChangePassword(title, url).resizeTo(pgBrowser.stdW.lg, pgBrowser.stdH.md);
     },
 
     isPgaLoginRequired(xhr) {
@@ -220,7 +220,7 @@ define([
         });
       }
 
-      alertify.PgaLogin(title, url).resizeTo('75%','70%');
+      alertify.PgaLogin(title, url).resizeTo(pgBrowser.stdW.md, pgBrowser.stdH.md);
     },
 
     // Callback to draw User Management Dialog.
@@ -625,18 +625,19 @@ define([
             prepare: function() {
               var footerTpl = _.template([
                   '<div class="pg-prop-footer" style="visibility:hidden;">',
-                  '<div class="pg-prop-status-bar">',
-                  '<div class="media error-in-footer bg-danger-light border-danger text-danger text-14">',
-                  '<div class="media-body media-middle">',
-                  '<div class="alert-icon error-icon">',
-                  '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
-                  '</div>',
-                  '<div class="alert-text">',
-                  '</div>',
-                  '<div class="close-error-bar"><a class="close-error">x</a></div>',
-                  '</div>',
-                  '</div>',
-                  '</div>',
+                  ' <div class="pg-prop-status-bar">',
+                  '    <div class="error-in-footer"> ',
+                  '      <div class="d-flex px-2 py-1"> ',
+                  '        <div class="pr-2"> ',
+                  '          <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ',
+                  '        </div> ',
+                  '        <div class="alert-text"></div> ',
+                  '        <div class="ml-auto close-error-bar"> ',
+                  '          <a class="close-error fa fa-times text-danger"></a> ',
+                  '        </div> ',
+                  '      </div> ',
+                  '    </div> ',
+                  ' </div>',
                   '</div>',
                 ].join('\n')),
                 $statusBar = $(footerTpl()),
@@ -887,7 +888,7 @@ define([
           };
         });
       }
-      alertify.UserManagement(true).resizeTo('680px', '400px');
+      alertify.UserManagement(true).resizeTo(pgBrowser.stdW.md, pgBrowser.stdH.md);
     },
 
   };

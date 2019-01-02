@@ -1031,6 +1031,7 @@ define([
 
                   // Render SqlTab control to generate its html markup
                   var sqlCtrlHtml = sqlControl.render().$el;
+                  sqlCtrlHtml.addClass('h-100');
                   this.render = function() {
                     return {
                       el: sqlCtrlHtml,
@@ -1150,7 +1151,7 @@ define([
       }
 
       // Call Grant Wizard Dialog and set dimensions for wizard
-      Alertify.wizardDialog(true).resizeTo('55%', '75%');
+      Alertify.wizardDialog(true).resizeTo(pgBrowser.stdW.lg,pgBrowser.stdH.lg);
     },
   };
 

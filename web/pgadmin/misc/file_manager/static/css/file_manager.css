@@ -236,10 +236,8 @@ a.dz-remove {
 
 .file_listing .no_folder_found {
   text-align: center;
-  position: absolute;
-  top: 50px;
   width: 100%;
-  font-size: 14px;
+  padding: 0.5rem;
 }
 
 div.change_file_types span {

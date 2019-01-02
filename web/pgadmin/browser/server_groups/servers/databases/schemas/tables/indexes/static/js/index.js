@@ -228,7 +228,6 @@ define('pgadmin.node.index', [
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: ['Size', 'Index size'],
-      width: '45%',
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

@@ -307,12 +307,6 @@ define('pgadmin.preferences', [
                   /*
                    * Clear the existing html in the preferences content
                    */
-                // Keyboard short cuts and nodes wiull have striped divs
-                if (d.label.toLowerCase() == 'keyboard shortcuts' || d.label.toLowerCase() == 'nodes')
-                  $container.find('.preferences_content').addClass('striped-divs');
-                else
-                  $container.find('.preferences_content').removeClass('striped-divs');
-
                 $container.find('.preferences_content');
 
                 renderPreferencePanel(d.preferences);
@@ -477,7 +471,7 @@ define('pgadmin.preferences', [
 
     },
     show: function() {
-      Alertify.preferencesDlg(true).resizeTo('60%', '60%');
+      Alertify.preferencesDlg(true).resizeTo(pgAdmin.Browser.stdW.lg,pgAdmin.Browser.stdH.lg);
     },
   };
 

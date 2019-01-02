@@ -50,7 +50,7 @@ define([
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
     ].join('\n')),
-    className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-xs-12 row',
+    className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-12 row',
   });
 
   //Backup Model (Server Node)
@@ -580,7 +580,7 @@ define([
         alertify,
         BackupModel
       );
-      dialog.draw(action, item, {'globals': true});
+      dialog.draw(action, item, {'globals': true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
     },
     start_backup_server: function(action, item) {
       let dialog = new globalBackupDialog.BackupDialog(
@@ -589,7 +589,7 @@ define([
         alertify,
         BackupObjectModel
       );
-      dialog.draw(action, item, {'server': true});
+      dialog.draw(action, item, {'server': true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
     },
     // Callback to draw Backup Dialog for objects
     backup_objects: function(action, treeItem) {
@@ -599,7 +599,7 @@ define([
         alertify,
         BackupObjectModel
       );
-      dialog.draw(action, treeItem, null);
+      dialog.draw(action, treeItem, null, pgBrowser.stdW.md, pgBrowser.stdH.md);
     },
   };
   return pgBrowser.Backup;

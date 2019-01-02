@@ -31,6 +31,18 @@ describe('GlobalServerBackupDialog', () => {
       Nodes: {
         server: jasmine.createSpyObj('Node[server]', ['getTreeNodeHierarchy']),
       },
+      stdW: {
+        sm: 500,
+        md: 700,
+        lg: 900,
+        default: 500,
+      },
+      stdH: {
+        sm: 200,
+        md: 400,
+        lg: 550,
+        default: 550,
+      },
     };
     pgBrowser.Nodes.server.hasId = true;
     jquerySpy = jasmine.createSpy('jquerySpy');
@@ -158,10 +170,10 @@ describe('GlobalServerBackupDialog', () => {
 
           context('dialog for global backup', () => {
             it('displays the dialog', (done) => {
-              backupDialog.draw(null, [serverTreeNode], {globals: true});
+              backupDialog.draw(null, [serverTreeNode], {globals: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
               setTimeout(() => {
                 expect(alertifySpy['BackupDialog_globals']).toHaveBeenCalledWith(true);
-                expect(globalResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+                expect(globalResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
                 done();
               }, 0);
             });
@@ -169,10 +181,10 @@ describe('GlobalServerBackupDialog', () => {
 
           context('dialog for server backup', () => {
             it('displays the dialog', (done) => {
-              backupDialog.draw(null, [serverTreeNode], {server: true});
+              backupDialog.draw(null, [serverTreeNode], {server: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
               setTimeout(() => {
                 expect(alertifySpy['BackupDialog_server']).toHaveBeenCalledWith(true);
-                expect(serverResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+                expect(serverResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
                 done();
               }, 0);
             });

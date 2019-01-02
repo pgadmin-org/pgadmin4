@@ -40,6 +40,18 @@ describe('BackupDialog', () => {
           getTreeNodeHierarchy: jasmine.createSpy('db.getTreeNodeHierarchy'),
         },
       },
+      stdW: {
+        sm: 500,
+        md: 700,
+        lg: 900,
+        default: 500,
+      },
+      stdH: {
+        sm: 200,
+        md: 400,
+        lg: 550,
+        default: 550,
+      },
     };
     pgBrowser.Nodes.server.hasId = true;
     pgBrowser.Nodes.database.hasId = true;
@@ -196,10 +208,10 @@ describe('BackupDialog', () => {
           });
 
           it('displays the dialog', (done) => {
-            backupDialog.draw(null, [{id: 'serverTreeNode'}], null);
+            backupDialog.draw(null, [{id: 'serverTreeNode'}], null, pgBrowser.stdW.md, pgBrowser.stdH.md);
             setTimeout(() => {
               expect(alertifySpy['backup_objects']).toHaveBeenCalledWith(true);
-              expect(backupDialogResizeToSpy.resizeTo).toHaveBeenCalledWith('60%', '50%');
+              expect(backupDialogResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
               done();
             }, 0);
           });

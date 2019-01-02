@@ -104,25 +104,17 @@
   }
 
   .alert-text {
-    flex-grow: 1;
-    border: 1px solid $color-danger-light;
-    padding: 6px 12px 6px 10px;
-    border-left: none;
     -moz-user-select: text;
     -khtml-user-select: text;
     -webkit-user-select: text;
     -ms-user-select: text;
     user-select: text;
-    width: 100%;
   }
 
   .error-in-footer {
-    border-radius: 5px;
-    border: 1px solid transparent;
-
-    .alert-text {
-      border-color: $color-danger-light;
-    }
+    border-radius: $border-radius;
+    border: 1px solid $color-danger-light;
+    background: $color-danger-lighter;
   }
 
   .success-in-footer {

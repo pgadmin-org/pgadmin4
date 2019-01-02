@@ -2288,7 +2288,7 @@ define([
       '<div class="input-group">',
       '<input type="<%=type%>" class="form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '<div class="input-group-append">',
-      '<button class="btn btn-outline-secondary fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> ></button>',
+      '<button class="btn btn-secondary fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> ></button>',
       '</div>',
       '</div>',
       '<% if (helpMessage && helpMessage.length) { %>',

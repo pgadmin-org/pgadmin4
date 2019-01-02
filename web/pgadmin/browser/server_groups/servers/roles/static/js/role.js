@@ -68,18 +68,19 @@ define('pgadmin.node.role', [
 
   var RoleCustomSwitchControl = Backform.SwitchControl.extend({
     template: _.template([
-      '<label class="control-label"><%=label%></label>',
-      '<div class="pgadmin-controls">',
-      '  <div class="checkbox" style="float:right">',
+      '<label class="control-label pg-el-sm-10 pg-el-12"><%=label%></label>',
+      '<div class="pgadmin-controls pg-el-sm-2 pg-el-12">',
+      '  <div class="checkbox">',
       '    <label>',
       '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '    </label>',
       '  </div>',
-      '  <% if (helpMessage && helpMessage.length) { %>',
-      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '  <% } %>',
       '</div>',
+      '<% if (helpMessage && helpMessage.length) { %>',
+      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '<% } %>',
     ].join('\n')),
+    className: 'pgadmin-control-group form-group pg-el-12 row',
   });
 
   var RoleMembersControl = Backform.Control.extend({

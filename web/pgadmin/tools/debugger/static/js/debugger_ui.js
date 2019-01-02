@@ -951,7 +951,7 @@ define([
 
     Alertify.debuggerInputArgsDialog(
       gettext('Debugger'), debug_info, restart_debug, is_edb_proc
-    ).resizeTo('60%', '60%');
+    ).resizeTo(pgBrowser.stdW.md,pgBrowser.stdH.md);
 
   };
 

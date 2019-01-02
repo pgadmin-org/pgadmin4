@@ -197,10 +197,10 @@ define([
         this.pgResizeTimeout = null;
 
         /** Calculations based on https://getbootstrap.com/docs/4.1/layout/grid/#grid-options **/
-        if (w < 576) {
+        if (w < 480) {
           w = 'xs';
         }
-        if (w >= 576) {
+        if (w >= 480) {
           w = 'sm';
         }
         if (w >= 768) {

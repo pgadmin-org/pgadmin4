@@ -80,10 +80,6 @@
   text-align: center;
 }
 
-.backgrid td.editor {
-  padding: 0;
-}
-
 .backgrid td.editor,
 .backgrid tbody tr:nth-child(odd) td.editor {
   background-color: rgba(82, 168, 236, 0.1);

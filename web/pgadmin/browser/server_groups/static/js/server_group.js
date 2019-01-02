@@ -9,8 +9,8 @@ define('pgadmin.node.server_group', [
       type: 'server_group',
       dialogHelp: url_for('help.static', {'filename': 'server_group_dialog.html'}),
       label: gettext('Server Group'),
-      width: '350px',
-      height: '250px',
+      width: '250px',
+      height: '150px',
       is_collection: true,
       Init: function() {
         /* Avoid multiple registration of menus */

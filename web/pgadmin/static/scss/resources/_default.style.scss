@@ -22,6 +22,10 @@
   &-light {
     background-color: $color-danger-light;
   }
+
+  &-lighter {
+    background-color: $color-danger-lighter;
+  }
 }
 
 .bg-success {
@@ -80,6 +84,10 @@
 
   &-light {
     border-color: $color-danger-light;
+  }
+
+  &-lighter {
+    border-color: $color-danger-lighter;
   }
 }
 

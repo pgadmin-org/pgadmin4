@@ -1,6 +1,7 @@
 .backgrid th, .backgrid td {
   font-weight: normal!important;
   text-align: left;
+  line-height: $line-height-base;
 }
 
 .backgrid.backgrid-striped tbody {
@@ -223,6 +224,10 @@ span.form-control:disabled {
     background-color: $color-bg;
     border: 1px solid $border-color;
     border-radius: $panel-border-radius;
+
+    & .tab-pane {
+      padding: 0.5rem;
+    }
 }
 .subnode-footer {
     height: 38px;

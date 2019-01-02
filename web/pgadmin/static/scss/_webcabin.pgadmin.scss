@@ -29,8 +29,8 @@
 }
 
 .wcFrameButton {
-  width: 25px;
-  height: 20px;
+  width: 24px;
+  height: 22px;
   display: flex;
   border-radius: $btn-border-radius;
   margin: auto;
@@ -85,6 +85,66 @@
 .wcFloating {
   box-shadow: $box-shadow;
   z-index: 1050 !important;
+
+  &.wcFrame, & .wcPanelBackground {
+    border-bottom-left-radius: $card-border-radius;
+    border-bottom-right-radius: $card-border-radius;
+  }
+
+  & .pg-panel-content {
+    border-bottom: $card-border-radius;
+  }
+
+  & .wcFrameCornerNE,
+  & .wcFrameCornerNW,
+  & .wcFrameCornerSE,
+  & .wcFrameCornerSW {
+    height: $card-border-radius*2;
+    width: $card-border-radius*2;
+    background: transparent;
+  }
+
+  & .wcFrameCornerNE {
+    border: $panel-border;
+    border-left: none !important;
+    border-bottom: none !important;
+    border-radius: none;
+    border-top-right-radius: $card-border-radius;
+  }
+
+  & .wcFrameCornerNW {
+    border: $panel-border;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-radius: none;
+    border-top-left-radius: $card-border-radius;
+  }
+
+  & .wcFrameCornerSE {
+    border: $panel-border;
+    border-top: none !important;
+    border-left: none !important;
+    border-radius: none;
+    border-bottom-right-radius: $card-border-radius;
+  }
+
+  & .wcFrameCornerSW {
+    border: $panel-border;
+    border-right: none !important;
+    border-top: none !important;
+    border-radius: none;
+    border-bottom-left-radius: $card-border-radius;
+  }
+
+  .wcFrameEdgeH {
+    left: $card-border-radius !important;
+    right: $card-border-radius !important;
+  }
+
+  .wcFrameEdgeV {
+    top: $card-border-radius !important;
+    bottom: $card-border-radius !important;
+  }
 }
 
 .wcFloating .wcPanelTabActive {

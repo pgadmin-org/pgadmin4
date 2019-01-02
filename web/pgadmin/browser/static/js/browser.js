@@ -108,6 +108,19 @@ define('pgadmin.browser', [
     // It will be used to register extensions, tools, child node scripts,
     // etc.
     scripts: {},
+    // Standard Widths and Height for dialogs in px
+    stdW: {
+      sm: 500,
+      md: 700,
+      lg: 900,
+      default: 500,
+    },
+    stdH: {
+      sm: 200,
+      md: 400,
+      lg: 550,
+      default: 550,
+    },
     // Default panels
     panels: {
       // Panel to keep the left hand browser tree

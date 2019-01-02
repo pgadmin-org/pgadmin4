@@ -88,14 +88,15 @@ let queryToolNotifications = {
 
     // Set up the grid
     let notifications_grid = new Backgrid.Grid({
+      emptyText: 'No data found',
       columns: gridCols,
       collection: queryToolNotifications.collection,
-      className: 'backgrid table-bordered presentation table backgrid-striped',
+      className: 'backgrid presentation table table-bordered table-hover table-noouter-border table-bottom-border',
     });
 
     // Render the grid
     if (notifications_grid)
-      notifications_panel.$container.append(notifications_grid.render().el);
+      notifications_panel.$container.find('.sql-editor-notifications').append(notifications_grid.render().el);
   },
 
   // This function is used to raise notify messages and update the

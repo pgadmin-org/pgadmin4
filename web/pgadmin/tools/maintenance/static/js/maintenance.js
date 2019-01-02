@@ -34,7 +34,7 @@ define([
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
     ].join('\n')),
-    className: 'pgadmin-control-group form-group col-6',
+    className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-12 row',
   });
 
   // Main model for Maintenance functionality
@@ -492,7 +492,8 @@ define([
           return;
         }
         // Open the Alertify dialog
-        Alertify.MaintenanceDialog('Maintenance...').set('resizable', true).resizeTo('60%', '80%');
+        Alertify.MaintenanceDialog(gettext('Maintenance...')).set('resizable', true)
+          .resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.md);
       })
       .fail(function() {
         Alertify.alert(

@@ -2172,7 +2172,7 @@ define('tools.querytool', [
 
 
             /* If filter is applied then remove class 'btn-secondary'
-             * and add 'btn-warning' to change the colour of the button.
+             * and add 'btn-primary' to change the colour of the button.
              */
             if (self.can_filter && res.data.filter_applied) {
               $('#btn-filter').removeClass('btn-secondary');

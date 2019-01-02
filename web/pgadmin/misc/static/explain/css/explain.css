@@ -6,11 +6,11 @@
     cursor: pointer;
 }
 
-.pg-explain-zoom-btn {
+.pg-explain-zoom-btn,
+.pg-explain-download-btn {
     top: 5px;
     min-width: 25px;
     cursor: pointer;
-    border: 1px solid transparent;
     font-size: 0.75rem;
 }
 
@@ -71,11 +71,4 @@ td.explain-tooltip-val {
     top: 5px;
     left: 79px;
     opacity: 0.5;
-}
-
-.pg-explain-download-btn {
-    top: 5px;
-    min-width: 25px;
-    border: 1px solid transparent;
-    font-size: 0.75rem;
 }

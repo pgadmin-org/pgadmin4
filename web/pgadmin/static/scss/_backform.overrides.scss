@@ -1,6 +1,6 @@
 .has-error {
   .pgadmin-controls .form-control {
-    border-color: $color-danger;
+    border-color: $color-danger-light;
   }
 
   .form-control {
@@ -11,15 +11,15 @@
     color: $color-danger;
   }
 
-  .control-label:before {
+  .control-label::before {
     font: normal normal normal 16px/1 FontAwesome;
     content: "\f071";
     text-decoration: inherit;
     position: absolute;
     color: $color-danger;
-    right: 6px;
-    padding-top: 6px;
+    right: 0.5rem;
     z-index: 1;
+    line-height: inherit;
   }
 }
 
@@ -36,10 +36,14 @@
   }
 }
 .backform-tab .tab-pane {
-	padding: 7px;
+	padding: 0.5rem;
 	&.SQL {
     height: 100%;
-    padding: 0px 7px 0px 0px;
+    padding: 0px;
+
+    & .pgadmin-controls.SQL {
+      padding: 0px;
+    }
 	}
 }
 

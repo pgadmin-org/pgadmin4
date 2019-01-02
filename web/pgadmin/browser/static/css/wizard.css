@@ -44,28 +44,9 @@
   width: 140px;
 }
 
-.wizard-right-panel_content {
-  padding: 0.5rem 0rem;
-}
-
 /* Wizard Footer CSS */
 .pgadmin-wizard .footer .row {
   margin: 0 -6px 3px -6px;
-}
-
-/* Wizard Button CSS */
-
-.pgadmin-wizard .wizard-buttons button.wizard-next i.fa {
-  padding-left: 5px;
-}
-
-.pgadmin-wizard .wizard-buttons button.wizard-back i.fa,
-.pgadmin-wizard .wizard-buttons button.wizard-cancel i.fa {
-  padding-right: 5px;
-}
-
-.pgadmin-wizard .wizard-buttons .wizard-finish {
-  margin-right: 0 !important;
 }
 
 .wizard-header .wizard-cancel-event {

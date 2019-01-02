@@ -20,7 +20,8 @@ define(
               },
               setup: function() {
                 return {
-                  buttons:[{ text: gettext('OK'), key: 27, className: 'btn btn-primary' }],
+                  buttons:[{ text: gettext('OK'), key: 27,
+                    className: 'btn btn-primary fa fa-lg fa-check pg-alertify-button' }],
                   options: {
                     modal: false,
                     resizable: true,
@@ -44,7 +45,7 @@ define(
             function(data) {
               alertify.aboutDialog(
                   S(gettext('About %s')).sprintf(pgAdmin.Browser.utils.app_name).value(), data
-              ).resizeTo(800, 450);
+              ).resizeTo(pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
             });
       },
     };

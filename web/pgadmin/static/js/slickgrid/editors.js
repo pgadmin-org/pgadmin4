@@ -36,7 +36,13 @@
   function getButtons(editable) {
     var $buttons = $('<div class=\'pg_buttons\' />'),
       label = editable ? 'Cancel' : 'OK',
-      button_type = editable ? 'btn-danger' : 'btn-primary';
+      button_type = editable ? 'btn-secondary' : 'btn-primary',
+      button_icon = editable ? 'fa-times' : 'fa-check';
+
+    $('<button class=\'btn ' + button_type + ' long_text_editor pg-alertify-button\' data-label="'+label+'">' +
+    '<span class="fa '+ button_icon +' pg-alertify-button"></span>&nbsp;'+ label +
+    '</button>')
+    .appendTo($buttons);
 
     if (editable) {
       $('<button class=\'btn btn-primary long_text_editor\' data-label="Save">'+
@@ -44,11 +50,6 @@
         '</button>')
         .appendTo($buttons);
     }
-
-    $('<button class=\'btn ' + button_type + ' long_text_editor pg-alertify-button\' data-label="'+label+'">' +
-      '<span class="fa fa-save pg-alertify-button"></span>&nbsp;'+ label +
-      '</button>')
-      .appendTo($buttons);
     return $buttons;
   }
 
@@ -140,8 +141,8 @@
       $input = getTextArea().appendTo($wrapper);
       $buttons = getButtons(true).appendTo($wrapper);
 
-      $buttons.find('button:first').on('click', this.save);
-      $buttons.find('button:last').on('click', this.cancel);
+      $buttons.find('button:first').on('click', this.cancel);
+      $buttons.find('button:last').on('click', this.save);
       $input.on('keydown', this.handleKeyDown);
 
       scope.position(args.position);

@@ -4,7 +4,7 @@
            type="{% if type %}{{ type }}{% else %}{{ field.type }}{% endif %}" autofocus>
     {% if field.errors %}
     {% for error in field.errors %}
-    <span class="form-text text-danger">{{ error }}</span>
+    <span class="form-text">{{ error }}</span>
     {% endfor %}
     {% endif %}
 </div>

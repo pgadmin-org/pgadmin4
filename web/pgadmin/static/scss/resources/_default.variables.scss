@@ -19,7 +19,8 @@ $color-secondary: $white !default;
 
 $color-danger: #e53935 !default;
 $color-danger-fg: $white !default;
-$color-danger-light: #FBE1E1;
+$color-danger-light: #F39999;
+$color-danger-lighter: #FAECEC;
 
 $color-success: #43a047 !default;
 $color-success-fg: $black !default;
@@ -51,7 +52,7 @@ $font-family-editor: 'Source Code Pro' !default;
 $font-family-icon: 'FontAwesome' !default;
 
 $border-width: 1px;
-$border-color: rgba($color-gray, 0.5);
+$border-color: #dde0e6;
 $border-color-dark: $color-gray;
 $box-shadow: 0 0.5rem 3rem $color-gray-dark;
 
@@ -59,7 +60,8 @@ $box-shadow: 0 0.5rem 3rem $color-gray-dark;
 $gray-600: $color-gray-dark;
 $gray-900: $color-fg-theme;
 $body-color: $color-fg-theme;
-$font-size-base: 0.815rem;
+$font-size-base: 0.875rem;
+$line-height-base: 1.5; // no change
 $grid-gutter-width: 15px;
 $border-radius: 0.25rem; //no change
 
@@ -122,8 +124,18 @@ $input-border-radius: $border-radius; //no change
 $input-disabled-bg: $color-gray-lighter;
 $input-btn-border-width: $border-width; //no change
 $input-border-width: $input-btn-border-width; //no change
-$input-btn-padding-y: .375rem; //no change
+$input-btn-padding-y: .25rem;
 $input-btn-padding-x: .75rem; //no change
+
+$component-active-bg: $color-primary; //no change
+$input-btn-focus-width: .2rem !default; //no change
+$input-btn-focus-color: rgba($component-active-bg, .25) !default; //no change
+$input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color !default; //no change
+$input-focus-bg: $input-bg !default; //no change
+$input-focus-border-color: lighten($component-active-bg, 25%) !default; //no change
+$input-focus-color: $input-color !default; //no change
+$input-focus-width: $input-btn-focus-width !default; //no change
+$input-focus-box-shadow: $input-btn-focus-box-shadow !default; //no change
 
 $btn-border-radius: $border-radius; //no change
 
@@ -136,12 +148,12 @@ $panel-border-radius: $border-radius;
 $panel-border: $panel-border-width solid $panel-border-color !important;
 $panel-border-dark: $panel-border-width solid $border-color-dark !important;
 $tabs-padding: 5px 10px 2px;
-$title-height: 37px * $font-size-base/1rem;
+$title-height: ($line-height-base*16px) + 5px + 2px + $border-width;
 $footer-padding: 0.5rem;
-$footer-min-height: 2.18rem;
+$footer-min-height: 2rem;
 $footer-height-calc: $footer-min-height+$footer-padding*2;
-$navbar-font-size: 0.875rem;
-$navbar-user-font-size: 0.815rem;
+$navbar-font-size: 0.925rem;
+$navbar-user-font-size: 0.875rem;
 
 $navbar-dropdown-top: 100%;
 $dropdown-submenu-top: -$dropdown-spacer;
@@ -160,7 +172,7 @@ $sql-gutters-bg: $color-gray-light;
 $sql-history-detail-bg: $color-gray-lighter;
 $sql-history-success-bg: $color-primary-light;
 $sql-history-success-fg: $color-primary;
-$sql-history-error-bg: $color-danger-light;
+$sql-history-error-bg: $color-danger-lighter;
 $sql-history-error-fg: $color-danger;
 
 $negative-bg: $color-gray-light;
@@ -175,7 +187,7 @@ $btn-secondary-hover-bg: $color-gray-light;
 $card-header-padding : 0.25rem 0.5rem;
 $no-border-radius: 0px !important;
 
-$btn-checkbox-padding: 0.3rem 0.8rem;
+$btn-checkbox-padding: $input-btn-padding-y $input-btn-padding-x;
 
 $security-text-color: $white;
 $security-btn-color: #038bba;

@@ -379,7 +379,7 @@ define('pgadmin.datagrid', [
         $.get(url_for('datagrid.filter'),
           function(data) {
             alertify.filterDialog('Data Filter', data, baseUrl, validateUrl)
-                    .resizeTo(300, 200);
+                    .resizeTo(pgBrowser.stdW.sm,pgBrowser.stdH.sm);
           }
         );
       },

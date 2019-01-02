@@ -29,7 +29,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
     ].join('\n')),
-    className: 'pgadmin-control-group form-group pg-el-4 row',
+    className: 'pgadmin-control-group form-group pg-el-md-6 row',
   });
 
   //Restore Model (Objects like Database/Schema/Table)
@@ -381,7 +381,7 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       let dialog = new restoreDialog.RestoreDialog(
         pgBrowser, $, alertify, RestoreObjectModel
       );
-      dialog.draw(action, treeItem);
+      dialog.draw(action, treeItem, pgBrowser.stdW.md, pgBrowser.stdH.md);
     },
   };
   return pgBrowser.Restore;

@@ -302,7 +302,7 @@ define('pgadmin.node.tablespace', [
               };
             });
           }
-          Alertify.move_objects_dlg(true).resizeTo('40%','50%');
+          Alertify.move_objects_dlg(true).resizeTo(pgBrowser.stdW.md,pgBrowser.stdH.md);
         },
       },
       model: pgBrowser.Node.Model.extend({
