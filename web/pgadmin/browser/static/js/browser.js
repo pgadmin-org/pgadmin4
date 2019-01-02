@@ -1970,7 +1970,8 @@ define('pgadmin.browser', [
   }
 
   $(window).on('beforeunload', function() {
-    if (pgBrowser.get_preference('browser', 'browser_tree_state_save_interval').value !== -1)
+    let pref = pgBrowser.get_preference('browser', 'browser_tree_state_save_interval');
+    if (!_.isUndefined(pref) && pref.value !== -1)
       pgAdmin.Browser.browserTreeState.save_state();
   });
 
