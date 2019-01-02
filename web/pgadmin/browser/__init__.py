@@ -519,13 +519,14 @@ def index():
             current_app.logger.exception('Exception when checking for update')
 
         if data is not None:
-            if data['pgadmin4']['version_int'] > config.APP_VERSION_INT:
+            if data[config.UPGRADE_CHECK_KEY]['version_int'] > \
+                    config.APP_VERSION_INT:
                 msg = render_template(
                     MODULE_NAME + "/upgrade.html",
                     current_version=config.APP_VERSION,
-                    upgrade_version=data['pgadmin4']['version'],
+                    upgrade_version=data[config.UPGRADE_CHECK_KEY]['version'],
                     product_name=config.APP_NAME,
-                    download_url=data['pgadmin4']['download_url']
+                    download_url=data[config.UPGRADE_CHECK_KEY]['download_url']
                 )
 
                 flash(msg, 'warning')

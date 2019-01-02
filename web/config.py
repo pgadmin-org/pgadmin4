@@ -304,6 +304,9 @@ UPGRADE_CHECK_ENABLED = True
 # Where should we get the data from?
 UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 
+# What key should we look at in the upgrade data file?
+UPGRADE_CHECK_KEY = 'pgadmin4'
+
 # Which CA file should we use?
 # Default to cacert.pem in the same directory as config.py et al.
 CA_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)),
