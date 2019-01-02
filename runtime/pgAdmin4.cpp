@@ -347,12 +347,14 @@ int main(int argc, char * argv[])
     Logger::GetLogger()->Log(QString(QWidget::tr("Application Server URL: %1")).arg(appServerUrl));
 
     // Read the server connection timeout from the registry or set the default timeout.
-    int timeout = settings.value("ConnectionTimeout", 30).toInt();
+    int timeout = settings.value("ConnectionTimeout", 90).toInt();
 
     // Now the server should be up, we'll attempt to connect and get a response.
     // We'll retry in a loop a few time before aborting if necessary.
 
     QTime endTime = QTime::currentTime().addSecs(timeout);
+    QTime midTime1 = QTime::currentTime().addSecs(timeout/3);
+    QTime midTime2 = QTime::currentTime().addSecs(timeout*2/3);
     bool alive = false;
 
     Logger::GetLogger()->Log("The server should be up, we'll attempt to connect and get a response. Ping the server");
@@ -363,6 +365,17 @@ int main(int argc, char * argv[])
         if (alive)
         {
             break;
+        }
+
+        if(QTime::currentTime() >= midTime1)
+        {
+            if(QTime::currentTime() < midTime2) {
+                splash->showMessage(QString(QWidget::tr("Taking longer than usual...")), Qt::AlignBottom | Qt::AlignCenter);
+            }
+            else
+            {
+                splash->showMessage(QString(QWidget::tr("Almost there...")), Qt::AlignBottom | Qt::AlignCenter);
+            }
         }
 
         delay(200);
