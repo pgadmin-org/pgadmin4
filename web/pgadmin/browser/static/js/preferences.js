@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2019, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
 import * as modifyAnimation from 'sources/modify_animation';

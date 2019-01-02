@@ -14,7 +14,7 @@
     <key>LSMinimumSystemVersion</key>
     <string>10.10</string>
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright (C) 2013 - 2018, The pgAdmin Development Team</string>
+    <string>Copyright (C) 2013 - 2019, The pgAdmin Development Team</string>
     <key>CFBundleIconFile</key>
     <string>@ICON@</string>
     <key>CFBundlePackageType</key>

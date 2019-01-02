@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2019, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import CodeMirror from 'codemirror/lib/codemirror';
 import 'codemirror/mode/sql/sql';
 import 'codemirror/addon/selection/mark-selection';

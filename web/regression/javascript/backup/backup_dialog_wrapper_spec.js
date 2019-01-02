@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2019, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import {TreeFake} from '../tree/tree_fake';
 import {BackupDialogWrapper} from '../../../pgadmin/tools/backup/static/js/backup_dialog_wrapper';
 import axios from 'axios/index';

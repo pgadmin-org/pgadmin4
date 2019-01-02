@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2019, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 define('misc.statistics', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'backbone',
   'pgadmin.browser', 'pgadmin.backgrid', 'alertify', 'sources/size_prettify',

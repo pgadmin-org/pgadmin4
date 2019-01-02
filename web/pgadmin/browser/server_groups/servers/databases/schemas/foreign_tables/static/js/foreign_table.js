@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2019, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 /* Create and Register Foreign Table Collection and Node. */
 define('pgadmin.node.foreign_table', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',

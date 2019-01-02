@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2019, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.edbvar', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',

@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2019, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 define('pgadmin.node.table_partition_utils', [
   'sources/gettext', 'jquery', 'underscore', 'backbone', 'pgadmin.browser',
   'pgadmin.backform','pgadmin.backgrid', 'pgadmin.browser.collection',
