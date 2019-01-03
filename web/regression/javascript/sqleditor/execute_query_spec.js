@@ -1055,11 +1055,11 @@ describe('ExecuteQuery', () => {
           jasmine.clock().uninstall();
         });
 
-        it('should update loading text to "Initializing query execution"', () => {
+        it('should update loading text to "Running query"', () => {
           expect(sqlEditorMock.trigger)
             .toHaveBeenCalledWith(
               'pgadmin-sqleditor:loading-icon:show',
-              'Initializing query execution...'
+              'Running query...'
             );
         });
 
@@ -1104,11 +1104,11 @@ describe('ExecuteQuery', () => {
             executeQuery.execute('some sql query', '', true);
           });
 
-          it('should changes the loading message to "Waiting for the query execution to complete"', (done) => {
+          it('should changes the loading message to "Waiting for the query to complete"', (done) => {
             setTimeout(() => {
               expect(sqlEditorMock.trigger).toHaveBeenCalledWith(
                 'pgadmin-sqleditor:loading-icon:message',
-                'Waiting for the query execution to complete...'
+                'Waiting for the query to complete...'
               );
               done();
             }, 0);

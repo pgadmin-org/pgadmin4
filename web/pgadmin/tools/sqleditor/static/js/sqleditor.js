@@ -2150,14 +2150,14 @@ define('tools.querytool', [
 
         self.trigger(
           'pgadmin-sqleditor:loading-icon:show',
-          gettext('Initializing query execution.')
+          gettext('Running query...')
         );
 
         $('#btn-flash').prop('disabled', true);
 
         self.trigger(
           'pgadmin-sqleditor:loading-icon:message',
-          gettext('Waiting for the query execution to complete...')
+          gettext('Waiting for the query to complete...')
         );
 
         if (arguments.length > 0 &&

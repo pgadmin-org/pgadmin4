@@ -72,7 +72,7 @@ class ExecuteQuery {
         self.removeGridViewMarker();
 
         if (ExecuteQuery.isSqlCorrect(httpMessageData)) {
-          self.loadingScreen.setMessage('Waiting for the query execution to complete...');
+          self.loadingScreen.setMessage('Waiting for the query to complete...');
 
           self.updateSqlEditorStateWithInformationFromServer(httpMessageData.data);
 
@@ -169,7 +169,7 @@ class ExecuteQuery {
   }
 
   initializeExecutionOnSqlEditor(sqlStatement) {
-    this.loadingScreen.show('Initializing query execution...');
+    this.loadingScreen.show('Running query...');
 
     $('#btn-flash').prop('disabled', true);
 
