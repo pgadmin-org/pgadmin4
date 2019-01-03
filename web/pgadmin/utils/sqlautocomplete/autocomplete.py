@@ -437,6 +437,9 @@ class SQLAutoComplete(object):
             match_end_limit = len(text)
 
             def _match(item):
+                # Text starts with double quote; Remove quoting and
+                # match on everything that follows the double-quote.
+                item = self.unescape_name(item.lower())
                 match_point = item.lower().find(text, 0, match_end_limit)
                 if match_point >= 0:
                     # Use negative infinity to force keywords to sort after all
