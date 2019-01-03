@@ -5,6 +5,58 @@
 
 .file_listing {
   min-width: 100%;
+
+  .file_listing_table {
+    height: 100%;
+    display: block;
+    padding: 0;
+    overflow-y: hidden !important;
+  }
+
+  .file_listing_table thead {
+    display: table;
+    width: 100%;
+  }
+
+  .file_listing_table thead tr {
+    position: relative;
+    display: block;
+    width: 100%;
+    border-bottom: $panel-border;
+  }
+
+  .file_listing_table tbody {
+    display: block;
+    overflow: auto;
+    width: 100%;
+    /* 100% minus thead height */
+    height: calc(100% - 30px);
+  }
+
+  .file_listing_table tbody tr {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .file_listing_table tbody tr td:nth-child(1),
+  .file_listing_table thead tr th:nth-child(1) {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .file_listing_table tbody tr td:nth-child(2),
+  .file_listing_table thead tr th:nth-child(2) {
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+  }
+
+  .file_listing_table tbody tr td:nth-child(3),
+  .file_listing_table thead tr th:nth-child(3) {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+  }
 }
 
 .file_listing #contents.grid li:hover,

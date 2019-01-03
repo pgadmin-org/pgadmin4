@@ -363,6 +363,10 @@
   padding: 5px 10px;
 }
 
+.obj_properties .accordian-group > .accordian-content {
+  padding: 5px 10px;
+}
+
 .obj_properties .badge {
   display: block;
   text-align: left;
@@ -409,15 +413,21 @@
 .obj_properties .set-group {
   margin: 0.5rem 0rem;
   padding: 0rem;
+}
+
+.obj_properties .accordian-group {
+  margin: 0.5rem 0rem;
+  padding: 0rem;
   border: $panel-border;
   border-radius: $card-border-radius;
-  background-color: $color-bg;
+  background-color: $color-bg-theme;
 }
 
 fieldset.inline-fieldset {
     padding: 10px;
     border-radius: $card-border-radius;
     background: $color-gray-light;
+    border: $panel-border;
     & legend {
       font-size: 0.875rem;
       font-weight: bold;

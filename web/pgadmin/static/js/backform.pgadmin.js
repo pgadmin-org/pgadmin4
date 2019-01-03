@@ -38,6 +38,8 @@ define([
     setGroupClassName: 'set-group pg-el-12',
     tabClassName: 'backform-tab pg-el-12',
     setGroupContentClassName: 'fieldset-content pg-el-12',
+    accordianGroupClassName: 'accordian-group pg-el-12',
+    accordianContentClassName: 'accordian-content pg-el-12',
     hiddenClassName: 'd-none',
   });
 
@@ -429,12 +431,14 @@ define([
         offColor: 'primary',
         size: 'small',
       },
+      controlLabelClassName: Backform.controlLabelClassName,
+      controlsClassName: Backform.controlsClassName,
       extraClasses: [],
       helpMessage: null,
     },
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%>">',
+      '<label class="<%=controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=controlsClassName%>">',
       '  <div class="checkbox">',
       '    <label>',
       '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
@@ -636,6 +640,80 @@ define([
     },
   });
 
+  Backform.Accordian = Backform.Dialog.extend({
+    className: function() {
+      return 'set-group pg-el-12';
+    },
+    tabPanelClassName: function() {
+      return Backform.tabClassName;
+    },
+    legendClass: 'badge',
+    contentClass: Backform.accordianContentClassName + ' collapse show',
+    template: {
+      'header': _.template([
+        '<div class="<%=Backform.accordianGroupClassName%>" <%=disabled ? "disabled" : ""%>>',
+        ' <% if (legend != false) { %>',
+        '  <div class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
+        ' <% } %>',
+        '</div>',
+      ].join('\n')),
+      'content': _.template(
+        '  <div id="<%= cId %>" class="<%=contentClass%>"></div>'
+      ),
+    },
+    collapse: true,
+    render: function() {
+      this.cleanup();
+
+      var m = this.model,
+        $el = this.$el,
+        tmpl = this.template,
+        controls = this.controls,
+        data = {
+          'className': _.result(this, 'className'),
+          'legendClass': _.result(this, 'legendClass'),
+          'contentClass': _.result(this, 'contentClass'),
+          'collapse': _.result(this, 'collapse'),
+        },
+        idx = (this.tabIndex * 100),
+        evalF = function(f, d, m) {
+          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        };
+
+      this.$el.empty();
+
+      _.each(this.schema, function(o) {
+        idx++;
+        if (!o.version_compatible || !evalF(o.visible, o, m)) {
+          return;
+        }
+
+        if (!o.fields)
+          return;
+
+        var d = _.extend({}, data, o),
+          h = $((tmpl['header'])(d)).appendTo($el),
+          el = $((tmpl['content'])(d)).appendTo(h);
+
+        o.fields.each(function(f) {
+          var cntr = new(f.get('control'))({
+            field: f,
+            model: m,
+            tabIndex: idx,
+          });
+          el.append(cntr.render().$el);
+          controls.push(cntr);
+        });
+      });
+
+      return this;
+    },
+    getValueFromDOM: function() {
+      return '';
+    },
+    events: {},
+  });
+
   Backform.Fieldset = Backform.Dialog.extend({
     className: function() {
       return 'set-group pg-el-12';
@@ -650,7 +728,7 @@ define([
       'header': _.template([
         '<fieldset class="<%=fieldsetClass%>" <%=disabled ? "disabled" : ""%>>',
         ' <% if (legend != false) { %>',
-        '  <div><legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend></div>',
+        '  <legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
         ' <% } %>',
         '</fieldset>',
       ].join('\n')),

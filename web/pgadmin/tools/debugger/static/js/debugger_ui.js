@@ -949,7 +949,7 @@ define([
             this.grid.listenTo(this.debuggerInputArgsColl, 'backgrid:error',
               (function(obj) {
                 return function() {
-                  obj.__internal.buttons[0].element.disabled = true;
+                  obj.__internal.buttons[1].element.disabled = true;
                 };
               })(this)
             );

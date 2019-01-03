@@ -3435,6 +3435,9 @@ define('tools.querytool', [
       disable_tool_buttons: function(disabled) {
         $('#btn-clear').prop('disabled', disabled);
         $('#btn-query-dropdown').prop('disabled', disabled);
+        $('#btn-explain').prop('disabled', disabled);
+        $('#btn-explain-analyze').prop('disabled', disabled);
+        $('#btn-explain-options-dropdown').prop('disabled', disabled);
         $('#btn-edit-dropdown').prop('disabled', disabled);
         $('#btn-edit').prop('disabled', disabled);
         $('#btn-load-file').prop('disabled', disabled);

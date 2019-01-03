@@ -268,13 +268,18 @@ table.backgrid {
 }
 
 .backgrid tbody {
-  & td.editor {
+  & td.edit-cell.editor {
     background-color: $color-gray-light !important;
     border-bottom-color: $color-gray-light !important;
     outline: none !important;
   }
 
+  & td.editor {
+    background-color: $color-bg-theme !important;
+  }
+
   tr.editor-row  {
+    background-color: $color-gray-light !important;
     & > td {
       padding: 15px !important;
       background-color: $color-gray-light !important;

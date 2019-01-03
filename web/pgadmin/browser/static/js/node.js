@@ -368,7 +368,7 @@ define('pgadmin.browser.node', [
           if (formType == 'fieldset') {
             // It is used to show, edit, create the object in the
             // properties tab.
-            view = new Backform.Fieldset({
+            view = new Backform.Accordian({
               el: el,
               model: newModel,
               schema: fields,

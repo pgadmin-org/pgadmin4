@@ -127,18 +127,27 @@
   list-style: none;
 
   margin: 0;
-  padding: 2px;
+  padding: 0px;
 
-  -webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  -moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  border-radius: 3px;
-  border: 1px solid $border-color;
+  -webkit-box-shadow: $dropdown-box-shadow;
+  -moz-box-shadow: $dropdown-box-shadow;
+  box-shadow: $dropdown-box-shadow;
+  border-radius: $border-radius;
+  border: $panel-border;
 
-  background: $color-bg-theme;
+  background: $sql-hint-bg;
   font-size: 90%;
   font-family: $font-family-editor;
 
   max-height: 20em;
   overflow-y: auto;
+
+  & li {
+    padding: 0.125rem;
+    border-radius: 0rem;
+    &.CodeMirror-hint-active {
+      background: $sql-hint-active-bg;
+      color: $sql-hint-active-fg;
+    }
+  }
 }

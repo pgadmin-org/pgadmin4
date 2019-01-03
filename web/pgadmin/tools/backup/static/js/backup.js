@@ -45,8 +45,8 @@ define([
 
   Backform.CustomSwitchControl = Backform.SwitchControl.extend({
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%> custom_switch_label_class"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%> custom_switch_control_class">',
+      '<label class="<%=controlLabelClassName%> custom_switch_label_class"><%=label%></label>',
+      '<div class="<%=controlsClassName%> custom_switch_control_class">',
       '  <div class="checkbox">',
       '    <label>',
       '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>"',
@@ -93,6 +93,7 @@ define([
       type: 'nested',
       control: 'fieldset',
       label: gettext('Miscellaneous'),
+      contentClass: 'row',
       schema: [{
         id: 'verbose',
         label: gettext('Verbose messages'),
@@ -105,6 +106,8 @@ define([
         control: Backform.CustomSwitchControl,
         disabled: false,
         group: gettext('Miscellaneous'),
+        controlLabelClassName: 'control-label pg-el-sm-6 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-6 pg-el-12',
       }],
     }, {
       id: 'globals_note',

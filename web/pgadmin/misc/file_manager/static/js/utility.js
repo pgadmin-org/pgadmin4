@@ -36,7 +36,7 @@ define([
   };
 
   /* Common function to load:
-   * en.js language file
+   * en.json language file
    * file_manager_config.js config file
    * return transaction id
    */
@@ -585,7 +585,7 @@ define([
 
           result += '</ul>';
         } else {
-          result += '<table id="contents" class="table table-bordered table-noouter-border table-bottom-border table-hover tablesorter">';
+          result += '<table id="contents" class="table table-bordered table-noouter-border table-bottom-border table-hover tablesorter file_listing_table">';
           result += '<thead><tr><th>';
           result += '<span>' + lg.name + '</span></th>';
           result += '<th><span>' + lg.size + '</span></th><th>';
@@ -1096,8 +1096,8 @@ define([
        */
 
       var lg = [],
-        enjs = url_for('file_manager.index') + 'en.js',
-        lgf = loadData(enjs);
+        enjson = url_for('file_manager.index') + 'en.json',
+        lgf = loadData(enjson);
 
       if (lgf.readyState == 4) {
         this.lg = lg = JSON.parse(lgf.responseText);

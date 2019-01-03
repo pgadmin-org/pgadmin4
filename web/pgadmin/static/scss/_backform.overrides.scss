@@ -48,16 +48,11 @@
 }
 
 .backform_control_notes {
-	background-color: $color-gray-lighter;
-	border: 1px solid $color-gray-light;
-	border-radius: 3px;
-	color: $color-gray-dark;
-	display: block;
+	border: $panel-border;
+	border-radius: $border-radius;
 	font-family: $font-family-editor;
-	font-size: 12px;
-	line-height: 1.42857;
+	font-size: 0.8rem;
 	margin: 0 0 10px;
-	overflow: auto;
 	padding: 5px 10px;
 	word-wrap: break-word;
 }
@@ -69,6 +64,6 @@ div.backform_control_notes label.control-label {
   max-width: 90% !important;
 }
 
-.set-group {
+.set-group, .accordian-group {
   margin-bottom: $form-group-margin-bottom;
 }

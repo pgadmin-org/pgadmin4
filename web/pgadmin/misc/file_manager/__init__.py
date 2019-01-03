@@ -221,14 +221,13 @@ def file_manager_js():
         mimetype="application/javascript")
 
 
-@blueprint.route("/en.js")
+@blueprint.route("/en.json")
 @login_required
 def language():
     """render the required javascript"""
     return Response(response=render_template(
-        "file_manager/js/languages/en.js", _=gettext),
-        status=200,
-        mimetype="application/javascript")
+        "file_manager/js/languages/en.json", _=gettext),
+        status=200)
 
 
 @blueprint.route("/file_manager_config.js")
