@@ -19,7 +19,10 @@ const webpackShimConfig = require('./webpack.shim');
 const PRODUCTION = process.env.NODE_ENV === 'production';
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractStyle = new ExtractTextPlugin('[name].css');
+const extractStyle = new ExtractTextPlugin({
+  filename: '[name].css',
+  allChunks: true,
+});
 const envType = PRODUCTION ? 'production': 'development';
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
