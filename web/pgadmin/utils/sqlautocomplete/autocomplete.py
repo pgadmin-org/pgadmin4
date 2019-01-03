@@ -440,7 +440,7 @@ class SQLAutoComplete(object):
                 # Text starts with double quote; Remove quoting and
                 # match on everything that follows the double-quote.
                 item = self.unescape_name(item.lower())
-                match_point = item.lower().find(text, 0, match_end_limit)
+                match_point = item.find(text, 0, match_end_limit)
                 if match_point >= 0:
                     # Use negative infinity to force keywords to sort after all
                     # fuzzy matches
@@ -525,10 +525,15 @@ class SQLAutoComplete(object):
         return result
 
     def get_column_matches(self, suggestion, word_before_cursor):
+        schema = None
+        if len(suggestion.table_refs) > 0 and \
+                hasattr(suggestion.table_refs[0], 'schema') and \
+                suggestion.table_refs[0].schema != '':
+            schema = suggestion.table_refs[0].schema
 
         # Tables and Views should be populated first.
-        self.fetch_schema_objects(None, 'tables')
-        self.fetch_schema_objects(None, 'views')
+        self.fetch_schema_objects(schema, 'tables')
+        self.fetch_schema_objects(schema, 'views')
 
         tables = suggestion.table_refs
         do_qualify = suggestion.qualifiable and {

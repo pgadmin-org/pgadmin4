@@ -32,5 +32,6 @@ Bug fixes
 | `Bug #3798 <https://redmine.postgresql.org/issues/3798>`_ - Ensure the browser toolbar buttons work in languages other than English.
 | `Bug #3805 <https://redmine.postgresql.org/issues/3805>`_ - Allow horizontal sizing of the edit grid text pop-out.
 | `Bug #3809 <https://redmine.postgresql.org/issues/3809>`_ - Ensure auto complete should works when first identifier in the FROM clause needs quoting.
+| `Bug #3810 <https://redmine.postgresql.org/issues/3810>`_ - Ensure auto complete should works for columns from a schema-qualified table.
 | `Bug #3821 <https://redmine.postgresql.org/issues/3821>`_ - Ensure identifiers are properly displayed in the plan viewer.
 | `Bug #3830 <https://redmine.postgresql.org/issues/3830>`_ - Make the setup process more robust against aborted executions.
