@@ -219,25 +219,10 @@ def check_precondition(f):
                             " to view the graph.")
                 )
 
-        g.conn = g.manager.connection()
-
-        # If DB not connected then return error to browser
-        if not g.conn.connected():
-            if f.__name__ in stats_type:
-                return precondition_required(
-                    gettext("Please connect to the selected server"
-                            " to view the table.")
-                )
-            else:
-                return precondition_required(
-                    gettext("Please connect to the selected server"
-                            " to view the graph.")
-                )
-
         if 'did' in kwargs:
-            db_conn = g.manager.connection(did=kwargs['did'])
+            g.conn = g.manager.connection(did=kwargs['did'])
             # If the selected DB not connected then return error to browser
-            if not db_conn.connected():
+            if not g.conn.connected():
                 if f.__name__ in stats_type:
                     return precondition_required(
                         gettext("Please connect to the selected database"
@@ -247,6 +232,21 @@ def check_precondition(f):
                     return precondition_required(
                         gettext("Please connect to the selected database to"
                                 " view the graph.")
+                    )
+        else:
+            g.conn = g.manager.connection()
+
+            # If DB not connected then return error to browser
+            if not g.conn.connected():
+                if f.__name__ in stats_type:
+                    return precondition_required(
+                        gettext("Please connect to the selected server"
+                                " to view the table.")
+                    )
+                else:
+                    return precondition_required(
+                        gettext("Please connect to the selected server"
+                                " to view the graph.")
                     )
 
         # Set template path for sql scripts
