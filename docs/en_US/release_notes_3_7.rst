@@ -11,6 +11,7 @@ Features
 ********
 
 | `Feature #3589 <https://redmine.postgresql.org/issues/3589>`_ - Allow query plans to be downloaded as an SVG file.
+| `Feature #3692 <https://redmine.postgresql.org/issues/3692>`_ - New UI design.
 | `Feature #3801 <https://redmine.postgresql.org/issues/3801>`_ - Allow servers to be pre-loaded into container deployments.
 
 Bug fixes
