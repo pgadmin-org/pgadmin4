@@ -134,7 +134,7 @@ below which will activate Python virtual environment when Apache server runs.
 .. code-block:: python
 
     activate_this = 'C:\Program Files\pgAdmin4\venv\Scripts\activate_this.py'
-    execfile(activate_this, dict(__file__=activate_this))
+    exec(open(activate_this).read())
 
 **Note:** The changes made in ``pgAdmin4.wsgi`` file will revert when pgAdmin4 is either upgraded or downgraded.
     
