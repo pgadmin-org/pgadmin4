@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-01-03 15:27+0000\n"
-"PO-Revision-Date: 2018-11-27 04:10+0900\n"
+"PO-Revision-Date: 2019-01-04 19:33+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -598,7 +598,7 @@ msgstr "パスワードの変更に成功しました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1390
 msgid "WAL replay paused"
-msgstr "WAL の再生を一時停止しました"
+msgstr "WAL の適用を一時停止しました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1393
 #: pgadmin/browser/server_groups/servers/__init__.py:1451
@@ -2721,7 +2721,7 @@ msgstr "見積もり行数"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:316
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:242
 msgid "Leak proof?"
-msgstr "LEAKPROOF"
+msgstr "リークプルーフ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:333
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:334
@@ -7752,7 +7752,7 @@ msgstr "読み取り行数の更新速度"
 
 #: pgadmin/dashboard/__init__.py:110
 msgid "Block I/O statistics refresh rate"
-msgstr "ブロックI/O統計更新速度"
+msgstr "ブロック I/O 統計更新速度"
 
 #: pgadmin/dashboard/__init__.py:118
 msgid "Show graphs?"
@@ -8026,7 +8026,7 @@ msgstr "するにはスーパーユーザ権限が必要です"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:7
 msgid "Dashboard sessions"
-msgstr ""
+msgstr "ダッシュボードセッション"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:17
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:17
@@ -8046,7 +8046,7 @@ msgstr "読み取り行数"
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:49
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:49
 msgid "Block I/O"
-msgstr "ブロックI/O"
+msgstr "ブロック I/O"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:60
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:60
@@ -8294,7 +8294,7 @@ msgstr "開始時刻"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:215
 msgid "Running..."
-msgstr ""
+msgstr "実行中..."
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:220
 msgid "Terminated by user."
@@ -8845,15 +8845,15 @@ msgstr "ツリー状態の取得中にエラーが発生しました\""
 #: pgadmin/templates/security/panel.html:9
 #, python-format
 msgid "%(appname)s"
-msgstr ""
+msgstr "%(appname)s"
 
 #: pgadmin/templates/security/change_password.html:11
 msgid "Password Change"
-msgstr ""
+msgstr "パスワードの変更"
 
 #: pgadmin/templates/security/forgot_password.html:4
 msgid "Forgot Password"
-msgstr ""
+msgstr "パスワードを忘れた"
 
 #: pgadmin/templates/security/forgot_password.html:7
 #: pgadmin/templates/security/forgot_password.html:15
@@ -8876,7 +8876,7 @@ msgstr "ログイン"
 #: pgadmin/templates/security/login_user.html:17
 #, python-format
 msgid "<a href=\"%(url)s\" class=\"text-white\">Forgotten your password</a>?"
-msgstr ""
+msgstr "<a href=\"%(url)s\" class=\"text-white\">パスワードをお忘れですか</a>？"
 
 #: pgadmin/templates/security/reset_password.html:2
 #, python-format
@@ -9299,7 +9299,7 @@ msgstr "選択箇所のインデントを解除 (Shift+Tab)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:150
 msgid "Inline Comment Selection"
-msgstr "選択箇所をインラインコメント"
+msgstr "選択箇所をインラインコメント化"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:151
 msgid " (Cmd+/)"
@@ -9323,7 +9323,7 @@ msgstr " (Ctrl+.)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:166
 msgid "Block Comment/Uncomment Selection"
-msgstr "選択箇所のブロック化/解除"
+msgstr "選択箇所のブロックコメント化/解除"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:167
 msgid " (Shift+Cmd+/)"
@@ -9785,7 +9785,7 @@ msgstr "デバッガ - "
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:80
 msgid "Please select any database object."
-msgstr ""
+msgstr "任意のデータベースオブジェクトを選択してください"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:124
 msgid "Object Type"
@@ -9794,7 +9794,7 @@ msgstr "オブジェクトの種類"
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:165
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:181
 msgid "Grant Wizard..."
-msgstr "GRANT ウィザード..."
+msgstr "権限付与ウィザード..."
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:252
 msgid "Search by object type or name"
@@ -9815,11 +9815,11 @@ msgstr "行を取得中です。お待ちください..."
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:765
 msgid "Privilege Selection (step 2 of 3)"
-msgstr ""
+msgstr "権限の選択 (2/3)"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:766
 msgid "Please add the required privileges for the selected objects."
-msgstr ""
+msgstr "選択したオブジェクトに必要な権限を付与してください"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:964
 msgid "Sql Tab"
@@ -9838,7 +9838,7 @@ msgstr "選択された権限を付与するため、データベースサーバ
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1094
 msgid "Grant Wizard"
-msgstr "権限付与"
+msgstr "権限付与ウィザード"
 
 #: pgadmin/tools/import_export/__init__.py:41
 #: pgadmin/tools/import_export/static/js/import_export.js:51
@@ -10259,7 +10259,7 @@ msgstr "現在のオブジェクトではデータが保存できません"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:186
 msgid "Query Editor"
-msgstr ""
+msgstr "クエリエディタ"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:234
 msgid "Data Output"
@@ -10361,15 +10361,15 @@ msgstr "SQL スクリプトの取得中にエラーが発生しました： %s."
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
-msgstr "データが変更されましたが保存されていません。変更を破棄しますか？"
+msgstr "変更されたデータがありますが、保存されていません。変更を破棄してもよろしいですか？"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2153
 msgid "Running query..."
-msgstr ""
+msgstr "クエリを実行中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2160
 msgid "Waiting for the query to complete..."
-msgstr ""
+msgstr "クエリの完了を待機しています..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2295
 msgid "Loading data from the database server and rendering..."
@@ -10641,14 +10641,15 @@ msgstr "CSV 出力"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:203
 msgid "Replace null values with"
-msgstr ""
+msgstr "NULL 値の表現文字列"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:205
 msgid ""
 "Specifies the string that represents a null value while downloading query"
 " results as CSV. You can specify any arbitrary string to represent a null"
 " value, with quotes if desired."
-msgstr ""
+msgstr "CSV でクエリ結果をダウンロードする際、NULL 値を表現するために使う文字列を指定します。"
+"引用符を含む、任意の文字列を使用できます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:214
 msgid "Result copy quoting"
@@ -11897,15 +11898,6 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgid "SQL Editor"
 #~ msgstr "SQL エディタ"
 
-#~ msgid "Please select objects from the list below."
-#~ msgstr "以下の一覧からオブジェクトを選択してください"
-
-#~ msgid "Privileges Selection (step 2 of 3)"
-#~ msgstr "権限の選択 (2/3)"
-
-#~ msgid "Please select privileges for the selected objects."
-#~ msgstr "選択オブジェクトの権限を選択してください"
-
 #~ msgid "Ok"
 #~ msgstr "OK"
 
@@ -11920,6 +11912,24 @@ msgstr "指定されたデータベースが見つかりませんでした"
 
 #~ msgid "Show hidden files and folders"
 #~ msgstr "非表示のファイルとフォルダを表示"
+
+#~ msgid "Please select any database object type."
+#~ msgstr "データベースのオブジェクトタイプを選択してください"
+
+#~ msgid "Please select objects from the list below."
+#~ msgstr "以下の一覧からオブジェクトを選択してください"
+
+#~ msgid "Privileges Selection (step 2 of 3)"
+#~ msgstr "権限の選択 (2/3)"
+
+#~ msgid "Please select privileges for the selected objects."
+#~ msgstr "選択オブジェクトの権限を選択してください"
+
+#~ msgid "Initializing query execution."
+#~ msgstr "クエリ実行を初期化中"
+
+#~ msgid "Waiting for the query execution to complete..."
+#~ msgstr "クエリ実行完了を待機中..."
 
 #~ msgid "Loading data..."
 #~ msgstr "データの読み込み中..."
@@ -11941,16 +11951,4 @@ msgstr "指定されたデータベースが見つかりませんでした"
 
 #~ msgid "Explain Options"
 #~ msgstr "EXPLAIN のオプション"
-
-#~ msgid "Please select any database object type."
-#~ msgstr "データベースのオブジェクトタイプを選択してください"
-
-#~ msgid "Please select the objects to grant privileges to from the list below."
-#~ msgstr ""
-
-#~ msgid "Initializing query execution."
-#~ msgstr "クエリ実行を初期化中"
-
-#~ msgid "Waiting for the query execution to complete..."
-#~ msgstr "クエリ実行完了を待機中..."
 
