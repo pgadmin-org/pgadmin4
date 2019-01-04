@@ -33,7 +33,7 @@ from pgadmin.utils import env, IS_PY2, IS_WIN, fs_short_path
 ##########################################################################
 
 # Name of the application to display in the UI
-APP_NAME = 'pgAdmin 4'
+APP_NAME = 'pgAdmin'
 APP_ICON = 'pg-icon'
 
 ##########################################################################
@@ -49,17 +49,17 @@ APP_ICON = 'pg-icon'
 #
 
 # Application version number components
-APP_RELEASE = 3
-APP_REVISION = 6
+APP_RELEASE = 4
+APP_REVISION = 0
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
-APP_SUFFIX = ''
+APP_SUFFIX = 'dev'
 
 # Numeric application version for upgrade checks. Should be in the format:
 # [X]XYYZZ, where X is the release version, Y is the revision, with a leading
 # zero if needed, and Z represents the suffix, with a leading zero if needed
-APP_VERSION_INT = 30600
+APP_VERSION_INT = 40000
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
