@@ -15,6 +15,6 @@ WHERE
             pg_type typ ON typ.oid=p.prorettype
         WHERE
             p.prokind IN ('f', 'w')
-            AND typname = 'trigger'
+            AND typname IN ('trigger', 'event_trigger')
     )
 ORDER BY funcname;

@@ -22,7 +22,7 @@ LEFT OUTER JOIN
     pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_proc'::regclass)
 WHERE
     pr.prokind IN ('f', 'w')
-    AND typname = 'trigger' AND lanname != 'edbspl'
+    AND typname IN ('trigger', 'event_trigger') AND lanname != 'edbspl'
 {% if fnid %}
     AND pr.oid = {{fnid}}::oid
 {% else %}

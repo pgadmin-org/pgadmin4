@@ -12,7 +12,7 @@ JOIN
 WHERE
     pr.prokind IN ('f', 'w')
     AND pronamespace = {{scid}}::oid
-    AND typname = 'trigger'
+    AND typname IN ('trigger', 'event_trigger')
     AND pr.oid = {{fnid}};
 {% endif %}
 
