@@ -31,10 +31,6 @@
   margin: 50px auto;
 }
 
-.fm_file {
-  font-size: xx-large !important;
-}
-
 .file_manager h1 {
   font-size: medium;
 }
@@ -72,7 +68,6 @@ x:-o-prefocus, .file-input-container {top:16px;width:198px;}
 }
 
 div.clip {
-  height: 30px;
   margin: 10px auto;
   overflow: hidden;
 }

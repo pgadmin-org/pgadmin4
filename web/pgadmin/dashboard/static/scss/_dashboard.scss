@@ -41,3 +41,8 @@
     border-radius: $card-border-radius;
     border: $panel-border;
 }
+
+.dashboard-link a {
+    cursor: pointer;
+    color: $color-fg-theme;
+}

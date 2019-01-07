@@ -93,13 +93,15 @@
   }
 }
 
-.fm_folder_grid {
+.fm_folder_grid, .fm_file_grid {
   font-size: xx-large !important;
 }
 
 .fm_folder_list,
-.fm_folder_grid {
-  color: $color-warning;
+.fm_folder_grid,
+.fm_file_grid,
+.fm_file_list {
+  color: $color-gray-darker;
 }
 
 .fm_drive {
@@ -365,4 +367,12 @@
 
 .cap_select_file {
   cursor: pointer;
+}
+
+.add-folder-icon {
+  position: relative;
+  top: -8px;
+  left: -6px;
+  font-size: 8px;
+  margin-right: -8px;
 }

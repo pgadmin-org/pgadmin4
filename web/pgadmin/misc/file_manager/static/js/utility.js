@@ -264,7 +264,7 @@ define([
               }
 
               if ($('.fileinfo').data('view') == 'grid') {
-                $('.fileinfo span[data-alt="' + oldPath + '"]').parent().next('p span').text(newName);
+                $('.fileinfo span[data-alt="' + oldPath + '"]').parent().next('div span').text(newName);
                 $('.fileinfo span[data-alt="' + oldPath + '"]').attr('data-alt', newPath);
               } else {
                 $('.fileinfo td[title="' + oldPath + '"]').text(newName);
@@ -537,7 +537,7 @@ define([
             } else if ((data[key]).file_type == 'drive') {
               class_type = 'fa fa-hdd-o fm_drive';
             } else {
-              class_type = 'fa fa-file-text fm_file';
+              class_type = 'fa fa-file-text-o fm_file_grid';
             }
 
             var fm_filename = (data[key]).Filename;
@@ -617,7 +617,7 @@ define([
               icon_type = 'fa fa-hdd-o';
             } else {
               class_type = 'tbl_file';
-              icon_type = 'fa fa-file-text';
+              icon_type = 'fa fa-file-text-o';
             }
 
             result += '<tr class="' + cap_classes + '">';
@@ -641,7 +641,7 @@ define([
             } else {
               result += '<div><input type="text" class="fm_file_rename"/>'+
                         '<div class="d-flex">' +
-                        '<span class="'+icon_type+'"></span>' +
+                        '<span class="fm_file_list '+icon_type+'"></span>' +
                         data_protected +
                         '<span class="less_text ml-2" title="' + fm_filename + '">' + fm_filename + '</span>' +
                         '</div>' +
@@ -1582,32 +1582,32 @@ define([
           folder_div =
             '<li class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
             '<div class=\'clip\'><span data-alt=\'\' class=\'fa fa-folder-open fm_folder_grid\'></span></div>' +
-            '<div><input type=\'text\' class=\'fm_file_rename\'><span title=\'\'>New_Folder</span></div>' +
+            '<div><input type=\'text\' class=\'fm_file_rename\'><span class="less_text" title=\'\'>New_Folder</span></div>' +
             '<span class=\'meta size\'></span><span class=\'meta created\'></span><span class=\'meta modified\'></span></li>';
 
           path = $('.currentpath').val();
           $file_element = $(folder_div);
-          $('.fileinfo #contents.grid').append($file_element);
-          $file_element.find('p span').toggle();
-          $file_element.find('p input').toggle().val(lg.new_folder).select();
+          $('.fileinfo #contents.grid').prepend($file_element);
+          $file_element.find('div span.less_text').toggle();
+          $file_element.find('div input').toggle().val(lg.new_folder).select();
 
           // rename folder/file on pressing enter key
           $('.file_manager').on('keyup', function(e) {
             if (e.keyCode == 13) {
               e.stopPropagation();
-              $file_element.find('p input').trigger('blur');
+              $file_element.find('div input').trigger('blur');
             }
           });
 
           // rename folder/file on blur
-          $file_element.find('p input').on('blur', function() {
+          $file_element.find('div input').on('blur', function() {
             $('.file_manager button.create').removeAttr('disabled');
-            var text_value = $file_element.find('p input').val();
+            var text_value = $file_element.find('div input').val();
 
             path = $('.currentpath').val();
 
-            $file_element.find('p input').toggle();
-            $file_element.find('p span').toggle().html(text_value);
+            $file_element.find('div input').toggle();
+            $file_element.find('div span.less_text').toggle().html(text_value);
             if (text_value === undefined) {
               text_value = lg.new_folder;
             }
@@ -1620,9 +1620,9 @@ define([
           folder_div = $(
             '<tr class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
             '<td title=\'\' class=\' tbl_folder\'>' +
-            '<input type=\'text\' class=\'fm_file_rename\'>'+
             '<span class="fa fa-folder-open fm_folder_list"></span>' +
-            '<span>' + lg.new_folder + '</span>' +
+            '<span class="less_text">' + lg.new_folder + '</span>' +
+            '<input type=\'text\' class=\'fm_file_rename\'>'+
             '</td>'+
             '<td><span title=\'\'></span></td>' +
             '<td></td>' +
@@ -1630,25 +1630,25 @@ define([
           );
 
           $file_element_list = $(folder_div);
-          $('.fileinfo #contents.list').prepend($file_element_list);
-          $file_element_list.find('p span').toggle();
-          $file_element_list.find('p input').toggle().val(lg.new_folder).select();
+          $('.fileinfo #contents.file_listing_table tbody').prepend($file_element_list);
+          $file_element_list.find('td span.less_text').toggle();
+          $file_element_list.find('td input').toggle().val(lg.new_folder).select();
 
           // rename folder/file on pressing enter key
           $('.file_manager').on('keyup', function(e) {
             if (e.keyCode == 13) {
               e.stopPropagation();
-              $file_element_list.find('p input').trigger('blur');
+              $file_element_list.find('td input').trigger('blur');
             }
           });
 
           // rename folder/file on blur
-          $file_element_list.find('p input').on('blur', function() {
+          $file_element_list.find('td input').on('blur', function() {
             $('.file_manager button.create').removeAttr('disabled');
-            var text_value = $file_element_list.find('p input').val();
+            var text_value = $file_element_list.find('td input').val();
             path = $('.currentpath').val();
-            $file_element_list.find('p input').toggle();
-            $file_element_list.find('p span').toggle().html(text_value);
+            $file_element_list.find('td input').toggle();
+            $file_element_list.find('td span.less_text').toggle().html(text_value);
             if (text_value === undefined) {
               text_value = lg.new_folder;
             }

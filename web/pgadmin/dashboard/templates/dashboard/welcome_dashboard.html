@@ -5,8 +5,9 @@
                 <div class="card">
                     <div class="card-header">{{ _('Welcome') }}</div>
                     <div class="card-body p-2">
-                        <img src="{{ url_for('dashboard.static', filename='img/welcome_logo.png') }}"
-                             alt="{{ config.APP_NAME }} {{ _('logo') }}">
+                        <img src="{{ url_for('dashboard.static', filename='img/welcome_logo.svg') }}"
+                             alt="{{ config.APP_NAME }} {{ _('logo') }}"
+                             width="400" height="100">
                         <h4>{{ _('Feature rich') }} | {{ _('Maximises PostgreSQL') }} | {{ _('Open Source') }} </h4>
                         <p>
                             {{ _('pgAdmin is an Open Source administration and management tool for the PostgreSQL database. It includes a graphical administration interface, an SQL query tool, a procedural code debugger and much more. The tool is designed to answer the needs of developers, DBAs and system administrators alike.') }}
