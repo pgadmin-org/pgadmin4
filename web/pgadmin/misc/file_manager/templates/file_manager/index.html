@@ -8,12 +8,13 @@
             <div class="flex-grow-1 mr-1">
                 <div class="input-group" role="group">
                     <div class="input-group-prepend">
-                        <button name="home" type="button" value="Home" title="{{ _('Home') }}" class="btn btn-secondary bg-gray-lighter home"
+                        <button name="home" type="button" value="Home" title="{{ _('Home') }}" class="btn btn-secondary home"
                                 tabindex="1">
-                            <span class="fa fa-home fa-lg"></span>
+                            <span class="fa fa-home sql-icon-lg"></span>
                         </button>
-                        <button name="level-up" type="button" title="{{ _('Back') }}" value="LevelUp" class="btn btn-secondary bg-gray-lighter fa fa-level-up level-up"
+                        <button name="level-up" type="button" title="{{ _('Back') }}" value="LevelUp" class="btn btn-secondary level-up"
                                 disabled tabindex="2">
+                            <span class="fa fa-level-up sql-icon-lg"></span>
                         </button>
                     </div>
                     <input id="file-input-path" class="form-control input-path text-truncate" title="" type="text" tabindex="3" autofocus/>
@@ -23,32 +24,32 @@
             <div>
                 <input class="mode" name="mode" type="hidden" value="add"/>
                 <input class="currentpath" name="currentpath" type="hidden"/>
-                <button type="button" title="{{ _('Refresh') }}" class="btn btn-sm refresh"
+                <button type="button" title="{{ _('Refresh') }}" class="btn btn-sm btn-secondary refresh"
                         tabindex="4">
-                    <span class="fa fa-refresh fa-lg"></span>
+                    <span class="fa fa-refresh sql-icon-lg"></span>
                 </button>
-                <button type="button" title="{{ _('Download File') }}" class="btn btn-sm download"
+                <button type="button" title="{{ _('Download File') }}" class="btn btn-sm btn-secondary download"
                         disabled>
-                    <span class="fa fa-download fa-lg"></span>
+                    <span class="fa fa-download sql-icon-lg"></span>
                 </button>
-                <button name="delete" type="button" title="{{ _('Delete File/Folder') }}" class="btn btn-sm delete"
+                <button name="delete" type="button" title="{{ _('Delete File/Folder') }}" class="btn btn-sm btn-secondary delete"
                         disabled>
-                    <span class="fa fa-trash fa-lg"></span>
+                    <span class="fa fa-trash sql-icon-lg"></span>
                 </button>
-                <button name="rename" type="button" title="{{ _('Rename File/Folder') }}" class="btn btn-sm rename"
+                <button name="rename" type="button" title="{{ _('Rename File/Folder') }}" class="btn btn-sm btn-secondary rename"
                         tabindex="5">
-                    <span class="fa fa-pencil-square-o fa-lg"></span>
+                    <span class="fa fa-pencil-square-o sql-icon-lg"></span>
                 </button>
                 <button name="newfolder" type="button" title="{{ _('Create new folder') }}" value="New Folder"
-                        class="btn btn-sm create" tabindex="8">
-                    <span class="fa fa-folder-open fa-lg"></span>
+                        class="btn btn-sm btn-secondary create" tabindex="8">
+                    <span class="fa fa-folder-open sql-icon-lg"></span>
                 </button>
                 <div class="btn-group" role="group">
                     <button class="ON btn btn-secondary btn-sm grid" type="button" title="{{ _('View as grid') }}" tabindex="9">
-                        <span class="fa fa-th fa-lg"></span>
+                        <span class="fa fa-th sql-icon-lg"></span>
                     </button>
                     <button type="button" class="btn btn-secondary btn-sm list" title="{{ _('View as table') }}" tabindex="10">
-                        <span class="fa fa-list fa-lg"></span>
+                        <span class="fa fa-list sql-icon-lg"></span>
                     </button>
                 </div>
             </div>

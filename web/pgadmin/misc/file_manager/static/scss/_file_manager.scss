@@ -40,8 +40,8 @@
 
   .file_listing_table tbody tr td:nth-child(1),
   .file_listing_table thead tr th:nth-child(1) {
-    width: 100%;
-    min-width: 100%;
+    width: 400px;
+    min-width: 400px;
   }
 
   .file_listing_table tbody tr td:nth-child(2),
@@ -53,9 +53,9 @@
 
   .file_listing_table tbody tr td:nth-child(3),
   .file_listing_table thead tr th:nth-child(3) {
-    width: 200px;
-    min-width: 200px;
-    max-width: 200px;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -66,12 +66,39 @@
   background: $table-hover-bg-color;
 }
 
-.fileinfo table#contents tr td p {
+.fileinfo table#contents tr td {
   font-family: $font-family-primary;
 }
 
-.fm_folder {
+.fileinfo #contents li span.less_text {
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+  white-space: nowrap;
+  display: block;
+}
+
+.fileinfo table#contents tr td:first-child {
+  & span.less_text {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: calc(400px - 30px);
+  }
+
+  & .fa {
+    line-height: inherit;
+  }
+}
+
+.fm_folder_grid {
   font-size: xx-large !important;
+}
+
+.fm_folder_list,
+.fm_folder_grid {
   color: $color-warning;
 }
 
@@ -118,7 +145,7 @@
   height: 80px;
   text-align: center;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin: 0.5rem;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;

@@ -266,7 +266,6 @@ td.switch-cell > div.bootstrap-switch {
 			border: none !important;
 			padding: $tabs-padding;
 			color: $color-fg-theme;
-			font-weight: bold;
 			&.active {
 				border-bottom: $active-border !important;
 				color: $color-primary;
@@ -290,10 +289,11 @@ td.switch-cell > div.bootstrap-switch {
 	margin-right: 0rem;
 	padding-left: 0.5rem !important;
 	padding-right: 1rem !important;
-	min-height: $title-height;
+	min-height: $navbar-height;
 	padding: 0rem;
 	display: flex;
 	align-items: center !important;
+	font-weight: bold;
 }
 
 .navbar-brand:hover {

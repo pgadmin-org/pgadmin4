@@ -533,7 +533,7 @@ define([
 
             var class_type;
             if ((data[key]).file_type == 'dir') {
-              class_type = 'fa fa-folder-open fm_folder';
+              class_type = 'fa fa-folder-open fm_folder_grid';
             } else if ((data[key]).file_type == 'drive') {
               class_type = 'fa fa-hdd-o fm_drive';
             } else {
@@ -560,9 +560,9 @@ define([
               result += '<span>' + fm_filename + '</span>';
             } else {
               result +=
-                '<p><input type="text" class="fm_file_rename" />' +
+                '<div><input type="text" class="fm_file_rename" />' +
                 '<span class="less_text" title="' + fm_filename + '">' + fm_filename +
-                '</span></p>';
+                '</span></div>';
             }
             if (props.Width && props.Width != '') {
               result += '<span class="meta dimensions">' +
@@ -611,7 +611,7 @@ define([
 
             if ((data[key]).file_type == 'dir') {
               class_type = 'tbl_folder';
-              icon_type = 'fa fa-folder-open';
+              icon_type = 'fa fa-folder-open fm_folder_list';
             } else if ((data[key]).file_type == 'drive') {
               class_type = 'tbl_drive';
               icon_type = 'fa fa-hdd-o';
@@ -639,11 +639,13 @@ define([
               result += '<span title="' + (data[key]).Filename + '">' +
                 fm_filename + '</span></td>';
             } else {
-              result += '<p><input type="text" class="fm_file_rename"/>'+
+              result += '<div><input type="text" class="fm_file_rename"/>'+
+                        '<div class="d-flex">' +
                         '<span class="'+icon_type+'"></span>' +
                         data_protected +
                         '<span class="less_text ml-2" title="' + fm_filename + '">' + fm_filename + '</span>' +
-                        '</p></td>';
+                        '</div>' +
+                        '</div></td>';
             }
             if (props.Size && props.Size != '') {
               result += '<td><span title="' + props.Size + '">' +
@@ -698,7 +700,7 @@ define([
 
         if ($('.fileinfo').data('view') == 'grid') {
           e.stopPropagation();
-          $this = $('.file_manager').find('#contents li.selected p');
+          $this = $('.file_manager').find('#contents li.selected div');
           orig_value = decodeURI($this.find('span.less_text').attr('title'));
           newvalue = orig_value.substring(0, orig_value.indexOf('.'));
 
@@ -713,7 +715,7 @@ define([
           $('.file_manager').off().on('keyup', function(e) {
             if (e.keyCode == 13) {
               e.stopPropagation();
-              $('.fileinfo #contents li.selected p').find(
+              $('.fileinfo #contents li.selected div').find(
                 'input'
               ).trigger('blur');
             }
@@ -721,7 +723,7 @@ define([
         } else if ($('.fileinfo').data('view') == 'list') {
           e.stopPropagation();
           $this = $('.fileinfo').find(
-            'table#contents tbody tr.selected td:first-child p'
+            'table#contents tbody tr.selected td:first-child div'
           );
           orig_value = decodeURI($this.find('span.less_text').html()),
             newvalue = orig_value.substring(0, orig_value.lastIndexOf('.'));
@@ -737,7 +739,7 @@ define([
           $('.file_manager').off().on('keyup', function(e) {
             if (e.keyCode == 13) {
               e.stopPropagation();
-              $('.fileinfo table#contents tr.selected td p').find(
+              $('.fileinfo table#contents tr.selected td div').find(
                 'input'
               ).trigger('blur');
             }
@@ -746,7 +748,7 @@ define([
       });
 
       // Rename UI handling
-      $('.fileinfo #contents li p').on('blur dblclick', 'input', function(e) {
+      $('.fileinfo #contents li div').on('blur dblclick', 'input', function(e) {
         e.stopPropagation();
 
         var old_name = decodeURI($(this).siblings('span').attr('title'));
@@ -824,7 +826,7 @@ define([
         }
       });
 
-      $('.fileinfo table#contents tr td p').on(
+      $('.fileinfo table#contents tr td div').on(
         'blur dblclick', 'input',
         function(e) {
           var old_name = decodeURI($(this).siblings('span').attr('title')),
@@ -1141,7 +1143,7 @@ define([
 
           select_box = `<div class='change_file_types d-flex align-items-center p-1'>
           <div>
-            ${gettext('Show hidden files and folders')} ?
+            ${gettext('Show hidden files and folders')}?
             <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='11'>
           </div>
           <div class="ml-auto">
@@ -1415,7 +1417,7 @@ define([
         // we remove simple file upload element
         $('.file-input-container').remove();
         $('.upload').remove();
-        $('.create').before('<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn fa fa-upload upload" tabindex="6"><span></span></button> ');
+        $('.create').before('<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn btn-sm btn-secondary upload" tabindex="6"><span class="fa fa-upload sql-icon-lg"></span></button> ');
 
         $('#uploader .upload').off().on('click', function() {
           // we create prompt
@@ -1579,8 +1581,8 @@ define([
           // template for creating new folder
           folder_div =
             '<li class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
-            '<div class=\'clip\'><span data-alt=\'\' class=\'fa fa-folder-open fm_folder\'></span></div>' +
-            '<p><input type=\'text\' class=\'fm_file_rename\'><span title=\'\'>New_Folder</span></p>' +
+            '<div class=\'clip\'><span data-alt=\'\' class=\'fa fa-folder-open fm_folder_grid\'></span></div>' +
+            '<div><input type=\'text\' class=\'fm_file_rename\'><span title=\'\'>New_Folder</span></div>' +
             '<span class=\'meta size\'></span><span class=\'meta created\'></span><span class=\'meta modified\'></span></li>';
 
           path = $('.currentpath').val();
@@ -1619,7 +1621,7 @@ define([
             '<tr class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
             '<td title=\'\' class=\' tbl_folder\'>' +
             '<input type=\'text\' class=\'fm_file_rename\'>'+
-            '<span class="fa fa-folder-open"></span>' +
+            '<span class="fa fa-folder-open fm_folder_list"></span>' +
             '<span>' + lg.new_folder + '</span>' +
             '</td>'+
             '<td><span title=\'\'></span></td>' +

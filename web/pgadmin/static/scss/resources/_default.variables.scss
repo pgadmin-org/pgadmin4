@@ -155,7 +155,8 @@ $footer-height-calc: $footer-min-height+$footer-padding*2;
 $navbar-font-size: 0.925rem;
 $navbar-user-font-size: 0.875rem;
 
-$navbar-dropdown-top: 100%;
+$navbar-height: 40px;
+$navbar-dropdown-top: 110%;
 $dropdown-submenu-top: -$dropdown-spacer;
 
 $table-bg: $color-bg-theme;

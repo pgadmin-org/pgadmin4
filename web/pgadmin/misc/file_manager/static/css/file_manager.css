@@ -20,20 +20,6 @@
   height: 17px;
 }
 
-.fileinfo #contents li p > span.less_text,
-.fileinfo table#contents tr td:first-child p span.less_text {
-  width: 100%;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.fileinfo table#contents tr td p {
-  display: inline-block;
-  margin-bottom: 0;
-}
-
 .fileinfo > h1 {
   font-size: 16px;
   margin: 100px auto;
@@ -86,7 +72,6 @@ x:-o-prefocus, .file-input-container {top:16px;width:198px;}
 }
 
 div.clip {
-  width: 30px;
   height: 30px;
   margin: 10px auto;
   overflow: hidden;

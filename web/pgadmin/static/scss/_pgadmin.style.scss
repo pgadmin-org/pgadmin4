@@ -145,17 +145,16 @@
 
 @media (min-width: 768px) {
   .pg-navbar {
-    height: $title-height;
+    height: $navbar-height;
   }
 
   .pg-docker {
-    top: $title-height !important;
+    top: $navbar-height !important;
   }
 }
 
 .pg-navbar {
   font-size: $navbar-font-size;
-  font-weight: bold;
   padding-left: 0rem;
   padding-right: 0.5rem;
   & .nav-item .nav-link{
@@ -163,7 +162,7 @@
   }
 
   .pg-navbar-brand-arrow {
-    border: $title-height/2 solid $color-fg;
+    border: $navbar-height/2 solid $color-fg;
     border-right-color: transparent;
     border-bottom-color: transparent;
     border-top-color: transparent;
