@@ -39,3 +39,4 @@ Bug fixes
 | `Bug #3810 <https://redmine.postgresql.org/issues/3810>`_ - Ensure auto complete should works for columns from a schema-qualified table.
 | `Bug #3821 <https://redmine.postgresql.org/issues/3821>`_ - Ensure identifiers are properly displayed in the plan viewer.
 | `Bug #3830 <https://redmine.postgresql.org/issues/3830>`_ - Make the setup process more robust against aborted executions.
+| `Bug #3856 <https://redmine.postgresql.org/issues/3856>`_ - Fixed an issue while creating export job.

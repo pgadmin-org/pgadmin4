@@ -206,9 +206,7 @@ def create_import_export_job(sid):
         None
     """
     if request.form:
-        # Convert ImmutableDict to dict
-        data = dict(request.form)
-        data = json.loads(data['data'][0], encoding='utf-8')
+        data = json.loads(request.form['data'], encoding='utf-8')
     else:
         data = json.loads(request.data, encoding='utf-8')
 
