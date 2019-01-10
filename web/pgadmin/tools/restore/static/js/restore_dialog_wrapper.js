@@ -114,7 +114,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
         event.button.element.name,
         event.button.element.getAttribute('url'),
         node,
-        selectedTreeNode,
+        selectedTreeNode.getHtmlIdentifier(),
         event.button.element.getAttribute('label')
       );
       return;
