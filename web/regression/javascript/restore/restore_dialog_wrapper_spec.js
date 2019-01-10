@@ -252,7 +252,7 @@ describe('RestoreDialogWrapper', () => {
           'dialog_help',
           'http://someurl',
           pgBrowser.Nodes['server'],
-          serverTreeNode,
+          serverTreeNode.getHtmlIdentifier(),
           'some label'
         );
       });
@@ -294,7 +294,7 @@ describe('RestoreDialogWrapper', () => {
           'object_help',
           'http://someurl',
           pgBrowser.Nodes['server'],
-          serverTreeNode,
+          serverTreeNode.getHtmlIdentifier(),
           'some label'
         );
       });

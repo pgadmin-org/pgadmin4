@@ -260,7 +260,7 @@ describe('BackupDialogWrapper', () => {
           'dialog_help',
           'http://someurl',
           pgBrowser.Nodes['server'],
-          serverTreeNode,
+          serverTreeNode.getHtmlIdentifier(),
           'some label'
         );
       });
@@ -303,7 +303,7 @@ describe('BackupDialogWrapper', () => {
           'object_help',
           'http://someurl',
           pgBrowser.Nodes['server'],
-          serverTreeNode,
+          serverTreeNode.getHtmlIdentifier(),
           'some label'
         );
       });
