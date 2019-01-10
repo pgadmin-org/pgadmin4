@@ -14,5 +14,6 @@ Features
 Bug fixes
 *********
 
+| `Bug #3575 <https://redmine.postgresql.org/issues/3575>`_ - Ensure the context menu works after a server is renamed.
 | `Bug #3842 <https://redmine.postgresql.org/issues/3842>`_ - Don't show system catalogs in the schemas property list unless show system objects is enabled.
 | `Bug #3861 <https://redmine.postgresql.org/issues/3861>`_ - Fix help for the backup/restore dialogues.

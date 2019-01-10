@@ -135,7 +135,7 @@ export class Tree {
     }
     const oldNode = this.findNode(oldNodePath);
     if (oldNode !== null) {
-      oldNode.data = Object.assign({}, data);
+      oldNode.data = data;
       return oldNode;
     }
 
