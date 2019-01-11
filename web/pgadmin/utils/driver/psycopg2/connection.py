@@ -52,6 +52,7 @@ _ = gettext
 register_global_typecasters()
 configureDriverEncodings(encodings)
 
+
 class Connection(BaseConnection):
     """
     class Connection(object)
@@ -407,7 +408,6 @@ class Connection(BaseConnection):
                                "SET bytea_output=escape;"
                                "SET client_encoding='{0}';"
                           .format(postgres_encoding))
-
 
         if status is not None:
             self.conn.close()

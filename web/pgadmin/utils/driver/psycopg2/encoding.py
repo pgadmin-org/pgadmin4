@@ -35,6 +35,7 @@ def getEncoding(key):
     """
     return encode_dict.get(key, ['UNICODE', 'utf-8'])
 
+
 def configureDriverEncodings(encodings):
     # Replace the python encoding for original name and renamed encodings
     # psycopg2 removes the underscore in conn.encoding
