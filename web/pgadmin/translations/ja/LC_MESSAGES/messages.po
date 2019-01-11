@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-01-07 16:07+0530\n"
+"POT-Creation-Date: 2019-01-11 23:27+0530\n"
 "PO-Revision-Date: 2019-01-04 19:33+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
@@ -592,9 +592,9 @@ msgstr "サーバが見つかりません"
 #: pgadmin/browser/server_groups/servers/__init__.py:977
 #: pgadmin/browser/server_groups/servers/__init__.py:979
 #: pgadmin/browser/server_groups/servers/__init__.py:1243
-#: pgadmin/utils/driver/psycopg2/connection.py:253
-#: pgadmin/utils/driver/psycopg2/connection.py:1289
-#: pgadmin/utils/driver/psycopg2/connection.py:1573
+#: pgadmin/utils/driver/psycopg2/connection.py:254
+#: pgadmin/utils/driver/psycopg2/connection.py:1281
+#: pgadmin/utils/driver/psycopg2/connection.py:1565
 #: pgadmin/utils/driver/psycopg2/server_manager.py:405
 msgid "Unauthorized request."
 msgstr "認証されていない要求です"
@@ -12085,8 +12085,8 @@ msgid " another users query."
 msgstr "するにはスーパーユーザ権限が必要です"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:7
-msgid "Dashboard sessions"
-msgstr "ダッシュボードセッション"
+msgid "Database sessions"
+msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:17
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:17
@@ -14876,16 +14876,16 @@ msgstr "サーバ「{0}」をバックアップ中..."
 msgid "Running command:"
 msgstr "実行コマンド："
 
-#: pgadmin/tools/backup/__init__.py:305 pgadmin/tools/backup/__init__.py:495
-#: pgadmin/tools/import_export/__init__.py:354
-#: pgadmin/tools/maintenance/__init__.py:291
-#: pgadmin/tools/restore/__init__.py:212 pgadmin/tools/restore/__init__.py:390
+#: pgadmin/tools/backup/__init__.py:303 pgadmin/tools/backup/__init__.py:493
+#: pgadmin/tools/import_export/__init__.py:352
+#: pgadmin/tools/maintenance/__init__.py:289
+#: pgadmin/tools/restore/__init__.py:210 pgadmin/tools/restore/__init__.py:388
 msgid "Could not find the specified server."
 msgstr "指定されたサーバが見つかりませんでした"
 
-#: pgadmin/tools/backup/__init__.py:318
-#: pgadmin/tools/maintenance/__init__.py:211
-#: pgadmin/tools/restore/__init__.py:226
+#: pgadmin/tools/backup/__init__.py:316
+#: pgadmin/tools/maintenance/__init__.py:209
+#: pgadmin/tools/restore/__init__.py:224
 msgid "Please connect to the server first."
 msgstr "サーバに接続してください"
 
@@ -15229,17 +15229,17 @@ msgstr "データベース「{2}」とサーバ（{3}:{4}）のテーブルデ�
 msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'..."
 msgstr "データベース「{2}」のテーブルデータ「{0}.{1}」をサーバ「{3}」へコピー中..."
 
-#: pgadmin/tools/import_export/__init__.py:220
-#: pgadmin/tools/maintenance/__init__.py:199
+#: pgadmin/tools/import_export/__init__.py:218
+#: pgadmin/tools/maintenance/__init__.py:197
 msgid "Could not find the given server"
 msgstr "入力されたサーバが見つかりませんでした"
 
-#: pgadmin/tools/import_export/__init__.py:230
+#: pgadmin/tools/import_export/__init__.py:228
 msgid "Please connect to the server first..."
 msgstr "まずサーバに接続してください..."
 
-#: pgadmin/tools/import_export/__init__.py:252
-#: pgadmin/tools/import_export/__init__.py:259
+#: pgadmin/tools/import_export/__init__.py:250
+#: pgadmin/tools/import_export/__init__.py:257
 msgid "Please specify a valid file"
 msgstr "有効なファイルを指定してください"
 
@@ -15299,7 +15299,7 @@ msgstr "リストア"
 msgid "Restoring backup on the server '{0}'..."
 msgstr "サーバ「{0}」のバックアップをリストア中..."
 
-#: pgadmin/tools/restore/__init__.py:201
+#: pgadmin/tools/restore/__init__.py:199
 msgid "File could not be found."
 msgstr "ファイルが見つかりませんでした"
 
@@ -15733,7 +15733,7 @@ msgstr "指定された優先順が見つかりません"
 msgid "Driver '{0}' has not been implemented."
 msgstr "ドライバ「{0}」が実装されていません"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:268
+#: pgadmin/utils/driver/psycopg2/connection.py:269
 msgid ""
 "Failed to decrypt the saved password.\n"
 "Error: {0}"
@@ -15741,7 +15741,7 @@ msgstr ""
 "保存されているパスワードの復号化に失敗しました。\n"
 "エラー： {0}"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:442
+#: pgadmin/utils/driver/psycopg2/connection.py:434
 msgid ""
 "Failed to setup the role with error message:\n"
 "{0}"
@@ -15749,7 +15749,7 @@ msgstr ""
 "ロールの設定に失敗しました\n"
 "エラー： {0}"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:577
+#: pgadmin/utils/driver/psycopg2/connection.py:569
 msgid ""
 "Failed to create cursor for psycopg2 connection with error message for "
 "the server#{1}:{2}:\n"
@@ -15758,27 +15758,27 @@ msgstr ""
 "サーバ#{1}:{2}の psycopg2 接続のためのカーソルの作成に失敗しました\n"
 "エラー： {0}"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:589
+#: pgadmin/utils/driver/psycopg2/connection.py:581
 msgid ""
 "Attempting to reconnect to the database server (#{server_id}) for the "
 "connection - '{conn_id}'."
 msgstr "接続「{conn_id}」でデータベースサーバ（#{server_id}）に再接続中"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:795
+#: pgadmin/utils/driver/psycopg2/connection.py:787
 msgid "The query executed did not return any data."
 msgstr "クエリを実行しましたが、データが取得されませんでした"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1232
-#: pgadmin/utils/driver/psycopg2/connection.py:1431
-#: pgadmin/utils/driver/psycopg2/connection.py:1519
+#: pgadmin/utils/driver/psycopg2/connection.py:1224
+#: pgadmin/utils/driver/psycopg2/connection.py:1423
+#: pgadmin/utils/driver/psycopg2/connection.py:1511
 msgid "Cursor could not be found for the async connection."
 msgstr "非同期接続のためのカーソルが見つかりませんでした"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1237
+#: pgadmin/utils/driver/psycopg2/connection.py:1229
 msgid "Asynchronous query execution/operation underway."
 msgstr "非同期クエリ実行/処理の実行中です"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1321
+#: pgadmin/utils/driver/psycopg2/connection.py:1313
 msgid ""
 "\n"
 "Failed to reset the connection to the server due to following error:\n"
@@ -15788,39 +15788,39 @@ msgstr ""
 "サーバへの接続のリセットに失敗しました\n"
 "エラー： {0}"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1628
+#: pgadmin/utils/driver/psycopg2/connection.py:1620
 msgid "Not connected to the database server."
 msgstr "データベースサーバに接続できません"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1642
+#: pgadmin/utils/driver/psycopg2/connection.py:1634
 msgid ""
 "Asynchronous notification \"{0}\" with payload \"{1}\" received from "
 "server process with PID {2}\n"
 msgstr "非同期通知「{0}」とペイロード「{1}」を受信しました。送信元サーバのプロセス ID：{2}\n"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1648
+#: pgadmin/utils/driver/psycopg2/connection.py:1640
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
 msgstr "非同期通知「{0}」を受信しました。送信元サーバのプロセス ID：{1}\n"
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1742
+#: pgadmin/utils/driver/psycopg2/connection.py:1734
 msgid "SQL state: "
 msgstr "SQL 状態："
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1749
+#: pgadmin/utils/driver/psycopg2/connection.py:1741
 msgid "Detail: "
 msgstr "詳細："
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1758
+#: pgadmin/utils/driver/psycopg2/connection.py:1750
 msgid "Hint: "
 msgstr "ヒント："
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1765
+#: pgadmin/utils/driver/psycopg2/connection.py:1757
 msgid "Character: "
 msgstr "文字："
 
-#: pgadmin/utils/driver/psycopg2/connection.py:1774
+#: pgadmin/utils/driver/psycopg2/connection.py:1766
 msgid "Context: "
 msgstr "コンテキスト："
 
@@ -16711,4 +16711,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 
 #~ msgid "Explain Options"
 #~ msgstr "EXPLAIN のオプション"
+
+#~ msgid "Dashboard sessions"
+#~ msgstr "ダッシュボードセッション"
 
