@@ -41,10 +41,10 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data
 {### Add columns ###}
 {% if data.columns and data.columns|length > 0 %}
 {% for c in data.columns %}
-{% if c.name and c.cltype %}
-{% if loop.index != 1 %},
-{% endif %}
+{% if c.name and c.cltype and not c.inheritedfrom %}
     {{conn|qtIdent(c.name)}} {% if is_sql %}{{c.displaytypname}}{% else %}{{ GET_TYPE.CREATE_TYPE_SQL(conn, c.cltype, c.attlen, c.attprecision, c.hasSqrBracket) }}{% endif %}{% if c.collspcname %} COLLATE {{c.collspcname}}{% endif %}{% if c.attnotnull %} NOT NULL{% endif %}{% if c.defval %} DEFAULT {{c.defval}}{% endif %}
+{% if not loop.last %},
+{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}
