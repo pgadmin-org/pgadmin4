@@ -62,6 +62,7 @@ $gray-900: $color-fg-theme;
 $body-color: $color-fg-theme;
 $font-size-base: 0.875rem;
 $line-height-base: 1.5; // no change
+$text-height-calc: $line-height-base*$font-size-base/1rem;
 $grid-gutter-width: 15px;
 $border-radius: 0.25rem; //no change
 
@@ -169,6 +170,8 @@ $datagrid-bg: $color-gray-light;
 $sql-title-padding: 3px;
 $sql-title-bg: $color-gray-darker;
 $sql-title-fg: $white;
+// Toolbar + editor title heights + title bottom border
+$sql-editor-panel-top: $title-height + $text-height-calc*16px + $sql-title-padding*2 + $panel-border-width;
 $sql-gutters-bg: $color-gray-light;
 $sql-history-detail-bg: $color-gray-lighter;
 $sql-history-success-bg: $color-primary-light;
