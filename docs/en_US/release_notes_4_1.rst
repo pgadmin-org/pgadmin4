@@ -19,3 +19,4 @@ Bug fixes
 | `Bug #3836 <https://redmine.postgresql.org/issues/3836>`_ - Fix ordering of VACUUM options which changed in PG11.
 | `Bug #3842 <https://redmine.postgresql.org/issues/3842>`_ - Don't show system catalogs in the schemas property list unless show system objects is enabled.
 | `Bug #3861 <https://redmine.postgresql.org/issues/3861>`_ - Fix help for the backup/restore dialogues.
+| `Bug #3877 <https://redmine.postgresql.org/issues/3877>`_ - Make the browser more robust in the face of multibyte characters in SQL_ASCII databases.

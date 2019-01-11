@@ -18,7 +18,10 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
-from psycopg2.extensions import cursor as _cursor
+from psycopg2.extensions import cursor as _cursor, encodings
+from .encoding import configureDriverEncodings
+
+configureDriverEncodings(encodings)
 
 
 class _WrapperColumn(object):

@@ -36,7 +36,7 @@ from .cursor import DictCursor
 from .typecast import register_global_typecasters, \
     register_string_typecasters, register_binary_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
-from .encoding import getEncoding
+from .encoding import getEncoding, configureDriverEncodings
 from pgadmin.utils import csv
 
 if sys.version_info < (3,):
@@ -50,7 +50,7 @@ _ = gettext
 
 # Register global type caster which will be applicable to all connections.
 register_global_typecasters()
-
+configureDriverEncodings(encodings)
 
 class Connection(BaseConnection):
     """
@@ -408,14 +408,6 @@ class Connection(BaseConnection):
                                "SET client_encoding='{0}';"
                           .format(postgres_encoding))
 
-        # Replace the python encoding for original name and renamed encodings
-        # psycopg2 removes the underscore in conn.encoding
-        # Setting the encodings dict value will only help for select statements
-        # because for parameterized DML, param values are converted based on
-        # python encoding of pyscopg2s internal encodings dict.
-        for key, val in encodings.items():
-            if key.replace('_', '') == self.conn.encoding:
-                encodings[key] = self.python_encoding
 
         if status is not None:
             self.conn.close()
@@ -627,10 +619,10 @@ WHERE
                     # "unicode_escape" will convert single backslash to double
                     # backslash, so we will have to replace/revert them again
                     # to store the correct value into the database.
-                    if isinstance(val, six.string_types):
-                        modified_val = val.encode('unicode_escape')\
-                            .decode('raw_unicode_escape')\
-                            .replace("\\\\", "\\")
+                    # if isinstance(val, six.string_types):
+                    #     modified_val = val.encode('unicode_escape')\
+                    #         .decode('raw_unicode_escape')\
+                    #         .replace("\\\\", "\\")
 
                     params[key] = modified_val
 

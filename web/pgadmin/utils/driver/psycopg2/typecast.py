@@ -18,6 +18,10 @@ from psycopg2 import STRING as _STRING
 import psycopg2
 from psycopg2.extensions import encodings
 
+from .encoding import configureDriverEncodings
+
+configureDriverEncodings(encodings)
+
 
 # OIDs of data types which need to typecast as string to avoid JavaScript
 # compatibility issues.
@@ -176,12 +180,13 @@ def register_string_typecasters(connection):
                     return None
                 return bytes(
                     value, encodings[cursor.connection.encoding]
-                ).decode('raw_unicode_escape')
+                ).decode('unicode_escape', errors='replace')
         else:
             def non_ascii_escape(value, cursor):
                 if value is None:
                     return None
-                return value.decode('raw_unicode_escape')
+                return value.decode('unicode_escape', errors='replace')
+                # return value
 
         unicode_type = psycopg2.extensions.new_type(
             # "char", name, text, character, character varying
