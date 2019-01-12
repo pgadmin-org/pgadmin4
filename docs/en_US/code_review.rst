@@ -38,7 +38,7 @@ review process for any patches submitted for inclusion in pgAdmin.
   A good example is the "Init" field on an FTS Template - Init is the PG term, but 
   adding the word "Function" after it makes it much more descriptive.
 
-* Re-use code whereever possible, but factor it out into a suitably central
+* Re-use code wherever possible, but factor it out into a suitably central
   location - don't copy and paste it unless modifications are required!
 
 * Format code nicely to make it readable. Break up logical chunks of code with 

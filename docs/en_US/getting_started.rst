@@ -42,7 +42,7 @@ Contents:
    desktop_deployment
 
 .. note:: Pre-compiled and configured installation packages are available for
-     a number of platforms. These packages should be used by end-users whereever
+     a number of platforms. These packages should be used by end-users wherever
      possible - the following information is useful for the maintainers of those
      packages and users interested in understanding how pgAdmin works.
 
