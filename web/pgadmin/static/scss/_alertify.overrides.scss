@@ -47,8 +47,18 @@
       z-index: 5;
     }
   }
-  .ajs-body .ajs-content {
+  &.ajs-frameless,
+  &.ajs-frameless {
+    & .ajs-body {
+      & .ajs-content {
+        top: 0 !important;
+      }
+    }
+  }
+  &:not(.ajs-frameless) .ajs-body .ajs-content {
     top: $title-height !important;
+  }
+  .ajs-body .ajs-content {
     bottom: $footer-height-calc !important;
   }
 
