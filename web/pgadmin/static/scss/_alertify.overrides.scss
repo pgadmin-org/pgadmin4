@@ -60,6 +60,8 @@
   }
   .ajs-body .ajs-content {
     bottom: $footer-height-calc !important;
+    word-break: break-word;
+    word-wrap: break-word;
   }
 
   /* Removes padding from alertify footer */
