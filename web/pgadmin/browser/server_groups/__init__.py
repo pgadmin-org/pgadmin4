@@ -145,6 +145,7 @@ class ServerGroupView(NodeView):
                 db.session.delete(sg)
                 db.session.commit()
             except Exception as e:
+                db.session.rollback()
                 return make_json_response(
                     status=410, success=0, errormsg=e.message
                 )
@@ -178,10 +179,12 @@ class ServerGroupView(NodeView):
                     servergroup.name = data[u'name']
                 db.session.commit()
             except exc.IntegrityError:
+                db.session.rollback()
                 return bad_request(gettext(
                     "The specified server group already exists."
                 ))
             except Exception as e:
+                db.session.rollback()
                 return make_json_response(
                     status=410, success=0, errormsg=e.message
                 )
@@ -251,11 +254,13 @@ class ServerGroupView(NodeView):
                     )
                 )
             except exc.IntegrityError:
+                db.session.rollback()
                 return bad_request(gettext(
                     "The specified server group already exists."
                 ))
 
             except Exception as e:
+                db.session.rollback()
                 return make_json_response(
                     status=410,
                     success=0,
