@@ -79,4 +79,27 @@ describe('#calculateQueryRunTime', () => {
           .toEqual('9 min 54 secs');
     });
   });
+
+  describe('time difference is bigger then 1 hour', () => {
+    it('displays seconds, milliseconds', () => {
+      let startDate = moment({
+        years:2018,
+        months:4,
+        date:2,
+        hours:10,
+        minutes:30,
+        seconds:20,
+        milliseconds:123}).toDate();
+      let endDate = moment({
+        years:2018,
+        months:4,
+        date:2,
+        hours:11,
+        minutes:40,
+        seconds:15,
+        milliseconds:70}).toDate();
+      expect(calculateQueryRunTime(startDate, endDate))
+          .toEqual('1 hr 9 min');
+    });
+  });
 });
