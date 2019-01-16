@@ -17,11 +17,10 @@ define('pgadmin.node.trigger', [
   gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify,
   SchemaChildTreeNode
 ) {
-
   Backform.CustomSwitchControl = Backform.SwitchControl.extend({
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%> custom_switch_label_class"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%> custom_switch_control_class">',
+      '<label class="control-label pg-el-sm-6 pg-el-12"><%=label%></label>',
+      '<div class="pgadmin-controls pg-el-sm-6 pg-el-12">',
       '  <div class="checkbox">',
       '    <label>',
       '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>"',
@@ -34,7 +33,7 @@ define('pgadmin.node.trigger', [
       '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
     ].join('\n')),
-    className: 'pgadmin-control-group form-group col-6',
+    className: 'pgadmin-control-group form-group col-6 row',
   });
 
   if (!pgBrowser.Nodes['coll-trigger']) {
@@ -57,7 +56,7 @@ define('pgadmin.node.trigger', [
       label: gettext('Trigger'),
       hasSQL:  true,
       hasDepends: true,
-      width: '650px',
+      width: pgBrowser.stdW.sm + 'px',
       sqlAlterHelp: 'sql-altertrigger.html',
       sqlCreateHelp: 'sql-createtrigger.html',
       dialogHelp: url_for('help.static', {'filename': 'trigger_dialog.html'}),
@@ -391,7 +390,7 @@ define('pgadmin.node.trigger', [
           },
         },{
           type: 'nested', control: 'fieldset', mode: ['create','edit', 'properties'],
-          label: gettext('Events'), group: gettext('Events'),
+          label: gettext('Events'), group: gettext('Events'), contentClass: 'row',
           schema:[{
             id: 'evnt_insert', label: gettext('INSERT'),
             type: 'switch', mode: ['create','edit', 'properties'],

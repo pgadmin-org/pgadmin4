@@ -18,3 +18,4 @@ Bug fixes
 | `Bug #3475 <https://redmine.postgresql.org/issues/3475>`_ - Fixed execution time to show Hours part for long running queries in Query Tool.
 | `Bug #3693 <https://redmine.postgresql.org/issues/3693>`_ - Proper error should be thrown when server group is created with existing name.
 | `Bug #3695 <https://redmine.postgresql.org/issues/3695>`_ - Ensure long string should be wrap in alertify dialogs.
+| `Bug #3837 <https://redmine.postgresql.org/issues/3837>`_ - Fixed SQL for when clause while creating Trigger.

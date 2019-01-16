@@ -421,6 +421,9 @@
   border: $panel-border;
   border-radius: $card-border-radius;
   background-color: $color-bg-theme;
+  fieldset.inline-fieldset {
+    background: $color-bg-theme;
+  }
 }
 
 fieldset.inline-fieldset {
