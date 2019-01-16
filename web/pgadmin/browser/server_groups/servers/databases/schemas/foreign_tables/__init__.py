@@ -1209,10 +1209,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         if db_variables is not None:
             for row in db_variables:
                 var_name, var_value = row.split("=")
-                # Because we save as boolean string in db so it needs
-                # conversion
-                if var_value == 'false' or var_value == 'off':
-                    var_value = False
 
                 var_dict = {'option': var_name, 'value': var_value}
 

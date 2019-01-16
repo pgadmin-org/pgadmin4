@@ -14,5 +14,6 @@ Features
 Bug fixes
 *********
 
+| `Bug #3453 <https://redmine.postgresql.org/issues/3453>`_ - Fixed SQL for foreign table options.
 | `Bug #3693 <https://redmine.postgresql.org/issues/3693>`_ - Proper error should be thrown when server group is created with existing name.
 | `Bug #3695 <https://redmine.postgresql.org/issues/3695>`_ - Ensure long string should be wrap in alertify dialogs.
