@@ -218,14 +218,6 @@ define([
                 },
               };
             },
-            hooks: {
-              onshow: function() {
-
-                // Add pgadmin_grant_wizard_body class to dialog
-                $(this.elements.body).addClass('pgadmin_grant_wizard_body');
-              },
-            },
-
             /**
               Returns a Paginator Class Object which is again to be rendered
 

@@ -285,11 +285,12 @@ td.switch-cell > div.bootstrap-switch {
 
 .navbar-brand {
 	color: $color-brand !important;
-	background: $color-brand-bg !important;
+	background: $navbar-brand-bg !important;
 	margin-right: 0rem;
 	padding-left: 0.5rem !important;
 	padding-right: 1rem !important;
 	min-height: $navbar-height;
+	height: $navbar-height;
 	padding: 0rem;
 	display: flex;
 	align-items: center !important;

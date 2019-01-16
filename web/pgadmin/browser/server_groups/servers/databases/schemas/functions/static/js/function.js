@@ -108,6 +108,7 @@ define('pgadmin.node.function', [
       collection_type: 'coll-function',
       hasSQL: true,
       hasDepends: true,
+      width: pgBrowser.stdW.md + 'px',
       hasStatistics: (treeInformation) => {
         return treeInformation.server.server_type !== 'gpdb';
       },

@@ -329,6 +329,17 @@ define('pgadmin.preferences', [
               if (!d)
                 return true;
 
+              /* Bind events to enable clicking anywhere and not only text, button */
+              item.on('dblclick', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                api.toggle(item);
+              });
+              item.on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                api.select(item);
+              });
                 // We will add the preferences in to the preferences data
                 // collection.
               if (d.preferences && _.isArray(d.preferences)) {

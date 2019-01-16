@@ -348,7 +348,7 @@ define('pgadmin.node.type', [
           id: 'typtype', label: gettext('Type'),
           mode: ['create','edit'], disabled: 'inSchemaWithModelCheck',
           group: gettext('Definition'),
-          select2: { width: '50%', allowClear: false },
+          select2: { allowClear: false },
           options: function() {
             return [
               {label: 'Composite', value: 'c'},
@@ -553,11 +553,13 @@ define('pgadmin.node.type', [
         },{
           type: 'nested', control: 'tab', group: gettext('Definition'),
           label: gettext('External Type'), deps: ['typtype'],
-          mode: ['create', 'edit'],
+          mode: ['create', 'edit'], tabPanelExtraClasses:'inline-tab-panel-padded',
           visible: function(m) {
             return m.get('typtype') === 'b';
           },
           schema:[{
+            id: 'spacer_ctrl', group: gettext('Required'), mode: ['edit', 'create'], type: 'spacer',
+          },{
             id: 'typinput', label: gettext('Input function'),
             cell: 'string',type: 'text',
             mode: ['properties', 'create', 'edit'], group: gettext('Required'),
@@ -574,6 +576,8 @@ define('pgadmin.node.type', [
             ,control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: '', width: '100%' },
+          },{
+            id: 'spacer_ctrl_optional_1', group: gettext('Optional-1'), mode: ['edit', 'create'], type: 'spacer',
           },{
             id: 'typreceive', label: gettext('Receive function'),
             cell: 'string', type: 'text', group: gettext('Optional-1'),
@@ -675,6 +679,8 @@ define('pgadmin.node.type', [
             type: 'switch', mode: ['properties', 'create','edit'],
             disabled: 'inSchemaWithModelCheck',
             group: gettext('Optional-1'),
+          },{
+            id: 'spacer_ctrl_optional_2', group: gettext('Optional-2'), mode: ['edit', 'create'], type: 'spacer',
           },{
             id: 'element', label: gettext('Element type'), cell: 'string',
             control: 'node-ajax-options', group: gettext('Optional-2'),

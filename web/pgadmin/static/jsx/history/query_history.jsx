@@ -13,6 +13,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SplitPane from 'react-split-pane';
 import _ from 'underscore';
+import gettext from 'sources/gettext';
 
 import QueryHistoryDetail from './query_history_detail';
 import QueryHistoryEntries from './query_history_entries';
@@ -90,17 +91,23 @@ export default class QueryHistory extends React.Component {
   }
 
   render() {
-    return (
-      <SplitPane defaultSize='50%' split='vertical' pane1Style={queryEntryListDivStyle}
-        pane2Style={queryDetailDivStyle}>
-        <QueryHistoryEntries historyEntries={this.state.history}
-          selectedEntry={this.state.selectedEntry}
-          onSelectEntry={this.selectHistoryEntry}
-        />
-        <QueryHistoryDetail historyEntry={this.state.currentHistoryDetail}
-            sqlEditorPref={this.props.sqlEditorPref}
-        />
-      </SplitPane>);
+    if(this.state.history.length == 0) {
+      return(
+        <div className="alert alert-info pg-panel-message">{gettext('No history found')}</div>
+      );
+    } else {
+      return (
+        <SplitPane defaultSize='50%' split='vertical' pane1Style={queryEntryListDivStyle}
+          pane2Style={queryDetailDivStyle}>
+          <QueryHistoryEntries historyEntries={this.state.history}
+            selectedEntry={this.state.selectedEntry}
+            onSelectEntry={this.selectHistoryEntry}
+          />
+          <QueryHistoryDetail historyEntry={this.state.currentHistoryDetail}
+              sqlEditorPref={this.props.sqlEditorPref}
+          />
+        </SplitPane>);
+    }
   }
 }
 

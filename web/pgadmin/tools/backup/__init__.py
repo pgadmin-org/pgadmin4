@@ -126,13 +126,25 @@ class BackupMessage(IProcessDesc):
         return s.name, host, port
 
     @property
+    def type_desc(self):
+        if self.backup_type == BACKUP.OBJECT:
+            return _("Backing up an object on the server")
+        if self.backup_type == BACKUP.GLOBALS:
+            return _("Backing up the global objects")
+        elif self.backup_type == BACKUP.SERVER:
+            return _("Backing up the server")
+        else:
+            # It should never reach here.
+            return _("Unknown Backup")
+
+    @property
     def message(self):
         name, host, port = self.get_server_details()
 
         if self.backup_type == BACKUP.OBJECT:
             return _(
                 "Backing up an object on the server '{0}' "
-                "from database '{1}'..."
+                "from database '{1}'"
             ).format(
                 "{0} ({1}:{2})".format(
                     name, host, port
@@ -141,13 +153,13 @@ class BackupMessage(IProcessDesc):
             )
         if self.backup_type == BACKUP.GLOBALS:
             return _("Backing up the global objects on "
-                     "the server '{0}'...").format(
+                     "the server '{0}'").format(
                 "{0} ({1}:{2})".format(
                     name, host, port
                 )
             )
         elif self.backup_type == BACKUP.SERVER:
-            return _("Backing up the server '{0}'...").format(
+            return _("Backing up the server '{0}'").format(
                 "{0} ({1}:{2})".format(
                     name, host, port
                 )

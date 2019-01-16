@@ -41,7 +41,7 @@ define('misc.bgprocess', [
         <div class="text-body mx-auto pg-bg-status-text"><%-status_text%></div>
       </div>`),
       failed_status_tpl: _.template(`
-      <div class="d-flex px-2 py-1 bg-danger-light border border-danger rounded">
+      <div class="d-flex px-2 py-1 bg-danger-lighter border border-danger rounded">
         <div class="pr-2">
           <i class="fa fa-close fa-lg text-danger pg-bg-status-icon" aria-hidden="true"></i>
         </div>
@@ -63,6 +63,7 @@ define('misc.bgprocess', [
           completed: false,
 
           id: info['id'],
+          type_desc: null,
           desc: null,
           detailed_desc: null,
           stime: null,
@@ -144,6 +145,9 @@ define('misc.bgprocess', [
 
         if ('execution_time' in data)
           self.execution_time = parseFloat(data.execution_time);
+
+        if ('type_desc' in data)
+          self.type_desc = data.type_desc;
 
         if ('desc' in data)
           self.desc = data.desc;
@@ -288,12 +292,13 @@ define('misc.bgprocess', [
             let content = $(`
             <div class="card">
               <div class="card-header bg-primary d-flex">
-                <div>${_.unescape(self.desc)}</div>
+                <div>${_.escape(self.type_desc)}</div>
                 <div class="ml-auto">
                   <button class="btn btn-sm-sq btn-primary pg-bg-close"><i class="fa fa-lg fa-close"></i></button>
                 </div>
               </div>
               <div class="card-body px-2">
+                <div class="py-1">${_.unescape(self.desc)}</div>
                 <div class="py-1">${self.stime.toString()}</div>
                 <div class="d-flex py-1">
                   <div class="my-auto mr-2">
@@ -384,7 +389,7 @@ define('misc.bgprocess', [
           panel = this.panel =
             pgBrowser.BackgroundProcessObsorver.create_panel();
 
-          panel.title('Process Watcher - ' + _.escape(self.desc));
+          panel.title('Process Watcher - ' + _.escape(self.type_desc));
           panel.focus();
         }
 

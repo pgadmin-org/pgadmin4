@@ -6,6 +6,10 @@
 .file_listing {
   min-width: 100%;
 
+  .file_listing_table_no_data {
+    height: unset !important;
+  }
+
   .file_listing_table {
     height: 100%;
     display: block;

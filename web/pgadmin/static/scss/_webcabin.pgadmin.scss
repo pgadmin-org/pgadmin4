@@ -63,6 +63,10 @@
 }
 
 
+.wcLayout {
+  display: block;
+}
+
 .wcLayoutGrid, .wcLayoutGrid tr, .wcLayoutGrid td {
   border: 1px solid $panel-border-color;
 }

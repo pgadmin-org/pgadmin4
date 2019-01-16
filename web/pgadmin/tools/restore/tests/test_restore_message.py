@@ -46,7 +46,7 @@ class RestoreMessageTest(BaseTestGenerator):
                  cmd="/test_path/pg_restore"
              ),
              extected_msg="Restoring backup on the server "
-                          "'test_restore_server (localhost:5444)'...",
+                          "'test_restore_server (localhost:5444)'",
              expetced_details_cmd='/test_path/pg_restore --file '
                                   '"restore_file" --host "localhost"'
                                   ' --port "5444" --username "postgres" '

@@ -155,6 +155,7 @@
 
 .pg-navbar {
   font-size: $navbar-font-size;
+  background-color: $navbar-color-bg;
   padding-left: 0rem;
   padding-right: 0.5rem;
   & .nav-item .nav-link{
@@ -162,7 +163,7 @@
   }
 
   .pg-navbar-brand-arrow {
-    border: $navbar-height/2 solid $color-fg;
+    border: $navbar-height/2 solid $navbar-brand-arrow-bg;
     border-right-color: transparent;
     border-bottom-color: transparent;
     border-top-color: transparent;
@@ -436,7 +437,7 @@ fieldset.inline-fieldset {
 fieldset.inline-fieldset-without-border {
     margin: 0px; margin-left: 0px; margin-right: 0px;
     padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;
-    border: 0px solid; border-radius: 0px; display: inline-block;
+    border: 0px solid; border-radius: 0px;
 }
 
 fieldset.inline-fieldset > legend {
@@ -678,12 +679,17 @@ div.rolmembership {
   border-bottom-left-radius: 5px; border-style: solid solid;
 }
 
-.inline-tab-panel > .tab-content {
-  padding: 0px;
-  margin: 0px;
-  border-top: none;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+.inline-tab-panel  {
+  & > .tab-content {
+    padding: 0px;
+    margin: 0px;
+    border-top: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+  &.inline-tab-panel-padded > .tab-content {
+    padding: 0.5rem;
+  }
 }
 
 .inline-tab-panel > .tab-content > div.tab-pane {

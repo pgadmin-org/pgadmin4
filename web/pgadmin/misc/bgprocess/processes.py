@@ -606,11 +606,13 @@ class BatchProcess(object):
                 for arg in args_reader:
                     args = args + arg
                 details = desc.details(p.command, args)
+                type_desc = desc.type_desc
                 desc = desc.message
 
             res.append({
                 'id': p.pid,
                 'desc': desc,
+                'type_desc': type_desc,
                 'details': details,
                 'stime': stime,
                 'etime': p.end_time,
@@ -627,13 +629,7 @@ class BatchProcess(object):
 
     @staticmethod
     def total_seconds(dt):
-        # Keep backward compatibility with Python 2.6 which doesn't have
-        # this method
-        if hasattr(dt, 'total_seconds'):
-            return dt.total_seconds()
-        else:
-            return (dt.microseconds + (dt.seconds + dt.days * 24 * 3600) *
-                    10**6) / 10**6
+        return round(dt.total_seconds(), 2)
 
     @staticmethod
     def acknowledge(_pid):

@@ -22,7 +22,7 @@
 }
 
 .alert.alert-info {
-  padding: 15px;
+  padding: 0.5rem;
 }
 
 .success-icon {
@@ -48,7 +48,7 @@
 .alert-info {
   border-color: $color-primary;
   background-color: $color-primary-light;
-  color : $color-primary;
+  color : $color-fg-theme;
   background-image: none;
 }
 

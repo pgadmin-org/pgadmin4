@@ -105,9 +105,13 @@ class RestoreMessage(IProcessDesc):
     def message(self):
         name, host, port = self.get_server_details()
 
-        return _("Restoring backup on the server '{0}'...").format(
+        return _("Restoring backup on the server '{0}'").format(
             "{0} ({1}:{2})".format(name, host, port),
         )
+
+    @property
+    def type_desc(self):
+        return _("Restoring backup on the server")
 
     def details(self, cmd, args):
         name, host, port = self.get_server_details()

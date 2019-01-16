@@ -6,6 +6,8 @@ $bgproc-container-pad: 2px;
   padding: 0px !important;
   text-align: left;
   color: $color-fg-theme;
+  min-width: 500px;
+  max-width: 500px;
   .card {
     border:none;
     & .card-header {

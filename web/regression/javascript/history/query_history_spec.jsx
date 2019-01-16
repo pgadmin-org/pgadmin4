@@ -61,7 +61,7 @@ describe('QueryHistory', () => {
 
     it('nothing is displayed in the history details panel', (done) => {
       let foundChildren = historyWrapper.find(QueryHistoryDetail);
-      expect(foundChildren.length).toBe(1);
+      expect(foundChildren.length).toBe(0);
       done();
     });
   });

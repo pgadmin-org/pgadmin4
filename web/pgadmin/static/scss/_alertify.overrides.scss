@@ -28,14 +28,6 @@
       & .ajs-content {
         top: $title-height;
       }
-      &.pgadmin_grant_wizard_body {
-        border-top-left-radius: $panel-border-radius;
-        border-top-right-radius: $panel-border-radius;
-        & .ajs-content {
-          top: 0 !important;
-          border-radius: inherit;
-        }
-      }
     }
 
     & .ajs-header{
@@ -52,6 +44,7 @@
     & .ajs-body {
       & .ajs-content {
         top: 0 !important;
+        padding: 0px;
       }
     }
   }
@@ -233,4 +226,9 @@
 
 .alertify .ajs-dimmer {
   background-color: $loading-bg;
+}
+
+/* It sometimes is applied to dialog and blocks the dialog from editing */
+.alertify .ajs-dialog.ajs-capture:before {
+  display: none;
 }

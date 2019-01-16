@@ -2112,11 +2112,16 @@ define([
     tagName: 'div',
     className: 'inline-tab-panel',
     tabPanelClassName: 'inline-tab-panel',
+    tabPanelExtraClasses: '',
     initialize: function(opts) {
       Backform.FieldsetControl.prototype.initialize.apply(
         this, arguments
       );
       this.tabIndex = (opts.tabIndex || parseInt(Math.random() * 1000)) + 1;
+      if(opts.field.get('tabPanelExtraClasses')) {
+        this.tabPanelExtraClasses = opts.field.get('tabPanelExtraClasses');
+      }
+      this.tabPanelClassName = this.tabPanelClassName + ' ' + this.tabPanelExtraClasses;
     },
     // Render using Backform.Dialog (tabular UI) (only if this control is
     // visible).

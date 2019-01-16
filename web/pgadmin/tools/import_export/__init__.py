@@ -114,10 +114,14 @@ class IEMessage(IProcessDesc):
 
         return _(
             "Copying table data '{0}.{1}' on database '{2}' "
-            "and server ({3}:{4})..."
+            "and server ({3}:{4})"
         ).format(
             self.schema, self.table, self.database, s.host, s.port
         )
+
+    @property
+    def type_desc(self):
+        return _("Copying table data")
 
     def details(self, cmd, args):
         # Fetch the server details like hostname, port, roles etc
@@ -128,7 +132,7 @@ class IEMessage(IProcessDesc):
         res = '<div>'
         res += _(
             "Copying table data '{0}.{1}' on database '{2}' "
-            "for the server '{3}'..."
+            "for the server '{3}'"
         ).format(
             html.safe_str(self.schema),
             html.safe_str(self.table),
@@ -140,11 +144,11 @@ class IEMessage(IProcessDesc):
             )
         )
 
-        res += '</div><div>'
+        res += '</div><div class="py-1">'
         res += _("Running command:")
-        res += '</b><br><span class="pg-bg-cmd enable-selection">'
+        res += '<div class="pg-bg-cmd enable-selection p-1">'
         res += html.safe_str(self._cmd)
-        res += '</span></div>'
+        res += '</div></div>'
 
         return res
 

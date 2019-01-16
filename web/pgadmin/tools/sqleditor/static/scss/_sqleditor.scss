@@ -18,6 +18,14 @@
   z-index: 0;
 }
 
+
+.editor-title {
+  padding: $sql-title-padding;
+  background: $sql-title-bg;
+  color: $sql-title-fg;
+}
+
+
 #editor-panel {
   z-index: 0;
   position: absolute;
@@ -209,6 +217,7 @@ li.CodeMirror-hint-active {
 /* color the first column */
 #datagrid .slick-row .slick-cell.l0.r0.selected {
   background-color: $color-primary;
+  color: $color-primary-fg;
 }
 
 #datagrid .slick-row > .slick-cell:not(.l0):not(.r0).selected {
@@ -231,12 +240,6 @@ li.CodeMirror-hint-active {
   padding: 0.25rem;
   border: $panel-border;
   box-shadow: $dropdown-box-shadow;
-}
-
-.editor-title {
-  padding: $sql-title-padding;
-  background: $sql-title-bg;
-  color: $sql-title-fg;
 }
 
 .pg_text_editor textarea {

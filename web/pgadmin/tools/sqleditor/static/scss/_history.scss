@@ -2,6 +2,7 @@
   height: 100%;
   .list-item {
     border-bottom: $panel-border;
+    background-color: $color-bg-theme;
   }
 
   .entry {
@@ -76,11 +77,19 @@
   display: block;
 }
 
+
+.sql-editor-history-container {
+  height: 100%;
+  overflow: auto;
+  background-color: $negative-bg;
+}
+
+
 .query-detail {
   width: 100%;
   display: flex;
   flex-direction: column;
-
+  background-color: $color-bg-theme;
   .error-message-block {
     background: $sql-history-error-bg;
     flex: 0.3;

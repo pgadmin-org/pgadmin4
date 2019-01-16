@@ -670,12 +670,15 @@ define([
         if ($('.fileinfo').data('view') == 'grid') {
           result += '<ul id="contents" class="grid"></ul>';
         } else {
-          result += '<table id="contents" class="table table-bordered table-noouter-border table-empty-rows ablesorter">';
+          /* file_listing_table class makes height 100%, because of which No folder message is not displayed
+           * file_listing_table_no_data will be removed when new folder is created
+           */
+          result += '<table id="contents" class="table table-bordered table-noouter-border table-bottom-border table-hover tablesorter file_listing_table file_listing_table_no_data">';
           result += '<thead><tr><th><span>' + lg.name + '</span></th>' +
                     '<th><span>' + lg.size + '</span></th>' +
                     '<th><span>' + lg.modified + '</span></th>' +
-                    '</tr></thead>';
-          result += '</tbody>';
+                    '</tr></thead>' +
+                    '<tbody></tbody>';
           result += '</table>';
         }
         result += '<div class="no_folder_found">' + lg.could_not_retrieve_folder + '</div>';
@@ -1576,6 +1579,7 @@ define([
 
 
         $('.file_manager button.create').attr('disabled', 'disabled');
+        $('.no_folder_found').addClass('d-none');
         if ($('.fileinfo').data('view') == 'grid') {
 
           // template for creating new folder
@@ -1630,7 +1634,10 @@ define([
           );
 
           $file_element_list = $(folder_div);
-          $('.fileinfo #contents.file_listing_table tbody').prepend($file_element_list);
+          let tableEl = $('.fileinfo #contents.file_listing_table');
+          tableEl.removeClass('file_listing_table_no_data');
+          tableEl.find('tbody').prepend($file_element_list);
+
           $file_element_list.find('td span.less_text').toggle();
           $file_element_list.find('td input').toggle().val(lg.new_folder).select();
 

@@ -47,7 +47,7 @@ class BackupMessageTest(BaseTestGenerator):
                  cmd="/test_path/pg_dump"
              ),
              extected_msg="Backing up the server"
-                          " 'test_backup_server (localhost:5444)'...",
+                          " 'test_backup_server (localhost:5444)'",
              expetced_details_cmd='/test_path/pg_dump --file '
                                   '"backup_file" --host "localhost" '
                                   '--port "5444" --username "postgres" '
@@ -80,7 +80,7 @@ class BackupMessageTest(BaseTestGenerator):
                  cmd="/test_path/pg_dump"
              ),
              extected_msg="Backing up the global objects on the server "
-                          "'test_backup_server (localhost:5444)'...",
+                          "'test_backup_server (localhost:5444)'",
              expetced_details_cmd='/test_path/pg_dump --file "backup_file" '
                                   '--host "localhost"'
                                   ' --port "5444" --username "postgres" '
@@ -114,7 +114,7 @@ class BackupMessageTest(BaseTestGenerator):
              ),
              extected_msg="Backing up an object on the server "
                           "'test_backup_server (localhost:5444)'"
-                          " from database 'postgres'...",
+                          " from database 'postgres'",
              expetced_details_cmd='/test_path/pg_dump --file "backup_file" '
                                   '--host "localhost" '
                                   '--port "5444" --username "postgres" '

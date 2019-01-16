@@ -1,22 +1,18 @@
 .aciTree .aciTreeLi {
   display: grid !important;
+  cursor: pointer;
 }
 .aciTree .aciTreeText {
 	font-family: $font-family-primary;
 	font-size: 0.815rem;
 }
 .aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine  {
-  background-color: $color-primary-light;
-	border-right: $active-border;
+  background-color: $color-primary-light !important;
 }
+
 .aciTree .aciTreeSelected > .aciTreeLine {
-	background-color: $color-primary-light;
-	border-color: $color-primary-light;
-	border-right: $active-border;
-	border-left: none !important;
-	border-top: none !important;
-	border-bottom: none !important;
-	-webkit-border-radius: none !important;
+  background-color: $color-primary-light !important;
+  -webkit-border-radius: none !important;
   -moz-border-radius: none !important;
   border-radius: none !important;
 }

@@ -185,7 +185,7 @@ define('tools.querytool', [
         name: 'sql_panel',
         title: gettext('Query Editor'),
         width: '100%',
-        height: '20%',
+        height: '50%',
         isCloseable: false,
         isPrivate: true,
       });

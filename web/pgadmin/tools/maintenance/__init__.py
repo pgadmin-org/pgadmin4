@@ -93,6 +93,10 @@ class Message(IProcessDesc):
         if self.data['op'] == "CLUSTER":
             return res.format(_('Cluster'))
 
+    @property
+    def type_desc(self):
+        return _("Maintenance")
+
     def details(self, cmd, args):
 
         res = None

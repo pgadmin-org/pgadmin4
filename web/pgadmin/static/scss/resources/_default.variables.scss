@@ -37,7 +37,6 @@ $color-gray-light: #ebeef3;
 $color-gray-lighter: #f3f5f9;
 
 $color-brand: $white !default;
-$color-brand-bg: #222222;
 
 $color-editor-bg: $color-bg !default;
 $color-editor-keyword: #908 !default;
@@ -68,6 +67,7 @@ $border-radius: 0.25rem; //no change
 
 $text-color: $color-fg-theme;
 $text-muted: $color-gray-dark;
+
 $navbar-dark-color: #fff;
 $navbar-dark-hover-color: #fff;
 $navbar-dark-active-color: #fff;
@@ -153,6 +153,10 @@ $title-height: ($line-height-base*16px) + 5px + 2px + $border-width;
 $footer-padding: 0.5rem;
 $footer-min-height: 2rem;
 $footer-height-calc: $footer-min-height+$footer-padding*2;
+
+$navbar-brand-bg: #222222; //place image url if image
+$navbar-brand-arrow-bg: #222222;
+$navbar-color-bg: $color-primary;
 $navbar-font-size: 0.925rem;
 $navbar-user-font-size: 0.875rem;
 

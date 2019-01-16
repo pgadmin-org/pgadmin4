@@ -14,10 +14,6 @@
   bottom: 0;
 }
 
-#editor-panel {
-  z-index: 0;
-}
-
 .sql-editor-grid-container {
   height: 100%;
   overflow: auto;
@@ -55,12 +51,6 @@
   max-width: 35px !important;
   min-width: 35px !important;
 }
-
-.sql-editor-history-container {
-  height: 100%;
-  overflow: auto;
-}
-
 .sql-status-cell {
   max-width: 30px;
 }
