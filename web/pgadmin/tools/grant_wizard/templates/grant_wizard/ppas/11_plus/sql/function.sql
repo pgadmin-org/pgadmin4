@@ -21,6 +21,7 @@ WHERE
     pronamespace = {{ node_id }}::oid
     AND typname {{ 'NOT' if type != 'trigger_function' else '' }} IN ('trigger', 'event_trigger')
     AND pr.prokind = '{{ kind }}'
+    AND pr.protype = {{ 0 if type != 'procedure' else 1 }}
 ORDER BY
     proname
 {% endif %}
