@@ -41,16 +41,52 @@
       flex-grow: 1;
       max-width: 100%;
     }
+  }
 
-    @for $i from 1 through $columns {
-      .pg-el-container[el=lg],
-      .pg-el-container[el=md],
-      .pg-el-container[el=sm]
-      .pg-el#{$infix}-#{$i} {
+  @for $i from 1 through $columns {
+    .pg-el-container[el=xl] {
+      .pg-el-sm-#{$i} {
+        @include make-col($i, $columns);
+      }
+      .pg-el-md-#{$i} {
+        @include make-col($i, $columns);
+      }
+      .pg-el-lg-#{$i} {
+        @include make-col($i, $columns);
+      }
+      .pg-el-xl-#{$i} {
+        @include make-col($i, $columns);
+      }
+    }
+
+    .pg-el-container[el=lg] {
+      .pg-el-sm-#{$i} {
+        @include make-col($i, $columns);
+      }
+      .pg-el-md-#{$i} {
+        @include make-col($i, $columns);
+      }
+      .pg-el-lg-#{$i} {
+        @include make-col($i, $columns);
+      }
+    }
+
+    .pg-el-container[el=md] {
+      .pg-el-md-#{$i} {
+        @include make-col($i, $columns);
+      }
+      .pg-el-sm-#{$i} {
+        @include make-col($i, $columns);
+      }
+    }
+
+    .pg-el-container[el=sm] {
+      .pg-el-sm-#{$i} {
         @include make-col($i, $columns);
       }
     }
   }
+
 }
 
 @include make-grid-columns();

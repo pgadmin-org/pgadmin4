@@ -201,28 +201,29 @@ define([
     self.pgResizeTimeout = setTimeout(
       function() {
         var $el = $(this.elements.dialog),
-          w = $el.width();
+          w = $el.width(),
+          elAttr = 'xs';
 
         this.pgResizeTimeout = null;
 
         /** Calculations based on https://getbootstrap.com/docs/4.1/layout/grid/#grid-options **/
         if (w < 480) {
-          w = 'xs';
+          elAttr = 'xs';
         }
         if (w >= 480) {
-          w = 'sm';
+          elAttr = 'sm';
         }
         if (w >= 768) {
-          w = 'md';
+          elAttr = 'md';
         }
         if (w >= 992) {
-          w = 'lg';
+          elAttr = 'lg';
         }
         if (w >=1200) {
-          w = 'xl';
+          elAttr = 'xl';
         }
 
-        $el.attr('el', w);
+        $el.attr('el', elAttr);
       }.bind(self),
       100
     );
