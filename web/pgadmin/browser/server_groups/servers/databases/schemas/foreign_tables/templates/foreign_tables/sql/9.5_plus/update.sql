@@ -23,7 +23,7 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 {% if (not c.inheritedfrom or c.inheritedfrom =='' or  c.inheritedfrom == None or  c.inheritedfrom == 'None' ) %}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
-    ADD COLUMN {{conn|qtIdent(c.attname)}} {{ conn|qtTypeIdent(c.datatype) }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}
+    ADD COLUMN {{conn|qtIdent(c.attname)}} {{ c.datatype }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}
 {% if c.coloptions %}
 {% for o in c.coloptions %}{% if o.option and o.value %}
 {% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
@@ -50,7 +50,7 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 c.precision != o_data['columns'][c.attnum]['precision'] %}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}} TYPE {{ conn|qtTypeIdent(c.datatype) }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %};
+    ALTER COLUMN {{conn|qtIdent(col_name)}} TYPE {{ c.datatype }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %};
 {% endif %}
 {% if c.typdefault is defined and c.typdefault != o_data['columns'][c.attnum]['typdefault'] %}
 
