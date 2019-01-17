@@ -8,10 +8,16 @@
 }
 .aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine  {
   background-color: $color-primary-light !important;
+	border-right: $active-border !important;
 }
 
 .aciTree .aciTreeSelected > .aciTreeLine {
   background-color: $color-primary-light !important;
+	border-color: $color-primary-light;
+	border-right: $active-border !important;
+	border-left: none !important;
+	border-top: none !important;
+	border-bottom: none !important;
   -webkit-border-radius: none !important;
   -moz-border-radius: none !important;
   border-radius: none !important;
