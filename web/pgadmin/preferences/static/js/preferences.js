@@ -375,9 +375,9 @@ define('pgadmin.preferences', [
             dialogContentCleanup();
 
             $container.append(
-              '<div class=\'pg-el-3 preferences_tree aciTree\'></div>'
+              '<div class=\'pg-el-sm-3 preferences_tree aciTree\'></div>'
             ).append(
-              '<div class=\'pg-el-9 preferences_content\'>' +
+              '<div class=\'pg-el-sm-9 preferences_content\'>' +
               gettext('Category is not selected.') +
               '</div>'
             );

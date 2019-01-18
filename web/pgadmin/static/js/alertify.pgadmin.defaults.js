@@ -430,6 +430,7 @@ define([
     onshow:function() {
       $(this.elements.commands.close).attr('title', gettext('Close'));
       $(this.elements.commands.maximize).attr('title', gettext('Maximize'));
+      $(this.elements.content).addClass('ajs-wrap-text');
     },
     reverseButtons: true,
   });
