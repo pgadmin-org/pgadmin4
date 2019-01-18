@@ -23,3 +23,4 @@ Bug fixes
 | `Bug #3837 <https://redmine.postgresql.org/issues/3837>`_ - Fixed SQL for when clause while creating Trigger.
 | `Bug #3838 <https://redmine.postgresql.org/issues/3838>`_ - Proper SQL should be generated when creating/changing column with custom type argument.
 | `Bug #3846 <https://redmine.postgresql.org/issues/3846>`_ - Proper SQL should be generated when create procedure with custom type arguments.
+| `Bug #3891 <https://redmine.postgresql.org/issues/3891>`_ - Correct order of Save and Cancel button for json/jsonb editing.

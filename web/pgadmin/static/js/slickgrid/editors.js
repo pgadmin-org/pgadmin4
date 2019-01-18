@@ -307,8 +307,8 @@
       $input = getTextArea().appendTo($wrapper);
       $buttons = getButtons(true).appendTo($wrapper);
 
-      $buttons.find('button:first').on('click', this.save);
-      $buttons.find('button:last').on('click', this.cancel);
+      $buttons.find('button:first').on('click', this.cancel);
+      $buttons.find('button:last').on('click', this.save);
       $input.on('keydown', this.handleKeyDown);
 
       scope.position(args.position);
