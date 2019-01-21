@@ -23,6 +23,7 @@ Bug fixes
 | `Bug #3811 <https://redmine.postgresql.org/issues/3811>`_ - Ensure that Backup/Restore button should work on single click.
 | `Bug #3837 <https://redmine.postgresql.org/issues/3837>`_ - Fixed SQL for when clause while creating Trigger.
 | `Bug #3838 <https://redmine.postgresql.org/issues/3838>`_ - Proper SQL should be generated when creating/changing column with custom type argument.
+| `Bug #3840 <https://redmine.postgresql.org/issues/3840>`_ - Ensure that file format combo box value should not retained when hidden files checkbox is toggled.
 | `Bug #3846 <https://redmine.postgresql.org/issues/3846>`_ - Proper SQL should be generated when create procedure with custom type arguments.
 | `Bug #3891 <https://redmine.postgresql.org/issues/3891>`_ - Correct order of Save and Cancel button for json/jsonb editing.
 | `Bug #3897 <https://redmine.postgresql.org/issues/3897>`_ - Data should be updated properly for FTS Configurations, FTS Dictionaries, FTS Parsers and FTS Templates.

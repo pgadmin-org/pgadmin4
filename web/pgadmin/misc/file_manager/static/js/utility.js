@@ -1176,11 +1176,11 @@ define([
           };
 
           if (cb.checked) {
-            $('div.allowed_file_types select').val('*').trigger('change');
+            $('div.allowed_file_types select').trigger('change');
             data['is_checked'] = true;
           } else {
             // User wants to hide it again
-            $('div.allowed_file_types select').prop('selectedIndex', 0).trigger('change');
+            $('div.allowed_file_types select').trigger('change');
             data['is_checked'] = false;
           }
           // Save it in preference
