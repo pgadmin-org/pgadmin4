@@ -2419,6 +2419,7 @@ define([
 
       // Set selected value into the model
       this.model.set(name, decodeURI(value));
+      this.$el.find('input[type=text]').focus();
     },
     storage_close_dlg_hander: function() {
       this.remove_file_dlg_event_listeners();

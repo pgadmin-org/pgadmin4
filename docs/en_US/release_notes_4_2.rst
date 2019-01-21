@@ -20,6 +20,7 @@ Bug fixes
 | `Bug #3695 <https://redmine.postgresql.org/issues/3695>`_ - Ensure long string should be wrap in alertify dialogs.
 | `Bug #3740 <https://redmine.postgresql.org/issues/3740>`_ - Inline edbspl trigger functions should not be visible in Grant Wizard.
 | `Bug #3774 <https://redmine.postgresql.org/issues/3774>`_ - Proper SQL should be generated when create function with return type as custom type argument.
+| `Bug #3811 <https://redmine.postgresql.org/issues/3811>`_ - Ensure that Backup/Restore button should work on single click.
 | `Bug #3837 <https://redmine.postgresql.org/issues/3837>`_ - Fixed SQL for when clause while creating Trigger.
 | `Bug #3838 <https://redmine.postgresql.org/issues/3838>`_ - Proper SQL should be generated when creating/changing column with custom type argument.
 | `Bug #3846 <https://redmine.postgresql.org/issues/3846>`_ - Proper SQL should be generated when create procedure with custom type arguments.
