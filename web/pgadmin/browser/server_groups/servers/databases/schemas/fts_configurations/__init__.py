@@ -509,7 +509,7 @@ class FtsConfigurationView(PGChildNodeView):
             sql = render_template(
                 "/".join([self.template_path, 'nodes.sql']),
                 cfgid=cfgid,
-                scid=data['schema'] if 'scheam' in data else scid
+                scid=data['schema'] if 'schema' in data else scid
             )
 
             status, res = self.conn.execute_dict(sql)
@@ -655,6 +655,8 @@ class FtsConfigurationView(PGChildNodeView):
                 return gone(_("Could not find the FTS Configuration node."))
 
             old_data = res['rows'][0]
+            if 'schema' not in data:
+                data['schema'] = old_data['schema']
 
             # If user has changed the schema then fetch new schema directly
             # using its oid otherwise fetch old schema name using its oid

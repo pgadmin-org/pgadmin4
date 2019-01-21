@@ -502,9 +502,15 @@ class FtsTemplateView(PGChildNodeView):
         :param scid: schema id
         :param tid: fts tempate id
         """
-        data = request.args
 
-        # Fetch sql query for modified data
+        # data = request.args
+        data = {}
+        for k, v in request.args.items():
+            try:
+                data[k] = json.loads(v, encoding='utf-8')
+            except ValueError:
+                data[k] = v
+
         # Fetch sql query for modified data
         SQL, name = self.get_sql(gid, sid, did, scid, data, tid)
         # Most probably this is due to error
@@ -546,6 +552,8 @@ class FtsTemplateView(PGChildNodeView):
                 )
 
             old_data = res['rows'][0]
+            if 'schema' not in data:
+                data['schema'] = old_data['schema']
 
             # If user has changed the schema then fetch new schema directly
             # using its oid otherwise fetch old schema name using

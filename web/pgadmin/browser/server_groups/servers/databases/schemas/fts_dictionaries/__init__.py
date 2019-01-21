@@ -651,6 +651,8 @@ class FtsDictionaryView(PGChildNodeView):
                 return gone(_("Could not find the FTS Dictionary node."))
 
             old_data = res['rows'][0]
+            if 'schema' not in data:
+                data['schema'] = old_data['schema']
 
             # Handle templates and its schema name properly
             if old_data['template_schema'] is not None:

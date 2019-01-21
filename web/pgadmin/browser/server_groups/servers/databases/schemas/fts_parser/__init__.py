@@ -530,8 +530,13 @@ class FtsParserView(PGChildNodeView):
         :param scid: schema id
         :param pid: fts tempate id
         """
-        data = request.args
-        # Fetch sql query for modified data
+        # data = request.args
+        data = {}
+        for k, v in request.args.items():
+            try:
+                data[k] = json.loads(v, encoding='utf-8')
+            except ValueError:
+                data[k] = v
 
         # Fetch sql query for modified data
         SQL, name = self.get_sql(gid, sid, did, scid, data, pid)
@@ -572,6 +577,8 @@ class FtsParserView(PGChildNodeView):
                 return gone(_("Could not find the FTS Parser node."))
 
             old_data = res['rows'][0]
+            if 'schema' not in data:
+                data['schema'] = old_data['schema']
 
             # If user has changed the schema then fetch new schema directly
             # using its oid otherwise fetch old schema name with parser oid
