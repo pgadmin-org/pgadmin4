@@ -1849,7 +1849,8 @@ define([
     },
     toRaw: function(formattedData) {
       if (_.isArray(formattedData)) {
-        return _.map(formattedData, decodeURIComponent);
+        let tmpArr = _.map(formattedData, encodeURIComponent);
+        return _.map(tmpArr, decodeURIComponent);
       } else {
         if (!_.isNull(formattedData) && !_.isUndefined(formattedData)) {
           return decodeURIComponent(formattedData);
