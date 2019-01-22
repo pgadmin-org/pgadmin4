@@ -70,12 +70,8 @@ define('pgadmin.dashboard', [
         return;
 
       // This will refresh the grid
-      var refresh_grid = function() {
-        if (is_server_dashboard) {
-          $('#btn_server_activity_refresh').trigger('click');
-        } else if (is_database_dashboard) {
-          $('#btn_database_activity_refresh').trigger('click');
-        }
+      let refresh_grid = () => {
+        $('#btn_refresh').trigger('click');
       };
 
       if (cell_action === 'cancel') {
