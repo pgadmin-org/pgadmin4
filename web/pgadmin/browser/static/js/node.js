@@ -412,8 +412,6 @@ define('pgadmin.browser.node', [
                 view.render();
                 setFocusOnEl();
                 newModel.startNewSession();
-                // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
-                pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
               },
               error: function(xhr, error, message) {
                 var _label = that && item ?
@@ -450,8 +448,6 @@ define('pgadmin.browser.node', [
             view.render();
             setFocusOnEl();
             newModel.startNewSession();
-            // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
-            pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
           }
         }
 
@@ -1083,7 +1079,7 @@ define('pgadmin.browser.node', [
             // All buttons will be created within a single
             // div area.
             var btnGroup =
-              $('<div></div>').addClass(
+              $('<div tabindex="0"></div>').addClass(
                 'pg-prop-btn-group'
               ),
               // Template used for creating a button
@@ -1200,7 +1196,6 @@ define('pgadmin.browser.node', [
                 });
               },
             });
-
             createButtons(buttons, 'header', 'pg-prop-btn-group-above');
           }
           j.append(content);
@@ -1392,7 +1387,7 @@ define('pgadmin.browser.node', [
             );
 
             // Create proper buttons
-            createButtons([{
+            let btn_grp = createButtons([{
               label: '',
               type: 'help',
               tooltip: gettext('SQL help for this object type.'),
@@ -1458,6 +1453,18 @@ define('pgadmin.browser.node', [
                 });
               },
             }], 'footer', 'pg-prop-btn-group-below');
+
+            btn_grp.on('keydown', 'button', function(event) {
+              if (event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
+                // set focus back to first editable input element of current active tab once we cycle through all enabled buttons.
+                commonUtils.findAndSetFocus(view.$el.find('.tab-content div.active'));
+                return false;
+              }
+            });
+
+            setTimeout(function() {
+              pgBrowser.keyboardNavigation.getDialogTabNavigator(panel.pgElContainer);
+            }, 200);
           }
 
           // Create status bar.

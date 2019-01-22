@@ -349,11 +349,11 @@ _.extend(pgBrowser.keyboardNavigation, {
       d: selectedTreeNodeData,
     };
   },
-  getDialogTabNavigator: function(dialog) {
+  getDialogTabNavigator: function(dialogContainer) {
     const backward_shortcut = pgBrowser.get_preference('browser', 'dialog_tab_backward').value;
     const forward_shortcut = pgBrowser.get_preference('browser', 'dialog_tab_forward').value;
 
-    return new dialogTabNavigator.dialogTabNavigator(dialog, backward_shortcut, forward_shortcut);
+    return new dialogTabNavigator.dialogTabNavigator(dialogContainer, backward_shortcut, forward_shortcut);
   },
 });
 

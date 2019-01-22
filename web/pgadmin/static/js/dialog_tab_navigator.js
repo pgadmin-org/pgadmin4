@@ -13,13 +13,13 @@ import { findAndSetFocus } from './utils';
 import { parseShortcutValue } from './utils';
 
 class dialogTabNavigator {
-  constructor(dialog, backwardShortcut, forwardShortcut) {
+  constructor(dialogContainer, backwardShortcut, forwardShortcut) {
 
-    this.dialog = dialog;
+    this.dialogContainer = dialogContainer;
 
     this.tabSwitching = false;
 
-    this.tabs = this.dialog.$el.find('.nav-tabs');
+    this.tabs = this.dialogContainer.find('.nav-tabs');
 
     if (this.tabs.length > 0 ) {
       this.tabs = this.tabs[0];
@@ -28,13 +28,13 @@ class dialogTabNavigator {
     this.dialogTabBackward = parseShortcutValue(backwardShortcut);
     this.dialogTabForward = parseShortcutValue(forwardShortcut);
 
-    Mousetrap(this.dialog.el).bind(this.dialogTabBackward, this.onKeyboardEvent.bind(this));
-    Mousetrap(this.dialog.el).bind(this.dialogTabForward, this.onKeyboardEvent.bind(this));
+    Mousetrap(this.dialogContainer[0]).bind(this.dialogTabBackward, this.onKeyboardEvent.bind(this));
+    Mousetrap(this.dialogContainer[0]).bind(this.dialogTabForward, this.onKeyboardEvent.bind(this));
 
   }
 
   onKeyboardEvent(event, shortcut) {
-    var currentTabPane =  this.dialog.$el
+    var currentTabPane =  this.dialogContainer
         .find('.tab-content:first > .tab-pane.active:first'),
       childTabData = this.isActivePaneHasChildTabs(currentTabPane);
 
@@ -86,7 +86,7 @@ class dialogTabNavigator {
     var self = this,
       nextTabPane,
       innerTabContainer,
-      prevtab = $(tabs).find('li.active').prev('li');
+      prevtab = $(tabs).find('li').has('a.active').prev('li');
 
     if (prevtab.length > 0) {
       prevtab.find('a').tab('show');
@@ -116,7 +116,7 @@ class dialogTabNavigator {
     var self = this,
       nextTabPane,
       innerTabContainer,
-      nexttab = $(tabs).find('li.active').next('li');
+      nexttab = $(tabs).find('li').has('a.active').next('li');
 
     if(nexttab.length > 0) {
       nexttab.find('a').tab('show');
@@ -142,8 +142,8 @@ class dialogTabNavigator {
   }
 
   detach() {
-    Mousetrap(this.dialog.el).unbind(this.dialogTabBackward);
-    Mousetrap(this.dialog.el).unbind(this.dialogTabForward);
+    Mousetrap(this.dialogContainer[0]).unbind(this.dialogTabBackward);
+    Mousetrap(this.dialogContainer[0]).unbind(this.dialogTabForward);
   }
 }
 

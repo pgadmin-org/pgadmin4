@@ -657,10 +657,11 @@ Backform, commonUtils, supportedNodes
               });
 
               view.$el.attr('tabindex', -1);
-              // var dialogTabNavigator = pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
-              pgBrowser.keyboardNavigation.getDialogTabNavigator(view);
               var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
               commonUtils.findAndSetFocus(container);
+              setTimeout(function() {
+                pgBrowser.keyboardNavigation.getDialogTabNavigator($(self.elements.dialog));
+              }, 200);
             },
           };
         });
