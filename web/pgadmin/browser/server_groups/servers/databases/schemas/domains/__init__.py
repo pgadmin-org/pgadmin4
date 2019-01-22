@@ -442,11 +442,10 @@ It may have been removed by another user or moved to another schema.
             substr = basetype[basetype.find("(") + 1:len(
                 basetype) - 1]
             typlen = substr.split(",")
+            typ_len = typlen[0]
             if len(typlen) > 1:
-                typ_len = typlen[0]
                 typ_precision = typlen[1]
             else:
-                typ_len = typlen
                 typ_precision = ''
 
         return {'typlen': typ_len, 'precision': typ_precision}

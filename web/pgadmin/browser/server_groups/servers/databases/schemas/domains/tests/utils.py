@@ -15,7 +15,8 @@ import traceback
 from regression.python_test_utils import test_utils as utils
 
 
-def create_domain(server, db_name, schema_name, schema_id, domain_name):
+def create_domain(server, db_name, schema_name, schema_id, domain_name,
+                  domain_sql=None):
     """
     This function is used to add the domain to existing schema
     :param server: server details
@@ -37,8 +38,14 @@ def create_domain(server, db_name, schema_name, schema_id, domain_name):
                                              server['host'],
                                              server['port'])
         pg_cursor = connection.cursor()
-        query = 'CREATE DOMAIN ' + schema_name + '.' + domain_name + \
-                ' AS character(10) DEFAULT 1'
+
+        if domain_sql is None:
+            query = 'CREATE DOMAIN ' + schema_name + '.' + domain_name + \
+                    ' AS character(10) DEFAULT 1'
+        else:
+            query = 'CREATE DOMAIN ' + schema_name + '.' +\
+                    domain_name + ' ' + domain_sql
+
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created domain
@@ -77,3 +84,51 @@ def verify_domain(server, db_name, schema_id, domain_name):
     domains = pg_cursor.fetchone()
     connection.close()
     return domains
+
+
+def delete_domain(server, db_name, schema_name, domain_name):
+    """
+    This function deletes the domain.
+    :param server:
+    :param db_name:
+    :param schema_name:
+    :param domain_name:
+    :return:
+    """
+
+    try:
+        connection = utils.get_db_connection(db_name,
+                                             server['username'],
+                                             server['db_password'],
+                                             server['host'],
+                                             server['port'])
+        pg_cursor = connection.cursor()
+        pg_cursor.execute("DROP DOMAIN %s.%s" %
+                          (schema_name, domain_name))
+        connection.commit()
+        connection.close()
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
+def create_domain_from_sql(server, db_name, sql):
+    """
+    This function create domain from the reverse engineered sql
+    :param server:
+    :param db_name:
+    :param sql:
+    :return:
+    """
+
+    try:
+        connection = utils.get_db_connection(db_name,
+                                             server['username'],
+                                             server['db_password'],
+                                             server['host'],
+                                             server['port'])
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(sql)
+        connection.commit()
+        connection.close()
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
