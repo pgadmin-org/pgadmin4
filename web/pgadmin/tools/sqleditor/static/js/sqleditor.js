@@ -1316,7 +1316,7 @@ define('tools.querytool', [
     _closeDropDown: function(ev) {
       var target = ev && (ev.currentTarget || ev.target);
       if (target) {
-        $(target).closest('.show').removeClass('show').find('.dropdown-backdrop').remove();
+        $(target).closest('.editor-toolbar').find('.show').removeClass('show');
       }
     },
 

@@ -26,6 +26,7 @@ Bug fixes
 | `Bug #3838 <https://redmine.postgresql.org/issues/3838>`_ - Proper SQL should be generated when creating/changing column with custom type argument.
 | `Bug #3840 <https://redmine.postgresql.org/issues/3840>`_ - Ensure that file format combo box value should be retained when hidden files checkbox is toggled.
 | `Bug #3846 <https://redmine.postgresql.org/issues/3846>`_ - Proper SQL should be generated when create procedure with custom type arguments.
+| `Bug #3858 <https://redmine.postgresql.org/issues/3858>`_ - Drop-down should be closed when click on any other toolbar button.
 | `Bug #3871 <https://redmine.postgresql.org/issues/3871>`_ - Fixed alignment of tree arrow icons for Internet Explorer.
 | `Bug #3891 <https://redmine.postgresql.org/issues/3891>`_ - Correct order of Save and Cancel button for json/jsonb editing.
 | `Bug #3897 <https://redmine.postgresql.org/issues/3897>`_ - Data should be updated properly for FTS Configurations, FTS Dictionaries, FTS Parsers and FTS Templates.
