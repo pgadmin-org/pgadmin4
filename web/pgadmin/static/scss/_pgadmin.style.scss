@@ -656,6 +656,10 @@ fieldset.inline-fieldset > div {
   outline: none;
 }
 
+input[type="checkbox"]:focus {
+    outline: $color-primary auto 5px !important;
+}
+
 div.rolmembership {
     margin-top: 15px;
 }

@@ -591,11 +591,29 @@ define([
       this.$el.removeClass('editor');
     },
 
+    saveOrCancel: function (e) {
+      var model = this.model;
+      var column = this.column;
+
+      var command = new Backgrid.Command(e);
+      var blurred = e.type === 'blur';
+
+      if (command.moveUp() || command.moveDown() || command.moveLeft() || command.moveRight() ||
+          command.save() || blurred) {
+
+        this.exitEditMode();
+        e.preventDefault();
+        e.stopPropagation();
+        model.trigger('backgrid:edited', model, column, command);
+      }
+    },
     events: {
       'select2:open': 'enterEditMode',
       'select2:close': 'exitEditMode',
       'change': 'onSave',
       'select2:unselect': 'onSave',
+      'blur': 'saveOrCancel',
+      'keydown': 'saveOrCancel',
     },
     /** @property {function(Object, ?Object=): string} template */
     template: _.template([

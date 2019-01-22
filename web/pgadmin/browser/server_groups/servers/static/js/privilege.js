@@ -329,13 +329,13 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         '<tr class="<%= header ? "header" : "" %>">',
         ' <td class="renderable">',
         '  <label class="privilege_label">',
-        '   <input type="checkbox" name="privilege" privilege="<%- privilege_type %>" target="<%- target %>" <%= privilege ? \'checked\' : "" %>></input>',
+        '   <input type="checkbox" tabindex="1" name="privilege" privilege="<%- privilege_type %>" target="<%- target %>" <%= privilege ? \'checked\' : "" %>></input>',
         '   <%- privilege_label %>',
         '  </label>',
         ' </td>',
         ' <td class="renderable">',
         '  <label class="privilege_label">',
-        '   <input type="checkbox" name="with_grant" privilege="<%- privilege_type %>" target="<%- target %>" <%= with_grant ? \'checked\' : "" %> <%= enable_with_grant ? "" : \'disabled\'%>></input>',
+        '   <input type="checkbox" tabindex="1" name="with_grant" privilege="<%- privilege_type %>" target="<%- target %>" <%= with_grant ? \'checked\' : "" %> <%= enable_with_grant ? "" : \'disabled\'%>></input>',
         '   WITH GRANT OPTION',
         '  </label>',
         ' </td>',
@@ -344,6 +344,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
       events: {
         'change': 'privilegeChanged',
         'blur': 'lostFocus',
+        'keydown': 'lostFocus',
       },
 
       render: function () {
@@ -608,7 +609,42 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
               node = node.parentNode;
             }
             return false;
-          };
+          },
+          model = this.model,
+          column = this.column,
+          command = new Backgrid.Command(ev),
+          coll = this.model.get(this.column.get('name'));
+
+        if (command.moveUp() || command.moveDown() || command.save()) {
+            // backgrid vertical navigation (Up/Down arrow key)
+          ev.preventDefault();
+          ev.stopPropagation();
+          model.trigger('backgrid:edited', model, column, command);
+          return;
+        }
+        // esc
+        else if (command.cancel()) {
+          // undo
+          ev.stopPropagation();
+          model.trigger('backgrid:edited', model, column, command);
+          return;
+        } else if (command.moveRight()) {
+          // If we are at the last privilege then we should move to next cell
+          if (coll.last().get('privilege_type') === $(ev.target).attr('privilege')) {
+            if ((ev.target.name === 'privilege' && !ev.target.checked ) ||
+              $(ev.target).attr('name') === 'with_grant') {
+              ev.stopPropagation();
+              model.trigger('backgrid:edited', model, column, command);
+              return;
+            }
+          }
+        } else if (command.moveLeft() && ev.target.name === 'privilege' &&
+          $(ev.target).attr('privilege') === 'ALL') {
+          // If we are at the fist privilege then we should move to previous cell
+          ev.stopPropagation();
+          model.trigger('backgrid:edited', model, column, command);
+          return;
+        }
 
         /*
          * Between leaving the old element focus and entering the new element focus the
@@ -630,7 +666,6 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
             var m = self.model;
             m.trigger('backgrid:edited', m, self.column, new Backgrid.Command(ev));
           }},10);
-        return;
       },
     });
 
@@ -699,6 +734,30 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
           },10);
         }
       });
+    },
+
+    events: {
+      'click': 'enterEditMode',
+      'keydown': 'saveOrCancel',
+    },
+
+    saveOrCancel: function (e) {
+      var model = this.model;
+      var column = this.column;
+      var command = new Backgrid.Command(e);
+
+      if (command.moveUp() || command.moveDown() || command.moveLeft() || command.moveRight() ||
+        command.save()) {
+        e.preventDefault();
+        e.stopPropagation();
+        model.trigger('backgrid:edited', model, column, command);
+      }
+    // esc
+      else if (command.cancel()) {
+      // undo
+        e.stopPropagation();
+        model.trigger('backgrid:edited', model, column, command);
+      }
     },
   });
 
