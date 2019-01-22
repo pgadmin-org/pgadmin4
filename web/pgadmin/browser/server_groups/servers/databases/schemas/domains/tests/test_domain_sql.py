@@ -94,9 +94,10 @@ class DomainReverseEngineeredSQLTestCase(BaseTestGenerator):
         expected_sql = '-- DOMAIN: {0}.{1} -- DROP DOMAIN {0}.{1}; ' \
                        'CREATE DOMAIN {0}.{1} {2} ' \
                        'ALTER DOMAIN {0}.{1} OWNER' \
-                       ' TO postgres;'.format(self.schema_name,
-                                              self.domain_name,
-                                              self.domain_sql)
+                       ' TO {3};'.format(self.schema_name,
+                                         self.domain_name,
+                                         self.domain_sql,
+                                         self.server["username"])
 
         self.assertEquals(sql, expected_sql)
 
