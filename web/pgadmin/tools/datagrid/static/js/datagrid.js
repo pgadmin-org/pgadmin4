@@ -438,8 +438,8 @@ define('pgadmin.datagrid', [
               err.errormsg
             );
           } catch (e) {
-            alertify.alert(
-              e.statusText, gettext('Query Tool Initialize Error')
+            alertify.alert(gettext('Query Tool Initialize Error'),
+              e.statusText
             );
           }
         });
