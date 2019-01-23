@@ -311,18 +311,24 @@ int main(int argc, char * argv[])
             ConfigWindow *dlg = new ConfigWindow();
             dlg->setWindowTitle(QWidget::tr("Configuration"));
             dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
+            dlg->setFixedPort(settings.value("FixedPort").toBool());
+            dlg->setPortNumber(settings.value("PortNumber").toInt());
             dlg->setPythonPath(settings.value("PythonPath").toString());
             dlg->setApplicationPath(settings.value("ApplicationPath").toString());
             dlg->setModal(true);
             ok = dlg->exec();
 
             QString browsercommand = dlg->getBrowserCommand();
+            bool fixedport = dlg->getFixedPort();
+            int portnumber = dlg->getPortNumber();
             QString pythonpath = dlg->getPythonPath();
             QString applicationpath = dlg->getApplicationPath();
 
             if (ok)
             {
                 settings.setValue("BrowserCommand", browsercommand);
+                settings.setValue("FixedPort", fixedport);
+                settings.setValue("PortNumber", portnumber);
                 settings.setValue("PythonPath", pythonpath);
                 settings.setValue("ApplicationPath", applicationpath);
                 settings.sync();
