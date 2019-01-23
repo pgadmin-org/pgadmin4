@@ -35,6 +35,7 @@ let queryToolActions = {
       this._clearMessageTab();
       sqlEditorController.execute();
     } else {
+      this._clearMessageTab();
       sqlEditorController.execute_data_query();
     }
   },

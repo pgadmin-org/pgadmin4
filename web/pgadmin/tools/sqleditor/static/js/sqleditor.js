@@ -104,7 +104,6 @@ define('tools.querytool', [
       'click #btn-flash-menu': 'on_flash',
       'click #btn-cancel-query': 'on_cancel_query',
       'click #btn-download': 'on_download',
-      'click #btn-edit': 'on_clear',
       'click #btn-clear': 'on_clear',
       'click #btn-auto-commit': 'on_auto_commit',
       'click #btn-auto-rollback': 'on_auto_rollback',
@@ -3433,13 +3432,12 @@ define('tools.querytool', [
 
       // This function is used to enable/disable buttons
       disable_tool_buttons: function(disabled) {
-        $('#btn-clear').prop('disabled', disabled);
+        $('#btn-clear-dropdown').prop('disabled', disabled);
         $('#btn-query-dropdown').prop('disabled', disabled);
         $('#btn-explain').prop('disabled', disabled);
         $('#btn-explain-analyze').prop('disabled', disabled);
         $('#btn-explain-options-dropdown').prop('disabled', disabled);
         $('#btn-edit-dropdown').prop('disabled', disabled);
-        $('#btn-edit').prop('disabled', disabled);
         $('#btn-load-file').prop('disabled', disabled);
         if (this.is_query_tool) {
           // Cancel query tool needs opposite behaviour
