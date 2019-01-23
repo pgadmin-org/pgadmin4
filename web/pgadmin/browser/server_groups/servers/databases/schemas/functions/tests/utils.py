@@ -100,7 +100,7 @@ def verify_trigger_function(server, db_name, func_name):
 
 
 def create_procedure(server, db_name, schema_name, func_name, s_type,
-                     s_version):
+                     s_version, with_args=False, args=""):
     """This function add the procedure to schema"""
     try:
         connection = utils.get_db_connection(db_name,
@@ -111,22 +111,24 @@ def create_procedure(server, db_name, schema_name, func_name, s_type,
                                              server['sslmode'])
         pg_cursor = connection.cursor()
         if s_type == 'pg':
-            query = "CREATE PROCEDURE " + schema_name + "." + func_name + \
-                    "()" \
-                    " LANGUAGE 'sql'" \
-                    " SECURITY DEFINER AS $$" \
-                    " SELECT 1; $$;"
+                query = "CREATE PROCEDURE {0}.{1}" \
+                        "({2})" \
+                        " LANGUAGE 'sql'" \
+                        " SECURITY DEFINER AS $$" \
+                        " SELECT 1; $$;".format(schema_name, func_name, args)
         else:
             if s_version >= 90500:
-                query = "CREATE PROCEDURE " + schema_name + "." + func_name + \
-                        "()" \
+                query = "CREATE PROCEDURE {0}.{1}" \
+                        "({2})" \
                         " SECURITY DEFINER AS $BODY$ BEGIN" \
-                        " NULL; END; $BODY$"
+                        " NULL; END; $BODY$".format(schema_name, func_name,
+                                                    args)
             else:
-                query = "CREATE PROCEDURE " + schema_name + "." + func_name + \
-                        "()" \
+                query = "CREATE PROCEDURE {0}.{1}" \
+                        "({2})" \
                         " AS $BODY$ BEGIN" \
-                        " NULL; END; $BODY$"
+                        " NULL; END; $BODY$".format(schema_name, func_name,
+                                                    args)
 
         pg_cursor.execute(query)
         connection.commit()
@@ -220,3 +222,16 @@ def set_up(obj):
         raise Exception("Could not find the schema.")
 
     return obj
+
+
+def execute_procedure(server, db_name, proc_exec_sql):
+    """This function verifies the procedure in db"""
+    connection = utils.get_db_connection(db_name,
+                                         server['username'],
+                                         server['db_password'],
+                                         server['host'],
+                                         server['port'],
+                                         server['sslmode'])
+    pg_cursor = connection.cursor()
+    pg_cursor.execute(proc_exec_sql)
+    connection.close()

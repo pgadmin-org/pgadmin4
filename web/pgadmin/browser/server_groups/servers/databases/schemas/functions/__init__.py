@@ -1508,16 +1508,20 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         name = resp_data['pronamespace'] + "." + resp_data['name_with_args']
 
         # Fetch only arguments
-        args = name[name.rfind('('):].strip('(').strip(')').split(',')
-        # Remove unwanted spaces from arguments
-        args = [arg.strip(' ') for arg in args]
+        if name.rfind('(') != -1:
+            args = name[name.rfind('('):].strip('(').strip(')').split(',')
+            # Remove unwanted spaces from arguments
+            args = [arg.strip(' ') for arg in args]
 
-        # Remove duplicate and then format arguments
-        for arg in list(set(args)):
-            formatted_arg = '\n\t<' + arg + '>'
-            name = name.replace(arg, formatted_arg)
+            # Remove duplicate and then format arguments
+            for arg in list(set(args)):
+                formatted_arg = '\n\t<' + arg + '>'
+                name = name.replace(arg, formatted_arg)
 
-        name = name.replace(')', '\n)')
+            name = name.replace(')', '\n)')
+        else:
+            name += '()'
+
         if self.manager.server_type == 'pg':
             sql = "CALL {0}".format(name)
         else:
