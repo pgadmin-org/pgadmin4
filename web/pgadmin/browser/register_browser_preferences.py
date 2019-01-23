@@ -38,6 +38,16 @@ def register_browser_preferences(self):
         )
     )
 
+    self.preference.register(
+        'display', 'confirm_on_refresh_close',
+        gettext("Confirm on close or refresh ?"), 'boolean',
+        True, category_label=gettext('Display'),
+        help_str=gettext(
+            'Confirm closure or refresh of the browser or browser tab is '
+            'intended before proceeding.'
+        )
+    )
+
     self.table_row_count_threshold = self.preference.register(
         'properties', 'table_row_count_threshold',
         gettext("Count rows if estimated less than"), 'integer', 2000,

@@ -415,12 +415,9 @@ if __name__ == '__main__':
             test_utils.drop_database(connection, test_db_name)
             # Create database
             test_utils.create_database(server, test_db_name)
-
-            if server['default_binary_paths'] is not None:
-                test_utils.set_preference(server['default_binary_paths'])
-
-            # Disable tree state saving
-            test_utils.disable_tree_state_save()
+            # Configure preferences for the test cases
+            test_utils.configure_preferences(
+                default_binary_path=server['default_binary_paths'])
 
             suite = get_suite(test_module_list,
                               server,

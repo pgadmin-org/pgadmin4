@@ -26,6 +26,7 @@ Bug fixes
 | `Bug #3838 <https://redmine.postgresql.org/issues/3838>`_ - Proper SQL should be generated when creating/changing column with custom type argument.
 | `Bug #3840 <https://redmine.postgresql.org/issues/3840>`_ - Ensure that file format combo box value should be retained when hidden files checkbox is toggled.
 | `Bug #3846 <https://redmine.postgresql.org/issues/3846>`_ - Proper SQL should be generated when create procedure with custom type arguments.
+| `Bug #3849 <https://redmine.postgresql.org/issues/3849>`_ - Ensure that browser should warn before close or refresh.
 | `Bug #3853 <https://redmine.postgresql.org/issues/3853>`_ - Proper SQL should be generated when create domain of type interval with precision.
 | `Bug #3858 <https://redmine.postgresql.org/issues/3858>`_ - Drop-down should be closed when click on any other toolbar button.
 | `Bug #3862 <https://redmine.postgresql.org/issues/3862>`_ - Fixed keyboard navigation for dialog tabs.

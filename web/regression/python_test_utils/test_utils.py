@@ -646,58 +646,77 @@ def get_db_server(sid):
     return connection
 
 
-def set_preference(default_binary_path):
+def configure_preferences(default_binary_path=None):
     conn = sqlite3.connect(config.TEST_SQLITE_PATH)
     cur = conn.cursor()
-    perf = Preferences.module('paths')
-    server_types = default_binary_path.keys()
 
-    for server in server_types:
-        path_pref = perf.preference('{0}_bin_dir'.format(server))
-        user_pref = cur.execute(
-            'SELECT pid, uid FROM user_preferences '
-            'where pid=%s' % path_pref.pid
-        )
-
-        user_pref_data = user_pref.fetchone()
-        if user_pref_data:
-            cur.execute(
-                'UPDATE user_preferences SET value = ? WHERE pid = ?',
-                (default_binary_path[server], path_pref.pid)
-            )
-        else:
-            params = (path_pref.pid, 1, default_binary_path[server])
-            cur.execute(
-                'INSERT INTO user_preferences(pid, uid, value)'
-                ' VALUES (?,?,?)', params
+    if default_binary_path is not None:
+        paths_pref = Preferences.module('paths')
+        server_types = default_binary_path.keys()
+        for server in server_types:
+            pref_bin_path = paths_pref.preference('{0}_bin_dir'.format(server))
+            user_pref = cur.execute(
+                'SELECT pid, uid FROM user_preferences '
+                'where pid=%s' % pref_bin_path.pid
             )
 
-    conn.commit()
-    conn.close()
+            user_pref_data = user_pref.fetchone()
+            if user_pref_data:
+                cur.execute(
+                    'UPDATE user_preferences SET value = ? WHERE pid = ?',
+                    (default_binary_path[server], pref_bin_path.pid)
+                )
+            else:
+                params = (pref_bin_path.pid, 1, default_binary_path[server])
+                cur.execute(
+                    'INSERT INTO user_preferences(pid, uid, value)'
+                    ' VALUES (?,?,?)', params
+                )
 
+    browser_pref = Preferences.module('browser')
 
-def disable_tree_state_save():
-    conn = sqlite3.connect(config.TEST_SQLITE_PATH)
-    cur = conn.cursor()
-    pref = Preferences.module('browser')\
-        .preference('browser_tree_state_save_interval')
+    # Disable tree state save for tests
+    pref_tree_state_save_interval = \
+        browser_pref.preference('browser_tree_state_save_interval')
 
     user_pref = cur.execute(
         'SELECT pid, uid FROM user_preferences '
-        'where pid=?', (pref.pid,)
+        'where pid=?', (pref_tree_state_save_interval.pid,)
     )
 
     if len(user_pref.fetchall()) == 0:
         cur.execute(
             'INSERT INTO user_preferences(pid, uid, value)'
-            ' VALUES (?,?,?)', (pref.pid, 1, -1)
+            ' VALUES (?,?,?)', (pref_tree_state_save_interval.pid, 1, -1)
         )
     else:
         cur.execute(
             'UPDATE user_preferences'
             ' SET VALUE = ?'
-            ' WHERE PID = ?', (-1, pref.pid)
+            ' WHERE PID = ?', (-1, pref_tree_state_save_interval.pid)
         )
+
+    # Disable reload warning on browser
+    pref_confirm_on_refresh_close = \
+        browser_pref.preference('confirm_on_refresh_close')
+
+    user_pref = cur.execute(
+        'SELECT pid, uid FROM user_preferences '
+        'where pid=?', (pref_confirm_on_refresh_close.pid,)
+    )
+
+    if len(user_pref.fetchall()) == 0:
+        cur.execute(
+            'INSERT INTO user_preferences(pid, uid, value)'
+            ' VALUES (?,?,?)', (pref_confirm_on_refresh_close.pid, 1, 'False')
+        )
+    else:
+        cur.execute(
+            'UPDATE user_preferences'
+            ' SET VALUE = ?'
+            ' WHERE PID = ?', ('False', pref_confirm_on_refresh_close.pid)
+        )
+
     conn.commit()
     conn.close()
 
