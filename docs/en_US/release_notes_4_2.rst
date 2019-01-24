@@ -38,3 +38,4 @@ Bug fixes
 | `Bug #3891 <https://redmine.postgresql.org/issues/3891>`_ - Correct order of Save and Cancel button for json/jsonb editing.
 | `Bug #3897 <https://redmine.postgresql.org/issues/3897>`_ - Data should be updated properly for FTS Configurations, FTS Dictionaries, FTS Parsers and FTS Templates.
 | `Bug #3908 <https://redmine.postgresql.org/issues/3908>`_ - Fixed keyboard navigation for Select2 and Privilege cell in Backgrid.
+| `Bug #3929 <https://redmine.postgresql.org/issues/3929>`_ - Fix alignment of help messages in properties panels.

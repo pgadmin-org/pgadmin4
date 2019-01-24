@@ -163,10 +163,10 @@ define([
       '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled readonly" : ""%>>',
       '    <%-value%>',
       '  </span>',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
       '</div>',
-      '<% if (helpMessage && helpMessage.length) { %>',
-      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '<% } %>',
     ].join('\n')),
 
     clearInvalid: function() {
