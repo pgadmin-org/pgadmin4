@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+from __future__ import print_function
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from selenium.webdriver import ActionChains
