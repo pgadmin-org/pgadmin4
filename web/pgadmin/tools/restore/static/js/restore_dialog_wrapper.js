@@ -99,7 +99,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
 
     this.elements.content.appendChild($container.get(0));
 
-    this.focusOnDialog(dialog);
+    this.focusOnDialog(this);
     this.setListenersForFilenameChanges();
   }
 

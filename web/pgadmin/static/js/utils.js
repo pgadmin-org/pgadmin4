@@ -28,7 +28,7 @@ export function findAndSetFocus(container) {
 
     if (first_el.length == 0) {
       first_el = container
-        .find('.pgadmin-controls:first>input:enabled,.CodeMirror-scroll');
+        .find('.pgadmin-controls:first input:enabled,.CodeMirror-scroll');
     }
 
     if(first_el.length > 0) {

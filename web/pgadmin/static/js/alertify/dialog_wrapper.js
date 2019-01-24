@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import * as commonUtils from '../utils';
+import $ from 'jquery';
 
 export class DialogWrapper {
   constructor(
@@ -53,11 +54,20 @@ export class DialogWrapper {
     return undefined;
   }
 
-  focusOnDialog(dialog) {
-    dialog.$el.attr('tabindex', -1);
-    this.pgBrowser.keyboardNavigation.getDialogTabNavigator(dialog);
-    const container = dialog.$el.find('.tab-content:first > .tab-pane.active:first');
+  focusOnDialog(alertifyDialog) {
+    let backform_tab = $(alertifyDialog.elements.body).find('.backform-tab');
+    backform_tab.attr('tabindex', -1);
+    this.pgBrowser.keyboardNavigation.getDialogTabNavigator($(alertifyDialog.elements.dialog));
+    const container = backform_tab.find('.tab-content:first > .tab-pane.active:first');
     commonUtils.findAndSetFocus(container);
+
+    $(alertifyDialog.elements.footer).on('keydown', 'button', function(event) {
+      if (event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
+        // set focus back to first editable input element of current active tab once we cycle through all enabled buttons.
+        commonUtils.findAndSetFocus($(alertifyDialog.elements.body).find('.tab-content div.active'));
+        return false;
+      }
+    });
   }
 
   isNodeSelected(selectedTreeNode) {
