@@ -34,6 +34,7 @@ Bug fixes
 | `Bug #3858 <https://redmine.postgresql.org/issues/3858>`_ - Drop-down should be closed when click on any other toolbar button.
 | `Bug #3862 <https://redmine.postgresql.org/issues/3862>`_ - Fixed keyboard navigation for dialog tabs.
 | `Bug #3871 <https://redmine.postgresql.org/issues/3871>`_ - Fixed alignment of tree arrow icons for Internet Explorer.
+| `Bug #3872 <https://redmine.postgresql.org/issues/3872>`_ - Ensure object names in external process dialogues are properly escaped.
 | `Bug #3891 <https://redmine.postgresql.org/issues/3891>`_ - Correct order of Save and Cancel button for json/jsonb editing.
 | `Bug #3897 <https://redmine.postgresql.org/issues/3897>`_ - Data should be updated properly for FTS Configurations, FTS Dictionaries, FTS Parsers and FTS Templates.
 | `Bug #3908 <https://redmine.postgresql.org/issues/3908>`_ - Fixed keyboard navigation for Select2 and Privilege cell in Backgrid.

@@ -623,10 +623,10 @@ WHERE
                     # "unicode_escape" will convert single backslash to double
                     # backslash, so we will have to replace/revert them again
                     # to store the correct value into the database.
-                    # if isinstance(val, six.string_types):
-                    #     modified_val = val.encode('unicode_escape')\
-                    #         .decode('raw_unicode_escape')\
-                    #         .replace("\\\\", "\\")
+                    if isinstance(val, six.string_types):
+                        modified_val = val.encode('unicode_escape')\
+                            .decode('raw_unicode_escape')\
+                            .replace("\\\\", "\\")
 
                     params[key] = modified_val
 

@@ -83,7 +83,6 @@ class IEMessage(IProcessDesc):
 
         def cmdArg(x):
             if x:
-                x = html.safe_str(x)
                 x = x.replace('\\', '\\\\')
                 x = x.replace('"', '\\"')
                 x = x.replace('""', '\\"')
@@ -116,7 +115,11 @@ class IEMessage(IProcessDesc):
             "Copying table data '{0}.{1}' on database '{2}' "
             "and server ({3}:{4})"
         ).format(
-            self.schema, self.table, self.database, s.host, s.port
+            html.safe_str(self.schema),
+            html.safe_str(self.table),
+            html.safe_str(self.database),
+            html.safe_str(s.host),
+            html.safe_str(s.port)
         )
 
     @property

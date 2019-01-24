@@ -73,7 +73,6 @@ class RestoreMessage(IProcessDesc):
 
         def cmdArg(x):
             if x:
-                x = html.safe_str(x)
                 x = x.replace('\\', '\\\\')
                 x = x.replace('"', '\\"')
                 x = x.replace('""', '\\"')
@@ -106,7 +105,11 @@ class RestoreMessage(IProcessDesc):
         name, host, port = self.get_server_details()
 
         return _("Restoring backup on the server '{0}'").format(
-            "{0} ({1}:{2})".format(name, host, port),
+            "{0} ({1}:{2})".format(
+                html.safe_str(name),
+                html.safe_str(host),
+                html.safe_str(port)
+            ),
         )
 
     @property

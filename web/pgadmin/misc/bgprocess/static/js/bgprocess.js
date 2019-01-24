@@ -292,13 +292,13 @@ define('misc.bgprocess', [
             let content = $(`
             <div class="card">
               <div class="card-header bg-primary d-flex">
-                <div>${_.escape(self.type_desc)}</div>
+                <div>${self.type_desc}</div>
                 <div class="ml-auto">
                   <button class="btn btn-sm-sq btn-primary pg-bg-close"><i class="fa fa-lg fa-close"></i></button>
                 </div>
               </div>
               <div class="card-body px-2">
-                <div class="py-1">${_.unescape(self.desc)}</div>
+                <div class="py-1">${self.desc}</div>
                 <div class="py-1">${self.stime.toString()}</div>
                 <div class="d-flex py-1">
                   <div class="my-auto mr-2">
@@ -388,8 +388,7 @@ define('misc.bgprocess', [
           is_new = true;
           panel = this.panel =
             pgBrowser.BackgroundProcessObsorver.create_panel();
-
-          panel.title('Process Watcher - ' + _.escape(self.type_desc));
+          panel.title('Process Watcher - ' + self.type_desc);
           panel.focus();
         }
 
@@ -416,7 +415,7 @@ define('misc.bgprocess', [
             self.logs[0].scrollTop = self.logs[0].scrollHeight;
           });
           // set bgprocess detailed description
-          $header.find('.bg-detailed-desc').html(_.unescape(self.detailed_desc));
+          $header.find('.bg-detailed-desc').html(self.detailed_desc);
         }
 
         // set bgprocess start time

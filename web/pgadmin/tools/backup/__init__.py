@@ -140,6 +140,9 @@ class BackupMessage(IProcessDesc):
     @property
     def message(self):
         name, host, port = self.get_server_details()
+        name = html.safe_str(name)
+        host = html.safe_str(host)
+        port = html.safe_str(port)
 
         if self.backup_type == BACKUP.OBJECT:
             return _(
@@ -149,7 +152,7 @@ class BackupMessage(IProcessDesc):
                 "{0} ({1}:{2})".format(
                     name, host, port
                 ),
-                self.database
+                html.safe_str(self.database)
             )
         if self.backup_type == BACKUP.GLOBALS:
             return _("Backing up the global objects on "
@@ -174,34 +177,31 @@ class BackupMessage(IProcessDesc):
         res = '<div>'
 
         if self.backup_type == BACKUP.OBJECT:
-            res += _(
+            msg = _(
                 "Backing up an object on the server '{0}' "
                 "from database '{1}'..."
             ).format(
                 "{0} ({1}:{2})".format(
-                    html.safe_str(name),
-                    html.safe_str(host),
-                    html.safe_str(port),
+                    name, host, port
                 ),
-                html.safe_str(self.database)
+                self.database
             )
+            res += html.safe_str(msg)
         elif self.backup_type == BACKUP.GLOBALS:
-            res += _("Backing up the global objects on "
-                     "the server '{0}'...").format(
+            msg = _("Backing up the global objects on "
+                    "the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
-                    html.safe_str(name),
-                    html.safe_str(host),
-                    html.safe_str(port)
+                    name, host, port
                 )
             )
+            res += html.safe_str(msg)
         elif self.backup_type == BACKUP.SERVER:
-            res += _("Backing up the server '{0}'...").format(
+            msg = _("Backing up the server '{0}'...").format(
                 "{0} ({1}:{2})".format(
-                    html.safe_str(name),
-                    html.safe_str(host),
-                    html.safe_str(port)
+                    name, host, port
                 )
             )
+            res += html.safe_str(msg)
         else:
             # It should never reach here.
             res += "Backup"

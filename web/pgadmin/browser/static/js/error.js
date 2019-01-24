@@ -14,7 +14,10 @@ function(gettext, _, alertify, pgAdmin) {
 
   _.extend(pgAdmin.Browser, {
     report_error: function(title, message, info) {
-      var text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
+      title = _.escape(title);
+      message = _.escape(message);
+      info = _.escape(info);
+      let text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
            <div class="panel panel-default">\
            <div class="panel-heading" role="tab" id="headingOne">\
            <h4 class="panel-title">\
@@ -23,7 +26,7 @@ function(gettext, _, alertify, pgAdmin) {
         </h4>\
         </div>\
         <div id="collapseOne" class="panel-collapse collapse show" role="tabpanel" aria-labelledby="headingOne">\
-        <div class="panel-body" style="overflow: auto;">' + unescape(message) + '</div>\
+        <div class="panel-body" style="overflow: auto;">' + message + '</div>\
         </div>\
         </div>';
 
@@ -36,7 +39,7 @@ function(gettext, _, alertify, pgAdmin) {
           </h4>\
           </div>\
           <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">\
-          <div class="panel-body" style="overflow: auto;">' + unescape(info) + '</div>\
+          <div class="panel-body" style="overflow: auto;">' + info + '</div>\
           </div>\
           </div>\
           </div>';

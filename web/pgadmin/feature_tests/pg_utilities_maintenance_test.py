@@ -22,12 +22,20 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         ("Test for PG maintenance: database", dict(
             database_name='pg_maintenance',
             table_name='pg_maintenance_table',
-            test_level='database'
+            test_level='database',
+            is_xss_check=False,
         )),
         ("Test for PG maintenance: table", dict(
             database_name='pg_maintenance',
             table_name='pg_maintenance_table',
-            test_level='table'
+            test_level='table',
+            is_xss_check=False,
+        )),
+        ("Test for XSS in maintenance dialog", dict(
+            database_name='pg_maintenance',
+            table_name='<h1>test_me</h1>',
+            test_level='table',
+            is_xss_check=True,
         )),
     ]
 
@@ -85,6 +93,16 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             self.assertEquals(command, "VACUUM "
                                        "(VERBOSE)\nRunning Query:"
                                        "\nVACUUM VERBOSE;")
+        elif self.is_xss_check and self.test_level == 'table':
+            # Check for XSS in the dialog
+            source_code = self.page.find_by_css_selector(
+                ".bg-process-details .bg-detailed-desc"
+            ).get_attribute('innerHTML')
+            self._check_escaped_characters(
+                source_code,
+                '&lt;h1&gt;test_me&lt;/h1&gt;',
+                'Maintenance detailed window'
+            )
         else:
             self.assertEquals(command, "VACUUM "
                                        "(VERBOSE)\nRunning Query:"
@@ -106,3 +124,8 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             self.server['sslmode']
         )
         test_utils.drop_database(connection, self.database_name)
+
+    def _check_escaped_characters(self, source_code, string_to_find, source):
+        # For XSS we need to search against element's html code
+        assert source_code.find(string_to_find) != - \
+            1, "{0} might be vulnerable to XSS ".format(source)
