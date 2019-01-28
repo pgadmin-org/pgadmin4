@@ -27,8 +27,14 @@ fi
 # NOTE: currently pgadmin can run only with 1 worker due to sessions implementation
 # Using --threads to have multi-threaded single-process worker
 
-if [ ! -z ${PGADMIN_ENABLE_TLS} ]; then
-    exec gunicorn --bind [::]:${PGADMIN_LISTEN_PORT:-443} -w 1 --threads ${GUNICORN_THREADS:-25} --access-logfile - --keyfile /certs/server.key --certfile /certs/server.cert run_pgadmin:app
+if [ ! -z ${PGADMIN_USE_IPV4} ]; then
+    BIND_ADDRESS=[::]
 else
-    exec gunicorn --bind [::]:${PGADMIN_LISTEN_PORT:-80} -w 1 --threads ${GUNICORN_THREADS:-25} --access-logfile - run_pgadmin:app
+    BIND_ADDRESS=0.0.0.0
+fi
+
+if [ ! -z ${PGADMIN_ENABLE_TLS} ]; then
+    exec gunicorn --bind ${BIND_ADDRESS}:${PGADMIN_LISTEN_PORT:-443} -w 1 --threads ${GUNICORN_THREADS:-25} --access-logfile - --keyfile /certs/server.key --certfile /certs/server.cert run_pgadmin:app
+else
+    exec gunicorn --bind ${BIND_ADDRESS}:${PGADMIN_LISTEN_PORT:-80} -w 1 --threads ${GUNICORN_THREADS:-25} --access-logfile - run_pgadmin:app
 fi

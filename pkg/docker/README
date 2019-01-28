@@ -47,6 +47,14 @@ The expected paths are `/certs/server.crt` and `/certs/server.key`.
 
 You need to explicitly map these ports with `-p` option to some port at your machine.
 
+PGADMIN_USE_IPV4
+----------------
+
+Default: unset
+
+If not set, the container will try to bind the daemon to a IPV6 address,
+which would result in an error if no IPV6 network is configured on the host system.
+
 Examples
 ========
 
@@ -69,5 +77,15 @@ docker run -p 443:8443 \
            -e "PGADMIN_SETUP_EMAIL=user@domain.com" \
            -e "PGADMIN_SETUP_PASSWORD=SuperSecret" \
            -e "PGADMIN_ENABLE_TLS=1" \
+           -d pgadmin4
+```
+
+Run a simple container with IPV4-binding enabled:
+
+```console
+docker run -p 80:8080 \
+           -e "PGADMIN_SETUP_EMAIL=user@domain.com" \
+           -e "PGADMIN_SETUP_PASSWORD=SuperSecret" \
+           -e "PGADMIN_USE_IPV4=1" \
            -d pgadmin4
 ```
