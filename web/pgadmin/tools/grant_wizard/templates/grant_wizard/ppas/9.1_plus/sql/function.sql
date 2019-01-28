@@ -19,7 +19,7 @@ LEFT OUTER JOIN pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_pr
 WHERE
     proisagg = FALSE AND pronamespace = {{ node_id }}::oid
     AND typname {{ 'NOT' if type != 'trigger_function' else '' }} IN ('trigger', 'event_trigger')
-    AND pr.protype = {{ 0 if type != 'procedure' else 1 }}
+    AND pr.protype = {{'0' if type != 'procedure' else '1'}}::char
 ORDER BY
     proname
 {% endif %}
