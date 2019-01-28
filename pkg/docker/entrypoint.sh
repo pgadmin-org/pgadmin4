@@ -28,9 +28,9 @@ fi
 # Using --threads to have multi-threaded single-process worker
 
 if [ ! -z ${PGADMIN_USE_IPV4} ]; then
-    BIND_ADDRESS=[::]
-else
     BIND_ADDRESS=0.0.0.0
+else
+    BIND_ADDRESS=[::]
 fi
 
 if [ ! -z ${PGADMIN_ENABLE_TLS} ]; then
