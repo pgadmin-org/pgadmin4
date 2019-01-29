@@ -37,6 +37,7 @@ Bug fixes
 | `Bug #3872 <https://redmine.postgresql.org/issues/3872>`_ - Ensure object names in external process dialogues are properly escaped.
 | `Bug #3891 <https://redmine.postgresql.org/issues/3891>`_ - Correct order of Save and Cancel button for json/jsonb editing.
 | `Bug #3897 <https://redmine.postgresql.org/issues/3897>`_ - Data should be updated properly for FTS Configurations, FTS Dictionaries, FTS Parsers and FTS Templates.
+| `Bug #3903 <https://redmine.postgresql.org/issues/3903>`_ - Fixed Query Tool Initialization Error.
 | `Bug #3908 <https://redmine.postgresql.org/issues/3908>`_ - Fixed keyboard navigation for Select2 and Privilege cell in Backgrid.
 | `Bug #3929 <https://redmine.postgresql.org/issues/3929>`_ - Fix alignment of help messages in properties panels.
 | `Bug #3935 <https://redmine.postgresql.org/issues/3935>`_ - Ensure that grant wizard should list down functions for EPAS server running with no-redwood-compat mode.

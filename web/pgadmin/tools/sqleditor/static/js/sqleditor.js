@@ -96,7 +96,6 @@ define('tools.querytool', [
       'click #btn-include-filter': 'on_include_filter',
       'click #btn-exclude-filter': 'on_exclude_filter',
       'click #btn-remove-filter': 'on_remove_filter',
-      'click #btn-apply': 'on_apply',
       'click #btn-cancel': 'on_cancel',
       'click #btn-copy-row': 'on_copy_row',
       'click #btn-paste-row': 'on_paste_row',
@@ -1475,18 +1474,6 @@ define('tools.querytool', [
       );
     },
 
-    // Callback function for ok button click.
-    on_apply: function() {
-      var self = this;
-
-      // Trigger the apply_filter signal to the SqlEditorController class
-      self.handler.trigger(
-        'pgadmin-sqleditor:button:apply_filter',
-        self,
-        self.handler
-      );
-    },
-
     // Callback function for cancel button click.
     on_cancel: function() {
       $('#filter').addClass('d-none');
@@ -2084,7 +2071,6 @@ define('tools.querytool', [
         self.on('pgadmin-sqleditor:button:include_filter', self._include_filter, self);
         self.on('pgadmin-sqleditor:button:exclude_filter', self._exclude_filter, self);
         self.on('pgadmin-sqleditor:button:remove_filter', self._remove_filter, self);
-        self.on('pgadmin-sqleditor:button:apply_filter', self._apply_filter, self);
         self.on('pgadmin-sqleditor:button:copy_row', self._copy_row, self);
         self.on('pgadmin-sqleditor:button:paste_row', self._paste_row, self);
         self.on('pgadmin-sqleditor:button:limit', self._set_limit, self);
@@ -3261,49 +3247,6 @@ define('tools.querytool', [
             pgAdmin, self, e, '_remove_filter', [], true
           );
           alertify.alert(gettext('Remove Filter Error'), msg);
-        });
-      },
-
-      // This function will apply the filter.
-      _apply_filter: function() {
-        var self = this,
-          sql = self.gridView.filter_obj.getValue();
-
-        self.trigger(
-          'pgadmin-sqleditor:loading-icon:show',
-          gettext('Applying the filter...')
-        );
-
-        // Make ajax call to include the filter by selection
-        $.ajax({
-          url: url_for('sqleditor.apply_filter', {
-            'trans_id': self.transId,
-          }),
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(sql),
-        })
-        .done(function(res) {
-          self.trigger('pgadmin-sqleditor:loading-icon:hide');
-          setTimeout(
-            function() {
-              if (res.data.status) {
-                $('#filter').addClass('d-none');
-                $('#editor-panel').removeClass('sql-editor-busy-fetching');
-                // Refresh the sql grid
-                queryToolActions.executeQuery(self);
-              } else {
-                alertify.alert(gettext('Apply Filter Error'), res.data.result);
-              }
-            }, 10
-          );
-        })
-        .fail(function(e) {
-          self.trigger('pgadmin-sqleditor:loading-icon:hide');
-          let msg = httpErrorHandler.handleQueryToolAjaxError(
-            pgAdmin, self, e, '_apply_filter', [], true
-          );
-          alertify.alert(gettext('Apply Filter Error'), msg);
         });
       },
 

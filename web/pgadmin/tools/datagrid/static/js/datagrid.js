@@ -407,11 +407,20 @@ define('pgadmin.datagrid', [
         if (recreate) {
           baseUrl += '?recreate=1';
         }
+
+        /* Send the data only if required. Sending non required data may
+         * cause connection reset error if data is not read by flask server
+         */
+        let reqData = null;
+        if(sql_filter != '') {
+          reqData = JSON.stringify(sql_filter);
+        }
+
         $.ajax({
           url: baseUrl,
           method: 'POST',
           dataType: 'json',
-          data: JSON.stringify(sql_filter),
+          data: reqData,
           contentType: 'application/json',
         })
         .done(function(res) {

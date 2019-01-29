@@ -306,8 +306,15 @@ def initialize_query_tool(sgid, sid, did=None):
         did: Database Id
     """
     connect = True
-    if ('recreate' in request.args and
-            request.args['recreate'] == '1'):
+    reqArgs = None
+    # Read the data if present. Skipping read may cause connection
+    # reset error if data is sent from the client
+    if request.data:
+        reqArgs = request.data
+
+    reqArgs = request.args
+    if ('recreate' in reqArgs and
+            reqArgs['recreate'] == '1'):
         connect = False
     # Create asynchronous connection using random connection id.
     conn_id = str(random.randint(1, 9999999))
