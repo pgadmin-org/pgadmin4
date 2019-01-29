@@ -801,7 +801,7 @@ define('tools.querytool', [
         autoEdit: false,
       };
 
-      var $data_grid = self.$el.find('#datagrid');
+      var $data_grid = $('#datagrid');
       // Calculate height based on panel size at runtime & set it
       var grid_height = $($('#editor-panel').find('.wcFrame')[1]).height() - 35;
       $data_grid.height(grid_height);

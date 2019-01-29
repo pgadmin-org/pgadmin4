@@ -20,6 +20,7 @@ Bug fixes
 | `Bug #3609 <https://redmine.postgresql.org/issues/3609>`_ - Clear drop-down menu should be disabled for View/Edit Data.
 | `Bug #3693 <https://redmine.postgresql.org/issues/3693>`_ - Proper error should be thrown when server group is created with existing name.
 | `Bug #3695 <https://redmine.postgresql.org/issues/3695>`_ - Ensure long string should be wrap in alertify dialogs.
+| `Bug #3697 <https://redmine.postgresql.org/issues/3697>`_ - Ensure that output of the query should be displayed even if Data Output window is detached from the Query Tool.
 | `Bug #3740 <https://redmine.postgresql.org/issues/3740>`_ - Inline edbspl trigger functions should not be visible in Grant Wizard.
 | `Bug #3774 <https://redmine.postgresql.org/issues/3774>`_ - Proper SQL should be generated when create function with return type as custom type argument.
 | `Bug #3800 <https://redmine.postgresql.org/issues/3800>`_ - Ensure that database restriction of server dialog should work with special characters.
