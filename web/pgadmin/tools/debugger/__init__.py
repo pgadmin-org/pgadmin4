@@ -13,6 +13,7 @@ MODULE_NAME = 'debugger'
 
 import simplejson as json
 import random
+import re
 
 from flask import url_for, Response, render_template, request, session, \
     current_app
@@ -1301,20 +1302,16 @@ def messages(trans_id):
             # From the above message we need to find out port number
             # as "7" so below logic will find 7 as port number
             # and attach listened to that port number
-            offset = notify[0].find('PLDBGBREAK')
-            str_len = len('PLDBGBREAK')
-            str_len += 1
-            tmpOffset = 0
-            tmpFlag = False
+            port_found = False
+            tmp_list = list(filter(lambda x: 'PLDBGBREAK' in x, notify))
+            if len(tmp_list) > 0:
+                port_number = re.search(r'\d+', tmp_list[0])
+                if port_number is not None:
+                    status = 'Success'
+                    port_number = port_number.group(0)
+                    port_found = True
 
-            while notify[0][offset + str_len + tmpOffset].isdigit():
-                status = 'Success'
-                tmpFlag = True
-                port_number = port_number + \
-                    notify[0][offset + str_len + tmpOffset]
-                tmpOffset += 1
-
-            if not tmpFlag:
+            if not port_found:
                 status = 'Busy'
         else:
             status = 'Busy'

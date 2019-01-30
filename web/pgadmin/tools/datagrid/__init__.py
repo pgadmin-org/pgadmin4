@@ -409,6 +409,7 @@ def close(trans_id):
 
         # Release the connection
         if conn.connected():
+            conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
             manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
 
         # Remove the information of unique transaction id from the
