@@ -608,9 +608,28 @@ define([
               $('.wizard-progress-bar p').show();
 
               coll.fetch({
-                success: function() {
+                success: function(c, xhr) {
                   $('.wizard-progress-bar p').html('');
                   $('.wizard-progress-bar').hide();
+                  c.set(xhr.result, {parse: true});
+                  // If some objects failed while fetching then we will notify the user
+                  if (xhr && xhr.info && xhr.info !== '') {
+                    $('.pg-prop-status-bar .alert-text').html(xhr.info);
+                    $('.pg-prop-status-bar').css('visibility', 'visible');
+                  }
+                },
+                error: function(m, xhr) {
+                  // If the main request fails as whole then
+                  let msg;
+                  if (xhr && xhr.responseJSON && xhr.responseJSON.errormsg) {
+                    msg = xhr.responseJSON.errormsg;
+                  }
+
+                  if(!msg) {
+                    msg = gettext('Unable to fetch the database objects due to an error');
+                  }
+                  $('.wizard-progress-bar p').removeClass('alert-info').addClass('alert-danger');
+                  $('.wizard-progress-bar p').text(msg);
                 },
                 reset: true,
               }, this);

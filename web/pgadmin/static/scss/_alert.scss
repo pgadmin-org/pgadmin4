@@ -21,7 +21,8 @@
   display: inline-block;
 }
 
-.alert.alert-info {
+.alert.alert-info,
+.alert.alert-danger {
   padding: 0.5rem;
 }
 

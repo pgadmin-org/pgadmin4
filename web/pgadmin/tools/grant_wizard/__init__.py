@@ -191,6 +191,7 @@ def properties(sid, did, node_id, node_type):
     server_prop = server_info
 
     res_data = []
+    failed_objects = []
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
     conn = manager.connection(did=did)
 
@@ -231,11 +232,11 @@ def properties(sid, did, node_id, node_type):
                 node_id=node_id, type='function')
 
             status, res = conn.execute_dict(SQL)
-
             if not status:
-                return internal_server_error(errormsg=res)
-
-            res_data.extend(res['rows'])
+                current_app.logger.error(res)
+                failed_objects.append('function')
+            else:
+                res_data.extend(res['rows'])
 
         # Fetch procedures only if server type is EPAS or PG >= 11
         if (len(server_prop) > 0 and
@@ -250,9 +251,10 @@ def properties(sid, did, node_id, node_type):
             status, res = conn.execute_dict(SQL)
 
             if not status:
-                return internal_server_error(errormsg=res)
-
-            res_data.extend(res['rows'])
+                current_app.logger.error(res)
+                failed_objects.append('procedure')
+            else:
+                res_data.extend(res['rows'])
 
         # Fetch trigger functions
         if ntype in ['schema', 'trigger_function']:
@@ -262,9 +264,10 @@ def properties(sid, did, node_id, node_type):
             status, res = conn.execute_dict(SQL)
 
             if not status:
-                return internal_server_error(errormsg=res)
-
-            res_data.extend(res['rows'])
+                current_app.logger.error(res)
+                failed_objects.append('trigger function')
+            else:
+                res_data.extend(res['rows'])
 
         # Fetch Sequences against schema
         if ntype in ['schema', 'sequence']:
@@ -274,8 +277,10 @@ def properties(sid, did, node_id, node_type):
 
             status, res = conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
-            res_data.extend(res['rows'])
+                current_app.logger.error(res)
+                failed_objects.append('sequence')
+            else:
+                res_data.extend(res['rows'])
 
         # Fetch Tables against schema
         if ntype in ['schema', 'table']:
@@ -285,9 +290,10 @@ def properties(sid, did, node_id, node_type):
 
             status, res = conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
-
-            res_data.extend(res['rows'])
+                current_app.logger.error(res)
+                failed_objects.append('table')
+            else:
+                res_data.extend(res['rows'])
 
         # Fetch Views against schema
         if ntype in ['schema', 'view']:
@@ -297,9 +303,10 @@ def properties(sid, did, node_id, node_type):
 
             status, res = conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
-
-            res_data.extend(res['rows'])
+                current_app.logger.error(res)
+                failed_objects.append('view')
+            else:
+                res_data.extend(res['rows'])
 
         # Fetch Materialzed Views against schema
         if ntype in ['schema', 'mview']:
@@ -309,12 +316,20 @@ def properties(sid, did, node_id, node_type):
 
             status, res = conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                current_app.logger.error(res)
+                failed_objects.append('materialized view')
+            else:
+                res_data.extend(res['rows'])
 
-            res_data.extend(res['rows'])
+    msg = None
+    if len(failed_objects) > 0:
+        msg = gettext('Unable to fetch the {} objects'.format(
+            ", ".join(failed_objects))
+        )
 
-    return ajax_response(
-        response=res_data,
+    return make_json_response(
+        result=res_data,
+        info=msg,
         status=200
     )
 
