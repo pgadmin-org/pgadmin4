@@ -34,6 +34,7 @@ Bug fixes
 | `Bug #3853 <https://redmine.postgresql.org/issues/3853>`_ - Proper SQL should be generated when create domain of type interval with precision.
 | `Bug #3858 <https://redmine.postgresql.org/issues/3858>`_ - Drop-down should be closed when click on any other toolbar button.
 | `Bug #3862 <https://redmine.postgresql.org/issues/3862>`_ - Fixed keyboard navigation for dialog tabs.
+| `Bug #3865 <https://redmine.postgresql.org/issues/3865>`_ - Increase frames splitter mouse hover area to make it easier to resize.
 | `Bug #3871 <https://redmine.postgresql.org/issues/3871>`_ - Fixed alignment of tree arrow icons for Internet Explorer.
 | `Bug #3872 <https://redmine.postgresql.org/issues/3872>`_ - Ensure object names in external process dialogues are properly escaped.
 | `Bug #3891 <https://redmine.postgresql.org/issues/3891>`_ - Correct order of Save and Cancel button for json/jsonb editing.

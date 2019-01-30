@@ -156,6 +156,9 @@ $footer-padding: 0.5rem;
 $footer-min-height: 2rem;
 $footer-height-calc: $footer-min-height+$footer-padding*2;
 
+// ($splitter-hover-width - $panel-border-width) should be even number to split evenly.
+$splitter-hover-width: 7px;
+
 $navbar-brand-bg: #222222; //place image url if image
 $navbar-brand-arrow-bg: #222222;
 $navbar-color-bg: $color-primary;

@@ -207,17 +207,25 @@
 }
 
 
-.wcSplitterBar {
+.wcSplitterBarLine {
   background-color: $panel-border-color;
   border: none;
 }
 
 .wcSplitterBarV {
-  width: $panel-border-width;
+  width: $splitter-hover-width;
+
+  & .wcSplitterBarLine {
+    width: $panel-border-width;
+  }
 }
 
 .wcSplitterBarH {
-  height: $panel-border-width;
+  height: $splitter-hover-width;
+
+  & .wcSplitterBarLine {
+    height: $panel-border-width;
+  }
 }
 
 .wcSplitterBarV.wcSplitterBarStatic {
