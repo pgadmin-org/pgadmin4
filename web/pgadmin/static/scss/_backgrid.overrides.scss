@@ -4,6 +4,12 @@
   line-height: $line-height-base;
 }
 
+.backgrid.table th.sortable > button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
 .backgrid.backgrid-striped tbody {
   & tr:nth-child(even) {
     background: $table-bg;
