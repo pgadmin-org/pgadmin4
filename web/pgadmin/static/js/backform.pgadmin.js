@@ -42,6 +42,7 @@ define([
     accordianContentClassName: 'accordian-content pg-el-12',
     hiddenClassName: 'd-none',
     helpMessageClassName: 'form-text text-muted help-block',
+    helpBlockControlClass: 'pgadmin-controls offset-sm-3 pg-el-sm-9 pg-el-12',
   });
 
   Backform.controlMapper = {
@@ -2502,10 +2503,12 @@ define([
         ' <div class="input-group-append">',
         '   <span class="input-group-text fa fa-calendar"></span>',
         ' </div>',
-        '<% if (helpMessage && helpMessage.length) { %>',
-        '   <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-        '<% } %>',
         '</div>',
+        '<% if (helpMessage && helpMessage.length) { %>',
+        '<div class="<%=Backform.helpBlockControlClass%>">',
+        ' <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+        '</div>',
+        '<% } %>',
       ].join('\n')),
       render: function() {
         var field = _.defaults(this.field.toJSON(), this.defaults),
