@@ -117,7 +117,7 @@ define('misc.statistics', [
       _.bindAll(
         this,
         'showStatistics', 'panelVisibilityChanged',
-        '__createMultiLineStatistics', '__createSingleLineStatistics');
+        '__createMultiLineStatistics', '__createSingleLineStatistics', '__loadMoreRows');
 
       _.extend(
         this, {
@@ -253,10 +253,22 @@ define('misc.statistics', [
             clearTimeout(timer);
             $msgContainer.text('');
             if (res.data) {
-              var data = res.data;
+              var data = self.data = res.data;
               if (node.hasCollectiveStatistics || data['rows'].length > 1) {
+                // Listen scroll event to load more rows
+                pgBrowser.Events.on(
+                  'pgadmin-browser:panel-statistics:' +
+                  wcDocker.EVENT.SCROLLED,
+                  self.__loadMoreRows
+                );
                 self.__createMultiLineStatistics.call(self, data, node.statsPrettifyFields);
               } else {
+                // Do not listen the scroll event
+                pgBrowser.Events.off(
+                  'pgadmin-browser:panel-statistics:' +
+                  wcDocker.EVENT.SCROLLED,
+                  self.__loadMoreRows
+                );
                 self.__createSingleLineStatistics.call(self, data, node.statsPrettifyFields);
               }
 
@@ -386,7 +398,17 @@ define('misc.statistics', [
 
       }
 
-      this.collection.reset(rows);
+      this.collection.reset(rows.splice(0, 50));
+    },
+
+    __loadMoreRows: function() {
+      let elem = $('.pg-panel-statistics-container').closest('.wcFrameCenter')[0];
+      if ((elem.scrollHeight - 10) < elem.scrollTop + elem.offsetHeight) {
+        var rows = this.data['rows'];
+        if (rows.length > 0) {
+          this.collection.add(rows.splice(0, 50));
+        }
+      }
     },
 
     __createSingleLineStatistics: function(data, prettifyFields) {
