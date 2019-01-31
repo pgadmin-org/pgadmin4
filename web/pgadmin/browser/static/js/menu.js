@@ -347,31 +347,6 @@ define([
     return (len > 0);
   };
 
-  pgAdmin.Browser.SubmenuEvents = function($mnu) {
-    let subMenuClose = function(event) {
-      let $dropDown = $(event.currentTarget).closest('.dropdown');
-      $dropDown.find('.dropdown-submenu .dropdown-menu').removeClass('show');
-      $dropDown.find('.dropdown-submenu').removeClass('dropdown-submenu-visible');
-    };
-
-    let $navlink = $mnu.siblings('.nav-link');
-    $navlink.off('click', subMenuClose).on('click', subMenuClose);
-    $mnu.parent('.dropdown').off('show.bs.dropdown',subMenuClose)
-      .on('show.bs.dropdown',subMenuClose);
-
-    $mnu.find('.dropdown-item').off('mouseover').on('mouseover', (event)=> {
-      let $dropSubMenu = $(event.currentTarget).closest('.dropdown-menu').find('.dropdown-submenu');
-      /* Close all other submenus if any */
-      $dropSubMenu.find('.dropdown-menu').removeClass('show');
-      $dropSubMenu.removeClass('dropdown-submenu-visible');
-      /* Open the current submenu if any */
-      if($(event.currentTarget).parent().hasClass('dropdown-submenu')){
-        $(event.currentTarget).parent().find('.dropdown-menu').addClass('show');
-        $(event.currentTarget).parent().addClass('dropdown-submenu-visible');
-      }
-    });
-  };
-
   // MENU PUBLIC CLASS DEFINITION
   // ==============================
   var Menu = function(element, options) {
@@ -388,6 +363,7 @@ define([
       ev.preventDefault();
       return false;
     }
+
     var d = this.$element.data('pgMenu');
     if (d.cb) {
       var cb = d.module && d.module['callbacks'] && d.module['callbacks'][d.cb] || d.module && d.module[d.cb];
@@ -443,11 +419,27 @@ define([
     .on(
       'focus.pg.menu.data-api blur.pg.menu.data-api',
       '[data-toggle^="pg-menu"]',
-      function(e) {
-        $(e.target).closest('.menu').toggleClass(
-          'focus', /^focus(in)?$/.test(e.type)
+      function(ev) {
+        $(ev.target).closest('.menu').toggleClass(
+          'focus', /^focus(in)?$/.test(ev.type)
         );
-      });
+      })
+    .on('mouseenter', '.dropdown-submenu', function(ev) {
+      $(ev.currentTarget).removeClass('dropdown-submenu-visible')
+        .addClass('dropdown-submenu-visible');
+      $(ev.currentTarget).find('.dropdown-menu').first().addClass('show');
+    })
+    .on('mouseleave', '.dropdown-submenu', function(ev) {
+      $(ev.currentTarget).removeClass('dropdown-submenu-visible');
+      $(ev.currentTarget).find('.dropdown-menu').first().removeClass('show');
+    })
+    .on('hidden.bs.dropdown', function(ev) {
+      $(ev.target)
+        .find('.dropdown-submenu.dropdown-submenu-visible')
+        .removeClass('dropdown-submenu-visible')
+        .find('.dropdown-menu.show')
+        .removeClass('show');
+    });
 
   return pgAdmin.Browser.MenuItem;
 });

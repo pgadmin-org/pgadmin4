@@ -349,7 +349,6 @@ define('pgadmin.browser', [
           }], false);
         $obj_mnu.append(create_submenu.$el);
       }
-      pgAdmin.Browser.SubmenuEvents($obj_mnu);
     },
     save_current_layout: function(obj) {
       if(obj.docker) {
