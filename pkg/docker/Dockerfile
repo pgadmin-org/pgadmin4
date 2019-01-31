@@ -43,10 +43,12 @@ ENV PYTHONPATH=/pgadmin4
 
 # Install build-dependencies, build & install C extensions and purge deps in one RUN step
 # so that deps do not increase the size of resulting image by remaining in layers
+# NOTE: We're using PIP version 18.1 here because of this issue:
+#       https://github.com/pypa/pip/issues/6197
 COPY ./pgadmin4/requirements.txt /pgadmin4
 RUN set -ex && \
     apk add --no-cache --virtual build-deps build-base postgresql-dev libffi-dev linux-headers && \
-    pip install --upgrade pip && \
+    pip install --upgrade pip==18.1 && \
     pip install --no-cache-dir -r requirements.txt && \
     apk del --no-cache build-deps
 
