@@ -25,10 +25,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-if sys.version_info < (2, 7):
-    import unittest2 as unit_test
-else:
-    import unittest as unit_test
+import unittest
 
 if sys.version_info[0] >= 3:
     import builtins
@@ -119,9 +116,9 @@ app.PGADMIN_RUNTIME = True
 if config.SERVER_MODE is True:
     app.PGADMIN_RUNTIME = False
 
-setattr(unit_test.result.TestResult, "passed", [])
+setattr(unittest.result.TestResult, "passed", [])
 
-unit_test.runner.TextTestResult.addSuccess = test_utils.add_success
+unittest.runner.TextTestResult.addSuccess = test_utils.add_success
 
 # Override apply_scenario method as we need custom test description/name
 scenarios.apply_scenario = test_utils.apply_scenario
@@ -143,7 +140,7 @@ def get_suite(module_list, test_server, test_app_client, server_information,
     :rtype: TestSuite
     """
     modules = []
-    pgadmin_suite = unit_test.TestSuite()
+    pgadmin_suite = unittest.TestSuite()
 
     # Get the each test module and add into list
     for key, klass in module_list:
@@ -423,9 +420,9 @@ if __name__ == '__main__':
                               server,
                               test_client,
                               server_information, test_db_name)
-            tests = unit_test.TextTestRunner(stream=sys.stderr,
-                                             descriptions=True,
-                                             verbosity=2).run(suite)
+            tests = unittest.TextTestRunner(stream=sys.stderr,
+                                            descriptions=True,
+                                            verbosity=2).run(suite)
 
             ran_tests, failed_cases, skipped_cases, passed_cases = \
                 get_tests_result(tests)
@@ -434,7 +431,7 @@ if __name__ == '__main__':
 
             # Set empty list for 'passed' parameter for each testRun.
             # So that it will not append same test case name
-            unit_test.result.TestResult.passed = []
+            unittest.result.TestResult.passed = []
 
             if len(failed_cases) > 0:
                 failure = True

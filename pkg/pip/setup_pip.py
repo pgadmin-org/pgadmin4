@@ -66,7 +66,6 @@ setup(
     'Development Status :: 5 - Production/Stable',
 
     # Supported programming languages
-    'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
@@ -85,28 +84,9 @@ setup(
     install_requires=required,
 
     extras_require={
-        # ...
-        ":python_version<'2.7'": [
-            "psycopg2==2.7.3.2",
-            "Flask-Script==2.0.5",
-            "ordereddict",
-            "python-dateutil==2.5.0",
-            "SQLAlchemy==1.0.14",
-            "Flask-Security==1.7.5",
-            "Flask-BabelEx==0.9.3"
-        ],
         ":python_version<='2.7'": [
             "importlib==1.0.3"
         ],
-        ":python_version>='2.7'": [
-            "psycopg2>=2.7.4",
-            "python-dateutil>=2.7.1",
-            "htmlmin==0.1.12",
-            "Flask-HTMLmin==1.3.2",
-            "SQLAlchemy>=1.2.5",
-            "Flask-Security>=3.0.0",
-            "sshtunnel>=0.1.3"
-        ]
     },
 
     # Specify data files to be included.

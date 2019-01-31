@@ -47,3 +47,4 @@ Bug fixes
 | `Bug #3927 <https://redmine.postgresql.org/issues/3927>`_ - Fixed debugger issue for procedure inside package for EPAS servers.
 | `Bug #3929 <https://redmine.postgresql.org/issues/3929>`_ - Fix alignment of help messages in properties panels.
 | `Bug #3935 <https://redmine.postgresql.org/issues/3935>`_ - Ensure that grant wizard should list down functions for EPAS server running with no-redwood-compat mode.
+| `Bug #3954 <https://redmine.postgresql.org/issues/3954>`_ - Remove Python 2.6 code that's now obsolete.

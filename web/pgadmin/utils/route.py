@@ -16,10 +16,7 @@ import six
 from werkzeug.utils import find_modules
 from pgadmin.utils import server_utils
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestsGeneratorRegistry(ABCMeta):

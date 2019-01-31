@@ -14,11 +14,7 @@ import operator
 import sys
 from itertools import count, repeat, chain
 from .completion import Completion
-from collections import namedtuple, defaultdict
-if sys.version_info < (2, 7):
-    from ordereddict import OrderedDict
-else:
-    from collections import OrderedDict
+from collections import namedtuple, defaultdict, OrderedDict
 
 from .sqlcompletion import (
     FromClauseItem, suggest_type, Database, Schema, Table,

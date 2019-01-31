@@ -11,17 +11,7 @@ pyperclip~=1.6.0
 testscenarios==0.5.0
 testtools==2.3.0
 traceback2==1.4.0
-unittest2==1.1.0
-
-################################################################
-# Modules specifically requires for Python2.7 or greater version
-################################################################
-selenium==3.11.0; python_version >= '2.7'
-
-###############################################################
-# Modules required for Python2.6
-###############################################################
-selenium==3.3.3; python_version < '2.7'
+selenium==3.11.0
 
 ###############################################################
 # Modules specifically required for Python3.3 or lesser version
