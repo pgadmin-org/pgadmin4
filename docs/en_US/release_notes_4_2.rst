@@ -39,6 +39,7 @@ Bug fixes
 | `Bug #3872 <https://redmine.postgresql.org/issues/3872>`_ - Ensure object names in external process dialogues are properly escaped.
 | `Bug #3891 <https://redmine.postgresql.org/issues/3891>`_ - Correct order of Save and Cancel button for json/jsonb editing.
 | `Bug #3897 <https://redmine.postgresql.org/issues/3897>`_ - Data should be updated properly for FTS Configurations, FTS Dictionaries, FTS Parsers and FTS Templates.
+| `Bug #3899 <https://redmine.postgresql.org/issues/3899>`_ - Fixed unable to drop multiple Rules and Foreign Tables from properties tab.
 | `Bug #3903 <https://redmine.postgresql.org/issues/3903>`_ - Fixed Query Tool Initialization Error.
 | `Bug #3908 <https://redmine.postgresql.org/issues/3908>`_ - Fixed keyboard navigation for Select2 and Privilege cell in Backgrid.
 | `Bug #3916 <https://redmine.postgresql.org/issues/3916>`_ - Correct schema should be displayed in Materialized View dialog.

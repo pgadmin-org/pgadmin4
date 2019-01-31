@@ -523,6 +523,7 @@ define('pgadmin.node.foreign_table', [
 
       },
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
@@ -571,7 +572,8 @@ define('pgadmin.node.foreign_table', [
           type: 'multiline',
         },{
           id: 'ftsrvname', label: gettext('Foreign server'), cell: 'string', control: 'node-ajax-options',
-          type: 'text', group: gettext('Definition'), url: 'get_foreign_servers', disabled: function(m) { return !m.isNew(); },
+          type: 'text', group: gettext('Definition'), url: 'get_foreign_servers',
+          disabled: function(m) { return !m.isNew(); }, cache_node: 'database',
         },{
           id: 'inherits', label: gettext('Inherits'), group: gettext('Definition'),
           type: 'array', min_version: 90500, control: NodeAjaxOptionsMultipleControl,

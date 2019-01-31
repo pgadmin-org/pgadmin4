@@ -125,6 +125,7 @@ define('pgadmin.node.rule', [
         properties of the model in schema.
        */
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         schema: [{
           id: 'name', label: gettext('Name'),
           type: 'text', disabled: function(m) {
