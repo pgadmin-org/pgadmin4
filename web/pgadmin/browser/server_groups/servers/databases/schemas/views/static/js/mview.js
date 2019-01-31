@@ -74,7 +74,7 @@ define('pgadmin.node.mview', [
           system view nodes.
          */
         pgAdmin.Browser.add_menu_category(
-          'refresh_mview', gettext('Refresh View'), 18, 'fa fa-recycle');
+          'refresh_mview', gettext('Refresh View'), 18, '');
         pgBrowser.add_menus([{
           name: 'create_mview_on_coll', node: 'coll-mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -168,7 +168,7 @@ define('pgadmin.node.mview', [
           id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
         },{
-          id: 'definition', label:'', cell: 'string',
+          id: 'definition', label:'Definition', cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           control: Backform.SqlFieldControl, extraClasses:['sql_field_width_full'],
         },{
