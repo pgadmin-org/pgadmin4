@@ -130,9 +130,10 @@ define('pgadmin.node.mview', [
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
             // Set Selected Schema and Current User
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            var schemaLabel = args.node_info.schema._label || 'public',
+              userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({
-              'schema': 'public', 'owner': userInfo.name,
+              'schema': schemaLabel, 'owner': userInfo.name,
             }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
