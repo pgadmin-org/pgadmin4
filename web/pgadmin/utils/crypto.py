@@ -9,13 +9,21 @@
 
 """This File Provides Cryptography."""
 
+from __future__ import division
+
 import base64
 import hashlib
+import os
 
-from Crypto import Random
-from Crypto.Cipher import AES
+import six
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher
+from cryptography.hazmat.primitives.ciphers.algorithms import AES
+from cryptography.hazmat.primitives.ciphers.modes import CFB8
 
 padding_string = b'}'
+iv_size = AES.block_size // 8
 
 
 def encrypt(plaintext, key):
@@ -27,15 +35,17 @@ def encrypt(plaintext, key):
         key       -- Key for encryption.
     """
 
-    iv = Random.new().read(AES.block_size)
-    cipher = AES.new(pad(key), AES.MODE_CFB, iv)
+    iv = os.urandom(iv_size)
+    cipher = Cipher(AES(pad(key)), CFB8(iv), default_backend())
+    encryptor = cipher.encryptor()
+
     # If user has entered non ascii password (Python2)
     # we have to encode it first
-    if hasattr(str, 'decode'):
-        plaintext = plaintext.encode('utf-8')
-    encrypted = base64.b64encode(iv + cipher.encrypt(plaintext))
+    if isinstance(plaintext, six.text_type):
+        plaintext = plaintext.encode()
 
-    return encrypted
+    return base64.b64encode(iv + encryptor.update(plaintext) +
+                            encryptor.finalize())
 
 
 def decrypt(ciphertext, key):
@@ -47,36 +57,29 @@ def decrypt(ciphertext, key):
         key        -- key to decrypt the encrypted string.
     """
 
-    global padding_string
-
     ciphertext = base64.b64decode(ciphertext)
-    iv = ciphertext[:AES.block_size]
-    cipher = AES.new(pad(key), AES.MODE_CFB, iv)
-    decrypted = cipher.decrypt(ciphertext[AES.block_size:])
+    iv = ciphertext[:iv_size]
 
-    return decrypted
+    cipher = Cipher(AES(pad(key)), CFB8(iv), default_backend())
+    decryptor = cipher.decryptor()
+    return decryptor.update(ciphertext[iv_size:]) + decryptor.finalize()
 
 
 def pad(key):
     """Add padding to the key."""
 
-    global padding_string
-    str_len = len(key)
+    if isinstance(key, six.text_type):
+        key = key.encode()
 
     # Key must be maximum 32 bytes long, so take first 32 bytes
-    if str_len > 32:
-        return key[:32]
+    key = key[:32]
 
-    # If key size id 16, 24 or 32 bytes then padding not require
-    if str_len == 16 or str_len == 24 or str_len == 32:
+    # If key size is 16, 24 or 32 bytes then padding is not required
+    if len(key) in (16, 24, 32):
         return key
 
-    # Convert bytes to string (python3)
-    if not hasattr(str, 'decode'):
-        padding_string = padding_string.decode()
-
     # Add padding to make key 32 bytes long
-    return key + ((32 - str_len % 32) * padding_string)
+    return key.ljust(32, padding_string)
 
 
 def pqencryptpassword(password, user):

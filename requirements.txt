@@ -18,7 +18,6 @@ html5lib==1.0.1
 linecache2==1.0.0
 passlib==1.7.1
 pbr==3.1.1
-pycrypto>=2.6.1
 pyrsistent==0.14.2
 python-mimeparse==1.6.0
 pytz==2018.3

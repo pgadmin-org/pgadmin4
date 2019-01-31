@@ -14,6 +14,7 @@ Features
 Bug fixes
 *********
 
+| `Bug #3272 <https://redmine.postgresql.org/issues/3272>`_ - Replace the PyCrypto module with the cryptography module.
 | `Bug #3453 <https://redmine.postgresql.org/issues/3453>`_ - Fixed SQL for foreign table options.
 | `Bug #3475 <https://redmine.postgresql.org/issues/3475>`_ - Fixed execution time to show Hours part for long running queries in Query Tool.
 | `Bug #3608 <https://redmine.postgresql.org/issues/3608>`_ - Messages tab of query tool should be clear on subsequent execution of table/view using View/Edit Data.

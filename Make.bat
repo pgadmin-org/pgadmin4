@@ -181,11 +181,6 @@ REM Main build sequence Ends
     ECHO Creating virtual environment...
     IF NOT EXIST "%PGBUILDPATH%"  MKDIR "%PGBUILDPATH%"
     
-    REM If we're using VC++, and this is Python 3.6+, we need a hack for PyCrypto
-    IF "%MAKE%" == "nmake" (
-        IF %PYTHON_VERSION% GEQ 36 SET CL=-FI"%VCINSTALLDIR%\INCLUDE\stdint.h"
-    )
-
     CD "%PGBUILDPATH%"
     "%PYTHON_HOME%\Scripts\virtualenv.exe" "%VIRTUALENV%"
 
@@ -254,12 +249,6 @@ REM Main build sequence Ends
 
     ECHO Removing Sphinx
     CALL pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
-
-    IF %PYTHON_MAJOR% == 3 (
-        ECHO Fixing PyCrypto module for Python 3...
-        CALL "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\Crypto\Random\OSRNG\nt.py" "-o" "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\Crypto\Random\OSRNG\nt.py.new" "-s" "import winrandom" -r "from . import winrandom"
-        MOVE /Y "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\Crypto\Random\OSRNG\nt.py.new" "%PGBUILDPATH%\%VIRTUALENV%\Lib\site-packages\Crypto\Random\OSRNG\nt.py"
-    )
 
     ECHO Assembling runtime environment...
     CD "%WD%\runtime"
