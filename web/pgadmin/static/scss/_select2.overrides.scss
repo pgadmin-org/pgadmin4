@@ -16,7 +16,7 @@
 }
 
 .select2-container .select2-selection--single  {
-  height: unset;
+  height: auto;
   min-height: 28px;
   & .select2-selection__rendered{
     line-height: inherit;

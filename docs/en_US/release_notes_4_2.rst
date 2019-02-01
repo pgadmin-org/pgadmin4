@@ -47,6 +47,7 @@ Bug fixes
 | `Bug #3916 <https://redmine.postgresql.org/issues/3916>`_ - Correct schema should be displayed in Materialized View dialog.
 | `Bug #3927 <https://redmine.postgresql.org/issues/3927>`_ - Fixed debugger issue for procedure inside package for EPAS servers.
 | `Bug #3929 <https://redmine.postgresql.org/issues/3929>`_ - Fix alignment of help messages in properties panels.
+| `Bug #3932 <https://redmine.postgresql.org/issues/3932>`_ - Fix alignment of submenu for Internet Explorer.
 | `Bug #3935 <https://redmine.postgresql.org/issues/3935>`_ - Ensure that grant wizard should list down functions for EPAS server running with no-redwood-compat mode.
 | `Bug #3954 <https://redmine.postgresql.org/issues/3954>`_ - Remove Python 2.6 code that's now obsolete.
 | `Bug #3955 <https://redmine.postgresql.org/issues/3955>`_ - Expose the bind address in the Docker container via PGADMIN_BIND_ADDRESS.
