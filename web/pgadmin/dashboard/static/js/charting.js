@@ -68,7 +68,9 @@ export class Chart {
   }
 
   getOtherData(key) {
-    return this._otherData[key];
+    if(this._otherData[key]) {
+      return this._otherData[key];
+    }
   }
 
   setOtherData(key, value) {

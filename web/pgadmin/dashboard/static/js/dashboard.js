@@ -10,11 +10,11 @@
 define('pgadmin.dashboard', [
   'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
   'sources/pgadmin', 'backbone', 'backgrid', './charting',
-  'pgadmin.alertifyjs', 'pgadmin.backform',
-  'sources/nodes/dashboard', 'pgadmin.browser', 'bootstrap', 'wcdocker',
+  'pgadmin.alertifyjs', 'pgadmin.backform', 'sources/nodes/dashboard',
+  'sources/utils', 'pgadmin.browser', 'bootstrap', 'wcdocker',
 ], function(
   url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, charting,
-  Alertify, Backform, NodesDashboard
+  Alertify, Backform, NodesDashboard, commonUtils
 ) {
 
   pgAdmin.Browser = pgAdmin.Browser || {};
@@ -214,8 +214,9 @@ define('pgadmin.dashboard', [
       // Load the default welcome dashboard
       var url = url_for('dashboard.index');
 
-      /* Store the chart objects and there interval ids in this store */
-      this.chartStore = {};
+      /* Store the chart objects, refresh freq and next refresh time */
+      this.chart_store = {};
+      this.charts_poller_int_id = -1;
 
       var dashboardPanel = pgBrowser.panels['dashboard'].panel;
       if (dashboardPanel) {
@@ -373,96 +374,178 @@ define('pgadmin.dashboard', [
       }
     },
 
-    renderChartLoop: function(chartObj, sid, did, url, counter, refresh) {
-      var data = [],
-        dataset = [];
+    // Render the charts
+    renderCharts: function(charts_config) {
 
-      var theIntervalFunc = function() {
-        var path = url + sid;
-        if (did != -1) {
-          path += '/' + did;
+      let self = this,
+        tooltipFormatter = function(refresh, currVal) {
+          return(`Seconds ago: ${parseInt(currVal.x * refresh)}</br>
+                  Value: ${currVal.y}`);
+        },
+        curr_epoch=commonUtils.getEpoch();
+
+      self.stopChartsPoller();
+
+      charts_config.map((chart_config) => {
+        if(self.chart_store[chart_config.chart_name]
+          && self.old_preferences[chart_config.refresh_pref_name] !=
+            self.preferences[chart_config.refresh_pref_name]) {
+          self.clearChartFromStore(chart_config.chart_name);
         }
+
+        if(self.chart_store[chart_config.chart_name]) {
+          let chart_obj = self.chart_store[chart_config.chart_name].chart_obj;
+          chart_obj.setOptions(chart_config.options, false);
+          chart_obj.setTooltipFormatter(
+            tooltipFormatter.bind(null, self.preferences[chart_config.refresh_pref_name])
+          );
+        }
+
+        if(!self.chart_store[chart_config.chart_name]) {
+          let chart_obj = new charting.Chart(chart_config.container, chart_config.options);
+
+          chart_obj.setTooltipFormatter(
+            tooltipFormatter.bind(null, self.preferences[chart_config.refresh_pref_name])
+          );
+
+          chart_obj.setOtherData('counter', chart_config.counter);
+
+          self.chart_store[chart_config.chart_name] = {
+            'chart_obj' : chart_obj,
+            'refresh_on': curr_epoch,
+            'refresh_rate': self.preferences[chart_config.refresh_pref_name],
+          };
+        }
+      });
+
+      self.startChartsPoller(self.chart_store, self.sid, self.did);
+    },
+
+    getStatsUrl: function(sid=-1, did=-1, chart_names=[]) {
+      let base_url = url_for('dashboard.dashboard_stats');
+      base_url += '/' + sid;
+      base_url += (did > 0) ? ('/' + did) : '';
+      base_url += '?chart_names=' + chart_names.join(',');
+      return base_url;
+    },
+
+    updateChart: function(chart_obj, new_data){
+      // Dataset format:
+      // [
+      //     { data: [[0, y0], [1, y1]...], label: 'Label 1', [options] },
+      //     { data: [[0, y0], [1, y1]...], label: 'Label 2', [options] },
+      //     { data: [[0, y0], [1, y1]...], label: 'Label 3', [options] }
+      // ]
+      let dataset = chart_obj.getOtherData('dataset') || [],
+        counter_prev_data = chart_obj.getOtherData('counter_prev_data') || new_data,
+        counter = chart_obj.getOtherData('counter') || false;
+
+      if (dataset.length == 0) {
+        // Create the initial data structure
+        for (let label in new_data) {
+          dataset.push({
+            'data': [
+              [0, counter ? (new_data[label] - counter_prev_data[label]) : new_data[label]],
+            ],
+            'label': label,
+          });
+        }
+      } else {
+        Object.keys(new_data).map((label, label_ind) => {
+          // Push new values onto the existing data structure
+          // If this is a counter stat, we need to subtract the previous value
+          if (!counter) {
+            dataset[label_ind]['data'].unshift([0, new_data[label]]);
+          } else {
+            // Store the current value, minus the previous one we stashed.
+            // It's possible the tab has been reloaded, in which case out previous values are gone
+            if (_.isUndefined(counter_prev_data))
+              return;
+
+            dataset[label_ind]['data'].unshift([0, new_data[label] - counter_prev_data[label]]);
+          }
+
+          // Reset the time index to get a proper scrolling display
+          for (var time_ind = 0; time_ind < dataset[label_ind]['data'].length; time_ind++) {
+            dataset[label_ind]['data'][time_ind][0] = time_ind;
+          }
+        });
+        counter_prev_data = new_data;
+      }
+
+      // Remove old data points
+      for (let label_ind = 0; label_ind < dataset.length; label_ind++) {
+        if (dataset[label_ind]['data'].length > 101) {
+          dataset[label_ind]['data'].pop();
+        }
+      }
+
+      chart_obj.setOtherData('dataset', dataset);
+      chart_obj.setOtherData('counter_prev_data', counter_prev_data);
+
+      if (chart_obj.isInPage()) {
+        if (chart_obj.isVisible()) {
+          chart_obj.draw(dataset);
+        }
+      } else {
+        return;
+      }
+    },
+
+    stopChartsPoller: function() {
+      clearInterval(this.charts_poller_int_id);
+    },
+
+    startChartsPoller: function(chart_store, sid, did) {
+      let self = this;
+      /* polling will the greatest common divisor of the refresh rates*/
+      let poll_interval = commonUtils.getGCD(
+        Object.values(chart_store).map(item => item.refresh_rate)
+      );
+      const WAIT_COUNTER = 3;
+      let last_poll_wait_counter = 0;
+
+      /* Stop if running, only one poller lives */
+      self.stopChartsPoller();
+
+      var thePollingFunc = function() {
+        let curr_epoch = commonUtils.getEpoch();
+        let chart_names_to_get = [];
+
+        for(let chart_name in chart_store) {
+          /* when its time to get the data */
+          if(chart_store[chart_name].refresh_on <= curr_epoch) {
+            /* set the next trigger point */
+            chart_store[chart_name].refresh_on = curr_epoch + chart_store[chart_name].refresh_rate;
+            chart_names_to_get.push(chart_name);
+          }
+        }
+
+        /* If none of the chart wants data, don't trouble
+         * If response not received from prev poll, don't trouble !!
+         */
+        if(chart_names_to_get.length == 0 || last_poll_wait_counter > 0) {
+          /* reduce the number of tries, request should be sent if last_poll_wait_counter
+           * completes WAIT_COUNTER times.*/
+          last_poll_wait_counter--;
+          return;
+        }
+
+        var path = self.getStatsUrl(sid, did, chart_names_to_get);
         $.ajax({
           url: path,
           type: 'GET',
-          dataType: 'html',
         })
         .done(function(resp) {
-          $(chartObj.getContainer()).removeClass('graph-error');
-          data = JSON.parse(resp);
-
-          var y = 0,
-            x;
-          if (dataset.length == 0) {
-            if (counter == true) {
-              // Have we stashed initial values?
-              if (_.isUndefined(chartObj.getOtherData('counter_previous_vals'))) {
-                chartObj.setOtherData('counter_previous_vals', data[0]);
-              } else {
-                // Create the initial data structure
-                for (x in data[0]) {
-                  dataset.push({
-                    'data': [
-                      [0, data[0][x] - chartObj.getOtherData('counter_previous_vals')[x]],
-                    ],
-                    'label': x,
-                  });
-                }
-              }
-            } else {
-              // Create the initial data structure
-              for (x in data[0]) {
-                dataset.push({
-                  'data': [
-                    [0, data[0][x]],
-                  ],
-                  'label': x,
-                });
-              }
-            }
-          } else {
-            for (x in data[0]) {
-              // Push new values onto the existing data structure
-              // If this is a counter stat, we need to subtract the previous value
-              if (counter == false) {
-                dataset[y]['data'].unshift([0, data[0][x]]);
-              } else {
-                // Store the current value, minus the previous one we stashed.
-                // It's possible the tab has been reloaded, in which case out previous values are gone
-                if (_.isUndefined(chartObj.getOtherData('counter_previous_vals')))
-                  return;
-
-                dataset[y]['data'].unshift([0, data[0][x] - chartObj.getOtherData('counter_previous_vals')[x]]);
-              }
-
-              // Reset the time index to get a proper scrolling display
-              for (var z = 0; z < dataset[y]['data'].length; z++) {
-                dataset[y]['data'][z][0] = z;
-              }
-
-              y++;
-            }
-            chartObj.setOtherData('counter_previous_vals', data[0]);
+          last_poll_wait_counter = 0;
+          for(let chart_name in resp) {
+            let chart_obj = chart_store[chart_name].chart_obj;
+            $(chart_obj.getContainer()).removeClass('graph-error');
+            self.updateChart(chart_obj, resp[chart_name]);
           }
-
-          // Remove uneeded elements
-          for (x = 0; x < dataset.length; x++) {
-            // Remove old data points
-            if (dataset[x]['data'].length > 101) {
-              dataset[x]['data'].pop();
-            }
-          }
-
-          if (chartObj.isInPage()) {
-            if (chartObj.isVisible()) {
-              chartObj.draw(dataset);
-            }
-          } else {
-            return;
-          }
-
         })
         .fail(function(xhr) {
+          last_poll_wait_counter = 0;
           let err = '';
           let msg = '';
           let cls = 'info';
@@ -484,66 +567,19 @@ define('pgadmin.dashboard', [
             }
           }
 
-          $(chartObj.getContainer()).addClass('graph-error');
-          $(chartObj.getContainer()).html(
-            '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
-          );
+          for(let chart_name in chart_store) {
+            let chart_obj = chart_store[chart_name].chart_obj;
+            $(chart_obj.getContainer()).addClass('graph-error');
+            $(chart_obj.getContainer()).html(
+              '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
+            );
+          }
         });
+        last_poll_wait_counter = WAIT_COUNTER;
       };
       /* Execute once for the first time as setInterval will not do */
-      theIntervalFunc();
-      return setInterval(theIntervalFunc, refresh * 1000);
-    },
-
-    // Render a chart
-    render_chart: function(
-      container, url, options, counter, chartName, prefName
-    ) {
-
-      // Data format:
-      // [
-      //     { data: [[0, y0], [1, y1]...], label: 'Label 1', [options] },
-      //     { data: [[0, y0], [1, y1]...], label: 'Label 2', [options] },
-      //     { data: [[0, y0], [1, y1]...], label: 'Label 3', [options] }
-      // ]
-
-      let self = this,
-        tooltipFormatter = function(refresh, currVal) {
-          return(`Seconds ago: ${parseInt(currVal.x * refresh)}</br>
-                  Value: ${currVal.y}`);
-        };
-
-      if(self.chartStore[chartName]
-        && self.old_preferences[prefName] != self.preferences[prefName]) {
-        self.clearChartFromStore(chartName);
-      }
-
-      if(self.chartStore[chartName]) {
-        let chartObj = self.chartStore[chartName].chartObj;
-        chartObj.setOptions(options, false);
-        chartObj.setTooltipFormatter(
-          tooltipFormatter.bind(null, self.preferences[prefName])
-        );
-      }
-
-      if(!self.chartStore[chartName]) {
-
-        let chartObj = new charting.Chart(container, options);
-
-        chartObj.setTooltipFormatter(
-          tooltipFormatter.bind(null, self.preferences[prefName])
-        );
-
-        self.chartStore[chartName] = {
-          'chartObj' : chartObj,
-          'intervalId' : undefined,
-        };
-
-        self.chartStore[chartName]['intervalId'] = self.renderChartLoop(
-          self.chartStore[chartName]['chartObj'], self.sid, self.did, url,
-          counter, self.preferences[prefName]
-        );
-      }
+      thePollingFunc();
+      self.charts_poller_int_id = setInterval(thePollingFunc, poll_interval * 1000);
     },
 
     // Handler function to support the "Add Server" link
@@ -683,14 +719,13 @@ define('pgadmin.dashboard', [
     clearChartFromStore: function(chartName) {
       var self = this;
       if(!chartName){
-        _.each(self.chartStore, function(chart, key) {
-          clearInterval(chart.intervalId);
-          delete self.chartStore[key];
+        self.stopChartsPoller();
+        _.each(self.chart_store, function(chart, key) {
+          delete self.chart_store[key];
         });
       }
       else {
-        clearInterval(self.chartStore[chartName].intervalId);
-        delete self.chartStore[chartName];
+        delete self.chart_store[chartName];
       }
     },
 
@@ -797,26 +832,37 @@ define('pgadmin.dashboard', [
 
         if(self.preferences.show_graphs) {
           // Render the graphs
-          pgAdmin.Dashboard.render_chart(
-            div_sessions, url_for('dashboard.session_stats'), options_line, false,
-            'session_stats', 'session_stats_refresh'
-          );
-          pgAdmin.Dashboard.render_chart(
-            div_tps, url_for('dashboard.tps_stats'), options_line, true,
-            'tps_stats','tps_stats_refresh'
-          );
-          pgAdmin.Dashboard.render_chart(
-            div_ti, url_for('dashboard.ti_stats'), options_line, true,
-            'ti_stats', 'ti_stats_refresh'
-          );
-          pgAdmin.Dashboard.render_chart(
-            div_to, url_for('dashboard.to_stats'), options_line, true,
-            'to_stats','to_stats_refresh'
-          );
-          pgAdmin.Dashboard.render_chart(
-            div_bio, url_for('dashboard.bio_stats'), options_line, true,
-            'bio_stats','bio_stats_refresh'
-          );
+          pgAdmin.Dashboard.renderCharts([{
+            chart_name: 'session_stats',
+            container: div_sessions,
+            options: options_line,
+            counter: false,
+            refresh_pref_name: 'session_stats_refresh',
+          }, {
+            chart_name: 'tps_stats',
+            container: div_tps,
+            options: options_line,
+            counter: true,
+            refresh_pref_name: 'tps_stats_refresh',
+          }, {
+            chart_name: 'ti_stats',
+            container: div_ti,
+            options: options_line,
+            counter: true,
+            refresh_pref_name: 'ti_stats_refresh',
+          }, {
+            chart_name: 'to_stats',
+            container: div_to,
+            options: options_line,
+            counter: true,
+            refresh_pref_name: 'to_stats_refresh',
+          }, {
+            chart_name: 'bio_stats',
+            container: div_bio,
+            options: options_line,
+            counter: true,
+            refresh_pref_name: 'bio_stats_refresh',
+          }]);
         }
 
         if(!self.preferences.show_graphs && !self.preferences.show_activity) {

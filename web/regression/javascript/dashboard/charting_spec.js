@@ -73,6 +73,10 @@ describe('In charting related testcases', ()=> {
     expect(chartObj.getOtherData('some_val')).toEqual(1);
   });
 
+  it('Check if other data returns undefined for not set', ()=>{
+    expect(chartObj.getOtherData('some_val_not_set')).toBe(undefined);
+  });
+
   it('Check if isVisible returns correct', ()=>{
     let dimSpy = spyOn(chartObj, 'getContainerDimensions');
 

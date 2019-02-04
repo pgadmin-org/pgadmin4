@@ -46,3 +46,27 @@ let isString = (str) => (_.isString(str));
 export {
   isValidData, isFunction, isString,
 };
+
+export function getEpoch(inp_date) {
+  let date_obj = inp_date ? inp_date : new Date();
+  return parseInt(date_obj.getTime()/1000);
+}
+
+/* Eucladian GCD */
+export function getGCD(inp_arr) {
+  let gcd_for_two = (a, b) => {
+    return a == 0?b:gcd_for_two(b % a, a);
+  };
+
+  let inp_len = inp_arr.length;
+  if(inp_len <= 2) {
+    return gcd_for_two(inp_arr[0], inp_arr[1]);
+  }
+
+  let result = inp_arr[0];
+  for(let i=1; i<inp_len; i++) {
+    result = gcd_for_two(inp_arr[i], result);
+  }
+
+  return result;
+}

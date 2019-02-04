@@ -9,7 +9,7 @@
 
 """A blueprint module implementing the dashboard frame."""
 from functools import wraps
-from flask import render_template, url_for, Response, g
+from flask import render_template, url_for, Response, g, request
 from flask_babelex import gettext
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
@@ -154,21 +154,9 @@ class DashboardModule(PgAdminModule):
         return [
             'dashboard.index', 'dashboard.get_by_sever_id',
             'dashboard.get_by_database_id',
-            'dashboard.session_stats',
-            'dashboard.get_session_stats_by_sever_id',
-            'dashboard.get_session_stats_by_database_id',
-            'dashboard.tps_stats',
-            'dashboard.tps_stats_by_server_id',
-            'dashboard.tps_stats_by_database_id',
-            'dashboard.ti_stats',
-            'dashboard.ti_stats_by_server_id',
-            'dashboard.ti_stats_by_database_id',
-            'dashboard.to_stats',
-            'dashboard.to_stats_by_server_id',
-            'dashboard.to_stats_by_database_id',
-            'dashboard.bio_stats',
-            'dashboard.bio_stats_by_server_id',
-            'dashboard.bio_stats_by_database_id',
+            'dashboard.dashboard_stats',
+            'dashboard.dashboard_stats_sid',
+            'dashboard.dashboard_stats_did',
             'dashboard.activity',
             'dashboard.get_activity_by_server_id',
             'dashboard.get_activity_by_database_id',
@@ -356,87 +344,36 @@ def get_data(sid, did, template):
     )
 
 
-@blueprint.route('/session_stats/', endpoint='session_stats')
-@blueprint.route(
-    '/session_stats/<int:sid>', endpoint='get_session_stats_by_sever_id'
-)
-@blueprint.route(
-    '/session_stats/<int:sid>/<int:did>',
-    endpoint='get_session_stats_by_database_id'
-)
+@blueprint.route('/dashboard_stats',
+                 endpoint='dashboard_stats')
+@blueprint.route('/dashboard_stats/<int:sid>',
+                 endpoint='dashboard_stats_sid')
+@blueprint.route('/dashboard_stats/<int:sid>/<int:did>',
+                 endpoint='dashboard_stats_did')
 @login_required
 @check_precondition
-def session_stats(sid=None, did=None):
-    """
-    This function returns server session statistics
-    :param sid: server id
-    :return:
-    """
-    return get_data(sid, did, 'session_stats.sql')
+def dashboard_stats(sid=None, did=None):
+    resp_data = {}
 
+    if request.args['chart_names'] != '':
+        chart_names = request.args['chart_names'].split(',')
 
-@blueprint.route('/tps_stats/', endpoint='tps_stats')
-@blueprint.route('/tps_stats/<int:sid>', endpoint='tps_stats_by_server_id')
-@blueprint.route(
-    '/tps_stats/<int:sid>/<int:did>', endpoint='tps_stats_by_database_id'
-)
-@login_required
-@check_precondition
-def tps_stats(sid=None, did=None):
-    """
-    This function returns server TPS throughput
-    :param sid: server id
-    :return:
-    """
-    return get_data(sid, did, 'tps_stats.sql')
+        if not sid:
+            return internal_server_error(errormsg='Server ID not specified.')
 
+        sql = render_template(
+            "/".join([g.template_path, 'dashboard_stats.sql']), did=did,
+            chart_names=chart_names,
+        )
+        status, res = g.conn.execute_dict(sql)
 
-@blueprint.route('/ti_stats/', endpoint='ti_stats')
-@blueprint.route('/ti_stats/<int:sid>', endpoint='ti_stats_by_server_id')
-@blueprint.route(
-    '/ti_stats/<int:sid>/<int:did>', endpoint='ti_stats_by_database_id'
-)
-@login_required
-@check_precondition
-def ti_stats(sid=None, did=None):
-    """
-    This function returns server tuple input statistics
-    :param sid: server id
-    :return:
-    """
-    return get_data(sid, did, 'ti_stats.sql')
+        for chart_row in res['rows']:
+            resp_data[chart_row['chart_name']] = chart_row['chart_data']
 
-
-@blueprint.route('/to_stats/', endpoint='to_stats')
-@blueprint.route('/to_stats/<int:sid>', endpoint='to_stats_by_server_id')
-@blueprint.route(
-    '/to_stats/<int:sid>/<int:did>', endpoint='to_stats_by_database_id'
-)
-@login_required
-@check_precondition
-def to_stats(sid=None, did=None):
-    """
-    This function returns server tuple output statistics
-    :param sid: server id
-    :return:
-    """
-    return get_data(sid, did, 'to_stats.sql')
-
-
-@blueprint.route('/bio_stats/', endpoint='bio_stats')
-@blueprint.route('/bio_stats/<int:sid>', endpoint='bio_stats_by_server_id')
-@blueprint.route(
-    '/bio_stats/<int:sid>/<int:did>', endpoint='bio_stats_by_database_id'
-)
-@login_required
-@check_precondition
-def bio_stats(sid=None, did=None):
-    """
-    This function returns server block IO statistics
-    :param sid: server id
-    :return:
-    """
-    return get_data(sid, did, 'bio_stats.sql')
+    return ajax_response(
+        response=resp_data,
+        status=200
+    )
 
 
 @blueprint.route('/activity/', endpoint='activity')
