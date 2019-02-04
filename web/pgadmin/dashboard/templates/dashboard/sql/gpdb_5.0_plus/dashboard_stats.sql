@@ -1,3 +1,4 @@
+/*pga4dash*/
 {% set add_union = false %}
 {% if 'session_stats' in chart_names %}
 {% set add_union = true %}
