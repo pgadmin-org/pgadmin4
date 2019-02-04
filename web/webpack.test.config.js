@@ -77,7 +77,7 @@ module.exports = {
       'spectrum': path.join(__dirname, './node_modules/spectrum-colorpicker/spectrum'),
       'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
       'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
-      'bootstrap.switch': path.join(__dirname, './node_modules/bootstrap-switch/dist/js/bootstrap-switch'),
+      'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle'),
       'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
       'backform': path.join(__dirname, './node_modules/backform/src/backform'),
       'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),

@@ -264,7 +264,6 @@ define('pgadmin.node.domain', [
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small',
           },
         },{
           id: 'collname', label: gettext('Collation'), cell: 'string',

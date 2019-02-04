@@ -10,7 +10,7 @@
 define([
   'sources/gettext', 'underscore', 'underscore.string', 'jquery',
   'backbone', 'backform', 'backgrid', 'codemirror', 'sources/sqleditor_utils',
-  'spectrum', 'pgadmin.backgrid', 'select2',
+  'spectrum', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle',
 ], function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror, SqlEditorUtils) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {}),
@@ -431,7 +431,9 @@ define([
         offText: gettext('No'),
         onColor: 'success',
         offColor: 'primary',
-        size: 'small',
+        size: 'mini',
+        width: null,
+        height: null,
       },
       controlLabelClassName: Backform.controlLabelClassName,
       controlsClassName: Backform.controlsClassName,
@@ -441,11 +443,11 @@ define([
     template: _.template([
       '<label class="<%=controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=controlsClassName%>">',
-      '  <div class="checkbox">',
-      '    <label>',
-      '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '    </label>',
-      '  </div>',
+      '      <input tabindex="0" type="checkbox" data-style="quick" data-toggle="toggle"',
+      '      data-size="<%=options.size%>" data-height="<%=options.height%>"  ',
+      '      data-on="<%=options.onText%>" data-off="<%=options.offText%>" ',
+      '      data-onstyle="<%=options.onColor%>" data-offstyle="<%=options.offColor%>" data-width="<%=options.width%>" ',
+      '      name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -458,7 +460,14 @@ define([
       );
     },
     events: {
-      'switchChange.bootstrapSwitch': 'onChange',
+      'change input': 'onChange',
+      'keyup': 'toggleSwitch',
+    },
+    toggleSwitch: function(e) {
+      if (e.keyCode == 32) {
+        this.$el.find('input[type=checkbox]').bootstrapToggle('toggle');
+        e.preventDefault();
+      }
     },
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
@@ -467,23 +476,46 @@ define([
         name = attrArr.shift(),
         path = attrArr.join('.'),
         rawValue = this.keyPathAccessor(attributes[name], path),
+        data = _.extend(field, {
+          rawValue: rawValue,
+          value: this.formatter.fromRaw(rawValue, this.model),
+          attributes: attributes,
+          formatter: this.formatter,
+        }),
         evalF = function(f, d, m) {
           return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-        },
-        options = _.defaults({
-          disabled: evalF(field.disabled, field, this.model),
-        }, this.field.get('options'), this.defaults.options,
-          $.fn.bootstrapSwitch.defaults);
+        };
 
-      Backform.InputControl.prototype.render.apply(this, arguments);
+      // Evaluate the disabled, visible, and required option
+      _.extend(data, {
+        disabled: evalF(field.disabled, field, this.model),
+        visible:  evalF(data.visible, field, this.model),
+        required: evalF(data.required, field, this.model),
+      });
+
+      // Clean up first
+      this.$el.removeClass(Backform.hiddenClassName);
+
+      if (!data.visible)
+        this.$el.addClass(Backform.hiddenClassName);
+
+      if(Backform.requiredInputClassName) {
+        this.$el.removeClass(Backform.requiredInputClassName);
+      }
+
+      if (data.required) {
+        this.$el.addClass(Backform.requiredInputClassName);
+      }
+
+      data.options = _.defaults({
+        disabled: evalF(field.disabled, field, this.model),
+      }, this.field.get('options'), this.defaults.options,
+        $.fn.bootstrapToggle.defaults);
+
+      this.$el.html(this.template(data)).addClass(field.name);
       this.$input = this.$el.find('input[type=checkbox]').first();
-
-      //Check & set additional properties
-      this.$input.bootstrapSwitch(
-        _.extend(options, {
-          'state': rawValue,
-        })
-      );
+      this.$input.bootstrapToggle();
+      this.updateInvalid();
 
       return this;
     },

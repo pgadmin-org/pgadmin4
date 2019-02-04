@@ -14,6 +14,7 @@ Features
 Bug fixes
 *********
 
+| `Bug #3051 <https://redmine.postgresql.org/issues/3051>`_ - Replace Bootstrap switch with Bootstrap4 toggle to improve the performance.
 | `Bug #3272 <https://redmine.postgresql.org/issues/3272>`_ - Replace the PyCrypto module with the cryptography module.
 | `Bug #3453 <https://redmine.postgresql.org/issues/3453>`_ - Fixed SQL for foreign table options.
 | `Bug #3475 <https://redmine.postgresql.org/issues/3475>`_ - Fixed execution time to show Hours part for long running queries in Query Tool.

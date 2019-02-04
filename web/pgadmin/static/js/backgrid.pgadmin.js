@@ -9,7 +9,8 @@
 
 define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-  'moment', 'bignumber', 'bootstrap.datetimepicker', 'bootstrap.switch', 'backgrid.filter',
+  'moment', 'bignumber', 'bootstrap.datetimepicker', 'backgrid.filter',
+  'bootstrap.toggle',
 ], function(
   gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber
 ) {
@@ -451,18 +452,20 @@ define([
   /**
     SwitchCell renders a Bootstrap Switch in backgrid cell
   */
-  if (window.jQuery && window.jQuery.fn.bootstrapSwitch)
-    $.fn.bootstrapSwitch = window.jQuery.fn.bootstrapSwitch;
+  if (window.jQuery && window.jQuery.fn.bootstrapToggle)
+    $.fn.bootstrapToggle = window.jQuery.fn.bootstrapToggle;
 
   Backgrid.Extension.SwitchCell = Backgrid.BooleanCell.extend({
     defaults: {
       options: _.defaults({
-        onText: gettext('True'),
-        offText: gettext('False'),
+        onText: gettext('Yes'),
+        offText: gettext('No'),
         onColor: 'success',
-        offColor: 'default',
+        offColor: 'primary',
         size: 'mini',
-      }, $.fn.bootstrapSwitch.defaults),
+        width: null,
+        height: null,
+      }, $.fn.bootstrapToggle.defaults),
     },
 
     className: 'switch-cell',
@@ -474,7 +477,7 @@ define([
 
     enterEditMode: function() {
       this.$el.addClass('editor');
-      $(this.$el.find('input')).trigger('focus');
+      $(this.$el.find('input[type=checkbox]')).trigger('focus');
     },
 
     exitEditMode: function() {
@@ -482,7 +485,16 @@ define([
     },
 
     events: {
-      'switchChange.bootstrapSwitch': 'onChange',
+      'change input': 'onChange',
+      'keyup': 'toggleSwitch',
+      'blur input': 'exitEditMode',
+    },
+
+    toggleSwitch: function(e) {
+      if (e.keyCode == 32) {
+        this.$el.find('input[type=checkbox]').bootstrapToggle('toggle');
+        e.preventDefault();
+      }
     },
 
     onChange: function() {
@@ -503,7 +515,8 @@ define([
         rawValue = this.formatter.fromRaw(
           model.get(column.get('name')), model
         ),
-        editable = Backgrid.callByNeed(col.editable, column, model);
+        editable = Backgrid.callByNeed(col.editable, column, model),
+        options =  _.defaults({}, col.options, this.defaults.options);
 
       this.undelegateEvents();
 
@@ -513,17 +526,14 @@ define([
         $('<input>', {
           tabIndex: -1,
           type: 'checkbox',
-        }).prop('checked', rawValue).prop('disabled', !editable));
+        }).prop('checked', rawValue).prop('disabled', !editable).attr('data-toggle', 'toggle')
+        .attr('data-size', options.size).attr('data-on', options.onText).attr('data-off', options.offText)
+        .attr('data-onstyle', options.onColor).attr('data-offstyle', options.offColor));
+
       this.$input = this.$el.find('input[type=checkbox]').first();
 
-      // Override BooleanCell checkbox with Bootstrapswitch
-      this.$input.bootstrapSwitch(
-        _.defaults({
-          'state': rawValue,
-          'disabled': !editable,
-        }, col.options,
-          this.defaults.options
-        ));
+      // Override BooleanCell checkbox with Bootstraptoggle
+      this.$input.bootstrapToggle();
 
       // Listen for Tab key
       this.$el.on('keydown', function(e) {
@@ -546,6 +556,7 @@ define([
               });
               self.model.trigger('backgrid:edited', self.model,
                 self.column, command);
+              this.exitEditMode();
               gotoCell.trigger('focus');
             }
           }, 20);

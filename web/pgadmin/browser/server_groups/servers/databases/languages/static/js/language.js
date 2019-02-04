@@ -138,7 +138,6 @@ define('pgadmin.node.language', [
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small',
           },
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], deps: ['name'],
           disabled: function(m) {

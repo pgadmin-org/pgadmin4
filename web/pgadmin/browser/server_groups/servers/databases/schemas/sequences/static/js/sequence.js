@@ -160,7 +160,6 @@ define('pgadmin.node.sequence', [
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small',
           },
         }, pgBrowser.SecurityGroupSchema,{
           id: 'acl', label: gettext('Privileges'), type: 'text',

@@ -463,10 +463,10 @@ define('pgadmin.node.schema', [
       is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
       if (is_editable) {
         this.$el.addClass('editable');
-        input.bootstrapSwitch('disabled',false);
+        input.bootstrapToggle('disabled',false);
       } else {
         this.$el.removeClass('editable');
-        input.bootstrapSwitch('disabled',true);
+        input.bootstrapToggle('disabled',true);
         // Set self value into model to false
         setTimeout(function() { model.set(self_name, false); }, 10);
       }

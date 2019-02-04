@@ -44,21 +44,6 @@ define([
   */
 
   Backform.CustomSwitchControl = Backform.SwitchControl.extend({
-    template: _.template([
-      '<label class="<%=controlLabelClassName%> custom_switch_label_class"><%=label%></label>',
-      '<div class="<%=controlsClassName%> custom_switch_control_class">',
-      '  <div class="checkbox">',
-      '    <label>',
-      '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>"',
-      '        name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%>',
-      '        <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '    </label>',
-      '  </div>',
-      '</div>',
-      '<% if (helpMessage && helpMessage.length) { %>',
-      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '<% } %>',
-    ].join('\n')),
     className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-12 row',
   });
 

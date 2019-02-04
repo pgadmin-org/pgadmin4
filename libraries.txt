@@ -21,7 +21,6 @@ font-Awesome        4.5            SIL OFL      http://fortawesome.github.io/Fon
 font-mfizz          2.4.1          MIT          http://fizzed.com/oss/font-mfizz
 backgrid.js         0.3.5          MIT          http://backgridjs.com/
 backbone.undo       0.2            MIT          http://backbone.undojs.com/
-bootstrap-switch    3.3.2          MIT          http://www.bootstrap-switch.org/
 select2             4.0.1          MIT          https://select2.github.io/
 backgrid-filter     01b2b21        MIT          https://github.com/wyuenho/backgrid-filter
 backbone.paginator  2.0.3          MIT          http://github.com/backbone-paginator/backbone.paginator

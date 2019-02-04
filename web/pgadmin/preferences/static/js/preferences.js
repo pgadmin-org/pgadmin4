@@ -214,7 +214,7 @@ define('pgadmin.preferences', [
                 onText: gettext('True'),
                 offText: gettext('False'),
                 onColor: 'success',
-                offColor: 'default',
+                offColor: 'primary',
                 size: 'mini',
               };
               return 'switch';
@@ -223,8 +223,9 @@ define('pgadmin.preferences', [
                 onText: gettext('Show'),
                 offText: gettext('Hide'),
                 onColor: 'success',
-                offColor: 'default',
+                offColor: 'primary',
                 size: 'mini',
+                width: '56',
               };
               return 'switch';
             case 'integer':

@@ -228,30 +228,13 @@ legend {
 	font-size: 13px;
 }
 
-
-/* Remove default left padding from checkbox for bootstrap-switch */
-.checkbox {
-	margin-bottom: 0px !important;
-	margin-top: 0px !important;
-}
-.checkbox label {
-	padding-left: 0px !important;
-	margin-bottom: 0px !important;
-}
-.bootstrap-switch > .bootstrap-switch-container > input {
-	border: 0px solid $color-fg;
-	height: 0px;
-	margin: 0px;
-	padding: 0px;
-	width: 0px;
-}
 .switch-cell {
 	height: 0px;
 	width: 0px;
 }
 
 /* Center align the switch in backgrid */
-td.switch-cell > div.bootstrap-switch {
+td.switch-cell > div.toggle {
 	display: block;
 	margin: auto;
 }
@@ -309,13 +292,6 @@ td.switch-cell > div.bootstrap-switch {
   line-height: 0.7rem;
 }
 
-
-.bootstrap-switch.bootstrap-switch-disabled, .bootstrap-switch.bootstrap-switch-readonly {
-  background-color: $input-disabled-bg !important;
-  opacity: 1;
-}
-
-
 .btn-toolbar {
   min-width: 100%;
 }
@@ -330,10 +306,6 @@ td.switch-cell > div.bootstrap-switch {
 	}
 }
 
-/* bootstrap-switch */
-.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
-	background: $color-primary;
-}
-.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-success, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-success {
-	background: $color-success;
+.btn.disabled, .btn:disabled, .btn[disabled] {
+  opacity: $btn-disabled-opacity;
 }

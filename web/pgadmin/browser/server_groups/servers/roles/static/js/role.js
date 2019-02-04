@@ -72,23 +72,27 @@ define('pgadmin.node.role', [
 
   var switchOptions = {
     'onText': gettext('Yes'), 'offText': gettext('No'),
-    'size': 'mini',
+    'size': 'mini', onColor: 'success',
+    offColor: 'primary',
   };
 
   var RoleCustomSwitchControl = Backform.SwitchControl.extend({
-    template: _.template([
-      '<label class="control-label pg-el-sm-10 pg-el-12"><%=label%></label>',
-      '<div class="pgadmin-controls pg-el-sm-2 pg-el-12">',
-      '  <div class="checkbox">',
-      '    <label>',
-      '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '    </label>',
-      '  </div>',
-      '</div>',
-      '<% if (helpMessage && helpMessage.length) { %>',
-      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '<% } %>',
-    ].join('\n')),
+    defaults: {
+      label: '',
+      options: {
+        onText: gettext('Yes'),
+        offText: gettext('No'),
+        onColor: 'success',
+        offColor: 'primary',
+        size: 'mini',
+        width: null,
+        height: null,
+      },
+      controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+      controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
+      extraClasses: [],
+      helpMessage: null,
+    },
     className: 'pgadmin-control-group form-group pg-el-12 row',
   });
 

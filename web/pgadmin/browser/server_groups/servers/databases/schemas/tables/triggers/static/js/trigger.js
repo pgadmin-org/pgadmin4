@@ -18,21 +18,21 @@ define('pgadmin.node.trigger', [
   SchemaChildTreeNode
 ) {
   Backform.CustomSwitchControl = Backform.SwitchControl.extend({
-    template: _.template([
-      '<label class="control-label pg-el-sm-6 pg-el-12"><%=label%></label>',
-      '<div class="pgadmin-controls pg-el-sm-6 pg-el-12">',
-      '  <div class="checkbox">',
-      '    <label>',
-      '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>"',
-      '        name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%>',
-      '        <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '    </label>',
-      '  </div>',
-      '</div>',
-      '<% if (helpMessage && helpMessage.length) { %>',
-      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '<% } %>',
-    ].join('\n')),
+    defaults: {
+      label: '',
+      options: {
+        onText: gettext('Yes'),
+        offText: gettext('No'),
+        onColor: 'success',
+        offColor: 'primary',
+        width: null,
+        height: null,
+      },
+      controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+      controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
+      extraClasses: [],
+      helpMessage: null,
+    },
     className: 'pgadmin-control-group form-group col-6 row',
   });
 

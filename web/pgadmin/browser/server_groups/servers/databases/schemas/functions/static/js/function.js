@@ -286,7 +286,6 @@ define('pgadmin.node.function', [
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small',
           },
         },{
           id: 'prosecdef', label: gettext('Security of definer?'),

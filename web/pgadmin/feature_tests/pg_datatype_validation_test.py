@@ -102,10 +102,10 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         )
 
         switch_btn = insert_bracket_pairs_control.\
-            find_element_by_class_name('bootstrap-switch')
+            find_element_by_class_name('toggle')
 
         # check if switch is on then only toggle.
-        if 'bootstrap-switch-on' in switch_btn.get_attribute('class'):
+        if 'off' not in switch_btn.get_attribute('class'):
             switch_btn.click()
 
         # save and close the preference dialog.

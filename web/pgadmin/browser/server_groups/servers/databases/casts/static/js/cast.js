@@ -234,7 +234,7 @@ define('pgadmin.node.cast', [
           group: gettext('Definition'), disabled: true, mode:['properties','edit'],
         },{
           id: 'castcontext', label: gettext('Context'),
-          options:{'onText':'IMPLICIT','offText':'EXPLICIT'},
+          options:{'onText':'IMPLICIT','offText':'EXPLICIT', width: '90'},
           editable: false, type: 'string', group: gettext('Definition'),
           mode:['create'],
           control: Backform.SwitchControl.extend({

@@ -388,7 +388,6 @@ define('pgadmin.node.database', [
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small',
           },
         },{
           id: 'datallowconn', label: gettext('Allow connections?'),
@@ -397,7 +396,6 @@ define('pgadmin.node.database', [
           options: {
             'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
-            'size': 'small',
           },
         },{
           id: 'datacl', label: gettext('Privileges'), type: 'collection',

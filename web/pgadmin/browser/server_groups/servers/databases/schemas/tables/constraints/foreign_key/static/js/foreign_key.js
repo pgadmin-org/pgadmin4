@@ -771,6 +771,7 @@ define('pgadmin.node.foreign_key', [
           options: {
             onText: 'FULL',
             offText: 'SIMPLE',
+            width: '80',
           },disabled: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {

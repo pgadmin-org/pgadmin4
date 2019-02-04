@@ -768,7 +768,7 @@ define('pgadmin.node.server', [
         },{
           id: 'connected', label: gettext('Connected?'), type: 'switch',
           mode: ['properties'], group: gettext('Connection'), 'options': {
-            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'small',
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
           },
         },{
           id: 'version', label: gettext('Version'), type: 'text', group: null,
@@ -857,7 +857,7 @@ define('pgadmin.node.server', [
         },{
           id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
           mode: ['edit', 'create'], group: gettext('SSL'),
-          'options': {'size': 'small'},
+          'options': {'size': 'mini'},
           deps: ['sslmode'], disabled: 'isSSL',
         },{
           id: 'sslcert', label: gettext('Client certificate'), type: 'text',
@@ -894,7 +894,7 @@ define('pgadmin.node.server', [
         },{
           id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
           mode: ['properties'], group: gettext('SSL'),
-          'options': {'size': 'small'},
+          'options': {'size': 'mini'},
           deps: ['sslmode'], visible: function(model) {
             var sslmode = model.get('sslmode');
             return _.indexOf(SSL_MODES, sslmode) != -1;
@@ -902,7 +902,7 @@ define('pgadmin.node.server', [
         },{
           id: 'use_ssh_tunnel', label: gettext('Use SSH tunneling'), type: 'switch',
           mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
-          'options': {'size': 'small'},
+          'options': {'size': 'mini'},
           disabled: function(model) {
             if (!pgAdmin.Browser.utils.support_ssh_tunnel) {
               setTimeout(function() {
@@ -936,7 +936,7 @@ define('pgadmin.node.server', [
           id: 'tunnel_authentication', label: gettext('Authentication'), type: 'switch',
           mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
           'options': {'onText':  gettext('Identity file'),
-            'offText':  gettext('Password'), 'size': 'small'},
+            'offText':  gettext('Password'), 'size': 'mini', width: '90'},
           deps: ['use_ssh_tunnel'],
           disabled: function(model) {
             return !model.get('use_ssh_tunnel');

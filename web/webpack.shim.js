@@ -37,9 +37,9 @@ var webpackShimConfig = {
       'deps': ['moment'],
       'exports': 'jQuery.fn.datetimepicker',
     },
-    'bootstrap.switch': {
+    'bootstrap.toggle': {
       deps: ['jquery', 'bootstrap'],
-      'exports': '$.fn.bootstrapSwitch',
+      'exports': '$.fn.bootstrapToggle',
     },
     'backbone': {
       exports: 'Backbone', // Once loaded, use the global 'Backbone' as the module value.
@@ -53,10 +53,10 @@ var webpackShimConfig = {
       'exports': 'Backgrid',
     },
     'pgadmin.backform': {
-      'deps': ['backform', 'pgadmin.backgrid', 'select2'],
+      'deps': ['backform', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle'],
     },
     'pgadmin.backgrid': {
-      'deps': ['backgrid', 'bootstrap.datetimepicker', 'bootstrap.switch'],
+      'deps': ['backgrid', 'bootstrap.datetimepicker', 'bootstrap.toggle'],
     },
 
     'backgrid.select.all': {
@@ -172,7 +172,7 @@ var webpackShimConfig = {
     'backform': path.join(__dirname, './pgadmin/static/vendor/backform/backform'),
     'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),
     'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
-    'bootstrap.switch': path.join(__dirname, './node_modules/bootstrap-switch/dist/js/bootstrap-switch'),
+    'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle'),
     'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
     'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),
     'backgrid.sizeable.columns': path.join(__dirname, './node_modules/backgrid-sizeable-columns/backgrid-sizeable-columns'),
