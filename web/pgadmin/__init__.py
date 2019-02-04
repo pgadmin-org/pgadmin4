@@ -16,6 +16,7 @@ from collections import defaultdict
 from importlib import import_module
 
 from flask import Flask, abort, request, current_app, session, url_for
+from werkzeug.exceptions import HTTPException
 from flask_babelex import Babel, gettext
 from flask_login import user_logged_in, user_logged_out
 from flask_mail import Mail
@@ -668,6 +669,14 @@ def create_app(app_name=None):
     def all_exception_handler(e):
         current_app.logger.error(e, exc_info=True)
         return internal_server_error(errormsg=str(e))
+
+    # Exclude HTTPexception from above handler (all_exception_handler)
+    # HTTPException are user defined exceptions and those should be returned
+    # as is
+    @app.errorhandler(HTTPException)
+    def http_exception_handler(e):
+        current_app.logger.error(e, exc_info=True)
+        return e
 
     ##########################################################################
     # All done!

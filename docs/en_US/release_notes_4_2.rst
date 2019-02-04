@@ -48,3 +48,4 @@ Bug fixes
 | `Bug #3941 <https://redmine.postgresql.org/issues/3941>`_ - Dashboard graph optimization.
 | `Bug #3954 <https://redmine.postgresql.org/issues/3954>`_ - Remove Python 2.6 code that's now obsolete.
 | `Bug #3955 <https://redmine.postgresql.org/issues/3955>`_ - Expose the bind address in the Docker container via PGADMIN_BIND_ADDRESS.
+| `Bug #3961 <https://redmine.postgresql.org/issues/3961>`_ - Exclude HTTPExceptions from the all_exception_handler as they should be returned as-is.
