@@ -9,6 +9,7 @@
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.utils import server_utils as server_utils
+from regression import parent_node_dict
 import simplejson as json
 
 
@@ -21,42 +22,36 @@ class DashboardGraphsTestCase(BaseTestGenerator):
 
     scenarios = [(
         'TestCase for session_stats graph', dict(
-            sid=1,
             did=-1,
             chart_data={
                 'session_stats': ['Total', 'Active', 'Idle'],
             }
         )), (
         'TestCase for tps_stats graph', dict(
-            sid=1,
             did=-1,
             chart_data={
                 'tps_stats': ['Transactions', 'Commits', 'Rollbacks'],
             }
         )), (
         'TestCase for ti_stats graph', dict(
-            sid=1,
             did=-1,
             chart_data={
                 'ti_stats': ['Inserts', 'Updates', 'Deletes'],
             }
         )), (
         'TestCase for to_stats graph', dict(
-            sid=1,
             did=-1,
             chart_data={
                 'to_stats': ['Fetched', 'Returned'],
             }
         )), (
         'TestCase for bio_stats graph', dict(
-            sid=1,
             did=-1,
             chart_data={
                 'bio_stats': ['Reads', 'Hits'],
             }
         )), (
         'TestCase for two graphs', dict(
-            sid=1,
             did=-1,
             chart_data={
                 'session_stats': ['Total', 'Active', 'Idle'],
@@ -64,7 +59,6 @@ class DashboardGraphsTestCase(BaseTestGenerator):
             }
         )), (
         'TestCase for five graphs', dict(
-            sid=1,
             did=-1,
             chart_data={
                 'session_stats': ['Total', 'Active', 'Idle'],
@@ -75,7 +69,6 @@ class DashboardGraphsTestCase(BaseTestGenerator):
             }
         )), (
         'TestCase for no graph', dict(
-            sid=1,
             did=-1,
             chart_data={},
         ))
@@ -92,10 +85,11 @@ class DashboardGraphsTestCase(BaseTestGenerator):
         return base_url
 
     def runTest(self):
-        server_response = server_utils.connect_server(self, self.sid)
+        self.server_id = parent_node_dict["server"][-1]["server_id"]
+        server_response = server_utils.connect_server(self, self.server_id)
         if server_response["info"] == "Server connected.":
 
-            url = self.getStatsUrl(self.sid, self.did,
+            url = self.getStatsUrl(self.server_id, self.did,
                                    ",".join(self.chart_data.keys()))
             response = self.tester.get(url)
             self.assertEquals(response.status_code, 200)
