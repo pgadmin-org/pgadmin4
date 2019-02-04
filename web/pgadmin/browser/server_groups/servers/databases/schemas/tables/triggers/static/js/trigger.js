@@ -25,6 +25,7 @@ define('pgadmin.node.trigger', [
         offText: gettext('No'),
         onColor: 'success',
         offColor: 'primary',
+        size: 'mini',
         width: null,
         height: null,
       },
