@@ -443,11 +443,11 @@ define('pgadmin.datagrid', [
 
           try {
             var err = JSON.parse(xhr.responseText);
-            alertify.alert(gettext('Query Tool Initialize Error'),
+            alertify.alert(gettext('Query Tool initialization error'),
               err.errormsg
             );
           } catch (e) {
-            alertify.alert(gettext('Query Tool Initialize Error'),
+            alertify.alert(gettext('Query Tool initialization error'),
               e.statusText
             );
           }
