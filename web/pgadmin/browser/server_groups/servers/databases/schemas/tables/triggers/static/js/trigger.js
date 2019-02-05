@@ -17,25 +17,6 @@ define('pgadmin.node.trigger', [
   gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify,
   SchemaChildTreeNode
 ) {
-  Backform.CustomSwitchControl = Backform.SwitchControl.extend({
-    defaults: {
-      label: '',
-      options: {
-        onText: gettext('Yes'),
-        offText: gettext('No'),
-        onColor: 'success',
-        offColor: 'primary',
-        size: 'mini',
-        width: null,
-        height: null,
-      },
-      controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-      controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-      extraClasses: [],
-      helpMessage: null,
-    },
-    className: 'pgadmin-control-group form-group col-6 row',
-  });
 
   if (!pgBrowser.Nodes['coll-trigger']) {
     pgAdmin.Browser.Nodes['coll-trigger'] =
@@ -396,7 +377,9 @@ define('pgadmin.node.trigger', [
             id: 'evnt_insert', label: gettext('INSERT'),
             type: 'switch', mode: ['create','edit', 'properties'],
             group: gettext('Events'),
-            control: Backform.CustomSwitchControl,
+            extraToggleClasses: 'pg-el-sm-6',
+            controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
             disabled: function(m) {
               var evn_insert = m.get('evnt_insert');
               if (!_.isUndefined(evn_insert) && m.node_info['server']['server_type'] == 'ppas')
@@ -407,7 +390,9 @@ define('pgadmin.node.trigger', [
             id: 'evnt_update', label: gettext('UPDATE'),
             type: 'switch', mode: ['create','edit', 'properties'],
             group: gettext('Events'),
-            control: Backform.CustomSwitchControl,
+            extraToggleClasses: 'pg-el-sm-6',
+            controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
             disabled: function(m) {
               var evn_update = m.get('evnt_update');
               if (!_.isUndefined(evn_update) && m.node_info['server']['server_type'] == 'ppas')
@@ -418,7 +403,9 @@ define('pgadmin.node.trigger', [
             id: 'evnt_delete', label: gettext('DELETE'),
             type: 'switch', mode: ['create','edit', 'properties'],
             group: gettext('Events'),
-            control: Backform.CustomSwitchControl,
+            extraToggleClasses: 'pg-el-sm-6',
+            controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
             disabled: function(m) {
               var evn_delete = m.get('evnt_delete');
               if (!_.isUndefined(evn_delete) && m.node_info['server']['server_type'] == 'ppas')
@@ -428,7 +415,9 @@ define('pgadmin.node.trigger', [
           },{
             id: 'evnt_truncate', label: gettext('TRUNCATE'),
             type: 'switch', group: gettext('Events'),
-            control: Backform.CustomSwitchControl,
+            extraToggleClasses: 'pg-el-sm-6',
+            controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
             disabled: function(m) {
               var is_constraint_trigger = m.get('is_constraint_trigger'),
                 is_row_trigger = m.get('is_row_trigger'),

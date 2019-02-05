@@ -29,10 +29,6 @@ define([
   if (pgAdmin.Tools.maintenance)
     return pgAdmin.Tools.maintenance;
 
-  Backform.CustomSwitchControl = Backform.SwitchControl.extend({
-    className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-12 row',
-  });
-
   // Main model for Maintenance functionality
   var MaintenanceModel = Backbone.Model.extend({
     defaults: {
@@ -103,21 +99,30 @@ define([
         id: 'vacuum_full',
         group: gettext('Vacuum'),
         disabled: 'isDisabled',
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-4',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         label: gettext('FULL'),
         deps: ['op'],
       }, {
         id: 'vacuum_freeze',
         deps: ['op'],
         disabled: 'isDisabled',
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-4',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         label: gettext('FREEZE'),
         group: gettext('Vacuum'),
       }, {
         id: 'vacuum_analyze',
         deps: ['op'],
         disabled: 'isDisabled',
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-4',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         label: gettext('ANALYZE'),
         group: gettext('Vacuum'),
       }],
@@ -126,7 +131,7 @@ define([
       id: 'verbose',
       group: gettext('Options'),
       deps: ['op'],
-      control: Backform.CustomSwitchControl,
+      type: 'switch',
       label: gettext('Verbose Messages'),
       disabled: 'isDisabled',
     },

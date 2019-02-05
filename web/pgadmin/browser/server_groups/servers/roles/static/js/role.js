@@ -70,32 +70,6 @@ define('pgadmin.node.role', [
       },
     });
 
-  var switchOptions = {
-    'onText': gettext('Yes'), 'offText': gettext('No'),
-    'size': 'mini', onColor: 'success',
-    offColor: 'primary',
-  };
-
-  var RoleCustomSwitchControl = Backform.SwitchControl.extend({
-    defaults: {
-      label: '',
-      options: {
-        onText: gettext('Yes'),
-        offText: gettext('No'),
-        onColor: 'success',
-        offColor: 'primary',
-        size: 'mini',
-        width: null,
-        height: null,
-      },
-      controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
-      controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
-      extraClasses: [],
-      helpMessage: null,
-    },
-    className: 'pgadmin-control-group form-group pg-el-12 row',
-  });
-
   var RoleMembersControl = Backform.Control.extend({
     defaults: _.defaults(
       {extraClasses: ['col-12 col-sm-12 col-md-12']},
@@ -439,13 +413,21 @@ define('pgadmin.node.role', [
           label: gettext('Connection limit'), cell: 'integer', min : -1,
           mode: ['properties', 'edit', 'create'], disabled: 'readonly',
         },{
-          id: 'rolcanlogin', label: gettext('Can login?'), type: 'switch',
-          group: gettext('Privileges'), options: switchOptions,
-          disabled: 'readonly', control: RoleCustomSwitchControl,
+          id: 'rolcanlogin', label: gettext('Can login?'),
+          type: 'switch',
+          options: {'onText': gettext('Yes'), 'offText': gettext('No')},
+          controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+          controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
+          group: gettext('Privileges'),
+          disabled: 'readonly',
         },{
-          id: 'rolsuper', label: gettext('Superuser'), type: 'switch',
-          group: gettext('Privileges'), options: switchOptions,
-          control: RoleCustomSwitchControl.extend({
+          id: 'rolsuper', label: gettext('Superuser'),
+          type: 'switch',
+          options: {'onText': gettext('Yes'), 'offText': gettext('No')},
+          controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+          controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
+          group: gettext('Privileges'),
+          control: Backform.SwitchControl.extend({
             onChange: function() {
               Backform.SwitchControl.prototype.onChange.apply(this, arguments);
 
@@ -457,35 +439,51 @@ define('pgadmin.node.role', [
           disabled: 'readonly',
         },{
           id: 'rolcreaterole', label: gettext('Create roles?'),
-          group: gettext('Privileges'), type: 'switch',
-          options: switchOptions, disabled: 'readonly',
-          control: RoleCustomSwitchControl,
+          group: gettext('Privileges'),
+          type: 'switch',
+          options: {'onText': gettext('Yes'), 'offText': gettext('No')},
+          controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+          controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
+          disabled: 'readonly',
         },{
           id: 'description', label: gettext('Comments'), type: 'multiline',
           group: null, mode: ['properties', 'edit', 'create'],
-          options: switchOptions, disabled: 'readonly',
+          disabled: 'readonly',
         },{
           id: 'rolcreatedb', label: gettext('Create databases?'),
-          group: gettext('Privileges'), type: 'switch',
-          options: switchOptions, disabled: 'readonly',
-          control: RoleCustomSwitchControl,
+          group: gettext('Privileges'),
+          type: 'switch',
+          options: {'onText': gettext('Yes'), 'offText': gettext('No')},
+          controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+          controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
+          disabled: 'readonly',
         },{
           id: 'rolcatupdate', label: gettext('Update catalog?'),
-          type: 'switch', max_version: 90400, options: switchOptions,
-          control: RoleCustomSwitchControl,
+          type: 'switch',
+          options: {'onText': gettext('Yes'), 'offText': gettext('No')},
+          controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+          controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
+          max_version: 90400,
           group: gettext('Privileges'), disabled: function(m) {
             return (m.get('read_only') || (!m.get('rolsuper')));
           },
         },{
           id: 'rolinherit', group: gettext('Privileges'),
           label: gettext('Inherit rights from the parent roles?'),
-          type: 'switch', options: switchOptions, disabled: 'readonly',
-          control: RoleCustomSwitchControl,
+          type: 'switch',
+          options: {'onText': gettext('Yes'), 'offText': gettext('No')},
+          controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+          controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
+          disabled: 'readonly',
         },{
           id: 'rolreplication', group: gettext('Privileges'),
           label: gettext('Can initiate streaming replication and backups?'),
-          type: 'switch', min_version: 90100, options: switchOptions,
-          disabled: 'readonly', control: RoleCustomSwitchControl,
+          type: 'switch',
+          options: {'onText': gettext('Yes'), 'offText': gettext('No')},
+          controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+          controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
+          min_version: 90100,
+          disabled: 'readonly',
         },{
           id: 'rolmembership', label: gettext('Roles'),
           group: gettext('Membership'), type: 'collection',

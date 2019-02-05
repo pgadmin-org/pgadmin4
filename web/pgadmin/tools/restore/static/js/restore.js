@@ -24,10 +24,6 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
     return pgBrowser.Restore;
   }
 
-  Backform.CustomSwitchControl = Backform.SwitchControl.extend({
-    className: 'pgadmin-control-group form-group pg-el-md-6 row',
-  });
-
   //Restore Model (Objects like Database/Schema/Table)
   var RestoreObjectModel = Backbone.Model.extend({
     idAttribute: 'id',
@@ -146,7 +142,10 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       schema: [{
         id: 'pre_data',
         label: gettext('Pre-data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Sections'),
         deps: ['only_data', 'only_schema'],
         disabled: function(m) {
@@ -158,7 +157,10 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       }, {
         id: 'data',
         label: gettext('Data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Sections'),
         deps: ['only_data', 'only_schema'],
         disabled: function(m) {
@@ -170,7 +172,10 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       }, {
         id: 'post_data',
         label: gettext('Post-data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Sections'),
         deps: ['only_data', 'only_schema'],
         disabled: function(m) {
@@ -189,7 +194,10 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       schema: [{
         id: 'only_data',
         label: gettext('Only data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Type of objects'),
         deps: ['pre_data', 'data', 'post_data', 'only_schema'],
         disabled: function(m) {
@@ -203,7 +211,10 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       }, {
         id: 'only_schema',
         label: gettext('Only schema'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Type of objects'),
         deps: ['pre_data', 'data', 'post_data', 'only_data'],
         disabled: function(m) {
@@ -224,25 +235,37 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       schema: [{
         id: 'dns_owner',
         label: gettext('Owner'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
       }, {
         id: 'dns_privilege',
         label: gettext('Privilege'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
       }, {
         id: 'dns_tablespace',
         label: gettext('Tablespace'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
       }, {
         id: 'no_comments',
         label: gettext('Comments'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
         visible: function() {
@@ -263,13 +286,19 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       schema: [{
         id: 'include_create_database',
         label: gettext('Include CREATE DATABASE statement'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Queries'),
       }, {
         id: 'clean',
         label: gettext('Clean before restore'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Queries'),
         disabled: function() {
           return this.node.type === 'function' ||
@@ -278,7 +307,10 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       }, {
         id: 'single_transaction',
         label: gettext('Single transaction'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Queries'),
       }],
@@ -291,12 +323,18 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       schema: [{
         id: 'disable_trigger',
         label: gettext('Trigger'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Disable'),
       }, {
         id: 'no_data_fail_table',
         label: gettext('No data for Failed Tables'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Disable'),
       }],
@@ -309,19 +347,28 @@ commonUtils, menuUtils, supportedNodes, restoreDialog
       schema: [{
         id: 'verbose',
         label: gettext('Verbose messages'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Miscellaneous / Behavior'),
       }, {
         id: 'use_set_session_auth',
         label: gettext('Use SET SESSION AUTHORIZATION'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Miscellaneous / Behavior'),
       }, {
         id: 'exit_on_error',
         label: gettext('Exit on error'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Miscellaneous / Behavior'),
       }],

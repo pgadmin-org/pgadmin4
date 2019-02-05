@@ -439,10 +439,11 @@ define([
       controlsClassName: Backform.controlsClassName,
       extraClasses: [],
       helpMessage: null,
+      extraToggleClasses: null,
     },
     template: _.template([
       '<label class="<%=controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=controlsClassName%>">',
+      '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
       '      <input tabindex="0" type="checkbox" data-style="quick" data-toggle="toggle"',
       '      data-size="<%=options.size%>" data-height="<%=options.height%>"  ',
       '      data-on="<%=options.onText%>" data-off="<%=options.offText%>" ',
@@ -513,6 +514,10 @@ define([
         $.fn.bootstrapToggle.defaults);
 
       this.$el.html(this.template(data)).addClass(field.name);
+
+      // Add Extra Toggle classes to render multiple toggles in a single row
+      if(!_.isNull(field.extraToggleClasses)) this.$el.addClass(field.extraToggleClasses);
+
       this.$input = this.$el.find('input[type=checkbox]').first();
       this.$input.bootstrapToggle();
       this.updateInvalid();

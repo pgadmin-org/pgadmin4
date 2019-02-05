@@ -137,7 +137,8 @@ define('pgadmin.node.pga_jobstep', [
           id: 'jstname', label: gettext('Name'), type: 'text',
           disabled: false, cellHeaderClasses: 'width_percent_60',
         },{
-          id: 'jstenabled', label: gettext('Enabled?'), type: 'switch',
+          id: 'jstenabled', label: gettext('Enabled?'),
+          type: 'switch',
           disabled: function() { return false; },
         },{
           id: 'jstkind', label: gettext('Kind'), type: 'switch',

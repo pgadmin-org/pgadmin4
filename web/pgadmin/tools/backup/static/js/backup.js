@@ -43,10 +43,6 @@ define([
      with schema.
   */
 
-  Backform.CustomSwitchControl = Backform.SwitchControl.extend({
-    className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-12 row',
-  });
-
   //Backup Model (Server Node)
   var BackupModel = Backbone.Model.extend({
     idAttribute: 'id',
@@ -82,13 +78,13 @@ define([
       schema: [{
         id: 'verbose',
         label: gettext('Verbose messages'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
         disabled: false,
         group: gettext('Miscellaneous'),
       }, {
         id: 'dqoute',
         label: gettext('Force double quote on identifiers'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
         disabled: false,
         group: gettext('Miscellaneous'),
         controlLabelClassName: 'control-label pg-el-sm-6 pg-el-12',
@@ -243,7 +239,10 @@ define([
       schema: [{
         id: 'pre_data',
         label: gettext('Pre-data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Sections'),
         deps: ['only_data', 'only_schema'],
         disabled: function(m) {
@@ -253,7 +252,10 @@ define([
       }, {
         id: 'data',
         label: gettext('Data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Sections'),
         deps: ['only_data', 'only_schema'],
         disabled: function(m) {
@@ -263,7 +265,10 @@ define([
       }, {
         id: 'post_data',
         label: gettext('Post-data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Sections'),
         deps: ['only_data', 'only_schema'],
         disabled: function(m) {
@@ -285,7 +290,10 @@ define([
       schema: [{
         id: 'only_data',
         label: gettext('Only data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Type of objects'),
         deps: ['pre_data', 'data', 'post_data', 'only_schema'],
         disabled: function(m) {
@@ -297,7 +305,10 @@ define([
       }, {
         id: 'only_schema',
         label: gettext('Only schema'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Type of objects'),
         deps: ['pre_data', 'data', 'post_data', 'only_data'],
         disabled: function(m) {
@@ -309,7 +320,10 @@ define([
       }, {
         id: 'blobs',
         label: gettext('Blobs'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Type of objects'),
         visible: function(m) {
@@ -329,31 +343,46 @@ define([
       schema: [{
         id: 'dns_owner',
         label: gettext('Owner'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
       }, {
         id: 'dns_privilege',
         label: gettext('Privilege'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
       }, {
         id: 'dns_tablespace',
         label: gettext('Tablespace'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
       }, {
         id: 'dns_unlogged_tbl_data',
         label: gettext('Unlogged table data'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
       }, {
         id: 'no_comments',
         label: gettext('Comments'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Do not save'),
         visible: function() {
@@ -374,19 +403,28 @@ define([
       schema: [{
         id: 'use_column_inserts',
         label: gettext('Use Column Inserts'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Queries'),
       }, {
         id: 'use_insert_commands',
         label: gettext('Use Insert Commands'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Queries'),
       }, {
         id: 'include_create_database',
         label: gettext('Include CREATE DATABASE statement'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Queries'),
         visible: function(m) {
@@ -397,7 +435,10 @@ define([
       }, {
         id: 'include_drop_database',
         label: gettext('Include DROP DATABASE statement'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Queries'),
         deps: ['only_data'],
         disabled: function(m) {
@@ -410,7 +451,10 @@ define([
       }, {
         id: 'load_via_partition_root',
         label: gettext('Load Via Partition Root'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Queries'),
         visible: function(m) {
@@ -434,7 +478,10 @@ define([
       schema: [{
         id: 'disable_trigger',
         label: gettext('Trigger'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         group: gettext('Disable'),
         deps: ['only_data'],
         disabled: function(m) {
@@ -443,7 +490,10 @@ define([
       }, {
         id: 'disable_quoting',
         label: gettext('$ quoting'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Disable'),
       }],
@@ -456,7 +506,10 @@ define([
       schema: [{
         id: 'with_oids',
         label: gettext('With OID(s)'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         deps: ['use_column_inserts', 'use_insert_commands'],
         group: gettext('Miscellaneous'),
         disabled: function(m) {
@@ -469,19 +522,28 @@ define([
       }, {
         id: 'verbose',
         label: gettext('Verbose messages'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Miscellaneous'),
       }, {
         id: 'dqoute',
         label: gettext('Force double quote on identifiers'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Miscellaneous'),
       }, {
         id: 'use_set_session_auth',
         label: gettext('Use SET SESSION AUTHORIZATION'),
-        control: Backform.CustomSwitchControl,
+        type: 'switch',
+        extraToggleClasses: 'pg-el-sm-6',
+        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
         disabled: false,
         group: gettext('Miscellaneous'),
       }],
