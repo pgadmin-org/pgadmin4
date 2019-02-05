@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-02-04 17:55+0530\n"
-"PO-Revision-Date: 2019-01-04 19:33+0900\n"
+"PO-Revision-Date: 2019-02-04 22:59+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -172,13 +172,13 @@ msgstr "ブラウザツリーの状態を何秒おきに保存するかを指定
 
 #: pgadmin/browser/register_browser_preferences.py:43
 msgid "Confirm on close or refresh ?"
-msgstr ""
+msgstr "ページを閉じる際に確認する"
 
 #: pgadmin/browser/register_browser_preferences.py:45
 msgid ""
 "Confirm closure or refresh of the browser or browser tab is intended "
 "before proceeding."
-msgstr ""
+msgstr "ブラウザ、もしくはそのタブを閉じたり、再読み込みする前に確認します"
 
 #: pgadmin/browser/register_browser_preferences.py:53
 msgid "Count rows if estimated less than"
@@ -7450,7 +7450,7 @@ msgstr "ノードの詳細を取得中にエラーが発生しました"
 #: pgadmin/browser/static/js/browser.js:2001
 #, python-format
 msgid "Are you sure you want to close the %s browser?"
-msgstr ""
+msgstr "%s ブラウザを閉じてもよろしいですか？"
 
 #: pgadmin/browser/static/js/collection.js:48
 #: pgadmin/browser/static/js/node.js:115
@@ -8049,7 +8049,7 @@ msgstr "するにはスーパーユーザ権限が必要です"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:7
 msgid "Database sessions"
-msgstr ""
+msgstr "データベースセッション"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:17
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:17
@@ -8345,7 +8345,7 @@ msgstr "失敗しました（終了コード： %s）"
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:365
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:435
 msgid "seconds"
-msgstr "秒数"
+msgstr "秒"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:616
 msgid "Stop Process"
@@ -8935,31 +8935,31 @@ msgstr "バックアップ"
 
 #: pgadmin/tools/backup/__init__.py:131
 msgid "Backing up an object on the server"
-msgstr ""
+msgstr "サーバのオブジェクトをバックアップ中"
 
 #: pgadmin/tools/backup/__init__.py:133
 msgid "Backing up the global objects"
-msgstr ""
+msgstr "グローバルオブジェクトをバックアップ中"
 
 #: pgadmin/tools/backup/__init__.py:135
 msgid "Backing up the server"
-msgstr ""
+msgstr "サーバをバックアップ中"
 
 #: pgadmin/tools/backup/__init__.py:138
 msgid "Unknown Backup"
-msgstr ""
+msgstr "不明なバックアップ"
 
 #: pgadmin/tools/backup/__init__.py:148
 msgid "Backing up an object on the server '{0}' from database '{1}'"
-msgstr ""
+msgstr "サーバ「{0}」のデータベース「{1}」からオブジェクトをバックアップ中"
 
 #: pgadmin/tools/backup/__init__.py:158
 msgid "Backing up the global objects on the server '{0}'"
-msgstr ""
+msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップ中"
 
 #: pgadmin/tools/backup/__init__.py:165
 msgid "Backing up the server '{0}'"
-msgstr ""
+msgstr "サーバ「{0}」をバックアップ中"
 
 #: pgadmin/tools/backup/__init__.py:180
 msgid "Backing up an object on the server '{0}' from database '{1}'..."
@@ -9268,7 +9268,7 @@ msgstr "データグリッドエラー"
 #: pgadmin/tools/datagrid/static/js/datagrid.js:446
 #: pgadmin/tools/datagrid/static/js/datagrid.js:450
 msgid "Query Tool initialization error"
-msgstr ""
+msgstr "クエリツールの初期化エラー"
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:470
 msgid "Edit Data - "
@@ -9846,7 +9846,7 @@ msgstr "デバッガ - "
 
 #: pgadmin/tools/grant_wizard/__init__.py:327
 msgid "Unable to fetch the {} objects"
-msgstr ""
+msgstr "{} オブジェクトを取得できませんでした"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:80
 msgid "Please select any database object."
@@ -9872,7 +9872,7 @@ msgstr "オブジェクト"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:629
 msgid "Unable to fetch the database objects due to an error"
-msgstr ""
+msgstr "エラーが発生したため、データベースオブジェクトを取得できませんでした"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:651
 msgid "Object Selection (step 1 of 3)"
@@ -9916,15 +9916,15 @@ msgstr "インポート/エクスポート"
 
 #: pgadmin/tools/import_export/__init__.py:114
 msgid "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})"
-msgstr ""
+msgstr "サーバ（{3}:{4}）のデータベース「{2}」内にあるテーブル「{0}.{1}」のデータをコピーしています"
 
 #: pgadmin/tools/import_export/__init__.py:127
 msgid "Copying table data"
-msgstr ""
+msgstr "テーブルデータをコピー中"
 
 #: pgadmin/tools/import_export/__init__.py:136
 msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'"
-msgstr ""
+msgstr "サーバ「{3}」のデータベース「{2}」内にあるテーブル「{0}.{1}」のデータをコピーしています"
 
 #: pgadmin/tools/import_export/__init__.py:225
 #: pgadmin/tools/maintenance/__init__.py:201
@@ -9993,7 +9993,7 @@ msgid ""
 msgstr ""
 "NULL 値を表す文字列を指定します。デフォルトは、テキスト形式では \\N （バックスラッシュN）、CSV "
 "形式では引用符のない空文字です。NULL "
-"と空文字を同じものとみなしたい場合には、テキスト形式でも空文字とすることができます。このオプションはバイナリ形式では使用できません"
+"と空文字を同じものと見なしたい場合には、テキスト形式でも空文字とすることができます。このオプションはバイナリ形式では使用できません"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:243
 msgid "Not null columns"
@@ -10011,8 +10011,8 @@ msgid ""
 "are not quoted. This option is allowed only in import, and only when "
 "using CSV format."
 msgstr ""
-"指定した列の値を NULL 文字とみなしません。NULL 文字が空文字であるデフォルトの状態では、引用符付けされていない場合でも、空文字は "
-"NULL ではなく0文字の文字列とみなされます。このオプションはインポート時、かつ CSV 形式でのみ使用することができます"
+"指定した列の値を NULL 文字と見なしません。デフォルトでは空になっているため、引用符付けされていなくても、空の値は（NULL ではなく）0文字の値と見なされます。"
+"このオプションはインポート時、かつ CSV 形式でのみ使用することができます"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:309
 #: pgadmin/tools/import_export/static/js/import_export.js:336
@@ -10212,11 +10212,11 @@ msgstr "リストア"
 
 #: pgadmin/tools/restore/__init__.py:107
 msgid "Restoring backup on the server '{0}'"
-msgstr ""
+msgstr "サーバ「{0}」のバックアップをリストア中"
 
 #: pgadmin/tools/restore/__init__.py:117
 msgid "Restoring backup on the server"
-msgstr ""
+msgstr "サーバのバックアップをリストア中"
 
 #: pgadmin/tools/restore/__init__.py:124
 msgid "Restoring backup on the server '{0}'..."
@@ -10249,7 +10249,7 @@ msgstr "単一トランザクション"
 
 #: pgadmin/tools/restore/static/js/restore.js:298
 msgid "No data for Failed Tables"
-msgstr "失敗したテーブルにはデータがありません"
+msgstr "既存テーブルには復元しない"
 
 #: pgadmin/tools/restore/static/js/restore.js:306
 #: pgadmin/tools/restore/static/js/restore.js:314
@@ -12040,8 +12040,8 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "フィルタ適用エラー"
 
 #~ msgid "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})..."
-#~ msgstr "データベース「{2}」とサーバ（{3}:{4}）のテーブルデータ「{0}.{1}」をコピー中..."
+#~ msgstr "サーバ（{3}:{4}）のデータベース「{2}」内にあるテーブル「{0}.{1}」のデータをコピーしています..."
 
 #~ msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'..."
-#~ msgstr "データベース「{2}」のテーブルデータ「{0}.{1}」をサーバ「{3}」へコピー中..."
+#~ msgstr "サーバ「{3}」のデータベース「{2}」内にあるテーブル「{0}.{1}」のデータをコピーしています..."
 
