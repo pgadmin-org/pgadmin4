@@ -147,8 +147,6 @@ define('pgadmin.node.index', [
         deps: ['amname'],
         options: {
           'onText': 'DESC', 'offText': 'ASC',
-          'onColor': 'success', 'offColor': 'primary',
-          'size': 'small',
         },
       },{
         id: 'nulls', label: gettext('NULLs'),
@@ -170,8 +168,6 @@ define('pgadmin.node.index', [
         deps: ['amname', 'sort_order'],
         options: {
           'onText': 'FIRST', 'offText': 'LAST',
-          'onColor': 'success', 'offColor': 'primary',
-          'size': 'small',
         },
       },
     ],

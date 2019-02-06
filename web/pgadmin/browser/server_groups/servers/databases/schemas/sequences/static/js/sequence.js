@@ -157,10 +157,6 @@ define('pgadmin.node.sequence', [
         },{
           id: 'cycled', label: gettext('Cycled'), type: 'switch',
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-          },
         }, pgBrowser.SecurityGroupSchema,{
           id: 'acl', label: gettext('Privileges'), type: 'text',
           group: gettext('Security'), mode: ['properties'], disabled: true,

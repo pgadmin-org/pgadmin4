@@ -18,6 +18,7 @@
 .toggle input[type="checkbox"] {
 	display: block;
 	opacity: 0;
+	margin-top: 0px !important;
 }
 
 .toggle:focus-within {

@@ -135,10 +135,6 @@ define('pgadmin.node.language', [
           type: 'multiline',
         },{
           id: 'trusted', label: gettext('Trusted?'), type: 'switch',
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-          },
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], deps: ['name'],
           disabled: function(m) {
             if (m.isNew()) {

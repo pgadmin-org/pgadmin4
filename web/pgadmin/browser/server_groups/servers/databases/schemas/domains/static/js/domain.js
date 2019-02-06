@@ -180,11 +180,6 @@ define('pgadmin.node.domain', [
         },{
           id: 'sysdomain', label: gettext('System domain?'), cell: 'boolean',
           type: 'switch', mode: ['properties'],
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-            'size': 'small',
-          },
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
@@ -261,10 +256,6 @@ define('pgadmin.node.domain', [
         },{
           id: 'typnotnull', label: gettext('Not Null?'), cell: 'boolean',
           type: 'switch', group: gettext('Definition'),
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-          },
         },{
           id: 'collname', label: gettext('Collation'), cell: 'string',
           control: 'node-ajax-options', type: 'text', url: 'get_collations',

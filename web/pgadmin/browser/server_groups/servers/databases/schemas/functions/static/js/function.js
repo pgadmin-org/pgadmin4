@@ -283,10 +283,6 @@ define('pgadmin.node.function', [
           id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
           group: gettext('Options'), disabled: 'isDisabled',
           deps: ['lanname'],
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-          },
         },{
           id: 'prosecdef', label: gettext('Security of definer?'),
           group: gettext('Options'), type: 'switch',

@@ -260,11 +260,6 @@ define('pgadmin.node.cast', [
         },{
           id: 'syscast', label: gettext('System cast?'),
           cell: 'switch', type: 'switch', mode: ['properties'], disabled: true,
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-            'size': 'small',
-          },
         },{
           id: 'description', label: gettext('Comment'),
           type: 'multiline', cellHeaderClasses: 'width_percent_50',

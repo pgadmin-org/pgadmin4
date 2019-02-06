@@ -385,18 +385,10 @@ define('pgadmin.node.database', [
           id: 'is_template', label: gettext('Template?'),
           editable: false, type: 'switch', group: gettext('Definition'),
           disabled: true,  mode: ['properties', 'edit'],
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-          },
         },{
           id: 'datallowconn', label: gettext('Allow connections?'),
           editable: false, type: 'switch', group: gettext('Definition'),
           mode: ['properties'], disabled: true,
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-          },
         },{
           id: 'datacl', label: gettext('Privileges'), type: 'collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({

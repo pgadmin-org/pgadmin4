@@ -217,10 +217,6 @@ define('pgadmin.node.trigger_function', [
         },{
           id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
           disabled: 'isDisabled', group: gettext('Options'),
-          options: {
-            'onText': gettext('Yes'), 'offText': gettext('No'),
-            'onColor': 'success', 'offColor': 'primary',
-          },
         },{
           id: 'prosecdef', label: gettext('Security of definer?'),
           group: gettext('Options'), cell:'boolean', type: 'switch',

@@ -312,10 +312,6 @@ define([
             type: 'switch',
             cell: 'switch',
             cellHeaderClasses: 'width_percent_10',
-            options: {
-              'onText': gettext('Yes'),
-              'offText': gettext('No'),
-            },
             editable: function(m) {
               if (m instanceof Backbone.Collection) {
                 return true;

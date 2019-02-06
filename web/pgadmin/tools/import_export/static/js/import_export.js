@@ -55,8 +55,7 @@ Backform, commonUtils, supportedNodes
       options: {
         'onText': gettext('Import'),
         'offText': gettext('Export'),
-        'onColor': 'success',
-        'offColor': 'primary',
+        width: '65',
       },
     }, {
       type: 'nested',
