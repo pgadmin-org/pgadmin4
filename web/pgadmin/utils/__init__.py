@@ -66,6 +66,7 @@ class PgAdminModule(Blueprint):
             if first_registration:
                 module.parentmodules.append(self)
             app.register_blueprint(module)
+            app.register_logout_hook(module)
 
     def get_own_stylesheets(self):
         """

@@ -14,6 +14,7 @@ import simplejson as json
 import pickle
 import random
 
+from threading import Lock
 from flask import Response, url_for, session, request, make_response
 from werkzeug.useragents import UserAgent
 from flask import current_app as app
@@ -27,6 +28,8 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
+
+query_tool_close_session_lock = Lock()
 
 
 class DataGridModule(PgAdminModule):
@@ -65,6 +68,20 @@ class DataGridModule(PgAdminModule):
             'datagrid.panel',
             'datagrid.close'
         ]
+
+    def on_logout(self, user):
+        """
+        This is a callback function when user logout from pgAdmin
+        :param user:
+        :return:
+        """
+        with query_tool_close_session_lock:
+            if 'gridData' in session:
+                for trans_id in session['gridData']:
+                    close_query_tool_session(trans_id)
+
+                # Delete all grid data from session variable
+                del session['gridData']
 
 
 blueprint = DataGridModule(MODULE_NAME, __name__, static_url_path='/static')
@@ -392,30 +409,16 @@ def close(trans_id):
     if str(trans_id) not in grid_data:
         return make_json_response(data={'status': True})
 
-    cmd_obj_str = grid_data[str(trans_id)]['command_obj']
-    # Use pickle.loads function to get the command object
-    cmd_obj = pickle.loads(cmd_obj_str)
-
-    # if connection id is None then no need to release the connection
-    if cmd_obj.conn_id is not None:
+    with query_tool_close_session_lock:
         try:
-            manager = get_driver(
-                PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
-            conn = manager.connection(
-                did=cmd_obj.did, conn_id=cmd_obj.conn_id)
+            close_query_tool_session(trans_id)
+            # Remove the information of unique transaction id from the
+            # session variable.
+            grid_data.pop(str(trans_id), None)
+            session['gridData'] = grid_data
         except Exception as e:
             app.logger.error(e)
             return internal_server_error(errormsg=str(e))
-
-        # Release the connection
-        if conn.connected():
-            conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
-            manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
-
-        # Remove the information of unique transaction id from the
-        # session variable.
-        grid_data.pop(str(trans_id), None)
-        session['gridData'] = grid_data
 
     return make_json_response(data={'status': True})
 
@@ -461,3 +464,29 @@ def script():
         status=200,
         mimetype="application/javascript"
     )
+
+
+def close_query_tool_session(trans_id):
+    """
+    This function is used to cancel the transaction and release the connection.
+
+    :param trans_id: Transaction id
+    :return:
+    """
+
+    cmd_obj_str = session['gridData'][str(trans_id)]['command_obj']
+    # Use pickle.loads function to get the command object
+    cmd_obj = pickle.loads(cmd_obj_str)
+
+    # if connection id is None then no need to release the connection
+    if cmd_obj.conn_id is not None:
+        manager = get_driver(
+            PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
+        if manager is not None:
+            conn = manager.connection(
+                did=cmd_obj.did, conn_id=cmd_obj.conn_id)
+
+            # Release the connection
+            if conn.connected():
+                conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
+                manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)

@@ -12,6 +12,7 @@ such as setup of logging, dynamic loading of modules etc."""
 import logging
 import os
 import sys
+from types import MethodType
 from collections import defaultdict
 from importlib import import_module
 
@@ -56,6 +57,8 @@ class PgAdmin(Flask):
             extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_'],
             loader=VersionedTemplateLoader(self)
         )
+        self.logout_hooks = []
+
         super(PgAdmin, self).__init__(*args, **kwargs)
 
     def find_submodules(self, basemodule):
@@ -160,6 +163,11 @@ class PgAdmin(Flask):
         menu_items = dict((key, sorted(value, key=attrgetter('priority')))
                           for key, value in menu_items.items())
         return menu_items
+
+    def register_logout_hook(self, module):
+        if hasattr(module, 'on_logout') and \
+                type(getattr(module, 'on_logout')) == MethodType:
+            self.logout_hooks.append(module)
 
 
 def _find_blueprint():
@@ -556,9 +564,17 @@ def create_app(app_name=None):
         session.force_write = True
 
     @user_logged_out.connect_via(app)
-    def clear_current_user_connections(app, user):
+    def current_user_cleanup(app, user):
         from config import PG_DEFAULT_DRIVER
         from pgadmin.utils.driver import get_driver
+        from flask import current_app
+
+        for mdl in current_app.logout_hooks:
+            try:
+                mdl.on_logout(user)
+            except Exception as e:
+                current_app.logger.exception(e)
+
         _driver = get_driver(PG_DEFAULT_DRIVER)
         _driver.gc_own()
 
@@ -568,6 +584,7 @@ def create_app(app_name=None):
     for module in app.find_submodules('pgadmin'):
         app.logger.info('Registering blueprint module: %s' % module)
         app.register_blueprint(module)
+        app.register_logout_hook(module)
 
     ##########################################################################
     # Handle the desktop login

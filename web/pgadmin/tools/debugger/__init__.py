@@ -15,6 +15,7 @@ import simplejson as json
 import random
 import re
 
+from threading import Lock
 from flask import url_for, Response, render_template, request, session, \
     current_app
 from flask_babelex import gettext
@@ -31,10 +32,10 @@ from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, DebuggerFunctionArguments
-from pgadmin.utils.preferences import Preferences
 
 # Constants
 ASYNC_OK = 1
+debugger_close_session_lock = Lock()
 
 
 class DebuggerModule(PgAdminModule):
@@ -225,6 +226,21 @@ class DebuggerModule(PgAdminModule):
                 'debugger.set_arguments',
                 'debugger.poll_end_execution_result', 'debugger.poll_result'
                 ]
+
+    def on_logout(self, user):
+        """
+        This is a callback function when user logout from pgAdmin
+        :param user:
+        :return:
+        """
+        with debugger_close_session_lock:
+            if 'debuggerData' in session:
+                for trans_id in session['debuggerData']:
+                    close_debugger_session(trans_id)
+
+                # Delete the all debugger data from session variable
+                del session['debuggerData']
+                del session['functionData']
 
 
 blueprint = DebuggerModule(MODULE_NAME, __name__)
@@ -828,29 +844,19 @@ def close(trans_id):
     if 'debuggerData' not in session:
         return make_json_response(data={'status': True})
 
-    debugger_data = session['debuggerData']
     # Return from the function if transaction id not found
-    if str(trans_id) not in debugger_data:
+    if str(trans_id) not in session['debuggerData']:
         return make_json_response(data={'status': True})
 
-    obj = debugger_data[str(trans_id)]
-    try:
-        manager = get_driver(
-            PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
-        conn = manager.connection(
-            did=obj['database_id'], conn_id=obj['conn_id'])
-        conn.cancel_transaction(obj['conn_id'], obj['database_id'])
-        conn = manager.connection(
-            did=obj['database_id'], conn_id=obj['exe_conn_id'])
-        conn.cancel_transaction(obj['exe_conn_id'], obj['database_id'])
-        manager.release(conn_id=obj['conn_id'])
-        manager.release(conn_id=obj['exe_conn_id'])
-        # Delete the existing debugger data in session variable
-        del session['debuggerData'][str(trans_id)]
-        del session['functionData'][str(trans_id)]
-        return make_json_response(data={'status': True})
-    except Exception as e:
-        return internal_server_error(errormsg=str(e))
+    with debugger_close_session_lock:
+        try:
+            close_debugger_session(trans_id)
+            # Delete the existing debugger data in session variable
+            del session['debuggerData'][str(trans_id)]
+            del session['functionData'][str(trans_id)]
+            return make_json_response(data={'status': True})
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
 
 @blueprint.route(
@@ -2105,3 +2111,31 @@ def poll_result(trans_id):
             'result': result
         }
     )
+
+
+def close_debugger_session(trans_id):
+    """
+    This function is used to cancel the debugger transaction and
+    release the connection.
+
+    :param trans_id: Transaction id
+    :return:
+    """
+    dbg_obj = session['debuggerData'][str(trans_id)]
+
+    manager = get_driver(
+        PG_DEFAULT_DRIVER).connection_manager(dbg_obj['server_id'])
+
+    if manager is not None:
+        conn = manager.connection(
+            did=dbg_obj['database_id'], conn_id=dbg_obj['conn_id'])
+        if conn.connected():
+            conn.cancel_transaction(dbg_obj['conn_id'],
+                                    dbg_obj['database_id'])
+        conn = manager.connection(
+            did=dbg_obj['database_id'], conn_id=dbg_obj['exe_conn_id'])
+        if conn.connected():
+            conn.cancel_transaction(dbg_obj['exe_conn_id'],
+                                    dbg_obj['database_id'])
+        manager.release(conn_id=dbg_obj['conn_id'])
+        manager.release(conn_id=dbg_obj['exe_conn_id'])
