@@ -4,8 +4,6 @@
 #       ignored when building a PIP Wheel.
 ##############################################################################
 blinker==1.4
-extras==1.0.0
-fixtures==3.0.0
 Flask==0.12.4
 Flask-Gravatar==0.5.0
 Flask-Login==0.3.2
@@ -14,12 +12,7 @@ Flask-Migrate==2.1.1
 Flask-Principal==0.4.0
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
-html5lib==1.0.1
-linecache2==1.0.0
 passlib==1.7.1
-pbr==3.1.1
-pyrsistent==0.14.2
-python-mimeparse==1.6.0
 pytz==2018.3
 simplejson==3.13.2
 six>=1.11.0
