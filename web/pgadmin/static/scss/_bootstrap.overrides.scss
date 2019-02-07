@@ -1,6 +1,8 @@
 /* Ensure simple forms don't hit the top of the screen */
 body {
 	font-family: $font-family-primary;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .app-icon {
