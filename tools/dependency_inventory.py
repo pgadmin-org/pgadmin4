@@ -23,12 +23,12 @@ from subprocess import Popen, PIPE
 # Column sizes
 name_size = 64
 version_size = 16
-licence_size = 32
+licence_size = 36
 
 
 def print_title(title):
     print(title)
-    print("=" * len(title), "\n")
+    print(("=" * len(title)) + "\n")
 
 
 def print_row(name, version, licence, url):
@@ -48,7 +48,7 @@ def print_summary(count):
 
 def get_python_deps():
     # Get the path to the requirements.txt file
-    req_file = os.path.realpath(os.path.dirname(__file__) +
+    req_file = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) +
                                 "/../requirements.txt")
 
     with open(req_file, 'r') as req_file_p:
@@ -65,7 +65,6 @@ def get_python_deps():
 
     # Iterate the packages and get the distribution info for each
     for pkg in requirements:
-        metadata = []
 
         try:
             distribution = pkg_resources.get_distribution(pkg)
@@ -95,7 +94,7 @@ def get_python_deps():
 
         try:
             metadata = distribution.get_metadata_lines('METADATA')
-        except FileNotFoundError:
+        except IOError:
             metadata = distribution.get_metadata_lines('PKG-INFO')
 
         # Somewhere to store the info we need...
@@ -138,7 +137,8 @@ def get_python_deps():
 
 def get_js_deps():
     # Get the path to package.json file
-    web_dir = os.path.realpath(os.path.dirname(__file__) + "/../web/")
+    web_dir = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) +
+                               "/../web/")
 
     # Build the Yarn command
     cmd = ["yarn", "--cwd", web_dir, "licenses", "list", "--json"]
@@ -181,7 +181,7 @@ def dump_header():
         "dependent on various third party libraries. These are "
         "automatically compiled from the system, requirements.txt."
         "and packages.json and list below.",
-        width=79), "\n")
+        width=79) + "\n")
 
 
 def dump_cplusplus():
