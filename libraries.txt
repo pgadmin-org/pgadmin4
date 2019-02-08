@@ -52,8 +52,8 @@ shown for Python modules that are not required with this version.
 
 26 dependencies listed.
 
-Direct Javascript Dependencies
-==============================
+Javascript Dependencies
+=======================
 
 Name                                                             Version          Licence                              URL
 ----                                                             -------          -------                              ---
