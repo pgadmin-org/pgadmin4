@@ -200,7 +200,7 @@ def dump_python():
 
 
 def dump_js():
-    print_title("Direct Javascript Dependencies")
+    print_title("Javascript Dependencies")
     print_table_header()
 
     get_js_deps()
