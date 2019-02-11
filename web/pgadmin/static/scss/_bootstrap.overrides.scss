@@ -163,6 +163,9 @@ legend {
 
 .table {
 	margin-bottom: 0rem;
+	th {
+		padding: $table-header-cell-padding $table-cell-padding;
+	}
 }
 
 .table-bordered {
