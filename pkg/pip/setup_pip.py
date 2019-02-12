@@ -96,6 +96,8 @@ setup(
     ##data_files=,
 
     # 'scripts' keyword is used to provide executable scripts. It provides cross-platform support.
-    ##entry_points=,
+    entry_points={
+        'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4.__init__:main'],
+    },
 
 )
