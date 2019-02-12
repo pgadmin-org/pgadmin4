@@ -144,6 +144,12 @@ DEFAULT_SERVER_PORT = 5050
 # Enable CSRF protection?
 CSRF_ENABLED = True
 
+# Enable X-Frame-Option protection.
+# Set to one of "SAMEORIGIN", "ALLOW-FROM origin" or "" to disable.
+# Note that "DENY" is NOT supported (and will be silently ignored).
+# See https://tools.ietf.org/html/rfc7034 for more info.
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
 # Hashing algorithm used for password storage
 SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 

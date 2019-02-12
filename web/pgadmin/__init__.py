@@ -630,6 +630,11 @@ def create_app(app_name=None):
                                 path=config.COOKIE_DEFAULT_PATH,
                                 **domain)
 
+        # X-Frame-Options for security
+        if config.X_FRAME_OPTIONS != "" and \
+                config.X_FRAME_OPTIONS.lower() != "deny":
+            response.headers["X-Frame-Options"] = config.X_FRAME_OPTIONS
+
         return response
 
     ##########################################################################
