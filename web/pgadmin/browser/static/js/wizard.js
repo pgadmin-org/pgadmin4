@@ -12,8 +12,6 @@ define([
   'sources/gettext', 'sources/utils',
 ], function(_, $, Backbone, pgAdmin, pgBrowser, gettext, commonUtils) {
 
-  var wcDocker = window.wcDocker;
-
   /* Wizard individual Page Model */
   pgBrowser.WizardPage = Backbone.Model.extend({
     defaults: {
@@ -309,20 +307,7 @@ define([
       return (_.isFunction(func) ? func.apply(ctx, [self]) : func);
     },
     onDialogHelp: function() {
-      // See if we can find an existing panel, if not, create one
-      var pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
-
-      if (pnlDialogHelp == null) {
-        var pnlProperties = pgBrowser.docker.findPanels('properties')[0];
-        pgBrowser.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
-        pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
-      }
-
-      // Update the panel
-      var iframe = $(pnlDialogHelp).data('embeddedFrame');
-
-      pnlDialogHelp.focus();
-      iframe.openURL(this.options.wizard_help);
+      window.open(this.options.wizard_help, 'pgadmin_help');
     },
   });
 

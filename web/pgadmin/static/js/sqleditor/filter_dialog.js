@@ -206,7 +206,7 @@ let FilterDialog = {
             if (e.button.element.name == 'dialog_help') {
               e.cancel = true;
               pgAdmin.Browser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
-                null, null, e.button.element.getAttribute('label'));
+                null, null);
               return;
             } else if (e.button['data-btn-name'] === 'ok') {
               e.cancel = true; // Do not close dialog

@@ -336,7 +336,7 @@ define([
               if (e.button.element.name == 'dialog_help' || e.button.element.name == 'object_help') {
                 e.cancel = true;
                 pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
-                  node, i, e.button.element.getAttribute('label'));
+                  node, i);
                 return;
               }
 

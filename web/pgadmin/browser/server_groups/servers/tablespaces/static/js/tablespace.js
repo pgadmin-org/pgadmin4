@@ -270,7 +270,7 @@ define('pgadmin.node.tablespace', [
                   if (e.button.element.name == 'dialog_help') {
                     e.cancel = true;
                     pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
-                      null, null, e.button.element.getAttribute('label'));
+                      null, null);
                     return;
                   }
                   if (e.button.text === gettext('OK')) {

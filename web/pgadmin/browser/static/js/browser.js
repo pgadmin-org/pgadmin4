@@ -644,18 +644,8 @@ define('pgadmin.browser', [
       obj.enable_disable_menus();
     },
     // General function to handle callbacks for object or dialog help.
-    showHelp: function(type, url, node, item, label) {
-      var iframe, pnlProperties;
+    showHelp: function(type, url, node, item) {
       if (type == 'object_help') {
-        // See if we can find an existing panel, if not, create one
-        var pnlSqlHelp = this.docker.findPanels('pnl_sql_help')[0];
-
-        if (pnlSqlHelp == null) {
-          pnlProperties = this.docker.findPanels('properties')[0];
-          this.docker.addPanel('pnl_sql_help', wcDocker.DOCK.STACKED, pnlProperties);
-          pnlSqlHelp = this.docker.findPanels('pnl_sql_help')[0];
-        }
-
         // Construct the URL
         var server = node.getTreeNodeHierarchy(item).server;
         var baseUrl = pgBrowser.utils.pg_help_path;
@@ -670,35 +660,11 @@ define('pgadmin.browser', [
         if (!S(baseUrl).endsWith('/')) {
           baseUrl = baseUrl + '/';
         }
-        var fullUrl = baseUrl+ url;
-        // Update the panel
-        iframe = $(pnlSqlHelp).data('embeddedFrame');
-        pnlSqlHelp.title('Help: '+ label);
+        var fullUrl = baseUrl + url;
 
-        pnlSqlHelp.focus();
-        iframe.openURL(fullUrl);
+        window.open(fullUrl, 'postgres_help');
       } else if(type == 'dialog_help') {
-        if(this.docker) {
-          // See if we can find an existing panel, if not, create one
-          var pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
-
-          if (pnlDialogHelp == null) {
-            pnlProperties = this.docker.findPanels('properties')[0];
-            this.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
-            pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
-          }
-
-          // Update the panel
-          iframe = $(pnlDialogHelp).data('embeddedFrame');
-
-          pnlDialogHelp.focus();
-          iframe.openURL(url);
-        } else {
-          // We have added new functionality of opening Query tool & debugger in new
-          // browser tab, In that case we will not have docker object available
-          // so we will open dialog help in new browser tab
-          window.open(url, '_blank');
-        }
+        window.open(url, 'pgadmin_help');
       }
     },
     _findTreeChildNode: function(_i, _d, _o) {

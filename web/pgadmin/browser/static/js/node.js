@@ -1201,15 +1201,6 @@ define('pgadmin.browser.node', [
           j.append(content);
         }.bind(panel),
         onSqlHelp = function() {
-          // See if we can find an existing panel, if not, create one
-          var pnlSqlHelp = pgBrowser.docker.findPanels('pnl_sql_help')[0];
-
-          if (pnlSqlHelp == null) {
-            var pnlProperties = pgBrowser.docker.findPanels('properties')[0];
-            pgBrowser.docker.addPanel('pnl_sql_help', wcDocker.DOCK.STACKED, pnlProperties);
-            pnlSqlHelp = pgBrowser.docker.findPanels('pnl_sql_help')[0];
-          }
-
           // Construct the URL
           var server = that.getTreeNodeHierarchy(item).server;
 
@@ -1237,29 +1228,11 @@ define('pgadmin.browser.node', [
             }
           }
 
-          // Update the panel
-          var iframe = $(pnlSqlHelp).data('embeddedFrame');
-          pnlSqlHelp.title('SQL: ' + that.label);
-
-          pnlSqlHelp.focus();
-          iframe.openURL(url);
+          window.open(url, 'postgres_help');
         }.bind(panel),
 
         onDialogHelp = function() {
-          // See if we can find an existing panel, if not, create one
-          var pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
-
-          if (pnlDialogHelp == null) {
-            var pnlProperties = pgBrowser.docker.findPanels('properties')[0];
-            pgBrowser.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
-            pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
-          }
-
-          // Update the panel
-          var iframe = $(pnlDialogHelp).data('embeddedFrame');
-
-          pnlDialogHelp.focus();
-          iframe.openURL(that.dialogHelp);
+          window.open(that.dialogHelp, 'pgadmin_help');
         }.bind(panel),
 
         onSave = function(view, saveBtn) {

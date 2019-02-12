@@ -245,8 +245,6 @@ describe('BackupDialogWrapper', () => {
               getAttribute: (attributeName) => {
                 if (attributeName === 'url') {
                   return 'http://someurl';
-                } else if (attributeName === 'label') {
-                  return 'some label';
                 }
               },
             },
@@ -260,8 +258,7 @@ describe('BackupDialogWrapper', () => {
           'dialog_help',
           'http://someurl',
           pgBrowser.Nodes['server'],
-          serverTreeNode.getHtmlIdentifier(),
-          'some label'
+          serverTreeNode.getHtmlIdentifier()
         );
       });
 
@@ -288,8 +285,6 @@ describe('BackupDialogWrapper', () => {
               getAttribute: (attributeName) => {
                 if (attributeName === 'url') {
                   return 'http://someurl';
-                } else if (attributeName === 'label') {
-                  return 'some label';
                 }
               },
             },
@@ -303,8 +298,7 @@ describe('BackupDialogWrapper', () => {
           'object_help',
           'http://someurl',
           pgBrowser.Nodes['server'],
-          serverTreeNode.getHtmlIdentifier(),
-          'some label'
+          serverTreeNode.getHtmlIdentifier()
         );
       });
 

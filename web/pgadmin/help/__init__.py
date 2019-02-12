@@ -26,39 +26,23 @@ class HelpModule(PgAdminModule):
             MenuItem(name='mnu_online_help',
                      label=gettext('Online Help'),
                      priority=100,
-                     target='_blank',
+                     target='pgadmin_help',
                      icon='fa fa-question',
                      url=url_for('help.static', filename='index.html')),
 
             MenuItem(name='mnu_pgadmin_website',
                      label=gettext('pgAdmin Website'),
                      priority=200,
-                     target='_blank',
+                     target='pgadmin_website',
                      icon='fa fa-external-link',
                      url='https://www.pgadmin.org/'),
 
             MenuItem(name='mnu_postgresql_website',
                      label=gettext('PostgreSQL Website'),
                      priority=300,
-                     target='_blank',
+                     target='postgres_website',
                      icon='fa fa-external-link',
                      url='https://www.postgresql.org/')]}
-
-    def get_panels(self):
-        return [
-            Panel(
-                name='pnl_online_help',
-                priority=100,
-                isPrivate=True,
-                title=gettext('Online Help'),
-                icon='fa fa-question').__dict__,
-
-            Panel(
-                name='pnl_sql_help',
-                priority=200,
-                isPrivate=True,
-                icon='fa fa-info',
-                title=gettext('SQL Help')).__dict__]
 
     def register_preferences(self):
         """
