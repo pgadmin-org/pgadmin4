@@ -164,9 +164,10 @@ class SQLFilter(object):
         self.sid = kwargs['sid']
         self.did = kwargs['did']
         self.obj_id = kwargs['obj_id']
-        self.__row_filter = kwargs.get('sql_filter', None)
-        self.__dara_sorting = kwargs.get('data_sorting', None)
-        self.__set_sorting_from_filter_dialog = False
+        sql_filter = kwargs.get('sql_filter', None)
+        self._row_filter = sql_filter if type(sql_filter) is str else None
+        self._data_sorting = kwargs.get('data_sorting', None)
+        self._set_sorting_from_filter_dialog = False
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
         conn = manager.connection(did=self.did)
@@ -197,7 +198,7 @@ class SQLFilter(object):
         """
         This function returns the filter.
         """
-        return self.__row_filter
+        return self._row_filter
 
     def set_filter(self, row_filter):
         """
@@ -207,11 +208,13 @@ class SQLFilter(object):
         Args:
             row_filter: sql query
         """
+        if type(row_filter) is not str:
+            row_filter = None
 
         status, msg = self.validate_filter(row_filter)
 
         if status:
-            self.__row_filter = row_filter
+            self._row_filter = row_filter
 
         return status, msg
 
@@ -219,8 +222,8 @@ class SQLFilter(object):
         """
         This function returns the filter.
         """
-        if self.__dara_sorting and len(self.__dara_sorting) > 0:
-            return self.__dara_sorting
+        if self._data_sorting and len(self._data_sorting) > 0:
+            return self._data_sorting
         return None
 
     def set_data_sorting(self, data_filter, set_from_filter_dialog=False):
@@ -228,23 +231,23 @@ class SQLFilter(object):
         This function validates the filter and set the
         given filter to member variable.
         """
-        self.__dara_sorting = data_filter['data_sorting']
-        self.__set_sorting_from_filter_dialog = set_from_filter_dialog
+        self._data_sorting = data_filter['data_sorting']
+        self._set_sorting_from_filter_dialog = set_from_filter_dialog
 
     def is_sorting_set_from_filter_dialog(self):
         """This function return whether sorting is set from filter dialog"""
-        return self.__set_sorting_from_filter_dialog
+        return self._set_sorting_from_filter_dialog
 
     def is_filter_applied(self):
         """
         This function returns True if filter is applied else False.
         """
         is_filter_applied = True
-        if self.__row_filter is None or self.__row_filter == '':
+        if self._row_filter is None or self._row_filter == '':
             is_filter_applied = False
 
         if not is_filter_applied:
-            if self.__dara_sorting and len(self.__dara_sorting) > 0:
+            if self._data_sorting and len(self._data_sorting) > 0:
                 is_filter_applied = True
 
         return is_filter_applied
@@ -253,8 +256,8 @@ class SQLFilter(object):
         """
         This function remove the filter by setting value to None.
         """
-        self.__row_filter = None
-        self.__dara_sorting = None
+        self._row_filter = None
+        self._data_sorting = None
 
     def append_filter(self, row_filter):
         """
@@ -268,9 +271,9 @@ class SQLFilter(object):
         existing_filter = self.get_filter()
 
         if existing_filter is None or existing_filter == '':
-            self.__row_filter = row_filter
+            self._row_filter = row_filter
         else:
-            self.__row_filter = existing_filter + ' \n    AND ' + row_filter
+            self._row_filter = existing_filter + ' \n    AND ' + row_filter
 
     def validate_filter(self, row_filter):
         """
