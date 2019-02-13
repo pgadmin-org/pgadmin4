@@ -528,6 +528,7 @@ define([
           type: 'checkbox',
         }).prop('checked', rawValue).prop('disabled', !editable).attr('data-toggle', 'toggle')
         .attr('data-size', options.size).attr('data-on', options.onText).attr('data-off', options.offText)
+        .attr('data-width', options.width).attr('data-height', options.height)
         .attr('data-onstyle', options.onColor).attr('data-offstyle', options.offColor));
 
       this.$input = this.$el.find('input[type=checkbox]').first();

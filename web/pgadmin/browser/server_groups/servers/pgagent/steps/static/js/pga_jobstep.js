@@ -153,7 +153,7 @@ define('pgadmin.node.pga_jobstep', [
           disabled: function(m) { return !m.get('jstkind'); },
           options: {
             'onText': gettext('Local'), 'offText': gettext('Remote'),
-            'onColor': 'primary', 'offColor': 'primary',
+            'onColor': 'primary', 'offColor': 'primary', width: '65',
           },
         },{
           id: 'jstconntype', label: gettext('Connection type'),
@@ -166,7 +166,7 @@ define('pgadmin.node.pga_jobstep', [
           },
           options: {
             'onText': gettext('Local'), 'offText': gettext('Remote'),
-            'onColor': 'primary', 'offColor': 'primary',
+            'onColor': 'primary', 'offColor': 'primary', width: '65',
           }, helpMessage: gettext('Select <b>Local</b> if the job step will execute on the local database server, or <b>Remote</b> to specify a remote database server.'),
         },{
           id: 'jstdbname', label: gettext('Database'), type: 'text',
