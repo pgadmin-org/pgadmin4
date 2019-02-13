@@ -18,6 +18,7 @@ Bug fixes
 | `Bug #3873 <https://redmine.postgresql.org/issues/3873>`_ - Fix context sub-menu alignment on Safari.
 | `Bug #3906 <https://redmine.postgresql.org/issues/3906>`_ - Fix alignment of Close and Maximize button of Grant Wizard.
 | `Bug #3942 <https://redmine.postgresql.org/issues/3942>`_ - Close connections gracefully when the user logs out of pgAdmin.
+| `Bug #3946 <https://redmine.postgresql.org/issues/3946>`_ - Fix alignment of checkbox to drop multiple schedules of pgAgent job.
 | `Bug #3963 <https://redmine.postgresql.org/issues/3963>`_ - Fix alignment of import/export toggle switch.
 | `Bug #3974 <https://redmine.postgresql.org/issues/3974>`_ - Fix alignment of Connection type toggle switch of pgagent.
 | `Bug #3981 <https://redmine.postgresql.org/issues/3981>`_ - Fix the query to set bytea_output so that read-only standbys don't consider it a write query.

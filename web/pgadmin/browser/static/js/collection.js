@@ -151,7 +151,7 @@ define([
                   $el.toggleClass('renderable', renderable);
                 });
 
-                if (Backgrid.callByNeed(column.renderable(), column, model)) $el.addClass('renderable');
+                if (Backgrid.callByNeed(column.renderable(), column, model)) $el.addClass('renderable width_percent_3');
 
                 this.listenTo(model, 'backgrid:select', this.toggleCheckbox);
               },
