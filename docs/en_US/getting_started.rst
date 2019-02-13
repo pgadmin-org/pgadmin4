@@ -61,7 +61,7 @@ tool and the debugger). pgAdmin opens additional feature tabs each time you
 access the extended functionality offered by pgAdmin tools; you can open, close,
 and re-arrange feature tabs as needed.
 
-Use the *Preferences* dialog to customize the content and colors of the pgAdmin
+Use the *Preferences* dialog to customize the content and behaviour of the pgAdmin
 display.  To open the *Preferences* dialog, select *Preferences* from the *File* menu.
 
 *Help* buttons in the lower-left corner of each dialog will open the online help
