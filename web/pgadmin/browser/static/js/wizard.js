@@ -85,7 +85,7 @@ define([
       '              <button class="ajs-close wizard-cancel-event pull-right"' +
       '                title="' + gettext('Close') + '"></button>' +
       '              <% if (this.options.show_header_maximize_btn) { %>' +
-      '                <button class="ajs-maximize wizard-maximize-event pull-right"' +
+      '                <button class="ajs-maximize wizard-maximize-event mr-1 pull-right"' +
       '                  title="' + gettext('Maximize') + '"></button>' +
       '              <% } %>' +
       '            </div>' +
