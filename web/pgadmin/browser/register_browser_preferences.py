@@ -48,6 +48,16 @@ def register_browser_preferences(self):
         )
     )
 
+    self.preference.register(
+        'display', 'auto_expand_sole_children',
+        gettext("Auto-expand sole children"), 'boolean', True,
+        category_label=gettext('Display'),
+        help_str=gettext(
+            'If a treeview node is expanded and has only a single '
+            'child, automatically expand the child node as well.'
+        )
+    )
+
     self.table_row_count_threshold = self.preference.register(
         'properties', 'table_row_count_threshold',
         gettext("Count rows if estimated less than"), 'integer', 2000,

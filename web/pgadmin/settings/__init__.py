@@ -55,7 +55,8 @@ class SettingsModule(PgAdminModule):
         """
         return [
             'settings.store', 'settings.store_bulk', 'settings.reset_layout',
-            'settings.save_tree_state', 'settings.get_tree_state'
+            'settings.save_tree_state', 'settings.get_tree_state',
+            'settings.reset_tree_state'
         ]
 
 
@@ -148,6 +149,24 @@ def reset_layout():
         )
 
     return make_json_response(result=request.form)
+
+
+@blueprint.route("/reset_tree_state", methods=['DELETE'], endpoint='reset_tree_state')
+@login_required
+def reset_tree_state():
+    """Reset the saved tree state."""
+
+    data = Setting.query.filter_by(user_id=current_user.id, setting='browser_tree_state').first()
+    try:
+        if data is not None:
+            db.session.delete(data)
+            db.session.commit()
+    except Exception as e:
+        return make_json_response(
+            status=410, success=0, errormsg=str(e)
+        )
+
+    return success_return()
 
 
 @blueprint.route("/save_tree_state/", endpoint="save_tree_state",

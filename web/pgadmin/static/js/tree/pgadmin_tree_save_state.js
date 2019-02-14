@@ -69,7 +69,27 @@ _.extend(pgBrowser.browserTreeState, {
         this.remove_from_cache, this);
       pgBrowser.Events.on('pgadmin:browser:tree:update-tree-state',
         this.update_cache, this);
+    } else {
+      $.ajax({
+        url: url_for('settings.reset_tree_state'),
+        type: 'DELETE',
+      })
+      .fail(function(jqx) {
+        var msg = jqx.responseText;
+        /* Error from the server */
+        if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
+          try {
+            var data = JSON.parse(jqx.responseText);
+            msg = data.errormsg;
+          } catch (e) {
+            console.warn(e.stack || e);
+          }
+        }
+        console.warn(
+          gettext('Error resetting the tree saved state."'), msg);
+      });
     }
+
   },
   save_state: function() {
 

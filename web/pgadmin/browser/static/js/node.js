@@ -999,8 +999,17 @@ define('pgadmin.browser.node', [
           });
       },
       opened: function(item) {
+        let tree = pgBrowser.tree,
+          auto_expand = pgBrowser.get_preference('browser', 'auto_expand_sole_children');
+
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
          item);
+
+        if (auto_expand && auto_expand.value == true && tree.children(item).length == 1) {
+          // Automatically expand the child node, if a treeview node has only a single child.
+          tree.open(tree.first(item));
+        }
+
       },
       closed: function(item) {
         pgBrowser.Events.trigger('pgadmin:browser:tree:remove-from-tree-state',
