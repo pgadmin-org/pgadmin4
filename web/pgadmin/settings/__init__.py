@@ -151,12 +151,14 @@ def reset_layout():
     return make_json_response(result=request.form)
 
 
-@blueprint.route("/reset_tree_state", methods=['DELETE'], endpoint='reset_tree_state')
+@blueprint.route("/reset_tree_state", methods=['DELETE'],
+                 endpoint='reset_tree_state')
 @login_required
 def reset_tree_state():
     """Reset the saved tree state."""
 
-    data = Setting.query.filter_by(user_id=current_user.id, setting='browser_tree_state').first()
+    data = Setting.query.filter_by(user_id=current_user.id,
+                                   setting='browser_tree_state').first()
     try:
         if data is not None:
             db.session.delete(data)
