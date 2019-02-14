@@ -12,17 +12,19 @@
 from flask import url_for
 from pgadmin.utils import PgAdminModule
 
-MODULE_NAME = 'depends'
+MODULE_NAME = 'dependencies'
 
 
-class DependsModule(PgAdminModule):
+class DependenciesModule(PgAdminModule):
     def get_own_javascripts(self):
         return [{
-            'name': 'pgadmin.browser.object_depends',
-            'path': url_for('depends.static', filename='js/depends'),
+            'name': 'pgadmin.browser.dependencies',
+            'path': url_for('dependencies.static',
+                            filename='js/dependencies'),
             'when': None
         }]
 
 
 # Initialise the module
-blueprint = DependsModule(MODULE_NAME, __name__, url_prefix='/misc/depends')
+blueprint = DependenciesModule(MODULE_NAME, __name__,
+                               url_prefix='/misc/dependencies')

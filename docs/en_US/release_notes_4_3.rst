@@ -21,6 +21,7 @@ Bug fixes
 | `Bug #3906 <https://redmine.postgresql.org/issues/3906>`_ - Fix alignment of Close and Maximize button of Grant Wizard.
 | `Bug #3942 <https://redmine.postgresql.org/issues/3942>`_ - Close connections gracefully when the user logs out of pgAdmin.
 | `Bug #3946 <https://redmine.postgresql.org/issues/3946>`_ - Fix alignment of checkbox to drop multiple schedules of pgAgent job.
+| `Bug #3959 <https://redmine.postgresql.org/issues/3959>`_ - Optimise display of Dependencies and Dependents, and use on-demand loading of rows in batches of 100.
 | `Bug #3963 <https://redmine.postgresql.org/issues/3963>`_ - Fix alignment of import/export toggle switch.
 | `Bug #3970 <https://redmine.postgresql.org/issues/3970>`_ - Prevent an error when closing the Sort/Filter dialogue with an empty filter string.
 | `Bug #3974 <https://redmine.postgresql.org/issues/3974>`_ - Fix alignment of Connection type toggle switch of pgagent.

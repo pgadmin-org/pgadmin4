@@ -42,6 +42,7 @@ define([
         if (this.node_initialized)
           return;
         this.node_initialized = true;
+
         pgAdmin.Browser.add_menus([{
           name: 'refresh', node: this.type, module: this,
           applies: ['object', 'context'], callback: 'refresh',
@@ -77,12 +78,9 @@ define([
           content = $('<div></div>')
           .addClass('pg-prop-content col-12 has-pg-prop-btn-group'),
           node = pgBrowser.Nodes[that.node],
+          $msgContainer = '',
           // This will be the URL, used for object manipulation.
           urlBase = this.generate_url(item, 'properties', data),
-          collection = new (node.Collection.extend({
-            url: urlBase,
-            model: node.model,
-          }))(),
           info = this.getTreeNodeHierarchy.apply(this, [item]),
           gridSchema = Backform.generateGridColumnsFromModel(
             info, node.model, 'properties', that.columns
@@ -132,6 +130,10 @@ define([
             return null;
           }.bind(panel);
 
+        that.collection = new (node.Collection.extend({
+          url: urlBase,
+          model: node.model,
+        }))();
         // Add the new column for the multi-select menus
         if((_.isFunction(that.canDrop) ?
               that.canDrop.apply(that, [data, item]) : that.canDrop) ||
@@ -180,7 +182,7 @@ define([
         that.grid = new Backgrid.Grid({
           emptyText: 'No data found',
           columns: gridSchema.columns,
-          collection: collection,
+          collection: that.collection,
           className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
         });
 
@@ -199,6 +201,7 @@ define([
         };
 
         if (view) {
+
           // Avoid unnecessary reloads
           if (_.isEqual($(panel).data('node-prop'), urlBase)) {
             return;
@@ -215,9 +218,14 @@ define([
         j.empty();
         j.data('obj-view', gridView);
 
+        $msgContainer = '<div class="alert alert-info pg-panel-message pg-panel-properties-message">' +
+         gettext('Retrieving data from the server...') + '</div>';
+
+        $msgContainer = $($msgContainer).appendTo(j);
+
         that.header = $('<div></div>').addClass(
             'pg-prop-header'
-        ).appendTo(j);
+        );
 
          // Render the buttons
         var buttons = [];
@@ -255,26 +263,69 @@ define([
         // Render subNode grid
         content.append('<div class="pg-prop-coll-container"></div>');
         content.find('.pg-prop-coll-container').append(that.grid.render().$el);
-        j.append(content);
 
-        // Fetch Data
-        collection.fetch({
-          reset: true,
-          error: function(model, error, xhr) {
-            pgBrowser.Events.trigger(
-              'pgadmin:collection:retrieval:error', 'properties', xhr, error,
-              error.message, item, that
-            );
-            if (!Alertify.pgHandleItemError(
-              xhr, error, error.message, {item: item, info: info}
-            )) {
-              Alertify.pgNotifier(error, xhr, S(
-                gettext('Error retrieving properties - %s.')
-              ).sprintf(error.message || that.label).value(), function() {
+        var timer;
+
+        $.ajax({
+          url: urlBase,
+          type: 'GET',
+          beforeSend: function() {
+            // Generate a timer for the request
+            timer = setTimeout(function() {
+              // notify user if request is taking longer than 1 second
+
+              $msgContainer.text(gettext('Retrieving data from the server...'));
+              $msgContainer.removeClass('d-none');
+              if (self.grid) {
+                self.grid.remove();
+              }
+            }, 1000);
+          },
+        })
+        .done(function(res) {
+          clearTimeout(timer);
+
+          if (_.isUndefined(that.grid) || _.isNull(that.grid)) return;
+
+          that.data = res;
+
+          if (that.data.length > 0) {
+
+            if (!$msgContainer.hasClass('d-none')) {
+              $msgContainer.addClass('d-none');
+            }
+            that.header.appendTo(j);
+            j.append(content);
+
+            // Listen scroll event to load more rows
+            $('.pg-prop-content').on('scroll', that.__loadMoreRows.bind(that));
+
+            that.collection.reset(that.data.splice(0, 50));
+          } else {
+            // Do not listen the scroll event
+            $('.pg-prop-content').off('scroll', that.__loadMoreRows);
+
+            $msgContainer.text(gettext('No properties are available for the selected object.'));
+
+          }
+        })
+        .fail(function(xhr, error) {
+          pgBrowser.Events.trigger(
+            'pgadmin:node:retrieval:error', 'properties', xhr, error.message, item, that
+          );
+          if (!Alertify.pgHandleItemError(xhr, error.message, {
+            item: item,
+            info: info,
+          })) {
+            Alertify.pgNotifier(
+              error, xhr,
+              S(gettext('Error retrieving properties - %s')).sprintf(
+              error.message || that.label).value(), function() {
                 console.warn(arguments);
               });
-            }
-          },
+          }
+          // show failed message.
+          $msgContainer.text(gettext('Failed to retrieve data from the server.'));
         });
 
         var onDrop = function(type) {
@@ -358,6 +409,14 @@ define([
             null).show();
           return;
         }.bind(that);
+      },
+      __loadMoreRows: function(e) {
+        let elem = e.currentTarget;
+        if ((elem.scrollHeight - 10) < elem.scrollTop + elem.offsetHeight) {
+          if (this.data.length > 0) {
+            this.collection.add(this.data.splice(0, 50));
+          }
+        }
       },
       generate_url: function(item, type) {
         /*

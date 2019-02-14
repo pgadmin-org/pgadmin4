@@ -235,7 +235,8 @@ module.exports = {
         'pgadmin.dashboard' +
         ',pgadmin.tools.user_management' +
         ',pgadmin.browser.object_statistics' +
-        ',pgadmin.browser.object_depends' +
+        ',pgadmin.browser.dependencies' +
+        ',pgadmin.browser.dependents' +
         ',pgadmin.browser.object_sql' +
         ',pgadmin.browser.bgprocess' +
         ',pgadmin.node.server_group' +
