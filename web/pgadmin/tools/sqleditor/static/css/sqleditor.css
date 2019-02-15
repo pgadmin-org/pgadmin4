@@ -14,6 +14,21 @@
   bottom: 0;
 }
 
+.sql-scratch {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: hidden;
+}
+
+.sql-scratch textarea {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: none;
+  resize: none;
+}
+
 .sql-editor-grid-container {
   height: 100%;
   overflow: auto;

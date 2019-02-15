@@ -1,10 +1,14 @@
 .. _query_tool:
 
 *******************
-`Query tool`:index:
+`Query Tool`:index:
 *******************
 
-The Query tool is a powerful, feature-rich environment that allows you to execute arbitrary SQL commands and review the result set.  You can access the Query tool via the *Query Tool* menu option on the *Tools* menu, or through the context menu of select nodes of the Browser tree control.  The Query Tool allows you to:
+The Query Tool is a powerful, feature-rich environment that allows you to
+execute arbitrary SQL commands and review the result set.  You can access the
+Query Tool via the *Query Tool* menu option on the *Tools* menu, or through the
+context menu of select nodes of the Browser tree control.  The Query Tool
+allows you to:
 
 * Issue ad-hoc SQL queries.
 * Execute arbitrary SQL commands.
@@ -16,16 +20,29 @@ The Query tool is a powerful, feature-rich environment that allows you to execut
 .. image:: images/query_tool.png
     :alt: Query tool window
 
-You can open multiple copies of the Query tool in individual tabs simultaneously.  To close a copy of the Query tool, click the *X* in the upper-right hand corner of the tab bar.
+You can open multiple copies of the Query tool in individual tabs
+simultaneously.  To close a copy of the Query tool, click the *X* in the
+upper-right hand corner of the tab bar.
 
 The Query Tool features two panels:
 
-* The upper panel displays the *SQL Editor*.  You can use the panel to enter, edit, or execute a query.
-* The lower panel displays the *Data Output* panel. The tabbed panel displays the result set returned by a query, information about a query's execution plan, server messages related to the query's execution, and a history of the queries invoked in the SQL Editor.
+* The upper panel displays the *SQL Editor*. You can use the panel to enter,
+  edit, or execute a query. It also shows the *History* tab which can be used
+  to view the queries that have been executed in the session, and a *Scratch Pad*
+  which can be used to hold text snippets during editing. If the Scratch Pad is
+  closed, it can be re-opened (or additional ones opened) by right-clicking in
+  the SQL Editor and other panels and adding a new panel.
+* The lower panel displays the *Data Output* panel. The tabbed panel displays
+  the result set returned by a query, information about a query's execution plan,
+  server messages related to the query's execution and any asynchronous
+  notifications received from the server.
 
 **The Query Tool Toolbar**
 
-The *Query Tool* toolbar uses context-sensitive icons that provide shortcuts to frequently performed tasks. If an icon is highlighted, the option is enabled; if the icon is grayed-out, the task is disabled.  Please note that disabled icons may support functionality accessed via the :ref:`data editor <editgrid>`.
+The *Query Tool* toolbar uses context-sensitive icons that provide shortcuts to
+frequently performed tasks. If an icon is highlighted, the option is enabled;
+if the icon is grayed-out, the task is disabled.  Please note that disabled
+icons may support functionality accessed via the :ref:`data editor <editgrid>`.
 
 .. image:: images/query_toolbar.png
     :alt: Query tool toolbar
@@ -129,69 +146,102 @@ Hover over an icon to display a tooltip that describes the icon's functionality:
 
 **The SQL Editor Panel**
 
-The *SQL editor* panel is a workspace where you can manually provide a query, copy a query from another source, or read a query from a file. The SQL editor features syntax coloring and autocompletion.
+The *SQL editor* panel is a workspace where you can manually provide a query,
+copy a query from another source, or read a query from a file. The SQL editor
+features syntax coloring and autocompletion.
 
 .. image:: images/query_sql_editor.png
     :alt: Query tool editor
 
-To use autocomplete, begin typing your query; when you would like the Query editor to suggest object names or commands that might be next in your query, press the Control+Space key combination. For example, type "\*SELECT \* FROM\* " (without quotes, but with a trailing space), and then press the Control+Space key combination to select from a popup menu of autocomplete options.
+To use autocomplete, begin typing your query; when you would like the Query
+editor to suggest object names or commands that might be next in your query,
+press the Control+Space key combination. For example, type "\*SELECT \* FROM\* "
+(without quotes, but with a trailing space), and then press the Control+Space
+key combination to select from a popup menu of autocomplete options.
 
 .. image:: images/query_autocomplete.png
     :alt: Query tool autocomplete feature
 
-After entering a query, select the *Execute/Refresh* icon from the toolbar. The complete contents of the SQL editor panel will be sent to the database server for execution. To execute only a section of the code that is displayed in the SQL editor, highlight the text that you want the server to execute, and click the *Execute/Refresh* icon.
+After entering a query, select the *Execute/Refresh* icon from the toolbar. The
+complete contents of the SQL editor panel will be sent to the database server
+for execution. To execute only a section of the code that is displayed in the
+SQL editor, highlight the text that you want the server to execute, and click
+the *Execute/Refresh* icon.
 
 .. image:: images/query_execute_section.png
     :alt: Query tool execute query section
 
-The message returned by the server when a command executes is displayed on the *Messages* tab.  If the command is successful, the *Messages* tab displays execution details.
+The message returned by the server when a command executes is displayed on the
+*Messages* tab.  If the command is successful, the *Messages* tab displays
+execution details.
 
 .. image:: images/query_tool_message.png
     :alt: Query tool message panel
 
-Options on the *Edit* menu offer functionality that helps with code formatting and commenting:
+Options on the *Edit* menu offer functionality that helps with code formatting
+and commenting:
 
-* The auto-indent feature will automatically indent text to the same depth as the previous line when you press the Return key.
+* The auto-indent feature will automatically indent text to the same depth as
+  the previous line when you press the Return key.
 * Block indent text by selecting two or more lines and pressing the Tab key.
-* Implement or remove SQL style or toggle C style comment notation within your code.
+* Implement or remove SQL style or toggle C style comment notation within your
+  code.
 
 
 **The Data Output Panel**
 
-The *Data Output* panel displays data and statistics generated by the most recently executed query.
+The *Data Output* panel displays data and statistics generated by the most
+recently executed query.
 
 .. image:: images/query_output_data.png
     :alt: Query tool output panel
 
-The *Data Output* tab displays the result set of the query in a table format. You can:
+The *Data Output* tab displays the result set of the query in a table format.
+You can:
 
 * Select and copy from the displayed result set.
-* Use the *Execute/Refresh* options to retrieve query execution information and set query execution options.
-* Use the *Download as CSV* icon to download the content of the *Data Output* tab as a comma-delimited file.
+* Use the *Execute/Refresh* options to retrieve query execution information and
+  set query execution options.
+* Use the *Download as CSV* icon to download the content of the *Data Output*
+  tab as a comma-delimited file.
 
-All rowsets from previous queries or commands that are displayed in the *Data Output* panel will be discarded when you invoke another query; open another query tool browser tab to keep your previous results available.
+All rowsets from previous queries or commands that are displayed in the *Data
+Output* panel will be discarded when you invoke another query; open another
+query tool browser tab to keep your previous results available.
 
 Use the *Explain* tab to view a graphical representation of a query:
 
 .. image:: images/query_output_explain.png
     :alt: Query tool explain panel
 
-To generate a graphical explain diagram, open the *Explain* tab, and select *Explain*, *Explain Analyze*, or one or more options from the *Explain options* menu on the *Execute/Refresh* drop-down. Please note that *EXPLAIN VERBOSE* cannot be displayed graphically. Hover over an icon on the *Explain* tab to review information about that item; a popup window will display information about the selected object:
+To generate a graphical explain diagram, open the *Explain* tab, and select
+*Explain*, *Explain Analyze*, or one or more options from the *Explain options*
+menu on the *Execute/Refresh* drop-down. Please note that *EXPLAIN VERBOSE*
+cannot be displayed graphically. Hover over an icon on the *Explain* tab to
+review information about that item; a popup window will display information
+about the selected object:
 
-Use the download button on top left corner of the *Explain* canvas to download the plan as an SVG file.
+Use the download button on top left corner of the *Explain* canvas to download
+the plan as an SVG file.
+
 **Note:** Download as SVG is not supported on Internet Explorer.
 
 .. image:: images/query_output_explain_details.png
     :alt: Query tool graphical explain plan
 
-Note that the query plan that accompanies the *Explain analyze* is available on the *Data Output* tab.
+Note that the query plan that accompanies the *Explain analyze* is available on
+the *Data Output* tab.
 
-Use the *Messages* tab to view information about the most recently executed query:
+Use the *Messages* tab to view information about the most recently executed
+query:
 
 .. image:: images/query_output_error.png
     :alt: Query tool output messages
 
-If the server returns an error, the error message will be displayed on the *Messages* tab, and the syntax that caused the error will be underlined in the SQL editor.  If a query succeeds, the *Messages* tab displays how long the query took to complete and how many rows were retrieved:
+If the server returns an error, the error message will be displayed on the
+*Messages* tab, and the syntax that caused the error will be underlined in the
+SQL editor.  If a query succeeds, the *Messages* tab displays how long the
+query took to complete and how many rows were retrieved:
 
 .. image:: images/query_output_messages.png
     :alt: Query tool output information
@@ -206,12 +256,15 @@ The Query History tab displays information about recent commands:
 * The date and time that a query was invoked.
 * The text of the query.
 * The number of rows returned by the query.
-* The amount of time it took the server to process the query and return a result set.
+* The amount of time it took the server to process the query and return a
+  result set.
 * Messages returned by the server (not noted on the *Messages* tab).
 
-To erase the content of the *Query History* tab, select *Clear history* from the *Clear* drop-down menu.
+To erase the content of the *Query History* tab, select *Clear history* from
+the *Clear* drop-down menu.
 
-Use the *Connection status* feature to view the current connection and transaction status by clicking on the status icon in query tool:
+Use the *Connection status* feature to view the current connection and
+transaction status by clicking on the status icon in query tool:
 
 .. image:: images/query_tool_connection_status.png
     :alt: Query tool connection and transaction statuses

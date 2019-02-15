@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 define('tools.querytool', [
-  'babel-polyfill', 'sources/gettext', 'sources/url_for', 'jquery',
-  'underscore', 'underscore.string', 'pgadmin.alertifyjs',
+  'babel-polyfill', 'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
+  'jqueryui.position', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'sources/pgadmin', 'backbone', 'sources/../bundle/codemirror',
   'pgadmin.misc.explain',
   'sources/selection/grid_selector',
@@ -44,7 +44,7 @@ define('tools.querytool', [
   'pgadmin.browser',
   'pgadmin.tools.user_management',
 ], function(
-  babelPollyfill, gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
+  babelPollyfill, gettext, url_for, $, jqueryui, jqueryui_position, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   GeometryViewer, HistoryBundle, queryHistory, React, ReactDOM,
@@ -168,7 +168,7 @@ define('tools.querytool', [
       // Create main wcDocker instance
       var main_docker = new wcDocker(
         '#editor-panel', {
-          allowContextMenu: false,
+          allowContextMenu: true,
           allowCollapse: false,
           loadingClass: 'pg-sp-icon',
           themePath: url_for('static', {
@@ -182,8 +182,8 @@ define('tools.querytool', [
       var sql_panel = new pgAdmin.Browser.Panel({
         name: 'sql_panel',
         title: gettext('Query Editor'),
-        width: '100%',
-        height: '50%',
+        width: '75%',
+        height: '33%',
         isCloseable: false,
         isPrivate: true,
       });
@@ -267,6 +267,16 @@ define('tools.querytool', [
         content: '<div id ="history_grid" class="sql-editor-history-container" tabindex: "0"></div>',
       });
 
+      var scratch = new pgAdmin.Browser.Panel({
+        name: 'scratch',
+        title: gettext('Scratch Pad'),
+        width: '25%',
+        height: '100%',
+        isCloseable: true,
+        isPrivate: false,
+        content: '<div class="sql-scratch" tabindex: "0"><textarea wrap="off"></textarea></div>',
+      });
+
       var notifications = new pgAdmin.Browser.Panel({
         name: 'notifications',
         title: gettext('Notifications'),
@@ -292,6 +302,7 @@ define('tools.querytool', [
       explain.load(main_docker);
       messages.load(main_docker);
       history.load(main_docker);
+      scratch.load(main_docker);
       notifications.load(main_docker);
       geometry_viewer.load(main_docker);
 
@@ -301,6 +312,7 @@ define('tools.querytool', [
       self.messages_panel = main_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.notifications_panel = main_docker.addPanel('notifications', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, sql_panel_obj);
+      self.scratch_panel = main_docker.addPanel('scratch', wcDocker.DOCK.RIGHT, sql_panel_obj);
 
       self.render_history_grid();
       queryToolNotifications.renderNotificationsGrid(self.notifications_panel);

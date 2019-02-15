@@ -10,6 +10,7 @@ Features
 ********
 
 | `Feature #1825 <https://redmine.postgresql.org/issues/1825>`_ - Install a script to start pgAdmin (pgadmin4) from the command line when installed from the Python wheel.
+| `Feature #2233 <https://redmine.postgresql.org/issues/2233>`_ - Add a "scratch pad" to the Query Tool to hold text snippets whilst editing.
 | `Feature #3439 <https://redmine.postgresql.org/issues/3439>`_ - Allow X-FRAME-OPTIONS to be set for security. Default to SAMEORIGIN.
 | `Feature #3559 <https://redmine.postgresql.org/issues/3559>`_ - Automatically expand child nodes as well as the selected node on the treeview if there is only one.
 | `Feature #3991 <https://redmine.postgresql.org/issues/3991>`_ - Update Alpine Linux version in the docker container. This also updates the PG utilities to v11.
