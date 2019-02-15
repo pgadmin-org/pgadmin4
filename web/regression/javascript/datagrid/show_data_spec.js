@@ -133,7 +133,7 @@ describe('#show_data', () => {
         'false',
         'pg',
         '',
-        'server1 - database1 - schema1.schema1',
+        'schema1.schema1',
         ''
       );
     });
@@ -148,7 +148,7 @@ describe('#show_data', () => {
         'false',
         'pg',
         '',
-        'server1 - database1 - view1.view1',
+        'view1.view1',
         ''
       );
     });
@@ -163,7 +163,7 @@ describe('#show_data', () => {
         'false',
         'pg',
         '',
-        'server1 - database1 - catalog1.catalog1',
+        'catalog1.catalog1',
         ''
       );
     });

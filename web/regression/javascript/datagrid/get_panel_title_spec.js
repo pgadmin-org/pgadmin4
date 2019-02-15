@@ -54,7 +54,7 @@ describe('#getPanelTitle', () => {
 
         tree.selectNode([{id: 'level1'}]);
         expect(getPanelTitle(pgBrowser))
-          .toBe('other db label on some user name@server label');
+          .toBe('other db label/some user name@server label');
       });
     });
 
@@ -75,7 +75,7 @@ describe('#getPanelTitle', () => {
           new TreeNode('level1.1.1', {_type: 'table'}));
         tree.selectNode([{id: 'level1.1.1'}]);
         expect(getPanelTitle(pgBrowser))
-          .toBe('db label on some user name@server label');
+          .toBe('db label/some user name@server label');
       });
     });
   });

@@ -88,5 +88,5 @@ function hasSchemaOrCatalogOrViewInformation(parentData) {
 }
 
 function generateDatagridTitle(parentData, namespaceName, nodeData) {
-  return `${parentData.server.label} - ${parentData.database.label} - ${namespaceName}.${nodeData.label}`;
+  return `${namespaceName}.${nodeData.label}`;
 }

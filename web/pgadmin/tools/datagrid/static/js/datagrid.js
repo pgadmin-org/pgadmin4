@@ -457,26 +457,37 @@ define('pgadmin.datagrid', [
         var self = this,
           panel_title = trans_obj.panel_title,
           grid_title = self.get_panel_title(),
+          panel_icon = '',
+          panel_tooltip = '';
+
+        if (trans_obj.is_query_tool == 'false') {
+          // Edit grid titles
+          grid_title = panel_title + '/' + grid_title;
+          panel_tooltip = gettext('View/Edit Data - ') + grid_title;
+          panel_title = grid_title;
+          panel_icon = 'fa fa-table';
+        } else {
+          if (panel_title) {
+            // Script titles
+            panel_tooltip = panel_title.toUpperCase() + ' ' + gettext('Script - ') + grid_title;
+            panel_title = grid_title;
+            panel_icon = 'fa fa-file-text-o';
+          } else {
+            // Query tool titles
+            panel_tooltip = gettext('Query Tool - ') + grid_title;
+            panel_title = grid_title;
+            panel_icon = 'fa fa-bolt';
+          }
+        }
+
           // Open the panel if frame is initialized
-          url_params = {
+        var url_params = {
             'trans_id': trans_obj.gridTransId,
             'is_query_tool': trans_obj.is_query_tool,
             'editor_title': encodeURIComponent(grid_title),
           },
           baseUrl = url_for('datagrid.panel', url_params) +
             '?' + 'query_url=' + encodeURI(trans_obj.sURL) + '&server_type=' + encodeURIComponent(trans_obj.server_type);
-
-        if(trans_obj.is_query_tool == 'false') {
-          panel_title = gettext('Edit Data - ') + grid_title;
-        } else {
-          // Create title for CREATE/DELETE scripts
-          if (panel_title) {
-            panel_title =
-              sqlEditorUtils.capitalizeFirstLetter(panel_title) + ' script';
-          } else {
-            panel_title = gettext('Query - ') + grid_title;
-          }
-        }
 
         if (self.preferences.new_browser_tab) {
           var newWin = window.open(baseUrl, '_blank');
@@ -500,8 +511,8 @@ define('pgadmin.datagrid', [
           var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
           // Set panel title and icon
-          queryToolPanel.title('<span title="'+panel_title+'">'+panel_title+'</span>');
-          queryToolPanel.icon('fa fa-bolt');
+          queryToolPanel.title('<span title="'+panel_tooltip+'">'+panel_title+'</span>');
+          queryToolPanel.icon(panel_icon);
           queryToolPanel.focus();
 
           // Listen on the panel closed event.

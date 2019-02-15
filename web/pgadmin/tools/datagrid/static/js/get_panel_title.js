@@ -29,5 +29,5 @@ export function getPanelTitle(pgBrowser) {
 
   const db_label = getDatabaseLabel(parentData);
 
-  return `${db_label} on ${parentData.server.user.name}@${parentData.server.label}`;
+  return `${db_label}/${parentData.server.user.name}@${parentData.server.label}`;
 }
