@@ -47,17 +47,12 @@
 	}
 }
 
-.backform_control_notes {
-	border: $panel-border;
-	border-radius: $border-radius;
-	font-family: $font-family-editor;
-	font-size: 0.8rem;
-	margin: 0 0 10px;
-	padding: 5px 10px;
-	word-wrap: break-word;
-}
-div.backform_control_notes label.control-label {
-	min-width: 0px;
+.backform-note {
+  border-radius: $border-radius;
+  padding: .25rem;
+  word-wrap: break-word;
+  background: $border-color;
+  color: $color-fg;
 }
 
 .subnode-header label {

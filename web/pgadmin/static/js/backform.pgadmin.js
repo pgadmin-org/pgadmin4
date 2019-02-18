@@ -2380,13 +2380,22 @@ define([
     defaults: {
       label: gettext('Note'),
       text: '',
-      extraClasses: [],
-      noteClass: 'backform_control_notes',
+      extraClasses: ['pg-el-12', 'd-flex'],
+      noteClass: 'backform-note',
+      faIcon: 'fa-file-text-o',
+      faExtraClass: 'fa-rotate-180 fa-flip-vertical',
+      iconWidthClass: 'col-0 pr-2',
+      textWidthClass: 'col-sm',
     },
     template: _.template([
-      '<div class="<%=noteClass%> pg-el-12 <%=extraClasses.join(\' \')%>">',
-      '<label class="control-label"><%=label%>:</label>',
-      '<span><%=text%></span></div>',
+      '<div class="<%=noteClass%> <%=extraClasses.join(\' \')%>">',
+      '  <div class="icon <%=iconWidthClass%>">',
+      '    <i class="fa <%=faIcon%> <%=faExtraClass%>" aria-hidden="true"></i>',
+      '  </div>',
+      '  <div class="<%=textWidthClass%>">',
+      '    <span><%=text%></span>',
+      '  </div>',
+      '</div>',
     ].join('\n')),
   });
 

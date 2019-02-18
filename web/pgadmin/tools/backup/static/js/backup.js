@@ -93,7 +93,7 @@ define([
     }, {
       id: 'globals_note',
       label: gettext('Note'),
-      text: gettext('Only objects global to the entire database will be backed up in PLAIN format'),
+      text: gettext('Only objects global to the entire database will be backed up, in PLAIN format'),
       type: 'note',
     }, {}],
     validate: function() {
@@ -229,7 +229,7 @@ define([
       type: 'note',
       visible: function(m) {
         return m.get('type') === 'server';
-      },
+      },Only objects global to the entire database will be backed up in PLAIN format
     }, {
       type: 'nested',
       control: 'fieldset',
