@@ -69,7 +69,7 @@ _.extend(pgBrowser.browserTreeState, {
         this.remove_from_cache, this);
       pgBrowser.Events.on('pgadmin:browser:tree:update-tree-state',
         this.update_cache, this);
-    } else {
+    } else if (!_.isUndefined(save_tree_state_period)) {
       $.ajax({
         url: url_for('settings.reset_tree_state'),
         type: 'DELETE',
