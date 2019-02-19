@@ -149,7 +149,11 @@ def get_js_deps():
     process.wait()
 
     # Cleanup the output
-    raw_data = json.loads(output.splitlines()[-1])
+    output_str = output.splitlines()[-1]
+    if hasattr(output_str, 'decode'):
+        output_str = output_str.decode('utf-8')
+    raw_data = json.loads(output_str)
+
     modules = raw_data['data']['body']
 
     # Loop through the modules, and output the data.
