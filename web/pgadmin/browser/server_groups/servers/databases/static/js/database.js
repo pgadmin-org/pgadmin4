@@ -24,7 +24,7 @@ define('pgadmin.node.database', [
         hasStatistics: true,
         canDrop: true,
         canDropCascade: false,
-        statsPrettifyFields: ['Size', 'Size of temporary files'],
+        statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       });
   }
 
@@ -38,7 +38,7 @@ define('pgadmin.node.database', [
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
-      statsPrettifyFields: ['Size', 'Size of temporary files'],
+      statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       canDrop: function(node) {
         return node.canDrop;
       },

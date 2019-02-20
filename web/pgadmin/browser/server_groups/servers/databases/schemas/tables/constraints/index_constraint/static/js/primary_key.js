@@ -25,7 +25,7 @@ define('pgadmin.node.primary_key', [
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
-      statsPrettifyFields: ['Index size'],
+      statsPrettifyFields: [gettext('Index size')],
       parent_type: ['table','partition'],
       canDrop: true,
       canDropCascade: true,

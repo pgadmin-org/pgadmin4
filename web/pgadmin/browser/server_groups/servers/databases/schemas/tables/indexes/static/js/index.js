@@ -29,7 +29,7 @@ define('pgadmin.node.index', [
         dialogHelp: url_for('help.static', {'filename': 'index_dialog.html'}),
         columns: ['name', 'description'],
         hasStatistics: true,
-        statsPrettifyFields: ['Size', 'Index size'],
+        statsPrettifyFields: [gettext('Size'), gettext('Index size')],
         canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
@@ -232,7 +232,7 @@ define('pgadmin.node.index', [
       hasSQL:  true,
       hasDepends: true,
       hasStatistics: true,
-      statsPrettifyFields: ['Size', 'Index size'],
+      statsPrettifyFields: [gettext('Size'), gettext('Index size')],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

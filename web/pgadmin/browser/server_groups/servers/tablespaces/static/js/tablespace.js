@@ -24,7 +24,7 @@ define('pgadmin.node.tablespace', [
         type: 'coll-tablespace',
         columns: ['name', 'spcuser', 'description'],
         hasStatistics: true,
-        statsPrettifyFields: ['Size'],
+        statsPrettifyFields: [gettext('Size')],
         canDrop: true,
         canDropCascade: false,
       });
@@ -42,7 +42,7 @@ define('pgadmin.node.tablespace', [
       canDrop: true,
       hasDepends: true,
       hasStatistics: true,
-      statsPrettifyFields: ['Size'],
+      statsPrettifyFields: [gettext('Size')],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

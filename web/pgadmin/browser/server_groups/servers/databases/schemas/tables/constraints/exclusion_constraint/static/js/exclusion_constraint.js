@@ -628,7 +628,7 @@ define('pgadmin.node.exclusion_constraint', [
       canDropCascade: true,
       hasDepends: true,
       hasStatistics: true,
-      statsPrettifyFields: ['Index size'],
+      statsPrettifyFields: [gettext('Index size')],
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
