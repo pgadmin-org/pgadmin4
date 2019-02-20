@@ -31,6 +31,13 @@ COPY ./pgadmin4/ /pgadmin4
 
 RUN LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 make -C /pgadmin4/docs/en_US -f Makefile.sphinx html
 
+# Get the PG binaries
+FROM postgres:9.4-alpine as pg94-builder
+FROM postgres:9.5-alpine as pg95-builder
+FROM postgres:9.6-alpine as pg96-builder
+FROM postgres:10-alpine as pg10-builder
+FROM postgres:11-alpine as pg11-builder
+
 # Then install backend, copy static files and set up entrypoint
 FROM python:3.7-alpine3.9
 
@@ -65,6 +72,33 @@ RUN python -O -m compileall /pgadmin4
 
 COPY ./entrypoint.sh /entrypoint.sh
 
+# Copy the PG binaries
+COPY --from=pg94-builder /usr/local/bin/pg_dump /usr/local/pgsql-9.4/
+COPY --from=pg94-builder /usr/local/bin/pg_dumpall /usr/local/pgsql-9.4/
+COPY --from=pg94-builder /usr/local/bin/pg_restore /usr/local/pgsql-9.4/
+COPY --from=pg94-builder /usr/local/bin/psql /usr/local/pgsql-9.4/
+
+COPY --from=pg95-builder /usr/local/bin/pg_dump /usr/local/pgsql-9.5/
+COPY --from=pg95-builder /usr/local/bin/pg_dumpall /usr/local/pgsql-9.5/
+COPY --from=pg95-builder /usr/local/bin/pg_restore /usr/local/pgsql-9.5/
+COPY --from=pg95-builder /usr/local/bin/psql /usr/local/pgsql-9.5/
+
+COPY --from=pg96-builder /usr/local/bin/pg_dump /usr/local/pgsql-9.6/
+COPY --from=pg96-builder /usr/local/bin/pg_dumpall /usr/local/pgsql-9.6/
+COPY --from=pg96-builder /usr/local/bin/pg_restore /usr/local/pgsql-9.6/
+COPY --from=pg96-builder /usr/local/bin/psql /usr/local/pgsql-9.6/
+
+COPY --from=pg10-builder /usr/local/bin/pg_dump /usr/local/pgsql-10/
+COPY --from=pg10-builder /usr/local/bin/pg_dumpall /usr/local/pgsql-10/
+COPY --from=pg10-builder /usr/local/bin/pg_restore /usr/local/pgsql-10/
+COPY --from=pg10-builder /usr/local/bin/psql /usr/local/pgsql-10/
+
+COPY --from=pg11-builder /usr/local/bin/pg_dump /usr/local/pgsql-11/
+COPY --from=pg11-builder /usr/local/bin/pg_dumpall /usr/local/pgsql-11/
+COPY --from=pg11-builder /usr/local/bin/pg_restore /usr/local/pgsql-11/
+COPY --from=pg11-builder /usr/local/bin/psql /usr/local/pgsql-11/
+
+# Finish up
 VOLUME /var/lib/pgadmin
 EXPOSE 80 443
 
