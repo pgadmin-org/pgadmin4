@@ -1393,29 +1393,16 @@ def save_file():
 @login_required
 def start_query_download_tool(trans_id):
     sync_conn = None
-    (status, error_msg, conn, trans_obj,
+    (status, error_msg, sync_conn, trans_obj,
      session_obj) = check_transaction_status(trans_id)
 
-    if status and conn is not None and \
+    if status and sync_conn is not None and \
        trans_obj is not None and session_obj is not None:
 
         data = request.args if request.args else None
         try:
             if data and 'query' in data:
                 sql = data['query']
-                conn_id = str(random.randint(1, 9999999))
-                sync_conn = conn.manager.connection(
-                    did=trans_obj.did,
-                    conn_id=conn_id,
-                    auto_reconnect=False,
-                    async_=False
-                )
-
-                sync_conn.connect(autocommit=False)
-
-                def cleanup():
-                    conn.manager.connections[sync_conn.conn_id]._release()
-                    del conn.manager.connections[sync_conn.conn_id]
 
                 # This returns generator of records.
                 status, gen = sync_conn.execute_on_server_as_csv(
@@ -1427,7 +1414,6 @@ def start_query_download_tool(trans_id):
                     r.headers[
                         "Content-Disposition"
                     ] = "attachment;filename=error.csv"
-                    r.call_on_close(cleanup)
                     return r
 
                 r = Response(
@@ -1459,13 +1445,11 @@ def start_query_download_tool(trans_id):
                     "Content-Disposition"
                 ] = "attachment;filename={0}".format(filename)
 
-                r.call_on_close(cleanup)
                 return r
 
         except Exception as e:
             r = Response('"{0}"'.format(e), mimetype='text/csv')
             r.headers["Content-Disposition"] = "attachment;filename=error.csv"
-            r.call_on_close(cleanup)
             return r
     else:
         return internal_server_error(

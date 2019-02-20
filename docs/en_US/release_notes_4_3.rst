@@ -19,6 +19,7 @@ Bug fixes
 *********
 
 | `Bug #3544 <https://redmine.postgresql.org/issues/3544>`_ - Make the Query Tool tab titles more concise and useful.
+| `Bug #3673 <https://redmine.postgresql.org/issues/3673>`_ - Modify the Download as CSV option to use the same connection as the Query Tool its running in so temporary tables etc. can be used.
 | `Bug #3873 <https://redmine.postgresql.org/issues/3873>`_ - Fix context sub-menu alignment on Safari.
 | `Bug #3906 <https://redmine.postgresql.org/issues/3906>`_ - Fix alignment of Close and Maximize button of Grant Wizard.
 | `Bug #3912 <https://redmine.postgresql.org/issues/3912>`_ - Fix editing of table data with a JSON primary key.

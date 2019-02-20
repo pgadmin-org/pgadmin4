@@ -673,7 +673,7 @@ WHERE
         Returns:
             Generator response
         """
-        status, cur = self.__cursor(server_cursor=True)
+        status, cur = self.__cursor()
         self.row_count = 0
 
         if not status:

@@ -307,12 +307,12 @@ define('tools.querytool', [
       geometry_viewer.load(main_docker);
 
       // Add all the panels to the docker
-      self.data_output_panel = main_docker.addPanel('data_output', wcDocker.DOCK.BOTTOM, sql_panel_obj);
+      self.scratch_panel = main_docker.addPanel('scratch', wcDocker.DOCK.RIGHT, sql_panel_obj);
+      self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, sql_panel_obj);
+      self.data_output_panel = main_docker.addPanel('data_output', wcDocker.DOCK.BOTTOM);
       self.explain_panel = main_docker.addPanel('explain', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.messages_panel = main_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.notifications_panel = main_docker.addPanel('notifications', wcDocker.DOCK.STACKED, self.data_output_panel);
-      self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, sql_panel_obj);
-      self.scratch_panel = main_docker.addPanel('scratch', wcDocker.DOCK.RIGHT, sql_panel_obj);
 
       self.render_history_grid();
       queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
@@ -3502,6 +3502,12 @@ define('tools.querytool', [
           }
           self.disable_tool_buttons(false);
           is_query_running = false;
+          if(!_.isUndefined(self.download_csv_obj)) {
+            self.download_csv_obj.abort();
+            $('#btn-flash').prop('disabled', false);
+            self.trigger(
+              'pgadmin-sqleditor:loading-icon:hide');
+          }
           setTimeout(() => { self.gridView.query_tool_obj.focus(); }, 200);
         })
         .fail(function(e) {
@@ -3517,7 +3523,6 @@ define('tools.querytool', [
       // Trigger query result download to csv.
       trigger_csv_download: function(query, filename) {
         var self = this,
-          link = $(this.container).find('#download-csv'),
           url = url_for('sqleditor.query_tool_download', {
             'trans_id': self.transId,
           });
@@ -3526,7 +3531,57 @@ define('tools.querytool', [
           query: query,
           filename: filename,
         });
-        link.attr('src', url);
+
+        // Get the CSV file
+        self.download_csv_obj = $.ajax({
+          type: 'GET',
+          url: url,
+          cache: false,
+          async: true,
+          xhrFields: {
+            responseType: 'blob',
+          },
+          beforeSend: function() {
+            // Disable the Execute button
+            $('#btn-flash').prop('disabled', true);
+            self.disable_tool_buttons(true);
+
+            self.trigger(
+              'pgadmin-sqleditor:loading-icon:show',
+              gettext('Downloading CSV...')
+            );
+          },
+        })
+        .done(function(response) {
+          let urlCreator = window.URL || window.webkitURL,
+            url = urlCreator.createObjectURL(response),
+            link = document.createElement('a');
+
+          link.setAttribute('href', url);
+          link.setAttribute('download', filename);
+          link.click();
+
+          self.download_csv_obj = undefined;
+          // Enable the execute button
+          $('#btn-flash').prop('disabled', false);
+          self.disable_tool_buttons(false);
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:hide');
+
+        })
+        .fail(function(err) {
+          let msg = '';
+
+          if (err.statusText == 'abort') {
+            msg = gettext('CSV Download cancelled.');
+          } else {
+            msg = httpErrorHandler.handleQueryToolAjaxError(
+              pgAdmin, self, err, gettext('Download CSV'), [], true
+            );
+          }
+          alertify.alert(gettext('Download CSV error'), msg);
+        });
+
       },
 
       call_cache_preferences: function() {
