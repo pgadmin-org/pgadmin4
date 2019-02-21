@@ -36,3 +36,4 @@ Bug fixes
 | `Bug #3981 <https://redmine.postgresql.org/issues/3981>`_ - Fix the query to set bytea_output so that read-only standbys don't consider it a write query.
 | `Bug #3985 <https://redmine.postgresql.org/issues/3985>`_ - Don't embed docs and external sites in iframes, to allow the external sites to set X-FRAME-OPTIONS = DENY for security.
 | `Bug #4021 <https://redmine.postgresql.org/issues/4021>`_ - Disable the editor and execute functions whilst queries are executing.
+| `Bug #4022 <https://redmine.postgresql.org/issues/4022>`_ - Fix an issue where importing servers fails if a group already exists for a different user.

@@ -190,8 +190,8 @@ def load_servers(args):
         groups_added = 0
         servers_added = 0
 
-        # Get the server group
-        groups = ServerGroup.query.all()
+        # Get the server groups
+        groups = ServerGroup.query.filter_by(user_id=user_id)
 
         def print_summary():
             print("Added %d Server Group(s) and %d Server(s)." %
@@ -251,7 +251,7 @@ def load_servers(args):
 
                 group_id = new_group.id
                 groups_added = groups_added + 1
-                groups = ServerGroup.query.all()
+                groups = ServerGroup.query.filter_by(user_id=user_id)
 
             # Create the server
             new_server = Server()
