@@ -61,7 +61,7 @@
     "bootstrap-datepicker": "^1.7.0",
     "bowser": "1.6.1",
     "browserify": "~14.1.0",
-    "codemirror": "^5.29.0",
+    "codemirror": "^5.43.0",
     "css-loader": "0.14.0",
     "cssnano": "^3.10.0",
     "dropzone": "^5.1.1",

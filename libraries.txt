@@ -329,7 +329,7 @@ co                                                               4.6.0          
 co                                                               3.0.6            MIT                                  https://github.com/visionmedia/co.git
 coa                                                              1.0.4            MIT                                  git://github.com/veged/coa.git
 code-point-at                                                    1.1.0            MIT                                  https://github.com/sindresorhus/code-point-at.git
-codemirror                                                       5.37.0           MIT                                  https://github.com/codemirror/CodeMirror.git
+codemirror                                                       5.43.0           MIT                                  https://github.com/codemirror/CodeMirror.git
 collection-visit                                                 1.0.0            MIT                                  https://github.com/jonschlinkert/collection-visit.git
 color                                                            0.11.4           MIT                                  https://github.com/Qix-/color.git
 color-convert                                                    1.9.1            MIT                                  https://github.com/Qix-/color-convert.git
