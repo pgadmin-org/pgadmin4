@@ -3394,6 +3394,11 @@ define('tools.querytool', [
         $('#btn-explain-options-dropdown').prop('disabled', disabled);
         $('#btn-edit-dropdown').prop('disabled', disabled);
         $('#btn-load-file').prop('disabled', disabled);
+        $('#btn-save').prop('disabled', disabled);
+        $('#btn-file-menu-dropdown').prop('disabled', disabled);
+        $('#btn-find').prop('disabled', disabled);
+        $('#btn-find-menu-dropdown').prop('disabled', disabled);
+        $('#btn-download').prop('disabled', disabled);
         if (this.is_query_tool) {
           // Cancel query tool needs opposite behaviour
           $('#btn-cancel-query').prop('disabled', !disabled);
