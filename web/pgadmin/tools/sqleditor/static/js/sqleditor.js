@@ -760,14 +760,14 @@ define('tools.querytool', [
           options['width'] = column_size[table_name][c.name];
         }
         // If grid is editable then add editor else make it readonly
-        if (c.cell == 'oid') {
+        if (c.cell == 'oid' && c.name == 'oid') {
           options['editor'] = null;
         } else if (c.cell == 'Json') {
           options['editor'] = is_editable ? Slick.Editors.JsonText :
             Slick.Editors.ReadOnlyJsonText;
           options['formatter'] = Slick.Formatters.JsonString;
-        } else if (c.cell == 'number' ||
-          $.inArray(c.type, ['oid', 'xid', 'real']) !== -1
+        } else if (c.cell == 'number' || c.cell == 'oid' ||
+          $.inArray(c.type, ['xid', 'real']) !== -1
         ) {
           options['editor'] = is_editable ? Slick.Editors.CustomNumber :
             Slick.Editors.ReadOnlyText;
