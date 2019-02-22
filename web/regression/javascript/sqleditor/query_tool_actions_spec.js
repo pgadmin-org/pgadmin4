@@ -521,6 +521,32 @@ describe('queryToolActions', () => {
     });
   });
 
+  describe('executeCommit', () => {
+    describe('when commit action is being run from the query tool', () => {
+      beforeEach(() => {
+        setUpSpies('', '');
+      });
+
+      it('calls the execute commit function', () => {
+        queryToolActions.executeCommit(sqlEditorController);
+        expect(sqlEditorController.special_sql).toEqual('COMMIT;');
+      });
+    });
+  });
+
+  describe('executeRollback', () => {
+    describe('when rollback action is being run from the query tool', () => {
+      beforeEach(() => {
+        setUpSpies('', '');
+      });
+
+      it('calls the execute rollback function', () => {
+        queryToolActions.executeRollback(sqlEditorController);
+        expect(sqlEditorController.special_sql).toEqual('ROLLBACK;');
+      });
+    });
+  });
+
   function setUpSpies(selectedQueryString, entireQueryString) {
     getValueSpy = jasmine.createSpy('getValueSpy').and.returnValue(entireQueryString);
     getSelectionSpy = jasmine.createSpy('getSelectionSpy').and.returnValue(selectedQueryString);

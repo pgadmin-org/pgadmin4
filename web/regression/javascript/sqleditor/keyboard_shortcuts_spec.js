@@ -93,6 +93,22 @@ describe('the keyboard shortcuts', () => {
           key_code: null,
         },
       },
+      commit_transaction: {
+        alt: false,
+        shift: true,
+        control: true,
+        key: {
+          key_code: 'm',
+        },
+      },
+      rollback_transaction: {
+        alt: false,
+        shift: true,
+        control: true,
+        key: {
+          key_code: 'r',
+        },
+      },
     };
 
     queryToolActionsSpy = jasmine.createSpyObj(queryToolActions, [
@@ -103,6 +119,8 @@ describe('the keyboard shortcuts', () => {
       'commentLineCode',
       'uncommentLineCode',
       'executeQuery',
+      'executeCommit',
+      'executeRollback',
     ]);
   });
 
@@ -518,6 +536,80 @@ describe('the keyboard shortcuts', () => {
       shortcut.alt = true, shortcut.shift = true, shortcut.control = true;
       expect(keyboardShortcuts.shortcut_title(
         'Title', shortcut)).toBe(gettext('Title (Alt+Shift+Ctrl+A)'));
+    });
+  });
+
+  describe('Shift+Ctrl+C', () => {
+    describe('when there is not a query already running', () => {
+      beforeEach(() => {
+        event.shiftKey = true;
+        event.which = 'm';
+        event.altKey = false;
+        event.ctrlKey = true;
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolActionsSpy, event
+        );
+      });
+
+      it('should commit the transaction', () => {
+        expect(queryToolActionsSpy.executeCommit).toHaveBeenCalledWith(sqlEditorControllerSpy);
+      });
+
+      expectEventPropagationToStop();
+    });
+
+    describe('when the query is already running', () => {
+      it('does nothing', () => {
+        event.shiftKey = true;
+        event.which = 'm';
+        event.altKey = false;
+        event.ctrlKey = true;
+
+        sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
+
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolActionsSpy, event
+        );
+
+        expect(queryToolActionsSpy.executeCommit).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Shift+Ctrl+R', () => {
+    describe('when there is not a query already running', () => {
+      beforeEach(() => {
+        event.shiftKey = true;
+        event.which = 'r';
+        event.altKey = false;
+        event.ctrlKey = true;
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolActionsSpy, event
+        );
+      });
+
+      it('should rollback the transaction', () => {
+        expect(queryToolActionsSpy.executeRollback).toHaveBeenCalledWith(sqlEditorControllerSpy);
+      });
+
+      expectEventPropagationToStop();
+    });
+
+    describe('when the query is already running', () => {
+      it('does nothing', () => {
+        event.shiftKey = true;
+        event.which = 'r';
+        event.altKey = false;
+        event.ctrlKey = true;
+
+        sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
+
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolActionsSpy, event
+        );
+
+        expect(queryToolActionsSpy.executeRollback).not.toHaveBeenCalled();
+      });
     });
   });
 

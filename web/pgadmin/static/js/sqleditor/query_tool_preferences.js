@@ -97,6 +97,14 @@ function updateUIPreferences(sqlEditor) {
     .attr('title',
       shortcut_title('Download as CSV',preferences.download_csv));
 
+  $el.find('#btn-commit')
+    .attr('title',
+      shortcut_title('Commit',preferences.commit_transaction));
+
+  $el.find('#btn-rollback')
+    .attr('title',
+      shortcut_title('Rollback',preferences.rollback_transaction));
+
   /* Set Auto-commit and auto-rollback on query editor */
   if (preferences.auto_commit) {
     $el.find('.auto-commit').removeClass('visibility-hidden');

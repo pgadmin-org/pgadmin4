@@ -181,6 +181,8 @@ function keyboardShortcutsQueryTool(
   let nextPanelKeys = sqlEditorController.preferences.move_next;
   let previousPanelKeys = sqlEditorController.preferences.move_previous;
   let toggleCaseKeys = sqlEditorController.preferences.toggle_case;
+  let commitKeys = sqlEditorController.preferences.commit_transaction;
+  let rollbackKeys = sqlEditorController.preferences.rollback_transaction;
 
   if (this.validateShortcutKeys(executeKeys, event)) {
     this._stopEventPropagation(event);
@@ -197,6 +199,18 @@ function keyboardShortcutsQueryTool(
   } else if (this.validateShortcutKeys(toggleCaseKeys, event)) {
     this._stopEventPropagation(event);
     queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
+  } else if (this.validateShortcutKeys(commitKeys, event)) {
+    // If transaction buttons are disabled then no need to execute commit.
+    if (!sqlEditorController.is_transaction_buttons_disabled) {
+      this._stopEventPropagation(event);
+      queryToolActions.executeCommit(sqlEditorController);
+    }
+  } else if (this.validateShortcutKeys(rollbackKeys, event)) {
+    // If transaction buttons are disabled then no need to execute rollback.
+    if (!sqlEditorController.is_transaction_buttons_disabled) {
+      this._stopEventPropagation(event);
+      queryToolActions.executeRollback(sqlEditorController);
+    }
   } else if ((
      (this.isMac() && event.metaKey) ||
      (!this.isMac() && event.ctrlKey)

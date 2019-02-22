@@ -48,6 +48,7 @@ class StartRunningQuery:
         can_edit = False
         can_filter = False
         notifies = None
+        trans_status = None
         if transaction_object is not None and session_obj is not None:
             # set fetched row count to 0 as we are executing query again.
             transaction_object.update_fetched_row_cnt(0)
@@ -91,6 +92,7 @@ class StartRunningQuery:
 
             # Get the notifies
             notifies = conn.get_notifies()
+            trans_status = conn.transaction_status()
         else:
             status = False
             result = gettext(
@@ -101,7 +103,8 @@ class StartRunningQuery:
                 'can_edit': can_edit, 'can_filter': can_filter,
                 'info_notifier_timeout':
                     self.blueprint_object.info_notifier_timeout.get(),
-                'notifies': notifies
+                'notifies': notifies,
+                'transaction_status': trans_status,
             }
         )
 

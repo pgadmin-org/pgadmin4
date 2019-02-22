@@ -81,6 +81,12 @@ class ExecuteQuery {
         } else {
           self.loadingScreen.hide();
           self.enableSQLEditorButtons();
+          // Enable/Disable commit and rollback button.
+          if (result.data.data.transaction_status == 2 || result.data.data.transaction_status == 3) {
+            self.enableTransactionButtons();
+          } else {
+            self.disableTransactionButtons();
+          }
           self.sqlServerObject.update_msg_history(false, httpMessageData.data.result);
           if ('notifies' in httpMessageData.data)
             self.sqlServerObject.update_notifications(httpMessageData.data.notifies);
@@ -114,6 +120,13 @@ class ExecuteQuery {
       })
     ).then(
       (httpMessage) => {
+        // Enable/Disable commit and rollback button.
+        if (httpMessage.data.data.transaction_status == 2 || httpMessage.data.data.transaction_status == 3) {
+          self.enableTransactionButtons();
+        } else {
+          self.disableTransactionButtons();
+        }
+
         if (ExecuteQuery.isQueryFinished(httpMessage)) {
           self.loadingScreen.setMessage('Loading data from the database server and rendering...');
 
@@ -184,6 +197,7 @@ class ExecuteQuery {
     this.sqlServerObject.rows_affected = 0;
     this.sqlServerObject._init_polling_flags();
     this.disableSQLEditorButtons();
+    this.disableTransactionButtons();
   }
 
   static prepareAnalyzeSql(sqlStatement, analyzeSql) {
@@ -245,6 +259,15 @@ class ExecuteQuery {
 
   disableSQLEditorButtons() {
     this.sqlServerObject.disable_tool_buttons(true);
+  }
+
+  enableTransactionButtons() {
+    this.sqlServerObject.disable_transaction_buttons(false);
+  }
+
+  disableTransactionButtons() {
+    this.sqlServerObject.special_sql = undefined;
+    this.sqlServerObject.disable_transaction_buttons(true);
   }
 
   static wasConnectionLostToPythonServer(httpResponse) {

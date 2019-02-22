@@ -124,6 +124,8 @@ define('tools.querytool', [
       // Indentation options
       'click #btn-indent-code': 'on_indent_code',
       'click #btn-unindent-code': 'on_unindent_code',
+      'click #btn-commit': 'on_commit_transaction',
+      'click #btn-rollback': 'on_rollback_transaction',
     },
 
     reflectPreferences: function() {
@@ -1782,6 +1784,15 @@ define('tools.querytool', [
         }
       }
     },
+    // Callback function for the commit button click.
+    on_commit_transaction: function() {
+      queryToolActions.executeCommit(this.handler);
+    },
+
+    // Callback function for the rollback button click.
+    on_rollback_transaction: function() {
+      queryToolActions.executeRollback(this.handler);
+    },
   });
 
   /* Defining controller class for data grid, which actually
@@ -3411,6 +3422,15 @@ define('tools.querytool', [
         }
       },
 
+      // This function is used to enable/disable commit/rollback buttons
+      disable_transaction_buttons: function(disabled) {
+        this.is_transaction_buttons_disabled = disabled;
+        if (this.is_query_tool) {
+          $('#btn-commit').prop('disabled', disabled);
+          $('#btn-rollback').prop('disabled', disabled);
+        }
+      },
+
       // This function will fetch the sql query from the text box
       // and execute the query.
       execute: function(explain_prefix, shouldReconnect=false) {
@@ -3420,14 +3440,18 @@ define('tools.querytool', [
         self.has_more_rows = false;
         self.fetching_rows = false;
 
-        /* If code is selected in the code mirror then execute
-         * the selected part else execute the complete code.
-         */
-        var selected_code = self.gridView.query_tool_obj.getSelection();
-        if (selected_code.length > 0)
-          sql = selected_code;
-        else
-          sql = self.gridView.query_tool_obj.getValue();
+        if (!_.isUndefined(self.special_sql)) {
+          sql = self.special_sql;
+        } else {
+          /* If code is selected in the code mirror then execute
+           * the selected part else execute the complete code.
+           */
+          var selected_code = self.gridView.query_tool_obj.getSelection();
+          if (selected_code.length > 0)
+            sql = selected_code;
+          else
+            sql = self.gridView.query_tool_obj.getValue();
+        }
 
         const executeQuery = new ExecuteQuery.ExecuteQuery(this, pgAdmin.Browser.UserManagement);
         executeQuery.execute(sql, explain_prefix, shouldReconnect);

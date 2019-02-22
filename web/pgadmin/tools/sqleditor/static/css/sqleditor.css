@@ -297,6 +297,26 @@ input.editor-checkbox:focus {
   background-image: url('../img/disconnect.svg');
 }
 
+.icon-commit, .icon-rollback {
+  display: inline-block;
+  align-content: center;
+  vertical-align: middle;
+  height: 18px;
+  width: 18px;
+  background-size: 22px !important;
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
+}
+
+.icon-commit {
+  background-image: url('../img/commit.svg') !important;
+}
+
+.icon-rollback {
+  background-image: url('../img/rollback.svg') !important;
+}
+
 .ajs-body .warn-header {
   font-size: 13px;
   font-weight: bold;

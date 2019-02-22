@@ -141,6 +141,18 @@ let queryToolActions = {
       codeMirrorObj.replaceSelection(selectedText.toUpperCase());
     }
   },
+
+  executeCommit: function (sqlEditorController) {
+    var self = this;
+    sqlEditorController.special_sql = 'COMMIT;';
+    self.executeQuery(sqlEditorController);
+  },
+
+  executeRollback: function (sqlEditorController) {
+    var self = this;
+    sqlEditorController.special_sql = 'ROLLBACK;';
+    self.executeQuery(sqlEditorController);
+  },
 };
 
 module.exports = queryToolActions;

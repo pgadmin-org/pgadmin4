@@ -571,3 +571,39 @@ def RegisterQueryToolPreferences(self):
         help_str=gettext('If set to True, Keywords will be displayed '
                          'in upper case for auto completion.')
     )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'commit_transaction',
+        gettext('Commit'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': True,
+            'control': True,
+            'key': {
+                'key_code': 77,
+                'char': 'm'
+            }
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'rollback_transaction',
+        gettext('Rollback'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': True,
+            'control': True,
+            'key': {
+                'key_code': 82,
+                'char': 'r'
+            }
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=shortcut_fields
+    )

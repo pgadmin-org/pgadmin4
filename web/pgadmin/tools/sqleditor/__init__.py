@@ -584,6 +584,7 @@ def poll(trans_id):
            result is not None and additional_messages:
             result = additional_messages + result
 
+    transaction_status = conn.transaction_status()
     return make_json_response(
         data={
             'status': status, 'result': result,
@@ -598,7 +599,8 @@ def poll(trans_id):
             'types': types,
             'client_primary_key': client_primary_key,
             'has_oids': has_oids,
-            'oids': oids
+            'oids': oids,
+            'transaction_status': transaction_status,
         },
         encoding=conn.python_encoding
     )

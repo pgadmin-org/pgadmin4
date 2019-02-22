@@ -22,6 +22,7 @@ describe('#callRenderAfterPoll', () => {
       trigger: jasmine.createSpy('SQLEditor.trigger'),
       update_msg_history: jasmine.createSpy('SQLEditor.update_msg_history'),
       disable_tool_buttons: jasmine.createSpy('SQLEditor.disable_tool_buttons'),
+      disable_transaction_buttons: jasmine.createSpy('SQLEditor.disable_transaction_buttons'),
       query_start_time: new Date(),
     };
     alertify = jasmine.createSpyObj('alertify', ['success']);

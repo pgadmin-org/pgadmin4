@@ -118,7 +118,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      can_edit=False,
                      can_filter=False,
                      info_notifier_timeout=5,
-                     notifies=None
+                     notifies=None,
+                     transaction_status=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -278,7 +279,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      can_edit=True,
                      can_filter=True,
                      info_notifier_timeout=5,
-                     notifies=None
+                     notifies=None,
+                     transaction_status=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -322,7 +324,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      can_edit=True,
                      can_filter=True,
                      info_notifier_timeout=5,
-                     notifies=None
+                     notifies=None,
+                     transaction_status=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -366,7 +369,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      can_edit=True,
                      can_filter=True,
                      info_notifier_timeout=5,
-                     notifies=None
+                     notifies=None,
+                     transaction_status=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -411,7 +415,8 @@ class StartRunningQueryTest(BaseTestGenerator):
                      can_edit=True,
                      can_filter=True,
                      info_notifier_timeout=5,
-                     notifies=None
+                     notifies=None,
+                     transaction_status=None
                  )
              ),
              expect_internal_server_error_called_with=None,
@@ -517,9 +522,11 @@ class StartRunningQueryTest(BaseTestGenerator):
             execute_async=MagicMock(),
             execute_void=MagicMock(),
             get_notifies=MagicMock(),
+            transaction_status=MagicMock(),
         )
         self.connection.connect.return_value = self.connection_connect_return
         self.connection.get_notifies.return_value = None
+        self.connection.transaction_status.return_value = None
         self.connection.execute_async.return_value = \
             self.execute_async_return_value
         if self.manager_connection_exception is None:

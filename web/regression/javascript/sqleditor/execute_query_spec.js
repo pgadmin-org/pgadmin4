@@ -44,6 +44,7 @@ describe('ExecuteQuery', () => {
       'initTransaction',
       'handle_connection_lost',
       'update_notifications',
+      'disable_transaction_buttons',
     ]);
     sqlEditorMock.transId = 123;
     sqlEditorMock.rows_affected = 1000;
@@ -109,6 +110,46 @@ describe('ExecuteQuery', () => {
                 .toHaveBeenCalledWith([{'pid': 100}]);
               done();
             }, 0);
+          });
+        });
+
+        describe('when query was successful but in transaction block', () => {
+          beforeEach(() => {
+            response = {
+              data: {status: 'Success', notifies: [{'pid': 100}], transaction_status: 2},
+            };
+            networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
+
+            executeQuery.poll();
+          });
+
+          it('enable the transaction buttons', (done) => {
+            setTimeout(
+              () => {
+                expect(sqlEditorMock.disable_transaction_buttons)
+                  .toHaveBeenCalledWith(false);
+                done();
+              }, 0);
+          });
+        });
+
+        describe('when query was successful but not in transaction block', () => {
+          beforeEach(() => {
+            response = {
+              data: {status: 'Success', notifies: [{'pid': 100}], transaction_status: 0},
+            };
+            networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
+
+            executeQuery.poll();
+          });
+
+          it('disable the transaction buttons', (done) => {
+            setTimeout(
+              () => {
+                expect(sqlEditorMock.disable_transaction_buttons)
+                  .toHaveBeenCalledWith(true);
+                done();
+              }, 0);
           });
         });
 
