@@ -111,13 +111,16 @@ html_theme = 'classic'
 # documentation.
 html_theme_options = { 
     'collapsiblesidebar': True,
-    'relbarbgcolor': '#2C76B4',
+    'relbarbgcolor': '#326690',
     'sidebarbgcolor': '#E2E2E2',
-    'sidebarbtncolor': '#2C76B4',
-    'sidebartextcolor': '#000',
-    'sidebarlinkcolor': '#337AB7',
-    'footerbgcolor': '#333',
-    'codebgcolor': '#D9EDF7',
+    'sidebarbtncolor': '#326690',
+    'sidebartextcolor': '#222222',
+    'sidebarlinkcolor': '#326690',
+    'footerbgcolor': '#222222',
+    'codebgcolor': '#d6effc',
+    'textcolor': '#222222',
+    'headbgcolor': '#E2E2E2',
+    'headtextcolor': '#326690',
     'bodyfont': '"Helvetica Neue", Helvetica, Arial, sans-serif',
     'headfont': '"Helvetica Neue", Helvetica, Arial, sans-serif'
 }
