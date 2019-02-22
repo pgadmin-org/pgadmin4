@@ -172,6 +172,7 @@ class ExecuteQuery {
     this.loadingScreen.show('Running query...');
 
     $('#btn-flash').prop('disabled', true);
+    $('#btn-download').prop('disabled', true);
 
     this.sqlServerObject.query_start_time = new Date();
     if (typeof sqlStatement === 'object') {

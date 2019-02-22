@@ -1174,6 +1174,7 @@ define('tools.querytool', [
       self.handler.fetching_rows = true;
 
       $('#btn-flash').prop('disabled', true);
+      $('#btn-download').prop('disabled', true);
 
       if (fetch_all) {
         self.handler.trigger(
@@ -1197,6 +1198,7 @@ define('tools.querytool', [
       .done(function(res) {
         self.handler.has_more_rows = res.data.has_more_rows;
         $('#btn-flash').prop('disabled', false);
+        $('#btn-download').prop('disabled', false);
         self.handler.trigger('pgadmin-sqleditor:loading-icon:hide');
         self.update_grid_data(res.data.result);
         self.handler.fetching_rows = false;
@@ -1206,6 +1208,7 @@ define('tools.querytool', [
       })
       .fail(function(e) {
         $('#btn-flash').prop('disabled', false);
+        $('#btn-download').prop('disabled', false);
         self.handler.trigger('pgadmin-sqleditor:loading-icon:hide');
         self.handler.has_more_rows = false;
         self.handler.fetching_rows = false;
@@ -2151,6 +2154,7 @@ define('tools.querytool', [
         );
 
         $('#btn-flash').prop('disabled', true);
+        $('#btn-download').prop('disabled', true);
 
         self.trigger(
           'pgadmin-sqleditor:loading-icon:message',
@@ -2362,6 +2366,7 @@ define('tools.querytool', [
             // Hide the loading icon
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             $('#btn-flash').prop('disabled', false);
+            $('#btn-download').prop('disabled', false);
           }.bind(self)
         );
       },
@@ -2534,6 +2539,7 @@ define('tools.querytool', [
 
         if (status != 'Busy') {
           $('#btn-flash').prop('disabled', false);
+          $('#btn-download').prop('disabled', false);
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
           self.gridView.history_collection.add({
             'status': status,
@@ -2787,6 +2793,7 @@ define('tools.querytool', [
             } else {
               // Something went wrong while saving data on the db server
               $('#btn-flash').prop('disabled', false);
+              $('#btn-download').prop('disabled', false);
               $('.sql-editor-message').text(res.data.result);
               var err_msg = S(gettext('%s.')).sprintf(res.data.result).value();
               alertify.error(err_msg, 20);
@@ -3398,7 +3405,6 @@ define('tools.querytool', [
         $('#btn-file-menu-dropdown').prop('disabled', disabled);
         $('#btn-find').prop('disabled', disabled);
         $('#btn-find-menu-dropdown').prop('disabled', disabled);
-        $('#btn-download').prop('disabled', disabled);
         if (this.is_query_tool) {
           // Cancel query tool needs opposite behaviour
           $('#btn-cancel-query').prop('disabled', !disabled);
@@ -3510,6 +3516,7 @@ define('tools.querytool', [
           if(!_.isUndefined(self.download_csv_obj)) {
             self.download_csv_obj.abort();
             $('#btn-flash').prop('disabled', false);
+            $('#btn-download').prop('disabled', false);
             self.trigger(
               'pgadmin-sqleditor:loading-icon:hide');
           }
@@ -3549,6 +3556,7 @@ define('tools.querytool', [
           beforeSend: function() {
             // Disable the Execute button
             $('#btn-flash').prop('disabled', true);
+            $('#btn-download').prop('disabled', true);
             self.disable_tool_buttons(true);
 
             self.trigger(
@@ -3569,6 +3577,7 @@ define('tools.querytool', [
           self.download_csv_obj = undefined;
           // Enable the execute button
           $('#btn-flash').prop('disabled', false);
+          $('#btn-download').prop('disabled', false);
           self.disable_tool_buttons(false);
           self.trigger(
             'pgadmin-sqleditor:loading-icon:hide');
