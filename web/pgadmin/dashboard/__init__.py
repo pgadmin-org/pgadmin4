@@ -12,6 +12,7 @@ from functools import wraps
 from flask import render_template, url_for, Response, g, request
 from flask_babelex import gettext
 from flask_security import login_required
+import simplejson as json
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response,\
     internal_server_error
@@ -368,7 +369,8 @@ def dashboard_stats(sid=None, did=None):
         status, res = g.conn.execute_dict(sql)
 
         for chart_row in res['rows']:
-            resp_data[chart_row['chart_name']] = chart_row['chart_data']
+            resp_data[chart_row['chart_name']] = \
+                json.loads(chart_row['chart_data'])
 
     return ajax_response(
         response=resp_data,
