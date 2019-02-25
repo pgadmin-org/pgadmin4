@@ -233,17 +233,26 @@ li.CodeMirror-hint-active {
   border-top: none;
 }
 
-.pg_text_editor {
+.pg-text-editor {
   z-index:10000;
   position:absolute;
   background: $color-bg-theme;
   padding: 0.25rem;
   border: $panel-border;
   box-shadow: $dropdown-box-shadow;
-}
 
-.pg_text_editor textarea {
-  resize: both;
+
+  & .pg-textarea {
+    width:250px;
+    height:80px;
+    border:0;
+    outline:0;
+    resize: both;
+  }
+
+  & .pg-text-invalid {
+    background: $color-danger-lighter;
+  }
 }
 
 .sql-editor-message {

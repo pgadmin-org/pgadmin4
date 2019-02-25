@@ -18,7 +18,6 @@ from flask import session
 from flask_babelex import gettext
 import psycopg2
 from psycopg2.extensions import adapt
-from psycopg2.extras import Json as psycopg2_json
 
 import config
 from pgadmin.model import Server, User
@@ -226,14 +225,7 @@ class Driver(BaseDriver):
 
     @staticmethod
     def qtLiteral(value):
-        adapted = None
-
-        # adapt function cannot adapt dict data type
-        # Used http://initd.org/psycopg/docs/extras.html#json-adaptation
-        if type(value) == dict:
-            adapted = psycopg2_json(value)
-        else:
-            adapted = adapt(value)
+        adapted = adapt(value)
 
         # Not all adapted objects have encoding
         # e.g.

@@ -33,12 +33,12 @@
 
   // return wrapper element
   function getWrapper() {
-    return $('<div class=\'pg_text_editor\' />');
+    return $('<div class=\'pg-text-editor\' />');
   }
 
   // return textarea element
   function getTextArea() {
-    return $('<textarea class=\'pg_textarea text-12\' hidefocus rows=5\'>');
+    return $('<textarea class=\'pg-textarea text-12\' hidefocus rows=5\'>');
   }
 
   // Generate and return editor buttons
@@ -107,7 +107,11 @@
         grid.copied_rows[row][cell] = 1;
       }
     } else {
-      item[args.column.field] = state;
+      if(column_type === 'jsonb') {
+        item[args.column.field] = JSON.parse(state);
+      } else {
+        item[args.column.field] = state;
+      }
     }
   }
 
@@ -364,6 +368,7 @@
 
     this.loadValue = function(item) {
       var data = defaultValue = item[args.column.field];
+      /* If jsonb or array */
       if (data && typeof data === 'object' && !Array.isArray(data)) {
         data = JSON.stringify(data, null, 4);
       } else if (Array.isArray(data)) {
@@ -377,6 +382,7 @@
         });
         data = '[' + temp.join() + ']';
       }
+      /* if json take as is */
       $input.val(data);
       $input.trigger('select');
     };
@@ -388,8 +394,12 @@
       return $input.val();
     };
 
-    this.applyValue = function(item, state) {
-      setValue(args, item, state, 'text');
+    this.applyValue = function(item, state){
+      if(args.column.column_type_internal === 'jsonb') {
+        setValue(args, item, state, 'jsonb');
+      } else {
+        setValue(args, item, state, 'text');
+      }
     };
 
     this.isValueChanged = function() {
@@ -401,13 +411,17 @@
     };
 
     this.validate = function() {
-      if (args.column.validator) {
-        var validationResults = args.column.validator($input.val());
-        if (!validationResults.valid) {
-          return validationResults;
+      if(args.column.column_type_internal === 'jsonb') {
+        try {
+          JSON.parse($input.val());
+        } catch(e) {
+          $input.addClass('pg-text-invalid');
+          return {
+            valid: false,
+          };
         }
       }
-
+      $input.removeClass('pg-text-invalid');
       return {
         valid: true,
         msg: null,

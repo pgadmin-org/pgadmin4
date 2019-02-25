@@ -17,6 +17,7 @@ import sys
 from psycopg2 import STRING as _STRING
 import psycopg2
 from psycopg2.extensions import encodings
+from psycopg2.extras import Json as psycopg2_json
 
 from .encoding import configureDriverEncodings
 
@@ -165,6 +166,14 @@ def register_global_typecasters():
     # This registers a type caster to convert various pg array types into
     # array of string type
     psycopg2.extensions.register_type(pg_array_types_to_array_of_string_type)
+
+    # Treat JSON data as text because converting it to dict alters the data
+    # which should not happen as per postgres docs
+    psycopg2.extras.register_default_json(loads=lambda x: x)
+
+    # pysycopg2 adapt does not support dict by default. Need to register
+    # Used http://initd.org/psycopg/docs/extras.html#json-adaptation
+    psycopg2.extensions.register_adapter(dict, psycopg2_json)
 
 
 def register_string_typecasters(connection):

@@ -266,12 +266,6 @@ input.editor-checkbox:focus {
 }
 
 /* Style for text editor */
-.pg_textarea {
-  width:250px;
-  height:80px;
-  border:0;
-  outline:0;
-}
 .pg_buttons {
   text-align:right;
 }
