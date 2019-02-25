@@ -2598,6 +2598,11 @@ define([
         } else {
           this.has_datepicker = true;
           var self = this;
+          if (!_.isUndefined(data.value) && !_.isNull(data.value)
+              && data.value.toLowerCase() === 'infinity') {
+            data.value = null;
+          }
+
           this.$el.find('input').first().datetimepicker(
             _.extend({
               keyBinds: {
