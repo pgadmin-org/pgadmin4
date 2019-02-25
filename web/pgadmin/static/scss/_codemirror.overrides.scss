@@ -152,3 +152,7 @@
     }
   }
 }
+
+.CodeMirror-focused .CodeMirror-selected {
+  background: $color-primary-light !important;
+}
