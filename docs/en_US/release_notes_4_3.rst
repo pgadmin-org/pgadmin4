@@ -16,6 +16,7 @@ Features
 | `Feature #3559 <https://redmine.postgresql.org/issues/3559>`_ - Automatically expand child nodes as well as the selected node on the treeview if there is only one.
 | `Feature #3886 <https://redmine.postgresql.org/issues/3886>`_ - Include multiple versions of the PG utilties in containers.
 | `Feature #3991 <https://redmine.postgresql.org/issues/3991>`_ - Update Alpine Linux version in the docker container.
+| `Feature #4034 <https://redmine.postgresql.org/issues/4034>`_ - Support double-click on Query Tool result grid column resize handles to auto-size to the content.
 
 Bug fixes
 *********

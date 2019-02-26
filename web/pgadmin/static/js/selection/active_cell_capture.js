@@ -62,6 +62,11 @@ define([
         return;
       }
 
+      /* Skip if clicked on resize handler */
+      if($(event.target).hasClass('slick-resizable-handle')) {
+        return;
+      }
+
       bypassDefaultActiveCellRangeChange = true;
 
       var clickedColumn = args.column.pos + 1;

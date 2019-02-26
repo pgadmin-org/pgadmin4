@@ -283,6 +283,7 @@ var webpackShimConfig = {
     'pgadmin.user_management.current_user': '/user_management/current_user',
     'slick.pgadmin.editors': path.join(__dirname, './pgadmin/tools/../static/js/slickgrid/editors'),
     'slick.pgadmin.formatters': path.join(__dirname, './pgadmin/tools/../static/js/slickgrid/formatters'),
+    'slick.pgadmin.plugins': path.join(__dirname, './pgadmin/tools/../static/js/slickgrid/plugins'),
   },
   externals: [
     'pgadmin.user_management.current_user',

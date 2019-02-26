@@ -41,6 +41,7 @@ define('tools.querytool', [
   'backgrid.sizeable.columns',
   'slick.pgadmin.formatters',
   'slick.pgadmin.editors',
+  'slick.pgadmin.plugins/slick.autocolumnsize',
   'pgadmin.browser',
   'pgadmin.tools.user_management',
 ], function(
@@ -863,6 +864,7 @@ define('tools.querytool', [
       grid.registerPlugin(new ActiveCellCapture());
       grid.setSelectionModel(new XCellSelectionModel());
       grid.registerPlugin(gridSelector);
+      grid.registerPlugin(new Slick.AutoColumnSize());
       var headerButtonsPlugin = new Slick.Plugins.HeaderButtons();
       headerButtonsPlugin.onCommand.subscribe(function (e, args) {
         let command = args.command;
@@ -926,7 +928,7 @@ define('tools.querytool', [
           var column_size = self.handler['col_size'];
           column_size[self.handler['table_name']][col['id']] = col['width'];
         });
-      });
+      }.bind(grid));
 
       gridSelector.onBeforeGridSelectAll.subscribe(function(e, args) {
         if (self.handler.has_more_rows) {
