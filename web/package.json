@@ -59,6 +59,7 @@
     "bignumber.js": "^6.0.0",
     "bootstrap": "^4.1.3",
     "bootstrap-datepicker": "^1.7.0",
+    "bootstrap4-toggle": "3.4.0",
     "bowser": "1.6.1",
     "browserify": "~14.1.0",
     "codemirror": "^5.43.0",
@@ -75,6 +76,7 @@
     "jquery": "3.3.1",
     "jquery-contextmenu": "^2.6.4",
     "jquery-ui": "^1.12.1",
+    "json-bignumber": "^1.0.1",
     "leaflet": "^1.3.3",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.21",
@@ -97,8 +99,7 @@
     "underscore.string": "^3.3.4",
     "watchify": "~3.9.0",
     "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#9cf81f03bb350b76b77a264f1db5d55391d5e424",
-    "wkx": "^0.4.5",
-    "bootstrap4-toggle": "3.4.0"
+    "wkx": "^0.4.5"
   },
   "scripts": {
     "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js --ext .jsx .",

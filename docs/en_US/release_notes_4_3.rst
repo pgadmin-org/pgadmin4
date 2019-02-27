@@ -25,6 +25,7 @@ Bug fixes
 | `Bug #3352 <https://redmine.postgresql.org/issues/3352>`_ - Handle display of roles with expiration set to infinity correctly.
 | `Bug #3418 <https://redmine.postgresql.org/issues/3418>`_ - Allow editing of values in columns with the oid datatype which are not an actual row OID.
 | `Bug #3544 <https://redmine.postgresql.org/issues/3544>`_ - Make the Query Tool tab titles more concise and useful.
+| `Bug #3587 <https://redmine.postgresql.org/issues/3587>`_ - Fix support for bigint's in JSONB data.
 | `Bug #3583 <https://redmine.postgresql.org/issues/3583>`_ - Update CodeMirror to 5.43.0 to resolve issues with auto-indent.
 | `Bug #3600 <https://redmine.postgresql.org/issues/3600>`_ - Ensure JSON data isn't modified in-flight by psycopg2 when using View/Edit data.
 | `Bug #3673 <https://redmine.postgresql.org/issues/3673>`_ - Modify the Download as CSV option to use the same connection as the Query Tool its running in so temporary tables etc. can be used.

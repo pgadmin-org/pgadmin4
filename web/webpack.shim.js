@@ -156,6 +156,7 @@ var webpackShimConfig = {
     'jquery.contextmenu': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.contextMenu'),
     'dropzone': path.join(__dirname, './node_modules/dropzone/dist/dropzone'),
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
+    'json-bignumber': path.join(__dirname, './node_modules/json-bignumber/dist/JSONBigNumber.min'),
     'snap.svg': path.join(__dirname, './node_modules/snapsvg/dist/snap.svg'),
     'spectrum': path.join(__dirname, './node_modules/spectrum-colorpicker/spectrum'),
     'mousetrap': path.join(__dirname, './node_modules/mousetrap'),

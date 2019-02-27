@@ -170,6 +170,7 @@ def register_global_typecasters():
     # Treat JSON data as text because converting it to dict alters the data
     # which should not happen as per postgres docs
     psycopg2.extras.register_default_json(loads=lambda x: x)
+    psycopg2.extras.register_default_jsonb(loads=lambda x: x)
 
     # pysycopg2 adapt does not support dict by default. Need to register
     # Used http://initd.org/psycopg/docs/extras.html#json-adaptation

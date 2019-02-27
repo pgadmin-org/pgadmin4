@@ -13,7 +13,9 @@
  * @namespace Slick
  */
 
-(function($) {
+import JSONBigNumber from 'json-bignumber';
+
+(function($, JSONBigNumber) {
   // register namespace
   $.extend(true, window, {
     'Slick': {
@@ -108,7 +110,7 @@
       }
     } else {
       if(column_type === 'jsonb') {
-        item[args.column.field] = JSON.parse(state);
+        item[args.column.field] = JSONBigNumber.stringify(JSONBigNumber.parse(state));
       } else {
         item[args.column.field] = state;
       }
@@ -369,13 +371,13 @@
     this.loadValue = function(item) {
       var data = defaultValue = item[args.column.field];
       /* If jsonb or array */
-      if (data && typeof data === 'object' && !Array.isArray(data)) {
-        data = JSON.stringify(data, null, 4);
+      if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data)) {
+        data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 4);
       } else if (Array.isArray(data)) {
         var temp = [];
         $.each(data, function(i, val) {
           if (typeof val === 'object') {
-            temp.push(JSON.stringify(val, null, 4));
+            temp.push(JSONBigNumber.stringify(val, null, 4));
           } else {
             temp.push(val);
           }
@@ -411,7 +413,8 @@
     };
 
     this.validate = function() {
-      if(args.column.column_type_internal === 'jsonb') {
+      if(args.column.column_type_internal === 'jsonb' ||
+          args.column.column_type_internal === 'json') {
         try {
           JSON.parse($input.val());
         } catch(e) {
@@ -597,13 +600,13 @@
 
     this.loadValue = function(item) {
       var data = defaultValue = item[args.column.field];
-      if (typeof data === 'object' && !Array.isArray(data)) {
-        data = JSON.stringify(data, null, 4);
+      if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data)) {
+        data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 4);
       } else if (Array.isArray(data)) {
         var temp = [];
         $.each(data, function(i, val) {
           if (typeof val === 'object') {
-            temp.push(JSON.stringify(val, null, 4));
+            temp.push(JSONBigNumber.stringify(val, null, 4));
           } else {
             temp.push(val);
           }
@@ -988,4 +991,4 @@
     this.init();
   }
 
-})(window.jQuery);
+})(window.jQuery, JSONBigNumber);
