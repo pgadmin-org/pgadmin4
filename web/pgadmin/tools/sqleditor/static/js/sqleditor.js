@@ -237,6 +237,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
+        extraClasses: 'hide-vertical-scrollbar',
         content: '<div id ="datagrid" class="sql-editor-grid-container text-12" tabindex: "0"></div>',
       });
 

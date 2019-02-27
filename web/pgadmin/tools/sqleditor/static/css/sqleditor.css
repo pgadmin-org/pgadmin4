@@ -423,3 +423,7 @@ input.editor-checkbox:focus {
 .geometry-viewer-info-control i{
   margin: 0 0 0 4px;
 }
+
+.hide-vertical-scrollbar {
+  overflow-y: hidden;
+}

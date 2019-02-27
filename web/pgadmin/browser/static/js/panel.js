@@ -18,7 +18,7 @@ define(
       var defaults = [
         'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
         'isPrivate', 'content', 'icon', 'events', 'onCreate', 'elContainer',
-        'canHide', 'limit',
+        'canHide', 'limit', 'extraClasses',
       ];
       _.extend(this, _.pick(options, defaults));
     };
@@ -37,6 +37,7 @@ define(
       onCreate: null,
       elContainer: false,
       limit: null,
+      extraClasses: null,
       load: function(docker, title) {
         var that = this;
         if (!that.panel) {
@@ -60,6 +61,11 @@ define(
               var $container = $('<div>', {
                 'class': 'pg-panel-content',
               }).append($(that.content));
+
+              // Add extra classes
+              if (!_.isNull('extraClasses')) {
+                $container.addClass(that.extraClasses);
+              }
 
               myPanel.closeable(!!that.isCloseable);
               myPanel.layout().addItem($container);
