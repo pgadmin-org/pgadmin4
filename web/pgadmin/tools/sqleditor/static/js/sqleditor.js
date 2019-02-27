@@ -3564,17 +3564,14 @@ define('tools.querytool', [
         var self = this,
           url = url_for('sqleditor.query_tool_download', {
             'trans_id': self.transId,
-          });
-
-        url += '?' + $.param({
-          query: query,
-          filename: filename,
-        });
+          }),
+          data = { query: query, filename: filename };
 
         // Get the CSV file
         self.download_csv_obj = $.ajax({
-          type: 'GET',
+          type: 'POST',
           url: url,
+          data: data,
           cache: false,
           async: true,
           xhrFields: {

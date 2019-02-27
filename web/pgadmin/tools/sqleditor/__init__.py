@@ -1389,7 +1389,7 @@ def save_file():
 
 @blueprint.route(
     '/query_tool/download/<int:trans_id>',
-    methods=["GET"],
+    methods=["POST"],
     endpoint='query_tool_download'
 )
 @login_required
@@ -1401,7 +1401,7 @@ def start_query_download_tool(trans_id):
     if status and sync_conn is not None and \
        trans_obj is not None and session_obj is not None:
 
-        data = request.args if request.args else None
+        data = request.values if request.values else None
         try:
             if data and 'query' in data:
                 sql = data['query']
