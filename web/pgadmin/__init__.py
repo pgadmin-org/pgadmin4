@@ -213,6 +213,10 @@ def create_app(app_name=None):
     # Setup logging and log the application startup
     ##########################################################################
 
+    # We won't care about errors in the logging system, we are more
+    # interested in application errors.
+    logging.raiseException = False
+
     # Add SQL level logging, and set the base logging level
     logging.addLevelName(25, 'SQL')
     app.logger.setLevel(logging.DEBUG)

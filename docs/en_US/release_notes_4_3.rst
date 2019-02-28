@@ -32,6 +32,7 @@ Bug fixes
 | `Bug #3873 <https://redmine.postgresql.org/issues/3873>`_ - Fix context sub-menu alignment on Safari.
 | `Bug #3906 <https://redmine.postgresql.org/issues/3906>`_ - Fix alignment of Close and Maximize button of Grant Wizard.
 | `Bug #3912 <https://redmine.postgresql.org/issues/3912>`_ - Fix editing of table data with a JSON primary key.
+| `Bug #3933 <https://redmine.postgresql.org/issues/3933>`_ - Ignore exceptions in the logger.
 | `Bug #3942 <https://redmine.postgresql.org/issues/3942>`_ - Close connections gracefully when the user logs out of pgAdmin.
 | `Bug #3946 <https://redmine.postgresql.org/issues/3946>`_ - Fix alignment of checkbox to drop multiple schedules of pgAgent job.
 | `Bug #3958 <https://redmine.postgresql.org/issues/3958>`_ - Don't exclude SELECT statements from transaction management in the Query Tool in case they call data-modifying functions.
