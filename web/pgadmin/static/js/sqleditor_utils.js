@@ -195,6 +195,22 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
         }
         return '1em';
       },
+
+      removeSlashInTheString: (value) => {
+        let locationList = [];
+        let idx = 0;
+        while (value && value.indexOf('/') !== -1) {
+          locationList.push(value.indexOf('/') + idx);
+          value = value.replace('/', '');
+          // No of slashes already removed, so we need to increment the
+          // index accordingly when adding into location list
+          idx++;
+        }
+        return {
+          'slashLocations': locationList.join(','),
+          'title': encodeURIComponent(value),
+        };
+      },
     };
     return sqlEditorUtils;
   });

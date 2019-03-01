@@ -230,6 +230,16 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         server_type = None
 
+    # If title has slash(es) in it then replace it
+    if request.args and request.args['fslashes'] != '':
+        try:
+            fslashesList = request.args['fslashes'].split(',')
+            for idx in fslashesList:
+                idx = int(idx)
+                editor_title = editor_title[:idx] + '/' + editor_title[idx:]
+        except IndexError as e:
+            app.logger.exception(e)
+
     # We need client OS information to render correct Keyboard shortcuts
     user_agent = UserAgent(request.headers.get('User-Agent'))
 

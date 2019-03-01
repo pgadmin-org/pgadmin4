@@ -52,7 +52,7 @@ export function showDataGrid(
 }
 
 
-function retrieveNameSpaceName(parentData) {
+export function retrieveNameSpaceName(parentData) {
   if (parentData.schema !== undefined) {
     return parentData.schema.label;
   }
@@ -87,6 +87,6 @@ function hasSchemaOrCatalogOrViewInformation(parentData) {
     parentData.catalog !== undefined;
 }
 
-function generateDatagridTitle(parentData, namespaceName, nodeData) {
+export function generateDatagridTitle(parentData, namespaceName, nodeData) {
   return `${namespaceName}.${nodeData.label}`;
 }

@@ -45,6 +45,7 @@ Bug fixes
 | `Bug #3982 <https://redmine.postgresql.org/issues/3982>`_ - Add full support and testsfor all PG server side encodings.
 | `Bug #3985 <https://redmine.postgresql.org/issues/3985>`_ - Don't embed docs and external sites in iframes, to allow the external sites to set X-FRAME-OPTIONS = DENY for security.
 | `Bug #3992 <https://redmine.postgresql.org/issues/3992>`_ - Add full support and testsfor all PG server side encodings.
+| `Bug #3998 <https://redmine.postgresql.org/issues/3998>`_ - Custom-encode forward slashes in URL parameters as Apache HTTPD doesn't allow them in some cases.
 | `Bug #4000 <https://redmine.postgresql.org/issues/4000>`_ - Update CodeMirror to 5.43.0 to resolve issues with tab indent with use spaces enabled.
 | `Bug #4013 <https://redmine.postgresql.org/issues/4013>`_ - Ensure long queries don't cause errors when downloading CSV in the Query Tool.
 | `Bug #4021 <https://redmine.postgresql.org/issues/4021>`_ - Disable the editor and execute functions whilst queries are executing.

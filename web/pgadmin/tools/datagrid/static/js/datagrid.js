@@ -234,17 +234,7 @@ define('pgadmin.datagrid', [
           return;
         }
 
-        var nsp_name = '';
-
-        if (parentData.schema != undefined) {
-          nsp_name = parentData.schema.label;
-        }
-        else if (parentData.view != undefined) {
-          nsp_name = parentData.view.label;
-        }
-        else if (parentData.catalog != undefined) {
-          nsp_name = parentData.catalog.label;
-        }
+        let nsp_name = showData.retrieveNameSpaceName(parentData);
 
         var url_params = {
           'cmd_type': data.mnuid,
@@ -263,8 +253,8 @@ define('pgadmin.datagrid', [
           'did': url_params['did'],
           'obj_id': url_params['obj_id'],
         });
-        var grid_title = parentData.server.label + '-' + parentData.database.label + '-'
-                        + nsp_name + '.' + d.label;
+
+        let grid_title = showData.generateDatagridTitle(parentData, nsp_name, d);
 
         // Create filter dialog using alertify
         if (!alertify.filterDialog) {
@@ -481,13 +471,16 @@ define('pgadmin.datagrid', [
         }
 
           // Open the panel if frame is initialized
+        let titileForURLObj = sqlEditorUtils.removeSlashInTheString(grid_title);
         var url_params = {
             'trans_id': trans_obj.gridTransId,
             'is_query_tool': trans_obj.is_query_tool,
-            'editor_title': encodeURIComponent(grid_title),
+            'editor_title': titileForURLObj.title,
           },
           baseUrl = url_for('datagrid.panel', url_params) +
-            '?' + 'query_url=' + encodeURI(trans_obj.sURL) + '&server_type=' + encodeURIComponent(trans_obj.server_type);
+            '?' + 'query_url=' + encodeURI(trans_obj.sURL) +
+            '&server_type=' + encodeURIComponent(trans_obj.server_type) +
+            '&fslashes=' + titileForURLObj.slashLocations;
 
         if (self.preferences.new_browser_tab) {
           var newWin = window.open(baseUrl, '_blank');
