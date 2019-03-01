@@ -144,7 +144,8 @@ class TestEncoding(BaseTestGenerator):
             'When the database encoding is EUC_JIS_2004',
             dict(
                 db_encoding='EUC_JIS_2004',
-                expected_return_value=['EUC_JIS_2004', 'eucjis2004', 'eucjis2004']
+                expected_return_value=['EUC_JIS_2004', 'eucjis2004',
+                                       'eucjis2004']
             )
         ), (
             'When the database encoding is EUC_CN',
