@@ -2339,32 +2339,37 @@ define('tools.querytool', [
              * In case of Explain draw the graph on explain panel
              * and add json formatted data to collection and render.
              */
-            var explain_data_array = [];
-            if (
-              data.result && data.result.length >= 1 &&
-              data.result[0] && data.result[0][0] && data.result[0][0][0] &&
-              data.result[0][0][0].hasOwnProperty('Plan') &&
-              _.isObject(data.result[0][0][0]['Plan'])
-            ) {
-              var explain_data = [JSON.stringify(data.result[0][0], null, 2)];
-              explain_data_array.push(explain_data);
-              // Make sure - the 'Data Output' panel is visible, before - we
-              // start rendering the grid.
-              self.gridView.data_output_panel.focus();
-              setTimeout(
-                function() {
-                  self.gridView.render_grid(
-                    explain_data_array, self.columns, self.can_edit,
-                    self.client_primary_key
-                  );
-                  // Make sure - the 'Explain' panel is visible, before - we
-                  // start rendering the grid.
-                  self.gridView.explain_panel.focus();
-                  pgExplain.DrawJSONPlan(
-                    $('.sql-editor-explain'), data.result[0][0]
-                  );
-                }, 10
-              );
+            var explain_data_array = [],
+              explain_data_json = null;
+
+            if(data.types[0].typname === 'json') {
+              /* json is sent as text, parse it */
+              explain_data_json = JSON.parse(data.result[0]);
+
+              if (explain_data_json && explain_data_json[0] &&
+                explain_data_json[0].hasOwnProperty('Plan') &&
+                _.isObject(explain_data_json[0]['Plan'])
+              ) {
+                var explain_data = [JSON.stringify(explain_data_json, null, 2)];
+                explain_data_array.push(explain_data);
+                // Make sure - the 'Data Output' panel is visible, before - we
+                // start rendering the grid.
+                self.gridView.data_output_panel.focus();
+                setTimeout(
+                  function() {
+                    self.gridView.render_grid(
+                      explain_data_array, self.columns, self.can_edit,
+                      self.client_primary_key
+                    );
+                    // Make sure - the 'Explain' panel is visible, before - we
+                    // start rendering the grid.
+                    self.gridView.explain_panel.focus();
+                    pgExplain.DrawJSONPlan(
+                      $('.sql-editor-explain'), explain_data_json
+                    );
+                  }, 10
+                );
+              }
             } else {
               // Make sure - the 'Data Output' panel is visible, before - we
               // start rendering the grid.
