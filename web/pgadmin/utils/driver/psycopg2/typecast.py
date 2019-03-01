@@ -19,7 +19,7 @@ import psycopg2
 from psycopg2.extensions import encodings
 from psycopg2.extras import Json as psycopg2_json
 
-from .encoding import configureDriverEncodings
+from .encoding import configureDriverEncodings, getEncoding
 
 configureDriverEncodings(encodings)
 
@@ -182,20 +182,22 @@ def register_string_typecasters(connection):
     # characters. Here we unescape them using unicode_escape
     # and send ahead. When insert update is done, the characters
     # are escaped again and sent to the DB.
-    if connection.encoding in ('SQL_ASCII', 'SQLASCII',
-                               'MULE_INTERNAL', 'MULEINTERNAL'):
+
+    postgres_encoding, python_encoding, typecast_encoding = \
+        getEncoding(connection.encoding)
+    if postgres_encoding != 'UNICODE':
         if sys.version_info >= (3,):
             def non_ascii_escape(value, cursor):
                 if value is None:
                     return None
                 return bytes(
                     value, encodings[cursor.connection.encoding]
-                ).decode('unicode_escape', errors='replace')
+                ).decode(typecast_encoding, errors='replace')
         else:
             def non_ascii_escape(value, cursor):
                 if value is None:
                     return None
-                return value.decode('unicode_escape', errors='replace')
+                return value.decode(typecast_encoding, errors='replace')
                 # return value
 
         unicode_type = psycopg2.extensions.new_type(

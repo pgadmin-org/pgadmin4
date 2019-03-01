@@ -14,7 +14,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils
 import json
-from pgadmin.utils import server_utils
+from pgadmin.utils import server_utils, IS_PY2
 
 
 class TestEncodingCharset(BaseTestGenerator):
@@ -32,13 +32,6 @@ class TestEncodingCharset(BaseTestGenerator):
                 test_str='A'
             )),
         (
-            'With Encoding WIN1252',
-            dict(
-                db_encoding='WIN1252',
-                lc_collate='C',
-                test_str='A'
-            )),
-        (
             'With Encoding EUC_CN',
             dict(
                 db_encoding='EUC_CN',
@@ -50,14 +43,14 @@ class TestEncodingCharset(BaseTestGenerator):
             dict(
                 db_encoding='SQL_ASCII',
                 lc_collate='C',
-                test_str='\\255'
+                test_str='Tif'
             )),
         (
             'With Encoding LATIN1',
             dict(
                 db_encoding='LATIN1',
                 lc_collate='C',
-                test_str='Ň'
+                test_str='äöüßÑ'
             )),
         (
             'With Encoding LATIN2',
@@ -66,7 +59,174 @@ class TestEncodingCharset(BaseTestGenerator):
                 lc_collate='C',
                 test_str='§'
             )),
-
+        (
+            'With Encoding LATIN9',
+            dict(
+                db_encoding='LATIN9',
+                lc_collate='C',
+                test_str='äöüß'
+            )),
+        (
+            'With Encoding EUC_JIS_2004',
+            dict(
+                db_encoding='EUC_JIS_2004',
+                lc_collate='C',
+                test_str='じんぼはりんごをたべる'
+            )),
+        (
+            'With Encoding WIN1256',
+            dict(
+                db_encoding='WIN1256',
+                lc_collate='C',
+                test_str='صباح الخير'
+            )),
+        (
+            'With Encoding WIN866',
+            dict(
+                db_encoding='WIN866',
+                lc_collate='C',
+                test_str='Альтернативная'
+            )),
+        (
+            'With Encoding WIN874',
+            dict(
+                db_encoding='WIN874',
+                lc_collate='C',
+                test_str='กลิ่นหอม'
+            )),
+        (
+            'With Encoding WIN1250',
+            dict(
+                db_encoding='WIN1250',
+                lc_collate='C',
+                test_str='ŔÁÄÇ'
+            )),
+        (
+            'With Encoding WIN1251',
+            dict(
+                db_encoding='WIN1251',
+                lc_collate='C',
+                test_str='ЖИЙЮ'
+            )),
+        (
+            'With Encoding WIN1252',
+            dict(
+                db_encoding='WIN1252',
+                lc_collate='C',
+                test_str='ÆØÙü'
+            )),
+        (
+            'With Encoding WIN1253',
+            dict(
+                db_encoding='WIN1253',
+                lc_collate='C',
+                test_str='ΨΪμΫ'
+            )),
+        (
+            'With Encoding WIN1254',
+            dict(
+                db_encoding='WIN1254',
+                lc_collate='C',
+                test_str='ĞğØŠ'
+            )),
+        (
+            'With Encoding WIN1255',
+            dict(
+                db_encoding='WIN1255',
+                lc_collate='C',
+                test_str='₪¥©¾'
+            )),
+        (
+            'With Encoding WIN1256',
+            dict(
+                db_encoding='WIN1256',
+                lc_collate='C',
+                test_str='بؤغق'
+            )),
+        (
+            'With Encoding WIN1257',
+            dict(
+                db_encoding='WIN1257',
+                lc_collate='C',
+                test_str='‰ķģž'
+            )),
+        (
+            'With Encoding WIN1258',
+            dict(
+                db_encoding='WIN1258',
+                lc_collate='C',
+                test_str='₫SHYÑđ'
+            )),
+        (
+            'With Encoding EUC_CN',
+            dict(
+                db_encoding='EUC_CN',
+                lc_collate='C',
+                test_str='汉字不灭'
+            )),
+        (
+            'With Encoding EUC_JP',
+            dict(
+                db_encoding='EUC_JP',
+                lc_collate='C',
+                test_str='での日本'
+            )),
+        (
+            'With Encoding EUC_KR',
+            dict(
+                db_encoding='EUC_KR',
+                lc_collate='C',
+                test_str='ㄱㄲㄴㄷ'
+            )),
+        (
+            'With Encoding EUC_TW',
+            dict(
+                db_encoding='EUC_TW',
+                lc_collate='C',
+                test_str='中文'
+            )),
+        (
+            'With Encoding ISO_8859_5',
+            dict(
+                db_encoding='ISO_8859_5',
+                lc_collate='C',
+                test_str='ЁЎФЮ'
+            )),
+        (
+            'With Encoding ISO_8859_6',
+            dict(
+                db_encoding='ISO_8859_6',
+                lc_collate='C',
+                test_str='العَرَبِيَّة'
+            )),
+        (
+            'With Encoding ISO_8859_7',
+            dict(
+                db_encoding='ISO_8859_7',
+                lc_collate='C',
+                test_str='ελληνικά'
+            )),
+        (
+            'With Encoding ISO_8859_8',
+            dict(
+                db_encoding='ISO_8859_8',
+                lc_collate='C',
+                test_str='דבא'
+            )),
+        (
+            'With Encoding KOI8R',
+            dict(
+                db_encoding='KOI8R',
+                lc_collate='C',
+                test_str='Альтернативная'
+            )),
+        (
+            'With Encoding KOI8U',
+            dict(
+                db_encoding='KOI8U',
+                lc_collate='C',
+                test_str='українська'
+            )),
     ]
 
     def setUp(self):
@@ -113,6 +273,11 @@ class TestEncodingCharset(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         self.assertEquals(response_data['data']['rows_fetched_to'], 1)
+        if IS_PY2 and type(response_data['data']['result'][0][0]) == unicode:
+            result = response_data['data']['result'][0][0].encode('utf-8')
+        else:
+            result = response_data['data']['result'][0][0]
+        self.assertEquals(result, self.test_str)
 
         database_utils.disconnect_database(self, self.encode_sid,
                                            self.encode_did)

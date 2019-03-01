@@ -400,7 +400,7 @@ class Connection(BaseConnection):
         if self.use_binary_placeholder:
             register_binary_typecasters(self.conn)
 
-        postgres_encoding, self.python_encoding = \
+        postgres_encoding, self.python_encoding, typecast_encoding = \
             getEncoding(self.conn.encoding)
 
         # Note that we use 'UPDATE pg_settings' for setting bytea_output as a
@@ -647,11 +647,7 @@ WHERE
             params: Extra parameters
         """
 
-        if sys.version_info < (3,):
-            if type(query) == unicode:
-                query = query.encode('utf-8')
-        else:
-            query = query.encode('utf-8')
+        query = query.encode(self.python_encoding)
 
         params = self.escape_params_sqlascii(params)
         cur.execute(query, params)
@@ -680,16 +676,13 @@ WHERE
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
-        if IS_PY2 and type(query) == unicode:
-            query = query.encode('utf-8')
-
         current_app.logger.log(
             25,
             u"Execute (with server cursor) for server #{server_id} - "
             u"{conn_id} (Query-id: {query_id}):\n{query}".format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
-                query=query.decode('utf-8') if
+                query=query.decode(self.python_encoding) if
                 sys.version_info < (3,) else query,
                 query_id=query_id
             )
@@ -943,11 +936,9 @@ WHERE
             formatted exception message
         """
 
-        if sys.version_info < (3,):
-            if type(query) == unicode:
-                query = query.encode('utf-8')
-        else:
-            query = query.encode('utf-8')
+        encoding = self.python_encoding
+
+        query = query.encode(encoding)
 
         # Convert the params based on python_encoding
         params = self.escape_params_sqlascii(params)
@@ -965,7 +956,7 @@ WHERE
             u"{query_id}):\n{query}".format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
-                query=query.decode('utf-8'),
+                query=query.decode(encoding),
                 query_id=query_id
             )
         )
@@ -984,7 +975,7 @@ WHERE
                 u"Error Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
-                    query=query.decode('utf-8'),
+                    query=query.decode(encoding),
                     errmsg=errmsg,
                     query_id=query_id
                 )
