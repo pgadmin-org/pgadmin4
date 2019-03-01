@@ -265,7 +265,7 @@ define('tools.querytool', [
         name: 'history',
         title: gettext('Query History'),
         width: '100%',
-        height: '100%',
+        height: '33%',
         isCloseable: false,
         isPrivate: true,
         content: '<div id ="history_grid" class="sql-editor-history-container" tabindex: "0"></div>',
@@ -275,7 +275,7 @@ define('tools.querytool', [
         name: 'scratch',
         title: gettext('Scratch Pad'),
         width: '25%',
-        height: '100%',
+        height: '33%',
         isCloseable: true,
         isPrivate: false,
         content: '<div class="sql-scratch" tabindex: "0"><textarea wrap="off"></textarea></div>',
@@ -819,7 +819,7 @@ define('tools.querytool', [
 
       var $data_grid = $('#datagrid');
       // Calculate height based on panel size at runtime & set it
-      var grid_height = $($('#editor-panel').find('.wcFrame')[1]).height() - 35;
+      var grid_height = $(this.data_output_panel.$container.parent().parent()).height() - 35;
       $data_grid.height(grid_height);
 
       var dataView = self.dataView = new Slick.Data.DataView(),
@@ -1248,7 +1248,7 @@ define('tools.querytool', [
     /* This function is responsible to render output grid */
     grid_resize: function(grid) {
       var prev_height = $('#datagrid').height(),
-        h = $($('#editor-panel').find('.wcFrame')[1]).height() - 35,
+        h = $(this.data_output_panel.$container.parent().parent()).height() - 35,
         prev_viewport = grid.getViewport(),
         prev_viewport_rows = grid.getRenderedRange(),
         prev_cell = grid.getActiveCell();
