@@ -3597,11 +3597,17 @@ define('tools.querytool', [
         .done(function(response) {
           let urlCreator = window.URL || window.webkitURL,
             url = urlCreator.createObjectURL(response),
-            link = document.createElement('a');
+            link = document.createElement('a'),
+            current_browser = pgAdmin.Browser.get_browser();
 
-          link.setAttribute('href', url);
-          link.setAttribute('download', filename);
-          link.click();
+          if (current_browser.name === 'IE' && window.navigator.msSaveBlob) {
+            // IE10+ : (has Blob, but not a[download] or URL)
+            window.navigator.msSaveBlob(response, filename);
+          } else {
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.click();
+          }
 
           self.download_csv_obj = undefined;
           // Enable the execute button
