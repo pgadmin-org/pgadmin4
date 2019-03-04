@@ -936,10 +936,6 @@ WHERE
             formatted exception message
         """
 
-        encoding = self.python_encoding
-
-        query = query.encode(encoding)
-
         # Convert the params based on python_encoding
         params = self.escape_params_sqlascii(params)
 
@@ -949,6 +945,10 @@ WHERE
         if not status:
             return False, str(cur)
         query_id = random.randint(1, 9999999)
+
+        encoding = self.python_encoding
+
+        query = query.encode(encoding)
 
         current_app.logger.log(
             25,
