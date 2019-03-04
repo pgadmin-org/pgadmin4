@@ -9,7 +9,9 @@ server mode and then deploying it either behind a webserver running as a reverse
 proxy, or using the WSGI interface.
 
 The following instructions demonstrate how pgAdmin may be run as a WSGI 
-application under ``Apache HTTP``, using ``mod_wsgi``.
+application under ``Apache HTTP``, using ``mod_wsgi``, standalone using ``uWSGI``
+or ``Gunicorn``, or under ``NGINX`` using using ``uWSGI`` or ``Gunicorn``.
+
 
 .. seealso:: For detailed instructions on building and configuring pgAdmin from
     scratch, please see the README file in the top level directory of the source code.
@@ -174,3 +176,125 @@ with:
             Require all granted
 
 Adjust as needed to suit your access control requirements.
+
+Standalone Gunicorn Configuration
+---------------------------------
+
+pgAdmin may be hosted by Gunicorn directly simply by running a command such as
+the one shown below. Note that this example assumes pgAdmin was installed using
+the Python Wheel (you may need to adjust the path to suit your installation):
+
+.. code-block:: bash
+
+    gunicorn  --bind 0.0.0.0:80 \
+              --workers=1 \
+              --threads=25 \
+              --chdir /usr/lib/python3.7/dist-packages/pgadmin4 \
+              pgAdmin4:app
+
+Standalone uWSGI Configuration
+------------------------------
+
+pgAdmin may be hosted by uWSGI directly simply by running a command such as
+the one shown below. Note that this example assumes pgAdmin was installed using
+the Python Wheel (you may need to adjust the path to suit your installation):
+
+.. code-block:: bash
+
+    uwsgi --http-socket 0.0.0.0:80 \
+          --processes 1 \
+          --threads 25 \
+          --chdir /usr/lib/python3.7/dist-packages/pgadmin4/ \
+          --mount /=pgAdmin4:app
+
+NGINX Configuration with Gunicorn
+---------------------------------
+
+pgAdmin can be hosted by Gunicorn, with NGINX in front of it. Note that these
+examples assume pgAdmin was installed using the Python Wheel (you may need to
+adjust the path to suit your installation).
+
+To run with pgAdmin in the root directory of the server, start Gunicorn using a
+command similar to:
+
+.. code-block:: bash
+
+    gunicorn --bind unix:/tmp/pgadmin4.sock \
+             --workers=1 \
+             --threads=25 \
+             --chdir /usr/lib/python3.7/dist-packages/pgadmin4 \
+             pgAdmin4:app
+
+And configure NGINX:
+
+.. code-block:: nginx
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/tmp/pgadmin4.sock;
+    }
+
+Alternatively, pgAdmin can be hosted in a sub-directory (/pgadmin4 in this case)
+on the server. Start Gunicorn as when using the root directory, but configure
+NGINX as follows:
+
+.. code-block:: nginx
+
+    location /pgadmin4/ {
+        include proxy_params;
+        proxy_pass http://unix:/tmp/pgadmin4.sock;
+        proxy_set_header X-Script-Name /pgadmin4;
+    }
+
+NGINX Configuration with uWSGI
+------------------------------
+
+pgAdmin can be hosted by uWSGI, with NGINX in front of it. Note that these
+examples assume pgAdmin was installed using the Python Wheel (you may need to
+adjust the path to suit your installation).
+
+To run with pgAdmin in the root directory of the server, start Gunicorn using a
+command similar to:
+
+.. code-block:: bash
+
+    uwsgi --socket /tmp/pgadmin4.sock \
+          --processes 1 \
+          --threads 25 \
+          --chdir /usr/lib/python3.7/dist-packages/pgadmin4/ \
+          --manage-script-name \
+          --mount /=pgAdmin4:app
+
+And configure NGINX:
+
+.. code-block:: nginx
+
+    location / { try_files $uri @pgadmin4; }
+    location @pgadmin4 {
+        include uwsgi_params;
+        uwsgi_pass unix:/tmp/pgadmin4.sock;
+    }
+
+Alternatively, pgAdmin can be hosted in a sub-directory (/pgadmin4 in this case)
+on the server. Start uWSGI, noting that the directory name is specified in the
+``mount`` parameter:
+
+.. code-block:: bash
+
+    uwsgi --socket /tmp/pgadmin4.sock \
+          --processes 1 \
+          --threads 25 \
+          --chdir /usr/lib/python3.7/dist-packages/pgadmin4/ \
+          --manage-script-name \
+          --mount /pgadmin4=pgAdmin4:app
+
+Then, configure NGINX:
+
+.. code-block:: nginx
+
+    location = /pgadmin4 { rewrite ^ /pgadmin4/; }
+    location /pgadmin4 { try_files $uri @pgadmin4; }
+    location @pgadmin4 {
+      include uwsgi_params;
+      uwsgi_pass unix:/tmp/pgadmin4.sock;
+    }
