@@ -23,16 +23,12 @@ class StartQueryTool(BaseTestGenerator):
     calls the needed functions
     """
 
-    @patch('pgadmin.tools.sqleditor.set_trans_preferences')
     @patch('pgadmin.tools.sqleditor.extract_sql_from_network_parameters')
-    def runTest(self, extract_sql_from_network_parameters_mock,
-                set_trans_preferences):
+    def runTest(self, extract_sql_from_network_parameters_mock):
         """Check correct function is called to handle to run query."""
 
         extract_sql_from_network_parameters_mock.return_value = \
             'transformed sql'
-
-        set_trans_preferences.return_value = ''
 
         with patch.object(StartRunningQuery,
                           'execute',

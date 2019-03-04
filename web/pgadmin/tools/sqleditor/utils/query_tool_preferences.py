@@ -65,13 +65,17 @@ def RegisterQueryToolPreferences(self):
     self.auto_commit = self.preference.register(
         'Options', 'auto_commit',
         gettext("Auto commit?"), 'boolean', True,
-        category_label=gettext('Options')
+        category_label=gettext('Options'),
+        help_str=gettext('Set auto commit on or off by default in new Query '
+                         'Tool tabs.')
     )
 
     self.auto_rollback = self.preference.register(
         'Options', 'auto_rollback',
         gettext("Auto rollback?"), 'boolean', False,
-        category_label=gettext('Options')
+        category_label=gettext('Options'),
+        help_str=gettext('Set auto rollback on or off by default in new Query '
+                         'Tool tabs.')
     )
 
     self.sql_font_size = self.preference.register(

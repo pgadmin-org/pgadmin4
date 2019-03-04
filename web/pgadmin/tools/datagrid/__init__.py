@@ -28,6 +28,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
+from pgadmin.utils.preferences import Preferences
 
 query_tool_close_session_lock = Lock()
 
@@ -383,6 +384,11 @@ def initialize_query_tool(sgid, sid, did=None):
         sql_grid_data = dict()
     else:
         sql_grid_data = session['gridData']
+
+    # Set the value of auto commit and auto rollback specified in Preferences
+    pref = Preferences.module('sqleditor')
+    command_obj.set_auto_commit(pref.preference('auto_commit').get())
+    command_obj.set_auto_rollback(pref.preference('auto_rollback').get())
 
     # Use pickle to store the command object which will be used
     # later by the sql grid module.

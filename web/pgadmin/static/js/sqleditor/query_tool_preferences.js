@@ -105,20 +105,6 @@ function updateUIPreferences(sqlEditor) {
     .attr('title',
       shortcut_title('Rollback',preferences.rollback_transaction));
 
-  /* Set Auto-commit and auto-rollback on query editor */
-  if (preferences.auto_commit) {
-    $el.find('.auto-commit').removeClass('visibility-hidden');
-  }
-  else {
-    $el.find('.auto-commit').addClass('visibility-hidden');
-  }
-  if (preferences.auto_rollback) {
-    $el.find('.auto-rollback').removeClass('visibility-hidden');
-  }
-  else {
-    $el.find('.auto-rollback').addClass('visibility-hidden');
-  }
-
   /* Set explain options on query editor */
   if (preferences.explain_verbose){
     $el.find('.explain-verbose').removeClass('visibility-hidden');

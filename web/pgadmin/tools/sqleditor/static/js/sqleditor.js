@@ -554,6 +554,20 @@ define('tools.querytool', [
 
       self.reflectPreferences();
 
+      /* Set Auto-commit and auto-rollback on query editor */
+      if (self.preferences.auto_commit) {
+        $('.auto-commit').removeClass('visibility-hidden');
+      }
+      else {
+        $('.auto-commit').addClass('visibility-hidden');
+      }
+      if (self.preferences.auto_rollback) {
+        $('.auto-rollback').removeClass('visibility-hidden');
+      }
+      else {
+        $('.auto-rollback').addClass('visibility-hidden');
+      }
+
       /* Register for preference changed event broadcasted in parent
        * to reload the shorcuts. As sqleditor is in iFrame of wcDocker
        * window parent is referred
@@ -3414,7 +3428,6 @@ define('tools.querytool', [
       // This function is used to enable/disable buttons
       disable_tool_buttons: function(disabled) {
         $('#btn-clear-dropdown').prop('disabled', disabled);
-        $('#btn-query-dropdown').prop('disabled', disabled);
         $('#btn-explain').prop('disabled', disabled);
         $('#btn-explain-analyze').prop('disabled', disabled);
         $('#btn-explain-options-dropdown').prop('disabled', disabled);
@@ -3427,6 +3440,9 @@ define('tools.querytool', [
         if (this.is_query_tool) {
           // Cancel query tool needs opposite behaviour
           $('#btn-cancel-query').prop('disabled', !disabled);
+          $('#btn-query-dropdown').prop('disabled', !this.is_transaction_buttons_disabled);
+        } else {
+          $('#btn-query-dropdown').prop('disabled', disabled);
         }
       },
 
@@ -3665,8 +3681,6 @@ define('tools.querytool', [
         .done(function(res) {
           if (!res.data.status)
             alertify.alert(gettext('Auto Rollback Error'), res.data.result);
-          else
-            self.call_cache_preferences();
         })
         .fail(function(e) {
 
@@ -3700,8 +3714,6 @@ define('tools.querytool', [
         .done(function(res) {
           if (!res.data.status)
             alertify.alert(gettext('Auto Commit Error'), res.data.result);
-          else
-            self.call_cache_preferences();
         })
         .fail(function(e) {
           let msg = httpErrorHandler.handleQueryToolAjaxError(
