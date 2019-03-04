@@ -119,19 +119,8 @@ import JSONBigNumber from 'json-bignumber';
 
   function calculateEditorPosition(position, $wrapper) {
     var $edit_grid = $wrapper.parent().find('#datagrid');
-    var _elem_height = $edit_grid.height(),
-      is_hidden, _position;
-    // We cannot display editor partially visible so we will lift it above select column
-    if (position.top > _elem_height) {
-      is_hidden = position.bottom - _elem_height;
-    }
 
-    if (is_hidden) {
-      _position = position.top - is_hidden;
-    } else {
-      _position = position.top - 7;
-    }
-    position.top = _position;
+    position.top = position.top - $wrapper.height();
 
     var grid_width = $edit_grid.width(),
       popup_width = $wrapper.width() + 32;
