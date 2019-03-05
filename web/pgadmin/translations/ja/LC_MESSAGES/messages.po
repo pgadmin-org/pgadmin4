@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-03-04 17:25+0530\n"
-"PO-Revision-Date: 2019-02-04 22:59+0900\n"
+"PO-Revision-Date: 2019-03-04 23:59+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.6.0\n"
 
 #: pgadmin/__init__.py:500 pgadmin/__init__.py:553
 #, python-format
@@ -183,17 +183,17 @@ msgstr "ブラウザ、もしくはそのタブを閉じたり、再読み込み
 
 #: pgadmin/browser/register_browser_preferences.py:53
 msgid "Auto-expand sole children"
-msgstr ""
+msgstr "一つだけのツリー項目は自動展開する"
 
 #: pgadmin/browser/register_browser_preferences.py:55
 msgid ""
 "If a treeview node is expanded and has only a single child, automatically"
 " expand the child node as well."
-msgstr ""
+msgstr "単一の子ノードしかないツリー表示を展開した時、その子ノードも自動的に展開します"
 
 #: pgadmin/browser/register_browser_preferences.py:63
 msgid "Count rows if estimated less than"
-msgstr "推定行数がこの値未満の時に行を数える"
+msgstr "推定行数がこの値未満の時、実際の行数を計算する"
 
 #: pgadmin/browser/register_browser_preferences.py:64
 #: pgadmin/browser/register_browser_preferences.py:70
@@ -6447,7 +6447,7 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"ロールのメンバシップ情報は、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
+"ロールのメンバシップ情報は、以下の形式の JSON オブジェクトを配列にして渡してください\n"
 "rolmembership:[{\n"
 "    role: [ロール名],\n"
 "    admin: True/False\n"
@@ -6482,7 +6482,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"ロールのメンバシップ情報は、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
+"ロールのメンバシップ情報は、以下の形式の JSON オブジェクトを配列にして渡してください\n"
 "rolmembership:{\n"
 "    'added': [{\n"
 "        role: [ロール名],\n"
@@ -6517,7 +6517,7 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"セキュリティラベルは、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
+"セキュリティラベルは、以下の形式の JSON オブジェクトを配列にして渡してください\n"
 "seclabels:[{\n"
 "    provider: <プロバイダ>,\n"
 "    label: <ラベル>\n"
@@ -6552,7 +6552,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"セキュリティラベルは、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
+"セキュリティラベルは、以下の形式の JSON オブジェクトを配列にして渡してください\n"
 "seclabels:{\n"
 "    'added': [{\n"
 "        provider: <プロバイダ>,\n"
@@ -6588,7 +6588,7 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"作成モードの設定パラメータと変数は、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
+"作成モードの設定パラメータと変数は、以下の形式の JSON オブジェクトを配列にして渡してください\n"
 "variables:[{\n"
 "    database: <データベース> または null,\n"
 "    name: <設定>,\n"
@@ -6627,7 +6627,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"更新モードの設定パラメータと変数は、以下の形式の JSON オブジェクトを配列として渡す必要があります\n"
+"更新モードの設定パラメータと変数は、以下の形式の JSON オブジェクトを配列にして渡してください\n"
 "rolmembership:{\n"
 "    'added': [{\n"
 "        database: <データベース> または null,\n"
@@ -7503,13 +7503,13 @@ msgstr "強制削除"
 
 #: pgadmin/browser/static/js/collection.js:308
 msgid "No properties are available for the selected object."
-msgstr ""
+msgstr "選択されたオブジェクトに表示できるプロパティはありません"
 
 #: pgadmin/browser/static/js/collection.js:322
 #: pgadmin/browser/static/js/node.js:434
 #, python-format
 msgid "Error retrieving properties - %s"
-msgstr "プロパティ取得エラー - %s"
+msgstr "プロパティの取得エラー - %s"
 
 #: pgadmin/browser/static/js/collection.js:328
 #: pgadmin/misc/dependencies/static/js/dependencies.js:222
@@ -7621,7 +7621,7 @@ msgstr "%s を削除しますか？"
 #: pgadmin/browser/static/js/node.js:790
 #, python-format
 msgid "Error dropping %s: \"%s\""
-msgstr "%s 削除エラー： 「%s」"
+msgstr "%s の削除エラー： 「%s」"
 
 #: pgadmin/browser/static/js/node.js:1182
 #: pgadmin/browser/static/js/node.js:1184
@@ -8382,7 +8382,7 @@ msgstr "実行時間"
 
 #: pgadmin/misc/dependencies/static/js/dependencies.js:133
 msgid "No dependency information is available for the selected object."
-msgstr ""
+msgstr "選択されたオブジェクトに表示できる依存性情報はありません"
 
 #: pgadmin/misc/dependencies/static/js/dependencies.js:142
 #: pgadmin/misc/dependents/static/js/dependents.js:147
@@ -8397,11 +8397,11 @@ msgstr "サーバから依存性情報を取得しています..."
 #: pgadmin/misc/dependents/static/js/dependents.js:222
 #, python-format
 msgid "Error retrieving data from the server: %s"
-msgstr ""
+msgstr "サーバからのデータを取得中にエラーが発生しました： %s"
 
 #: pgadmin/misc/dependents/static/js/dependents.js:134
 msgid "No dependent information is available for the selected object."
-msgstr ""
+msgstr "選択されたオブジェクトに表示できる依存情報はありません"
 
 #: pgadmin/misc/dependents/static/js/dependents.js:164
 msgid "Fetching dependent information from the server..."
@@ -8472,7 +8472,7 @@ msgstr "ファイル名変更の際にエラーが発生しました："
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:139
 #: pgadmin/misc/file_manager/static/js/utility.js:429
 msgid "Error occurred while checking access permission."
-msgstr "アクセス権限チェック中にエラーが発生しました"
+msgstr "アクセス権限のチェック中にエラーが発生しました"
 
 #: pgadmin/misc/file_manager/static/js/select_dialogue.js:90
 #: pgadmin/misc/file_manager/static/js/select_dialogue.js:115
@@ -8534,7 +8534,7 @@ msgstr "選択されたオブジェクトに対して生成できる SQL はあ�
 #: pgadmin/misc/statistics/static/js/statistics.js:314
 #, python-format
 msgid "Error retrieving the information - %s"
-msgstr "情報取得エラー - %s"
+msgstr "情報の取得エラー - %s"
 
 #: pgadmin/misc/statistics/static/js/statistics.js:214
 msgid "No statistics are available for the selected object."
@@ -8886,7 +8886,7 @@ msgstr "」を受信しました。送信元サーバのプロセス ID："
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:89
 msgid "Error resetting the tree saved state.\""
-msgstr ""
+msgstr "ツリーの保存状態を初期化中にエラーが発生しました\""
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:121
 msgid "Error saving the tree state.\""
@@ -8999,7 +8999,7 @@ msgstr "サーバ「{0}」をバックアップ中..."
 #: pgadmin/tools/import_export/__init__.py:151
 #: pgadmin/tools/restore/__init__.py:132
 msgid "Running command:"
-msgstr "実行コマンド："
+msgstr "実行中のコマンド："
 
 #: pgadmin/tools/backup/__init__.py:315 pgadmin/tools/backup/__init__.py:505
 #: pgadmin/tools/import_export/__init__.py:359
@@ -9043,7 +9043,7 @@ msgstr "識別子でダブルクォートを強制"
 msgid ""
 "Only objects global to the entire database will be backed up, in PLAIN "
 "format"
-msgstr ""
+msgstr "平文形式では、データベース全体のグローバルオブジェクトのみがバックアップされます"
 
 #: pgadmin/tools/backup/static/js/backup.js:143
 #: pgadmin/tools/import_export/static/js/import_export.js:87
@@ -9061,7 +9061,7 @@ msgstr "Tar"
 
 #: pgadmin/tools/backup/static/js/backup.js:160
 msgid "Plain"
-msgstr "Plain"
+msgstr "平文"
 
 #: pgadmin/tools/backup/static/js/backup.js:164
 #: pgadmin/tools/restore/static/js/restore.js:98
@@ -9079,7 +9079,7 @@ msgstr "ジョブ数"
 
 #: pgadmin/tools/backup/static/js/backup.js:228
 msgid "The backup format will be PLAIN"
-msgstr "バックアップ形式は PLAIN が使われます"
+msgstr "バックアップ形式には、平文が使用されます"
 
 #: pgadmin/tools/backup/static/js/backup.js:236
 #: pgadmin/tools/backup/static/js/backup.js:246
@@ -9300,15 +9300,15 @@ msgstr "クエリツールの初期化エラー"
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:456
 msgid "View/Edit Data - "
-msgstr ""
+msgstr "データを表示/編集 - "
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:462
 msgid "Script - "
-msgstr ""
+msgstr "スクリプト - "
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:467
 msgid "Query Tool - "
-msgstr ""
+msgstr "クエリツール - "
 
 #: pgadmin/tools/datagrid/static/js/show_query_tool.js:45
 msgid "Query Tool Error"
@@ -10390,7 +10390,7 @@ msgstr "クエリの履歴"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:276
 msgid "Scratch Pad"
-msgstr ""
+msgstr "スクラッチパッド"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:286
 msgid "Notifications"
@@ -10587,11 +10587,11 @@ msgstr "クエリキャンセルエラー"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3609
 msgid "Downloading CSV..."
-msgstr ""
+msgstr "CSV をダウンロード中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3641
 msgid "CSV Download cancelled."
-msgstr ""
+msgstr "CSV のダウンロードをキャンセルしました"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3644
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:332
@@ -10600,7 +10600,7 @@ msgstr "CSV をダウンロード"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3647
 msgid "Download CSV error"
-msgstr ""
+msgstr "CSV ダウンロードエラー"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3683
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3690
@@ -10664,11 +10664,11 @@ msgstr "実行時間を表示"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:69
 msgid "Set auto commit on or off by default in new Query Tool tabs."
-msgstr ""
+msgstr "新しいクエリツールのタブで、自動コミットを既定で有効にするか、しないかを設定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:77
 msgid "Set auto rollback on or off by default in new Query Tool tabs."
-msgstr ""
+msgstr "新しいクエリツールのタブで、自動ロールバックを既定で有効にするか、しないかを設定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:83
 msgid "Font size"
@@ -10718,7 +10718,7 @@ msgstr "カッコを挿入"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:130
 msgid "Specifies whether or not to insert paired brackets in the editor."
-msgstr "エディタにカッコを挿入するかどうかを指定します"
+msgstr "エディタでカッコを挿入するかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:138
 msgid "Brace matching?"
@@ -10901,11 +10901,11 @@ msgstr "True の場合、自動補完時のキーワードが大文字で表示�
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:582
 msgid "Commit"
-msgstr ""
+msgstr "コミット"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:600
 msgid "Rollback"
-msgstr ""
+msgstr "ロールバック"
 
 #: pgadmin/tools/user_management/__init__.py:106
 msgid "Invalid email address."
@@ -11470,10 +11470,10 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "ホスト名かアドレスは必須です"
 
 #~ msgid "Error Initializing script - "
-#~ msgstr "スクリプト初期化エラー - "
+#~ msgstr "スクリプトの初期化エラー - "
 
 #~ msgid "Error loading script - "
-#~ msgstr "スクリプト読み込みエラー - "
+#~ msgstr "スクリプトの読み込みエラー - "
 
 #~ msgid "Are you sure you wish to close the %(appname)s browser?"
 #~ msgstr "%(appname)s ブラウザを閉じますか？"
@@ -11749,7 +11749,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "パスワードファイル"
 
 #~ msgid "Error saving properties: %s"
-#~ msgstr "プロパティ保存エラー： %s"
+#~ msgstr "プロパティの保存エラー： %s"
 
 #~ msgid "Debugger Set Arguments Error"
 #~ msgstr "デバッガ引数の設定エラー"
@@ -12108,7 +12108,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "サーバ「{3}」のデータベース「{2}」内にあるテーブル「{0}.{1}」のデータをコピーしています..."
 
 #~ msgid "Error retrieving properties - %s."
-#~ msgstr "プロパティ %s 取得中にエラーが発生しました"
+#~ msgstr "プロパティ %s の取得中にエラーが発生しました"
 
 #~ msgid "SQL Help"
 #~ msgstr "SQL ヘルプ"
@@ -12123,7 +12123,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ "Only objects global to the entire "
 #~ "database will be backed up in "
 #~ "PLAIN format"
-#~ msgstr "PLAIN 形式では、データベース全体のグローバルオブジェクトしかバックアップできません"
+#~ msgstr "平文形式では、データベース全体のグローバルオブジェクトしかバックアップできません"
 
 #~ msgid "Edit Data - "
 #~ msgstr "データの編集 - "
