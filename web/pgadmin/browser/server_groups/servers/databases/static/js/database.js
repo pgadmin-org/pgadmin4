@@ -397,13 +397,13 @@ define('pgadmin.node.database', [
           group: gettext('Security'), mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
         },{
-          id: 'variables', label: gettext('Parameters'), type: 'collection',
+          id: 'variables', label: '', type: 'collection',
           model: pgBrowser.Node.VariableModel.extend({keys:['name', 'role']}), editable: false,
           group: gettext('Parameters'), mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: true, hasRole: true,
           control: Backform.VariableCollectionControl, node: 'role',
         },{
-          id: 'seclabels', label: gettext('Security Labels'),
+          id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel,
           editable: false, type: 'collection', canEdit: false,
           group: gettext('Security'), canDelete: true,
@@ -415,25 +415,25 @@ define('pgadmin.node.database', [
           mode: ['edit'],
           schema:[{
             id: 'deftblacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), label: gettext('Default Privileges: Tables'),
+              {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), label: '',
             editable: false, type: 'collection', group: gettext('Tables'),
             mode: ['edit', 'create'], control: 'unique-col-collection',
             canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
           },{
             id: 'defseqacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['r', 'w', 'U']}), label: gettext('Default Privileges: Sequences'),
+              {privileges: ['r', 'w', 'U']}), label: '',
             editable: false, type: 'collection', group: gettext('Sequences'),
             mode: ['edit', 'create'], control: 'unique-col-collection',
             canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
           },{
             id: 'deffuncacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['X']}), label: gettext('Default Privileges: Functions'),
+              {privileges: ['X']}), label: '',
             editable: false, type: 'collection', group: gettext('Functions'),
             mode: ['edit', 'create'], control: 'unique-col-collection',
             canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
           },{
             id: 'deftypeacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['U']}),  label: gettext('Default Privileges: Types'),
+              {privileges: ['U']}),  label: '',
             editable: false, type: 'collection', group: 'deftypesacl_group',
             mode: ['edit', 'create'], control: 'unique-col-collection',
             canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],

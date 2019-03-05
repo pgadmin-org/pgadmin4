@@ -132,7 +132,7 @@ define('pgadmin.node.check_constraint', [
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
             }, editable: false,
         },{
-          id: 'connoinherit', label: gettext('No Inherit?'), type:
+          id: 'connoinherit', label: gettext('No inherit?'), type:
           'switch', cell: 'boolean', group: gettext('Definition'), mode:
           ['properties', 'create', 'edit'], min_version: 90200,
           disabled: function(m) {

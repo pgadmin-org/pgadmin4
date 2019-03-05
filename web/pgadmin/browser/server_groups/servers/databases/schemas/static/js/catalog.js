@@ -74,7 +74,7 @@ define('pgadmin.node.catalog', [
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
         },{
-          id: 'seclabels', label: gettext('Security Labels'),
+          id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,

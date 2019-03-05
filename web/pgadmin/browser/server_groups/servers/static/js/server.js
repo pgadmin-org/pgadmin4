@@ -33,7 +33,7 @@ define('pgadmin.node.server', [
         type: 'text', editable: true,
         cellHeaderClasses:'width_percent_50',
       },{
-        id: 'label', label: gettext('Security Label'),
+        id: 'label', label: gettext('Security label'),
         type: 'text', editable: true,
         cellHeaderClasses:'override_label_class_font_size',
       }],

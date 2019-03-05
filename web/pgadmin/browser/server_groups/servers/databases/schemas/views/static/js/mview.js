@@ -172,7 +172,7 @@ define('pgadmin.node.mview', [
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           control: Backform.SqlFieldControl, extraClasses:['sql_field_width_full'],
         },{
-          id: 'with_data', label: gettext('With Data'),
+          id: 'with_data', label: gettext('With data?'),
           group: gettext('Storage'), mode: ['edit', 'create'],
           type: 'switch',
         },{
@@ -184,7 +184,7 @@ define('pgadmin.node.mview', [
             else return true;
           },
         },{
-          id: 'fillfactor', label: gettext('Fill Factor'),
+          id: 'fillfactor', label: gettext('Fill factor'),
           group: gettext('Storage'), mode: ['edit', 'create'],
           type: 'int',
         },{
@@ -202,7 +202,7 @@ define('pgadmin.node.mview', [
           mode: ['edit', 'create'], control: 'unique-col-collection',
         },{
         // Add Security Labels Control
-          id: 'seclabels', label: gettext('Security Labels'),
+          id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           canEdit: false, group: 'security', canDelete: true,
           mode: ['edit', 'create'], canAdd: true,

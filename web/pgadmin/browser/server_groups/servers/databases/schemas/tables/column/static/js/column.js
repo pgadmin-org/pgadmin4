@@ -464,7 +464,7 @@ define('pgadmin.node.column', [
             return flag;
           },
         },{
-          id: 'defval', label: gettext('Default Value'), cell: 'string',
+          id: 'defval', label: gettext('Default'), cell: 'string',
           type: 'text', group: gettext('Definition'), deps: ['cltype'],
           disabled: function(m) {
             if(!m.inSchemaWithModelCheck.apply(this, [m])) {
@@ -540,7 +540,7 @@ define('pgadmin.node.column', [
           mode: ['edit'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee'],
         },{
-          id: 'seclabels', label: gettext('Security Labels'), canAdd: true,
+          id: 'seclabels', label: gettext('Security labels'), canAdd: true,
           model: pgBrowser.SecLabelModel, group: 'security',
           mode: ['edit', 'create'], editable: false, type: 'collection',
           min_version: 90100, canEdit: false, canDelete: true,

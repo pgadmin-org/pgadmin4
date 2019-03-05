@@ -300,7 +300,7 @@ define('pgadmin.node.trigger', [
             }
           },
         },{
-          id: 'tfunction', label: gettext('Trigger Function'),
+          id: 'tfunction', label: gettext('Trigger function'),
           type: 'text', disabled: 'inSchemaWithModelCheck',
           mode: ['create','edit', 'properties'], group: gettext('Definition'),
           control: 'node-ajax-options', url: 'get_triggerfunctions',

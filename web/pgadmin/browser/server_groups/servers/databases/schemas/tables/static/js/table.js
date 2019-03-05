@@ -31,7 +31,7 @@ define('pgadmin.node.table', [
         columns: ['name', 'relowner', 'is_partitioned', 'description'],
         hasStatistics: true,
         statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
-          gettext('Toast table size'), gettext('Tuple length'),
+          gettext('TOAST table size'), gettext('Tuple length'),
           gettext('Dead tuple length'), gettext('Free space')],
         canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
@@ -47,7 +47,7 @@ define('pgadmin.node.table', [
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
-        gettext('Toast table size'), gettext('Tuple length'),
+        gettext('TOAST table size'), gettext('Tuple length'),
         gettext('Dead tuple length'), gettext('Free space')],
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-createtable.html',
@@ -358,7 +358,7 @@ define('pgadmin.node.table', [
             return false;
           },
         },{
-          id: 'is_partitioned', label:gettext('Partitioned Table?'), cell: 'switch',
+          id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
           visible: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
@@ -595,7 +595,7 @@ define('pgadmin.node.table', [
           type: 'nested', control: 'tab', group: gettext('Constraints'),
           mode: ['edit', 'create'],
           schema: [{
-            id: 'primary_key', label: gettext('Primary key'),
+            id: 'primary_key', label: '',
             model: pgBrowser.Nodes['primary_key'].model,
             subnode: pgBrowser.Nodes['primary_key'].model,
             editable: false, type: 'collection',
@@ -625,7 +625,7 @@ define('pgadmin.node.table', [
                   _.some(columns.pluck('name')));
             },
           },{
-            id: 'foreign_key', label: gettext('Foreign key'),
+            id: 'foreign_key', label: '',
             model: pgBrowser.Nodes['foreign_key'].model,
             subnode: pgBrowser.Nodes['foreign_key'].model,
             editable: false, type: 'collection',
@@ -652,7 +652,7 @@ define('pgadmin.node.table', [
               return _.some(columns.pluck('name'));
             },
           },{
-            id: 'check_constraint', label: gettext('Check constraint'),
+            id: 'check_constraint', label: '',
             model: pgBrowser.Nodes['check_constraint'].model,
             subnode: pgBrowser.Nodes['check_constraint'].model,
             editable: false, type: 'collection',
@@ -662,7 +662,7 @@ define('pgadmin.node.table', [
             canAdd: true,
             columns : ['name', 'consrc'],
           },{
-            id: 'unique_constraint', label: gettext('Unique Constraint'),
+            id: 'unique_constraint', label: '',
             model: pgBrowser.Nodes['unique_constraint'].model,
             subnode: pgBrowser.Nodes['unique_constraint'].model,
             editable: false, type: 'collection',
@@ -688,7 +688,7 @@ define('pgadmin.node.table', [
               return _.some(columns.pluck('name'));
             },
           },{
-            id: 'exclude_constraint', label: gettext('Exclude constraint'),
+            id: 'exclude_constraint', label: '',
             model: pgBrowser.Nodes['exclusion_constraint'].model,
             subnode: pgBrowser.Nodes['exclusion_constraint'].model,
             editable: false, type: 'collection',
@@ -1081,7 +1081,7 @@ define('pgadmin.node.table', [
         },{
           // Here - we will create tab control for storage parameters
           // (auto vacuum).
-          type: 'nested', control: 'tab', group: gettext('Parameter'),
+          type: 'nested', control: 'tab', group: gettext('Parameters'),
           mode: ['edit', 'create'], deps: ['is_partitioned'],
           schema: Backform.VacuumSettingsSchema,
         },{

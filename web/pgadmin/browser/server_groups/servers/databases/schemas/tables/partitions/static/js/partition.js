@@ -43,7 +43,7 @@ function(
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
-        gettext('Toast table size'), gettext('Tuple length'),
+        gettext('TOAST table size'), gettext('Tuple length'),
         gettext('Dead tuple length'), gettext('Free space')],
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-createtable.html',
@@ -392,7 +392,7 @@ function(
             return false;
           },
         },{
-          id: 'is_partitioned', label:gettext('Partitioned Table?'), cell: 'switch',
+          id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
           visible: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)

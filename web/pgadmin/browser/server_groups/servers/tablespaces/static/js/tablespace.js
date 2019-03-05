@@ -362,7 +362,7 @@ define('pgadmin.node.tablespace', [
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
         },{
-          id: 'spcoptions', label: gettext('Parameters'), type: 'collection',
+          id: 'spcoptions', label: '', type: 'collection',
           group: gettext('Parameters'), control: 'variable-collection',
           model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
@@ -375,7 +375,7 @@ define('pgadmin.node.tablespace', [
           uniqueCol : ['grantee'],
           columns: ['grantee', 'grantor', 'privileges'],
         },{
-          id: 'seclabels', label: gettext('Security Labels'),
+          id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,

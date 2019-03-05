@@ -254,7 +254,7 @@ define('pgadmin.node.domain', [
           type: 'text', group: gettext('Definition'),
           placeholder: 'Enter an expression or a value.',
         },{
-          id: 'typnotnull', label: gettext('Not Null?'), cell: 'boolean',
+          id: 'typnotnull', label: gettext('Not NULL?'), cell: 'boolean',
           type: 'switch', group: gettext('Definition'),
         },{
           id: 'collname', label: gettext('Collation'), cell: 'string',
@@ -271,7 +271,7 @@ define('pgadmin.node.domain', [
         },
           pgBrowser.SecurityGroupSchema,
         {
-          id: 'seclabels', label: gettext('Security Labels'),
+          id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,

@@ -94,7 +94,7 @@ define('pgadmin.node.domain_constraints', [
           'string', group: gettext('Definition'), mode: ['properties',
             'create', 'edit'], disabled: function(m) { return !m.isNew(); },
         },{
-          id: 'connoinherit', label: gettext('No inherit'), type:
+          id: 'connoinherit', label: gettext('No inherit?'), type:
           'switch', cell: 'boolean', group: gettext('Definition'), mode:
           ['properties', 'create', 'edit'], disabled: 'isDisabled',
           visible: false,

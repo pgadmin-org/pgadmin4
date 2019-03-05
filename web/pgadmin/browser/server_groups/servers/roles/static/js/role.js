@@ -40,7 +40,7 @@ define('pgadmin.node.role', [
         type: 'text', disabled: false,
         cellHeaderClasses:'width_percent_50',
       },{
-        id: 'label', label: gettext('Security Label'),
+        id: 'label', label: gettext('Security label'),
         type: 'text', disabled: false,
       }],
       validate: function() {
@@ -420,7 +420,7 @@ define('pgadmin.node.role', [
           group: gettext('Privileges'),
           disabled: 'readonly',
         },{
-          id: 'rolsuper', label: gettext('Superuser'),
+          id: 'rolsuper', label: gettext('Superuser?'),
           type: 'switch',
           controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
@@ -504,14 +504,14 @@ define('pgadmin.node.role', [
             }
           },
         },{
-          id: 'variables', label: gettext('Parameters'), type: 'collection',
+          id: 'variables', label: '', type: 'collection',
           group: gettext('Parameters'), hasDatabase: true, url: 'variables',
           model: pgBrowser.Node.VariableModel.extend({keys:['name', 'database']}),
           control: 'variable-collection',
           mode: [ 'edit', 'create'], canAdd: true, canDelete: true,
           disabled: 'readonly',
         },{
-          id: 'seclabels', label: gettext('Security Labels'),
+          id: 'seclabels', label: gettext('Security labels'),
           model: SecurityModel, editable: false, type: 'collection',
           group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, disabled: 'readonly', canAdd: true,

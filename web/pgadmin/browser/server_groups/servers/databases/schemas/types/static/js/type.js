@@ -380,7 +380,7 @@ define('pgadmin.node.type', [
             return m.get('typtype') === 'c';
           },
         },{
-          id: 'enum', label: gettext('Enumeration Type'),
+          id: 'enum', label: gettext('Enumeration type'),
           model: EnumModel, editable: true, type: 'collection',
           group: gettext('Definition'), mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: function(m) {
@@ -781,7 +781,7 @@ define('pgadmin.node.type', [
             return !(m.get('typtype') === 'p');
           },
         },{
-          id: 'seclabels', label: gettext('Security Labels'),
+          id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canEdit: false, canDelete: true,

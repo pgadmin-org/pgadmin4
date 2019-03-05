@@ -175,7 +175,7 @@ define('pgadmin.node.rule', [
           ],
         },
         {
-          id: 'do_instead', label: gettext('Do Instead'), group: gettext('Definition'),
+          id: 'do_instead', label: gettext('Do instead?'), group: gettext('Definition'),
           type: 'switch',
         },
         {

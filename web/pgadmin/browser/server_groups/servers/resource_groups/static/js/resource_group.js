@@ -90,7 +90,7 @@ define('pgadmin.node.resource_group', [
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text',
         },{
-          id: 'cpu_rate_limit', label: gettext('CPU rate limit (%%)'), cell: 'string',
+          id: 'cpu_rate_limit', label: gettext('CPU rate limit (percentage)'), cell: 'string',
           type: 'numeric', min:0, max:16777216,
         },{
           id: 'dirty_rate_limit', label: gettext('Dirty rate limit (KB)'), cell: 'string',

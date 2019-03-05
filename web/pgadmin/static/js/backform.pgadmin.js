@@ -1657,7 +1657,7 @@ define([
           }
         } else {
           this.sqlCtrl.clearHistory();
-          this.sqlCtrl.setValue('-- ' + gettext('Nothing changed.'));
+          this.sqlCtrl.setValue('-- ' + gettext('No updates.'));
         }
         this.sqlCtrl.refresh.apply(this.sqlCtrl);
       }

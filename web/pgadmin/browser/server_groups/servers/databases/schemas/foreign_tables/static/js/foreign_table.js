@@ -82,7 +82,7 @@ define('pgadmin.node.foreign_table', [
       id: 'attname', label: gettext('Name'), cell: 'string', type: 'text',
       editable: 'is_editable_column', cellHeaderClasses: 'width_percent_40',
     },{
-      id: 'datatype', label: gettext('Data Type'), cell: 'node-ajax-options',
+      id: 'datatype', label: gettext('Data type'), cell: 'node-ajax-options',
       control: 'node-ajax-options', type: 'text', url: 'get_types',
       editable: 'is_editable_column', cellHeaderClasses: 'width_percent_0',
       group: gettext('Definition'),
@@ -216,7 +216,7 @@ define('pgadmin.node.foreign_table', [
         return true;
       },
     },{
-      id: 'attnotnull', label: gettext('Not Null'),
+      id: 'attnotnull', label: gettext('Not NULL?'),
       cell: 'boolean',type: 'switch', editable: 'is_editable_column',
       cellHeaderClasses: 'width_percent_10', group: gettext('Definition'),
     },{
@@ -416,7 +416,7 @@ define('pgadmin.node.foreign_table', [
       editable: 'is_editable', cell: Backgrid.Extension.TextareaCell,
       cellHeaderClasses: 'width_percent_30',
     },{
-      id: 'connoinherit', label: gettext('No Inherit'), type: 'switch',
+      id: 'connoinherit', label: gettext('No inherit?'), type: 'switch',
       cell: 'boolean', editable: 'is_editable',
       cellHeaderClasses: 'width_percent_20',
     },{
@@ -638,7 +638,7 @@ define('pgadmin.node.foreign_table', [
           canAdd: true, canDelete: true, control: 'unique-col-collection',
           min_version: 90200,
         },{
-          id: 'seclabels', label: gettext('Security Labels'),
+          id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,

@@ -241,7 +241,7 @@ define('pgadmin.node.trigger_function', [
           id: 'proacl', label: gettext('Privileges'), mode: ['properties'],
           group: gettext('Security'), type: 'text',
         },{
-          id: 'variables', label: gettext('Parameters'), type: 'collection',
+          id: 'variables', label: '', type: 'collection',
           group: gettext('Parameters'), control: 'variable-collection',
           model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: 'canVarAdd', canEdit: false,
@@ -254,7 +254,7 @@ define('pgadmin.node.trigger_function', [
           }), uniqueCol : ['grantee', 'grantor'], disabled: 'isDisabled',
           canAdd: true, canDelete: true, control: 'unique-col-collection',
         },{
-          id: 'seclabels', label: gettext('Security Labels'), canEdit: true,
+          id: 'seclabels', label: gettext('Security labels'), canEdit: true,
           model: pgBrowser.SecLabelModel, type: 'collection',
           min_version: 90100, group: 'security', mode: ['edit', 'create'],
           canDelete: true, control: 'unique-col-collection', canAdd: true,

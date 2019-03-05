@@ -519,7 +519,7 @@ define('pgadmin.node.fts_configuration', [
                     copy_config === '') ? false : true;
           },
         },{
-          id: 'copy_config', label: gettext('Copy Config'),type: 'text',
+          id: 'copy_config', label: gettext('Copy config'),type: 'text',
           mode: ['create'], group: gettext('Definition'),
           control: 'node-ajax-options', url: 'copyConfig', deps: ['prsname'],
 

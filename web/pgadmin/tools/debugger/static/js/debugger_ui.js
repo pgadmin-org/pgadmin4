@@ -313,7 +313,7 @@ define([
               },
               {
                 name: 'default_value',
-                label: gettext('Default value'),
+                label: gettext('Default'),
                 type: 'text',
                 editable: false,
                 cell: 'string',
@@ -367,14 +367,14 @@ define([
                       arg_cnt = arg_cnt - 1;
                       def_val_list[j] = default_args[arg_cnt];
                     } else {
-                      def_val_list[j] = '<No default value>';
+                      def_val_list[j] = '<no default>';
                     }
                   }
                 } else if (arg_cnt) {
                   arg_cnt = arg_cnt - 1;
                   def_val_list[j] = default_args[arg_cnt];
                 } else {
-                  def_val_list[j] = '<No default value>';
+                  def_val_list[j] = '<no default>';
                 }
               }
 
@@ -384,7 +384,7 @@ define([
                     if (argmode[i] == 'i' || argmode[i] == 'b' ||
                       (is_edb_proc && argmode[i] == 'o')) {
                       use_def_value = false;
-                      if (def_val_list[i] != '<No default value>') {
+                      if (def_val_list[i] != '<no default>') {
                         use_def_value = true;
                       }
                       my_obj.push({
@@ -396,7 +396,7 @@ define([
                     }
                   } else {
                     use_def_value = false;
-                    if (def_val_list[i] != '<No default value>') {
+                    if (def_val_list[i] != '<no default>') {
                       use_def_value = true;
                     }
                     my_obj.push({

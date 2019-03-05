@@ -148,7 +148,7 @@ define('pgadmin.node.language', [
             return true;
           },
         },{
-          id: 'lanproc', label: gettext('Handler Function'), type: 'text', control: 'node-ajax-options',
+          id: 'lanproc', label: gettext('Handler function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
           deps: ['name'], first_empty: false,
           /* This function is used to populate the handler function
@@ -173,7 +173,7 @@ define('pgadmin.node.language', [
             return true;
           },
         },{
-          id: 'laninl', label: gettext('Inline Function'), type: 'text', control: 'node-ajax-options',
+          id: 'laninl', label: gettext('Inline function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
           deps: ['name'], first_empty: false,
           /* This function is used to populate the inline function
@@ -198,7 +198,7 @@ define('pgadmin.node.language', [
             return true;
           },
         },{
-          id: 'lanval', label: gettext('Validator Function'), type: 'text', control: 'node-ajax-options',
+          id: 'lanval', label: gettext('Validator function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
           deps: ['name'],
           /* This function is used to populate the validator function
@@ -229,7 +229,7 @@ define('pgadmin.node.language', [
             privileges: ['U'],
           }), canAdd: true, canDelete: true, uniqueCol : ['grantee'],
         },{
-          id: 'seclabels', label: gettext('Security Labels'), mode: ['edit', 'create'],
+          id: 'seclabels', label: gettext('Security labels'), mode: ['edit', 'create'],
           model: pgBrowser.SecLabelModel, editable: false,
           type: 'collection', group: gettext('Security'), min_version: 90200,
           canAdd: true, canEdit: false, canDelete: true,
@@ -258,7 +258,7 @@ define('pgadmin.node.language', [
             var handler_func = this.get('lanproc');
             if (_.isUndefined(handler_func) || _.isNull(handler_func) ||
               String(handler_func).replace(/^\s+|\s+$/g, '') == '') {
-              msg = gettext('Handler Function cannot be empty.');
+              msg = gettext('Handler function cannot be empty.');
               this.errorModel.set('lanproc', msg);
               return msg;
             } else {

@@ -949,7 +949,7 @@ define('pgadmin.dashboard', [
           server_activity_columns = server_activity_columns.concat(
             [{
               name: 'wait_event',
-              label: gettext('Wait Event'),
+              label: gettext('Wait event'),
               editable: false,
               cell: 'string',
             }, {
@@ -1219,7 +1219,7 @@ define('pgadmin.dashboard', [
           database_activity_columns = database_activity_columns.concat(
             [{
               name: 'wait_event',
-              label: gettext('Wait Event'),
+              label: gettext('Wait event'),
               editable: false,
               cell: 'string',
             }, {

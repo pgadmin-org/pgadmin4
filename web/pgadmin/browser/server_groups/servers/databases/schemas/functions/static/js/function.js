@@ -45,7 +45,7 @@ define('pgadmin.node.function', [
       id: 'argid', visible: false, type: 'text',
       mode: ['properties', 'edit','create'],
     },{
-      id: 'argtype', label: gettext('Data Type'), cell:
+      id: 'argtype', label: gettext('Data type'), cell:
         'node-ajax-options', cellHeaderClasses: 'width_percent_30',
       control: 'node-ajax-options', type: 'text', url: 'get_types',
       editable: function(m) {
@@ -71,10 +71,10 @@ define('pgadmin.node.function', [
         return _.isUndefined(m.isNew) ? true : m.isNew();
       },
     },{
-      id: 'argname', label: gettext('Argument Name'), type: 'text',
+      id: 'argname', label: gettext('Argument name'), type: 'text',
       cell: 'string', editable: 'isInCatalog', cellHeaderClasses:'width_percent_30',
     },{
-      id: 'argdefval', label: gettext('Default Value'), type: 'text',
+      id: 'argdefval', label: gettext('Default'), type: 'text',
       cell: 'string', editable: 'isInCatalog',  cellHeaderClasses:'width_percent_20',
     },
     ],
@@ -326,7 +326,7 @@ define('pgadmin.node.function', [
             return m.isNew();
           },
         },{
-          id: 'variables', label: gettext('Parameters'), type: 'collection',
+          id: 'variables', label: '', type: 'collection',
           group: gettext('Parameters'), control: 'variable-collection',
           model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: 'canVarAdd', canEdit: false,
@@ -340,7 +340,7 @@ define('pgadmin.node.function', [
           canDelete: true, control: 'unique-col-collection',
           disabled: 'isDisabled',
         },{
-          id: 'seclabels', label: gettext('Security Labels'), canAdd: true,
+          id: 'seclabels', label: gettext('Security labels'), canAdd: true,
           model: pgBrowser.SecLabelModel, type: 'collection',
           min_version: 90100, group: 'security', mode: ['edit', 'create'],
           canEdit: false, canDelete: true, uniqueCol : ['provider'],

@@ -132,7 +132,7 @@ define('pgadmin.node.view', [
           id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline', disabled: 'notInSchema',
         },{
-          id: 'security_barrier', label: gettext('Security barrier'),
+          id: 'security_barrier', label: gettext('Security barrier?'),
           type: 'switch', min_version: '90200', group: gettext('Definition'),
           disabled: 'notInSchema',
         },{
