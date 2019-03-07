@@ -2349,7 +2349,7 @@ define('tools.querytool', [
             var explain_data_array = [],
               explain_data_json = null;
 
-            if(data.types[0].typname === 'json') {
+            if(data.types[0] && data.types[0].typname === 'json') {
               /* json is sent as text, parse it */
               explain_data_json = JSON.parse(data.result[0]);
 

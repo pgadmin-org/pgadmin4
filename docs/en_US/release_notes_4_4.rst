@@ -15,3 +15,4 @@ Features
 Bug fixes
 *********
 
+| `Bug #4054 <https://redmine.postgresql.org/issues/4054>`_ - Handle resultsets with zero columns correctly in the Query Tool.
