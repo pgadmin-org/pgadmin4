@@ -1,4 +1,4 @@
-.. _pgadmin_user:
+.. _user_management:
 
 *******************************
 `User Management Dialog`:index:
@@ -12,14 +12,14 @@ When you authenticate with pgAdmin, the server definitions associated with that 
 * assign privileges
 * manage the password associated with a role
 
-.. image:: images/pgadmin_user.png
+.. image:: images/user.png
     :alt: pgAdmin user management window
 
 Use the *Filter by email* search field to find a user; enter a user's email address to find a user.  If the user exists, the *User Management* table will display the user's current information.
 
 To add a user, click *Add* to add new role.
 
-.. image:: images/add_pgadmin_user.png
+.. image:: images/add_user.png
     :alt: pgAdmin user management window add new user
 
 Provide information about the new pgAdmin role in the row:

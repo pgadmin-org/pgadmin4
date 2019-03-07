@@ -1,7 +1,7 @@
 .. _debugger:
 
 *************************
-`pgAdmin Debugger`:index:
+`Debugger`:index:
 *************************
 
 .. image:: images/debug_main.png

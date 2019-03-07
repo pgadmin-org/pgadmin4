@@ -8,7 +8,7 @@ Pre-compiled and configured installation packages for pgAdmin 4 are available
 for a number of desktop environments; we recommend using an installer
 whenever possible.
 
-In a Server Deployment, the pgAdmin application is deployed behind a webserver
+In a *Server Deployment*, the pgAdmin application is deployed behind a webserver
 or with the WSGI interface.
 If you install pgAdmin in server mode, you will be prompted to provide a role
 name and pgAdmin password when you initially connect to pgAdmin.  The first
@@ -18,28 +18,26 @@ and manage additional pgAdmin user accounts.  When a user authenticates
 with pgAdmin, the pgAdmin tree control displays the server definitions
 associated with that login role.
 
-Contents:
-
-.. toctree::
-
-   server_deployment
-   pgadmin_login
-   pgadmin_user
-   change_user_password
-
-In a Desktop Deployment, the pgAdmin application is configured to use the
+In a *Desktop Deployment*, the pgAdmin application is configured to use the
 desktop runtime environment to host the program on a supported platform.
 Typically, users will install a pre-built package to run pgAdmin in desktop
 mode, but a manual desktop deployment can be installed and though it is more
 difficult to setup, it may be useful for developers interested in understanding
 how pgAdmin works.
 
+It is also possible to use a *Container Deployment* of pgAdmin, in which Server
+Mode is pre-configured for security.
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   desktop_deployment
+   deployment
+   login
+   user_management
+   change_user_password
+
 
 .. note:: Pre-compiled and configured installation packages are available for
      a number of platforms. These packages should be used by end-users whereever
@@ -71,12 +69,13 @@ the *Help* menu, and selecting the name of the resource that you wish to open.
 Contents:
 
 .. toctree::
+   :maxdepth: 2
 
    browser
-   pgadmin_menu_bar
-   pgadmin_toolbar
-   pgadmin_tabbed_browser
-   pgadmin_tree_control
+   menu_bar
+   toolbar
+   tabbed_browser
+   tree_control
    preferences
    keyboard_shortcuts
 

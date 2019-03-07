@@ -1,14 +1,14 @@
-.. _pgadmin_toolbar:
+.. _toolbar:
 
-*************************
-`pgAdmin Toolbar`:index:
-*************************
+****************
+`Toolbar`:index:
+****************
 
 The pgAdmin toolbar provides shortcut buttons for frequently used features like View Data and the Query Tool
 which are most frequently used in pgAdmin.
 This toolbar is visible on the Browser panel. Buttons get enabled/disabled based on the selected browser node.
 
-.. image:: /images/pgadmin_toolbar.png
+.. image:: /images/toolbar.png
     :alt: pgAdmin Toolbar
 
 * Use the :ref:`Query Tool <query_tool>` button to open the Query Tool in the current database context.

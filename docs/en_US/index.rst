@@ -15,6 +15,7 @@ of database objects.
 Contents:
 
 .. toctree::
+   :maxdepth: 2
 
    getting_started
    connecting
@@ -24,7 +25,6 @@ Contents:
    management_basics
    backup_and_restore
    developer_tools
-   deployment
    contributions
    pgagent
    licence

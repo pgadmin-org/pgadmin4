@@ -1,15 +1,15 @@
-.. _pgadmin_login:
+.. _login:
 
-*****************************
-`pgAdmin Login Dialog`:index:
-*****************************
+*********************
+`Login Dialog`:index:
+*********************
 
-Use the *pgAdmin Login* dialog to log in to pgAdmin:
+Use the *Login* dialog to log in to pgAdmin:
 
-.. image:: images/pgadmin_login.png
+.. image:: images/login.png
     :alt: pgAdmin login dialog
 
-Use the fields in the *pgAdmin Login* dialog to authenticate your connection:
+Use the fields in the *Login* dialog to authenticate your connection:
 
 #. Provide the email address associated with your account in the *Email Address* field.
 #. Provide your password in the *Password* field.
@@ -19,7 +19,7 @@ Use the fields in the *pgAdmin Login* dialog to authenticate your connection:
 
 If you cannot supply your password, click the *Forgotten your password?* button to launch a password recovery utility.
 
-.. image:: images/pgadmin_login_recover.png
+.. image:: images/login_recover.png
     :alt: pgAdmin recover login password
 
 #. Provide the email address associated with your account in the *Email Address* field.
