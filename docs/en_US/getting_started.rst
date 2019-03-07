@@ -71,7 +71,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   browser
+   user_interface
    menu_bar
    toolbar
    tabbed_browser

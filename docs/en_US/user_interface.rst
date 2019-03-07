@@ -1,7 +1,7 @@
-.. _browser:
+.. _user_interface:
 
 *****************************
-`The pgAdmin 4 Client`:index:
+`User Interface`:index:
 *****************************
 
 pgAdmin 4 supports all PostgreSQL features, from writing simple SQL queries to developing complex databases. It is designed to query an active database (in real-time), allowing you to stay current with modifications and implementations.
