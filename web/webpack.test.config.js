@@ -31,12 +31,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.js$/,
         exclude: [/node_modules/, /vendor/],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015', 'react', 'airbnb'],
+            presets: ['es2015'],
+            plugins: ['transform-object-rest-spread'],
           },
         },
       }, {
@@ -67,7 +68,7 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js'],
     alias: {
       'top': path.join(__dirname, './pgadmin'),
       'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
@@ -100,6 +101,7 @@ module.exports = {
       'pgbrowser': path.resolve(__dirname, 'regression/javascript/fake_browser'),
       'pgadmin.schema.dir': path.resolve(__dirname, 'pgadmin/browser/server_groups/servers/databases/schemas/static/js'),
       'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
+      'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
     },
   },
 };

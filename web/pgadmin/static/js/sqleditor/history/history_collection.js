@@ -10,8 +10,8 @@
 export default class HistoryCollection {
 
   constructor(history_model) {
-    this.historyList = history_model;
-    this.onChange(() => {});
+    this.historyList = _.sortBy(history_model, o=>o.start_time);
+    this.onAdd(() => {});
   }
 
   length() {
@@ -19,8 +19,10 @@ export default class HistoryCollection {
   }
 
   add(object) {
-    this.historyList.push(object);
-    this.onChangeHandler(this.historyList);
+    /* add object in sorted order */
+    let pushAt = _.sortedIndex(this.historyList, object, o=>o.start_time);
+    this.historyList.splice(pushAt, 0, object);
+    this.onAddHandler(object);
   }
 
   reset() {
@@ -28,8 +30,8 @@ export default class HistoryCollection {
     this.onResetHandler(this.historyList);
   }
 
-  onChange(onChangeHandler) {
-    this.onChangeHandler = onChangeHandler;
+  onAdd(onAddHandler) {
+    this.onAddHandler = onAddHandler;
   }
 
   onReset(onResetHandler) {

@@ -28,14 +28,13 @@ module.exports = function (config) {
          * filename: null, // if no value is provided the sourcemap is inlined
          */
         filename: '[name].js.map',
-        test: /\.jsx?$/i, // process .js and .jsx files only
+        test: /\.js$/i, // process .js files only
       }),
     ],
     files: [
       'pgadmin/static/bundle/slickgrid.js',
       {pattern: 'pgadmin/static/**/*.js', included: false, watched: true},
       {pattern: 'pgadmin/browser/static/js/**/*.js', included: false, watched: true},
-      'regression/javascript/**/*.jsx',
       {pattern: 'regression/javascript/**/*.js', watched: true},
     ],
 
@@ -48,9 +47,8 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'pgadmin/**/js/**/*.js[x]?': ['sourcemap'],
+      'pgadmin/**/js/**/*.js?': ['sourcemap'],
       'regression/javascript/**/*.js': ['webpack', 'sourcemap'],
-      'regression/javascript/**/*.jsx': ['webpack', 'sourcemap'],
       'pgadmin/static/bundle/slickgrid.js': ['webpack', 'sourcemap'],
     },
 

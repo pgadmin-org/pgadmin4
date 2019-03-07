@@ -25,9 +25,8 @@ define('tools.querytool', [
   'sources/sqleditor/query_tool_http_error_handler',
   'sources/sqleditor/filter_dialog',
   'sources/sqleditor/geometry_viewer',
-  'sources/history/index.js',
-  'sourcesjsx/history/query_history',
-  'react', 'react-dom',
+  'sources/sqleditor/history/history_collection.js',
+  'sources/sqleditor/history/query_history',
   'sources/keyboard_shortcuts',
   'sources/sqleditor/query_tool_actions',
   'sources/sqleditor/query_tool_notifications',
@@ -48,7 +47,7 @@ define('tools.querytool', [
   babelPollyfill, gettext, url_for, $, jqueryui, jqueryui_position, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
-  GeometryViewer, HistoryBundle, queryHistory, React, ReactDOM,
+  GeometryViewer, historyColl, queryHist,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
   modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref) {
   /* Return back, this has been called more than once */
@@ -60,7 +59,9 @@ define('tools.querytool', [
   var wcDocker = window.wcDocker,
     pgBrowser = pgAdmin.Browser,
     CodeMirror = codemirror.default,
-    Slick = window.Slick;
+    Slick = window.Slick,
+    HistoryCollection = historyColl.default,
+    QueryHistory = queryHist.default;
 
   var is_query_running = false;
 
@@ -1303,25 +1304,17 @@ define('tools.querytool', [
 
       /* Should not reset if function called again */
       if(!self.history_collection) {
-        self.history_collection = new HistoryBundle.HistoryCollection([]);
+        self.history_collection = new HistoryCollection([]);
       }
 
-      var historyComponent;
-      var historyCollectionReactElement = React.createElement(
-        queryHistory.QueryHistory, {
-          historyCollection: self.history_collection,
-          ref: function(component) {
-            historyComponent = component;
-          },
-          sqlEditorPref: {
-            sql_font_size: SqlEditorUtils.calcFontSize(this.preferences.sql_font_size),
-          },
-        });
-      ReactDOM.render(historyCollectionReactElement, $('#history_grid')[0]);
+      if(!self.historyComponent) {
+        self.historyComponent = new QueryHistory($('#history_grid'), self.history_collection);
+        self.historyComponent.render();
+      }
 
       self.history_panel.off(wcDocker.EVENT.VISIBILITY_CHANGED);
       self.history_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function() {
-        historyComponent.refocus();
+        self.historyComponent.focus();
       });
     },
 
@@ -2574,6 +2567,12 @@ define('tools.querytool', [
           $('#btn-flash').prop('disabled', false);
           $('#btn-download').prop('disabled', false);
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
+
+          if(!self.total_time) {
+            self.total_time = calculateQueryRunTime.calculateQueryRunTime(
+              self.query_start_time,
+              new Date());
+          }
           self.gridView.history_collection.add({
             'status': status,
             'start_time': self.query_start_time,

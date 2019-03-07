@@ -134,7 +134,6 @@ var webpackShimConfig = {
     'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
     'bundled_browser': path.join(__dirname, './pgadmin/static/bundle/browser'),
     'sources': path.join(__dirname, './pgadmin/static/js'),
-    'sourcesjsx': path.join(__dirname, './pgadmin/static/jsx'),
     'pgadmin': path.join(__dirname, './pgadmin/static/js/pgadmin'),
     'translations': path.join(__dirname, './pgadmin/tools/templates/js/translations'),
     'sources/gettext': path.join(__dirname, './pgadmin/static/js/gettext'),

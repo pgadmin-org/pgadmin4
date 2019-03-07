@@ -173,7 +173,9 @@ function updateUIPreferences(sqlEditor) {
   sqlEditor.query_tool_obj.refresh();
 
   /* Render history to reflect Font size change */
-  sqlEditor.render_history_grid();
+  sqlEditor.historyComponent.setEditorPref({
+    'sql_font_size' : sql_font_size,
+  });
 }
 
 export {updateUIPreferences};

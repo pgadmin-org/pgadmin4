@@ -201,12 +201,12 @@ module.exports = {
     // It solves number of problems
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
-      test: /\.jsx?$/,
+      test: /\.js$/,
       exclude: [/node_modules/, /vendor/],
       use: {
         loader: 'babel-loader',
         options: {
-          presets: ['es2015', 'react'],
+          presets: ['es2015'],
           plugins: ['transform-object-rest-spread'],
         },
       },
@@ -391,7 +391,7 @@ module.exports = {
   resolve: {
     alias: webpackShimConfig.resolveAlias,
     modules: ['node_modules', '.'],
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js'],
     unsafeCache: true,
   },
   // Watch mode Configuration: After initial build, webpack will watch for

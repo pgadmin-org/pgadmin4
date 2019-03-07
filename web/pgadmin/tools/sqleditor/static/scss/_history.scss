@@ -1,5 +1,6 @@
 .query-history {
   height: 100%;
+  overflow: auto;
   .list-item {
     border-bottom: $panel-border;
     background-color: $color-bg-theme;
@@ -46,19 +47,21 @@
     background: $sql-history-error-bg;
   }
 
-  .entry.selected.error {
-    background-color: $sql-history-error-bg;
-  }
+  .selected {
+    & .entry.error {
+      background-color: $sql-history-error-bg;
+    }
 
-  .entry.selected {
-    color: $sql-history-success-fg;
-    border: $table-hover-border;
-    background: $sql-history-success-bg;
-    font-weight: bold;
-
-    .other-info {
+    & .entry {
       color: $sql-history-success-fg;
+      border: $table-hover-border;
+      background: $sql-history-success-bg;
       font-weight: bold;
+
+      .other-info {
+        color: $sql-history-success-fg;
+        font-weight: bold;
+      }
     }
   }
 }
@@ -86,6 +89,7 @@
 
 
 .query-detail {
+  height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -202,6 +206,17 @@
           position: absolute;
         }
       }
+    }
+  }
+}
+
+#history_grid {
+  .gutter.gutter-horizontal {
+    width: $panel-border-width;
+    background: $panel-border-color;
+
+    &:hover {
+      cursor: ew-resize;
     }
   }
 }
