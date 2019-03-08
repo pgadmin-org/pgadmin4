@@ -1,20 +1,27 @@
 .. _tree_control:
 
-*****************************
+*********************
 `Tree Control`:index:
-*****************************
+*********************
 
-The left pane of the main window displays a tree control (the *pgAdmin* tree control) that provides access to the objects that reside on a server.
+The left pane of the main window displays a tree control (the *pgAdmin* tree
+control) that provides access to the objects that reside on a server.
 
 .. image:: /images/main_left_pane.png
     :alt: Browser tree panel
+    :align: center
 
-You can expand nodes in the tree control to view the database objects that reside on a selected server. The tree control expands to display a hierarchical view:
+You can expand nodes in the tree control to view the database objects that
+reside on a selected server. The tree control expands to display a hierarchical
+view:
 
-* Use the plus sign (+) to the left of a node to expand a segment of the tree control.
+* Use the plus sign (+) to the left of a node to expand a segment of the tree
+  control.
 * Click the minus sign (-) to the left of a node to close that node.
 
-Access context-sensitive menus by right-clicking on a node of the tree control to perform common tasks. Menus display options that include one or more of the following selections (options appear in alphabetical order):
+Access context-sensitive menus by right-clicking on a node of the tree control
+to perform common tasks. Menus display options that include one or more of the
+following selections (options appear in alphabetical order):
 
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | Option                    | Action                                                                                                                    |

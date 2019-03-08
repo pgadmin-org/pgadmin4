@@ -1,8 +1,8 @@
 .. _container_deployment:
 
-**************************************
+*****************************
 `Container Deployment`:index:
-**************************************
+*****************************
 
 pgAdmin can be deployed in a container using the image at:
 
@@ -17,11 +17,11 @@ maintenance functions to be executed. Multiple versions are included in the
 following directories to allow use with different versions of the database
 server:
 
-* PostgreSQL 9.4: /usr/local/pgsql-9.4
-* PostgreSQL 9.5: /usr/local/pgsql-9.5
-* PostgreSQL 9.6: /usr/local/pgsql-9.6
-* PostgreSQL 10: /usr/local/pgsql-10
-* PostgreSQL 11: /usr/local/pgsql-11
+* PostgreSQL 9.4: */usr/local/pgsql-9.4*
+* PostgreSQL 9.5: */usr/local/pgsql-9.5*
+* PostgreSQL 9.6: */usr/local/pgsql-9.6*
+* PostgreSQL 10: */usr/local/pgsql-10*
+* PostgreSQL 11: */usr/local/pgsql-11*
 
 The most recent version of the utilities is used by default; this may be
 changed in the :ref:`preferences`.

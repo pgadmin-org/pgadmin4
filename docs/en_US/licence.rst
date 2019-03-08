@@ -9,7 +9,7 @@ pgAdmin is released under the
 liberal Open Source licence similar to BSD or MIT, and approved by the Open
 Source Initiative. The copyright for the project source code, website and
 documentation is attributed to the
-`pgAdmin Development Team <https://www.pgadmin.org/development/team.php>`_
+`pgAdmin Development Team <https://www.pgadmin.org/development/team/>`_
 
 .. topic:: pgAdmin 4
 

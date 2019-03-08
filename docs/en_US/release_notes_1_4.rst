@@ -4,7 +4,8 @@ Version 1.4
 
 Release date: 2017-04-13
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 1.3.
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 1.3.
 
 Features
 ********
@@ -33,13 +34,13 @@ Bug fixes
 | `Bug #2277 <https://redmine.postgresql.org/issues/2277>`_ - Resolved various file-system encoding/decoding related cases
 | `Bug #2281 <https://redmine.postgresql.org/issues/2281>`_ - Ensure menus are updated after disconnecting a server
 | `Bug #2283 <https://redmine.postgresql.org/issues/2283>`_ - Check if cell is in multiselect mode before setting default selection of multiple values
-| `Bug #2287 <https://redmine.postgresql.org/issues/2287>`_ - Properly handle EXPLAIN queries entered directly by the user in the query tool
-| `Bug #2291 <https://redmine.postgresql.org/issues/2291>`_ - Fix error highlighting in the query tool
+| `Bug #2287 <https://redmine.postgresql.org/issues/2287>`_ - Properly handle EXPLAIN queries entered directly by the user in the Query Tool
+| `Bug #2291 <https://redmine.postgresql.org/issues/2291>`_ - Fix error highlighting in the Query Tool
 | `Bug #2299 <https://redmine.postgresql.org/issues/2299>`_ - Fix usage of QString
 | `Bug #2303 <https://redmine.postgresql.org/issues/2303>`_ - Fix ascending/descending sort order in backgrid while clicking on the headers
 | `Bug #2304 <https://redmine.postgresql.org/issues/2304>`_ - Resolve the issue for restoring the table from the backup
 | `Bug #2305 <https://redmine.postgresql.org/issues/2305>`_ - Resolve the issue where Generic function qtLiteral was not adapting values properly when they contain non ascii characters
-| `Bug #2310 <https://redmine.postgresql.org/issues/2310>`_ - Fix Dialog Help where query tool/Debugger opens in new browser tab
+| `Bug #2310 <https://redmine.postgresql.org/issues/2310>`_ - Fix Dialog Help where Query Tool/Debugger opens in new browser tab
 | `Bug #2319 <https://redmine.postgresql.org/issues/2319>`_ - Resolve issue where Click on pgAdmin4 logo leads to unauthorized error
 | `Bug #2321 <https://redmine.postgresql.org/issues/2321>`_ - Improved functionality of browser tree when adding new nodes if parent collection node has not loaded
-| `Bug #2330 <https://redmine.postgresql.org/issues/2330>`_ - Ensure the query tool displays but does not render HTML returned by the server in the results grid
+| `Bug #2330 <https://redmine.postgresql.org/issues/2330>`_ - Ensure the Query Tool displays but does not render HTML returned by the server in the results grid

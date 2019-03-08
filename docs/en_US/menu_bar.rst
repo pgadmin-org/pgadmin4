@@ -4,12 +4,17 @@
 `Menu Bar`:index:
 *****************
 
-The pgAdmin menu bar provides drop-down menus for access to options, commands, and utilities. The menu bar displays the following selections: *File*, *Object*, Tools*, and *Help*. Selections may be grayed out which indicates they are disabled for the object currently selected in the *pgAdmin* tree control.
+The pgAdmin menu bar provides drop-down menus for access to options, commands,
+and utilities. The menu bar displays the following selections: *File*, *Object*,
+Tools*, and *Help*. Selections may be grayed out which indicates they are
+disabled for the object currently selected in the *pgAdmin* tree control.
 
-**The File Menu**
+The File Menu
+*************
 
 .. image:: /images/file_menu.png
     :alt: pgAdmin file menu bar
+    :align: center
 
 Use the *File* menu to access the following options:
 
@@ -21,12 +26,15 @@ Use the *File* menu to access the following options:
 | *Reset Layout*          | If you have modified the workspace, click to restore the default layout.                                |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 
-**The Object Menu**
+The Object Menu
+***************
 
 .. image:: /images/object_menu.png
     :alt: pgAdmin object menu bar
+    :align: center
 
-The *Object* menu is context-sensitive. Use the *Object* menu to access the following options (in alphabetical order):
+The *Object* menu is context-sensitive. Use the *Object* menu to access the
+following options (in alphabetical order):
 
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | Option                      | Action                                                                                                                   |
@@ -64,10 +72,12 @@ The *Object* menu is context-sensitive. Use the *Object* menu to access the foll
 | *View Data*                 | Click to access a context menu that provides several options for viewing data (see below).                               |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 
-**The Tools Menu**
+The Tools Menu
+**************
 
 .. image:: /images/tool_menu.png
     :alt: pgAdmin tools menu bar
+    :align: center
 
 Use the *Tools* menu to access the following options (in alphabetical order):
 
@@ -100,12 +110,15 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 | *Resume replay of WAL*    | Click to resume the replay of the WAL log.                                                                                                |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
-**The Help Menu**
+The Help Menu
+*************
 
 .. image:: images/help_menu.png
     :alt: pgAdmin help menu bar
+    :align: center
 
-Use the options on the *Help* menu to access online help documents, or to review information about the pgAdmin installation (in alphabetical order):
+Use the options on the *Help* menu to access online help documents, or to review
+information about the pgAdmin installation (in alphabetical order):
 
 +----------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | Option               | Action                                                                                                                                  |

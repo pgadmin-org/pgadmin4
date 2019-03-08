@@ -4,19 +4,20 @@ Version 2.1
 
 Release date: 2018-01-11
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 2.0
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 2.0
 
 
 Features
 ********
 
-| `Feature #1383 <https://redmine.postgresql.org/issues/1383>`_ - Allow connections to be coloured in the treeview and query tool
+| `Feature #1383 <https://redmine.postgresql.org/issues/1383>`_ - Allow connections to be coloured in the treeview and Query Tool
 | `Feature #1489 <https://redmine.postgresql.org/issues/1489>`_ - Improve user interface for selection query in Data Filter window
 | `Feature #2368 <https://redmine.postgresql.org/issues/2368>`_ - Improve data entry in Query Tool
 | `Feature #2781 <https://redmine.postgresql.org/issues/2781>`_ - Allow configuration of CSV and clipboard formatting of query results
-| `Feature #2802 <https://redmine.postgresql.org/issues/2802>`_ - Allow connections to be coloured in the treeview and query tool.
+| `Feature #2802 <https://redmine.postgresql.org/issues/2802>`_ - Allow connections to be coloured in the treeview and Query Tool.
 | `Feature #2810 <https://redmine.postgresql.org/issues/2810>`_ - Allow files to be opened by double clicking on them within Query Tool
-| `Feature #2845 <https://redmine.postgresql.org/issues/2845>`_ - Make the "Save Changes" prompts in the query tool optional
+| `Feature #2845 <https://redmine.postgresql.org/issues/2845>`_ - Make the "Save Changes" prompts in the Query Tool optional
 | `Feature #2849 <https://redmine.postgresql.org/issues/2849>`_ - Add support for editing data in tables with OIDs but no primary keys and updates the editor to retrieve all row values on save, thus immediately showing default values and allowing subsequent editing without a refresh
 
 
@@ -47,7 +48,7 @@ Bug fixes
 | `Bug #2760 <https://redmine.postgresql.org/issues/2760>`_ - When selecting an SSL cert or key, update only the expected path in the UI, not all of them
 | `Bug #2765 <https://redmine.postgresql.org/issues/2765>`_ - Do not decrypt the password when the password is 'None'.  This should avoid the common but harmless exception "ValueError: IV must be 16 bytes long while decrypting the password."
 | `Bug #2768 <https://redmine.postgresql.org/issues/2768>`_ - Only allow specification of a pgpass file if libpq >= 10
-| `Bug #2769 <https://redmine.postgresql.org/issues/2769>`_ - Correct keyboard shortcut. Don't un-comment code with alt+. in the query tool. It's only supposed to respond to ctrl/cmd+
+| `Bug #2769 <https://redmine.postgresql.org/issues/2769>`_ - Correct keyboard shortcut. Don't un-comment code with alt+. in the Query Tool. It's only supposed to respond to ctrl/cmd+
 | `Bug #2772 <https://redmine.postgresql.org/issues/2772>`_ - Remove external links from Panel's context menu
 | `Bug #2778 <https://redmine.postgresql.org/issues/2778>`_ - Ensure the datatype cache is updated when a domain is added
 | `Bug #2779 <https://redmine.postgresql.org/issues/2779>`_ - Ensure column collation isn't lost when changing field size
@@ -66,7 +67,7 @@ Bug fixes
 | `Bug #2854 <https://redmine.postgresql.org/issues/2854>`_ - Fix utility output capture encoding
 | `Bug #2859 <https://redmine.postgresql.org/issues/2859>`_ - Allow form validation messages to be close in case the eclipse anything on the form
 | `Bug #2866 <https://redmine.postgresql.org/issues/2866>`_ - Ensure we don't show the full path on the server when using virtual filesystem roots in server mode for SSL certs
-| `Bug #2875 <https://redmine.postgresql.org/issues/2875>`_ - Ensure the scroll location is retains in the query tool data grid if the user changes tab and then returns
+| `Bug #2875 <https://redmine.postgresql.org/issues/2875>`_ - Ensure the scroll location is retains in the Query Tool data grid if the user changes tab and then returns
 | `Bug #2877 <https://redmine.postgresql.org/issues/2877>`_ - Remove the artificial limit of 4000 characters from text areas
 | `Bug #2880 <https://redmine.postgresql.org/issues/2880>`_ - Honour whitespace properly in the data grid
 | `Bug #2881 <https://redmine.postgresql.org/issues/2881>`_ - Fix support for time without timezone

@@ -4,7 +4,8 @@ Version 1.3
 
 Release date: 2017-03-10
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 1.2.
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 1.2.
 
 Features
 ********
@@ -26,7 +27,7 @@ Bug fixes
 | `Bug #2115 <https://redmine.postgresql.org/issues/2115>`_ - Fix exclusion constraint reverse engineered SQL
 | `Bug #2119 <https://redmine.postgresql.org/issues/2119>`_ - Fix display of long integers and decimals
 | `Bug #2126 <https://redmine.postgresql.org/issues/2126>`_ - Correct node labels in Preferences for EDB functions and procedures
-| `Bug #2151 <https://redmine.postgresql.org/issues/2151>`_ - Display un-sized varlen column types correctly in the query tool
+| `Bug #2151 <https://redmine.postgresql.org/issues/2151>`_ - Display un-sized varlen column types correctly in the Query Tool
 | `Bug #2154 <https://redmine.postgresql.org/issues/2154>`_ - Fix display of long integers and decimals
 | `Bug #2159 <https://redmine.postgresql.org/issues/2159>`_ - Resolve issue where Query editor is not working with Python2.6
 | `Bug #2160 <https://redmine.postgresql.org/issues/2160>`_ - Various encoding fixes to allow 'ascii' codec to decode byte 0xc3 in position 66: ordinal not in range(128)
@@ -40,7 +41,7 @@ Bug fixes
 | `Bug #2201 <https://redmine.postgresql.org/issues/2201>`_ - Fix renaming of check constraints when the table name is changed at the same time
 | `Bug #2202 <https://redmine.postgresql.org/issues/2202>`_ - Fix issue where Dependents query fails due to non ascii characters
 | `Bug #2204 <https://redmine.postgresql.org/issues/2204>`_ - Fixed issue where pgadmin 4 jobs not showing any activity
-| `Bug #2205 <https://redmine.postgresql.org/issues/2205>`_ - Fix display of boolean nulls in the query tool
+| `Bug #2205 <https://redmine.postgresql.org/issues/2205>`_ - Fix display of boolean nulls in the Query Tool
 | `Bug #2208 <https://redmine.postgresql.org/issues/2208>`_ - Ensure primary key column names are quoted in View Data mode of the Query Tool
 | `Bug #2212 <https://redmine.postgresql.org/issues/2212>`_ - Ensure servers are deleted when their parent group is deleted
 | `Bug #2213 <https://redmine.postgresql.org/issues/2213>`_ - Enable right click on browser tree

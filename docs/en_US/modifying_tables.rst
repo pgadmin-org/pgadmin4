@@ -4,14 +4,17 @@
 `Creating or Modifying a Table`:index:
 **************************************
 
-pgAdmin 4 provides dialogs that allow you to modify all table properties and attributes.
+pgAdmin 4 provides dialogs that allow you to modify all table properties and
+attributes.
 
-To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Casts* node, and select *Create Cast...*
-
-Contents:
+To access a dialog that allows you to create a database object, right-click on
+the object type in the pgAdmin tree control, and select the *Create* option for
+that object.  For example, to create a new database, right-click on the *Casts*
+node, and select *Create Cast...*
 
 .. toctree::
-   
+   :maxdepth: 1
+
    check_dialog
    column_dialog
    exclusion_constraint_dialog

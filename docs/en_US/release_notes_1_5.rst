@@ -4,12 +4,13 @@ Version 1.5
 
 Release date: 2017-05-19
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 1.4.
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 1.4.
 
 Features
 ********
 
-| `Feature #2216 <https://redmine.postgresql.org/issues/2216>`_ - Allow column or row selection in the query tool
+| `Feature #2216 <https://redmine.postgresql.org/issues/2216>`_ - Allow column or row selection in the Query Tool
 
 Bug fixes
 *********
@@ -28,7 +29,7 @@ Bug fixes
 | `Bug #2339 <https://redmine.postgresql.org/issues/2339>`_ - Ensure the treeview can be scrolled horizontally
 | `Bug #2350 <https://redmine.postgresql.org/issues/2350>`_ - Fix handling of default parameters ordering in functions
 | `Bug #2354 <https://redmine.postgresql.org/issues/2354>`_ - Fix the Backup module where it was not working if user changes its preference language other than English
-| `Bug #2356 <https://redmine.postgresql.org/issues/2356>`_ - Ensure errors thrown when deleting rows in the query tool in edit mode are shown properly
+| `Bug #2356 <https://redmine.postgresql.org/issues/2356>`_ - Ensure errors thrown when deleting rows in the Query Tool in edit mode are shown properly
 | `Bug #2360 <https://redmine.postgresql.org/issues/2360>`_ - Fix various issues in CSV file download feature
 | `Bug #2369 <https://redmine.postgresql.org/issues/2369>`_ - Support loading files with Unicode BOMs
 | `Bug #2377 <https://redmine.postgresql.org/issues/2377>`_ - Update psycopg2 version for PostgreSQL 10 compatibility

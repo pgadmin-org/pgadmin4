@@ -4,7 +4,8 @@ Version 1.6
 
 Release date: 2017-07-13
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 1.5
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 1.5
 
 
 Features
@@ -13,9 +14,9 @@ Features
 | `Feature #1344 <https://redmine.postgresql.org/issues/1344>`_ - Allow the Query Tool, Debugger and web browser tabs to be moved to different monitors as desired
 | `Feature #1533 <https://redmine.postgresql.org/issues/1533>`_ - Set focus on the first enabled field when a dialogue is opened
 | `Feature #1535 <https://redmine.postgresql.org/issues/1535>`_ - Teach dialogues about Escape to cancel, Enter to Save/OK, and F1 for help
-| `Feature #1971 <https://redmine.postgresql.org/issues/1971>`_ - Retain column sizing in the query tool results grid when the same query is re-run multiple times in a row
+| `Feature #1971 <https://redmine.postgresql.org/issues/1971>`_ - Retain column sizing in the Query Tool results grid when the same query is re-run multiple times in a row
 | `Feature #1972 <https://redmine.postgresql.org/issues/1972>`_ - Prompt the user to save dirty queries rather than discard them for a more natural workflow
-| `Feature #2137 <https://redmine.postgresql.org/issues/2137>`_ - On-demand loading for the query tool results
+| `Feature #2137 <https://redmine.postgresql.org/issues/2137>`_ - On-demand loading for the Query Tool results
 | `Feature #2191 <https://redmine.postgresql.org/issues/2191>`_ - Add support for the hostaddr connection parameter. This helps us play nicely with Kerberos/SSPI and friends
 | `Feature #2282 <https://redmine.postgresql.org/issues/2282>`_ - Overhaul the query history tab to allow browsing of the history and full query text
 | `Feature #2379 <https://redmine.postgresql.org/issues/2379>`_ - Support inserting multiple new rows into a table without clicking Save for each row
@@ -58,7 +59,7 @@ Bug fixes
 | `Bug #2242 <https://redmine.postgresql.org/issues/2242>`_ - Fix an issue in NodeAjaxControl caching with cache-node field and add cache-node field in Trigger & Event trigger node so that whenever the user creates new Trigger Function we get new data from server in NodeAjaxControl
 | `Bug #2280 <https://redmine.postgresql.org/issues/2280>`_ - Handle procedure flags (IMMUTABLE STRICT SECURITY DEFINER PARALLEL RESTRICTED) properly in RE-SQL on EPAS
 | `Bug #2324 <https://redmine.postgresql.org/issues/2324>`_ - Fix the PostGIS Datatypes in SQL tab, Create / Update dialogues for Table, Column, Foreign Table and Type node
-| `Bug #2344 <https://redmine.postgresql.org/issues/2344>`_ - Fix issue with ctrl-c / ctrl-v not working in query tool
+| `Bug #2344 <https://redmine.postgresql.org/issues/2344>`_ - Fix issue with ctrl-c / ctrl-v not working in Query Tool
 | `Bug #2348 <https://redmine.postgresql.org/issues/2348>`_ - Fix issue when resizing columns in Query Too/View Data where all row/colums will select/deselect
 | `Bug #2355 <https://redmine.postgresql.org/issues/2355>`_ - Properly refresh the parent node when renaming children
 | `Bug #2357 <https://redmine.postgresql.org/issues/2355>`_ - Cache statistics more reliably
@@ -72,7 +73,7 @@ Bug fixes
 | `Bug #2425 <https://redmine.postgresql.org/issues/2425>`_ - Handle composite primary keys correctly when deleting rows in the Edit Grid
 | `Bug #2426 <https://redmine.postgresql.org/issues/2426>`_ - Allow creation of ENUM types with no members
 | `Bug #2427 <https://redmine.postgresql.org/issues/2427>`_ - Add numerous missing checks to ensure objects really exist when we think they do
-| `Bug #2435 <https://redmine.postgresql.org/issues/2435>`_ - Pass the database ID to the query tool when using the Script options
+| `Bug #2435 <https://redmine.postgresql.org/issues/2435>`_ - Pass the database ID to the Query Tool when using the Script options
 | `Bug #2436 <https://redmine.postgresql.org/issues/2436>`_ - Ensure the last placeholder is included when generating UPDATE scripts for tables
 | `Bug #2448 <https://redmine.postgresql.org/issues/2448>`_ - Ensure that boolean checkboxes cycle values in the correct order
 | `Bug #2450 <https://redmine.postgresql.org/issues/2450>`_ - Fix error on the stats tab with PG10. Also, rename the 10.0_plus template directory to 10_plus to match the new versioning

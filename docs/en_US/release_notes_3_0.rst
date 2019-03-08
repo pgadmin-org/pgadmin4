@@ -4,7 +4,8 @@ Version 3.0
 
 Release date: 2018-03-22
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 2.1
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 2.1
 
 
 Features
@@ -115,5 +116,5 @@ Bug fixes
 | `Bug #3200 <https://redmine.postgresql.org/issues/3200>`_ - Ensure the host parameter is correctly pickup up from the service file
 | `Bug #3219 <https://redmine.postgresql.org/issues/3219>`_ - Update required ChromeDriver version for current versions of Chrome
 | `Bug #3226 <https://redmine.postgresql.org/issues/3226>`_ - Move the field error indicators in front of the affected fields so they don't obscure spinners or drop downs etc.
-| `Bug #3244 <https://redmine.postgresql.org/issues/3244>`_ - Show more granular timing info in the query tool history panel
+| `Bug #3244 <https://redmine.postgresql.org/issues/3244>`_ - Show more granular timing info in the Query Tool history panel
 | `Bug #3248 <https://redmine.postgresql.org/issues/3248>`_ - Ensure Alertify dialogues are modal to prevent them being closed by mis-click

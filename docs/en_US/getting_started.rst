@@ -28,8 +28,6 @@ how pgAdmin works.
 It is also possible to use a *Container Deployment* of pgAdmin, in which Server
 Mode is pre-configured for security.
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
@@ -65,8 +63,6 @@ display.  To open the *Preferences* dialog, select *Preferences* from the *File*
 *Help* buttons in the lower-left corner of each dialog will open the online help
 for the dialog.  You can access additional Postgres help by navigating through
 the *Help* menu, and selecting the name of the resource that you wish to open.
-
-Contents:
 
 .. toctree::
    :maxdepth: 2

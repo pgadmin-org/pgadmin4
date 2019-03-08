@@ -1,7 +1,7 @@
 .. _connecting:
 
 *******************************
-`Connecting to a Server`:index:
+`Connecting To A Server`:index:
 *******************************
 
 Before you can use the pgAdmin client to manage the objects that reside on your
@@ -10,8 +10,6 @@ Postgres server, you must define a connection to the server.  You can
 the server connections within the tree control for easier management. To open
 the *Server Group* dialog, right-click on the *Servers* node of the tree
 control, and select *Server Group* from the *Create* menu.
-
-Contents:
 
 .. toctree::
 
@@ -22,8 +20,6 @@ each new server that you wish to manage with pgAdmin.  To open the *Server*
 dialog, right-click on the *Servers* node of the tree control, and select
 *Server* from the *Create* menu.
 
-Contents:
-
 .. toctree::
 
    server_dialog
@@ -31,8 +27,6 @@ Contents:
 After defining a server connection, right-click on the server name, and select
 *Connect to server* to authenticate with the server, and start using pgAdmin to
 manage objects that reside on the server.
-
-Contents:
 
 .. toctree::
 
@@ -45,4 +39,4 @@ of pgAdmin.
 
 .. toctree::
 
-   export_import_servers
+   import_export_servers

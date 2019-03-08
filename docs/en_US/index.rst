@@ -12,8 +12,6 @@ to meet the needs of both novice and experienced Postgres users alike, providing
 a powerful graphical interface that simplifies the creation, maintenance and use
 of database objects.
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
@@ -25,10 +23,10 @@ Contents:
    management_basics
    backup_and_restore
    developer_tools
-   contributions
    pgagent
-   licence
+   contributions
    release_notes
+   licence
 
   
    

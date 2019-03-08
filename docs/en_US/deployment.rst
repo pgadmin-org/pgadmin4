@@ -10,8 +10,6 @@ possible.  If you are interested in learning more about the project, or if a
 pgAdmin installer is not available for your environment, the pages listed below
 will provide detailed information about creating a custom deployment.
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
    

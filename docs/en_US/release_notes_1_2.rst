@@ -4,7 +4,8 @@ Version 1.2
 
 Release date: 2017-02-10
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 1.1.
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 1.1.
 
 Features
 ********
@@ -34,7 +35,7 @@ Bug fixes
 | `Bug #1599 <https://redmine.postgresql.org/issues/1599>`_ - Ensure the grant wizard works with objects with special characters in the name
 | `Bug #1603 <https://redmine.postgresql.org/issues/1603>`_ - Fix quoting of objects names for external utilities.
 | `Bug #1679 <https://redmine.postgresql.org/issues/1679>`_ - Re-engineer the background process executor to avoid using sqlite as some builds of components it relies on do not support working in forked children
-| `Bug #1680 <https://redmine.postgresql.org/issues/1680>`_ - Render column headers at the correct width in the query tool under Firefox
+| `Bug #1680 <https://redmine.postgresql.org/issues/1680>`_ - Render column headers at the correct width in the Query Tool under Firefox
 | `Bug #1729 <https://redmine.postgresql.org/issues/1729>`_ - Improve display of role options
 | `Bug #1730 <https://redmine.postgresql.org/issues/1730>`_ - Improve the display of role membership on both the properties panel and role dialogue
 | `Bug #1745 <https://redmine.postgresql.org/issues/1745>`_ - Ensure breakpoints are cleared properly when working with Debugger
@@ -43,7 +44,7 @@ Bug fixes
 | `Bug #1792 <https://redmine.postgresql.org/issues/1792>`_ - List files and folders alphabetically
 | `Bug #1800 <https://redmine.postgresql.org/issues/1800>`_ - Handle the template property on databases appropriately
 | `Bug #1801 <https://redmine.postgresql.org/issues/1801>`_ - Handle databases with datallowconn == false
-| `Bug #1807 <https://redmine.postgresql.org/issues/1807>`_ - Properly detect when files have changed in the query tool and set flag accordingly
+| `Bug #1807 <https://redmine.postgresql.org/issues/1807>`_ - Properly detect when files have changed in the Query Tool and set flag accordingly
 | `Bug #1830 <https://redmine.postgresql.org/issues/1830>`_ - Fix a SQL error when reverse-engineering ROLE SQL on EPAS servers
 | `Bug #1832 <https://redmine.postgresql.org/issues/1832>`_ - Prevent attempts to access what may be an empty list in Dependancies tab
 | `Bug #1840 <https://redmine.postgresql.org/issues/1840>`_ - Enable/disable NULLs and ASC/DESC options for index columns and exclusion constraints appropriately
@@ -64,7 +65,7 @@ Bug fixes
 | `Bug #1939 <https://redmine.postgresql.org/issues/1939>`_ - Updated dynamic default for the window size (90% x 90%)
 | `Bug #1949 <https://redmine.postgresql.org/issues/1949>`_ - Ensure trigger function names are schema qualified in trigger RE-SQL
 | `Bug #1951 <https://redmine.postgresql.org/issues/1951>`_ - Fix issue where nnable to browse table columns when oid values exceeed max int
-| `Bug #1953 <https://redmine.postgresql.org/issues/1953>`_ - Add display messages and notices received in the query tool
+| `Bug #1953 <https://redmine.postgresql.org/issues/1953>`_ - Add display messages and notices received in the Query Tool
 | `Bug #1961 <https://redmine.postgresql.org/issues/1961>`_ - Fix upgrade check on Python 3
 | `Bug #1962 <https://redmine.postgresql.org/issues/1962>`_ - Ensure treeview collection nodes are translated in the UI
 | `Bug #1967 <https://redmine.postgresql.org/issues/1967>`_ - Store layout changes on each adjustment

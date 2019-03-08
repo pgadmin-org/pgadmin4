@@ -4,7 +4,8 @@ Version 4.0
 
 Release date: 2019-01-10
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 3.6
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 3.6
 
 
 Features
@@ -26,7 +27,7 @@ Bug fixes
 | `Bug #3619 <https://redmine.postgresql.org/issues/3619>`_ - Add titles to the code areas of the Query Tool and Debugger to ensure that panels can be re-docked within them.
 | `Bug #3679 <https://redmine.postgresql.org/issues/3679>`_ - Fix a webpack issue that could cause the Query Tool to fail to render.
 | `Bug #3702 <https://redmine.postgresql.org/issues/3702>`_ - Ensure we display the relation name (and not the OID) in the locks table wherever possible.
-| `Bug #3711 <https://redmine.postgresql.org/issues/3711>`_ - Fix an encoding issue in the query tool.
+| `Bug #3711 <https://redmine.postgresql.org/issues/3711>`_ - Fix an encoding issue in the Query Tool.
 | `Bug #3726 <https://redmine.postgresql.org/issues/3726>`_ - Include the WHERE clause on EXCLUDE constraints in RE-SQL.
 | `Bug #3753 <https://redmine.postgresql.org/issues/3753>`_ - Fix an issue when user define Cast from smallint->text is created.
 | `Bug #3757 <https://redmine.postgresql.org/issues/3757>`_ - Hide Radio buttons that should not be shown on the maintenance dialogue.

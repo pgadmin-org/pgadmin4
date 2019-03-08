@@ -4,7 +4,8 @@ Version 2.0
 
 Release date: 2017-10-05
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 1.6
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 1.6
 
 
 Features
@@ -38,7 +39,7 @@ Bug fixes
 | `Bug #2541 <https://redmine.postgresql.org/issues/2541>`_ - Fix issues using special keys on MacOS
 | `Bug #2544 <https://redmine.postgresql.org/issues/2544>`_ - Correct malformed query generated when using custom type
 | `Bug #2551 <https://redmine.postgresql.org/issues/2551>`_ - Show tablespace on partitions
-| `Bug #2555 <https://redmine.postgresql.org/issues/2555>`_ - Fix issue in query tool where messages were not displaying from functions/procedures properly
+| `Bug #2555 <https://redmine.postgresql.org/issues/2555>`_ - Fix issue in Query Tool where messages were not displaying from functions/procedures properly
 | `Bug #2557 <https://redmine.postgresql.org/issues/2557>`_ - Tidy up tab styling
 | `Bug #2558 <https://redmine.postgresql.org/issues/2558>`_ - Prevent the tab bar being hidden when detached tabs are being closed
 | `Bug #2559 <https://redmine.postgresql.org/issues/2559>`_ - Stop tool buttons from changing their styling unexpectedly
@@ -75,7 +76,7 @@ Bug fixes
 | `Bug #2668 <https://redmine.postgresql.org/issues/2668>`_ - Fix RE-SQL for triggers with a single arg
 | `Bug #2670 <https://redmine.postgresql.org/issues/2670>`_ - Improve datamodel validations for default Validator if user (developer) does not implement validate function in datamodel
 | `Bug #2671 <https://redmine.postgresql.org/issues/2671>`_ - Fix array data type formating for bigint, real, float, double precision
-| `Bug #2681 <https://redmine.postgresql.org/issues/2681>`_ - Reset query tool options before running tests
+| `Bug #2681 <https://redmine.postgresql.org/issues/2681>`_ - Reset Query Tool options before running tests
 | `Bug #2684 <https://redmine.postgresql.org/issues/2684>`_ - Fix layout of password prompt dialogue
 | `Bug #2691 <https://redmine.postgresql.org/issues/2691>`_ - View data option is missing from pgAdmin4 2.0 version
 | `Bug #2692 <https://redmine.postgresql.org/issues/2692>`_ - Base type is missing for Domain on pgAdmin4

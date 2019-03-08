@@ -1,8 +1,8 @@
 .. _export_import_servers:
 
-****************************************
-`Exporting and importing Servers`:index:
-****************************************
+******************************
+`Import/Export Servers`:index:
+******************************
 
 Server definitions (and their groups) can be exported to a JSON file and
 re-imported to the same or a different system to enable easy pre-configuration
@@ -15,7 +15,8 @@ of pgAdmin. The ``setup.py`` script is used for this purpose.
         directory. When using platform-native packages, the system installation
         of Python may be the one used by pgAdmin.
 
-**Exporting Servers**
+Exporting Servers
+*****************
 
 To export the servers defined in an installation, simply invoke ``setup.py`` with
 the ``--dump-servers`` command line option, followed by the name (and if required,
@@ -39,7 +40,8 @@ more server IDs. For example:
 
     /path/to/python /path/to/setup.py --dump-servers output_file.json --server 1 2 5
 
-**Importing Servers**
+Importing Servers
+*****************
 
 To import the servers defined in a JSON file, simply invoke ``setup.py`` with
 the ``--load-servers`` command line option, followed by the name (and if required,
@@ -59,7 +61,8 @@ line option. For example:
 If any Servers are defined with a Server Group that is not already present in
 the configuration database, the required Group will be created.
 
-**JSON format**
+JSON format
+***********
 
 The JSON file format used when importing or exporting servers is quite
 straightforward and simply contains a list of servers, with a number of

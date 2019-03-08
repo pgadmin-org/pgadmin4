@@ -19,6 +19,7 @@ allows you to:
 
 .. image:: images/query_tool.png
     :alt: Query tool window
+    :align: center
 
 You can open multiple copies of the Query tool in individual tabs
 simultaneously.  To close a copy of the Query tool, click the *X* in the
@@ -37,132 +38,18 @@ The Query Tool features two panels:
   server messages related to the query's execution and any asynchronous
   notifications received from the server.
 
-**The Query Tool Toolbar**
+Toolbar
+*******
 
-The *Query Tool* toolbar uses context-sensitive icons that provide shortcuts to
-frequently performed tasks. If an icon is highlighted, the option is enabled;
-if the icon is grayed-out, the task is disabled.  Please note that disabled
-icons may support functionality accessed via the :ref:`data editor <editgrid>`.
+The toolbar is described in the following subsections.
 
-.. image:: images/query_toolbar.png
-    :alt: Query tool toolbar
+.. toctree::
+   :maxdepth: 2
 
-Hover over an icon to display a tooltip that describes the icon's functionality:
+   query_tool_toolbar
 
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| Icon                 | Behavior                                                                                          | Shortcut       |
-+======================+===================================================================================================+================+
-| *Open File*          | Click the *Open File* icon to display a previously saved query in the SQL Editor.                 | Accesskey + O  |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Save*               | Click the *Save* icon to perform a quick-save of a previously saved query, or to access the       | Accesskey + S  |
-|                      | *Save* menu:                                                                                      |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Save* to save the selected content of the SQL Editor panel in a  file.                 |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Save As* to open a new browser dialog and specify a new location to which to save the  |                |
-|                      |    selected content of the SQL Editor panel.                                                      |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Find*               | Use the *Find* menu to search, replace, or navigate the code displayed in the SQL Editor:         |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Find* to provide a search target, and search the SQL Editor contents.                  | Cmd+F          |
-|                      |                                                                                                   |                |
-|                      |  * Select *Find next* to locate the next occurrence of the search target.                         | Cmd+G          |
-|                      |                                                                                                   |                |
-|                      |  * Select *Find previous* to move to the last occurrence of the search target.                    | Cmd+Shift+G    |
-|                      |                                                                                                   |                |
-|                      |  * Select *Pesistent find* to identify all occurrences of the search target within the editor.    |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Replace* to locate and replace (with prompting) individual occurrences of the target.  | Cmd+Shift+F    |
-|                      |                                                                                                   |                |
-|                      |  * Select *Replace all* to locate and replace all occurrences of the target within the editor.    |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Jump* to navigate to the next occurrence of the search target.                         | Alt+G          |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Copy*               | Click the *Copy* icon to copy the content that is currently highlighted in the Data Output panel. | Accesskey + C  |
-|                      | when in View/Edit data mode.                                                                      |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Paste*              | Click the *Paste* icon to paste a previously row into a new row when in View/Edit data mode.      | Accesskey + P  |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Delete*             | Click the *Delete* icon to delete the selected rows when in View/Edit data mode.                  | Accesskey + D  |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Edit*               | Use options on the *Edit* menu to access text editing tools; the options operate on the text      |                |
-|                      | displayed in the SQL Editor panel when in Query Tool mode:                                        |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Indent Selection* to indent the currently selected text.                               | Tab            |
-|                      |                                                                                                   |                |
-|                      |  * Select *Unindent Selection* to remove indentation from the currently selected text.            | Shift+Tab      |
-|                      |                                                                                                   |                |
-|                      |  * Select *Inline Comment Selection* to enclose any lines that contain the selection in           | Cmd+/          |
-|                      |    SQL style comment notation.                                                                    |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Inline Uncomment Selection* to remove SQL style comment notation from the              | Cmd+.          |
-|                      |    selected line.                                                                                 |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Block Comment* to enclose all lines that contain the selection in C style              | Shift+Cmd+/    |
-|                      |    comment notation.  This option acts as a toggle.                                               |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Filter*             | Click the *Filter* icon to set filtering and sorting criteria for the data when in View/Edit data | Accesskey + F  |
-|                      | mode. Click the down arrow to access other filtering and sorting options:                         |                |
-|                      |                                                                                                   |                |
-|                      |  * Click *Sort/Filter* to open the sorting and filtering dialogue.                                |                |
-|                      |                                                                                                   |                |
-|                      |  * Click *Filter by Selection* to show only the rows containing the values in the selected cells. |                |
-|                      |                                                                                                   |                |
-|                      |  * Click *Exclude by Selection* to show only the rows that do not contain the values in the       |                |
-|                      |    selected cells.                                                                                |                |
-|                      |                                                                                                   |                |
-|                      |  * Click *Remove Sort/Filter* to remove any previously selected sort or filtering options.        |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| Limit Selector       | Select a value in the *Limit Selector* to limit the size of the dataset to a number of rows.      | Accesskey + R  |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Stop*               | Click the *Stop* icon to cancel the execution of the currently running query.                     | Accesskey + Q  |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Execute/Refresh*    | Click the *Execute/Refresh* icon to either execute or refresh the query highlighted in the SQL    | F5             |
-|                      | editor panel. Click the down arrow to access other execution options:                             |                |
-|                      |                                                                                                   |                |
-|                      |  * Add a check next to *Auto-Rollback* to instruct the server to automatically roll back a        |                |
-|                      |    transaction if an error occurs during the transaction.                                         |                |
-|                      |                                                                                                   |                |
-|                      |  * Add a check next to *Auto-Commit* to instruct the server to automatically commit each          |                |
-|                      |    transaction.  Any changes made by the transaction will be visible to others, and               |                |
-|                      |    durable in the event of a crash.                                                               |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Explain*            | Click the *Explain* icon to view an explanation plan for the current query. The result of the     | F7             |
-|                      |    EXPLAIN is displayed graphically on the *Explain* tab of the output panel, and in text         |                |
-|                      |    form on the *Data Output* tab.                                                                 |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Explain analyze*    | Click the *Explain analyze* icon to invoke an EXPLAIN ANALYZE command on the current query.       | Shift+F7       |
-|                      |                                                                                                   |                |
-|                      | Navigate through the *Explain Options* menu to select options for the EXPLAIN command:            |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Verbose* to display additional information regarding the query plan.                   |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Costs* to include information on the estimated startup and total cost of each          |                |
-|                      |    plan node, as well as the estimated number of rows and the estimated width of each             |                |
-|                      |    row.                                                                                           |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Buffers* to include information on buffer usage.                                       |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Timing* to include information about the startup time and the amount of time           |                |
-|                      |    spent in each node of the query.                                                               |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Commit*             | Click the *Commit* icon to commit the transaction.                                                | Shift+CTRL+M   |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Rollback*           | Click the *Rollback* icon to rollback the transaction.                                            | Shift+CTRL+R   |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Clear*              | Use options on the *Clear* drop-down menu to erase display contents:                              | Accesskey + L  |
-|                      |                                                                                                   |                |
-|                      |  * Select *Clear Query Window* to erase the content of the SQL Editor panel.                      |                |
-|                      |                                                                                                   |                |
-|                      |  * Select *Clear History* to erase the content of the *History* tab.                              |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-| *Download as CSV*    | Click the *Download as CSV* icon to download the result set of the current query to a             | F8             |
-|                      | comma-separated list. You can specify the CSV settings through                                    |                |
-|                      | *Preferences -> SQL Editor -> CSV output* dialogue.                                               |                |
-+----------------------+---------------------------------------------------------------------------------------------------+----------------+
-
-
-**The SQL Editor Panel**
+The SQL Editor Panel
+********************
 
 The *SQL editor* panel is a workspace where you can manually provide a query,
 copy a query from another source, or read a query from a file. The SQL editor
@@ -170,6 +57,7 @@ features syntax coloring and autocompletion.
 
 .. image:: images/query_sql_editor.png
     :alt: Query tool editor
+    :align: center
 
 To use autocomplete, begin typing your query; when you would like the Query
 editor to suggest object names or commands that might be next in your query,
@@ -179,6 +67,7 @@ key combination to select from a popup menu of autocomplete options.
 
 .. image:: images/query_autocomplete.png
     :alt: Query tool autocomplete feature
+    :align: center
 
 After entering a query, select the *Execute/Refresh* icon from the toolbar. The
 complete contents of the SQL editor panel will be sent to the database server
@@ -188,6 +77,7 @@ the *Execute/Refresh* icon.
 
 .. image:: images/query_execute_section.png
     :alt: Query tool execute query section
+    :align: center
 
 The message returned by the server when a command executes is displayed on the
 *Messages* tab.  If the command is successful, the *Messages* tab displays
@@ -195,6 +85,7 @@ execution details.
 
 .. image:: images/query_tool_message.png
     :alt: Query tool message panel
+    :align: center
 
 Options on the *Edit* menu offer functionality that helps with code formatting
 and commenting:
@@ -206,13 +97,15 @@ and commenting:
   code.
 
 
-**The Data Output Panel**
+The Data Output Panel
+*********************
 
 The *Data Output* panel displays data and statistics generated by the most
 recently executed query.
 
 .. image:: images/query_output_data.png
     :alt: Query tool output panel
+    :align: center
 
 The *Data Output* tab displays the result set of the query in a table format.
 You can:
@@ -225,12 +118,13 @@ You can:
 
 All rowsets from previous queries or commands that are displayed in the *Data
 Output* panel will be discarded when you invoke another query; open another
-query tool browser tab to keep your previous results available.
+Query Tool tab to keep your previous results available.
 
 Use the *Explain* tab to view a graphical representation of a query:
 
 .. image:: images/query_output_explain.png
     :alt: Query tool explain panel
+    :align: center
 
 To generate a graphical explain diagram, open the *Explain* tab, and select
 *Explain*, *Explain Analyze*, or one or more options from the *Explain options*
@@ -246,6 +140,7 @@ the plan as an SVG file.
 
 .. image:: images/query_output_explain_details.png
     :alt: Query tool graphical explain plan
+    :align: center
 
 Note that the query plan that accompanies the *Explain analyze* is available on
 the *Data Output* tab.
@@ -255,6 +150,7 @@ query:
 
 .. image:: images/query_output_error.png
     :alt: Query tool output messages
+    :align: center
 
 If the server returns an error, the error message will be displayed on the
 *Messages* tab, and the syntax that caused the error will be underlined in the
@@ -263,11 +159,13 @@ query took to complete and how many rows were retrieved:
 
 .. image:: images/query_output_messages.png
     :alt: Query tool output information
+    :align: center
 
 Use the *Query History* tab to review activity for the current session:
 
 .. image:: images/query_output_history.png
     :alt: Query tool history panel
+    :align: center
 
 The Query History tab displays information about recent commands:
 
@@ -282,7 +180,8 @@ To erase the content of the *Query History* tab, select *Clear history* from
 the *Clear* drop-down menu.
 
 Use the *Connection status* feature to view the current connection and
-transaction status by clicking on the status icon in query tool:
+transaction status by clicking on the status icon in the Query Tool:
 
 .. image:: images/query_tool_connection_status.png
     :alt: Query tool connection and transaction statuses
+    :align: center

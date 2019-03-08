@@ -10,13 +10,15 @@ updated whenever languages are added or removed with
 codes. The codes are named **$LANG** in this document.
 
 Translation Marking
-===================
+*******************
 
 Strings can be marked for translation in either Python code (using **gettext()**)
 or Jinja templates (using **_()**). Here are some examples that show how this
 is achieved.
 
-Python::
+Python:
+
+.. code-block:: python
 
     errormsg = gettext('No server group name was specified')
 
@@ -43,12 +45,12 @@ Jinja:
 
 
 Updating and Merging
-====================
+********************
 
 Whenever new strings are added to the application, the template catalogue
 (**web/pgadmin/messages.pot**) and the existing translation
-catalogues (**web/pgadmin/translations/$LANG/LC_MESSAGES/messages.po**) must be updated
-and compiled. This can be achieved using the following commands from the
+catalogues (**web/pgadmin/translations/$LANG/LC_MESSAGES/messages.po**) must be
+updated and compiled. This can be achieved using the following commands from the
 **web** directory in the Python virtual environment for pgAdmin:
 
 .. code-block:: bash
@@ -69,7 +71,7 @@ Finally, the message catalogues can be compiled for use:
     (pgadmin4) user$ pybabel compile -d pgadmin/translations
 
 Adding a New Language
-=====================
+*********************
 
 Adding a new language is simple. First, add the language name and identifier to
 **web/config.py**::

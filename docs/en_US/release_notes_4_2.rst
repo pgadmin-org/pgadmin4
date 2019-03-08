@@ -4,7 +4,8 @@ Version 4.2
 
 Release date: 2019-02-07
 
-This release contains a number of fixes reported since the release of pgAdmin4 4.1
+This release contains a number of fixes reported since the release of pgAdmin4
+4.1
 
 Bug fixes
 *********
@@ -13,7 +14,7 @@ Bug fixes
 | `Bug #3272 <https://redmine.postgresql.org/issues/3272>`_ - Replace the PyCrypto module with the cryptography module.
 | `Bug #3453 <https://redmine.postgresql.org/issues/3453>`_ - Fixed SQL for foreign table options.
 | `Bug #3475 <https://redmine.postgresql.org/issues/3475>`_ - Fixed execution time to show Hours part for long running queries in Query Tool.
-| `Bug #3608 <https://redmine.postgresql.org/issues/3608>`_ - Messages tab of query tool should be clear on subsequent execution of table/view using View/Edit Data.
+| `Bug #3608 <https://redmine.postgresql.org/issues/3608>`_ - Messages tab of Query Tool should be clear on subsequent execution of table/view using View/Edit Data.
 | `Bug #3609 <https://redmine.postgresql.org/issues/3609>`_ - Clear drop-down menu should be disabled for View/Edit Data.
 | `Bug #3664 <https://redmine.postgresql.org/issues/3664>`_ - Fixed Statistics panel hang issue for 1000+ tables.
 | `Bug #3693 <https://redmine.postgresql.org/issues/3693>`_ - Proper error should be thrown when server group is created with existing name.

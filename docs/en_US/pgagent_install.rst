@@ -14,14 +14,16 @@ for execution by any host. Locking prevents execution of the same instance of a
 job by multiple hosts.
 
 Database setup
-==============
+**************
 
 Before using pgAdmin to manage pgAgent, you must create the pgAgent extension in
 the maintenance database registered with pgAdmin.  To install pgAgent on a
 PostgreSQL host, connect to the *postgres* database, and navigate  through the
 *Tools* menu to open the Query tool.  For server versions 9.1 or later, and
 pgAgent 3.4.0 or later, enter the following command in the query window, and
-click the *Execute* icon::
+click the *Execute* icon:
+
+.. code-block:: sql
 
     CREATE EXTENSION pgagent;
 
@@ -31,7 +33,9 @@ called 'pgagent'.
 The database must also have the pl/pgsql procedural language installed - use
 the PostgreSQL CREATE LANGUAGE command to install pl/pgsql if necessary.  To
 install pl/pgsql, enter the following command in the query window, and click
-the *Execute* icon::
+the *Execute* icon:
+
+.. code-block:: sql
 
 	CREATE LANGUAGE plpgsql;
 
@@ -52,7 +56,7 @@ the script.  The script will create a number of tables and other objects in a
 schema named *pgagent*.
 
 Daemon installation on Unix
-===========================
+***************************
 
 .. note:: pgAgent is available in Debian/Ubuntu (DEB) and Redhat/Fedora (RPM)
      packages for Linux users, as well as source code. See the
@@ -81,12 +85,14 @@ The connection string is a standard PostgreSQL libpq connection string (see
 the `PostgreSQL documentation on the connection string <http://www.postgresql.org/docs/current/static/libpq.html#libpq-connect>`_
 for further details). For example, the following command line will run pgAgent
 against a server listening on the localhost, using a database called 'pgadmin',
-connecting as the user 'postgres'::
+connecting as the user 'postgres':
 
-  /path/to/pgagent hostaddr=127.0.0.1 dbname=postgres user=postgres
+.. code-block:: bash
+
+    /path/to/pgagent hostaddr=127.0.0.1 dbname=postgres user=postgres
 
 Service installation on Windows
-===============================
+*******************************
 
 .. note:: pgAgent is available in a pre-built installer if you use
      `EnterpriseDB's PostgreSQL Installers <https://www.enterprisedb.com/downloads/postgres-postgresql-downloads>`_.
@@ -112,9 +118,11 @@ additional parameter to tell the service what to do::
       -l <logging verbosity (ERROR=0, WARNING=1, DEBUG=2, default 0)>
 
 The service may be quite simply installed from the command line as follows
-(adjust the path as required)::
+(adjust the path as required):
 
-  "C:\Program Files\pgAgent\bin\pgAgent" INSTALL pgAgent -u postgres -p secret hostaddr=127.0.0.1 dbname=postgres user=postgres
+.. code-block:: bash
+
+    "C:\Program Files\pgAgent\bin\pgAgent" INSTALL pgAgent -u postgres -p secret hostaddr=127.0.0.1 dbname=postgres user=postgres
 
 You can then start the service at the command line using *net start pgAgent*,
 or from the *Services* control panel applet. Any logging output or errors will

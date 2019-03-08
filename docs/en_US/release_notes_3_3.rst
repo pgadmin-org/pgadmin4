@@ -4,7 +4,8 @@ Version 3.3
 
 Release date: 2018-09-06
 
-This release contains a number of features and fixes reported since the release of pgAdmin4 3.2
+This release contains a number of features and fixes reported since the release
+of pgAdmin4 3.2
 
 
 Features
@@ -26,7 +27,7 @@ Bug fixes
 | `Bug #3420 <https://redmine.postgresql.org/issues/3420>`_ - Merge pgcli code with version 1.10.3, which is used for auto complete feature.
 | `Bug #3461 <https://redmine.postgresql.org/issues/3461>`_ - Ensure that refreshing a node also updates the Property list.
 | `Bug #3525 <https://redmine.postgresql.org/issues/3525>`_ - Ensure that refresh button on dashboard should refresh the table.
-| `Bug #3528 <https://redmine.postgresql.org/issues/3528>`_ - Handle connection errors properly in the query tool.
+| `Bug #3528 <https://redmine.postgresql.org/issues/3528>`_ - Handle connection errors properly in the Query Tool.
 | `Bug #3547 <https://redmine.postgresql.org/issues/3547>`_ - Make session implementation thread safe
 | `Bug #3548 <https://redmine.postgresql.org/issues/3548>`_ - Ensure external table node should be visible only for GPDB.
 | `Bug #3554 <https://redmine.postgresql.org/issues/3554>`_ - Fix auto scrolling issue in debugger on step in and step out.
