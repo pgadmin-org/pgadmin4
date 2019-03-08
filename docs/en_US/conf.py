@@ -235,6 +235,13 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
+# Fix the indexing for our docs. See:
+# https://groups.google.com/forum/#!topic/sphinx-users/ZlQ95_QikXo
+latex_elements = {
+     'fncychap' : r'\usepackage[Sonny]{fncychap}',
+}
+
+
 
 # -- Options for manual page output --------------------------------------------
 
