@@ -76,7 +76,7 @@ function:
   replacing an existing function definition. For more information about the
   CREATE FUNCTION command, see the PostgreSQL core documentation available at:
 
-   http://www.postgresql.org/docs/current/static/functions-window.html
+   https://www.postgresql.org/docs/current/functions-window.html
 
 * Use the *Estimated cost* field to specify a positive number representing the
   estimated execution cost for the function, in units of cpu_operator_cost. If

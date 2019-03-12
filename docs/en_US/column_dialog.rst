@@ -61,7 +61,7 @@ command. Click the *Add* icon (+) to add a *Name*/*Value* pair:
 
 * Specify the number of distinct values in the *Value* field. For more
   information, see the documentation for
-  `ALTER TABLE  <http://www.postgresql.org/docs/9.6/static/sql_altertable.html>`_.
+  `ALTER TABLE  <https://www.postgresql.org/docs/current/sql-altertable.html>`_.
 
 Click the *Add* icon (+) to specify each additional *Name*/*Value* pair; to
 discard a variable, click the trash icon to the left of the row and confirm

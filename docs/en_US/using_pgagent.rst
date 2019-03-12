@@ -39,7 +39,7 @@ connection string - on Unix systems it may be visible to all users in *ps*
 output, and on Windows systems it will be stored in the registry in plain text.
 Instead, use a libpq *~/.pgpass* file to store the passwords for every database
 that pgAgent must access. Details of this technique may be found in the
-`PostgreSQL documentation on .pgpass file <http://www.postgresql.org/docs/current/static/libpq-pgpass.html>`_.
+`PostgreSQL documentation on .pgpass file <https://www.postgresql.org/docs/current/libpq-pgpass.html>`_.
 
 **System/database access** - all jobs run by pgAgent will run with the security
 privileges of the pgAgent user. SQL steps will run as the user that pgAgent

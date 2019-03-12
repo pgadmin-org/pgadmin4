@@ -78,7 +78,7 @@ Use fields on the step definition dialog to define the step:
 * Use the *Connection string* field to specify a libpq-style connection string
   to the remote server on which the step will be performed. For more information
   about writing a connection string, please see the
-  `PostgreSQL documentation <http://www.postgresql.org/docs/current/static/libpq.html#libpq-connect>`_.
+  `PostgreSQL documentation <https://www.postgresql.org/docs/current/libpq.html#libpq-connect>`_.
 * Use the *On error* drop-down to specify the behavior of pgAgent if it
   encounters an error while executing the step.  Select from:
 

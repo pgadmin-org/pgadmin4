@@ -62,7 +62,7 @@ the object.
   deletion in the *Delete Row* dialog.
 
 For more information about granting privileges on database objects, see the
-`PostgreSQL core documentation <http://www.postgresql.org/docs/current/static/sql-grant.html>`_.
+`PostgreSQL core documentation <https://www.postgresql.org/docs/current/sql-grant.html>`_.
 
 Click the *Next* button to continue, the *Back* button to select or deselect
 additional database objects, or the *Cancel* button to close the wizard without

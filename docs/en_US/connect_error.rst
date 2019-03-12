@@ -37,7 +37,7 @@ can be done by adding **listen_addresses='*'**; this will make the server accept
 connections on any IP interface.
 
 For further information, please refer to the PostgreSQL documentation about
-`runtime configuration <http://www.postgresql.org/docs/current/interactive/runtime-config.html>`_.
+`runtime configuration <https://www.postgresql.org/docs/current/runtime-config.html>`_.
 
 **FATAL: no pg_hba.conf entry**
 
@@ -57,7 +57,7 @@ the pg_hba.conf file on the database server host, and add an entry in the form:
  * **host template1 postgres ::ffff:192.168.0.0/120 md5** for an IPV6 network
 
 For more information, please refer to the PostgreSQL documentation about
-`client authentication <http://www.postgresql.org/docs/current/interactive/client-authentication.html>`_.
+`client authentication <https://www.postgresql.org/docs/current/client-authentication.html>`_.
 
 **FATAL: password authentication failed**
 

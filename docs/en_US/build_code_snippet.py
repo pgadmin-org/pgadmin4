@@ -72,7 +72,7 @@ print_code(
         """
 NodeView class helps exposing basic REST APIs for different operations used by
 pgAdmin Browser. The basic idea has been taken from the `Flask's MethodView
-<http://flask.pocoo.org/docs/0.10/api/#flask.views.MethodView>`_ class. Because
+<http://flask.pocoo.org/docs/1.0/api/#flask.views.MethodView>`_ class. Because
 - we need a lot more operations (not, just CRUD), we can not use it directly.""")
 
 from pgadmin.utils.driver.abstract import BaseDriver, BaseConnection

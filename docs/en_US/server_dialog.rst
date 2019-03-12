@@ -59,7 +59,7 @@ Use the fields in the *Connection* tab to configure a connection:
   connecting role must be a member of the role specified.
 * Use the *Service* field to specify the service name. For more information,
   see
-  `Section 33.16 of the Postgres documentation <https://www.postgresql.org/docs/10/static/libpq-pgservice.html>`_.
+  `Section 33.16 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgservice.html>`_.
 
 Click the *SSL* tab to continue.
 
@@ -72,7 +72,7 @@ Use the fields in the *SSL* tab to configure SSL:
 * Use the drop-down list box in the *SSL* field to select the type of SSL
   connection the server should use. For more information about using SSL
   encryption, see
-  `Section 33.18 of the Postgres documentation <https://www.postgresql.org/docs/current/static/libpq-ssl.html>`_.
+  `Section 33.18 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-ssl.html>`_.
 
 If pgAdmin is installed in Server mode (the default mode), you can use the
 platform-specific File manager dialog to upload files that support SSL
@@ -167,7 +167,7 @@ Use the fields in the *Advanced* tab to configure a connection:
 * Use the *Password File* field to specify the location of a password file
   (.pgpass). A .pgpass file allows a user to login without providing a password
   when they connect.  For more information, see
-  `Section 33.15 of the Postgres documentation <http://www.postgresql.org/docs/current/static/libpq-pgpass.html>`_.
+  `Section 33.15 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgpass.html>`_.
 * Use the *Connection timeout* field to specify the maximum wait for connection,
   in seconds. Zero or not specified means wait indefinitely. It is not
   recommended to use a timeout of less than 2 seconds.

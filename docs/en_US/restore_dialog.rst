@@ -12,8 +12,8 @@ utility; the *Restore* dialog invokes options of the pg_restore client utility.
 You can use the *Query Tool* to play back the script created during a plain-text
 backup made with the *Backup* dialog.  For more information about backing up or
 restoring, please refer to the documentation for
-`pg_dump <https://www.postgresql.org/docs/9.5/static/app-pgdump.html>`_ or
-`pg_restore <https://www.postgresql.org/docs/9.5/static/app-pgrestore.html>`_.
+`pg_dump <https://www.postgresql.org/docs/current/app-pgdump.html>`_ or
+`pg_restore <https://www.postgresql.org/docs/current/app-pgrestore.html>`_.
 
 .. image:: images/restore_general.png
     :alt: Restore dialog general tab

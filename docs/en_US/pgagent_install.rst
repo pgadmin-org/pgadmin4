@@ -82,7 +82,7 @@ needed for debugging or specialised configurations::
     -l <logging verbosity (ERROR=0, WARNING=1, DEBUG=2, default 0)>
 
 The connection string is a standard PostgreSQL libpq connection string (see
-the `PostgreSQL documentation on the connection string <http://www.postgresql.org/docs/current/static/libpq.html#libpq-connect>`_
+the `PostgreSQL documentation on the connection string <https://www.postgresql.org/docs/current/libpq.html#libpq-connect>`_
 for further details). For example, the following command line will run pgAgent
 against a server listening on the localhost, using a database called 'pgadmin',
 connecting as the user 'postgres':

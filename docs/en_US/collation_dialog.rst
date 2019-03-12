@@ -76,7 +76,7 @@ rules specified for the locale, *fr-BI-x-icu.  The collation is owned by
   setting a locale, see Chapter 22.1 Locale Support of the PostgreSQL core
   documentation:
 
-   http://www.postgresql.org/docs/current/static/locale.html
+   https://www.postgresql.org/docs/current/locale.html
 
 * Click the *Save* button to save work.
 * Click the *Cancel* button to exit without saving work.
