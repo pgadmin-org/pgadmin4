@@ -92,6 +92,9 @@ docs:
 docs-pdf:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx latexpdf
 
+docs-epub:
+	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx epub
+
 messages: msg-extract msg-update msg-compile
 
 msg-compile:
