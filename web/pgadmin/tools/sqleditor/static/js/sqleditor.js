@@ -3612,8 +3612,10 @@ define('tools.querytool', [
         .done(function(response) {
           let urlCreator = window.URL || window.webkitURL,
             url = urlCreator.createObjectURL(response),
-            link = document.createElement('a'),
-            current_browser = pgAdmin.Browser.get_browser();
+            current_browser = pgAdmin.Browser.get_browser(),
+            link = document.createElement('a');
+
+          document.body.appendChild(link);
 
           if (current_browser.name === 'IE' && window.navigator.msSaveBlob) {
             // IE10+ : (has Blob, but not a[download] or URL)
@@ -3624,6 +3626,7 @@ define('tools.querytool', [
             link.click();
           }
 
+          document.body.removeChild(link);
           self.download_csv_obj = undefined;
           // Enable the execute button
           $('#btn-flash').prop('disabled', false);
