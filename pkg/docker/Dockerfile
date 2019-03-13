@@ -93,7 +93,19 @@ COPY ./entrypoint.sh /entrypoint.sh
 RUN python -O -m compileall /pgadmin4
 
 # Finish up
+RUN addgroup -S -g 1000 pgadmin && \
+    adduser -S -u 1000 -G pgadmin pgadmin
+
+RUN mkdir /var/log/pgadmin && \
+    mkdir /var/lib/pgadmin && \
+    chown pgadmin:pgadmin /var/log/pgadmin && \
+    chown pgadmin:pgadmin /var/lib/pgadmin
+
+VOLUME /var/log/pgadmin
 VOLUME /var/lib/pgadmin
-EXPOSE 80 443
+VOLUME /tmp
+EXPOSE 8080 8443
+
+USER 1000
 
 ENTRYPOINT ["/entrypoint.sh"]

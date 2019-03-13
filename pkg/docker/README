@@ -50,7 +50,7 @@ expected paths are /certs/server.crt and /certs/server.key
 
 *PGADMIN_LISTEN_PORT*
 
-Default: 80 or 443 (if TLS is enabled)
+Default: 8080 or 8443 (if TLS is enabled)
 
 Allows the port that the server listens on to be set to a specific value rather
 than using the default.
