@@ -1,7 +1,8 @@
 import CodeMirror from 'bundled_codemirror';
 import clipboard from 'sources/selection/clipboard';
-import moment from 'moment';
+import gettext from 'sources/gettext';
 import $ from 'jquery';
+import _ from 'underscore';
 
 export default class QueryHistoryDetails {
   constructor(parentNode) {
@@ -10,9 +11,11 @@ export default class QueryHistoryDetails {
     this.timeout = null;
     this.isRendered = false;
     this.sqlFontSize = null;
+    this.onCopyToEditorHandler = ()=>{};
 
     this.editorPref = {
       'sql_font_size': '1em',
+      'copy_to_editor': true,
     };
   }
 
@@ -31,12 +34,20 @@ export default class QueryHistoryDetails {
       ...editorPref,
     };
 
-    if(this.query_codemirror) {
+    if(this.query_codemirror && !_.isUndefined(editorPref.sql_font_size)) {
       $(this.query_codemirror.getWrapperElement()).css(
         'font-size',this.editorPref.sql_font_size
       );
 
       this.query_codemirror.refresh();
+    }
+
+    if(this.$copyToEditor && !_.isUndefined(editorPref.copy_to_editor)) {
+      if(editorPref.copy_to_editor) {
+        this.$copyToEditor.removeClass('d-none');
+      } else {
+        this.$copyToEditor.addClass('d-none');
+      }
     }
   }
 
@@ -47,7 +58,7 @@ export default class QueryHistoryDetails {
   }
 
   formatDate(date) {
-    return moment(date).format('M-D-YY HH:mm:ss');
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   }
 
   copyAllHandler() {
@@ -62,6 +73,10 @@ export default class QueryHistoryDetails {
     }, 1500);
   }
 
+  onCopyToEditorClick(onCopyToEditorHandler) {
+    this.onCopyToEditorHandler = onCopyToEditorHandler;
+  }
+
   clearPreviousTimeout() {
     if (this.timeout) {
       clearTimeout(this.timeout);
@@ -71,11 +86,11 @@ export default class QueryHistoryDetails {
 
   updateCopyButton(copied) {
     if (copied) {
-      this.$copyBtn.attr('class', 'was-copied');
+      this.$copyBtn.addClass('was-copied').removeClass('copy-all');
       this.$copyBtn.text('Copied!');
     } else {
-      this.$copyBtn.attr('class', 'copy-all');
-      this.$copyBtn.text('Copy All');
+      this.$copyBtn.addClass('copy-all').removeClass('was-copied');
+      this.$copyBtn.text('Copy');
     }
   }
 
@@ -137,7 +152,8 @@ export default class QueryHistoryDetails {
             <div class='metadata-block'></div>
             <div class='query-statement-block'>
               <div id='history-detail-query'>
-                <button class='' tabindex=0 accesskey='y'></button>
+                <button class='btn-copy' tabindex=0 accesskey='y'></button>
+                <button class='btn-copy-editor copy-to-editor' tabindex=0 accesskey='y'>` + gettext('Copy to Query Editor') + `</button>
                 <div></div>
               </div>
             </div>
@@ -154,8 +170,13 @@ export default class QueryHistoryDetails {
       );
 
       this.$errMsgBlock = this.parentNode.find('.error-message-block');
-      this.$copyBtn = this.parentNode.find('#history-detail-query button');
+      this.$copyBtn = this.parentNode.find('#history-detail-query .btn-copy');
       this.$copyBtn.off('click').on('click', this.copyAllHandler.bind(this));
+      this.$copyToEditor = this.parentNode.find('#history-detail-query .btn-copy-editor');
+      this.$copyToEditor.off('click').on('click', () => {
+        this.onCopyToEditorHandler(this.entry.query);
+      });
+      this.$copyToEditor.addClass(this.editorPref.copy_to_editor?'':'d-none');
       this.$metaData = this.parentNode.find('.metadata-block');
       this.query_codemirror = CodeMirror(
         this.parentNode.find('#history-detail-query div')[0],

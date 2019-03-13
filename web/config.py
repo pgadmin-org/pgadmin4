@@ -245,6 +245,9 @@ SQLITE_TIMEOUT = 500
 # Set to False to disable password saving.
 ALLOW_SAVE_PASSWORD = True
 
+# Maximum number of history queries stored per user/server/database
+MAX_QUERY_HIST_STORED = 20
+
 ##########################################################################
 # Server-side session storage path
 #

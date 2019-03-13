@@ -18,7 +18,7 @@ import simplejson as json
 from flask import Response, url_for, render_template, session, request, \
     current_app
 from flask_babelex import gettext
-from flask_security import login_required
+from flask_security import login_required, current_user
 
 from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
 from pgadmin.misc.file_manager import Filemanager
@@ -42,6 +42,7 @@ from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
 from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
     read_file_generator
 from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
+from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 MODULE_NAME = 'sqleditor'
 
@@ -113,7 +114,10 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.query_tool_download',
             'sqleditor.connection_status',
             'sqleditor.get_filter_data',
-            'sqleditor.set_filter_data'
+            'sqleditor.set_filter_data',
+            'sqleditor.get_query_history',
+            'sqleditor.add_query_history',
+            'sqleditor.clear_query_history',
         ]
 
     def register_preferences(self):
@@ -1504,3 +1508,64 @@ def set_filter_data(trans_id):
         request=request,
         trans_id=trans_id
     )
+
+
+@blueprint.route(
+    '/query_history/<int:trans_id>',
+    methods=["POST"], endpoint='add_query_history'
+)
+@login_required
+def add_query_history(trans_id):
+    """
+    This method adds to query history for user/server/database
+
+    Args:
+        sid: server id
+        did: database id
+    """
+
+    status, error_msg, conn, trans_obj, session_ob = \
+        check_transaction_status(trans_id)
+
+    return QueryHistory.save(current_user.id, trans_obj.sid, conn.db,
+                             request=request)
+
+
+@blueprint.route(
+    '/query_history/<int:trans_id>',
+    methods=["DELETE"], endpoint='clear_query_history'
+)
+@login_required
+def clear_query_history(trans_id):
+    """
+    This method returns clears history for user/server/database
+
+    Args:
+        sid: server id
+        did: database id
+    """
+
+    status, error_msg, conn, trans_obj, session_ob = \
+        check_transaction_status(trans_id)
+
+    return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db)
+
+
+@blueprint.route(
+    '/query_history/<int:trans_id>',
+    methods=["GET"], endpoint='get_query_history'
+)
+@login_required
+def get_query_history(trans_id):
+    """
+    This method returns query history for user/server/database
+
+    Args:
+        sid: server id
+        did: database id
+    """
+
+    status, error_msg, conn, trans_obj, session_ob = \
+        check_transaction_status(trans_id)
+
+    return QueryHistory.get(current_user.id, trans_obj.sid, conn.db)

@@ -18,7 +18,6 @@ import moment from 'moment';
 describe('QueryHistory', () => {
   let historyCollection;
   let historyWrapper;
-  let sqlEditorPref = {sql_font_size: '1.5em'};
   let historyComponent;
 
   beforeEach(() => {
@@ -70,6 +69,7 @@ describe('QueryHistory', () => {
 
         historyCollection = new HistoryCollection(historyObjects);
         historyComponent = new QueryHistory(historyWrapper, historyCollection);
+        historyComponent.onCopyToEditorClick(()=>{});
         historyComponent.render();
 
         queryEntries = historyWrapper.find('#query_list .list-item');
@@ -92,8 +92,9 @@ describe('QueryHistory', () => {
           expect($(queryEntries[1]).find('.timestamp').text()).toBe('01:33:05');
         });
 
-        it('renders the most recent query as selected', () => {
+        it('renders the most recent query as selected', (done) => {
           expect($(queryEntries[0]).hasClass('selected')).toBeTruthy();
+          done();
         });
 
         it('renders the older query as not selected', () => {
@@ -103,19 +104,26 @@ describe('QueryHistory', () => {
       });
 
       describe('the historydetails panel', () => {
-        let copyAllButton;
+        let copyAllButton, copyEditorButton;
 
         beforeEach(() => {
-          copyAllButton = () => queryDetail.find('#history-detail-query > button');
+          copyAllButton = () => queryDetail.find('#history-detail-query .btn-copy');
+          copyEditorButton = () => queryDetail.find('#history-detail-query .btn-copy-editor');
         });
 
-        it('should change preferences', ()=>{
-          historyComponent.setEditorPref(sqlEditorPref);
+        it('should change preference font size', ()=>{
+          historyComponent.setEditorPref({sql_font_size: '1.5em'});
           expect(queryDetail.find('#history-detail-query .CodeMirror').attr('style')).toBe('font-size: 1.5em;');
         });
 
+        it('should change preference copy to editor false', ()=>{
+          historyComponent.setEditorPref({copy_to_editor: false});
+          expect($(queryDetail.find('#history-detail-query .btn-copy-editor')).hasClass('d-none')).toBe(true);
+        });
+
         it('displays the formatted timestamp', () => {
-          expect(queryDetail.text()).toContain('6-3-17 14:03:15');
+          let firstDate = new Date(2017, 5, 3, 14, 3, 15, 150);
+          expect(queryDetail.text()).toContain(firstDate.toLocaleDateString() + ' ' + firstDate.toLocaleTimeString());
         });
 
         it('displays the number of rows affected', () => {
@@ -141,7 +149,7 @@ describe('QueryHistory', () => {
           }, 1000);
         });
 
-        describe('when the "Copy All" button is clicked', () => {
+        describe('when the "Copy" button is clicked', () => {
           beforeEach(() => {
             spyOn(clipboard, 'copyTextToClipboard');
             copyAllButton().trigger('click');
@@ -161,8 +169,8 @@ describe('QueryHistory', () => {
             jasmine.clock().uninstall();
           });
 
-          it('should have text \'Copy All\'', () => {
-            expect(copyAllButton().text()).toBe('Copy All');
+          it('should have text \'Copy\'', () => {
+            expect(copyAllButton().text()).toBe('Copy');
           });
 
           it('should not have the class \'was-copied\'', () => {
@@ -193,8 +201,8 @@ describe('QueryHistory', () => {
                 jasmine.clock().tick(1501);
               });
 
-              it('should change the button text back to \'Copy All\'', () => {
-                expect(copyAllButton().text()).toBe('Copy All');
+              it('should change the button text back to \'Copy\'', () => {
+                expect(copyAllButton().text()).toBe('Copy');
               });
             });
 
@@ -224,11 +232,22 @@ describe('QueryHistory', () => {
                   jasmine.clock().tick(1501);
                 });
 
-                it('should change the button text back to \'Copy All\'', () => {
-                  expect(copyAllButton().text()).toBe('Copy All');
+                it('should change the button text back to \'Copy\'', () => {
+                  expect(copyAllButton().text()).toBe('Copy');
                 });
               });
             });
+          });
+        });
+
+        describe('when the "Copy to query editor" button is clicked', () => {
+          beforeEach(() => {
+            spyOn(historyComponent.queryHistDetails, 'onCopyToEditorHandler').and.callThrough();
+            copyEditorButton().trigger('click');
+          });
+
+          it('sends the query to the onCopyToEditorHandler', () => {
+            expect(historyComponent.queryHistDetails.onCopyToEditorHandler).toHaveBeenCalledWith('first sql statement');
           });
         });
 
@@ -310,11 +329,16 @@ describe('QueryHistory', () => {
 
     describe('when several days of queries were executed', () => {
       let queryEntryDateGroups;
+      let dateToday, dateYest, dateBeforeYest;
 
       beforeEach(() => {
         jasmine.clock().install();
         const mockedCurrentDate = moment('2017-07-01 13:30:00');
         jasmine.clock().mockDate(mockedCurrentDate.toDate());
+
+        dateToday = mockedCurrentDate.toDate();
+        dateYest = mockedCurrentDate.clone().subtract(1, 'days').toDate();
+        dateBeforeYest = mockedCurrentDate.clone().subtract(3, 'days').toDate();
 
         const historyObjects = [{
           query: 'first today sql statement',
@@ -371,9 +395,9 @@ describe('QueryHistory', () => {
         });
 
         it('has title above', () => {
-          expect($(queryEntryDateGroups[0]).find('.date-label').text()).toBe('Today - Jul 01 2017');
-          expect($(queryEntryDateGroups[1]).find('.date-label').text()).toBe('Yesterday - Jun 30 2017');
-          expect($(queryEntryDateGroups[2]).find('.date-label').text()).toBe('Jun 28 2017');
+          expect($(queryEntryDateGroups[0]).find('.date-label').text()).toBe('Today - ' + dateToday.toLocaleDateString());
+          expect($(queryEntryDateGroups[1]).find('.date-label').text()).toBe('Yesterday - ' + dateYest.toLocaleDateString());
+          expect($(queryEntryDateGroups[2]).find('.date-label').text()).toBe(dateBeforeYest.toLocaleDateString());
         });
       });
     });

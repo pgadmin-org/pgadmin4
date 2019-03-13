@@ -15,6 +15,7 @@ from functools import wraps
 import simplejson as json
 from flask import render_template, current_app, request, jsonify
 from flask_babelex import gettext as _
+from flask_security import current_user
 
 import pgadmin.browser.server_groups.servers as servers
 from config import PG_DEFAULT_DRIVER
@@ -28,6 +29,7 @@ from pgadmin.utils.ajax import gone
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, unauthorized
 from pgadmin.utils.driver import get_driver
+from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 
 class DatabaseModule(CollectionNodeModule):
@@ -675,6 +677,8 @@ class DatabaseView(PGChildNodeView):
                         )
                     return internal_server_error(errormsg=msg)
 
+                QueryHistory.update_history_dbname(
+                    current_user.id, sid, data['old_name'], data['name'])
         # Make connection for database again
         if self._db['datallowconn']:
             self.conn = self.manager.connection(

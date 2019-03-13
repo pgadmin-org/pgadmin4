@@ -193,11 +193,11 @@ define('tools.querytool', [
       });
 
       sql_panel.load(main_docker);
-      var sql_panel_obj = main_docker.addPanel('sql_panel', wcDocker.DOCK.TOP);
+      self.sql_panel_obj = main_docker.addPanel('sql_panel', wcDocker.DOCK.TOP);
 
       var text_container = $('<textarea id="sql_query_tool" tabindex: "-1"></textarea>');
       var output_container = $('<div id="output-panel" tabindex: "0"></div>').append(text_container);
-      sql_panel_obj.$container.find('.pg-panel-content').append(output_container);
+      self.sql_panel_obj.$container.find('.pg-panel-content').append(output_container);
 
       self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
         tabindex: '0',
@@ -222,7 +222,7 @@ define('tools.querytool', [
 
       // Refresh Code mirror on SQL panel resize to
       // display its value properly
-      sql_panel_obj.on(wcDocker.EVENT.RESIZE_ENDED, function() {
+      self.sql_panel_obj.on(wcDocker.EVENT.RESIZE_ENDED, function() {
         setTimeout(function() {
           if (self && self.query_tool_obj) {
             self.query_tool_obj.refresh();
@@ -312,8 +312,8 @@ define('tools.querytool', [
       geometry_viewer.load(main_docker);
 
       // Add all the panels to the docker
-      self.scratch_panel = main_docker.addPanel('scratch', wcDocker.DOCK.RIGHT, sql_panel_obj);
-      self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, sql_panel_obj);
+      self.scratch_panel = main_docker.addPanel('scratch', wcDocker.DOCK.RIGHT, self.sql_panel_obj);
+      self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, self.sql_panel_obj);
       self.data_output_panel = main_docker.addPanel('data_output', wcDocker.DOCK.BOTTOM);
       self.explain_panel = main_docker.addPanel('explain', wcDocker.DOCK.STACKED, self.data_output_panel);
       self.messages_panel = main_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.data_output_panel);
@@ -1309,13 +1309,51 @@ define('tools.querytool', [
 
       if(!self.historyComponent) {
         self.historyComponent = new QueryHistory($('#history_grid'), self.history_collection);
+
+        /* Copy query to query editor, set the focus to editor and move cursor to end */
+        self.historyComponent.onCopyToEditorClick((query)=>{
+          self.query_tool_obj.setValue(query);
+          self.sql_panel_obj.focus();
+          setTimeout(() => {
+            self.query_tool_obj.focus();
+            self.query_tool_obj.setCursor(self.query_tool_obj.lineCount(), 0);
+          }, 100);
+        });
+
         self.historyComponent.render();
+
+        self.history_panel.off(wcDocker.EVENT.VISIBILITY_CHANGED);
+        self.history_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function() {
+          if (self.history_panel.isVisible()) {
+            setTimeout(()=>{
+              self.historyComponent.focus();
+            }, 100);
+          }
+        });
       }
 
-      self.history_panel.off(wcDocker.EVENT.VISIBILITY_CHANGED);
-      self.history_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function() {
-        self.historyComponent.focus();
-      });
+      // Make ajax call to get history data except view/edit data
+      if(self.handler.is_query_tool) {
+        $.ajax({
+          url: url_for('sqleditor.get_query_history', {
+            'trans_id': self.handler.transId,
+          }),
+          method: 'GET',
+          contentType: 'application/json',
+        })
+        .done(function(res) {
+          res.data.result.map((entry) => {
+            let newEntry = JSON.parse(entry);
+            newEntry.start_time = new Date(newEntry.start_time);
+            self.history_collection.add(newEntry);
+          });
+        })
+        .fail(function() {
+          /* history fetch fail should not affect query tool */
+        });
+      } else {
+        self.historyComponent.setEditorPref({'copy_to_editor':false});
+      }
     },
 
     // Callback function for Add New Row button click.
@@ -1637,10 +1675,25 @@ define('tools.querytool', [
       }
 
       alertify.confirm(gettext('Clear history'),
-        gettext('Are you sure you wish to clear the history?'),
+        gettext('Are you sure you wish to clear the history?') + '</br>' +
+        gettext('This will remove all of your query history from this and other sessions for this database.'),
         function() {
           if (self.history_collection) {
             self.history_collection.reset();
+          }
+
+          if(self.handler.is_query_tool) {
+            $.ajax({
+              url: url_for('sqleditor.clear_query_history', {
+                'trans_id': self.handler.transId,
+              }),
+              method: 'DELETE',
+              contentType: 'application/json',
+            })
+            .done(function() {})
+            .fail(function() {
+              /* history clear fail should not affect query tool */
+            });
           }
           setTimeout(() => { self.query_tool_obj.focus(); }, 200);
         },
@@ -2573,14 +2626,34 @@ define('tools.querytool', [
               self.query_start_time,
               new Date());
           }
-          self.gridView.history_collection.add({
+
+          let hist_entry = {
             'status': status,
             'start_time': self.query_start_time,
             'query': self.query,
             'row_affected': self.rows_affected,
             'total_time': self.total_time,
             'message': msg,
-          });
+          };
+
+          /* Make ajax call to save the history data
+           * Do not bother query tool if failed to save
+           * Not applicable for view/edit data
+           */
+          if(self.is_query_tool) {
+            $.ajax({
+              url: url_for('sqleditor.add_query_history', {
+                'trans_id': self.transId,
+              }),
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(hist_entry),
+            })
+            .done(function() {})
+            .fail(function() {});
+          }
+
+          self.gridView.history_collection.add(hist_entry);
         }
       },
 

@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 21
+SCHEMA_VERSION = 22
 
 ##########################################################################
 #
@@ -267,3 +267,18 @@ class Keys(db.Model):
     __tablename__ = 'keys'
     name = db.Column(db.String(), nullable=False, primary_key=True)
     value = db.Column(db.String(), nullable=False)
+
+
+class QueryHistoryModel(db.Model):
+    """Define the history SQL table."""
+    __tablename__ = 'query_history'
+    srno = db.Column(db.Integer(), nullable=False, primary_key=True)
+    uid = db.Column(
+        db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True
+    )
+    sid = db.Column(
+        db.Integer(), db.ForeignKey('server.id'), nullable=False,
+        primary_key=True)
+    dbname = db.Column(db.String(), nullable=False, primary_key=True)
+    query_info = db.Column(db.String(), nullable=False)
+    last_updated_flag = db.Column(db.String(), nullable=False)

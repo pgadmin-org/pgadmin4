@@ -179,6 +179,12 @@ The Query History tab displays information about recent commands:
 To erase the content of the *Query History* tab, select *Clear history* from
 the *Clear* drop-down menu.
 
+Query History is maintained across sessions for each database on a per-user
+basis when running in Query Tool mode. In View/Edit Data mode, history is not
+retained. By default, the last 20 queries are stored for each database. This
+can be adjusted in `config_local.py` by overriding the `MAX_QUERY_HIST_STORED`
+value. See the :ref:`Deployment <deployment>` section for more information.
+
 Use the *Connection status* feature to view the current connection and
 transaction status by clicking on the status icon in the Query Tool:
 

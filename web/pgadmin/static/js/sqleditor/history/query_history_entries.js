@@ -21,26 +21,20 @@ export class QueryHistoryEntryDateGroup {
     return prefix;
   }
 
-  getDateFormatted(momentToFormat) {
-    return momentToFormat.format(this.formatString);
-  }
-
-  getDateMoment() {
-    return moment(this.date);
+  getDateFormatted(date) {
+    return date.toLocaleDateString();
   }
 
   isDaysBefore(before) {
     return (
-      this.getDateFormatted(this.getDateMoment()) ===
-      this.getDateFormatted(moment().subtract(before, 'days'))
+      this.getDateFormatted(this.date) ===
+      this.getDateFormatted(moment().subtract(before, 'days').toDate())
     );
   }
 
   render() {
     return $(`<div class='query-group' data-key='${this.groupKey}'>
-            <div class='date-label'>${this.getDatePrefix()}${this.getDateFormatted(
-      this.getDateMoment()
-    )}</div>
+            <div class='date-label'>${this.getDatePrefix()}${this.getDateFormatted(this.date)}</div>
             <ul class='query-entries'></ul>
         </div>`);
   }
@@ -66,9 +60,13 @@ export class QueryHistoryItem {
     return moment(date).format('HH:mm:ss');
   }
 
+  dataKey() {
+    return this.formatDate(this.entry.start_time);
+  }
+
   render() {
     this.$el = $(
-      `<li class='list-item' tabindex='0' data-key='${this.formatDate(this.entry.start_time)}'>
+      `<li class='list-item' tabindex='0' data-key='${this.dataKey()}'>
           <div class='entry ${this.entry.status ? '' : 'error'}'>
               <div class='query'>${this.entry.query}</div>
               <div class='other-info'>
@@ -98,15 +96,11 @@ export class QueryHistoryEntries {
   }
 
   focus() {
-    let self = this;
-
     if (!this.$selectedItem) {
       this.setSelectedListItem(this.$el.find('.list-item').first());
     }
-
-    setTimeout(() => {
-      self.$selectedItem.trigger('click');
-    }, 500);
+    this.$selectedItem.trigger('click');
+    this.$el[0].focus();
   }
 
   isArrowDown(event) {
@@ -170,7 +164,8 @@ export class QueryHistoryEntries {
     }
     $listItem.addClass('selected');
     this.$selectedItem = $listItem;
-    this.$selectedItem[0].scrollIntoView(false);
+
+    this.$selectedItem[0].scrollIntoView({block: 'center'});
 
     if (this.onSelectedChangeHandler) {
       this.onSelectedChangeHandler(this.$selectedItem.data('entrydata'));
@@ -200,13 +195,20 @@ export class QueryHistoryEntries {
         entry.start_time,
         entryGroupKey
       ).render();
-      if (groups[groupIdx]) {
-        $groupEl.insertBefore(groups[groupIdx]);
-      } else {
-        this.$el.prepend($groupEl);
+
+      let i=0;
+      while(i<groupsKeys.length){
+        if(entryGroupKey > groupsKeys[i]) {
+          $groupEl.insertBefore(groups[i]);
+          break;
+        }
+        i++;
+      }
+      if(i == groupsKeys.length) {
+        this.$el.append($groupEl);
       }
     } else if (groupIdx >= 0) {
-      /* if groups present, but this is a new one */
+      /* if the group is present */
       $groupEl = $(groups[groupIdx]);
     }
 

@@ -10,6 +10,7 @@ export default class QueryHistory {
     this.histCollection = histModel;
     this.editorPref = {};
 
+    this.onCopyToEditorHandler = ()=>{};
     this.histCollection.onAdd(this.onAddEntry.bind(this));
     this.histCollection.onReset(this.onResetEntries.bind(this));
   }
@@ -35,8 +36,19 @@ export default class QueryHistory {
     this.render();
   }
 
+  onCopyToEditorClick(onCopyToEditorHandler) {
+    this.onCopyToEditorHandler = onCopyToEditorHandler;
+
+    if(this.queryHistDetails) {
+      this.queryHistDetails.onCopyToEditorClick(this.onCopyToEditorHandler);
+    }
+  }
+
   setEditorPref(editorPref) {
-    this.editorPref = editorPref;
+    this.editorPref = {
+      ...this.editorPref,
+      ...editorPref,
+    };
     if(this.queryHistDetails) {
       this.queryHistDetails.setEditorPref(this.editorPref);
     }
@@ -63,6 +75,7 @@ export default class QueryHistory {
 
       this.queryHistDetails = new QueryHistoryDetails($histDetails);
       this.queryHistDetails.setEditorPref(this.editorPref);
+      this.queryHistDetails.onCopyToEditorClick(this.onCopyToEditorHandler);
       this.queryHistDetails.render();
 
       this.queryHistEntries = new QueryHistoryEntries($histEntries);

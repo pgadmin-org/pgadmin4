@@ -20,6 +20,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
     make_response as ajax_response, internal_server_error, unauthorized, gone
 from pgadmin.utils.crypto import encrypt, decrypt, pqencryptpassword
 from pgadmin.utils.menu import MenuItem
+from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 import config
 from config import PG_DEFAULT_DRIVER
@@ -450,6 +451,9 @@ class ServerNode(PGChildNodeView):
                     get_driver(PG_DEFAULT_DRIVER).delete_manager(s.id)
                     db.session.delete(s)
                 db.session.commit()
+
+                QueryHistory.clear_history(current_user.id, sid)
+
             except Exception as e:
                 current_app.logger.exception(e)
                 return make_json_response(
