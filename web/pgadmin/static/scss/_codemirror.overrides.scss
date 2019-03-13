@@ -156,3 +156,7 @@
 .CodeMirror-focused .CodeMirror-selected {
   background: $color-primary-light !important;
 }
+
+.CodeMirror-activeline-background {
+  background: $color-danger-lighter !important;
+}

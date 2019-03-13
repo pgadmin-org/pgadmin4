@@ -21,3 +21,4 @@ Bug fixes
 | `Bug #4054 <https://redmine.postgresql.org/issues/4054>`_ - Handle resultsets with zero columns correctly in the Query Tool.
 | `Bug #4060 <https://redmine.postgresql.org/issues/4060>`_ - Fix the latexpdf doc build.
 | `Bug #4071 <https://redmine.postgresql.org/issues/4071>`_ - Ensure that Firefox prompts for a filename/location when downloading query results as a CSV file.
+| `Bug #4073 <https://redmine.postgresql.org/issues/4073>`_ - Change the CodeMirror active line background colour to $color-danger-lighter so it doesn't conflict with the selection colour.
