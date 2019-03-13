@@ -30,7 +30,7 @@ define('pgadmin.node.resource_group', [
     pgBrowser.Nodes['resource_group'] = pgBrowser.Node.extend({
       parent_type: 'server',
       type: 'resource_group',
-      dialogHelp: url_for('help.static', {'ilename': 'resource_group_dialog.html'}),
+      dialogHelp: url_for('help.static', {'filename': 'resource_group_dialog.html'}),
       label: gettext('Resource Group'),
       hasSQL:  true,
       canDrop: true,
