@@ -1358,7 +1358,7 @@ define([
                   $('.file_manager button.delete, .file_manager button.download, .file_manager button.rename').removeAttr(
                     'disabled'
                   );
-                  // set selected folder name in breadcrums
+                  // set selected folder name in breadcrumbs
                   $('.file_manager #uploader .show_selected_file').remove();
                 }
 
@@ -1388,7 +1388,7 @@ define([
                 path = '/';
               }
 
-              if (config.options.platform_type === 'win32') {
+              if (navigator.platform.toUpperCase().indexOf('WIN')!==-1) {
                 path = path.replace(/\//g, '\\');
               } else {
                 path = path.replace(/\\/g, '/');
@@ -1533,20 +1533,20 @@ define([
       $('.storage_dialog #uploader').find('a').remove();
       $('.storage_dialog #uploader').find('b').remove();
 
-      if (config.options.platform_type === 'win32') {
+      if (navigator.platform.toUpperCase().indexOf('WIN')!==-1) {
         path = path.replace(/\//g, '\\');
       } else {
         path = path.replace(/\\/g, '/');
       }
 
       path = decodeURI(path);
-      if (config.options.platform_type === 'win32') {
+      if (navigator.platform.toUpperCase().indexOf('WIN')!==-1) {
         if (config.options.show_volumes && path == '\\') {
           $('.storage_dialog #uploader .input-path').val('');
         } else {
           $('.storage_dialog #uploader .input-path').val(path);
         }
-      } else if (!config.options.platform_type === 'win32' &&
+      } else if (!(navigator.platform.toUpperCase().indexOf('WIN')!==-1) &&
         (path == '' || !S.startsWith(path, '/'))) {
         path = '/' + path;
         $('.storage_dialog #uploader .input-path').val(path);
@@ -1706,7 +1706,7 @@ define([
     // helpful in show/hide toolbar button for Windows
     hideButtons: function() {
       return (
-        this.config.options.platform_type == 'win32' &&
+        navigator.platform.toUpperCase().indexOf('WIN')!==-1 &&
         $('.currentpath').val() === ''
       );
     },
