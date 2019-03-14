@@ -2574,7 +2574,7 @@ msgstr "Prozeduren"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1720
 msgid "Trigger Functions"
-msgstr "Auslöserfunktionen"
+msgstr "Triggerfunktionen"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:59
 #: pgadmin/dashboard/static/js/dashboard.js:1064
@@ -5208,7 +5208,7 @@ msgstr "Ausgabefunktion kann nicht leer sein."
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:68
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:31
 msgid "Views"
-msgstr "Ansichten"
+msgstr "Sichten"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:133
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:31

@@ -18,6 +18,7 @@ Features
 Bug fixes
 *********
 
+| `Bug #3104 <https://redmine.postgresql.org/issues/3104>`_ - Improve a couple of German translations.
 | `Bug #3995 <https://redmine.postgresql.org/issues/3995>`_ - Avoid 'bogus varno' message from Postgres when viewing the SQL for a table with triggers.
 | `Bug #4019 <https://redmine.postgresql.org/issues/4019>`_ - Update all Python and JavaScript dependencies.
 | `Bug #4052 <https://redmine.postgresql.org/issues/4052>`_ - Fix the online help button on the resource group dialogue.
