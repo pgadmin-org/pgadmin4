@@ -13,7 +13,7 @@ import json
 import uuid
 
 from pgadmin.browser.server_groups.servers.databases.schemas. \
-    fts_parser.tests import utils as fts_parser_utils
+    fts_parsers.tests import utils as fts_parser_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.schemas \

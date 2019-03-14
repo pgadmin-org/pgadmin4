@@ -18,6 +18,7 @@ Features
 Bug fixes
 *********
 
+| `Bug #1269 <https://redmine.postgresql.org/issues/1269>`_ - Fix naming inconsistency for the column and FTS parser modules.
 | `Bug #3104 <https://redmine.postgresql.org/issues/3104>`_ - Improve a couple of German translations.
 | `Bug #3995 <https://redmine.postgresql.org/issues/3995>`_ - Avoid 'bogus varno' message from Postgres when viewing the SQL for a table with triggers.
 | `Bug #4019 <https://redmine.postgresql.org/issues/4019>`_ - Update all Python and JavaScript dependencies.

@@ -9,7 +9,7 @@
 
 import uuid
 
-from pgadmin.browser.server_groups.servers.databases.schemas.tables.column. \
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.columns. \
     tests import utils as columns_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
