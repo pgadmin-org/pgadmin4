@@ -97,7 +97,7 @@ class ExecuteQuery {
       }).catch(function (error) {
         self.onExecuteHTTPError(error);
       }
-    );
+      );
   }
 
   generateURLReconnectionFlag(shouldReconnect) {

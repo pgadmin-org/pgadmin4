@@ -14,14 +14,9 @@ module.exports = {
     'amd': true,
     'jasmine': true,
   },
-  'extends': [
-    'eslint:recommended',
-  ],
   'parserOptions': {
-    'ecmaFeatures': {
-      'experimentalObjectRestSpread': true,
-    },
-    'sourceType': 'module'
+    'ecmaVersion': 2018,
+    'sourceType': 'module',
   },
   'plugins': [
   ],

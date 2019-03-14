@@ -13,10 +13,10 @@ import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 
-const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+export const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
 
-const browserTreeState = pgBrowser.browserTreeState = pgBrowser.browserTreeState || {};
+export const browserTreeState = pgBrowser.browserTreeState = pgBrowser.browserTreeState || {};
 
 _.extend(pgBrowser.browserTreeState, {
 
@@ -74,20 +74,20 @@ _.extend(pgBrowser.browserTreeState, {
         url: url_for('settings.reset_tree_state'),
         type: 'DELETE',
       })
-      .fail(function(jqx) {
-        var msg = jqx.responseText;
-        /* Error from the server */
-        if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-          try {
-            var data = JSON.parse(jqx.responseText);
-            msg = data.errormsg;
-          } catch (e) {
-            console.warn(e.stack || e);
+        .fail(function(jqx) {
+          var msg = jqx.responseText;
+          /* Error from the server */
+          if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
+            try {
+              var data = JSON.parse(jqx.responseText);
+              msg = data.errormsg;
+            } catch (e) {
+              console.warn(e.stack || e);
+            }
           }
-        }
-        console.warn(
-          gettext('Error resetting the tree saved state."'), msg);
-      });
+          console.warn(
+            gettext('Error resetting the tree saved state."'), msg);
+        });
     }
 
   },
@@ -103,23 +103,23 @@ _.extend(pgBrowser.browserTreeState, {
       contentType: 'application/json',
       data: JSON.stringify(self.current_state),
     })
-    .done(function() {
-      self.last_state = JSON.stringify(self.current_state);
-    })
-    .fail(function(jqx) {
-      var msg = jqx.responseText;
-      /* Error from the server */
-      if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-        try {
-          var data = JSON.parse(jqx.responseText);
-          msg = data.errormsg;
-        } catch (e) {
-          console.warn(e.stack || e);
+      .done(function() {
+        self.last_state = JSON.stringify(self.current_state);
+      })
+      .fail(function(jqx) {
+        var msg = jqx.responseText;
+        /* Error from the server */
+        if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
+          try {
+            var data = JSON.parse(jqx.responseText);
+            msg = data.errormsg;
+          } catch (e) {
+            console.warn(e.stack || e);
+          }
         }
-      }
-      console.warn(
-        gettext('Error saving the tree state."'), msg);
-    });
+        console.warn(
+          gettext('Error saving the tree state."'), msg);
+      });
 
   },
   fetch_state: function() {
@@ -131,23 +131,23 @@ _.extend(pgBrowser.browserTreeState, {
       dataType: 'json',
       contentType: 'application/json',
     })
-    .done(function(res) {
-      self.stored_state = res;
-    })
-    .fail(function(jqx) {
-      var msg = jqx.responseText;
-      /* Error from the server */
-      if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-        try {
-          var data = JSON.parse(jqx.responseText);
-          msg = data.errormsg;
-        } catch (e) {
-          console.warn(e.stack || e);
+      .done(function(res) {
+        self.stored_state = res;
+      })
+      .fail(function(jqx) {
+        var msg = jqx.responseText;
+        /* Error from the server */
+        if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
+          try {
+            var data = JSON.parse(jqx.responseText);
+            msg = data.errormsg;
+          } catch (e) {
+            console.warn(e.stack || e);
+          }
         }
-      }
-      console.warn(
-        gettext('Error fetching the tree state."'), msg);
-    });
+        console.warn(
+          gettext('Error fetching the tree state."'), msg);
+      });
   },
   update_cache: function(item) {
 
@@ -390,5 +390,3 @@ _.extend(pgBrowser.browserTreeState, {
     }
   },
 });
-
-export {pgBrowser, browserTreeState};

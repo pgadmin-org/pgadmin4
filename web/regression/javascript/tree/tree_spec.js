@@ -32,7 +32,7 @@ const treeTests = (treeClass, setDefaultCallBack) => {
 
         it('return false for #hasParent()', () => {
           const node = tree.findNode(['some new node']);
-          expect(node.hasParent()).toBe(false);
+          expect(node.hasParent()).toEqual(false);
         });
 
         it('return null for #parent()', () => {
@@ -53,7 +53,7 @@ const treeTests = (treeClass, setDefaultCallBack) => {
 
         it('return false for #hasParent()', () => {
           const node = tree.findNode(['some new node']);
-          expect(node.hasParent()).toBe(false);
+          expect(node.hasParent()).toEqual(false);
         });
 
         it('return null for #parent()', () => {
@@ -74,7 +74,7 @@ const treeTests = (treeClass, setDefaultCallBack) => {
 
         it('return false for #hasParent()', () => {
           const node = tree.findNode(['some new node']);
-          expect(node.hasParent()).toBe(false);
+          expect(node.hasParent()).toEqual(false);
         });
 
         it('return null for #parent()', () => {
@@ -99,7 +99,7 @@ const treeTests = (treeClass, setDefaultCallBack) => {
 
       it('return true for #hasParent()', () => {
         const node = tree.findNode(['parent node', 'some new node']);
-        expect(node.hasParent()).toBe(true);
+        expect(node.hasParent()).toEqual(true);
       });
 
       it('return "parent node" object for #parent()', () => {
@@ -119,7 +119,7 @@ const treeTests = (treeClass, setDefaultCallBack) => {
         tree.addNewNode('some new node', {data: 'interesting 1'}, undefined, ['parent' +
         ' node']);
         const parentNode = tree.findNode(['parent node']);
-        expect(parentNode.children.length).toBe(1);
+        expect(parentNode.children.length).toEqual(1);
       });
 
       it('updates the existing node data', () => {
@@ -217,20 +217,20 @@ describe('tree tests', () => {
       context('parent is null', () => {
         it('returns false', () => {
           let treeNode = new TreeNode('123', {}, [], null);
-          expect(treeNode.hasParent()).toBe(false);
+          expect(treeNode.hasParent()).toEqual(false);
         });
       });
       context('parent is undefined', () => {
         it('returns false', () => {
           let treeNode = new TreeNode('123', {}, [], undefined);
-          expect(treeNode.hasParent()).toBe(false);
+          expect(treeNode.hasParent()).toEqual(false);
         });
       });
       context('parent exists', () => {
         it('returns true', () => {
           let parentNode = new TreeNode('456', {}, []);
           let treeNode = new TreeNode('123', {}, [], parentNode);
-          expect(treeNode.hasParent()).toBe(true);
+          expect(treeNode.hasParent()).toEqual(true);
         });
       });
     });
@@ -337,13 +337,13 @@ describe('tree tests', () => {
 
         context('node is at the first level', () => {
           it('returns false', () => {
-            expect(tree.hasParent([{id: 'level1'}])).toBe(false);
+            expect(tree.hasParent([{id: 'level1'}])).toEqual(false);
           });
         });
 
         context('node is at the second level', () => {
           it('returns true', () => {
-            expect(tree.hasParent([{id: 'level2'}])).toBe(true);
+            expect(tree.hasParent([{id: 'level2'}])).toEqual(true);
           });
         });
       });

@@ -13,14 +13,14 @@ define('pgadmin.node.foreign_data_wrapper', [
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
 
-    // Extend the browser's node model class to create a Options model
+  // Extend the browser's node model class to create a Options model
   var OptionsModel = pgBrowser.Node.Model.extend({
     idAttribute: 'fdwoption',
     defaults: {
       fdwoption: undefined,
       fdwvalue: undefined,
     },
-        // Defining schema for the Options model
+    // Defining schema for the Options model
     schema: [{
       id: 'fdwoption', label: gettext('Option'), type:'text',
       cellHeaderClasses:'width_percent_50', editable: true,
@@ -28,12 +28,12 @@ define('pgadmin.node.foreign_data_wrapper', [
       id: 'fdwvalue', label: gettext('Value'), type: 'text',
       cellHeaderClasses:'width_percent_50', group:null, editable: true,
     }],
-        /* validate function is used to validate the input given by
+    /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
          * the browser for the respective control.
          */
     validate: function() {
-          // Validation for the option name
+      // Validation for the option name
       if (_.isUndefined(this.get('fdwoption')) ||
             _.isNull(this.get('fdwoption')) ||
             String(this.get('fdwoption')).replace(/^\s+|\s+$/g, '') == '') {
@@ -170,7 +170,7 @@ define('pgadmin.node.foreign_data_wrapper', [
           id: 'acl', label: gettext('Privileges'), type: 'text',
           group: gettext('Security'), mode: ['properties'], disabled: true,
         }],
-         /* validate function is used to validate the input given by
+        /* validate function is used to validate the input given by
           * the user. In case of error, message will be displayed on
           * the browser for the respective control.
           */

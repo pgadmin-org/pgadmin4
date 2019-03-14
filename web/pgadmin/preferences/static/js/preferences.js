@@ -273,10 +273,10 @@ define('pgadmin.preferences', [
               return 'keyboardShortcut';
             default:
               if (console && console.warn) {
-                  // Warning for developer only.
+                // Warning for developer only.
                 console.warn(
-                    'Hmm.. We don\'t know how to render this type - \'\'' + p.type + '\' of control.'
-                  );
+                  'Hmm.. We don\'t know how to render this type - \'\'' + p.type + '\' of control.'
+                );
               }
               return 'input';
             }
@@ -314,7 +314,7 @@ define('pgadmin.preferences', [
                 return true;
 
               if (d.preferences) {
-                  /*
+                /*
                    * Clear the existing html in the preferences content
                    */
                 $container.find('.preferences_content');
@@ -341,7 +341,7 @@ define('pgadmin.preferences', [
                     'mid': d.mid,
                     'name': p.name,
                   });
-                    /*
+                  /*
                      * We don't know until now, how to render the control for
                      * this preference.
                      */
@@ -356,13 +356,13 @@ define('pgadmin.preferences', [
               d.sortable = false;
               break;
             case 'loaded':
-                // Let's select the first category from the prefrences.
-                // We need to wait for sometime before all item gets loaded
-                // properly.
+              // Let's select the first category from the prefrences.
+              // We need to wait for sometime before all item gets loaded
+              // properly.
               setTimeout(
-                  function() {
-                    selectFirstCategory(api, null);
-                  }, 300);
+                function() {
+                  selectFirstCategory(api, null);
+                }, 300);
               break;
             }
             return true;

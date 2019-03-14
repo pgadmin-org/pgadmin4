@@ -97,12 +97,12 @@ define('pgadmin.node.table_partition_utils', [
           return _.isObject(res) && !_.isArray(res) ? null : res;
         },
         initialize: function() {
-         // Here we will decide if we need to call URL
-         // Or fetch the data from parent columns collection
+          // Here we will decide if we need to call URL
+          // Or fetch the data from parent columns collection
           var self = this;
           if(this.model.handler) {
             Backgrid.Extension.Select2DepCell.prototype.initialize.apply(this, arguments);
-             // Do not listen for any event(s) for existing constraint.
+            // Do not listen for any event(s) for existing constraint.
             if (_.isUndefined(self.model.get('oid'))) {
               var tableCols = self.model.top.get('columns');
               self.listenTo(tableCols, 'remove' , self.resetColOptions);
@@ -121,7 +121,7 @@ define('pgadmin.node.table_partition_utils', [
           }, 50);
         },
         custom_options: function() {
-           // We will add all the columns entered by user in table model
+          // We will add all the columns entered by user in table model
           var columns = this.model.top.get('columns'),
             typename = this.model.top.get('typname'),
             of_types_tables = this.model.top.of_types_tables,
@@ -132,26 +132,26 @@ define('pgadmin.node.table_partition_utils', [
               var col = m.get('name');
               if(!_.isUndefined(col) && !_.isNull(col)) {
                 added_columns_from_tables.push(
-                     {label: col, value: col, image:'icon-column'}
-                   );
+                  {label: col, value: col, image:'icon-column'}
+                );
               }
             });
           } else if (!_.isUndefined(typename) && !_.isNull(typename)
               && !_.isUndefined(of_types_tables) && of_types_tables.length > 0) {
-              // Iterate through all the of_type tables
+            // Iterate through all the of_type tables
             _.each(of_types_tables, function(type) {
               if (type.label == typename) {
-                  // Iterate all the columns of selected "OF TYPE".
+                // Iterate all the columns of selected "OF TYPE".
                 _.each(type.oftype_columns, function(col) {
                   added_columns_from_tables.push(
-                      {label: col.name, value: col.name, image:'icon-column'}
-                    );
+                    {label: col.name, value: col.name, image:'icon-column'}
+                  );
                 });
               }
             });
           }
 
-           // Set the values in to options so that user can select
+          // Set the values in to options so that user can select
           this.column.set('options', added_columns_from_tables);
         },
         remove: function() {

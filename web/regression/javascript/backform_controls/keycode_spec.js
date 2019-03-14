@@ -75,7 +75,7 @@ define([
 
         // wait until UI updates.
         setTimeout(function() {
-          expect(control.$el.find('input')[0].value).toBe('A');
+          expect(control.$el.find('input')[0].value).toEqual('A');
           done();
         }, 100);
 
@@ -101,7 +101,7 @@ define([
 
         // wait until UI updates.
         setTimeout(function() {
-          expect(control.$el.find('input')[0].value).toBe('B');
+          expect(control.$el.find('input')[0].value).toEqual('B');
           done();
         }, 100);
 
@@ -139,7 +139,7 @@ define([
 
         // wait until UI updates.
         setTimeout(function() {
-          expect(control.$el.find('input')[0].value).toBe('A');
+          expect(control.$el.find('input')[0].value).toEqual('A');
           done();
         }, 100);
 
@@ -162,7 +162,7 @@ define([
 
         // wait until UI updates.
         setTimeout(function() {
-          expect(control.$el.find('input')[0].value).toBe('A');
+          expect(control.$el.find('input')[0].value).toEqual('A');
           done();
         }, 100);
 
@@ -178,7 +178,7 @@ define([
 
       it('when model changes UI should update', function (done) {
 
-        expect(control.$el.find('input')[0].value).toBe('A');
+        expect(control.$el.find('input')[0].value).toEqual('A');
 
         model.set('key', {
           'key_code': 67,
@@ -187,7 +187,7 @@ define([
 
         // wait until UI updates.
         setTimeout(function() {
-          expect(control.$el.find('input')[0].value).toBe('C');
+          expect(control.$el.find('input')[0].value).toEqual('C');
           done();
         }, 100);
 

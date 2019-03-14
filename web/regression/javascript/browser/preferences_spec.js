@@ -139,7 +139,7 @@ describe('preferences related functions test', function() {
       expect($.fn.css).toHaveBeenCalledWith('font-size', '1.46em');
 
       let setOptionCalls = pgBrowser.editor.setOption.calls;
-      expect(setOptionCalls.count()).toBe(Object.keys(editorOptions).length);
+      expect(setOptionCalls.count()).toEqual(Object.keys(editorOptions).length);
 
       for(let i = 0; i < Object.keys(editorOptions).length; i++) {
         let option = Object.keys(editorOptions)[i];

@@ -12,51 +12,49 @@ import gettext from 'sources/gettext';
 
 
 describe('alertify_wrapper', function () {
-  describe('success', function () {
+  var env = jasmine.getEnv();
+
+  env.allowRespy(true);
+
+  describe('alertify_success', function () {
     it('calls the success function from alertify and adds the checkmark to the element', function () {
-      spyOn(alertify, 'orig_success');
+      let spyObj = spyOn(alertify, 'orig_success').and.callThrough();
 
       alertify.success('Yay, congrats!', 1);
 
-      var calledWithMessage = alertify.orig_success.calls.mostRecent().args[0];
-
-      expect(calledWithMessage).toContain('Yay, congrats!');
-      expect(calledWithMessage).toContain('class="fa fa-check text-success"');
+      expect(spyObj).toHaveBeenCalled();
+      expect(spyObj.calls.mostRecent().args[0]).toContain('Yay, congrats!');
+      expect(spyObj.calls.mostRecent().args[0]).toContain('class="fa fa-check text-success"');
     });
   });
 
-  describe('error', function () {
-    it('calls the error function from alertify and adds the warning symbol to the element', function () {
-      spyOn(alertify, 'orig_error');
-
+  describe('alertify_error calls the error function', function() {
+    it('and adds the warning symbol to the element', function () {
+      let spyOrigError = spyOn(alertify, 'orig_error').and.callThrough();
       alertify.error('bad, very bad', 1);
 
-      var calledWithMessage = alertify.orig_error.calls.mostRecent().args[0];
-
-      expect(calledWithMessage).toContain('bad, very bad');
-      expect(calledWithMessage).toContain('class="fa fa-exclamation-triangle text-danger"');
+      expect(spyOrigError).toHaveBeenCalled();
+      expect(spyOrigError.calls.mostRecent().args[0]).toContain('bad, very bad');
+      expect(spyOrigError.calls.mostRecent().args[0]).toContain('class="fa fa-exclamation-triangle text-danger"');
     });
   });
 
-  describe('pgRespErrorNotify', () => {
-    it('calls error notifier which alertifies response error for ajax calls', () => {
-
+  describe('alertify_error calls pgRespErrorNotify notifier', function() {
+    it('which alertifies response error for ajax calls', () => {
       $.ajax({
         url: 'http://some/dummy/url',
         dataType: 'json',
         error: function(xhr, status, error) {
-
-          spyOn(alertify, 'orig_error').and.callThrough();
-          spyOn(alertify, 'notify').and.callThrough();
+          let spyOrigError = spyOn(alertify, 'orig_error').and.callThrough(),
+            spyNotify = spyOn(alertify, 'notify').and.callThrough();
 
           /*When connection lost*/
           xhr.status = 0;
           alertify.pgRespErrorNotify(xhr, error);
-          expect(alertify.orig_error).toHaveBeenCalled();
-          expect(alertify.orig_error.calls.mostRecent().args[0]).toContain(
+          expect(spyOrigError).toHaveBeenCalled();
+          expect(spyOrigError.calls.mostRecent().args[0]).toContain(
             gettext('Connection to the server has been lost.')
           );
-
 
           /*When some exception occurs at back end*/
           xhr.status = 4;
@@ -70,12 +68,11 @@ describe('alertify_wrapper', function () {
             else {
               return orig_getResponseHeader(header);
             }
-
           };
           xhr.responseText = '{"errormsg":"Exception XYZ"}';
           alertify.pgRespErrorNotify(xhr, error);
-          expect(alertify.orig_error).toHaveBeenCalled();
-          expect(alertify.orig_error.calls.mostRecent().args[0]).toContain(
+          expect(spyOrigError).toHaveBeenCalled();
+          expect(spyOrigError.calls.mostRecent().args[0]).toContain(
             gettext('Exception XYZ')
           );
 
@@ -90,8 +87,8 @@ describe('alertify_wrapper', function () {
           };
           xhr.responseText = '<p>Some Exception Occurred</p>';
           alertify.pgRespErrorNotify(xhr, error);
-          expect(alertify.notify).toHaveBeenCalled();
-          expect(alertify.notify.calls.mostRecent().args[0]).toContain(
+          expect(spyNotify).toHaveBeenCalled();
+          expect(spyNotify.calls.mostRecent().args[0]).toContain(
             gettext('INTERNAL SERVER ERROR')
           );
 
@@ -106,8 +103,8 @@ describe('alertify_wrapper', function () {
           };
           xhr.responseText = '{"errormsg":"Exception XYZ"}';
           alertify.pgRespErrorNotify(xhr, error, gettext('Some prefix message'));
-          expect(alertify.orig_error).toHaveBeenCalled();
-          expect(alertify.orig_error.calls.mostRecent().args[0]).toContain(
+          expect(spyOrigError).toHaveBeenCalled();
+          expect(spyOrigError.calls.mostRecent().args[0]).toContain(
             gettext('Some prefix message')
           );
         },

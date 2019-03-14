@@ -88,11 +88,11 @@ describe('copyData', function () {
     });
 
     it('copies them', function () {
-      spyOn(clipboard, 'copyTextToClipboard');
+      spyOn(clipboard, 'copyTextToClipboard').and.callThrough();
 
       copyData.apply(sqlEditor);
 
-      expect(sqlEditor.copied_rows.length).toBe(2);
+      expect(sqlEditor.copied_rows.length).toEqual(2);
 
       expect(clipboard.copyTextToClipboard).toHaveBeenCalled();
       expect(clipboard.copyTextToClipboard.calls.mostRecent().args[0]).toContain('1,"leopord",12');
@@ -103,7 +103,7 @@ describe('copyData', function () {
       it('enables the paste row button', function () {
         copyData.apply(_.extend({can_edit: true}, sqlEditor));
 
-        expect($('#btn-paste-row').prop('disabled')).toBe(false);
+        expect($('#btn-paste-row').prop('disabled')).toEqual(false);
       });
     });
   });
@@ -123,15 +123,15 @@ describe('copyData', function () {
 
       var copyArg = clipboard.copyTextToClipboard.calls.mostRecent().args[0];
       var rowStrings = copyArg.split('\n');
-      expect(rowStrings[0]).toBe('1');
-      expect(rowStrings[1]).toBe('2');
-      expect(rowStrings[2]).toBe('3');
+      expect(rowStrings[0]).toEqual('1');
+      expect(rowStrings[1]).toEqual('2');
+      expect(rowStrings[2]).toEqual('3');
     });
 
     it('sets copied_rows to empty', function () {
       copyData.apply(sqlEditor);
 
-      expect(sqlEditor.copied_rows.length).toBe(0);
+      expect(sqlEditor.copied_rows.length).toEqual(0);
     });
 
     describe('when the user can edit the grid', function () {
@@ -140,7 +140,7 @@ describe('copyData', function () {
       });
 
       it('disables the paste row button', function () {
-        expect($('#btn-paste-row').prop('disabled')).toBe(true);
+        expect($('#btn-paste-row').prop('disabled')).toEqual(true);
       });
     });
   });

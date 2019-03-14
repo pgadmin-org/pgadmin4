@@ -511,7 +511,7 @@ define([
       data.options = _.defaults({
         disabled: evalF(field.disabled, field, this.model),
       }, this.field.get('options'), this.defaults.options,
-        $.fn.bootstrapToggle.defaults);
+      $.fn.bootstrapToggle.defaults);
 
       this.$el.html(this.template(data)).addClass(field.name);
 
@@ -573,8 +573,8 @@ define([
       this.cleanup();
 
       var c = this.$el
-        .children().first().children('.active')
-        .first().attr('id'),
+          .children().first().children('.active')
+          .first().attr('id'),
         m = this.model,
         controls = this.controls,
         tmpls = this.template,
@@ -625,15 +625,15 @@ define([
           function() {
             self.hidden_tab = $(this).data('tabIndex');
           }).on('shown.bs.tab', function() {
-            var self = this;
-            self.shown_tab = $(self).data('tabIndex');
-            m.trigger('pg-property-tab-changed', {
-              'model': m,
-              'shown': self.shown_tab,
-              'hidden': self.hidden_tab,
-              'tab': self,
-            });
+          var self = this;
+          self.shown_tab = $(self).data('tabIndex');
+          m.trigger('pg-property-tab-changed', {
+            'model': m,
+            'shown': self.shown_tab,
+            'hidden': self.hidden_tab,
+            'tab': self,
           });
+        });
       });
 
       var makeActive = tabHead.find('[id="' + c + '"]').first();
@@ -1748,7 +1748,7 @@ define([
           var visible = true;
           ver_in_limit = (_.isUndefined(server_info) ? true :
             ((_.isUndefined(s.server_type) ? true :
-                (server_info.type in s.server_type)) &&
+              (server_info.type in s.server_type)) &&
               (_.isUndefined(s.min_version) ? true :
                 (server_info.version >= s.min_version)) &&
               (_.isUndefined(s.max_version) ? true :
@@ -1783,7 +1783,7 @@ define([
           groups[group] = (groups[group] || []);
           ver_in_limit = (_.isUndefined(server_info) ? true :
             ((_.isUndefined(s.server_type) ? true :
-                (server_info.type in s.server_type)) &&
+              (server_info.type in s.server_type)) &&
               (_.isUndefined(s.min_version) ? true :
                 (server_info.version >= s.min_version)) &&
               (_.isUndefined(s.max_version) ? true :
@@ -2242,7 +2242,7 @@ define([
          * SQL Editor can be in different tab
          */
         let browser = window.opener ?
-              window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+          window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
 
         let sqlEditPreferences = browser.get_preferences_for_module('sqleditor');
 
@@ -2916,12 +2916,12 @@ define([
       _.each(innerFields, function(fld) {
 
         var f = new Backform.Field(
-          _.extend({}, {
-            id: fld['name'],
-            name: fld['name'],
-            control: fld['type'] == 'checkbox' ? 'checkboxWithBox' : fld['type'],
-            label: fld['label'],
-          })
+            _.extend({}, {
+              id: fld['name'],
+              name: fld['name'],
+              control: fld['type'] == 'checkbox' ? 'checkboxWithBox' : fld['type'],
+              label: fld['label'],
+            })
           ),
           cntr = new (f.get('control')) ({
             field: f,

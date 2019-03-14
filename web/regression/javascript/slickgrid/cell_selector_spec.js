@@ -57,11 +57,11 @@ describe('CellSelector', function () {
       $(container.find('.slick-row .slick-cell.l' + column)[row]).trigger('click');
 
       var selectedRanges = cellSelectionModel.getSelectedRanges();
-      expect(selectedRanges.length).toBe(1);
-      expect(selectedRanges[0].fromCell).toBe(0);
-      expect(selectedRanges[0].toCell).toBe(0);
-      expect(selectedRanges[0].fromRow).toBe(1);
-      expect(selectedRanges[0].toRow).toBe(1);
+      expect(selectedRanges.length).toEqual(1);
+      expect(selectedRanges[0].fromCell).toEqual(0);
+      expect(selectedRanges[0].toCell).toEqual(0);
+      expect(selectedRanges[0].fromRow).toEqual(1);
+      expect(selectedRanges[0].toRow).toEqual(1);
     });
 
     it('deselects previously selected ranges', function () {
@@ -74,7 +74,7 @@ describe('CellSelector', function () {
       $(container.find('.slick-row .slick-cell.l' + column)[row]).trigger('click');
 
       expect(RangeSelectionHelper.isRangeSelected(cellSelectionModel.getSelectedRanges(), row2Range))
-        .toBe(false);
+        .toEqual(false);
     });
   });
 });

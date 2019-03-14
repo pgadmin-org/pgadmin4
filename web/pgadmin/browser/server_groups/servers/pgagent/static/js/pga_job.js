@@ -186,11 +186,11 @@ define('pgadmin.node.pga_job', [
         })
         // 'pgagent.pga_job' table updated with current time to run the job
         // now.
-        .done(function() { t.unload(i); })
-        .fail(function(xhr, status, error) {
-          alertify.pgRespErrorNotify(xhr, error);
-          t.unload(i);
-        });
+          .done(function() { t.unload(i); })
+          .fail(function(xhr, status, error) {
+            alertify.pgRespErrorNotify(xhr, error);
+            t.unload(i);
+          });
 
         return false;
       },

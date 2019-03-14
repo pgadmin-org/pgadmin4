@@ -24,7 +24,7 @@ define('pgadmin.node.fts_configuration', [
       dictname: undefined,
     },
     keys: ['token'],
-        // Define the schema for the token/dictionary list
+    // Define the schema for the token/dictionary list
     schema: [{
       id: 'token', label: gettext('Token'), type:'text', group: null,
       cellHeaderClasses:'width_percent_50',
@@ -34,9 +34,9 @@ define('pgadmin.node.fts_configuration', [
       cellHeaderClasses:'width_percent_50', editable: true,
       cell:Backgrid.Extension.MultiSelectAjaxCell, url: 'dictionaries',
     }],
-        // Validation for token and dictionary list
+    // Validation for token and dictionary list
     validate: function() {
-            // Clear any existing errors.
+      // Clear any existing errors.
       var msg;
       this.errorModel.clear();
       var token = this.get('token');
@@ -61,14 +61,14 @@ define('pgadmin.node.fts_configuration', [
     },
   });
 
-// Customized control for token control
+  // Customized control for token control
   var TokenControl =  Backform.TokenControl =
     Backform.UniqueColCollectionControl.extend({
 
       initialize: function() {
         Backform.UniqueColCollectionControl.prototype.initialize.apply(
-        this, arguments
-      );
+          this, arguments
+        );
 
         var self = this,
           headerSchema = [{
@@ -82,7 +82,7 @@ define('pgadmin.node.fts_configuration', [
                 Backform.NodeAjaxOptionsControl.prototype.initialize.apply(
                   this,
                   arguments
-                 );
+                );
                 var self = this,
                   url = self.field.get('url') || self.defaults.url,
                   m = self.model.top || self.model;
@@ -122,20 +122,20 @@ define('pgadmin.node.fts_configuration', [
                       async: false,
                       url: full_url,
                     })
-                    .done(function(res) {
-                    /*
+                      .done(function(res) {
+                        /*
                      * We will cache this data for short period of time for
                      * avoiding same calls.
                      */
-                      data = cache_node.cache(url,
-                               node_info,
-                               cache_level,
-                               res.data
-                             );
-                    })
-                    .fail(function() {
-                      m.trigger('pgadmin:view:fetch:error', m, self.field);
-                    });
+                        data = cache_node.cache(url,
+                          node_info,
+                          cache_level,
+                          res.data
+                        );
+                      })
+                      .fail(function() {
+                        m.trigger('pgadmin:view:fetch:error', m, self.field);
+                      });
                     m.trigger('pgadmin:view:fetched', m, self.field);
                   }
 
@@ -169,16 +169,16 @@ define('pgadmin.node.fts_configuration', [
           // Grid columns backgrid
           gridCols = ['token', 'dictname'];
 
-      // Creating model for header control which is used to add new tokens
+        // Creating model for header control which is used to add new tokens
         self.headerData = new (Backbone.Model.extend({
           defaults: headerDefaults,
           schema: headerSchema,
         }))({});
 
-      // Creating view from header schema in tokens control
+        // Creating view from header schema in tokens control
         var headerGroups = Backform.generateViewSchema(
-          self.field.get('node_info'), self.headerData, 'create',
-          self.field.get('schema_node'), self.field.get('node_data')
+            self.field.get('node_info'), self.headerData, 'create',
+            self.field.get('schema_node'), self.field.get('node_data')
           ),
           fields = [];
 
@@ -187,13 +187,13 @@ define('pgadmin.node.fts_configuration', [
         });
         self.headerFields = new Backform.Fields(fields);
 
-      // creating grid using grid columns
+        // creating grid using grid columns
         self.gridSchema = Backform.generateGridColumnsFromModel(
           self.field.get('node_info'), self.field.get('model'),
           'edit', gridCols, self.field.get('schema_node')
-      );
+        );
 
-      // Providing behaviour control functions to header and grid control
+        // Providing behaviour control functions to header and grid control
         self.controls = [];
         self.listenTo(self.headerData, 'change', self.headerDataChanged);
         self.listenTo(self.headerData, 'select2', self.headerDataChanged);
@@ -201,7 +201,7 @@ define('pgadmin.node.fts_configuration', [
         self.listenTo(self.collection, 'remove', self.onAddorRemoveTokens);
       },
 
-    // Template for creating header view
+      // Template for creating header view
       generateHeader: function(data) {
         var header = [
           '<div class="subnode-header-form">',
@@ -234,19 +234,19 @@ define('pgadmin.node.fts_configuration', [
           });
 
           $header.find('div[header="' + field.get('name') + '"]').append(
-          control.render().$el
-        );
+            control.render().$el
+          );
 
           control.$el.find('.control-label').remove();
           controls.push(control);
         });
 
-      // We should not show add button in properties mode
+        // We should not show add button in properties mode
         if (data.mode == 'properties') {
           $header.find('button.add').remove();
         }
 
-      // Disable add button in token control in create mode
+        // Disable add button in token control in create mode
         if(data.mode == 'create') {
           $header.find('button.add').attr('disabled', true);
         }
@@ -255,13 +255,13 @@ define('pgadmin.node.fts_configuration', [
         return $header;
       },
 
-    // Providing event handler for add button in header
+      // Providing event handler for add button in header
       events: _.extend(
-              {}, Backform.UniqueColCollectionControl.prototype.events,
-              {'click button.add': 'addTokens'}
-            ),
+        {}, Backform.UniqueColCollectionControl.prototype.events,
+        {'click button.add': 'addTokens'}
+      ),
 
-    // Show token/dictionary grid
+      // Show token/dictionary grid
       showGridControl: function(data) {
 
         var self = this,
@@ -269,14 +269,14 @@ define('pgadmin.node.fts_configuration', [
           $gridBody = $('<div></div>', {
             class:'pgadmin-control-group backgrid form-group col-12 object subnode',
           }).append(
-               titleTmpl({label: data.label})
+            titleTmpl({label: data.label})
           );
 
         $gridBody.append(self.generateHeader(data));
 
         var gridColumns = _.clone(this.gridSchema.columns);
 
-      // Insert Delete Cell into Grid
+        // Insert Delete Cell into Grid
         if (data.disabled == false && data.canDelete) {
           gridColumns.unshift({
             name: 'pg-backform-delete', label: '',
@@ -289,7 +289,7 @@ define('pgadmin.node.fts_configuration', [
           self.grid.remove();
           self.grid.null;
         }
-      // Initialize a new Grid instance
+        // Initialize a new Grid instance
         var grid = self.grid = new Backgrid.Grid({
           columns: gridColumns,
           collection: self.collection,
@@ -299,21 +299,21 @@ define('pgadmin.node.fts_configuration', [
 
         $gridBody.append(self.$grid);
 
-      // Find selected dictionaries in grid and show it all together
+        // Find selected dictionaries in grid and show it all together
         setTimeout(function() {
           self.headerData.set({
             'token': self.$header.find(
-            'div[header="token"] select'
+              'div[header="token"] select'
             ).val(),
           }, {silent:true}
           );
         }, 10);
 
-      // Render node grid
+        // Render node grid
         return $gridBody;
       },
 
-    // When user change the header control to add a new token
+      // When user change the header control to add a new token
       headerDataChanged: function() {
         var self = this,
           data = this.headerData.toJSON(),
@@ -326,7 +326,7 @@ define('pgadmin.node.fts_configuration', [
         self.$header.find('button.add').prop('disabled', inSelected);
       },
 
-    // Get called when user click on add button header
+      // Get called when user click on add button header
       addTokens: function(ev) {
         ev.preventDefault();
         var self = this,
@@ -338,14 +338,14 @@ define('pgadmin.node.fts_configuration', [
 
         var coll = self.model.get(self.field.get('name')),
           m = new (self.field.get('model'))(
-                self.headerData.toJSON(), {
-                  silent: true, top: self.model.top,
-                  collection: coll, handler: coll,
-                }),
+            self.headerData.toJSON(), {
+              silent: true, top: self.model.top,
+              collection: coll, handler: coll,
+            }),
           checkVars = ['token'],
           idx = -1;
 
-      // Find if token exists in grid
+        // Find if token exists in grid
         self.collection.each(function(m) {
           _.each(checkVars, function(v) {
             var val = m.get(v);
@@ -357,7 +357,7 @@ define('pgadmin.node.fts_configuration', [
 
 
 
-      // remove 'm' if duplicate value found.
+        // remove 'm' if duplicate value found.
         if (idx == -1) {
           coll.add(m);
           idx = coll.indexOf(m);
@@ -365,18 +365,18 @@ define('pgadmin.node.fts_configuration', [
         self.$grid.find('.new').removeClass('new');
         var newRow = self.grid.body.rows[idx].$el;
         newRow.addClass('new');
-      //$(newRow).pgMakeVisible('table-bordered');
+        //$(newRow).pgMakeVisible('table-bordered');
         $(newRow).pgMakeVisible('backform-tab');
 
 
         return false;
       },
 
-    // When user delete token/dictionary entry from grid
+      // When user delete token/dictionary entry from grid
       onAddorRemoveTokens: function() {
         var self = this;
 
-      /*
+        /*
        * Wait for collection to be updated before checking for the button to
        * be enabled, or not.
        */
@@ -386,7 +386,7 @@ define('pgadmin.node.fts_configuration', [
         }, 10);
       },
 
-    // When control is about to destroy
+      // When control is about to destroy
       remove: function() {
       /*
        * Stop listening the events registered by this control.
@@ -395,13 +395,13 @@ define('pgadmin.node.fts_configuration', [
         this.listenTo(this.headerData, 'select2', this.headerDataChanged);
         this.listenTo(this.collection, 'remove', this.onAddorRemoveTokens);
 
-      // Remove header controls.
+        // Remove header controls.
         _.each(this.controls, function(control) {
           control.remove();
         });
         TokenControl.__super__.remove.apply(this, arguments);
 
-      // Remove the header model
+        // Remove the header model
         delete (this.headerData);
 
       },
@@ -551,7 +551,7 @@ define('pgadmin.node.fts_configuration', [
           var copy_config_or_parser = !(parser === '' ||
                                         _.isUndefined(parser) ||
                                         _.isNull(parser)) ?
-                                        this.get('prsname') : this.get('copy_config');
+            this.get('prsname') : this.get('copy_config');
           var schema = this.get('schema');
 
           // Clear the existing error model

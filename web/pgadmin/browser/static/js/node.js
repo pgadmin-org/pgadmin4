@@ -423,11 +423,11 @@ define('pgadmin.browser.node', [
                   xhr, error, message, item
                 );
                 if (!Alertify.pgHandleItemError(
-                    xhr, error, message, {
-                      item: item,
-                      info: info,
-                    }
-                  )) {
+                  xhr, error, message, {
+                    item: item,
+                    info: info,
+                  }
+                )) {
                   Alertify.pgNotifier(
                     error, xhr,
                     S(
@@ -738,10 +738,10 @@ define('pgadmin.browser.node', [
           title = S(gettext('DROP CASCADE %s?')).sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDropCascade) ?
-              obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
+            obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
             Alertify.error(
               S(gettext('The %s "%s" cannot be dropped.'))
-              .sprintf(obj.label, d.label).value(),
+                .sprintf(obj.label, d.label).value(),
               10
             );
             return;
@@ -752,10 +752,10 @@ define('pgadmin.browser.node', [
           title = S(gettext('DROP %s?')).sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDrop) ?
-              obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
+            obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
             Alertify.error(
               S(gettext('The %s "%s" cannot be dropped.'))
-              .sprintf(obj.label, d.label).value(),
+                .sprintf(obj.label, d.label).value(),
               10
             );
             return;
@@ -767,30 +767,30 @@ define('pgadmin.browser.node', [
               url: obj.generate_url(i, input.url, d, true),
               type: 'DELETE',
             })
-            .done(function(res) {
-              if (res.success == 0) {
-                pgBrowser.report_error(res.errormsg, res.info);
-              } else {
-                pgBrowser.removeTreeNode(i, true);
-              }
-              return true;
-            })
-            .fail(function(jqx) {
-              var msg = jqx.responseText;
-              /* Error from the server */
-              if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-                try {
-                  var data = JSON.parse(jqx.responseText);
-                  msg = data.errormsg;
-                } catch (e) {
-                  console.warn(e.stack || e);
+              .done(function(res) {
+                if (res.success == 0) {
+                  pgBrowser.report_error(res.errormsg, res.info);
+                } else {
+                  pgBrowser.removeTreeNode(i, true);
                 }
-              }
-              pgBrowser.report_error(
-                S(gettext('Error dropping %s: "%s"'))
-                .sprintf(obj.label, objName)
-                .value(), msg);
-            });
+                return true;
+              })
+              .fail(function(jqx) {
+                var msg = jqx.responseText;
+                /* Error from the server */
+                if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
+                  try {
+                    var data = JSON.parse(jqx.responseText);
+                    msg = data.errormsg;
+                  } catch (e) {
+                    console.warn(e.stack || e);
+                  }
+                }
+                pgBrowser.report_error(
+                  S(gettext('Error dropping %s: "%s"'))
+                    .sprintf(obj.label, objName)
+                    .value(), msg);
+              });
           },
           null).show();
       },
@@ -913,7 +913,7 @@ define('pgadmin.browser.node', [
         }
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state',
-         item);
+          item);
         pgBrowser.Node.callbacks.change_server_background(item, data);
       },
       // Callback called - when a node is selected in browser tree.
@@ -944,7 +944,7 @@ define('pgadmin.browser.node', [
         }
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
-         item);
+          item);
         return true;
       },
       removed: function(item) {
@@ -1003,7 +1003,7 @@ define('pgadmin.browser.node', [
           auto_expand = pgBrowser.get_preference('browser', 'auto_expand_sole_children');
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
-         item);
+          item);
 
         if (auto_expand && auto_expand.value == true && tree.children(item).length == 1) {
           // Automatically expand the child node, if a treeview node has only a single child.
@@ -1013,7 +1013,7 @@ define('pgadmin.browser.node', [
       },
       closed: function(item) {
         pgBrowser.Events.trigger('pgadmin:browser:tree:remove-from-tree-state',
-         item);
+          item);
       },
     },
     /**********************************************************************
@@ -1029,7 +1029,7 @@ define('pgadmin.browser.node', [
         j = panel.$container.find('.obj_properties').first(),
         view = j.data('obj-view'),
         content = $('<div tabindex="1"></div>')
-        .addClass('pg-prop-content col-12');
+          .addClass('pg-prop-content col-12');
 
       // Handle key press events for Cancel, save and help button
       var handleKeyDown = function(event, context) {
@@ -1041,12 +1041,12 @@ define('pgadmin.browser.node', [
           closePanel();
           break;
         case keyCode.ENTER:
-            // Return if event is fired from child element
+          // Return if event is fired from child element
           if (event.target !== context) return;
           if (view && view.model && view.model.sessChanged()) {
             var btn = $(event.target).closest('.obj_properties')
-                .find('.pg-prop-btn-group')
-                .find('button.btn-primary');
+              .find('.pg-prop-btn-group')
+              .find('button.btn-primary');
             onSave.call(this, view, btn);
           }
           break;
@@ -1364,8 +1364,8 @@ define('pgadmin.browser.node', [
 
             panel.icon(
               _.isFunction(that['node_image']) ?
-              (that['node_image']).apply(that, [data, view.model]) :
-              (that['node_image'] || ('icon-' + that.type))
+                (that['node_image']).apply(that, [data, view.model]) :
+                (that['node_image'] || ('icon-' + that.type))
             );
 
             // Create proper buttons

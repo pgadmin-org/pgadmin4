@@ -209,11 +209,11 @@ define('pgadmin.node.role', [
             return opt.text;
           } else {
             var d = _.extend(
-              {}, data, {
-                'opttext': _.escape(opt.text),
-                'optimage': optimage,
-                'checkbox': true,
-              }),
+                {}, data, {
+                  'opttext': _.escape(opt.text),
+                  'optimage': optimage,
+                  'checkbox': true,
+                }),
               j = $(self.selectionTemplate(d));
 
             // Update the checkbox lazy
@@ -255,7 +255,7 @@ define('pgadmin.node.role', [
 
       this.stopListening(this.model, 'change:' + name, this.render);
 
-        /*
+      /*
          * Iterate through all the values, and find out how many are already
          * present in the collection.
          */
@@ -270,14 +270,14 @@ define('pgadmin.node.role', [
         }
       });
 
-        /*
+      /*
          * Adding new values
          */
       _.each(vals, function(v) {
         collection.add({role: v});
       });
 
-        /*
+      /*
          * Removing unwanted!
          */
       _.each(removed, function(v) {

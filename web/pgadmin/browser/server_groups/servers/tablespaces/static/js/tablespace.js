@@ -290,17 +290,17 @@ define('pgadmin.node.tablespace', [
                           method:'PUT',
                           data:{'data': JSON.stringify(args) },
                         })
-                        .done(function(res) {
-                          if (res.success) {
-                            Alertify.success(res.info);
-                            self.close();
-                          } else {
-                            Alertify.error(res.errormsg);
-                          }
-                        })
-                        .fail(function(xhr, status, error) {
-                          Alertify.pgRespErrorNotify(xhr, error);
-                        });
+                          .done(function(res) {
+                            if (res.success) {
+                              Alertify.success(res.info);
+                              self.close();
+                            } else {
+                              Alertify.error(res.errormsg);
+                            }
+                          })
+                          .fail(function(xhr, status, error) {
+                            Alertify.pgRespErrorNotify(xhr, error);
+                          });
                       },
                       function() {
                         // Do nothing as user cancel the operation

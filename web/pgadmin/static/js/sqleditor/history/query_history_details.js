@@ -106,9 +106,9 @@ export default class QueryHistoryDetails {
       `<div class='metadata'>
                 ${itemTemplate(this.formatDate(this.entry.start_time), 'Date')}
                 ${itemTemplate(
-                  this.entry.row_affected.toLocaleString(),
-                  'Rows Affected'
-                )}
+    this.entry.row_affected.toLocaleString(),
+    'Rows Affected'
+  )}
                 ${itemTemplate(this.entry.total_time, 'Duration')}
             </div>`
     );
@@ -126,8 +126,8 @@ export default class QueryHistoryDetails {
       this.$errMsgBlock.empty().append(
         `<div class='history-error-text'>
                     <span>Error Message</span> ${this.parseErrorMessage(
-                      this.entry.message
-                    )}
+    this.entry.message
+  )}
                 </div>`
       );
     } else {

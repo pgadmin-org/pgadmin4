@@ -4,32 +4,33 @@
 #       ignored when building a PIP Wheel.
 ##############################################################################
 blinker==1.4
-Flask==0.12.4
+Flask==1.0.2
 Flask-Gravatar==0.5.0
-Flask-Login==0.3.2
+Flask-Login==0.4.1
 Flask-Mail==0.9.1
-Flask-Migrate==2.1.1
+Flask-Migrate==2.4.0
 Flask-Principal==0.4.0
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
 passlib==1.7.1
-pytz==2018.3
-simplejson==3.13.2
-six>=1.11.0
+pytz==2018.9
+simplejson==3.16.0
+six>=1.12.0
 speaklater==1.3
 sqlparse==0.2.4
-WTForms==2.1
+WTForms==2.2.1
 Flask-Paranoid==0.2.0
-psutil==5.4.7
-psycopg2>=2.7.4
-python-dateutil>=2.7.1
+psutil==5.5.1
+psycopg2>=2.7.7
+python-dateutil>=2.8.0
 htmlmin==0.1.12
-Flask-HTMLmin==1.3.2
-SQLAlchemy>=1.2.5
+Flask-HTMLmin==1.5.0
+SQLAlchemy>=1.2.18
 Flask-Security>=3.0.0
-sshtunnel>=0.1.3
+sshtunnel>=0.1.4
 
 ###############################################################
 # Modules specifically required for Python2.7
 ###############################################################
-importlib==1.0.3;               python_version <= '2.7'
+importlib==1.0.4;               python_version <= '2.7'
+

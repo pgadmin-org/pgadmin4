@@ -18,36 +18,14 @@ const sourceDir = __dirname + '/pgadmin/static';
 const webpackShimConfig = require('./webpack.shim');
 const PRODUCTION = process.env.NODE_ENV === 'production';
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractStyle = new ExtractTextPlugin({
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const extractStyle = new MiniCssExtractPlugin({
   filename: '[name].css',
   allChunks: true,
 });
 const envType = PRODUCTION ? 'production': 'development';
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-
-// Extract vendor related libraries(node_modules/lib/lib.js) from bundles
-// specified in `chunks` into vendor.js bundle
-const vendorChunks = new webpack.optimize.CommonsChunkPlugin({
-  name: 'vendor',
-  chunks: ['app.bundle', 'sqleditor', 'codemirror', 'debugger_direct'],
-  filename: 'vendor.js',
-  minChunks: function(module) {
-    return webpackShimConfig.isExternal(module);
-  },
-});
-
-// Extract pgAdmin common libraries(pgadmin/web/module/filename.js) from bundles
-// specified in `chunks` into pgadmin_commons.js bundle.
-// pgLibs holds files that will be moved into this bundle.
-const pgAdminCommonChunks = new webpack.optimize.CommonsChunkPlugin({
-  name: 'pgadmin_commons',
-  chunks: ['app.bundle', 'sqleditor', 'codemirror', 'debugger_direct'],
-  filename: 'pgadmin_commons.js',
-  minChunks: function(module) {
-    return webpackShimConfig.isPgAdminLib(module);
-  },
-});
 
 // Expose libraries in app context so they need not to
 // require('libname') when used in a module
@@ -64,32 +42,12 @@ const providePlugin = new webpack.ProvidePlugin({
   'window.moment':'moment',
 });
 
-// Minify and omptimize JS/CSS to reduce bundle size. It is used in production
-const uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
-  output: {comments: false},
-  compress: {
-    warnings: false,
-    unused: true,
-    dead_code: true,
-    drop_console: true,
-  },
-});
-
 // Optimize CSS Assets by removing comments while bundling
 const optimizeAssetsPlugin = new OptimizeCssAssetsPlugin({
   assetNameRegExp: /\.css$/g,
   cssProcessor: require('cssnano'),
   cssProcessorOptions: { discardComments: {removeAll: true } },
   canPrint: true,
-});
-
-// Helps in minimising the `React' production bundle. Bundle only code
-// requires in production mode. React keeps the code conditional
-// based on 'NODE_ENV' variable. [used only in production]
-const definePlugin = new webpack.DefinePlugin({
-  'process.env': {
-    'NODE_ENV': JSON.stringify('production'),
-  },
 });
 
 // Manages the cache and stores it into 'sources/generated/.cache/<env><hash>/' path
@@ -164,6 +122,8 @@ for(let i=0; i<webpackShimConfig.css_bundle_include.length; i++) {
 pushModulesCss(path.join(__dirname,'./pgadmin'), pgadminStyles);
 
 module.exports = {
+  mode: envType,
+  devtool: false,
   stats: { children: false },
   // The base directory, an absolute path, for resolving entry points and loaders
   // from configuration.
@@ -206,8 +166,7 @@ module.exports = {
       use: {
         loader: 'babel-loader',
         options: {
-          presets: ['es2015'],
-          plugins: ['transform-object-rest-spread'],
+          presets: [['@babel/preset-env', {'modules': 'commonjs'}]],
         },
       },
     }, {
@@ -215,7 +174,7 @@ module.exports = {
       use: {
         loader: 'babel-loader',
         options: {
-          presets: ['es2015'],
+          presets: [['@babel/preset-env', {'modules': 'commonjs'}]],
         },
       },
     }, {
@@ -362,28 +321,25 @@ module.exports = {
       exclude: /vendor/,
     }, {
       test: /\.scss$/,
-      use: extractStyle.extract({
-        use: [{
-          loader: 'css-loader',
-        }, {
-          loader: 'sass-loader', // compiles Sass to CSS
-        }, {
-          /* This will @import with below resources to all scss files */
+      use: [
+        {loader: MiniCssExtractPlugin.loader},
+        {loader: 'css-loader'},
+        {loader: 'sass-loader'},
+        {
           loader: 'sass-resources-loader',
           options: {
             resources: [
               './pgadmin/static/scss/resources/pgadmin.resources.scss',
             ],
           },
-        }],
-      }),
+        },
+      ],
     }, {
       test: /\.css$/,
-      use: extractStyle.extract({
-        use: [{
-          loader: 'css-loader',
-        }],
-      }),
+      use: [
+        MiniCssExtractPlugin.loader,
+        'css-loader',
+      ],
     }],
     // Prevent module from parsing through webpack, helps in reducing build time
     noParse: [/moment.js/],
@@ -403,23 +359,55 @@ module.exports = {
     poll: 1000,
     ignored: /node_modules/,
   },
+  // Webpack 4: uglifyPlugin moved from plugins to optimization
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        parallel: true,
+        cache: true,
+        uglifyOptions: {
+          compress: false,
+        },
+      }),
+    ],
+    splitChunks: {
+      cacheGroups: {
+        vendors: {
+          name: 'vendors',
+          filename: 'vendor.js',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 1,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.isExternal(module);
+          },
+        },
+        secondary: {
+          name: 'pgadmin_commons',
+          filename: 'pgadmin_commons.js',
+          chunks: 'all',
+          priority: 2,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.isPgAdminLib(module);
+          },
+        },
+      },
+    },
+  },
   // Define list of Plugins used in Production or development mode
   // Ref:https://webpack.js.org/concepts/plugins/#components/sidebar/sidebar.jsx
   plugins: PRODUCTION ? [
     extractStyle,
-    vendorChunks,
-    pgAdminCommonChunks,
     providePlugin,
-    uglifyPlugin,
     optimizeAssetsPlugin,
-    definePlugin,
     sourceMapDevToolPlugin,
   ]: [
     extractStyle,
-    vendorChunks,
-    pgAdminCommonChunks,
     providePlugin,
-    definePlugin,
     hardSourceWebpackPlugin,
     sourceMapDevToolPlugin,
   ],

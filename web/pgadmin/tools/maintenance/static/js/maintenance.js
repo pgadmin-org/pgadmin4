@@ -391,23 +391,23 @@ define([
                     'data': JSON.stringify(this.view.model.toJSON()),
                   },
                 })
-                .done(function(res) {
-                  if (res.data && res.data.status) {
+                  .done(function(res) {
+                    if (res.data && res.data.status) {
                     //Do nothing as we are creating the job and exiting from the main dialog
-                    Alertify.success(res.data.info);
-                    pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
-                  } else {
+                      Alertify.success(res.data.info);
+                      pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
+                    } else {
+                      Alertify.alert(
+                        gettext('Maintenance job creation failed.'),
+                        res.errormsg
+                      );
+                    }
+                  })
+                  .fail(function() {
                     Alertify.alert(
-                      gettext('Maintenance job creation failed.'),
-                      res.errormsg
+                      gettext('Maintenance job creation failed.')
                     );
-                  }
-                })
-                .fail(function() {
-                  Alertify.alert(
-                    gettext('Maintenance job creation failed.')
-                  );
-                });
+                  });
               }
             },
             build: function() {
@@ -484,25 +484,25 @@ define([
         url: baseUrl,
         type:'GET',
       })
-      .done(function(res) {
-        if (!res.success) {
+        .done(function(res) {
+          if (!res.success) {
+            Alertify.alert(
+              gettext('Utility not found'),
+              res.errormsg
+            );
+            return;
+          }
+          // Open the Alertify dialog
+          Alertify.MaintenanceDialog(gettext('Maintenance...')).set('resizable', true)
+            .resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.md);
+        })
+        .fail(function() {
           Alertify.alert(
             gettext('Utility not found'),
-            res.errormsg
+            gettext('Failed to fetch Utility information')
           );
           return;
-        }
-        // Open the Alertify dialog
-        Alertify.MaintenanceDialog(gettext('Maintenance...')).set('resizable', true)
-          .resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.md);
-      })
-      .fail(function() {
-        Alertify.alert(
-          gettext('Utility not found'),
-          gettext('Failed to fetch Utility information')
-        );
-        return;
-      });
+        });
     },
   };
 

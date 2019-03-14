@@ -13,7 +13,7 @@ define('pgadmin.node.synonym', [
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify,
- schemaChild, schemaChildTreeNode) {
+  schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-synonym']) {
     pgAdmin.Browser.Nodes['coll-synonym'] =
@@ -110,13 +110,13 @@ define('pgadmin.node.synonym', [
           select2: { width: '50%', allowClear: false },
           options: function() {
             return [
-                {label: gettext('Function'), value: 'f'},
-                {label: gettext('Package'), value: 'P'},
-                {label: gettext('Procedure'), value: 'p'},
-                {label: gettext('Public Synonym'), value: 's'},
-                {label: gettext('Sequence'), value: 'S'},
-                {label: gettext('Table'), value: 'r'},
-                {label: gettext('View'), value: 'v'},
+              {label: gettext('Function'), value: 'f'},
+              {label: gettext('Package'), value: 'P'},
+              {label: gettext('Procedure'), value: 'p'},
+              {label: gettext('Public Synonym'), value: 's'},
+              {label: gettext('Sequence'), value: 'S'},
+              {label: gettext('Table'), value: 'r'},
+              {label: gettext('View'), value: 'v'},
             ];
           },
           control: 'select2',
@@ -169,14 +169,14 @@ define('pgadmin.node.synonym', [
               data: {'trgTyp' : trgTyp, 'trgSchema' : trgSchema},
             })
             // On success return function list from server
-            .done(function(result) {
-              res = result.data;
-              return res;
-            })
+              .done(function(result) {
+                res = result.data;
+                return res;
+              })
             // On failure show error appropriate error message to user
-            .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
-            });
+              .fail(function(xhr, status, error) {
+                alertify.pgRespErrorNotify(xhr, error);
+              });
             return res;
           },
         },{
@@ -228,7 +228,7 @@ define('pgadmin.node.synonym', [
         },
       }),
       canCreate: function(itemData, item, data) {
-          //If check is false then , we will allow create menu
+        //If check is false then , we will allow create menu
         if (data && data.check == false)
           return true;
 
@@ -238,11 +238,11 @@ define('pgadmin.node.synonym', [
         if (server && server.server_type === 'pg')
           return false;
 
-          // If it is catalog then don't allow user to create synonyms
+        // If it is catalog then don't allow user to create synonyms
         if (treeData['catalog'] != undefined)
           return false;
 
-          // by default we do not want to allow create menu
+        // by default we do not want to allow create menu
         return true;
       },
     });

@@ -45,7 +45,7 @@ define('pgadmin.browser', [
       if (d && obj.Nodes[d._type].callbacks['selected'] &&
         _.isFunction(obj.Nodes[d._type].callbacks['selected'])) {
         return obj.Nodes[d._type].callbacks['selected'].apply(
-            obj.Nodes[d._type], [i, d, obj]);
+          obj.Nodes[d._type], [i, d, obj]);
       }
     }
   };
@@ -492,7 +492,7 @@ define('pgadmin.browser', [
         if (d && obj.Nodes[d._type]) {
           node = obj.Nodes[d._type];
 
-            /* If the node specific callback returns false, we will also return
+          /* If the node specific callback returns false, we will also return
              * false for further processing.
              */
           if (_.isObject(node.callbacks) &&
@@ -535,8 +535,8 @@ define('pgadmin.browser', [
           url: url_for('misc.cleanup'),
           type:'POST',
         })
-        .done(function() {})
-        .fail(function() {});
+          .done(function() {})
+          .fail(function() {});
       }, 300000);
 
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode, obj);
@@ -571,13 +571,13 @@ define('pgadmin.browser', [
             'management', 'tools', 'help']) >= 0) {
             var menus;
 
-              // If current node is not visible in browser tree
-              // then return from here
+            // If current node is not visible in browser tree
+            // then return from here
             if(!checkNodeVisibility(self, m.node)) {
               return;
             } else if(_.has(m, 'module') && !_.isUndefined(m.module)) {
-                // If module to which this menu applies is not visible in
-                // browser tree then also we do not display menu
+              // If module to which this menu applies is not visible in
+              // browser tree then also we do not display menu
               if(!checkNodeVisibility(self, m.module.type)) {
                 return;
               }
@@ -601,16 +601,16 @@ define('pgadmin.browser', [
                 target: m.target, icon: m.icon,
                 enable: (m.enable == '' ? true : (_.isString(m.enable) &&
                     m.enable.toLowerCase() == 'false') ?
-                      false : m.enable),
+                  false : m.enable),
                 node: m.node,
               });
             }
           } else  {
             console.warn(
-                'Developer warning: Category \'' +
+              'Developer warning: Category \'' +
                   a +
                   '\' is not supported!\nSupported categories are: context, file, edit, object, tools, management, help'
-              );
+            );
           }
         });
       });
@@ -628,17 +628,17 @@ define('pgadmin.browser', [
         {menu: 'management', id: '#mnu_management'},
         {menu: 'tools', id: '#mnu_tools'},
         {menu: 'help', id:'#mnu_help'}],
-        function(o) {
-          var $mnu = navbar.children(o.id).first(),
-            $dropdown = $mnu.children('.dropdown-menu').first();
-          $dropdown.empty();
+      function(o) {
+        var $mnu = navbar.children(o.id).first(),
+          $dropdown = $mnu.children('.dropdown-menu').first();
+        $dropdown.empty();
 
-          if (pgAdmin.Browser.MenuCreator(
-            $dropdown, obj.menus[o.menu], obj.menu_categories
-          )) {
-            $mnu.removeClass('d-none');
-          }
-        });
+        if (pgAdmin.Browser.MenuCreator(
+          $dropdown, obj.menus[o.menu], obj.menu_categories
+        )) {
+          $mnu.removeClass('d-none');
+        }
+      });
 
       navbar.children('#mnu_obj').removeClass('d-none');
       obj.enable_disable_menus();
@@ -739,12 +739,12 @@ define('pgadmin.browser', [
           hasId: true,
           i: null, // current item
           p: _.toArray(_hierarchy || {}).sort(
-          function(a, b) {
-            return (a.priority === b.priority) ? 0 : (
-              a.priority < b.priority ? -1 : 1
-            );
-          }
-        ), // path of the parent
+            function(a, b) {
+              return (a.priority === b.priority) ? 0 : (
+                a.priority < b.priority ? -1 : 1
+              );
+            }
+          ), // path of the parent
           pathOfTreeItems: [], // path Item
           t: this.tree, // Tree Api
           o: _opts,
@@ -893,8 +893,8 @@ define('pgadmin.browser', [
                       if(
                         is_parent_loaded_before &&
                           _parent_data &&  _parent_data._type.search(
-                            _data._type
-                          ) > -1
+                          _data._type
+                        ) > -1
                       ) {
                         ctx.t.openPath(i);
                         ctx.t.select(i);
@@ -988,12 +988,12 @@ define('pgadmin.browser', [
           i: null, // current item
           hasId: true,
           p: _.toArray(_hierarchy || {}).sort(
-          function(a, b) {
-            return (a.priority === b.priority) ? 0 : (
-              a.priority < b.priority ? -1 : 1
-            );
-          }
-        ), // path of the old object
+            function(a, b) {
+              return (a.priority === b.priority) ? 0 : (
+                a.priority < b.priority ? -1 : 1
+              );
+            }
+          ), // path of the old object
           pathOfTreeItems: [], // path items
           t: this.tree, // Tree Api
           o: _opts,
@@ -1035,9 +1035,9 @@ define('pgadmin.browser', [
             && this.t.hasParent(this.i)
               && this.t.parent(this.i)) || null,
             _item_grand_parent = _item_parent ?
-            (this.t.hasParent(_item_parent)
+              (this.t.hasParent(_item_parent)
               && this.t.parent(_item_parent))
-            : null;
+              : null;
 
           // Remove the current node first.
           if (
@@ -1147,7 +1147,7 @@ define('pgadmin.browser', [
                         self.t.unload(_parent, {success: function() {
                           setTimeout(postRemove);
                         }}
-                          );
+                        );
                       },
                     });
                   } else {
@@ -1541,73 +1541,73 @@ define('pgadmin.browser', [
           cache: false,
           dataType: 'json',
         })
-        .done(function(res) {
+          .done(function(res) {
           // Node information can come as result/data
-          var newData = res.result || res.data;
+            var newData = res.result || res.data;
 
-          newData._label = newData.label;
-          newData.label = _.escape(newData.label);
+            newData._label = newData.label;
+            newData.label = _.escape(newData.label);
 
-          ctx.t.setLabel(ctx.i, {label: newData.label});
-          ctx.t.addIcon(ctx.i, {icon: newData.icon});
-          ctx.t.setId(ctx.i, {id: newData.id});
-          if (newData.inode)
-            ctx.t.setInode(ctx.i, {inode: true});
+            ctx.t.setLabel(ctx.i, {label: newData.label});
+            ctx.t.addIcon(ctx.i, {icon: newData.icon});
+            ctx.t.setId(ctx.i, {id: newData.id});
+            if (newData.inode)
+              ctx.t.setInode(ctx.i, {inode: true});
 
-          // This will update the tree item data.
-          var itemData = ctx.t.itemData(ctx.i);
-          _.extend(itemData, newData);
+            // This will update the tree item data.
+            var itemData = ctx.t.itemData(ctx.i);
+            _.extend(itemData, newData);
 
-          if (
-            _n.can_expand && typeof(_n.can_expand) == 'function'
-          ) {
-            if (!_n.can_expand(itemData)) {
-              ctx.t.unload(ctx.i);
-              return;
+            if (
+              _n.can_expand && typeof(_n.can_expand) == 'function'
+            ) {
+              if (!_n.can_expand(itemData)) {
+                ctx.t.unload(ctx.i);
+                return;
+              }
             }
-          }
-          ctx.b._refreshNode(ctx, ctx.branch);
-          var success = (ctx.o && ctx.o.success) || ctx.success;
-          if (success && typeof(success) == 'function') {
-            success();
-          }
-        })
-        .fail(function(xhr, error, status) {
-          if (
-            !Alertify.pgHandleItemError(
-              xhr, error, status, {item: _i, info: info}
-            )
-          ) {
-            var contentType = xhr.getResponseHeader('Content-Type'),
-              jsonResp = (
-                contentType &&
+            ctx.b._refreshNode(ctx, ctx.branch);
+            var success = (ctx.o && ctx.o.success) || ctx.success;
+            if (success && typeof(success) == 'function') {
+              success();
+            }
+          })
+          .fail(function(xhr, error, status) {
+            if (
+              !Alertify.pgHandleItemError(
+                xhr, error, status, {item: _i, info: info}
+              )
+            ) {
+              var contentType = xhr.getResponseHeader('Content-Type'),
+                jsonResp = (
+                  contentType &&
                   contentType.indexOf('application/json') == 0 &&
                   JSON.parse(xhr.responseText)
-              ) || {};
+                ) || {};
 
-            if (xhr.status == 410 && jsonResp.success == 0) {
-              var p = ctx.t.parent(ctx.i);
+              if (xhr.status == 410 && jsonResp.success == 0) {
+                var p = ctx.t.parent(ctx.i);
 
-              ctx.t.remove(ctx.i, {
-                success: function() {
-                  if (p) {
+                ctx.t.remove(ctx.i, {
+                  success: function() {
+                    if (p) {
                     // Try to refresh the parent on error
-                    try {
-                      pgBrowser.Events.trigger(
-                        'pgadmin:browser:tree:refresh', p
-                      );
-                    } catch (e) { console.warn(e.stack || e); }
-                  }
-                },
-              });
-            }
+                      try {
+                        pgBrowser.Events.trigger(
+                          'pgadmin:browser:tree:refresh', p
+                        );
+                      } catch (e) { console.warn(e.stack || e); }
+                    }
+                  },
+                });
+              }
 
-            Alertify.pgNotifier(
-              error, xhr, gettext('Error retrieving details for the node.'),
-              function() { console.warn(arguments); }
-            );
-          }
-        });
+              Alertify.pgNotifier(
+                error, xhr, gettext('Error retrieving details for the node.'),
+                function() { console.warn(arguments); }
+              );
+            }
+          });
       }.bind(this);
 
       if (n && n.collection_node) {
@@ -1792,16 +1792,16 @@ define('pgadmin.browser', [
             url: childNodeUrl,
             dataType: 'json',
           })
-          .done(function(res) {
-            if (res.success) {
-              arrayChildNodeData.push(res.data);
-            }
-            fetchNodeInfo(_callback);
-          })
-          .fail(function(xhr, status, error) {
-            Alertify.pgRespErrorNotify(xhr, error);
-            fetchNodeInfo(_callback);
-          });
+            .done(function(res) {
+              if (res.success) {
+                arrayChildNodeData.push(res.data);
+              }
+              fetchNodeInfo(_callback);
+            })
+            .fail(function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
+              fetchNodeInfo(_callback);
+            });
         };
 
 
@@ -1885,33 +1885,33 @@ define('pgadmin.browser', [
       'Ctrl-Space': 'autocomplete',
       'Cmd-Space': 'autocomplete',
 
-        // Select All text
+      // Select All text
       'Ctrl-A': 'selectAll',
       'Cmd-A': 'selectAll',
 
-        // Redo text
+      // Redo text
       'Ctrl-Y': 'redo',
       'Cmd-Y': 'redo',
 
-        // Undo text
+      // Undo text
       'Ctrl-Z': 'undo',
       'Cmd-Z': 'undo',
 
-        // Delete Line
+      // Delete Line
       'Ctrl-D': 'deleteLine',
       'Cmd-D': 'deleteLine',
 
-        // Go to start/end of Line
+      // Go to start/end of Line
       'Alt-Left': 'goLineStart',
       'Alt-Right': 'goLineEnd',
 
-        // Move word by word left/right
+      // Move word by word left/right
       'Ctrl-Alt-Left': 'goGroupLeft',
       'Cmd-Alt-Left': 'goGroupLeft',
       'Ctrl-Alt-Right': 'goGroupRight',
       'Cmd-Alt-Right': 'goGroupRight',
 
-        // Allow user to delete Tab(s)
+      // Allow user to delete Tab(s)
       'Shift-Tab': 'indentLess',
     },
     editor_options: {
@@ -1944,7 +1944,7 @@ define('pgadmin.browser', [
     },
   });
 
-    /* Remove paste event mapping from CodeMirror's emacsy KeyMap binding
+  /* Remove paste event mapping from CodeMirror's emacsy KeyMap binding
      * specific to Mac LineNumber:5797 - lib/Codemirror.js
      * It is preventing default paste event(Cmd-V) from triggering
      * in runtime.

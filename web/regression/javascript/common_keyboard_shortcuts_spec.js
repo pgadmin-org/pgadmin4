@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-import keyboardShortcuts from 'sources/keyboard_shortcuts';
+import * as keyboardShortcuts from 'sources/keyboard_shortcuts';
 
 describe('the keyboard shortcuts', () => {
   const F1_KEY = 112;

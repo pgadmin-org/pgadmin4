@@ -48,7 +48,7 @@ define('pgadmin.node.exclusion_constraint', [
               !_.isUndefined(m.collection.handler) &&
                 !_.isUndefined(m.collection.handler.get('amname')) &&
                 m.collection.handler.get('amname') != 'btree') {
-                  // Disable if access method is not btree
+          // Disable if access method is not btree
           return false;
         }
         return true;
@@ -67,7 +67,7 @@ define('pgadmin.node.exclusion_constraint', [
 
           if (url && (indextype == 'btree' || _.isUndefined(indextype) ||
             _.isNull(indextype) || indextype == '')) {
-              // Set sort_order and nulls to true if access method is btree
+            // Set sort_order and nulls to true if access method is btree
             setTimeout(function() {
               m.set('order', true);
               m.set('nulls_order', true);
@@ -77,10 +77,10 @@ define('pgadmin.node.exclusion_constraint', [
               eventHandler = m.top || m,
               node_info = this.column.get('node_info'),
               full_url = node.generate_url.apply(
-                  node, [
-                    null, url, this.column.get('node_data'),
-                    this.column.get('url_with_id') || false, node_info,
-                  ]),
+                node, [
+                  null, url, this.column.get('node_data'),
+                  this.column.get('url_with_id') || false, node_info,
+                ]),
               data = [];
 
             indextype = 'btree';
@@ -92,13 +92,13 @@ define('pgadmin.node.exclusion_constraint', [
                 data : {indextype:indextype},
                 url: full_url,
               })
-              .done(function(res) {
-                data = res.data;
-                self.column.set('options', data);
-              })
-              .fail(function() {
-                eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
-              });
+                .done(function(res) {
+                  data = res.data;
+                  self.column.set('options', data);
+                })
+                .fail(function() {
+                  eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
+                });
               eventHandler.trigger('pgadmin:view:fetched', m, self.column);
             }
           } else {
@@ -193,13 +193,13 @@ define('pgadmin.node.exclusion_constraint', [
                 data : {col_type:col_type},
                 url: full_url,
               })
-              .done(function(res) {
-                data = res.data;
-                self.column.set('options', data);
-              })
-              .fail(function() {
-                eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
-              });
+                .done(function(res) {
+                  data = res.data;
+                  self.column.set('options', data);
+                })
+                .fail(function() {
+                  eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
+                });
               eventHandler.trigger('pgadmin:view:fetched', m, self.column);
             }
           }
@@ -333,13 +333,13 @@ define('pgadmin.node.exclusion_constraint', [
               _.each(rows, function(r) {
                 if (filter(r)) {
                   var l = (_.isFunction(node['node_label']) ?
-                    (node['node_label']).apply(node, [r, that.model, that]) :
+                      (node['node_label']).apply(node, [r, that.model, that]) :
                       r.label),
                     image = (_.isFunction(node['node_image']) ?
                       (node['node_image']).apply(
                         node, [r, that.model, that]
                       ) :
-                        (node['node_image'] || ('icon-' + node.type)));
+                      (node['node_image'] || ('icon-' + node.type)));
                   res.push({
                     'value': r.label,
                     'image': image,
@@ -374,9 +374,9 @@ define('pgadmin.node.exclusion_constraint', [
         }))({});
 
         var headerGroups = Backform.generateViewSchema(
-          self.field.get('node_info'), self.headerData, 'create',
-          node, self.field.get('node_data')
-        ),
+            self.field.get('node_info'), self.headerData, 'create',
+            node, self.field.get('node_data')
+          ),
           fields = [];
 
         _.each(headerGroups, function(o) {
@@ -981,8 +981,8 @@ define('pgadmin.node.exclusion_constraint', [
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
-                // If OID is undefined then user is trying to add
-                // new constraint which should be allowed for Unique
+              // If OID is undefined then user is trying to add
+              // new constraint which should be allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
 
@@ -1024,16 +1024,16 @@ define('pgadmin.node.exclusion_constraint', [
       }),
 
       canCreate: function(itemData, item, data) {
-              // If check is false then , we will allow create menu
+        // If check is false then , we will allow create menu
         if (data && data.check == false)
           return true;
 
         var t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
           is_immediate_parent_table_partitioned = false;
-              // To iterate over tree to check parent node
+        // To iterate over tree to check parent node
         while (i) {
-              // If table is partitioned table then return false
+          // If table is partitioned table then return false
           if (!immediate_parent_table_found && (d._type == 'table' || d._type == 'partition')) {
             immediate_parent_table_found = true;
             if ('is_partitioned' in d && d.is_partitioned) {
@@ -1041,14 +1041,14 @@ define('pgadmin.node.exclusion_constraint', [
             }
           }
 
-              // If it is schema then allow user to create table
+          // If it is schema then allow user to create table
           if (_.indexOf(['schema'], d._type) > -1)
             return !is_immediate_parent_table_partitioned;
           parents.push(d._type);
           i = t.hasParent(i) ? t.parent(i) : null;
           d = i ? t.itemData(i) : null;
         }
-              // If node is under catalog then do not allow 'create' menu
+        // If node is under catalog then do not allow 'create' menu
         if (_.indexOf(parents, 'catalog') > -1) {
           return false;
         } else {

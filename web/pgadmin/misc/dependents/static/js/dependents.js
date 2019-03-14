@@ -47,8 +47,8 @@ define('misc.dependents', [
         parse: function(res) {
           var node = pgBrowser.Nodes[res.type];
           res.icon = node ? (_.isFunction(node['node_image']) ?
-              (node['node_image']).apply(node, [null, null]) :
-              (node['node_image'] || ('icon-' + res.type))) :
+            (node['node_image']).apply(node, [null, null]) :
+            (node['node_image'] || ('icon-' + res.type))) :
             ('icon-' + res.type);
           res.type = S.titleize(res.type.replace(/_/g, ' '), true);
           return res;
@@ -77,7 +77,7 @@ define('misc.dependents', [
           columns: [{
             name: 'type',
             label: gettext('Type'),
-              // Extend it to render the icon as per the type.
+            // Extend it to render the icon as per the type.
             cell: Backgrid.Cell.extend({
               render: function() {
                 Backgrid.Cell.prototype.render.apply(this, arguments);
@@ -168,65 +168,65 @@ define('misc.dependents', [
               }, 1000);
             },
           })
-          .done(function(res) {
-            clearTimeout(timer);
+            .done(function(res) {
+              clearTimeout(timer);
 
-            if (res.length > 0) {
+              if (res.length > 0) {
 
-              if (!$msgContainer.hasClass('d-none')) {
-                $msgContainer.addClass('d-none');
-              }
-              $gridContainer.removeClass('d-none');
+                if (!$msgContainer.hasClass('d-none')) {
+                  $msgContainer.addClass('d-none');
+                }
+                $gridContainer.removeClass('d-none');
 
-              self.dependentData = res;
+                self.dependentData = res;
 
-              // Load only 100 rows
-              self.dependentCollection.reset(self.dependentData.splice(0, 100), {parse: true});
+                // Load only 100 rows
+                self.dependentCollection.reset(self.dependentData.splice(0, 100), {parse: true});
 
-              // Load more rows on scroll down
-              pgBrowser.Events.on(
-                'pgadmin-browser:panel-dependents:' +
+                // Load more rows on scroll down
+                pgBrowser.Events.on(
+                  'pgadmin-browser:panel-dependents:' +
                 wcDocker.EVENT.SCROLLED,
-                self.__loadMoreRows
-              );
+                  self.__loadMoreRows
+                );
 
-            } else {
+              } else {
                 // Do not listen the scroll event
-              pgBrowser.Events.off(
-                'pgadmin-browser:panel-dependents:' +
+                pgBrowser.Events.off(
+                  'pgadmin-browser:panel-dependents:' +
                 wcDocker.EVENT.SCROLLED
-              );
+                );
 
-              self.dependentCollection.reset({silent: true});
-              $msgContainer.text(msg);
-              $msgContainer.removeClass('d-none');
+                self.dependentCollection.reset({silent: true});
+                $msgContainer.text(msg);
+                $msgContainer.removeClass('d-none');
 
-              if (!$gridContainer.hasClass('d-none')) {
-                $gridContainer.addClass('d-none');
+                if (!$gridContainer.hasClass('d-none')) {
+                  $gridContainer.addClass('d-none');
+                }
               }
-            }
 
 
-          })
-          .fail(function(xhr, error, message) {
-            var _label = treeHierarchy[n_type].label;
-            pgBrowser.Events.trigger(
-              'pgadmin:node:retrieval:error', 'depends', xhr, error, message
-            );
-            if (!Alertify.pgHandleItemError(xhr, error, message, {
-              item: item,
-              info: treeHierarchy,
-            })) {
-              Alertify.pgNotifier(
-                error, xhr,
-                S(gettext('Error retrieving data from the server: %s')).sprintf(
-                message || _label).value(), function() {
-                  console.warn(arguments);
-                });
-            }
-            // show failed message.
-            $msgContainer.text(gettext('Failed to retrieve data from the server.'));
-          });
+            })
+            .fail(function(xhr, error, message) {
+              var _label = treeHierarchy[n_type].label;
+              pgBrowser.Events.trigger(
+                'pgadmin:node:retrieval:error', 'depends', xhr, error, message
+              );
+              if (!Alertify.pgHandleItemError(xhr, error, message, {
+                item: item,
+                info: treeHierarchy,
+              })) {
+                Alertify.pgNotifier(
+                  error, xhr,
+                  S(gettext('Error retrieving data from the server: %s')).sprintf(
+                    message || _label).value(), function() {
+                    console.warn(arguments);
+                  });
+              }
+              // show failed message.
+              $msgContainer.text(gettext('Failed to retrieve data from the server.'));
+            });
         }
       } if (msg != '') {
         $msgContainer.text(msg);

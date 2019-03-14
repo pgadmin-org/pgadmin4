@@ -212,21 +212,21 @@ function keyboardShortcutsQueryTool(
       queryToolActions.executeRollback(sqlEditorController);
     }
   } else if ((
-     (this.isMac() && event.metaKey) ||
+    (this.isMac() && event.metaKey) ||
      (!this.isMac() && event.ctrlKey)
-    ) && !event.altKey && event.shiftKey && keyCode === FWD_SLASH_KEY) {
+  ) && !event.altKey && event.shiftKey && keyCode === FWD_SLASH_KEY) {
     this._stopEventPropagation(event);
     queryToolActions.commentBlockCode(sqlEditorController);
   } else if ((
-     (this.isMac() && !this.isKeyCtrlAltShift(event) && event.metaKey) ||
+    (this.isMac() && !this.isKeyCtrlAltShift(event) && event.metaKey) ||
      (!this.isMac() && !this.isKeyAltShift(event) && event.ctrlKey)
-    ) && keyCode === FWD_SLASH_KEY) {
+  ) && keyCode === FWD_SLASH_KEY) {
     this._stopEventPropagation(event);
     queryToolActions.commentLineCode(sqlEditorController);
   } else if ((
-     (this.isMac() && !this.isKeyCtrlAltShift(event) && event.metaKey) ||
+    (this.isMac() && !this.isKeyCtrlAltShift(event) && event.metaKey) ||
      (!this.isMac() && !this.isKeyAltShift(event) && event.ctrlKey)
-    ) && keyCode === PERIOD_KEY) {
+  ) && keyCode === PERIOD_KEY) {
     this._stopEventPropagation(event);
     queryToolActions.uncommentLineCode(sqlEditorController);
   }  else if (keyCode == ESC_KEY) {
@@ -296,22 +296,11 @@ function keyboardShortcutsQueryTool(
   return panel_id;
 }
 
-module.exports = {
-  processEventDebugger: keyboardShortcutsDebugger,
-  processEventQueryTool: keyboardShortcutsQueryTool,
-  getInnerPanel: getInnerPanel,
-  validateShortcutKeys: validateShortcutKeys,
-  // misc functions
-  _stopEventPropagation: _stopEventPropagation,
-  isMac: isMac,
-  isKeyCtrlAlt: isKeyCtrlAlt,
-  isKeyAltShift: isKeyAltShift,
-  isKeyCtrlShift: isKeyCtrlShift,
-  isKeyCtrlAltShift: isKeyCtrlAltShift,
-  isAltShiftBoth: isAltShiftBoth,
-  isCtrlShiftBoth: isCtrlShiftBoth,
-  isCtrlAltBoth: isCtrlAltBoth,
-  shortcut_key : shortcut_key,
-  shortcut_title : shortcut_title,
-  shortcut_accesskey_title : shortcut_accesskey_title,
+export {
+  keyboardShortcutsDebugger as processEventDebugger,
+  keyboardShortcutsQueryTool as processEventQueryTool,
+  getInnerPanel, validateShortcutKeys,
+  _stopEventPropagation, isMac, isKeyCtrlAlt, isKeyAltShift, isKeyCtrlShift,
+  isKeyCtrlAltShift, isAltShiftBoth, isCtrlShiftBoth, isCtrlAltBoth,
+  shortcut_key, shortcut_title, shortcut_accesskey_title,
 };

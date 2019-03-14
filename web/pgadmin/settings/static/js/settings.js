@@ -43,18 +43,18 @@ define('pgadmin.settings', [
             type: 'DELETE',
             async: false,
           })
-          .done(function() {
+            .done(function() {
             // Prevent saving layout on server for next page reload.
-            $(window).off('unload');
-            window.onbeforeunload = null;
-            // Now reload page
-            location.reload(true);
-          })
-          .fail(function() {
-            console.warn(
-              'Something went wrong on server while resetting layout.'
-            );
-          });
+              $(window).off('unload');
+              window.onbeforeunload = null;
+              // Now reload page
+              location.reload(true);
+            })
+            .fail(function() {
+              console.warn(
+                'Something went wrong on server while resetting layout.'
+              );
+            });
 
         },
         function() {

@@ -55,7 +55,7 @@ describe('geometry viewer test', function () {
       ];
       let columnIndex = 0;
       let result = GeometryViewer.parse_data(items, columns, columnIndex);
-      expect(result.geoJSONs.length).toBe(2);
+      expect(result.geoJSONs.length).toEqual(2);
     });
 
 
@@ -76,7 +76,7 @@ describe('geometry viewer test', function () {
       ];
       let columnIndex = 0;
       let result = GeometryViewer.parse_data(items, columns, columnIndex);
-      expect(result.geoJSONs.length).toBe(1);
+      expect(result.geoJSONs.length).toEqual(1);
     });
 
     it('should support geometry M', function () {
@@ -96,7 +96,7 @@ describe('geometry viewer test', function () {
       ];
       let columnIndex = 0;
       let result = GeometryViewer.parse_data(items, columns, columnIndex);
-      expect(result.geoJSONs.length).toBe(1);
+      expect(result.geoJSONs.length).toEqual(1);
     });
 
     it('should support empty geometry', function () {
@@ -114,7 +114,7 @@ describe('geometry viewer test', function () {
       ];
       let columnIndex = 0;
       let result = GeometryViewer.parse_data(items, columns, columnIndex);
-      expect(result.geoJSONs.length).toBe(1);
+      expect(result.geoJSONs.length).toEqual(1);
     });
 
 
@@ -145,7 +145,7 @@ describe('geometry viewer test', function () {
       ];
       let columnIndex = 0;
       let result = GeometryViewer.parse_data(items, columns, columnIndex);
-      expect(result.geoJSONs.length).toBe(2);
+      expect(result.geoJSONs.length).toEqual(2);
     });
 
 
@@ -164,7 +164,7 @@ describe('geometry viewer test', function () {
       ];
       let columnIndex = 0;
       let result = GeometryViewer.parse_data(items, columns, columnIndex);
-      expect(result.geoJSONs.length).toBe(0);
+      expect(result.geoJSONs.length).toEqual(0);
     });
 
     it('should not support 3DM geometry', function () {
@@ -183,7 +183,7 @@ describe('geometry viewer test', function () {
       ];
       let columnIndex = 0;
       let result = GeometryViewer.parse_data(items, columns, columnIndex);
-      expect(result.geoJSONs.length).toBe(0);
+      expect(result.geoJSONs.length).toEqual(0);
     });
 
     it('should not support TRIANGLE geometry', function () {
@@ -203,7 +203,7 @@ describe('geometry viewer test', function () {
       ];
       let columnIndex = 0;
       let result = GeometryViewer.parse_data(items, columns, columnIndex);
-      expect(result.geoJSONs.length).toBe(0);
+      expect(result.geoJSONs.length).toEqual(0);
     });
 
     it('should limit data size', function () {

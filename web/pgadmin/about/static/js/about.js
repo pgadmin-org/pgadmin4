@@ -51,11 +51,11 @@ define(
         }
 
         $.get(url_for('about.index'),
-            function(data) {
-              alertify.aboutDialog(
-                  S(gettext('About %s')).sprintf(pgAdmin.Browser.utils.app_name).value(), data
-              ).resizeTo(pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
-            });
+          function(data) {
+            alertify.aboutDialog(
+              S(gettext('About %s')).sprintf(pgAdmin.Browser.utils.app_name).value(), data
+            ).resizeTo(pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
+          });
       },
     };
 

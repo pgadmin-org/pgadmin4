@@ -13,7 +13,7 @@ define('pgadmin.node.collation', [
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, schemaChild,
- schemaChildTreeNode) {
+  schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-collation']) {
     pgAdmin.Browser.Nodes['coll-collation'] =

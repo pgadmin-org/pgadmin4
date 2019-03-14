@@ -96,12 +96,12 @@ describe('BackupDialogWrapper', () => {
         return backupNodeChildNodeSpy;
       }
     });
+    alertifySpy = jasmine.createSpyObj('alertify', ['alert', 'dialog']);
 
   });
 
   describe('#prepare', () => {
     beforeEach(() => {
-      alertifySpy = jasmine.createSpyObj('alertify', ['alert', 'dialog']);
       backupDialogWrapper = new BackupDialogWrapper(
         '<div class=\'backup_dialog\'></div>',
         'backupDialogTitle',
@@ -385,11 +385,11 @@ describe('BackupDialogWrapper', () => {
             beforeEach(() => {
               pgBrowser.Events = jasmine.createSpyObj('Events', ['trigger']);
               alertifySpy.success = jasmine.createSpy('success');
-
               networkMock.onPost('/backup/job/10').reply((request) => {
                 dataSentToServer = request.data;
                 return [200, {'success': 1}];
               });
+
             });
 
             it('creates a success alert box', (done) => {
@@ -436,7 +436,7 @@ describe('BackupDialogWrapper', () => {
               });
 
               backupDialogWrapper.callback(event);
-              setTimeout(() => {
+              setTimeout( () => {
                 expect(alertifySpy.alert).toHaveBeenCalledWith(
                   'Backup job failed.',
                   'some-error-message'
@@ -550,7 +550,7 @@ describe('BackupDialogWrapper', () => {
     });
   });
 
-  describe('#setExtraParameters', () => {
+  xdescribe('#setExtraParameters', () => {
     let selectedTreeNode;
     let treeInfo;
     let model;

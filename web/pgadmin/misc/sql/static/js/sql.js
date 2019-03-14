@@ -134,30 +134,30 @@ define('misc.sql', [
                   }, 1000);
                 },
               })
-              .done(function(res) {
-                if (pgAdmin.Browser.editor.getValue() != res) {
-                  pgAdmin.Browser.editor.setValue(res);
-                }
-                clearTimeout(timer);
-              })
-              .fail(function(xhr, error, message) {
-                var _label = treeHierarchy[n_type].label;
-                pgBrowser.Events.trigger(
-                  'pgadmin:node:retrieval:error', 'sql', xhr, error, message, item
-                );
-                if (!Alertify.pgHandleItemError(xhr, error, message, {
-                  item: item,
-                  info: treeHierarchy,
-                })) {
-                  Alertify.pgNotifier(
-                    error, xhr,
-                    S(gettext('Error retrieving the information - %s')).sprintf(
-                      message || _label
-                    ).value(),
-                    function() {}
+                .done(function(res) {
+                  if (pgAdmin.Browser.editor.getValue() != res) {
+                    pgAdmin.Browser.editor.setValue(res);
+                  }
+                  clearTimeout(timer);
+                })
+                .fail(function(xhr, error, message) {
+                  var _label = treeHierarchy[n_type].label;
+                  pgBrowser.Events.trigger(
+                    'pgadmin:node:retrieval:error', 'sql', xhr, error, message, item
                   );
-                }
-              });
+                  if (!Alertify.pgHandleItemError(xhr, error, message, {
+                    item: item,
+                    info: treeHierarchy,
+                  })) {
+                    Alertify.pgNotifier(
+                      error, xhr,
+                      S(gettext('Error retrieving the information - %s')).sprintf(
+                        message || _label
+                      ).value(),
+                      function() {}
+                    );
+                  }
+                });
             }
           }
 

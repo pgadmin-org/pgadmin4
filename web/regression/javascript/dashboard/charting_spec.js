@@ -28,7 +28,7 @@ describe('In charting related testcases', ()=> {
   });
 
   it('Return the correct container', ()=>{
-    expect(chartObj.getContainer()).toBe(chartDiv);
+    expect(chartObj.getContainer()).toEqual(chartDiv);
   });
 
   it('Returns the container dimensions', ()=>{
@@ -74,7 +74,7 @@ describe('In charting related testcases', ()=> {
   });
 
   it('Check if other data returns undefined for not set', ()=>{
-    expect(chartObj.getOtherData('some_val_not_set')).toBe(undefined);
+    expect(chartObj.getOtherData('some_val_not_set')).toEqual(undefined);
   });
 
   it('Check if isVisible returns correct', ()=>{
@@ -83,19 +83,19 @@ describe('In charting related testcases', ()=> {
     dimSpy.and.returnValue({
       height: 1, width: 1,
     });
-    expect(chartObj.isVisible()).toBe(true);
+    expect(chartObj.isVisible()).toEqual(true);
     dimSpy.and.stub();
 
     dimSpy.and.returnValue({
       height: 0, width: 0,
     });
-    expect(chartObj.isVisible()).toBe(false);
+    expect(chartObj.isVisible()).toEqual(false);
   });
 
   it('Check if isInPage returns correct', ()=>{
-    expect(chartObj.isInPage()).toBe(true);
+    expect(chartObj.isInPage()).toEqual(true);
     $('body').find('#charting-test-container').remove();
-    expect(chartObj.isInPage()).toBe(false);
+    expect(chartObj.isInPage()).toEqual(false);
   });
 
   afterEach(()=>{

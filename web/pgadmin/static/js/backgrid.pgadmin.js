@@ -68,10 +68,10 @@ define([
       var col_type = column.get('cell').prototype.className || 'string-cell',
         comparator = this.makeComparator(column.get('name'), order,
           order ?
-          column.sortValue() :
-          function(model) {
-            return model.cid.replace('c', '') * 1;
-          }, col_type);
+            column.sortValue() :
+            function(model) {
+              return model.cid.replace('c', '') * 1;
+            }, col_type);
 
       if (Backbone.PageableCollection &&
         collection instanceof Backbone.PageableCollection) {
@@ -527,9 +527,9 @@ define([
           tabIndex: -1,
           type: 'checkbox',
         }).prop('checked', rawValue).prop('disabled', !editable).attr('data-toggle', 'toggle')
-        .attr('data-size', options.size).attr('data-on', options.onText).attr('data-off', options.offText)
-        .attr('data-width', options.width).attr('data-height', options.height)
-        .attr('data-onstyle', options.onColor).attr('data-offstyle', options.offColor));
+          .attr('data-size', options.size).attr('data-on', options.onText).attr('data-off', options.offText)
+          .attr('data-width', options.width).attr('data-height', options.height)
+          .attr('data-onstyle', options.onColor).attr('data-offstyle', options.offColor));
 
       this.$input = this.$el.find('input[type=checkbox]').first();
 
@@ -633,9 +633,9 @@ define([
       '<%= selected ? \'selected="selected"\' : "" %>>',
       '<%- label %></option>',
     ].join(''),
-      null, {
-        variable: null,
-      }),
+    null, {
+      variable: null,
+    }),
 
     initialize: function() {
       Backgrid.SelectCell.prototype.initialize.apply(this, arguments);
@@ -683,7 +683,7 @@ define([
           openOnEnter: false,
           multiple: false,
         }, self.defaults.select2,
-          (col.select2 || {})
+        (col.select2 || {})
         ),
         selectTpl = _.template('<select <%=multiple ? "multiple" : "" %>></select>');
 
@@ -1409,9 +1409,9 @@ define([
 
       var m = this.modelInUnixOffset ? moment(rawData) :
         this.modelInUnixTimestamp ? moment.unix(rawData) :
-        this.modelInUTC ?
-        moment.utc(rawData, this.modelFormat, this.modelLang) :
-        moment(rawData, this.modelFormat, this.modelLang);
+          this.modelInUTC ?
+            moment.utc(rawData, this.modelFormat, this.modelLang) :
+            moment(rawData, this.modelFormat, this.modelLang);
 
       if (this.displayInUnixOffset) return +m;
 
@@ -1439,9 +1439,9 @@ define([
 
       var m = this.displayInUnixOffset ? moment(+formattedData) :
         this.displayInUnixTimestamp ? moment.unix(+formattedData) :
-        this.displayInUTC ?
-        moment.utc(formattedData, this.displayFormat, this.displayLang) :
-        moment(formattedData, this.displayFormat, this.displayLang);
+          this.displayInUTC ?
+            moment.utc(formattedData, this.displayFormat, this.displayLang) :
+            moment(formattedData, this.displayFormat, this.displayLang);
 
       if (!m || !m.isValid()) return (this.allowEmpty && formattedData === '') ? null : undefined;
 
@@ -1636,7 +1636,7 @@ define([
 
       if (
         _.isFunction(editable) ? !!editable.apply(column, [model]) :
-        !!editable
+          !!editable
       ) {
         this.$el.addClass('editable');
       } else {

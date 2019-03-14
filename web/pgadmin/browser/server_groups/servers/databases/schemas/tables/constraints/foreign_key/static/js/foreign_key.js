@@ -27,8 +27,8 @@ define('pgadmin.node.foreign_key', [
         return opt.text;
       } else {
         return $(
-        '<span><span class="wcTabIcon ' + optimage + '"/>' + opt.text + '</span>'
-      );
+          '<span><span class="wcTabIcon ' + optimage + '"/>' + opt.text + '</span>'
+        );
       }
     },
     headerSelectControlTemplate = _.template([
@@ -224,15 +224,15 @@ define('pgadmin.node.foreign_key', [
                       data : {tid:tid},
                       url: full_url,
                     })
-                    .done(function(res) {
-                      data = res.data;
-                    })
-                    .fail(function() {
-                      m.trigger('pgadmin:view:fetch:error', m, self.field);
-                    });
+                      .done(function(res) {
+                        data = res.data;
+                      })
+                      .fail(function() {
+                        m.trigger('pgadmin:view:fetch:error', m, self.field);
+                      });
                     m.trigger('pgadmin:view:fetched', m, self.field);
                   }
-                    /*
+                  /*
                      * Transform the data
                      */
                   var transform = this.field.get('transform') || self.defaults.transform;
@@ -285,9 +285,9 @@ define('pgadmin.node.foreign_key', [
         }))({});
 
         var headerGroups = Backform.generateViewSchema(
-          self.field.get('node_info'), self.headerData, 'create',
-          node, self.field.get('node_data')
-        ),
+            self.field.get('node_info'), self.headerData, 'create',
+            node, self.field.get('node_data')
+          ),
           fields = [];
 
         _.each(headerGroups, function(o) {
@@ -486,7 +486,7 @@ define('pgadmin.node.foreign_key', [
         }
 
         var m = new (self.field.get('model'))(
-          self.headerData.toJSON()),
+            self.headerData.toJSON()),
           coll = self.model.get(self.field.get('name'));
 
         coll.add(m);
@@ -567,12 +567,12 @@ define('pgadmin.node.foreign_key', [
               data : {cols:JSON.stringify(cols)},
               url: full_url,
             })
-            .done(function(res) {
-              coveringindex = res.data;
-            })
-            .fail(function() {
-              m.trigger('pgadmin:view:fetch:error', m, self.field);
-            });
+              .done(function(res) {
+                coveringindex = res.data;
+              })
+              .fail(function() {
+                m.trigger('pgadmin:view:fetch:error', m, self.field);
+              });
             m.trigger('pgadmin:view:fetched', m, self.field);
           }
         }
@@ -662,21 +662,21 @@ define('pgadmin.node.foreign_key', [
             url: obj.generate_url(i, 'validate', d, true),
             type:'GET',
           })
-          .done(function(res) {
-            if (res.success == 1) {
-              Alertify.success(res.info);
-              t.removeIcon(i);
-              data.valid = true;
-              data.icon = 'icon-foreign_key';
-              t.addIcon(i, {icon: data.icon});
-              setTimeout(function() {t.deselect(i);}, 10);
-              setTimeout(function() {t.select(i);}, 100);
-            }
-          })
-          .fail(function(xhr, status, error) {
-            Alertify.pgRespErrorNotify(xhr, error);
-            t.unload(i);
-          });
+            .done(function(res) {
+              if (res.success == 1) {
+                Alertify.success(res.info);
+                t.removeIcon(i);
+                data.valid = true;
+                data.icon = 'icon-foreign_key';
+                t.addIcon(i, {icon: data.icon});
+                setTimeout(function() {t.deselect(i);}, 10);
+                setTimeout(function() {t.select(i);}, 100);
+              }
+            })
+            .fail(function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
+              t.unload(i);
+            });
 
           return false;
         },
@@ -981,19 +981,19 @@ define('pgadmin.node.foreign_key', [
             },
           }),
           canAdd: function(m) {
-              // We can't update columns of existing foreign key.
+            // We can't update columns of existing foreign key.
             return m.isNew();
           }, canDelete: true,
           control: ForeignKeyColumnControl,
           model: ForeignKeyColumnModel,
           disabled: function(m) {
-              // If we are in table edit mode then
+            // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
-                // If OID is undefined then user is trying to add
-                // new constraint which should allowed for Unique
+              // If OID is undefined then user is trying to add
+              // new constraint which should allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
-              // We can't update columns of existing foreign key.
+            // We can't update columns of existing foreign key.
             return !m.isNew();
           },
         },{
@@ -1001,19 +1001,19 @@ define('pgadmin.node.foreign_key', [
           type:'select2', group: gettext('Action'), mode: ['edit','create'],
           select2:{width:'50%', allowClear: false},
           options: [
-              {label: 'NO ACTION', value: 'a'},
-              {label: 'RESTRICT', value: 'r'},
-              {label: 'CASCADE', value: 'c'},
-              {label: 'SET NULL', value: 'n'},
-              {label: 'SET DEFAULT', value: 'd'},
+            {label: 'NO ACTION', value: 'a'},
+            {label: 'RESTRICT', value: 'r'},
+            {label: 'CASCADE', value: 'c'},
+            {label: 'SET NULL', value: 'n'},
+            {label: 'SET DEFAULT', value: 'd'},
           ],disabled: function(m) {
-              // If we are in table edit mode then
+            // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
-                // If OID is undefined then user is trying to add
-                // new constraint which should allowed for Unique
+              // If OID is undefined then user is trying to add
+              // new constraint which should allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
-              // We can't update confupdtype of existing foreign key.
+            // We can't update confupdtype of existing foreign key.
             return !m.isNew();
           },
         },{
@@ -1021,19 +1021,19 @@ define('pgadmin.node.foreign_key', [
           type:'select2', group: gettext('Action'), mode: ['edit','create'],
           select2:{width:'50%', allowClear: false},
           options: [
-              {label: 'NO ACTION', value: 'a'},
-              {label: 'RESTRICT', value: 'r'},
-              {label: 'CASCADE', value: 'c'},
-              {label: 'SET NULL', value: 'n'},
-              {label: 'SET DEFAULT', value: 'd'},
+            {label: 'NO ACTION', value: 'a'},
+            {label: 'RESTRICT', value: 'r'},
+            {label: 'CASCADE', value: 'c'},
+            {label: 'SET NULL', value: 'n'},
+            {label: 'SET DEFAULT', value: 'd'},
           ],disabled: function(m) {
-              // If we are in table edit mode then
+            // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
-                // If OID is undefined then user is trying to add
-                // new constraint which should allowed for Unique
+              // If OID is undefined then user is trying to add
+              // new constraint which should allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
-              // We can't update confdeltype of existing foreign key.
+            // We can't update confdeltype of existing foreign key.
             return !m.isNew();
           },
         },
@@ -1064,7 +1064,7 @@ define('pgadmin.node.foreign_key', [
       }),
 
       canCreate: function(itemData, item, data) {
-          // If check is false then , we will allow create menu
+        // If check is false then , we will allow create menu
         if (data && data.check == false)
           return true;
 
@@ -1073,9 +1073,9 @@ define('pgadmin.node.foreign_key', [
           is_immediate_parent_table_partitioned = false,
           s_version = this.getTreeNodeHierarchy(i).server.version;
 
-          // To iterate over tree to check parent node
+        // To iterate over tree to check parent node
         while (i) {
-            // If table is partitioned table then return false
+          // If table is partitioned table then return false
           if (!immediate_parent_table_found && (d._type == 'table' || d._type == 'partition')) {
             immediate_parent_table_found = true;
             if ('is_partitioned' in d && d.is_partitioned && s_version < 110000) {
@@ -1083,14 +1083,14 @@ define('pgadmin.node.foreign_key', [
             }
           }
 
-            // If it is schema then allow user to c reate table
+          // If it is schema then allow user to c reate table
           if (_.indexOf(['schema'], d._type) > -1)
             return !is_immediate_parent_table_partitioned;
           parents.push(d._type);
           i = t.hasParent(i) ? t.parent(i) : null;
           d = i ? t.itemData(i) : null;
         }
-          // If node is under catalog then do not allow 'create' menu
+        // If node is under catalog then do not allow 'create' menu
         if (_.indexOf(parents, 'catalog') > -1) {
           return false;
         } else {

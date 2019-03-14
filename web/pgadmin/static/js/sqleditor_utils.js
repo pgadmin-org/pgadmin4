@@ -19,8 +19,8 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
         var hexDigits = '0123456789abcdef';
         for (var i = 0; i < 36; i++) {
           s[i] = hexDigits.substr(
-                    Math.floor(Math.random() * 0x10), 1
-                  );
+            Math.floor(Math.random() * 0x10), 1
+          );
         }
         // bits 12-15 of the time_hi_and_version field to 0010
         s[14] = '4';
@@ -46,7 +46,7 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
         // Create a temporary element with given label, append to body
         // calculate its width and remove the element.
         $('body').append(
-            '<span id="pg_text" style="visibility: hidden;">'+ text + '</span>'
+          '<span id="pg_text" style="visibility: hidden;">'+ text + '</span>'
         );
         var width = $('#pg_text').width() + 23;
         $('#pg_text').remove(); // remove element
@@ -80,102 +80,102 @@ define(['jquery', 'sources/gettext', 'sources/url_for'],
           url: url,
           method: 'GET',
         })
-        .done(function (res) {
-          if(res && res.data) {
-            var status = res.data.status,
-              msg = res.data.message,
-              is_status_changed = false;
+          .done(function (res) {
+            if(res && res.data) {
+              var status = res.data.status,
+                msg = res.data.message,
+                is_status_changed = false;
 
-            // Raise notify messages comes from database server.
-            sqleditor_obj.update_notifications(res.data.notifies);
+              // Raise notify messages comes from database server.
+              sqleditor_obj.update_notifications(res.data.notifies);
 
-            // Inject CSS as required
-            switch(status) {
-                // Busy
-            case 1:
-                    // if received busy status more than once then only
-              if(status == sqlEditorUtils.previousStatus &&
+              // Inject CSS as required
+              switch(status) {
+              // Busy
+              case 1:
+                // if received busy status more than once then only
+                if(status == sqlEditorUtils.previousStatus &&
                         !$status_el.hasClass('fa-hourglass-half')) {
-                $status_el.removeClass()
-                                .addClass('fa fa-hourglass-half');
-                is_status_changed = true;
-              }
-              break;
+                  $status_el.removeClass()
+                    .addClass('fa fa-hourglass-half');
+                  is_status_changed = true;
+                }
+                break;
                 // Idle in transaction
-            case 2:
-              if(sqlEditorUtils.previousStatus != status &&
+              case 2:
+                if(sqlEditorUtils.previousStatus != status &&
                         !$status_el.hasClass('fa-clock-o')) {
-                $status_el.removeClass()
-                                .addClass('fa fa-clock-o');
-                is_status_changed = true;
-              }
-              break;
+                  $status_el.removeClass()
+                    .addClass('fa fa-clock-o');
+                  is_status_changed = true;
+                }
+                break;
                 // Failed in transaction
-            case 3:
-              if(sqlEditorUtils.previousStatus != status &&
+              case 3:
+                if(sqlEditorUtils.previousStatus != status &&
                         !$status_el.hasClass('fa-exclamation-circle')) {
-                $status_el.removeClass()
-                                .addClass('fa fa-exclamation-circle');
-                is_status_changed = true;
-              }
-              break;
+                  $status_el.removeClass()
+                    .addClass('fa fa-exclamation-circle');
+                  is_status_changed = true;
+                }
+                break;
                 // Failed in transaction with unknown server side error
-            case 4:
-              if(sqlEditorUtils.previousStatus != status &&
+              case 4:
+                if(sqlEditorUtils.previousStatus != status &&
                         !$status_el.hasClass('fa-exclamation-triangle')) {
-                $status_el.removeClass()
-                                .addClass('fa fa-exclamation-triangle');
-                is_status_changed = true;
-              }
-              break;
-            default:
-              if(sqlEditorUtils.previousStatus != status &&
+                  $status_el.removeClass()
+                    .addClass('fa fa-exclamation-triangle');
+                  is_status_changed = true;
+                }
+                break;
+              default:
+                if(sqlEditorUtils.previousStatus != status &&
                         !$status_el.hasClass('fa-query_tool_connected')) {
-                $status_el.removeClass()
-                                .addClass('fa-custom fa-query-tool-connected');
-                is_status_changed = true;
+                  $status_el.removeClass()
+                    .addClass('fa-custom fa-query-tool-connected');
+                  is_status_changed = true;
+                }
               }
-            }
 
-            sqlEditorUtils.previousStatus = status;
-            // Set bootstrap popover message
-            if(is_status_changed) {
-              $el.popover('hide');
-              $el.attr('data-content', msg);
-            }
-          } else {
+              sqlEditorUtils.previousStatus = status;
+              // Set bootstrap popover message
+              if(is_status_changed) {
+                $el.popover('hide');
+                $el.attr('data-content', msg);
+              }
+            } else {
             // We come here means we did not receive expected response
             // from server, we need to error out
-            sqlEditorUtils.previousStatus = -99;
-            msg = gettext('An unexpected error occurred - ' +
+              sqlEditorUtils.previousStatus = -99;
+              msg = gettext('An unexpected error occurred - ' +
                           'ensure you are logged into the application.');
+              $el.attr('data-content', msg);
+              if(!$status_el.hasClass('fa-query-tool-disconnected')) {
+                $el.popover('hide');
+                $status_el.removeClass()
+                  .addClass('fa-custom fa-query-tool-disconnected');
+              }
+            }
+          })
+          .fail(function (e) {
+            sqlEditorUtils.previousStatus = -1;
+            var msg = gettext('Transaction status check failed.');
+            if (e.readyState == 0) {
+              msg = gettext('Not connected to the server or the connection to ' +
+                          'the server has been closed.');
+            } else if (e.responseJSON && e.responseJSON.errormsg) {
+              msg = e.responseJSON.errormsg;
+            }
+
+            // Set bootstrap popover
             $el.attr('data-content', msg);
+            // Add error class
             if(!$status_el.hasClass('fa-query-tool-disconnected')) {
               $el.popover('hide');
               $status_el.removeClass()
-                        .addClass('fa-custom fa-query-tool-disconnected');
+                .addClass('fa-custom fa-query-tool-disconnected');
             }
-          }
-        })
-        .fail(function (e) {
-          sqlEditorUtils.previousStatus = -1;
-          var msg = gettext('Transaction status check failed.');
-          if (e.readyState == 0) {
-            msg = gettext('Not connected to the server or the connection to ' +
-                          'the server has been closed.');
-          } else if (e.responseJSON && e.responseJSON.errormsg) {
-            msg = e.responseJSON.errormsg;
-          }
-
-          // Set bootstrap popover
-          $el.attr('data-content', msg);
-          // Add error class
-          if(!$status_el.hasClass('fa-query-tool-disconnected')) {
-            $el.popover('hide');
-            $status_el.removeClass()
-                      .addClass('fa-custom fa-query-tool-disconnected');
-          }
-        });
+          });
       },
 
       // Updates the flag for connection status poll

@@ -113,8 +113,8 @@ define([
         cb;
 
       if (o.module['callbacks'] && (
-          o.callback in o.module['callbacks']
-        )) {
+        o.callback in o.module['callbacks']
+      )) {
         cb = o.module['callbacks'][o.callback];
       } else if (o.callback in o.module) {
         cb = o.module[o.callback];
@@ -141,8 +141,8 @@ define([
           return true;
         }
         if (_.isArray(this.node) ? (
-            _.indexOf(this.node, node) == -1
-          ) : (this.node != node._type)) {
+          _.indexOf(this.node, node) == -1
+        ) : (this.node != node._type)) {
           return true;
         }
       }

@@ -138,7 +138,7 @@ var webpackShimConfig = {
     'translations': path.join(__dirname, './pgadmin/tools/templates/js/translations'),
     'sources/gettext': path.join(__dirname, './pgadmin/static/js/gettext'),
     'sources/utils': path.join(__dirname, './pgadmin/static/js/utils'),
-    'babel-polyfill': path.join(__dirname, './node_modules/babel-polyfill/dist/polyfill'),
+    'babel-polyfill': path.join(__dirname, './node_modules/@babel/polyfill/dist/polyfill'),
     'tools': path.join(__dirname, './pgadmin/tools/'),
     'pgbrowser': path.join(__dirname, './pgadmin/browser/static/js/'),
 

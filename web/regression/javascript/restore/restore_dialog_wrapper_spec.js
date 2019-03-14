@@ -115,7 +115,7 @@ describe('RestoreDialogWrapper', () => {
 
       it('disables the button "submit button" until a filename is selected', () => {
         restoreDialogWrapper.prepare();
-        expect(restoreDialogWrapper.__internal.buttons[3].element.disabled).toBe(true);
+        expect(restoreDialogWrapper.__internal.buttons[3].element.disabled).toEqual(true);
       });
     });
 
@@ -131,7 +131,7 @@ describe('RestoreDialogWrapper', () => {
 
       it('disables the button "submit button" until a filename is selected', () => {
         restoreDialogWrapper.prepare();
-        expect(restoreDialogWrapper.__internal.buttons[3].element.disabled).toBe(true);
+        expect(restoreDialogWrapper.__internal.buttons[3].element.disabled).toEqual(true);
       });
     });
 
@@ -177,7 +177,7 @@ describe('RestoreDialogWrapper', () => {
 
       it('disables the button submit button until a filename is selected', () => {
         restoreDialogWrapper.prepare();
-        expect(restoreNode.__internal.buttons[3].element.disabled).toBe(true);
+        expect(restoreNode.__internal.buttons[3].element.disabled).toEqual(true);
       });
 
       it('generates a new restore model', () => {
@@ -257,7 +257,7 @@ describe('RestoreDialogWrapper', () => {
       });
 
       it('does not start the restore', () => {
-        expect(networkCalled).toBe(false);
+        expect(networkCalled).toEqual(false);
       });
     });
 
@@ -298,7 +298,7 @@ describe('RestoreDialogWrapper', () => {
       });
 
       it('does not start the restore', () => {
-        expect(networkCalled).toBe(false);
+        expect(networkCalled).toEqual(false);
       });
     });
 
@@ -327,7 +327,7 @@ describe('RestoreDialogWrapper', () => {
 
         it('does not start the restore', () => {
           restoreDialogWrapper.callback(event);
-          expect(networkCalled).toBe(false);
+          expect(networkCalled).toEqual(false);
         });
       });
 
@@ -353,7 +353,7 @@ describe('RestoreDialogWrapper', () => {
 
         it('does not start the restore', () => {
           restoreDialogWrapper.callback(event);
-          expect(networkCalled).toBe(false);
+          expect(networkCalled).toEqual(false);
         });
       });
 

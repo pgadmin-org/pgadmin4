@@ -36,8 +36,8 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015'],
-            plugins: ['transform-object-rest-spread'],
+            presets: [['@babel/preset-env', {'modules': 'commonjs'}]],
+            sourceMap: 'inline',
           },
         },
       }, {

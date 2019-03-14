@@ -209,10 +209,10 @@ define('pgadmin.node.domain', [
               _.each(m.type_options, function(o) {
                 // if type from selected from combobox matches in options
                 if ( of_type == o.value ) {
-                    // if length is allowed for selected type
+                  // if length is allowed for selected type
                   if(o.length)
-                    {
-                      // set the values in model
+                  {
+                    // set the values in model
                     m.set('is_tlength', true, {silent: true});
                     m.set('min_val', o.min_val, {silent: true});
                     m.set('max_val', o.max_val, {silent: true});
@@ -236,10 +236,10 @@ define('pgadmin.node.domain', [
               _.each(m.type_options, function(o) {
                 // if type from selected from combobox matches in options
                 if ( of_type == o.value ) {
-                    // if precession is allowed for selected type
+                  // if precession is allowed for selected type
                   if(o.precision)
-                    {
-                      // set the values in model
+                  {
+                    // set the values in model
                     m.set('is_precision', true, {silent: true});
                     m.set('min_val', o.min_val, {silent: true});
                     m.set('max_val', o.max_val, {silent: true});
@@ -269,7 +269,7 @@ define('pgadmin.node.domain', [
           model: ConstraintModel, canAdd: true, canDelete: true,
           canEdit: false, columns: ['conname','consrc', 'convalidated'],
         },
-          pgBrowser.SecurityGroupSchema,
+        pgBrowser.SecurityGroupSchema,
         {
           id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, type: 'collection',
@@ -301,7 +301,7 @@ define('pgadmin.node.domain', [
         if (!m.isNew()) {
           var server = this.node_info.server;
           if (server.version < 90200)
-            {
+          {
             return false;
           }
         }

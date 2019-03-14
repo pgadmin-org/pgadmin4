@@ -436,9 +436,9 @@ define('pgadmin.misc.explain', [
       var mappedImage = (_.isFunction(imageMapper[node_type]) &&
           imageMapper[node_type].apply(undefined, [data])) ||
         imageMapper[node_type] || {
-          'image': 'ex_unknown.svg',
-          'image_text': node_type,
-        };
+        'image': 'ex_unknown.svg',
+        'image_text': node_type,
+      };
 
       data['image'] = mappedImage['image'];
       data['image_text'] = mappedImage['image_text'];

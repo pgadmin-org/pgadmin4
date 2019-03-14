@@ -66,19 +66,19 @@ describe('getProcedureId', function () {
 
   describe('Should return proper object id', function () {
     it('returns valid procedure id', function () {
-      expect(getProcedureId(treeInfroProc)).toBe(123);
+      expect(getProcedureId(treeInfroProc)).toEqual(123);
     });
 
     it('returns valid edbproc id', function () {
-      expect(getProcedureId(treeInfroEdbProc)).toBe(321);
+      expect(getProcedureId(treeInfroEdbProc)).toEqual(321);
     });
 
     it('returns undefined for fake tree info', function () {
-      expect(getProcedureId(fakeTreeInfro)).toBe(undefined);
+      expect(getProcedureId(fakeTreeInfro)).toEqual(undefined);
     });
 
     it('returns undefined for invalid procedure id', function () {
-      expect(getProcedureId(treeInfroInvalidProcId)).toBe(undefined);
+      expect(getProcedureId(treeInfroInvalidProcId)).toEqual(undefined);
     });
   });
 });

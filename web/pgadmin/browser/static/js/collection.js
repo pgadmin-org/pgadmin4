@@ -76,7 +76,7 @@ define([
           j = panel.$container.find('.obj_properties').first(),
           view = j.data('obj-view'),
           content = $('<div></div>')
-          .addClass('pg-prop-content col-12 has-pg-prop-btn-group'),
+            .addClass('pg-prop-content col-12 has-pg-prop-btn-group'),
           node = pgBrowser.Nodes[that.node],
           $msgContainer = '',
           // This will be the URL, used for object manipulation.
@@ -136,9 +136,9 @@ define([
         }))();
         // Add the new column for the multi-select menus
         if((_.isFunction(that.canDrop) ?
-              that.canDrop.apply(that, [data, item]) : that.canDrop) ||
+          that.canDrop.apply(that, [data, item]) : that.canDrop) ||
               (_.isFunction(that.canDropCascade) ?
-              that.canDropCascade.apply(that, [data, item]) : that.canDropCascade)) {
+                that.canDropCascade.apply(that, [data, item]) : that.canDropCascade)) {
           gridSchema.columns.unshift({
             name: 'oid',
             cell: Backgrid.Extension.SelectRowCell.extend({
@@ -178,7 +178,7 @@ define([
             headerCell: Backgrid.Extension.SelectAllHeaderCell,
           });
         }
-          // Initialize a new Grid instance
+        // Initialize a new Grid instance
         that.grid = new Backgrid.Grid({
           emptyText: 'No data found',
           columns: gridSchema.columns,
@@ -224,10 +224,10 @@ define([
         $msgContainer = $($msgContainer).appendTo(j);
 
         that.header = $('<div></div>').addClass(
-            'pg-prop-header'
+          'pg-prop-header'
         );
 
-         // Render the buttons
+        // Render the buttons
         var buttons = [];
 
         buttons.push({
@@ -282,51 +282,51 @@ define([
             }, 1000);
           },
         })
-        .done(function(res) {
-          clearTimeout(timer);
+          .done(function(res) {
+            clearTimeout(timer);
 
-          if (_.isUndefined(that.grid) || _.isNull(that.grid)) return;
+            if (_.isUndefined(that.grid) || _.isNull(that.grid)) return;
 
-          that.data = res;
+            that.data = res;
 
-          if (that.data.length > 0) {
+            if (that.data.length > 0) {
 
-            if (!$msgContainer.hasClass('d-none')) {
-              $msgContainer.addClass('d-none');
-            }
-            that.header.appendTo(j);
-            j.append(content);
+              if (!$msgContainer.hasClass('d-none')) {
+                $msgContainer.addClass('d-none');
+              }
+              that.header.appendTo(j);
+              j.append(content);
 
-            // Listen scroll event to load more rows
-            $('.pg-prop-content').on('scroll', that.__loadMoreRows.bind(that));
+              // Listen scroll event to load more rows
+              $('.pg-prop-content').on('scroll', that.__loadMoreRows.bind(that));
 
-            that.collection.reset(that.data.splice(0, 50));
-          } else {
+              that.collection.reset(that.data.splice(0, 50));
+            } else {
             // Do not listen the scroll event
-            $('.pg-prop-content').off('scroll', that.__loadMoreRows);
+              $('.pg-prop-content').off('scroll', that.__loadMoreRows);
 
-            $msgContainer.text(gettext('No properties are available for the selected object.'));
+              $msgContainer.text(gettext('No properties are available for the selected object.'));
 
-          }
-        })
-        .fail(function(xhr, error) {
-          pgBrowser.Events.trigger(
-            'pgadmin:node:retrieval:error', 'properties', xhr, error.message, item, that
-          );
-          if (!Alertify.pgHandleItemError(xhr, error.message, {
-            item: item,
-            info: info,
-          })) {
-            Alertify.pgNotifier(
-              error, xhr,
-              S(gettext('Error retrieving properties - %s')).sprintf(
-              error.message || that.label).value(), function() {
-                console.warn(arguments);
-              });
-          }
-          // show failed message.
-          $msgContainer.text(gettext('Failed to retrieve data from the server.'));
-        });
+            }
+          })
+          .fail(function(xhr, error) {
+            pgBrowser.Events.trigger(
+              'pgadmin:node:retrieval:error', 'properties', xhr, error.message, item, that
+            );
+            if (!Alertify.pgHandleItemError(xhr, error.message, {
+              item: item,
+              info: info,
+            })) {
+              Alertify.pgNotifier(
+                error, xhr,
+                S(gettext('Error retrieving properties - %s')).sprintf(
+                  error.message || that.label).value(), function() {
+                  console.warn(arguments);
+                });
+            }
+            // show failed message.
+            $msgContainer.text(gettext('Failed to retrieve data from the server.'));
+          });
 
         var onDrop = function(type) {
           let sel_row_models = this.grid.getSelectedModels(),
@@ -366,45 +366,45 @@ define([
                 data: JSON.stringify({'ids': sel_rows}),
                 contentType: 'application/json; charset=utf-8',
               })
-              .done(function(res) {
-                if (res.success == 0) {
-                  pgBrowser.report_error(res.errormsg, res.info);
-                } else {
+                .done(function(res) {
+                  if (res.success == 0) {
+                    pgBrowser.report_error(res.errormsg, res.info);
+                  } else {
+                    $(pgBrowser.panels['properties'].panel).removeData('node-prop');
+                    pgBrowser.Events.trigger(
+                      'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                        success: function() {
+                          node.callbacks.selected.apply(node, [item]);
+                        },
+                      });
+                  }
+                  return true;
+                })
+                .fail(function(jqx) {
+                  var msg = jqx.responseText;
+                  /* Error from the server */
+                  if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
+                    try {
+                      var data = JSON.parse(jqx.responseText);
+                      msg = data.errormsg;
+                    } catch (e) {
+                      console.warn(e.stack || e);
+                    }
+                  }
+                  pgBrowser.report_error(
+                    S(gettext('Error dropping %s'))
+                      .sprintf(d._label.toLowerCase())
+                      .value(), msg);
+
                   $(pgBrowser.panels['properties'].panel).removeData('node-prop');
                   pgBrowser.Events.trigger(
-                  'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
-                    success: function() {
-                      node.callbacks.selected.apply(node, [item]);
-                    },
-                  });
-                }
-                return true;
-              })
-              .fail(function(jqx) {
-                var msg = jqx.responseText;
-                /* Error from the server */
-                if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-                  try {
-                    var data = JSON.parse(jqx.responseText);
-                    msg = data.errormsg;
-                  } catch (e) {
-                    console.warn(e.stack || e);
-                  }
-                }
-                pgBrowser.report_error(
-                  S(gettext('Error dropping %s'))
-                  .sprintf(d._label.toLowerCase())
-                  .value(), msg);
-
-                $(pgBrowser.panels['properties'].panel).removeData('node-prop');
-                pgBrowser.Events.trigger(
-                  'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
-                    success: function() {
-                      node.callbacks.selected.apply(node, [item]);
-                    },
-                  }
-                );
-              });
+                    'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                      success: function() {
+                        node.callbacks.selected.apply(node, [item]);
+                      },
+                    }
+                  );
+                });
             },
             null).show();
           return;

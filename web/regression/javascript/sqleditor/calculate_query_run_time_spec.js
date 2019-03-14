@@ -30,7 +30,7 @@ describe('#calculateQueryRunTime', () => {
         seconds:21,
         milliseconds:70}).toDate();
       expect(calculateQueryRunTime(startDate, endDate))
-          .toEqual('947 msec');
+        .toEqual('947 msec');
     });
   });
 
@@ -53,7 +53,7 @@ describe('#calculateQueryRunTime', () => {
         seconds:15,
         milliseconds:70}).toDate();
       expect(calculateQueryRunTime(startDate, endDate))
-          .toEqual('54 secs 947 msec');
+        .toEqual('54 secs 947 msec');
     });
   });
 
@@ -76,7 +76,7 @@ describe('#calculateQueryRunTime', () => {
         seconds:15,
         milliseconds:70}).toDate();
       expect(calculateQueryRunTime(startDate, endDate))
-          .toEqual('9 min 54 secs');
+        .toEqual('9 min 54 secs');
     });
   });
 
@@ -99,7 +99,7 @@ describe('#calculateQueryRunTime', () => {
         seconds:15,
         milliseconds:70}).toDate();
       expect(calculateQueryRunTime(startDate, endDate))
-          .toEqual('1 hr 9 min');
+        .toEqual('1 hr 9 min');
     });
   });
 });

@@ -32,7 +32,7 @@ describe('ExplainStatistics', () => {
       statsModel.set('Triggers', []);
       statsModel.set_statistics(tooltipContainer);
 
-      expect($('.pg-explain-stats-area').hasClass('d-none')).toBe(true);
+      expect($('.pg-explain-stats-area').hasClass('d-none')).toEqual(true);
     });
   });
 
@@ -45,7 +45,7 @@ describe('ExplainStatistics', () => {
     });
 
     it('Statistics button should be visible', () => {
-      expect($('.pg-explain-stats-area').hasClass('d-none')).toBe(false);
+      expect($('.pg-explain-stats-area').hasClass('d-none')).toEqual(false);
     });
 
     it('Mouse over event should be trigger', () => {
@@ -53,7 +53,7 @@ describe('ExplainStatistics', () => {
       var hoverEvent = new $.Event('mouseover');
       $('.pg-explain-stats-area').trigger(hoverEvent);
 
-      expect(tooltipContainer.css('opacity')).toBe('0.8');
+      expect(tooltipContainer.css('opacity')).toEqual('0.8');
     });
 
     it('Mouse out event should be trigger', () => {
@@ -61,7 +61,7 @@ describe('ExplainStatistics', () => {
       var hoverEvent = new $.Event('mouseout');
       $('.pg-explain-stats-area').trigger(hoverEvent);
 
-      expect(tooltipContainer.css('opacity')).toBe('0');
+      expect(tooltipContainer.css('opacity')).toEqual('0');
     });
   });
 
@@ -74,7 +74,7 @@ describe('ExplainStatistics', () => {
     });
 
     it('Statistics button should be visible', () => {
-      expect($('.pg-explain-stats-area').hasClass('d-none')).toBe(false);
+      expect($('.pg-explain-stats-area').hasClass('d-none')).toEqual(false);
     });
 
     it('Mouse over event should be trigger', () => {
@@ -82,7 +82,7 @@ describe('ExplainStatistics', () => {
       var hoverEvent = new $.Event('mouseover');
       $('.pg-explain-stats-area').trigger(hoverEvent);
 
-      expect(tooltipContainer.css('opacity')).toBe('0.8');
+      expect(tooltipContainer.css('opacity')).toEqual('0.8');
     });
 
     it('Mouse out event should be trigger', () => {
@@ -90,7 +90,7 @@ describe('ExplainStatistics', () => {
       var hoverEvent = new $.Event('mouseout');
       $('.pg-explain-stats-area').trigger(hoverEvent);
 
-      expect(tooltipContainer.css('opacity')).toBe('0');
+      expect(tooltipContainer.css('opacity')).toEqual('0');
     });
   });
 });

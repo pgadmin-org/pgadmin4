@@ -267,20 +267,20 @@ define('pgadmin.node.mview', [
           data: {'concurrent': args.concurrent, 'with_data': args.with_data},
           dataType: 'json',
         })
-        .done(function(res) {
-          if (res.success == 1) {
-            Alertify.success(gettext('View refreshed successfully'));
-          }
-          else {
-            Alertify.alert(
-              gettext('Error refreshing view'),
+          .done(function(res) {
+            if (res.success == 1) {
+              Alertify.success(gettext('View refreshed successfully'));
+            }
+            else {
+              Alertify.alert(
+                gettext('Error refreshing view'),
                 res.data.result
-            );
-          }
-        })
-        .fail(function(xhr, status, error) {
-          Alertify.pgRespErrorNotify(xhr, error, gettext('Error refreshing view'));
-        });
+              );
+            }
+          })
+          .fail(function(xhr, status, error) {
+            Alertify.pgRespErrorNotify(xhr, error, gettext('Error refreshing view'));
+          });
 
       },
       is_version_supported: function(data, item) {

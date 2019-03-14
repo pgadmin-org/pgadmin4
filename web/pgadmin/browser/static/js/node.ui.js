@@ -165,16 +165,16 @@ define([
               async: false,
               url: full_url,
             })
-            .done(function(res) {
+              .done(function(res) {
               /*
                * We will cache this data for short period of time for avoiding
                * same calls.
                */
-              data = cache_node.cache(node.type + '#' + url, node_info, cache_level, res.data);
-            })
-            .fail(function() {
-              m.trigger('pgadmin:view:fetch:error', m, self.field);
-            });
+                data = cache_node.cache(node.type + '#' + url, node_info, cache_level, res.data);
+              })
+              .fail(function() {
+                m.trigger('pgadmin:view:fetch:error', m, self.field);
+              });
             m.trigger('pgadmin:view:fetched', m, self.field);
           }
           // To fetch only options from cache, we do not need time from 'at'
@@ -406,16 +406,16 @@ define([
             async: false,
             url: full_url,
           })
-          .done(function(res) {
+            .done(function(res) {
             /*
              * We will cache this data for short period of time for avoiding
              * same calls.
              */
-            data = cache_node.cache(node.type + '#' + url, node_info, cache_level, res.data);
-          })
-          .fail(function() {
-            eventHandler.trigger('pgadmin:view:fetch:error', m, column);
-          });
+              data = cache_node.cache(node.type + '#' + url, node_info, cache_level, res.data);
+            })
+            .fail(function() {
+              eventHandler.trigger('pgadmin:view:fetch:error', m, column);
+            });
           eventHandler.trigger('pgadmin:view:fetched', m, column);
         }
         // To fetch only options from cache, we do not need time from 'at'

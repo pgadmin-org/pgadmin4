@@ -22,11 +22,11 @@ define('app', [
     }
   };
 
-    // Initialize modules registered to pgAdmin, pgAdmin.Browser and Tools object.
+  // Initialize modules registered to pgAdmin, pgAdmin.Browser and Tools object.
   initializeModules(pgAdmin);
   initializeModules(pgAdmin.Browser);
   initializeModules(pgAdmin.Tools);
 
-    // create menus after all modules are initialized.
+  // create menus after all modules are initialized.
   pgAdmin.Browser.create_menus();
 });

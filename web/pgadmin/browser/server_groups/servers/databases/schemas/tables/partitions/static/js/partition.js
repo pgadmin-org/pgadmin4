@@ -108,12 +108,12 @@ function(
           info || {} : this.getTreeNodeHierarchy(item);
 
         return S('table/%s/%s/%s/%s/%s/%s').sprintf(
-            encodeURIComponent(type), encodeURIComponent(info['server_group']._id),
-            encodeURIComponent(info['server']._id),
-            encodeURIComponent(info['database']._id),
-            encodeURIComponent(info['partition'].schema_id),
-            encodeURIComponent(info['partition']._id)
-            ).value();
+          encodeURIComponent(type), encodeURIComponent(info['server_group']._id),
+          encodeURIComponent(info['server']._id),
+          encodeURIComponent(info['database']._id),
+          encodeURIComponent(info['partition'].schema_id),
+          encodeURIComponent(info['partition']._id)
+        ).value();
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
@@ -146,21 +146,21 @@ function(
             data: params,
             dataType: 'json',
           })
-          .done(function(res) {
-            if (res.success == 1) {
-              Alertify.success(res.info);
+            .done(function(res) {
+              if (res.success == 1) {
+                Alertify.success(res.info);
+                t.unload(i);
+                t.setInode(i);
+                t.deselect(i);
+                setTimeout(function() {
+                  t.select(i);
+                }, 10);
+              }
+            })
+            .fail(function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
-              t.setInode(i);
-              t.deselect(i);
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
-            }
-          })
-          .fail(function(xhr, status, error) {
-            Alertify.pgRespErrorNotify(xhr, error);
-            t.unload(i);
-          });
+            });
         },
         /* Truncate table */
         truncate_table: function(args) {
@@ -194,25 +194,25 @@ function(
                   data: params,
                   dataType: 'json',
                 })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    Alertify.success(res.info);
-                    t.removeIcon(i);
-                    data.icon = 'icon-partition';
-                    t.addIcon(i, {icon: data.icon});
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      Alertify.success(res.info);
+                      t.removeIcon(i);
+                      data.icon = 'icon-partition';
+                      t.addIcon(i, {icon: data.icon});
+                      t.unload(i);
+                      t.setInode(i);
+                      t.deselect(i);
+                      // Fetch updated data from server
+                      setTimeout(function() {
+                        t.select(i);
+                      }, 10);
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
-                    t.setInode(i);
-                    t.deselect(i);
-                  // Fetch updated data from server
-                    setTimeout(function() {
-                      t.select(i);
-                    }, 10);
-                  }
-                })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                  t.unload(i);
-                });
+                  });
               }},
             function() {}
           );
@@ -237,25 +237,25 @@ function(
                   url: obj.generate_url(i, 'reset' , d, true),
                   type:'DELETE',
                 })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    Alertify.success(res.info);
-                    t.removeIcon(i);
-                    data.icon = 'icon-partition';
-                    t.addIcon(i, {icon: data.icon});
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      Alertify.success(res.info);
+                      t.removeIcon(i);
+                      data.icon = 'icon-partition';
+                      t.addIcon(i, {icon: data.icon});
+                      t.unload(i);
+                      t.setInode(i);
+                      t.deselect(i);
+                      // Fetch updated data from server
+                      setTimeout(function() {
+                        t.select(i);
+                      }, 10);
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
-                    t.setInode(i);
-                    t.deselect(i);
-                    // Fetch updated data from server
-                    setTimeout(function() {
-                      t.select(i);
-                    }, 10);
-                  }
-                })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                  t.unload(i);
-                });
+                  });
               }
             },
             function() {}
@@ -280,26 +280,26 @@ function(
                   url: obj.generate_url(i, 'detach' , d, true),
                   type:'PUT',
                 })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    Alertify.success(res.info);
-                    var n = t.next(i);
-                    if (!n || !n.length) {
-                      n = t.prev(i);
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      Alertify.success(res.info);
+                      var n = t.next(i);
                       if (!n || !n.length) {
-                        n = t.parent(i);
-                        t.setInode(n, true);
+                        n = t.prev(i);
+                        if (!n || !n.length) {
+                          n = t.parent(i);
+                          t.setInode(n, true);
+                        }
+                      }
+                      t.remove(i);
+                      if (n.length) {
+                        t.select(n);
                       }
                     }
-                    t.remove(i);
-                    if (n.length) {
-                      t.select(n);
-                    }
-                  }
-                })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                });
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
+                  });
               }
             },
             function() {}
@@ -343,8 +343,8 @@ function(
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
             var userInfo = pgBrowser.serverInfo[
-              args.node_info.server._id
-            ].user,
+                args.node_info.server._id
+              ].user,
               schemaInfo = args.node_info.schema;
 
             this.set({
@@ -486,11 +486,11 @@ function(
 
                     if (primary_key_column_exist.length == 0) {
                       var primary_key_column = new (primary_key_column_coll.model)(
-                          {column: column_name}, { silent: true,
-                            top: self.model,
-                            collection: primary_key_coll,
-                            handler: primary_key_coll,
-                          });
+                        {column: column_name}, { silent: true,
+                          top: self.model,
+                          collection: primary_key_coll,
+                          handler: primary_key_coll,
+                        });
 
                       primary_key_column_coll.add(primary_key_column);
                     }
@@ -574,7 +574,7 @@ function(
               return true;
             },
             canAddRow: function(m) {
-               // User can only add one primary key
+              // User can only add one primary key
               var columns = m.get('columns');
 
               return (m.get('primary_key') &&
@@ -602,7 +602,7 @@ function(
             },
             columns : ['name', 'columns'],
             canAddRow: function(m) {
-               // User can only add if there is at least one column with name.
+              // User can only add if there is at least one column with name.
               var columns = m.get('columns');
               return _.some(columns.pluck('name'));
             },
@@ -637,7 +637,7 @@ function(
               return true;
             },
             canAddRow: function(m) {
-               // User can only add if there is at least one column with name.
+              // User can only add if there is at least one column with name.
               var columns = m.get('columns');
               return _.some(columns.pluck('name'));
             },
@@ -662,7 +662,7 @@ function(
               return true;
             },
             canAddRow: function(m) {
-               // User can only add if there is at least one column with name.
+              // User can only add if there is at least one column with name.
               var columns = m.get('columns');
               return _.some(columns.pluck('name'));
             },
@@ -679,7 +679,7 @@ function(
             return data;
           },
           control: Backform.NodeAjaxOptionsControl.extend({
-              // When of_types changes we need to clear columns collection
+            // When of_types changes we need to clear columns collection
             onChange: function() {
               Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
               var self = this,
@@ -693,7 +693,7 @@ function(
                 var msg = gettext('Changing of table type will clear columns collection.');
                 Alertify.confirm(msg, function (e) {
                   if (e) {
-                      // User clicks Ok, lets clear columns collection
+                    // User clicks Ok, lets clear columns collection
                     column_collection.reset();
                   } else {
                     return this;
@@ -703,11 +703,11 @@ function(
                 column_collection.reset();
               }
 
-                // Run Ajax now to fetch columns
+              // Run Ajax now to fetch columns
               if (!_.isUndefined(tbl_name) && tbl_name !== '') {
                 arg = { 'tname': tbl_name };
                 data = self.model.fetch_columns_ajax.apply(self, [arg]);
-                  // Add into column collection
+                // Add into column collection
                 column_collection.set(data, { merge:false,remove:false });
               }
             },
@@ -878,27 +878,27 @@ function(
                 // Make ajax call to get the tables to be attached
                 $.ajax({
                   url: node.generate_url.apply(
-                      node, [
-                        null, 'get_attach_tables', this.field.get('node_data'),
-                        true, node_info,
-                      ]),
+                    node, [
+                      null, 'get_attach_tables', this.field.get('node_data'),
+                      true, node_info,
+                    ]),
 
                   type: 'GET',
                   async: false,
                 })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    self.model.table_options = res.data;
-                  }
-                  else {
-                    Alertify.alert(
-                      gettext('Error fetching tables to be attached'), res.data.result
-                    );
-                  }
-                })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error, gettext('Error fetching tables to be attached'));
-                });
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      self.model.table_options = res.data;
+                    }
+                    else {
+                      Alertify.alert(
+                        gettext('Error fetching tables to be attached'), res.data.result
+                      );
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error, gettext('Error fetching tables to be attached'));
+                  });
               }
             },
           }
@@ -1143,11 +1143,11 @@ function(
             node = this.field.get('schema_node'),
             node_info = this.field.get('node_info'),
             full_url = node.generate_url.apply(
-                node, [
-                  null, url, this.field.get('node_data'),
-                  this.field.get('url_with_id') || false, node_info,
-                ]
-              ),
+              node, [
+                null, url, this.field.get('node_data'),
+                this.field.get('url_with_id') || false, node_info,
+              ]
+            ),
             cache_level = this.field.get('cache_level') || node.type,
             cache_node = this.field.get('cache_node');
 
@@ -1160,12 +1160,12 @@ function(
             url: full_url,
             data: arg,
           })
-          .done(function(res) {
-            data = cache_node.cache(url, node_info, cache_level, res.data);
-          })
-          .fail(function() {
-            m.trigger('pgadmin:view:fetch:error', m, self.field);
-          });
+            .done(function(res) {
+              data = cache_node.cache(url, node_info, cache_level, res.data);
+            })
+            .fail(function() {
+              m.trigger('pgadmin:view:fetch:error', m, self.field);
+            });
           m.trigger('pgadmin:view:fetched', m, self.field);
           data = (data && data.data) || [];
           return data;

@@ -175,25 +175,25 @@ define('pgadmin.node.table', [
                   data: params,
                   dataType: 'json',
                 })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    Alertify.success(res.info);
-                    t.removeIcon(i);
-                    data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
-                    t.addIcon(i, {icon: data.icon});
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      Alertify.success(res.info);
+                      t.removeIcon(i);
+                      data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
+                      t.addIcon(i, {icon: data.icon});
+                      t.unload(i);
+                      t.setInode(i);
+                      t.deselect(i);
+                      // Fetch updated data from server
+                      setTimeout(function() {
+                        t.select(i);
+                      }, 10);
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
-                    t.setInode(i);
-                    t.deselect(i);
-                    // Fetch updated data from server
-                    setTimeout(function() {
-                      t.select(i);
-                    }, 10);
-                  }
-                })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                  t.unload(i);
-                });
+                  });
               }
             }, function() {}
           );
@@ -218,25 +218,25 @@ define('pgadmin.node.table', [
                   url: obj.generate_url(i, 'reset' , d, true),
                   type:'DELETE',
                 })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    Alertify.success(res.info);
-                    t.removeIcon(i);
-                    data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
-                    t.addIcon(i, {icon: data.icon});
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      Alertify.success(res.info);
+                      t.removeIcon(i);
+                      data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
+                      t.addIcon(i, {icon: data.icon});
+                      t.unload(i);
+                      t.setInode(i);
+                      t.deselect(i);
+                      // Fetch updated data from server
+                      setTimeout(function() {
+                        t.select(i);
+                      }, 10);
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
-                    t.setInode(i);
-                    t.deselect(i);
-                    // Fetch updated data from server
-                    setTimeout(function() {
-                      t.select(i);
-                    }, 10);
-                  }
-                })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                  t.unload(i);
-                });
+                  });
               }
             },
             function() {}
@@ -256,20 +256,20 @@ define('pgadmin.node.table', [
             url: obj.generate_url(i, 'count_rows' , d, true),
             type:'GET',
           })
-          .done(function(res) {
-            Alertify.success(res.info);
-            d.rows_cnt = res.data.total_rows;
-            t.unload(i);
-            t.setInode(i);
-            t.deselect(i);
-            setTimeout(function() {
-              t.select(i);
-            }, 10);
-          })
-          .fail(function(xhr, status, error) {
-            Alertify.pgRespErrorNotify(xhr, error);
-            t.unload(i);
-          });
+            .done(function(res) {
+              Alertify.success(res.info);
+              d.rows_cnt = res.data.total_rows;
+              t.unload(i);
+              t.setInode(i);
+              t.deselect(i);
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            })
+            .fail(function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
+              t.unload(i);
+            });
         },
       },
       model: pgBrowser.Node.Model.extend({
@@ -309,8 +309,8 @@ define('pgadmin.node.table', [
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
             var userInfo = pgBrowser.serverInfo[
-              args.node_info.server._id
-            ].user,
+                args.node_info.server._id
+              ].user,
               schemaInfo = args.node_info.schema;
 
             this.set({
@@ -739,22 +739,22 @@ define('pgadmin.node.table', [
                   msg = gettext('Changing \'Of type\' will remove column definitions.');
 
                 Alertify.confirm(
-                    title, msg, function () {
-                      // User clicks Ok, lets clear columns collection
-                      column_collection.remove(
-                        column_collection.filter(function() { return true; })
-                      );
-                    },
-                    function() {
-                      setTimeout(function() {
-                        self.model.set('typname', null);
-                      }, 10);
-                    }
-                  );
+                  title, msg, function () {
+                    // User clicks Ok, lets clear columns collection
+                    column_collection.remove(
+                      column_collection.filter(function() { return true; })
+                    );
+                  },
+                  function() {
+                    setTimeout(function() {
+                      self.model.set('typname', null);
+                    }, 10);
+                  }
+                );
               } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
                 column_collection.remove(
-                    column_collection.filter(function() { return true; })
-                  );
+                  column_collection.filter(function() { return true; })
+                );
               }
 
               // Run Ajax now to fetch columns
@@ -903,7 +903,7 @@ define('pgadmin.node.table', [
             if (m.get('partition_type') && m.get('partition_type') == 'list')
               max_row_count = 1;
 
-              /* If columns are not specified by the user then it may be
+            /* If columns are not specified by the user then it may be
                * possible that he/she selected 'OF TYPE', so we should check
                * for that as well.
                */
@@ -1011,19 +1011,19 @@ define('pgadmin.node.table', [
                   type: 'GET',
                   async: false,
                 })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    self.model.table_options = res.data;
-                  }
-                  else {
-                    Alertify.alert(
-                      gettext('Error fetching tables to be attached'), res.data.result
-                    );
-                  }
-                })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                });
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      self.model.table_options = res.data;
+                    }
+                    else {
+                      Alertify.alert(
+                        gettext('Error fetching tables to be attached'), res.data.result
+                      );
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
+                  });
               }
             },
           }
@@ -1291,12 +1291,12 @@ define('pgadmin.node.table', [
             url: full_url,
             data: arg,
           })
-          .done(function(res) {
-            data = cache_node.cache(url, node_info, cache_level, res.data);
-          })
-          .fail(function() {
-            m.trigger('pgadmin:view:fetch:error', m, self.field);
-          });
+            .done(function(res) {
+              data = cache_node.cache(url, node_info, cache_level, res.data);
+            })
+            .fail(function() {
+              m.trigger('pgadmin:view:fetch:error', m, self.field);
+            });
           m.trigger('pgadmin:view:fetched', m, self.field);
           data = (data && data.data) || [];
           return data;

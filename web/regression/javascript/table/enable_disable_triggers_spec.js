@@ -51,7 +51,7 @@ describe('#enableTriggers', () => {
       });
 
       setTimeout(() => {
-        expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toBe(false);
+        expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
         done();
       }, 0);
     });
@@ -66,7 +66,7 @@ describe('#enableTriggers', () => {
         });
 
         setTimeout(() => {
-          expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toBe(false);
+          expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
         }, 0);
       });
     });
@@ -134,7 +134,7 @@ describe('#enableTriggers', () => {
           enableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
 
           setTimeout(() => {
-            expect(tree.findNodeByDomElement([{id: 'table1'}]).children.length).toBe(0);
+            expect(tree.findNodeByDomElement([{id: 'table1'}]).children.length).toEqual(0);
             done();
           }, 20);
         });
@@ -178,7 +178,7 @@ describe('#disableTriggers', () => {
       });
 
       setTimeout(() => {
-        expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toBe(false);
+        expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
         done();
       }, 0);
     });
@@ -193,7 +193,7 @@ describe('#disableTriggers', () => {
         });
 
         setTimeout(() => {
-          expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toBe(false);
+          expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
         }, 0);
       });
     });
@@ -261,7 +261,7 @@ describe('#disableTriggers', () => {
           disableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
 
           setTimeout(() => {
-            expect(tree.findNodeByDomElement([{id: 'table1'}]).children.length).toBe(0);
+            expect(tree.findNodeByDomElement([{id: 'table1'}]).children.length).toEqual(0);
             done();
           }, 20);
         });

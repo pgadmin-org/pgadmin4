@@ -205,8 +205,8 @@ define('pgadmin.node.index', [
         _.isNull(parent_model.get('amname')) ||
           String(parent_model.get('amname')).replace(/^\s+|\s+$/g, '') == '' ||
           parent_model.get('amname') === 'btree') {
-            // We need to set nulls to true if sort_order is set to desc
-            // nulls first is default for desc
+        // We need to set nulls to true if sort_order is set to desc
+        // nulls first is default for desc
         if(m.get('sort_order') == true && m.previous('sort_order') ==  false) {
           setTimeout(function() { m.set('nulls', true); }, 10);
         }

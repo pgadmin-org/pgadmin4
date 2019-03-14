@@ -16,7 +16,7 @@ import {DialogWrapper} from '../../../../static/js/alertify/dialog_wrapper';
 
 export class RestoreDialogWrapper extends DialogWrapper {
   constructor(dialogContainerSelector, dialogTitle, typeOfDialog,
-              jquery, pgBrowser, alertify, dialogModel, backform) {
+    jquery, pgBrowser, alertify, dialogModel, backform) {
     super(dialogContainerSelector, dialogTitle, jquery,
       pgBrowser, alertify, dialogModel, backform);
   }

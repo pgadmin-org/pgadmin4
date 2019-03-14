@@ -16,19 +16,19 @@ describe('backup.menuUtils', () => {
   describe('#menuEnabledServer', () => {
     context('provided node data is undefined', () => {
       it('returns false', () => {
-        expect(menuEnabledServer(undefined)).toBe(false);
+        expect(menuEnabledServer(undefined)).toEqual(false);
       });
     });
 
     context('provided node data is null', () => {
       it('returns false', () => {
-        expect(menuEnabledServer(null)).toBe(false);
+        expect(menuEnabledServer(null)).toEqual(false);
       });
     });
 
     context('current node type is not of the type server', () => {
       it('returns false', () => {
-        expect(menuEnabledServer({_type: 'schema'})).toBe(false);
+        expect(menuEnabledServer({_type: 'schema'})).toEqual(false);
       });
     });
 
@@ -38,7 +38,7 @@ describe('backup.menuUtils', () => {
           expect(menuEnabledServer({
             _type: 'server',
             connected: true,
-          })).toBe(true);
+          })).toEqual(true);
         });
       });
       context('is not connected', () => {
@@ -46,7 +46,7 @@ describe('backup.menuUtils', () => {
           expect(menuEnabledServer({
             _type: 'server',
             connected: false,
-          })).toBe(false);
+          })).toEqual(false);
         });
       });
     });

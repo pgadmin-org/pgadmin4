@@ -16,7 +16,7 @@ describe('#show_advanced_tab', () => {
     it('should return true', () => {
       tableModel = {};
 
-      expect(show_advanced_tab(tableModel)).toBe(true);
+      expect(show_advanced_tab(tableModel)).toEqual(true);
     });
   });
 
@@ -27,7 +27,7 @@ describe('#show_advanced_tab', () => {
           node_info: {},
         };
 
-        expect(show_advanced_tab(tableModel)).toBe(true);
+        expect(show_advanced_tab(tableModel)).toEqual(true);
       });
     });
 
@@ -42,7 +42,7 @@ describe('#show_advanced_tab', () => {
             },
           };
 
-          expect(show_advanced_tab(tableModel)).toBe(false);
+          expect(show_advanced_tab(tableModel)).toEqual(false);
         });
       });
 
@@ -56,7 +56,7 @@ describe('#show_advanced_tab', () => {
             },
           };
 
-          expect(show_advanced_tab(tableModel)).toBe(true);
+          expect(show_advanced_tab(tableModel)).toEqual(true);
         });
       });
     });

@@ -28,7 +28,7 @@ define('pgadmin.node.column', [
       });
   }
 
-   // This Node model will be used for variable control for column
+  // This Node model will be used for variable control for column
   var VariablesModel = Backform.VariablesModel = pgBrowser.Node.Model.extend({
     idAttribute: 'name',
     defaults: {
@@ -39,7 +39,7 @@ define('pgadmin.node.column', [
       id: 'name', label: gettext('Name'), cell: 'select2',
       type: 'text', disabled: false, node: 'column',
       options: [['n_distinct', 'n_distinct'],
-      ['n_distinct_inherited','n_distinct_inherited']],
+        ['n_distinct_inherited','n_distinct_inherited']],
       select2: {placeholder: 'Select variable'},
       cellHeaderClasses:'width_percent_50',
     },{
@@ -338,7 +338,7 @@ define('pgadmin.node.column', [
             _.each(m.datatypes, function(o) {
               if ( of_type == o.value ) {
                 if(o.length)
-                    {
+                {
                   m.set('min_val', o.min_val, {silent: true});
                   m.set('max_val', o.max_val, {silent: true});
                   flag = false;
@@ -355,7 +355,7 @@ define('pgadmin.node.column', [
             return flag;
           },
           editable: function(m) {
-             // inheritedfrom has value then we should disable it
+            // inheritedfrom has value then we should disable it
             if(!_.isUndefined(m.get('inheritedfrom'))) {
               return false;
             }
@@ -409,7 +409,7 @@ define('pgadmin.node.column', [
             return flag;
           },
           editable: function(m) {
-             // inheritedfrom has value then we should disable it
+            // inheritedfrom has value then we should disable it
             if(!_.isUndefined(m.get('inheritedfrom'))) {
               return false;
             }
@@ -449,7 +449,7 @@ define('pgadmin.node.column', [
             _.each(m.datatypes, function(o) {
               if ( of_type == o.value ) {
                 if(o.is_collatable)
-                    {
+                {
                   flag = false;
                 }
               }
@@ -661,25 +661,25 @@ define('pgadmin.node.column', [
         editable_check_for_table: function(arg) {
           if (arg instanceof Backbone.Collection) {
             return !arg.model.prototype.inSchemaWithColumnCheck.apply(
-                         this, [arg.top]
-                       );
+              this, [arg.top]
+            );
           } else {
             return !arg.inSchemaWithColumnCheck.apply(
-                         this, [arg]
-                       );
+              this, [arg]
+            );
           }
         },
       }),
       // Below function will enable right click menu for creating column
       canCreate: function(itemData, item, data) {
-          // If check is false then , we will allow create menu
+        // If check is false then , we will allow create menu
         if (data && data.check == false)
           return true;
 
         var t = pgBrowser.tree, i = item, d = itemData, parents = [];
-          // To iterate over tree to check parent node
+        // To iterate over tree to check parent node
         while (i) {
-            // If it is schema then allow user to create table
+          // If it is schema then allow user to create table
           if (_.indexOf(['schema'], d._type) > -1) {
             return true;
           }
@@ -693,7 +693,7 @@ define('pgadmin.node.column', [
           i = t.hasParent(i) ? t.parent(i) : null;
           d = i ? t.itemData(i) : null;
         }
-          // If node is under catalog then do not allow 'create' menu
+        // If node is under catalog then do not allow 'create' menu
         if (_.indexOf(parents, 'catalog') > -1 ||
               _.indexOf(parents, 'coll-view') > -1 ||
               _.indexOf(parents, 'coll-mview') > -1 ||

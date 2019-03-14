@@ -101,8 +101,8 @@ define([
     cell: Backgrid.Extension.SelectRowCell.extend({
       render: function() {
 
-       // Do not use parent's render function. It set's tabindex to -1 on
-       // checkboxes.
+        // Do not use parent's render function. It set's tabindex to -1 on
+        // checkboxes.
         this.$el.empty().append('<input type="checkbox" />');
         this.delegateEvents();
 

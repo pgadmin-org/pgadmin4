@@ -56,14 +56,14 @@ describe('GridSelector', function () {
   });
 
   it('renders an additional column on the left for selecting rows', function () {
-    expect(columns.length).toBe(3);
+    expect(columns.length).toEqual(3);
 
     var leftmostColumn = columns[0];
-    expect(leftmostColumn.id).toBe('row-header-column');
+    expect(leftmostColumn.id).toEqual('row-header-column');
   });
 
   it('renders a button for selecting all the cells', function () {
-    expect(container.find('[title=\'Select/Deselect All\']').length).toBe(1);
+    expect(container.find('[title=\'Select/Deselect All\']').length).toEqual(1);
   });
 
   describe('when the cell for the select/deselect all is clicked', function () {
@@ -71,12 +71,12 @@ describe('GridSelector', function () {
       container.find('[title=\'Select/Deselect All\']').parent().trigger('click');
 
       var selectedRanges = xCellSelectionModel.getSelectedRanges();
-      expect(selectedRanges.length).toBe(1);
+      expect(selectedRanges.length).toEqual(1);
       var selectedRange = selectedRanges[0];
-      expect(selectedRange.fromCell).toBe(1);
-      expect(selectedRange.toCell).toBe(2);
-      expect(selectedRange.fromRow).toBe(0);
-      expect(selectedRange.toRow).toBe(9);
+      expect(selectedRange.fromCell).toEqual(1);
+      expect(selectedRange.toCell).toEqual(2);
+      expect(selectedRange.fromRow).toEqual(0);
+      expect(selectedRange.toRow).toEqual(9);
     });
 
     it('adds selected class', function () {
@@ -92,12 +92,12 @@ describe('GridSelector', function () {
       container.find('[title=\'Select/Deselect All\']').trigger('click');
 
       var selectedRanges = xCellSelectionModel.getSelectedRanges();
-      expect(selectedRanges.length).toBe(1);
+      expect(selectedRanges.length).toEqual(1);
       var selectedRange = selectedRanges[0];
-      expect(selectedRange.fromCell).toBe(1);
-      expect(selectedRange.toCell).toBe(2);
-      expect(selectedRange.fromRow).toBe(0);
-      expect(selectedRange.toRow).toBe(9);
+      expect(selectedRange.fromCell).toEqual(1);
+      expect(selectedRange.toCell).toEqual(2);
+      expect(selectedRange.fromRow).toEqual(0);
+      expect(selectedRange.toRow).toEqual(9);
     });
 
     describe('when the select all button in the corner gets deselected', function () {
@@ -109,7 +109,7 @@ describe('GridSelector', function () {
         container.find('[title=\'Select/Deselect All\']').trigger('click');
 
         var selectedRanges = xCellSelectionModel.getSelectedRanges();
-        expect(selectedRanges.length).toBe(0);
+        expect(selectedRanges.length).toEqual(0);
       });
     });
 

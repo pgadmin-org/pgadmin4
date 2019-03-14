@@ -13,7 +13,7 @@ define('pgadmin.node.user_mapping', [
   'pgadmin.backform', 'pgadmin.browser.collection',
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
 
-    // Extend the browser's node model class to create a Options model
+  // Extend the browser's node model class to create a Options model
   var OptionsModel = pgAdmin.Browser.Node.Model.extend({
     idAttribute: 'umoption',
     defaults: {
@@ -21,7 +21,7 @@ define('pgadmin.node.user_mapping', [
       umvalue: undefined,
     },
 
-        // Defining schema for the Options model
+    // Defining schema for the Options model
     schema: [{
       id: 'umoption', label: gettext('Options'), type:'text',
       cellHeaderClasses:'width_percent_50', group: null, editable: true,
@@ -30,12 +30,12 @@ define('pgadmin.node.user_mapping', [
       cellHeaderClasses:'width_percent_50', group:null, editable: true,
     }],
 
-        /* validate function is used to validate the input given by
+    /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
          * the browser for the respective control.
          */
     validate: function() {
-          // Validation for the option value
+      // Validation for the option value
       if (_.isUndefined(this.get('umoption')) ||
             _.isNull(this.get('umoption')) ||
             String(this.get('umoption')).replace(/^\s+|\s+$/g, '') == '') {

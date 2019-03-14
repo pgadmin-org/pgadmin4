@@ -14,7 +14,7 @@ define('pgadmin.node.fts_dictionary', [
   'pgadmin.browser.collection',
 ], function(
   gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, schemaChild,
-   schemaChildTreeNode
+  schemaChildTreeNode
 ) {
 
   // Extend the browser's node model class to create a option/value pair
@@ -23,7 +23,7 @@ define('pgadmin.node.fts_dictionary', [
       options: undefined,
       value: undefined,
     },
-        // Define the schema for the Options
+    // Define the schema for the Options
     schema: [
       {
         id: 'option', label: gettext('Option'), type:'text', group: null,

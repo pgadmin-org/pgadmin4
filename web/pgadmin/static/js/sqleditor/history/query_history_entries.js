@@ -75,10 +75,10 @@ export class QueryHistoryItem {
           </div>
       </li>`
     )
-    .data('entrydata', this.entry)
-    .on('click', e => {
-      this.onClickHandler($(e.currentTarget));
-    });
+      .data('entrydata', this.entry)
+      .on('click', e => {
+        this.onClickHandler($(e.currentTarget));
+      });
   }
 }
 

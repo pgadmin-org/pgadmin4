@@ -58,7 +58,7 @@ describe('Server#ModelValidation', () => {
       describe('Service id present', () => {
         it('sets empty service name which should throw an error', () => {
           model.allValues['service'] = '';
-          expect(modelValidation.validate()).toBe('Either Host name, Address or Service must be specified.');
+          expect(modelValidation.validate()).toEqual('Either Host name, Address or Service must be specified.');
           expect(model.errorModel.set).toHaveBeenCalledWith({
             host: 'Either Host name, Address or Service must be specified.',
             hostaddr: 'Either Host name, Address or Service must be specified.',
@@ -81,7 +81,7 @@ describe('Server#ModelValidation', () => {
         it('sets the "SSH Tunnel host must be specified." error', () => {
           model.allValues['tunnel_port'] = 22;
           model.allValues['tunnel_username'] = 'user1';
-          expect(modelValidation.validate()).toBe('SSH Tunnel host must be specified.');
+          expect(modelValidation.validate()).toEqual('SSH Tunnel host must be specified.');
           expect(model.errorModel.set).toHaveBeenCalledWith({
             tunnel_host:'SSH Tunnel host must be specified.',
           });
@@ -89,7 +89,7 @@ describe('Server#ModelValidation', () => {
         it('sets the "SSH Tunnel port must be specified." error', () => {
           model.allValues['tunnel_host'] = 'host';
           model.allValues['tunnel_username'] = 'user1';
-          expect(modelValidation.validate()).toBe('SSH Tunnel port must be specified.');
+          expect(modelValidation.validate()).toEqual('SSH Tunnel port must be specified.');
           expect(model.errorModel.set).toHaveBeenCalledWith({
             tunnel_port:'SSH Tunnel port must be specified.',
           });
@@ -97,7 +97,7 @@ describe('Server#ModelValidation', () => {
         it('sets the "SSH Tunnel username be specified." error', () => {
           model.allValues['tunnel_host'] = 'host';
           model.allValues['tunnel_port'] = 22;
-          expect(modelValidation.validate()).toBe('SSH Tunnel username must be specified.');
+          expect(modelValidation.validate()).toEqual('SSH Tunnel username must be specified.');
           expect(model.errorModel.set).toHaveBeenCalledWith({
             tunnel_username:'SSH Tunnel username must be specified.',
           });
@@ -107,7 +107,7 @@ describe('Server#ModelValidation', () => {
           model.allValues['tunnel_port'] = 22;
           model.allValues['tunnel_username'] = 'user1';
           model.allValues['tunnel_authentication'] = 1;
-          expect(modelValidation.validate()).toBe('SSH Tunnel identity file must be specified.');
+          expect(modelValidation.validate()).toEqual('SSH Tunnel identity file must be specified.');
           expect(model.errorModel.set).toHaveBeenCalledWith({
             tunnel_identity_file:'SSH Tunnel identity file must be specified.',
           });
@@ -118,7 +118,7 @@ describe('Server#ModelValidation', () => {
     describe('When no parameters are valid', () => {
       describe('Service id not present', () => {
         it('does not set any error in the model', () => {
-          expect(modelValidation.validate()).toBe('Name must be specified.');
+          expect(modelValidation.validate()).toEqual('Name must be specified.');
           expect(model.errorModel.set).toHaveBeenCalledTimes(1);
           expect(model.errorModel.set).toHaveBeenCalledWith({
             name: 'Name must be specified.',
@@ -134,7 +134,7 @@ describe('Server#ModelValidation', () => {
       describe('Host address is not valid', () => {
         it('sets the "Host address must be a valid IPv4 or IPv6 address" error', () => {
           model.allValues['hostaddr'] = 'something that is not an ip address';
-          expect(modelValidation.validate()).toBe('Host address must be valid IPv4 or IPv6 address.');
+          expect(modelValidation.validate()).toEqual('Host address must be valid IPv4 or IPv6 address.');
           expect(model.errorModel.set).toHaveBeenCalledTimes(1);
           expect(model.errorModel.set).toHaveBeenCalledWith({
             name: 'Name must be specified.',
@@ -149,7 +149,7 @@ describe('Server#ModelValidation', () => {
       describe('Service id present', () => {
         it('does not set any error in the model', () => {
           model.allValues['service'] = 'asdfg';
-          expect(modelValidation.validate()).toBe('Name must be specified.');
+          expect(modelValidation.validate()).toEqual('Name must be specified.');
           expect(model.errorModel.set).toHaveBeenCalledTimes(1);
           expect(model.errorModel.set).toHaveBeenCalledWith({
             name: 'Name must be specified.',

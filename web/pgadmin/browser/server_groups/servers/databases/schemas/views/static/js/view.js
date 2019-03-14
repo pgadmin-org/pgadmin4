@@ -62,7 +62,7 @@ define('pgadmin.node.view', [
 
         this.initialized = true;
 
-          /**
+        /**
           Add "create view" menu option into context and object menu
           for the following nodes:
           coll-view, view and schema.

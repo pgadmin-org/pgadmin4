@@ -112,12 +112,12 @@ define('misc.bgprocess', [
         case 'status':
           if (this.details && this.out != -1 && this.err != -1) {
             return url_for(
-                'bgprocess.detailed_status', {
-                  'pid': this.id,
-                  'out': this.out,
-                  'err': this.err,
-                }
-              );
+              'bgprocess.detailed_status', {
+                'pid': this.id,
+                'out': this.out,
+                'err': this.err,
+              }
+            );
           }
           return url_for('bgprocess.status', {
             'pid': this.id,
@@ -270,18 +270,18 @@ define('misc.bgprocess', [
           async: true,
           contentType: 'application/json',
         })
-        .done(function(res) {
-          setTimeout(function() {
-            self.update(res);
-          }, 10);
-        })
-        .fail(function(res) {
-          // Try after some time only if job id present
-          if (res.status != 410)
+          .done(function(res) {
             setTimeout(function() {
               self.update(res);
-            }, 10000);
-        });
+            }, 10);
+          })
+          .fail(function(res) {
+          // Try after some time only if job id present
+            if (res.status != 410)
+              setTimeout(function() {
+                self.update(res);
+              }, 10000);
+          });
       },
 
       show: function() {
@@ -477,12 +477,12 @@ define('misc.bgprocess', [
           async: true,
           contentType: 'application/json',
         })
-        .done(function() {
-          return;
-        })
-        .fail(function() {
-          console.warn(arguments);
-        });
+          .done(function() {
+            return;
+          })
+          .fail(function() {
+            console.warn(arguments);
+          });
       },
 
       stop_process: function() {
@@ -497,12 +497,12 @@ define('misc.bgprocess', [
           async: true,
           contentType: 'application/json',
         })
-        .done(function() {
-          return;
-        })
-        .fail(function() {
-          console.warn(arguments);
-        });
+          .done(function() {
+            return;
+          })
+          .fail(function() {
+            console.warn(arguments);
+          });
       },
 
     });
@@ -547,31 +547,31 @@ define('misc.bgprocess', [
           async: true,
           contentType: 'application/json',
         })
-        .done(function(res) {
-          if (!res || !_.isArray(res)) {
-            return;
-          }
-          for (var idx in res) {
-            var process = res[idx];
-            if ('id' in process) {
-              if (!(process.id in observer.bgprocesses)) {
-                observer.bgprocesses[process.id] = new BGProcess(process);
+          .done(function(res) {
+            if (!res || !_.isArray(res)) {
+              return;
+            }
+            for (var idx in res) {
+              var process = res[idx];
+              if ('id' in process) {
+                if (!(process.id in observer.bgprocesses)) {
+                  observer.bgprocesses[process.id] = new BGProcess(process);
+                }
               }
             }
-          }
-          if (recheck && res.length == 0) {
+            if (recheck && res.length == 0) {
             // Recheck after some more time
-            setTimeout(
-              function() {
-                observer.update_process_list(false);
-              }, 3000
-            );
-          }
-        })
-        .fail(function() {
+              setTimeout(
+                function() {
+                  observer.update_process_list(false);
+                }, 3000
+              );
+            }
+          })
+          .fail(function() {
           // FIXME:: What to do now?
-          console.warn(arguments);
-        });
+            console.warn(arguments);
+          });
       },
 
       create_panel: function() {

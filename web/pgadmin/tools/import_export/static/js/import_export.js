@@ -15,7 +15,7 @@ define([
   'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui',
 ], function(
   gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-Backform, commonUtils, supportedNodes
+  Backform, commonUtils, supportedNodes
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -542,28 +542,28 @@ Backform, commonUtils, supportedNodes
                     'data': JSON.stringify(this.view.model.toJSON()),
                   },
                 })
-                .done(function(res) {
-                  if (res.success) {
-                    Alertify.success(gettext('Import/export job created.'), 5);
-                    pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
-                  } else {
-                    Alertify.alert(
-                      gettext('Import/export job creation failed.'),
-                      res.errormsg
-                    );
-                  }
-                })
-                .fail(function(xhr) {
-                  try {
-                    var err = JSON.parse(xhr.responseText);
-                    Alertify.alert(
-                      gettext('Import/export job failed.'),
-                      err.errormsg
-                    );
-                  } catch (e) {
-                    console.warn(e.stack || e);
-                  }
-                });
+                  .done(function(res) {
+                    if (res.success) {
+                      Alertify.success(gettext('Import/export job created.'), 5);
+                      pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
+                    } else {
+                      Alertify.alert(
+                        gettext('Import/export job creation failed.'),
+                        res.errormsg
+                      );
+                    }
+                  })
+                  .fail(function(xhr) {
+                    try {
+                      var err = JSON.parse(xhr.responseText);
+                      Alertify.alert(
+                        gettext('Import/export job failed.'),
+                        err.errormsg
+                      );
+                    } catch (e) {
+                      console.warn(e.stack || e);
+                    }
+                  });
               }
             },
 
@@ -675,29 +675,29 @@ Backform, commonUtils, supportedNodes
         url: baseUrl,
         type:'GET',
       })
-      .done(function(res) {
-        if (!res.success) {
+        .done(function(res) {
+          if (!res.success) {
+            Alertify.alert(
+              gettext('Utility not found'),
+              res.errormsg
+            );
+            return;
+          }
+
+          // Open the Alertify dialog for the import/export module
+          Alertify.ImportDialog(
+            S(
+              gettext('Import/Export data - table \'%s\'')
+            ).sprintf(treeInfo.table.label).value(), node, i, d
+          ).set('resizable', true).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
+        })
+        .fail(function() {
           Alertify.alert(
             gettext('Utility not found'),
-            res.errormsg
+            gettext('Failed to fetch Utility information')
           );
           return;
-        }
-
-        // Open the Alertify dialog for the import/export module
-        Alertify.ImportDialog(
-          S(
-            gettext('Import/Export data - table \'%s\'')
-          ).sprintf(treeInfo.table.label).value(), node, i, d
-        ).set('resizable', true).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
-      })
-      .fail(function() {
-        Alertify.alert(
-          gettext('Utility not found'),
-          gettext('Failed to fetch Utility information')
-        );
-        return;
-      });
+        });
     },
   };
 

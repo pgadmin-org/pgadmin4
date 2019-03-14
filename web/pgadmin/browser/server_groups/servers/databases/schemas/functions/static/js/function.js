@@ -59,10 +59,10 @@ define('pgadmin.node.function', [
       id: 'argmode', label: gettext('Mode'), type: 'options',
       control: 'node-ajax-options', cellHeaderClasses:'width_percent_20',
       options:[
-          {'label': 'IN', 'value': 'IN'},
-          {'label': 'OUT', 'value': 'OUT'},
-          {'label': 'INOUT', 'value': 'INOUT'},
-          {'label': 'VARIADIC', 'value': 'VARIADIC'},
+        {'label': 'IN', 'value': 'IN'},
+        {'label': 'OUT', 'value': 'OUT'},
+        {'label': 'INOUT', 'value': 'INOUT'},
+        {'label': 'VARIADIC', 'value': 'VARIADIC'},
       ], editable: function(m) {
         var node_info = this.get('node_info');
         if(node_info && 'catalog' in node_info) {

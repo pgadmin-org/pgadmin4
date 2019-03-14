@@ -58,7 +58,7 @@ define([
 
       it('keyboard shortcut control should be rendered with inner fields', function () {
 
-        expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+        expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
 
         expect(control.$el.find('input:checkbox[name="alt_option"]')[0].checked).toBeTruthy();
 
@@ -78,7 +78,7 @@ define([
 
       it('when model "key" value changes UI and innerModel should update new "key" value', function (done) {
 
-        expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+        expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
         expect(control.innerModel.get('key')).toEqual({
           'key_code': 73,
           'char': 'I',
@@ -98,7 +98,7 @@ define([
         // wait until UI updates.
         setTimeout(function() {
           // this should change
-          expect(control.$el.find('input:text[name="key"]')[0].value).toBe('A');
+          expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('A');
           expect(control.innerModel.get('key')).toEqual({
             'key_code': 65,
             'char': 'A',
@@ -142,7 +142,7 @@ define([
           expect(control.$el.find('input:checkbox[name="alt_option"]')[0].checked).toBeTruthy();
           expect(control.innerModel.get('alt_option')).toBeTruthy();
 
-          expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+          expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
           expect(control.innerModel.get('key')).toEqual({
             'key_code': 73,
             'char': 'I',
@@ -179,7 +179,7 @@ define([
           expect(control.$el.find('input:checkbox[name="alt_option"]')[0].checked).toBeTruthy();
           expect(control.innerModel.get('alt_option')).toBeTruthy();
 
-          expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+          expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
           expect(control.innerModel.get('key')).toEqual({
             'key_code': 73,
             'char': 'I',
@@ -216,7 +216,7 @@ define([
           expect(control.$el.find('input:checkbox[name="shift"]')[0].checked).toBeFalsy();
           expect(control.innerModel.get('shift')).toBeFalsy();
 
-          expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+          expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
           expect(control.innerModel.get('key')).toEqual({
             'key_code': 73,
             'char': 'I',
@@ -241,7 +241,7 @@ define([
 
       it('when innerModel "key" value changes UI and model should update new "key" value', function (done) {
 
-        expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+        expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
         expect(model.get(field.get('name'))).toEqual({
           'control': true,
           'shift': false,
@@ -262,7 +262,7 @@ define([
         // wait until UI updates.
         setTimeout(function() {
           // this should change
-          expect(control.$el.find('input:text[name="key"]')[0].value).toBe('A');
+          expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('A');
           expect(model.get(field.get('name'))).toEqual({
             'control': true,
             'shift': false,
@@ -317,7 +317,7 @@ define([
           // below three should not change.
           expect(control.$el.find('input:checkbox[name="alt_option"]')[0].checked).toBeTruthy();
 
-          expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+          expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
 
           expect(control.$el.find('input:checkbox[name="shift"]')[0].checked).toBeFalsy();
 
@@ -358,7 +358,7 @@ define([
           // below three should not change.
           expect(control.$el.find('input:checkbox[name="alt_option"]')[0].checked).toBeTruthy();
 
-          expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+          expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
 
           expect(control.$el.find('input:checkbox[name="control"]')[0].checked).toBeTruthy();
 
@@ -399,7 +399,7 @@ define([
           // below three should not change.
           expect(control.$el.find('input:checkbox[name="shift"]')[0].checked).toBeFalsy();
 
-          expect(control.$el.find('input:text[name="key"]')[0].value).toBe('I');
+          expect(control.$el.find('input:text[name="key"]')[0].value).toEqual('I');
 
           expect(control.$el.find('input:checkbox[name="control"]')[0].checked).toBeTruthy();
 
@@ -424,7 +424,7 @@ define([
 
         expect(control.cleanup).toHaveBeenCalled();
 
-        expect(control.controls.length).toBe(0);
+        expect(control.controls.length).toEqual(0);
 
       });
 

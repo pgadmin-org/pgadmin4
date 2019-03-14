@@ -13,7 +13,7 @@ define('pgadmin.node.package', [
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild,
- schemaChildTreeNode) {
+  schemaChildTreeNode) {
 
   // Extend the browser's collection class for package collection
   if (!pgBrowser.Nodes['coll-package']) {
@@ -67,7 +67,7 @@ define('pgadmin.node.package', [
 
       },
       canCreate: function(itemData, item, data) {
-          //If check is false then , we will allow create menu
+        //If check is false then , we will allow create menu
         if (data && data.check == false)
           return true;
 
@@ -77,11 +77,11 @@ define('pgadmin.node.package', [
         if (server && server.server_type === 'pg')
           return false;
 
-          // If it is catalog then don't allow user to create package
+        // If it is catalog then don't allow user to create package
         if (treeData['catalog'] != undefined)
           return false;
 
-          // by default we want to allow create menu
+        // by default we want to allow create menu
         return true;
       },
       // Define the model for package node.

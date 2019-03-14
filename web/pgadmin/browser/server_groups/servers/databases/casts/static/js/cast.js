@@ -12,7 +12,7 @@ define('pgadmin.node.cast', [
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.browser.collection',
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Backform) {
-    // Extend the collection class for cast
+  // Extend the collection class for cast
   if (!pgBrowser.Nodes['coll-cast']) {
     pgAdmin.Browser.Nodes['coll-cast'] =
       pgAdmin.Browser.Collection.extend({
@@ -23,7 +23,7 @@ define('pgadmin.node.cast', [
       });
   }
 
-    // Extend the node class for cast
+  // Extend the node class for cast
   if (!pgBrowser.Nodes['cast']) {
     pgAdmin.Browser.Nodes['cast'] = pgAdmin.Browser.Node.extend({
       parent_type: 'database',
@@ -38,13 +38,13 @@ define('pgadmin.node.cast', [
       hasDepends: true,
       Init: function() {
 
-          // Avoid multiple registration of menus
+        // Avoid multiple registration of menus
         if (this.initialized)
           return;
 
         this.initialized = true;
 
-          // Add context menus for cast
+        // Add context menus for cast
         pgBrowser.add_menus([{
           name: 'create_cast_on_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -65,7 +65,7 @@ define('pgadmin.node.cast', [
 
       },
 
-        // Define the backform model for cast node
+      // Define the backform model for cast node
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
         defaults: {
@@ -79,7 +79,7 @@ define('pgadmin.node.cast', [
           description: undefined,      // Comment on the cast
         },
 
-          // Define the schema for cast
+        // Define the schema for cast
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
           editable: false, type: 'text', disabled: true, cellHeaderClasses: 'width_percent_50',
@@ -99,7 +99,7 @@ define('pgadmin.node.cast', [
             return rows;
           },
 
-            /*
+          /*
              * Control is extended to create cast name from source type and destination type
              * once their values are changed
              */
@@ -107,10 +107,10 @@ define('pgadmin.node.cast', [
 
             onChange: function() {
               Backform.NodeAjaxOptionsControl.prototype.onChange.apply(
-                    this, arguments
-                    );
+                this, arguments
+              );
 
-                 /*
+              /*
                   * On source type change, check if both source type and
                   * target type are set, if yes then fetch values from both
                   * controls and generate cast name
@@ -121,12 +121,12 @@ define('pgadmin.node.cast', [
                     trgtype != undefined && trgtype != '')
                 this.model.set('name', srctype+'->'+trgtype);
               else
-                   this.model.unset('name');
+                this.model.unset('name');
             },
           }),
         },
 
-          /*
+        /*
            * Text control for viewing source type in properties and
            * edit mode only
            */
@@ -145,7 +145,7 @@ define('pgadmin.node.cast', [
             return rows;
           },
 
-            /*
+          /*
              * Control is extended to create cast name from source type and destination type
              * once their values are changed
              */
@@ -153,10 +153,10 @@ define('pgadmin.node.cast', [
 
             onChange: function() {
               Backform.NodeAjaxOptionsControl.prototype.onChange.apply(
-                 this, arguments
-                 );
+                this, arguments
+              );
 
-                 /*
+              /*
                   * on target type change, check if both source type and
                   * target type are set, if yes then fetch values from both
                   * controls and generate cast name
@@ -167,11 +167,11 @@ define('pgadmin.node.cast', [
                   trgtype != undefined && trgtype != '')
                 this.model.set('name', srcType+'->'+trgtype);
               else
-                 this.model.unset('name');
+                this.model.unset('name');
             },
           }),
         },
-          /*
+        /*
            * Text control for viewing target type in properties and
            * edit mode only
            */
@@ -180,7 +180,7 @@ define('pgadmin.node.cast', [
           group: gettext('Definition'), disabled: true, mode:['properties','edit'],
         },
 
-          /*
+        /*
            * Proname field is dependent on source type and target type.
            * On source and target type changed event,
            * associated functions will be fetch using ajax call
@@ -197,13 +197,13 @@ define('pgadmin.node.cast', [
 
             if(srcTyp != undefined && srcTyp != '' &&
                  trgtyp != undefined && trgtyp != '')
-              {
+            {
               var node = control.field.get('schema_node'),
                 _url = node.generate_url.apply(
-                 node, [
-                   null, 'get_functions', control.field.get('node_data'), false,
-                   control.field.get('node_info'),
-                 ]);
+                  node, [
+                    null, 'get_functions', control.field.get('node_data'), false,
+                    control.field.get('node_info'),
+                  ]);
               $.ajax({
                 type: 'POST',
                 timeout: 30000,
@@ -212,15 +212,15 @@ define('pgadmin.node.cast', [
                 async: false,
                 data: {'srctyp' : srcTyp, 'trgtyp' : trgtyp},
               })
-               // On success return function list from server
-              .done(function(result) {
-                res = result.data;
-                return res;
-              })
-               // On failure show error appropriate error message to user
-              .fail(function(xhr, status, error) {
-                alertify.pgRespErrorNotify(xhr, error);
-              });
+              // On success return function list from server
+                .done(function(result) {
+                  res = result.data;
+                  return res;
+                })
+              // On failure show error appropriate error message to user
+                .fail(function(xhr, status, error) {
+                  alertify.pgRespErrorNotify(xhr, error);
+                });
             }
             return res;
           },

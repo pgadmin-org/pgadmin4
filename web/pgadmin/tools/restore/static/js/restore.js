@@ -16,7 +16,7 @@ define('tools.restore', [
   'tools/restore/static/js/restore_dialog',
 ], function(
   gettext, url_for, $, _, Backbone, S, alertify, pgBrowser, Backgrid, Backform,
-commonUtils, menuUtils, supportedNodes, restoreDialog
+  commonUtils, menuUtils, supportedNodes, restoreDialog
 ) {
 
   // if module is already initialized, refer to that.

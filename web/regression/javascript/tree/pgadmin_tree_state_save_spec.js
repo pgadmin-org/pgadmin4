@@ -12,6 +12,7 @@ import {pgBrowser, browserTreeState} from '../../../pgadmin/static/js/tree/pgadm
 
 describe('#browserTreeState', () => {
   beforeEach(() => {
+
     pgBrowser.Nodes = {
       server_group: {
         _type: 'server_group',
@@ -192,10 +193,9 @@ describe('#browserTreeState', () => {
         expect(browserTreeState.current_state, {1: {'paths': ['server_group/1,server/1,coll_database/1','database/10']}});
       });
     });
-  });
 
 
-  describe('When node is closed, node should get removed from the tree state cache', () => {
+
     describe('When coll_database node is closed, both database and coll_database should be removed', () => {
       let item = {
         _type: 'coll_database',
@@ -212,6 +212,7 @@ describe('#browserTreeState', () => {
       });
 
       it('The tree current state will remove coll_database and database', () => {
+        browserTreeState.update_cache(item);
         browserTreeState.remove_from_cache(item);
         expect(browserTreeState.current_state, {1: {'paths': ['server_group/1,server/1']}});
       });

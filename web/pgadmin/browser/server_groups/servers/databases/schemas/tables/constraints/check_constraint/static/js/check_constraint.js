@@ -71,21 +71,21 @@ define('pgadmin.node.check_constraint', [
             url: obj.generate_url(i, 'validate', d, true),
             type:'GET',
           })
-          .done(function(res) {
-            if (res.success == 1) {
-              alertify.success(res.info);
-              t.removeIcon(i);
-              data.valid = true;
-              data.icon = 'icon-check_constraint';
-              t.addIcon(i, {icon: data.icon});
-              setTimeout(function() {t.deselect(i);}, 10);
-              setTimeout(function() {t.select(i);}, 100);
-            }
-          })
-          .fail(function(xhr, status, error) {
-            alertify.pgRespErrorNotify(xhr, error);
-            t.unload(i);
-          });
+            .done(function(res) {
+              if (res.success == 1) {
+                alertify.success(res.info);
+                t.removeIcon(i);
+                data.valid = true;
+                data.icon = 'icon-check_constraint';
+                t.addIcon(i, {icon: data.icon});
+                setTimeout(function() {t.deselect(i);}, 10);
+                setTimeout(function() {t.select(i);}, 100);
+              }
+            })
+            .fail(function(xhr, status, error) {
+              alertify.pgRespErrorNotify(xhr, error);
+              t.unload(i);
+            });
 
           return false;
         },
@@ -127,10 +127,10 @@ define('pgadmin.node.check_constraint', [
           id: 'consrc', label: gettext('Check'), type: 'multiline', cell:
           'string', group: gettext('Definition'), mode: ['properties',
             'create', 'edit'], disabled: function(m) {
-              return ((_.has(m, 'handler') &&
+            return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
-            }, editable: false,
+          }, editable: false,
         },{
           id: 'connoinherit', label: gettext('No inherit?'), type:
           'switch', cell: 'boolean', group: gettext('Definition'), mode:
@@ -204,21 +204,21 @@ define('pgadmin.node.check_constraint', [
       }),
       // Below function will enable right click menu for creating check constraint.
       canCreate: function(itemData, item, data) {
-          // If check is false then , we will allow create menu
+        // If check is false then , we will allow create menu
         if (data && data.check == false)
           return true;
 
         var t = pgBrowser.tree, i = item, d = itemData, parents = [];
-          // To iterate over tree to check parent node
+        // To iterate over tree to check parent node
         while (i) {
-            // If it is schema then allow user to c reate table
+          // If it is schema then allow user to c reate table
           if (_.indexOf(['schema'], d._type) > -1)
             return true;
           parents.push(d._type);
           i = t.hasParent(i) ? t.parent(i) : null;
           d = i ? t.itemData(i) : null;
         }
-          // If node is under catalog then do not allow 'create' menu
+        // If node is under catalog then do not allow 'create' menu
         if (_.indexOf(parents, 'catalog') > -1) {
           return false;
         } else {

@@ -57,17 +57,17 @@ function modifyAlertifyAnimation(pgBrowser) {
 
   if(enableAcitreeAnimation) {
     $(document).find('link#alertify-no-animation')
-               .attr('disabled', 'disabled');
+      .attr('disabled', 'disabled');
     _.each(document.getElementsByTagName('iframe'), function(frame) {
       $(frame.contentDocument).find('link#alertify-no-animation')
-                              .attr('disabled', 'disabled');
+        .attr('disabled', 'disabled');
     });
   } else {
     $(document).find('link#alertify-no-animation')
-               .removeAttr('disabled', 'disabled');
+      .removeAttr('disabled', 'disabled');
     _.each(document.getElementsByTagName('iframe'), function(frame) {
       $(frame.contentDocument).find('link#alertify-no-animation')
-                              .removeAttr('disabled', 'disabled');
+        .removeAttr('disabled', 'disabled');
     });
   }
 }

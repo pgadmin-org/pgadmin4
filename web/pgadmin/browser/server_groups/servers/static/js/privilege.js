@@ -133,8 +133,8 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
             // it is not loaded yet
             node_info = (_.has(model.top, 'node_info')
               && !_.isUndefined(model.top.node_info)) ?
-            model.top.node_info :
-            model.handler.top.node_info,
+              model.top.node_info :
+              model.handler.top.node_info,
             curr_user = node_info.server.user.name;
 
           model.collection.each(function(m) {
@@ -282,11 +282,11 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         this.attributes['privileges']) {
         var anyPrivSelected = false;
         this.attributes['privileges'].each(
-            function(p) {
-              if (p.get('privilege')) {
-                anyPrivSelected = true;
-              }
-            });
+          function(p) {
+            if (p.get('privilege')) {
+              anyPrivSelected = true;
+            }
+          });
 
         if (!anyPrivSelected) {
           msg = gettext('At least one privilege should be selected.');
@@ -473,7 +473,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
                  */
                 $allPrivileges.prop('checked', false);
                 $elGrant.prop('checked', false),
-                  $allGrants.prop('checked', false);
+                $allGrants.prop('checked', false);
                 $elGrant.prop('disabled', true);
                 $allGrants.prop('disabled', true);
               }
@@ -546,8 +546,8 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
 
                 if (type == 'with_grant') {
                   $allGrants = $tbl.find(
-                      'input[name=with_grant][privilege!=\'ALL\']:checked'
-                    );
+                    'input[name=with_grant][privilege!=\'ALL\']:checked'
+                  );
                   if ($allGrants.length == collection.models.length) {
                     $allGrants.prop('disabled', false);
                     $allGrants.prop('checked', true);
@@ -616,7 +616,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
           coll = this.model.get(this.column.get('name'));
 
         if (command.moveUp() || command.moveDown() || command.save()) {
-            // backgrid vertical navigation (Up/Down arrow key)
+          // backgrid vertical navigation (Up/Down arrow key)
           ev.preventDefault();
           ev.stopPropagation();
           model.trigger('backgrid:edited', model, column, command);
@@ -752,7 +752,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         e.stopPropagation();
         model.trigger('backgrid:edited', model, column, command);
       }
-    // esc
+      // esc
       else if (command.cancel()) {
       // undo
         e.stopPropagation();

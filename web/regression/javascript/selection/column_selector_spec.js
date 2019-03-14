@@ -100,7 +100,7 @@ describe('ColumnSelector', function () {
     var columnSelector = new ColumnSelector();
     var selectableColumns = columnSelector.getColumnDefinitions(columns);
 
-    expect(selectableColumns[1].id).toBe('1');
+    expect(selectableColumns[1].id).toEqual('1');
   });
 
   describe('with ActiveCellCapture, CellSelectionModel, and GridSelector: selecting columns', function () {
@@ -142,11 +142,11 @@ describe('ColumnSelector', function () {
       it('toggles a selected class to the header cell', function () {
         container.find('.slick-header-column:contains(second column)').click();
         expect($(container.find('.slick-header-column:contains(second column)')).hasClass('selected'))
-          .toBe(true);
+          .toEqual(true);
 
         container.find('.slick-header-column:contains(second column)').click();
         expect($(container.find('.slick-header-column:contains(second column)')).hasClass('selected'))
-          .toBe(false);
+          .toEqual(false);
       });
     });
 
@@ -160,14 +160,14 @@ describe('ColumnSelector', function () {
 
         var selectedRanges = cellSelectionModel.getSelectedRanges();
 
-        expect(selectedRanges.length).toBe(2);
+        expect(selectedRanges.length).toEqual(2);
         var column1 = selectedRanges[0];
-        expect(column1.fromCell).toBe(1);
-        expect(column1.toCell).toBe(1);
+        expect(column1.fromCell).toEqual(1);
+        expect(column1.toCell).toEqual(1);
 
         var column2 = selectedRanges[1];
-        expect(column2.fromCell).toBe(2);
-        expect(column2.toCell).toBe(2);
+        expect(column2.fromCell).toEqual(2);
+        expect(column2.toCell).toEqual(2);
       });
 
       describe('and presses shift + right-arrow', function () {
@@ -176,24 +176,24 @@ describe('ColumnSelector', function () {
         });
 
         it('keeps the last column selected', function () {
-          expect(cellSelectionModel.getSelectedRanges().length).toBe(1);
+          expect(cellSelectionModel.getSelectedRanges().length).toEqual(1);
         });
 
         it('grows the selection to the right', function () {
           var selectedRange = cellSelectionModel.getSelectedRanges()[0];
-          expect(selectedRange.fromCell).toBe(2);
-          expect(selectedRange.toCell).toBe(3);
-          expect(selectedRange.fromRow).toBe(0);
-          expect(selectedRange.toRow).toBe(9);
+          expect(selectedRange.fromCell).toEqual(2);
+          expect(selectedRange.toCell).toEqual(3);
+          expect(selectedRange.fromRow).toEqual(0);
+          expect(selectedRange.toRow).toEqual(9);
         });
 
         it('keeps selected class on columns 2 and 3', function () {
           expect($(container.find('.slick-header-column:contains(second column)')).hasClass('selected'))
-            .toBe(true);
+            .toEqual(true);
           expect($(container.find('.slick-header-column:contains(third column)')).hasClass('selected'))
-            .toBe(true);
+            .toEqual(true);
           expect($(container.find('.slick-header-column:contains(some-column-name)')).hasClass('selected'))
-            .toBe(false);
+            .toEqual(false);
         });
       });
 
@@ -208,11 +208,11 @@ describe('ColumnSelector', function () {
 
             var selectedRanges = cellSelectionModel.getSelectedRanges();
 
-            expect(selectedRanges.length).toBe(1);
-            expect(selectedRanges[0].fromCell).toBe(1);
-            expect(selectedRanges[0].toCell).toBe(2);
-            expect(selectedRanges[0].fromRow).toBe(0);
-            expect(selectedRanges[0].toRow).toBe(9);
+            expect(selectedRanges.length).toEqual(1);
+            expect(selectedRanges[0].fromCell).toEqual(1);
+            expect(selectedRanges[0].toCell).toEqual(2);
+            expect(selectedRanges[0].fromRow).toEqual(0);
+            expect(selectedRanges[0].toRow).toEqual(9);
           });
         });
       });
@@ -229,11 +229,11 @@ describe('ColumnSelector', function () {
       it('toggles a selected class to the header cell', function () {
         container.find('.slick-header-column span.column-description:contains(second column)').click();
         expect($(container.find('.slick-header-column:contains(second column)')).hasClass('selected'))
-          .toBe(true);
+          .toEqual(true);
 
         container.find('.slick-header-column span.column-description:contains(second column)').click();
         expect($(container.find('.slick-header-column:contains(second column)')).hasClass('selected'))
-          .toBe(false);
+          .toEqual(false);
       });
     });
 
@@ -247,14 +247,14 @@ describe('ColumnSelector', function () {
         container.find('.slick-header-column')[1].click();
         var selectedRanges = cellSelectionModel.getSelectedRanges();
 
-        expect(selectedRanges.length).toBe(1);
+        expect(selectedRanges.length).toEqual(1);
 
         var column = selectedRanges[0];
 
-        expect(column.fromCell).toBe(1);
-        expect(column.toCell).toBe(1);
-        expect(column.fromRow).toBe(0);
-        expect(column.toRow).toBe(9);
+        expect(column.fromCell).toEqual(1);
+        expect(column.toCell).toEqual(1);
+        expect(column.fromRow).toEqual(0);
+        expect(column.toRow).toEqual(9);
       });
     });
 
@@ -289,7 +289,7 @@ describe('ColumnSelector', function () {
         cellSelectionModel.setSelectedRanges([]);
 
         expect($(container.find('.slick-header-column')[1]).hasClass('selected'))
-          .toBe(false);
+          .toEqual(false);
       });
     });
 
@@ -321,14 +321,14 @@ describe('ColumnSelector', function () {
 
           var selectedRanges = cellSelectionModel.getSelectedRanges();
 
-          expect(selectedRanges.length).toBe(1);
+          expect(selectedRanges.length).toEqual(1);
 
           var column = selectedRanges[0];
 
-          expect(column.fromCell).toBe(1);
-          expect(column.toCell).toBe(1);
-          expect(column.fromRow).toBe(1);
-          expect(column.toRow).toBe(1);
+          expect(column.fromCell).toEqual(1);
+          expect(column.toCell).toEqual(1);
+          expect(column.fromRow).toEqual(1);
+          expect(column.toRow).toEqual(1);
         });
 
         it('keep select class on column header', function () {
@@ -346,14 +346,14 @@ describe('ColumnSelector', function () {
 
           var selectedRanges = cellSelectionModel.getSelectedRanges();
 
-          expect(selectedRanges.length).toBe(1);
+          expect(selectedRanges.length).toEqual(1);
 
           var column = selectedRanges[0];
 
-          expect(column.fromCell).toBe(2);
-          expect(column.toCell).toBe(2);
-          expect(column.fromRow).toBe(2);
-          expect(column.toRow).toBe(2);
+          expect(column.fromCell).toEqual(2);
+          expect(column.toCell).toEqual(2);
+          expect(column.fromRow).toEqual(2);
+          expect(column.toRow).toEqual(2);
         });
 
         it('remove select class on \'some-column-name\' column header', function () {
@@ -373,14 +373,14 @@ describe('ColumnSelector', function () {
         it('column is deselected', function () {
           var selectedRanges = cellSelectionModel.getSelectedRanges();
 
-          expect(selectedRanges.length).toBe(1);
+          expect(selectedRanges.length).toEqual(1);
 
           var column = selectedRanges[0];
 
-          expect(column.fromCell).toBe(1);
-          expect(column.toCell).toBe(3);
-          expect(column.fromRow).toBe(1);
-          expect(column.toRow).toBe(1);
+          expect(column.fromCell).toEqual(1);
+          expect(column.toCell).toEqual(3);
+          expect(column.fromRow).toEqual(1);
+          expect(column.toRow).toEqual(1);
         });
 
         it('no column should have the class \'selected\'', function () {
@@ -407,10 +407,10 @@ describe('ColumnSelector', function () {
     var row = selectedRanges[0];
 
     expect(selectedRanges.length).toEqual(1);
-    expect(row.fromCell).toBe(1);
-    expect(row.toCell).toBe(1);
-    expect(row.fromRow).toBe(0);
-    expect(row.toRow).toBe(9);
+    expect(row.fromCell).toEqual(1);
+    expect(row.toCell).toEqual(1);
+    expect(row.fromRow).toEqual(0);
+    expect(row.toRow).toEqual(9);
   }
 
   function pressShiftArrow(keyCode) {

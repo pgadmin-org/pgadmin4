@@ -8,25 +8,25 @@
 //////////////////////////////////////////////////////////////////////////
 
 define(['sources/check_node_visibility'],
-function (checkNodeVisibility) {
-  describe('checkNodeVisibility', function () {
+  function (checkNodeVisibility) {
+    describe('checkNodeVisibility', function () {
 
-    var browser;
+      var browser;
 
-    browser = jasmine.createSpyObj('browser', [
-      'node_preference_data', 'get_preference']
-                );
+      browser = jasmine.createSpyObj('browser', [
+        'node_preference_data', 'get_preference']
+      );
 
-    describe('when node is server collection', function () {
-      it('returns true', function () {
-        expect(checkNodeVisibility(browser, 'coll-server')).toEqual(true);
+      describe('when node is server collection', function () {
+        it('returns true', function () {
+          expect(checkNodeVisibility(browser, 'coll-server')).toEqual(true);
+        });
       });
-    });
 
-    describe('when node is server', function () {
-      it('returns true', function () {
-        expect(checkNodeVisibility(browser, 'server')).toEqual(true);
+      describe('when node is server', function () {
+        it('returns true', function () {
+          expect(checkNodeVisibility(browser, 'server')).toEqual(true);
+        });
       });
     });
   });
-});

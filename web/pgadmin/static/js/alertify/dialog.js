@@ -22,9 +22,9 @@ import {getTreeNodeHierarchyFromIdentifier} from '../tree/pgadmin_tree_node';
  */
 export class Dialog {
   constructor(errorAlertTitle,
-              dialogContainerSelector,
-              pgBrowser, $, alertify, DialogModel,
-              backform = Backform) {
+    dialogContainerSelector,
+    pgBrowser, $, alertify, DialogModel,
+    backform = Backform) {
     this.errorAlertTitle = errorAlertTitle;
     this.alertify = alertify;
     this.pgBrowser = pgBrowser;

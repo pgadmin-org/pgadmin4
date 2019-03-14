@@ -53,7 +53,7 @@ import JSONBigNumber from 'json-bignumber';
     $('<button class=\'btn ' + button_type + ' long_text_editor pg-alertify-button\' data-label="'+label+'">' +
     '<span class="fa '+ button_icon +' pg-alertify-button"></span>&nbsp;'+ label +
     '</button>')
-    .appendTo($buttons);
+      .appendTo($buttons);
 
     if (editable) {
       $('<button class=\'btn btn-primary long_text_editor\' data-label="Save">'+

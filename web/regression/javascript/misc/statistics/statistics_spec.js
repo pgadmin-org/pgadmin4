@@ -15,7 +15,7 @@ describe('#nodeHasStatistics', () => {
       const node = {
         hasStatistics: true,
       };
-      expect(nodeHasStatistics(node, {})).toBe(true);
+      expect(nodeHasStatistics(node, {})).toEqual(true);
     });
   });
 
@@ -28,7 +28,7 @@ describe('#nodeHasStatistics', () => {
         };
         const item = {};
 
-        expect(nodeHasStatistics(node, item)).toBe(true);
+        expect(nodeHasStatistics(node, item)).toEqual(true);
         expect(node.getTreeNodeHierarchy).toHaveBeenCalledWith(item);
       });
     });

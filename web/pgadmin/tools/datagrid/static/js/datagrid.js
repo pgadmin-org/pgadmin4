@@ -68,7 +68,7 @@ define('pgadmin.datagrid', [
             'foreign_table', 'catalog_object', 'partition',
           ],
 
-        /* Enable/disable View data menu in tools based
+          /* Enable/disable View data menu in tools based
          * on node selected. if selected node is present
          * in supported_nodes, menu will be enabled
          * otherwise disabled.
@@ -86,7 +86,7 @@ define('pgadmin.datagrid', [
             return isEnabled;
           },
 
-        /* Enable/disable Query tool menu in tools based
+          /* Enable/disable Query tool menu in tools based
          * on node selected. if selected node is present
          * in unsupported_nodes, menu will be disabled
          * otherwise enabled.
@@ -350,25 +350,25 @@ define('pgadmin.datagrid', [
                     contentType: 'application/json',
                     data: JSON.stringify(sql),
                   })
-                  .done(function(res) {
-                    if (res.data.status) {
+                    .done(function(res) {
+                      if (res.data.status) {
                       // Initialize the data grid.
-                      self.create_transaction(that.baseUrl, null, 'false', parentData.server.server_type, '', grid_title, sql, false);
-                      that.close(); // Close the dialog
-                    }
-                    else {
+                        self.create_transaction(that.baseUrl, null, 'false', parentData.server.server_type, '', grid_title, sql, false);
+                        that.close(); // Close the dialog
+                      }
+                      else {
+                        alertify.alert(
+                          gettext('Validation Error'),
+                          res.data.result
+                        );
+                      }
+                    })
+                    .fail(function(e) {
                       alertify.alert(
                         gettext('Validation Error'),
-                          res.data.result
+                        e
                       );
-                    }
-                  })
-                  .fail(function(e) {
-                    alertify.alert(
-                      gettext('Validation Error'),
-                      e
-                    );
-                  });
+                    });
                 }
               },
             };
@@ -378,7 +378,7 @@ define('pgadmin.datagrid', [
         $.get(url_for('datagrid.filter'),
           function(data) {
             alertify.filterDialog('Data Filter', data, baseUrl, validateUrl)
-                    .resizeTo(pgBrowser.stdW.sm,pgBrowser.stdH.sm);
+              .resizeTo(pgBrowser.stdW.sm,pgBrowser.stdH.sm);
           }
         );
       },
@@ -413,35 +413,35 @@ define('pgadmin.datagrid', [
           data: reqData,
           contentType: 'application/json',
         })
-        .done(function(res) {
-          res.data.is_query_tool = is_query_tool;
-          res.data.server_type = server_type;
-          res.data.sURL = sURL;
-          res.data.panel_title = panel_title;
-          target.trigger('pgadmin-datagrid:transaction:created', res.data);
-        })
-        .fail(function(xhr) {
-          if (target !== self) {
-            if(xhr.status == 503 && xhr.responseJSON.info != undefined &&
+          .done(function(res) {
+            res.data.is_query_tool = is_query_tool;
+            res.data.server_type = server_type;
+            res.data.sURL = sURL;
+            res.data.panel_title = panel_title;
+            target.trigger('pgadmin-datagrid:transaction:created', res.data);
+          })
+          .fail(function(xhr) {
+            if (target !== self) {
+              if(xhr.status == 503 && xhr.responseJSON.info != undefined &&
                 xhr.responseJSON.info == 'CONNECTION_LOST') {
-              setTimeout(function() {
-                target.handle_connection_lost(true, xhr);
-              });
-              return;
+                setTimeout(function() {
+                  target.handle_connection_lost(true, xhr);
+                });
+                return;
+              }
             }
-          }
 
-          try {
-            var err = JSON.parse(xhr.responseText);
-            alertify.alert(gettext('Query Tool initialization error'),
-              err.errormsg
-            );
-          } catch (e) {
-            alertify.alert(gettext('Query Tool initialization error'),
-              e.statusText
-            );
-          }
-        });
+            try {
+              var err = JSON.parse(xhr.responseText);
+              alertify.alert(gettext('Query Tool initialization error'),
+                err.errormsg
+              );
+            } catch (e) {
+              alertify.alert(gettext('Query Tool initialization error'),
+                e.statusText
+              );
+            }
+          });
       },
       launch_grid: function(trans_obj) {
         var self = this,
@@ -470,7 +470,7 @@ define('pgadmin.datagrid', [
           }
         }
 
-          // Open the panel if frame is initialized
+        // Open the panel if frame is initialized
         let titileForURLObj = sqlEditorUtils.removeSlashInTheString(grid_title);
         var url_params = {
             'trans_id': trans_obj.gridTransId,

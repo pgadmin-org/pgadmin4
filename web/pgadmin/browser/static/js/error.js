@@ -8,16 +8,16 @@
 //////////////////////////////////////////////////////////////
 
 define(
-    ['sources/gettext', 'underscore', 'alertify', 'sources/pgadmin'],
-function(gettext, _, alertify, pgAdmin) {
-  pgAdmin.Browser = pgAdmin.Browser || {};
+  ['sources/gettext', 'underscore', 'alertify', 'sources/pgadmin'],
+  function(gettext, _, alertify, pgAdmin) {
+    pgAdmin.Browser = pgAdmin.Browser || {};
 
-  _.extend(pgAdmin.Browser, {
-    report_error: function(title, message, info) {
-      title = _.escape(title);
-      message = _.escape(message);
-      info = _.escape(info);
-      let text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
+    _.extend(pgAdmin.Browser, {
+      report_error: function(title, message, info) {
+        title = _.escape(title);
+        message = _.escape(message);
+        info = _.escape(info);
+        let text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
            <div class="panel panel-default">\
            <div class="panel-heading" role="tab" id="headingOne">\
            <h4 class="panel-title">\
@@ -30,8 +30,8 @@ function(gettext, _, alertify, pgAdmin) {
         </div>\
         </div>';
 
-      if (info != null && info != '') {
-        text += '<div class="panel panel-default">\
+        if (info != null && info != '') {
+          text += '<div class="panel panel-default">\
             <div class="panel-heading" role="tab" id="headingTwo">\
             <h4 class="panel-title">\
             <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">\
@@ -43,15 +43,15 @@ function(gettext, _, alertify, pgAdmin) {
           </div>\
           </div>\
           </div>';
-      }
+        }
 
-      text += '</div>';
-      alertify.alert(
-        title,
-        text
-      ).set('closable', true);
-    },
+        text += '</div>';
+        alertify.alert(
+          title,
+          text
+        ).set('closable', true);
+      },
+    });
+
+    return pgAdmin.Browser.report_error;
   });
-
-  return pgAdmin.Browser.report_error;
-});

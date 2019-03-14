@@ -78,7 +78,7 @@ function updateUIPreferences(sqlEditor) {
     .find('i')
     .attr('title',
       shortcut_accesskey_title('Connection status (click for details)',
-                            preferences.btn_conn_status));
+        preferences.btn_conn_status));
 
   /* Accessed using ctrl,atl,shift and key */
   $el.find('#btn-flash')
@@ -152,8 +152,8 @@ function updateUIPreferences(sqlEditor) {
 
     // Calling it again in specified interval
     sqlEditor.connIntervalId =  setInterval(
-        SqlEditorUtils.fetchConnectionStatus.bind(null, sqlEditor.handler, $conn_status, $status_el),
-        preferences.connection_status_fetch_time * 1000
+      SqlEditorUtils.fetchConnectionStatus.bind(null, sqlEditor.handler, $conn_status, $status_el),
+      preferences.connection_status_fetch_time * 1000
     );
   }
   else {

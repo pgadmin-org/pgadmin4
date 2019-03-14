@@ -17,7 +17,7 @@ describe('#httpResponseRequiresNewTransaction', () => {
     it('should return false', () => {
       expect(httpResponseRequiresNewTransaction({
         status: 300,
-      })).toBe(false);
+      })).toEqual(false);
     });
   });
 
@@ -48,7 +48,7 @@ describe('#httpResponseRequiresNewTransaction', () => {
               data: {
                 info: 'some information',
               },
-            })).toBe(false);
+            })).toEqual(false);
           });
         });
 
@@ -59,7 +59,7 @@ describe('#httpResponseRequiresNewTransaction', () => {
               data: {
                 info: 'DATAGRID_TRANSACTION_REQUIRED',
               },
-            })).toBe(true);
+            })).toEqual(true);
           });
         });
       });
@@ -79,8 +79,8 @@ describe('#handleQueryToolAjaxError', () => {
     stateParameters = [];
     checkTransaction = false;
     sqlEditorHandler = jasmine.createSpyObj(
-        'handler', ['initTransaction', 'saveState', 'handle_connection_lost']
-      );
+      'handler', ['initTransaction', 'saveState', 'handle_connection_lost']
+    );
     exceptionSpy = {
       readyState: 0,
       status: 404,
@@ -102,7 +102,7 @@ describe('#handleQueryToolAjaxError', () => {
           pgBrowserMock, sqlEditorHandler, exceptionSpy, stateToSave,
           stateParameters, checkTransaction
         )
-      ).toBe('Not connected to the server or the connection to the server has been closed.');
+      ).toEqual('Not connected to the server or the connection to the server has been closed.');
     });
   });
 
@@ -184,7 +184,7 @@ describe('#handleQueryToolAjaxError', () => {
           pgBrowserMock, sqlEditorHandler, exceptionSpy, stateToSave,
           stateParameters, checkTransaction
         )
-      ).toBe('ajax failed with unknown reason');
+      ).toEqual('ajax failed with unknown reason');
     });
   });
 

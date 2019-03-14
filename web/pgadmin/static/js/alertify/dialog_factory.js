@@ -12,8 +12,8 @@ import {RestoreDialogWrapper} from '../../../tools/restore/static/js/restore_dia
 
 export class DialogFactory {
   constructor(pgBrowser, $,
-              alertify, DialogModel,
-              backform, dialogContainerSelector) {
+    alertify, DialogModel,
+    backform, dialogContainerSelector) {
     this.pgBrowser = pgBrowser;
     this.jquery = $;
     this.alertify = alertify;

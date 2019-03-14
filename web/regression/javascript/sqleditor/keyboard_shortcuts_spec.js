@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-import keyboardShortcuts from 'sources/keyboard_shortcuts';
+import * as keyboardShortcuts from 'sources/keyboard_shortcuts';
 import {queryToolActions} from 'sources/sqleditor/query_tool_actions';
 import gettext from 'sources/gettext';
 
@@ -512,30 +512,30 @@ describe('the keyboard shortcuts', () => {
     };
 
     it('shortcut_key',()=>{
-      expect(keyboardShortcuts.shortcut_key(shortcut)).toBe('A');
+      expect(keyboardShortcuts.shortcut_key(shortcut)).toEqual('A');
     });
 
     it('shortcut_accesskey_title',()=>{
       expect(keyboardShortcuts.shortcut_accesskey_title(
-        'Title', shortcut)).toBe(gettext('Title (accesskey + A)'));
+        'Title', shortcut)).toEqual(gettext('Title (accesskey + A)'));
     });
 
     it('shortcut_title',()=>{
       shortcut.alt = true, shortcut.shift = false, shortcut.control = false;
       expect(keyboardShortcuts.shortcut_title(
-        'Title', shortcut)).toBe(gettext('Title (Alt+A)'));
+        'Title', shortcut)).toEqual(gettext('Title (Alt+A)'));
 
       shortcut.alt = false, shortcut.shift = true, shortcut.control = false;
       expect(keyboardShortcuts.shortcut_title(
-        'Title', shortcut)).toBe(gettext('Title (Shift+A)'));
+        'Title', shortcut)).toEqual(gettext('Title (Shift+A)'));
 
       shortcut.alt = false, shortcut.shift = false, shortcut.control = true;
       expect(keyboardShortcuts.shortcut_title(
-        'Title', shortcut)).toBe(gettext('Title (Ctrl+A)'));
+        'Title', shortcut)).toEqual(gettext('Title (Ctrl+A)'));
 
       shortcut.alt = true, shortcut.shift = true, shortcut.control = true;
       expect(keyboardShortcuts.shortcut_title(
-        'Title', shortcut)).toBe(gettext('Title (Alt+Shift+Ctrl+A)'));
+        'Title', shortcut)).toEqual(gettext('Title (Alt+Shift+Ctrl+A)'));
     });
   });
 
@@ -617,7 +617,7 @@ describe('the keyboard shortcuts', () => {
     describe('stops all event propogation', () => {
 
       it('should cancel the bubble', () => {
-        expect(event.cancelBubble).toBe(true);
+        expect(event.cancelBubble).toEqual(true);
       });
 
       it('should prevent the default behavior', () => {

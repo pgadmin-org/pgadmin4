@@ -67,7 +67,7 @@ describe('dialogTabNavigator', function () {
     };
 
     tabNavigator = new dialogTabNavigator.dialogTabNavigator(
-          dialog, backward_shortcut, forward_shortcut);
+      dialog, backward_shortcut, forward_shortcut);
   });
 
   describe('navigate', function () {

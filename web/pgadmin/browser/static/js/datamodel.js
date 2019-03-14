@@ -36,7 +36,7 @@ define([
                   obj = new(pgBrowser.Node.Collection)(val, {
                     model: ((_.isString(s.model) &&
                           s.model in pgBrowser.Nodes) ?
-                        pgBrowser.Nodes[s.model].model : s.model),
+                      pgBrowser.Nodes[s.model].model : s.model),
                     top: self.top || self,
                     handler: self,
                     parse: true,
@@ -44,7 +44,7 @@ define([
                     attrName: s.id,
                   });
 
-                    /*
+                  /*
                      * Nested collection models may or may not have idAttribute.
                      * So to decide whether model is new or not set 'on_server'
                      * flag on such models.
@@ -56,7 +56,7 @@ define([
                     on_server: true,
                   });
                 } else {
-                    /*
+                  /*
                      * Nested collection models may or may not have idAttribute.
                      * So to decide whether model is new or not set 'on_server'
                      * flag on such models.
@@ -83,13 +83,13 @@ define([
                   if (_.isString(s.model) &&
                       s.model in pgBrowser.Nodes[s.model]) {
                     obj = new(pgBrowser.Nodes[s.model].Model)(
-                        obj, {
-                          silent: true,
-                          top: self.top || self,
-                          handler: self,
-                          attrName: s.id,
-                        }
-                      );
+                      obj, {
+                        silent: true,
+                        top: self.top || self,
+                        handler: self,
+                        attrName: s.id,
+                      }
+                    );
                   } else {
                     obj = new(s.model)(obj, {
                       silent: true,
@@ -163,7 +163,7 @@ define([
       self.objects = [];
       self.arrays = [];
       self.attrName = options.attrName,
-        self.top = (options.top || self.collection && self.collection.top || self.collection || self);
+      self.top = (options.top || self.collection && self.collection.top || self.collection || self);
       self.handler = options.handler ||
         (self.collection && self.collection.handler);
       self.trackChanges = false;
@@ -234,19 +234,19 @@ define([
                 if (_.isString(s.model) &&
                     s.model in pgBrowser.Nodes[s.model]) {
                   obj = new(pgBrowser.Nodes[s.model].Model)(
-                      obj, {
-                        top: self.top || self,
-                        handler: self,
-                        attrName: s.id,
-                      }
-                    );
+                    obj, {
+                      top: self.top || self,
+                      handler: self,
+                      attrName: s.id,
+                    }
+                  );
                 } else {
                   obj = new(s.model)(
-                      obj, {
-                        top: self.top || self,
-                        handler: self,
-                        attrName: s.id,
-                      });
+                    obj, {
+                      top: self.top || self,
+                      handler: self,
+                      attrName: s.id,
+                    });
                 }
               }
 
@@ -549,26 +549,26 @@ define([
             typeof(obj.primary_key) === 'function';
           var key = hasPrimaryKey ? obj.primary_key() : obj.cid,
             comparator = hasPrimaryKey ?
-            function(k) {
-              var o = self.get('k');
+              function(k) {
+                var o = self.get('k');
 
-              if (o && o.primary_key() === key) {
-                objName = k;
-                return true;
-              }
+                if (o && o.primary_key() === key) {
+                  objName = k;
+                  return true;
+                }
 
-              return false;
-            } :
-            function(k) {
-              var o = self.get(k);
+                return false;
+              } :
+              function(k) {
+                var o = self.get(k);
 
-              if (o.cid === key) {
-                objName = k;
-                return true;
-              }
+                if (o.cid === key) {
+                  objName = k;
+                  return true;
+                }
 
-              return false;
-            };
+                return false;
+              };
           _.findIndex(self.objects, comparator);
         }
 
@@ -599,26 +599,26 @@ define([
             (typeof(obj.primary_key) === 'function'));
           var key = hasPrimaryKey ? obj.primary_key() : obj.cid,
             comparator = hasPrimaryKey ?
-            function(k) {
-              var o = self.get('k');
+              function(k) {
+                var o = self.get('k');
 
-              if (o && o.primary_key() === key) {
-                objName = k;
-                return true;
-              }
+                if (o && o.primary_key() === key) {
+                  objName = k;
+                  return true;
+                }
 
-              return false;
-            } :
-            function(k) {
-              var o = self.get('k');
+                return false;
+              } :
+              function(k) {
+                var o = self.get('k');
 
-              if (o && o.cid === key) {
-                objName = k;
-                return true;
-              }
+                if (o && o.cid === key) {
+                  objName = k;
+                  return true;
+                }
 
-              return false;
-            };
+                return false;
+              };
 
           _.findIndex(self.objects, comparator);
         }

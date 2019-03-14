@@ -111,25 +111,25 @@ define('pgadmin.node.trigger', [
             data: {'enable' : true},
             dataType: 'json',
           })
-          .done(function(res) {
-            if (res.success == 1) {
-              alertify.success(res.info);
-              t.removeIcon(i);
-              data.icon = 'icon-trigger';
-              t.addIcon(i, {icon: data.icon});
+            .done(function(res) {
+              if (res.success == 1) {
+                alertify.success(res.info);
+                t.removeIcon(i);
+                data.icon = 'icon-trigger';
+                t.addIcon(i, {icon: data.icon});
+                t.unload(i);
+                t.setInode(false);
+                t.deselect(i);
+                // Fetch updated data from server
+                setTimeout(function() {
+                  t.select(i);
+                }, 10);
+              }
+            })
+            .fail(function(xhr, status, error) {
+              alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);
-              t.setInode(false);
-              t.deselect(i);
-              // Fetch updated data from server
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
-            }
-          })
-          .fail(function(xhr, status, error) {
-            alertify.pgRespErrorNotify(xhr, error);
-            t.unload(i);
-          });
+            });
         },
         /* Disable trigger */
         disable_trigger: function(args) {
@@ -149,25 +149,25 @@ define('pgadmin.node.trigger', [
             data: {'enable' : false},
             dataType: 'json',
           })
-          .done(function(res) {
-            if (res.success == 1) {
-              alertify.success(res.info);
-              t.removeIcon(i);
-              data.icon = 'icon-trigger-bad';
-              t.addIcon(i, {icon: data.icon});
+            .done(function(res) {
+              if (res.success == 1) {
+                alertify.success(res.info);
+                t.removeIcon(i);
+                data.icon = 'icon-trigger-bad';
+                t.addIcon(i, {icon: data.icon});
+                t.unload(i);
+                t.setInode(false);
+                t.deselect(i);
+                // Fetch updated data from server
+                setTimeout(function() {
+                  t.select(i);
+                }, 10);
+              }
+            })
+            .fail(function(xhr, status, error) {
+              alertify.pgRespErrorNotify(xhr, error, gettext('Disable trigger failed'));
               t.unload(i);
-              t.setInode(false);
-              t.deselect(i);
-              // Fetch updated data from server
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
-            }
-          })
-          .fail(function(xhr, status, error) {
-            alertify.pgRespErrorNotify(xhr, error, gettext('Disable trigger failed'));
-            t.unload(i);
-          });
+            });
         },
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
@@ -199,7 +199,7 @@ define('pgadmin.node.trigger', [
             if (_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
               _.has(m.node_info.table, 'is_partitioned') &&
                m.node_info.table.is_partitioned && m.node_info.server.version < 110000
-               )
+            )
             {
               setTimeout(function(){
                 m.set('is_row_trigger', false);
@@ -214,7 +214,7 @@ define('pgadmin.node.trigger', [
             if(!m.inSchemaWithModelCheck.apply(this, [m])) {
               if(!_.isUndefined(is_constraint_trigger) &&
                 is_constraint_trigger === true) {
-                  // change it's model value
+                // change it's model value
                 setTimeout(function() { m.set('is_row_trigger', true); }, 10);
                 return true;
               } else {
@@ -263,7 +263,7 @@ define('pgadmin.node.trigger', [
                 is_constraint_trigger === true) {
                 return false;
               } else {
-                  // If value is already set then reset it to false
+                // If value is already set then reset it to false
                 if(m.get('tgdeferrable')) {
                   setTimeout(function() { m.set('tgdeferrable', false); }, 10);
                 }
@@ -287,11 +287,11 @@ define('pgadmin.node.trigger', [
                 tgdeferrable) {
                 return false;
               } else {
-                  // If value is already set then reset it to false
+                // If value is already set then reset it to false
                 if(m.get('tginitdeferred')) {
                   setTimeout(function() { m.set('tginitdeferred', false); }, 10);
                 }
-                  // If constraint trigger is set then do not disable
+                // If constraint trigger is set then do not disable
                 return m.get('is_constraint_trigger') ? false : true;
               }
             } else {
@@ -318,7 +318,7 @@ define('pgadmin.node.trigger', [
               if(server_type === 'ppas' &&
                 !_.isUndefined(tfunction) &&
                   tfunction === 'Inline EDB-SPL') {
-                    // Disable and clear its value
+                // Disable and clear its value
                 m.set('tgargs', undefined);
                 return true;
               } else {
@@ -334,8 +334,8 @@ define('pgadmin.node.trigger', [
           mode: ['create','edit', 'properties'], group: gettext('Events'),
           options: function(control) {
             var table_options = [
-              {label: 'BEFORE', value: 'BEFORE'},
-              {label: 'AFTER', value: 'AFTER'}],
+                {label: 'BEFORE', value: 'BEFORE'},
+                {label: 'AFTER', value: 'AFTER'}],
               view_options = [
                 {label: 'BEFORE', value: 'BEFORE'},
                 {label: 'AFTER', value: 'AFTER'},

@@ -86,10 +86,10 @@ define('misc.statistics', [
       }),
       // timestamptz
       1184: 'string'
-        /* Backgrid.DatetimeCell.extend({
+      /* Backgrid.DatetimeCell.extend({
               includeDate: true, includeTime: true, includeMilli: true
             }) */
-        ,
+      ,
       1266: 'string',
       /* Backgrid.DatetimeCell.extend({
             includeDate: false, includeTime: true, includeMilli: true
@@ -248,78 +248,78 @@ define('misc.statistics', [
               }, 1000);
             },
           })
-          .done(function(res) {
+            .done(function(res) {
             // clear timer and reset message.
-            clearTimeout(timer);
-            $msgContainer.text('');
-            if (res.data) {
-              var data = self.data = res.data;
-              if (node.hasCollectiveStatistics || data['rows'].length > 1) {
+              clearTimeout(timer);
+              $msgContainer.text('');
+              if (res.data) {
+                var data = self.data = res.data;
+                if (node.hasCollectiveStatistics || data['rows'].length > 1) {
                 // Listen scroll event to load more rows
-                pgBrowser.Events.on(
-                  'pgadmin-browser:panel-statistics:' +
+                  pgBrowser.Events.on(
+                    'pgadmin-browser:panel-statistics:' +
                   wcDocker.EVENT.SCROLLED,
-                  self.__loadMoreRows
-                );
-                self.__createMultiLineStatistics.call(self, data, node.statsPrettifyFields);
-              } else {
+                    self.__loadMoreRows
+                  );
+                  self.__createMultiLineStatistics.call(self, data, node.statsPrettifyFields);
+                } else {
                 // Do not listen the scroll event
-                pgBrowser.Events.off(
-                  'pgadmin-browser:panel-statistics:' +
+                  pgBrowser.Events.off(
+                    'pgadmin-browser:panel-statistics:' +
                   wcDocker.EVENT.SCROLLED,
-                  self.__loadMoreRows
-                );
-                self.__createSingleLineStatistics.call(self, data, node.statsPrettifyFields);
-              }
+                    self.__loadMoreRows
+                  );
+                  self.__createSingleLineStatistics.call(self, data, node.statsPrettifyFields);
+                }
 
-              if (self.grid) {
-                delete self.grid;
-                self.grid = null;
-              }
+                if (self.grid) {
+                  delete self.grid;
+                  self.grid = null;
+                }
 
-              self.grid = new Backgrid.Grid({
-                emptyText: 'No data found',
-                columns: self.columns,
-                collection: self.collection,
-                className: GRID_CLASSES,
-              });
-              self.grid.render();
-              $gridContainer.empty();
-              $gridContainer.append(self.grid.$el);
+                self.grid = new Backgrid.Grid({
+                  emptyText: 'No data found',
+                  columns: self.columns,
+                  collection: self.collection,
+                  className: GRID_CLASSES,
+                });
+                self.grid.render();
+                $gridContainer.empty();
+                $gridContainer.append(self.grid.$el);
 
-              if (!$msgContainer.hasClass('d-none')) {
-                $msgContainer.addClass('d-none');
-              }
-              $gridContainer.removeClass('d-none');
+                if (!$msgContainer.hasClass('d-none')) {
+                  $msgContainer.addClass('d-none');
+                }
+                $gridContainer.removeClass('d-none');
 
-            } else if (res.info) {
-              if (!$gridContainer.hasClass('d-none')) {
-                $gridContainer.addClass('d-none');
+              } else if (res.info) {
+                if (!$gridContainer.hasClass('d-none')) {
+                  $gridContainer.addClass('d-none');
+                }
+                $msgContainer.text(res.info);
+                $msgContainer.removeClass('d-none');
               }
-              $msgContainer.text(res.info);
-              $msgContainer.removeClass('d-none');
-            }
-          })
-          .fail(function(xhr, error, message) {
-            var _label = treeHierarchy[n_type].label;
-            pgBrowser.Events.trigger(
-              'pgadmin:node:retrieval:error', 'statistics', xhr, error, message, item
-            );
-            if (!Alertify.pgHandleItemError(xhr, error, message, {
-              item: item,
-              info: treeHierarchy,
-            })) {
-              Alertify.pgNotifier(
-                error, xhr,
-                S(gettext('Error retrieving the information - %s')).sprintf(
-                  message || _label
-                ).value(),
-                function() {}
+            })
+            .fail(function(xhr, error, message) {
+              var _label = treeHierarchy[n_type].label;
+              pgBrowser.Events.trigger(
+                'pgadmin:node:retrieval:error', 'statistics', xhr, error, message, item
               );
-            }
-            // show failed message.
-            $msgContainer.text(gettext('Failed to retrieve data from the server.'));
-          });
+              if (!Alertify.pgHandleItemError(xhr, error, message, {
+                item: item,
+                info: treeHierarchy,
+              })) {
+                Alertify.pgNotifier(
+                  error, xhr,
+                  S(gettext('Error retrieving the information - %s')).sprintf(
+                    message || _label
+                  ).value(),
+                  function() {}
+                );
+              }
+              // show failed message.
+              $msgContainer.text(gettext('Failed to retrieve data from the server.'));
+            });
         }
       }
       if (msg != '') {

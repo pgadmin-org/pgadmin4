@@ -141,7 +141,7 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
     },
     hooks: {
       onshow: function() {
-//        $(this.elements.body).addClass('pgadmin-storage-body');
+        //        $(this.elements.body).addClass('pgadmin-storage-body');
       },
     },
   };

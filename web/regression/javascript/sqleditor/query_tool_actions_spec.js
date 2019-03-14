@@ -474,13 +474,13 @@ describe('queryToolActions', () => {
       it('toggle the selection and string should be in upper case', () => {
         queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
         expect(replaceSelectionSpy
-          ).toHaveBeenCalledWith('STRING');
+        ).toHaveBeenCalledWith('STRING');
       });
 
       it('(negative scenario toggle the selection and string should be in upper case', () => {
         queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
         expect(replaceSelectionSpy
-          ).not.toHaveBeenCalledWith('string');
+        ).not.toHaveBeenCalledWith('string');
       });
     });
 
@@ -492,13 +492,13 @@ describe('queryToolActions', () => {
       it('toggle the selection and string should be in lower case', () => {
         queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
         expect(replaceSelectionSpy
-          ).toHaveBeenCalledWith('string');
+        ).toHaveBeenCalledWith('string');
       });
 
       it('(negative scenario toggle the selection and string should be in lower case', () => {
         queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
         expect(replaceSelectionSpy
-          ).not.toHaveBeenCalledWith('STRING');
+        ).not.toHaveBeenCalledWith('STRING');
       });
     });
 
@@ -510,13 +510,13 @@ describe('queryToolActions', () => {
       it('toggle the selection and string should be in upper case', () => {
         queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
         expect(replaceSelectionSpy
-          ).toHaveBeenCalledWith('STRING');
+        ).toHaveBeenCalledWith('STRING');
       });
 
       it('(negative scenario toggle the selection and string should be in upper case', () => {
         queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
         expect(replaceSelectionSpy
-          ).not.toHaveBeenCalledWith('sTRIng');
+        ).not.toHaveBeenCalledWith('sTRIng');
       });
     });
   });

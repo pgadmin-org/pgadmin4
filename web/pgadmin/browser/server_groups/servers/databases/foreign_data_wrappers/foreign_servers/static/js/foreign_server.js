@@ -21,18 +21,18 @@ define('pgadmin.node.foreign_server', [
       fsrvvalue: undefined,
     },
 
-        // Defining schema for the Options model
+    // Defining schema for the Options model
     schema: [
-          {id: 'fsrvoption', label: gettext('Options'), type:'text', cellHeaderClasses:'width_percent_50', group: null, editable: true},
-          {id: 'fsrvvalue', label: gettext('Value'), type: 'text', cellHeaderClasses:'width_percent_50', group:null, editable: true},
+      {id: 'fsrvoption', label: gettext('Options'), type:'text', cellHeaderClasses:'width_percent_50', group: null, editable: true},
+      {id: 'fsrvvalue', label: gettext('Value'), type: 'text', cellHeaderClasses:'width_percent_50', group:null, editable: true},
     ],
 
-        /* validate function is used to validate the input given by
+    /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
          * the browser for the respective control.
          */
     validate: function() {
-          // Validation for the option name
+      // Validation for the option name
       if (_.isUndefined(this.get('fsrvoption')) ||
             _.isNull(this.get('fsrvoption')) ||
             String(this.get('fsrvoption')).replace(/^\s+|\s+$/g, '') == '') {

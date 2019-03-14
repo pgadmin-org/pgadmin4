@@ -314,7 +314,7 @@ define('pgadmin.node.primary_key', [
 
               this.stopListening(this.model, 'change:' + name, this.render);
 
-                /*
+              /*
                  * Iterate through all the values, and find out how many are already
                  * present in the collection.
                  */
@@ -329,7 +329,7 @@ define('pgadmin.node.primary_key', [
                 }
               });
 
-                /*
+              /*
                  * Adding new values
                  */
 
@@ -344,7 +344,7 @@ define('pgadmin.node.primary_key', [
                 collection.add(m);
               });
 
-                /*
+              /*
                  * Removing unwanted!
                  */
               _.each(removed, function(v) {
@@ -391,8 +391,8 @@ define('pgadmin.node.primary_key', [
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
-                // If OID is undefined then user is trying to add
-                // new constraint which should be allowed for Unique
+              // If OID is undefined then user is trying to add
+              // new constraint which should be allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
 
@@ -488,8 +488,8 @@ define('pgadmin.node.primary_key', [
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
-                // If OID is undefined then user is trying to add
-                // new constraint which should be allowed for Unique
+              // If OID is undefined then user is trying to add
+              // new constraint which should be allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
 
@@ -580,8 +580,8 @@ define('pgadmin.node.primary_key', [
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
-                // If OID is undefined then user is trying to add
-                // new constraint which should allowed for Unique
+              // If OID is undefined then user is trying to add
+              // new constraint which should allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
 
@@ -609,8 +609,8 @@ define('pgadmin.node.primary_key', [
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
-                // If OID is undefined then user is trying to add
-                // new constraint which should allowed for Unique
+              // If OID is undefined then user is trying to add
+              // new constraint which should allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
 

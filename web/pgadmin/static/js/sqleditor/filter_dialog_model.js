@@ -13,7 +13,7 @@ import pgAdmin from 'sources/pgadmin';
 import Backgrid from 'pgadmin.backgrid';
 import Backform from 'pgadmin.backform';
 
-let initModel = function(response) {
+export default function filterDialogModel(response) {
 
   let order_mapping = {
     'asc': gettext('ASC'),
@@ -135,7 +135,4 @@ let initModel = function(response) {
 
   let model = new FilterCollectionModel();
   return model;
-};
-
-
-module.exports = initModel;
+}

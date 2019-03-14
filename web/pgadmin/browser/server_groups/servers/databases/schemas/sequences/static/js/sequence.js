@@ -14,7 +14,7 @@ define('pgadmin.node.sequence', [
   'pgadmin.browser.collection',
 ], function(
   gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, schemaChild,
-   schemaChildTreeNode
+  schemaChildTreeNode
 ) {
 
   // Extend the browser's collection class for sequence collection

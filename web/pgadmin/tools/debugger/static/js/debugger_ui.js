@@ -66,7 +66,7 @@ define([
       case 'cid':
       case 'xid':
       case 'tid':
-          // As we are getting this value as text from sqlite database so we need to type cast it.
+        // As we are getting this value as text from sqlite database so we need to type cast it.
         if (model.get('value') != undefined) {
           model.set({
             'value': parseInt(model.get('value')),
@@ -80,7 +80,7 @@ define([
       case 'numeric':
       case 'double precision':
       case 'decimal':
-          // As we are getting this value as text from sqlite database so we need to type cast it.
+        // As we are getting this value as text from sqlite database so we need to type cast it.
         if (model.get('value') != undefined) {
           model.set({
             'value': parseFloat(model.get('value')),
@@ -240,26 +240,26 @@ define([
               method: 'GET',
               async: false,
             })
-            .done(function(res) {
-              if (res.data.args_count != 0) {
-                for (i = 0; i < res.data.result.length; i++) {
+              .done(function(res) {
+                if (res.data.args_count != 0) {
+                  for (i = 0; i < res.data.result.length; i++) {
                   // Below will format the data to be stored in sqlite database
-                  func_args_data.push({
-                    'arg_id': res.data.result[i]['arg_id'],
-                    'is_null': res.data.result[i]['is_null'],
-                    'is_expression': res.data.result[i]['is_expression'],
-                    'use_default': res.data.result[i]['use_default'],
-                    'value': res.data.result[i]['value'],
-                  });
+                    func_args_data.push({
+                      'arg_id': res.data.result[i]['arg_id'],
+                      'is_null': res.data.result[i]['is_null'],
+                      'is_expression': res.data.result[i]['is_expression'],
+                      'use_default': res.data.result[i]['use_default'],
+                      'value': res.data.result[i]['value'],
+                    });
+                  }
                 }
-              }
-            })
-            .fail(function() {
-              Alertify.alert(
-                gettext('Debugger Error'),
-                gettext('Unable to fetch the arguments from server')
-              );
-            });
+              })
+              .fail(function() {
+                Alertify.alert(
+                  gettext('Debugger Error'),
+                  gettext('Unable to fetch the arguments from server')
+                );
+              });
 
             var argname, argtype, argmode, default_args_count, default_args, arg_cnt;
 
@@ -744,97 +744,97 @@ define([
                     'data': JSON.stringify(args_value_list),
                   },
                 })
-                .done(function(res) {
+                  .done(function(res) {
 
-                  var url = url_for(
-                    'debugger.direct', {
-                      'trans_id': res.data.debuggerTransId,
-                    }
-                  );
-
-                  if (self.preferences.debugger_new_browser_tab) {
-                    window.open(url, '_blank');
-                  } else {
-                    pgBrowser.Events.once(
-                      'pgadmin-browser:frame:urlloaded:frm_debugger',
-                      function(frame) {
-                        frame.openURL(url);
-                      });
-
-                    // Create the debugger panel as per the data received from user input dialog.
-                    var dashboardPanel = pgBrowser.docker.findPanels('properties'),
-                      panel = pgBrowser.docker.addPanel(
-                        'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
-                      );
-
-                    panel.focus();
-
-                    // Panel Closed event
-                    panel.on(wcDocker.EVENT.CLOSED, function() {
-                      var closeUrl = url_for('debugger.close', {
+                    var url = url_for(
+                      'debugger.direct', {
                         'trans_id': res.data.debuggerTransId,
-                      });
-                      $.ajax({
-                        url: closeUrl,
-                        method: 'DELETE',
-                      });
-                    });
-                  }
-                  var _Url;
+                      }
+                    );
 
-                  if (d._type == 'function') {
-                    _Url = url_for('debugger.set_arguments', {
-                      'sid': treeInfo.server._id,
-                      'did': treeInfo.database._id,
-                      'scid': treeInfo.schema._id,
-                      'func_id': treeInfo.function._id,
-                    });
-                  } else if (d._type == 'procedure') {
-                    _Url = url_for('debugger.set_arguments', {
-                      'sid': treeInfo.server._id,
-                      'did': treeInfo.database._id,
-                      'scid': treeInfo.schema._id,
-                      'func_id': treeInfo.procedure._id,
-                    });
-                  } else if (d._type == 'edbfunc') {
-                    // Get the existing function parameters available from sqlite database
-                    _Url = url_for('debugger.set_arguments', {
-                      'sid': treeInfo.server._id,
-                      'did': treeInfo.database._id,
-                      'scid': treeInfo.schema._id,
-                      'func_id': treeInfo.edbfunc._id,
-                    });
-                  } else if (d._type == 'edbproc') {
-                    // Get the existing function parameters available from sqlite database
-                    _Url = url_for('debugger.set_arguments', {
-                      'sid': treeInfo.server._id,
-                      'did': treeInfo.database._id,
-                      'scid': treeInfo.schema._id,
-                      'func_id': treeInfo.edbproc._id,
-                    });
-                  }
+                    if (self.preferences.debugger_new_browser_tab) {
+                      window.open(url, '_blank');
+                    } else {
+                      pgBrowser.Events.once(
+                        'pgadmin-browser:frame:urlloaded:frm_debugger',
+                        function(frame) {
+                          frame.openURL(url);
+                        });
 
-                  $.ajax({
-                    url: _Url,
-                    method: 'POST',
-                    data: {
-                      'data': JSON.stringify(sqlite_func_args_list),
-                    },
+                      // Create the debugger panel as per the data received from user input dialog.
+                      var dashboardPanel = pgBrowser.docker.findPanels('properties'),
+                        panel = pgBrowser.docker.addPanel(
+                          'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
+                        );
+
+                      panel.focus();
+
+                      // Panel Closed event
+                      panel.on(wcDocker.EVENT.CLOSED, function() {
+                        var closeUrl = url_for('debugger.close', {
+                          'trans_id': res.data.debuggerTransId,
+                        });
+                        $.ajax({
+                          url: closeUrl,
+                          method: 'DELETE',
+                        });
+                      });
+                    }
+                    var _Url;
+
+                    if (d._type == 'function') {
+                      _Url = url_for('debugger.set_arguments', {
+                        'sid': treeInfo.server._id,
+                        'did': treeInfo.database._id,
+                        'scid': treeInfo.schema._id,
+                        'func_id': treeInfo.function._id,
+                      });
+                    } else if (d._type == 'procedure') {
+                      _Url = url_for('debugger.set_arguments', {
+                        'sid': treeInfo.server._id,
+                        'did': treeInfo.database._id,
+                        'scid': treeInfo.schema._id,
+                        'func_id': treeInfo.procedure._id,
+                      });
+                    } else if (d._type == 'edbfunc') {
+                    // Get the existing function parameters available from sqlite database
+                      _Url = url_for('debugger.set_arguments', {
+                        'sid': treeInfo.server._id,
+                        'did': treeInfo.database._id,
+                        'scid': treeInfo.schema._id,
+                        'func_id': treeInfo.edbfunc._id,
+                      });
+                    } else if (d._type == 'edbproc') {
+                    // Get the existing function parameters available from sqlite database
+                      _Url = url_for('debugger.set_arguments', {
+                        'sid': treeInfo.server._id,
+                        'did': treeInfo.database._id,
+                        'scid': treeInfo.schema._id,
+                        'func_id': treeInfo.edbproc._id,
+                      });
+                    }
+
+                    $.ajax({
+                      url: _Url,
+                      method: 'POST',
+                      data: {
+                        'data': JSON.stringify(sqlite_func_args_list),
+                      },
+                    })
+                      .done(function() {})
+                      .fail(function() {
+                        Alertify.alert(
+                          gettext('Debugger Error'),
+                          gettext('Unable to set the arguments on the server')
+                        );
+                      });
                   })
-                  .done(function() {})
-                  .fail(function() {
+                  .fail(function(e) {
                     Alertify.alert(
-                      gettext('Debugger Error'),
-                      gettext('Unable to set the arguments on the server')
+                      gettext('Debugger Target Initialization Error'),
+                      e.responseJSON.errormsg
                     );
                   });
-                })
-                .fail(function(e) {
-                  Alertify.alert(
-                    gettext('Debugger Target Initialization Error'),
-                    e.responseJSON.errormsg
-                  );
-                });
               } else {
                 // If the debugging is started again then we should only set the
                 // arguments and start the listener again
@@ -849,13 +849,13 @@ define([
                     'data': JSON.stringify(args_value_list),
                   },
                 })
-                .done(function() {})
-                .fail(function(e) {
-                  Alertify.alert(
-                    gettext('Debugger Listener Startup Error'),
-                    e.responseJSON.errormsg
-                  );
-                });
+                  .done(function() {})
+                  .fail(function(e) {
+                    Alertify.alert(
+                      gettext('Debugger Listener Startup Error'),
+                      e.responseJSON.errormsg
+                    );
+                  });
 
                 // Set the new input arguments given by the user during debugging
                 var _Url = url_for('debugger.set_arguments', {
@@ -871,13 +871,13 @@ define([
                     'data': JSON.stringify(sqlite_func_args_list),
                   },
                 })
-                .done(function() {})
-                .fail(function() {
-                  Alertify.alert(
-                    gettext('Debugger Error'),
-                    gettext('Unable to set the arguments on the server')
-                  );
-                });
+                  .done(function() {})
+                  .fail(function() {
+                    Alertify.alert(
+                      gettext('Debugger Error'),
+                      gettext('Unable to set the arguments on the server')
+                    );
+                  });
 
               }
 
@@ -913,37 +913,37 @@ define([
              debug button.
             */
             this.grid.listenTo(this.debuggerInputArgsColl, 'backgrid:edited',
-                (function(obj) {
+              (function(obj) {
 
-                  return function() {
+                return function() {
 
-                    var enable_btn = false;
+                  var enable_btn = false;
 
-                    for (var i = 0; i < this.collection.length; i++) {
+                  for (var i = 0; i < this.collection.length; i++) {
 
-                      if (this.collection.models[i].get('is_null')) {
-                        obj.__internal.buttons[1].element.disabled = false;
-                        enable_btn = true;
-                        continue;
-                      }
-                      // TODO: Need to check the "Expression" column value to
-                      // enable/disable the "Debug" button
-                      if (this.collection.models[i].get('value') == null ||
+                    if (this.collection.models[i].get('is_null')) {
+                      obj.__internal.buttons[1].element.disabled = false;
+                      enable_btn = true;
+                      continue;
+                    }
+                    // TODO: Need to check the "Expression" column value to
+                    // enable/disable the "Debug" button
+                    if (this.collection.models[i].get('value') == null ||
                         this.collection.models[i].get('value') == undefined) {
-                        enable_btn = true;
+                      enable_btn = true;
 
-                        if (this.collection.models[i].get('use_default')) {
-                          obj.__internal.buttons[1].element.disabled = false;
-                        } else {
-                          obj.__internal.buttons[1].element.disabled = true;
-                          break;
-                        }
+                      if (this.collection.models[i].get('use_default')) {
+                        obj.__internal.buttons[1].element.disabled = false;
+                      } else {
+                        obj.__internal.buttons[1].element.disabled = true;
+                        break;
                       }
                     }
-                    if (!enable_btn)
-                      obj.__internal.buttons[1].element.disabled = false;
-                  };
-                })(this)
+                  }
+                  if (!enable_btn)
+                    obj.__internal.buttons[1].element.disabled = false;
+                };
+              })(this)
             );
 
             this.grid.listenTo(this.debuggerInputArgsColl, 'backgrid:error',

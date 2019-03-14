@@ -11,214 +11,214 @@ define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
   'sources/pgadmin', 'pgadmin.browser.node', 'pgadmin.browser.node.ui',
 ],
-  function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode) {
+function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode) {
 
-    /*
+  /*
      * cellFunction for variable control.
      * This function returns cell class depending on vartype.
      */
-    var cellFunction = function(model) {
-      var self = this,
-        name = model.get('name'),
-        availVariables = {};
+  var cellFunction = function(model) {
+    var self = this,
+      name = model.get('name'),
+      availVariables = {};
 
-      self.collection.each(function(col) {
-        if (col.get('name') == 'name') {
-          availVariables = col.get('availVariables');
-        }
-      });
+    self.collection.each(function(col) {
+      if (col.get('name') == 'name') {
+        availVariables = col.get('availVariables');
+      }
+    });
 
-      var variable = name ? availVariables[name]: undefined,
-        value = model.get('value');
+    var variable = name ? availVariables[name]: undefined,
+      value = model.get('value');
 
-      switch(variable && variable.vartype) {
-      case 'bool':
-          /*
+    switch(variable && variable.vartype) {
+    case 'bool':
+      /*
            * bool cell and variable cannot be stateless (i.e undefined).
            * It should be either true or false.
            */
 
-        model.set('value', !!model.get('value'), {silent: true});
+      model.set('value', !!model.get('value'), {silent: true});
 
-        return Backgrid.Extension.SwitchCell;
-      case 'enum':
-        model.set({'value': value}, {silent:true});
-        var options = [],
-          enumVals = variable.enumvals;
+      return Backgrid.Extension.SwitchCell;
+    case 'enum':
+      model.set({'value': value}, {silent:true});
+      var options = [],
+        enumVals = variable.enumvals;
 
-        _.each(enumVals, function(enumVal) {
-          options.push([enumVal, enumVal]);
-        });
+      _.each(enumVals, function(enumVal) {
+        options.push([enumVal, enumVal]);
+      });
 
-        return Backgrid.Extension.Select2Cell.extend({optionValues: options});
-      case 'integer':
-        if (!_.isNaN(parseInt(value))) {
-          model.set({'value': parseInt(value)}, {silent:true});
-        } else {
-          model.set({'value': undefined}, {silent:true});
-        }
-        return Backgrid.IntegerCell;
-      case 'real':
-        if (!_.isNaN(parseFloat(value))) {
-          model.set({'value': parseFloat(value)}, {silent:true});
-        } else {
-          model.set({'value': undefined}, {silent:true});
-        }
-        return Backgrid.NumberCell.extend({decimals: 0});
-      case 'string':
-        return Backgrid.StringCell;
-      default:
+      return Backgrid.Extension.Select2Cell.extend({optionValues: options});
+    case 'integer':
+      if (!_.isNaN(parseInt(value))) {
+        model.set({'value': parseInt(value)}, {silent:true});
+      } else {
         model.set({'value': undefined}, {silent:true});
-        return Backgrid.Cell;
       }
-    };
+      return Backgrid.IntegerCell;
+    case 'real':
+      if (!_.isNaN(parseFloat(value))) {
+        model.set({'value': parseFloat(value)}, {silent:true});
+      } else {
+        model.set({'value': undefined}, {silent:true});
+      }
+      return Backgrid.NumberCell.extend({decimals: 0});
+    case 'string':
+      return Backgrid.StringCell;
+    default:
+      model.set({'value': undefined}, {silent:true});
+      return Backgrid.Cell;
+    }
+  };
 
-      /*
+  /*
        * This row will define behaviour or value column cell depending upon
        * variable name.
        */
-    var VariableRow = Backgrid.Row.extend({
-      modelDuplicateClass: 'bg-model-duplicate',
+  var VariableRow = Backgrid.Row.extend({
+    modelDuplicateClass: 'bg-model-duplicate',
 
-      initialize: function () {
-        Backgrid.Row.prototype.initialize.apply(this, arguments);
-        var self = this;
-        self.model.on('change:name', function() {
-          setTimeout(function() {
-            self.columns.each(function(col) {
-              if (col.get('name') == 'value') {
+    initialize: function () {
+      Backgrid.Row.prototype.initialize.apply(this, arguments);
+      var self = this;
+      self.model.on('change:name', function() {
+        setTimeout(function() {
+          self.columns.each(function(col) {
+            if (col.get('name') == 'value') {
 
-                var idx = self.columns.indexOf(col),
-                  cf = col.get('cellFunction'),
-                  cell = new (cf.apply(col, [self.model]))({
-                    column: col,
-                    model: self.model,
-                  }),
-                  oldCell = self.cells[idx];
-                oldCell.remove();
-                self.cells[idx] = cell;
-                self.render();
-              }
+              var idx = self.columns.indexOf(col),
+                cf = col.get('cellFunction'),
+                cell = new (cf.apply(col, [self.model]))({
+                  column: col,
+                  model: self.model,
+                }),
+                oldCell = self.cells[idx];
+              oldCell.remove();
+              self.cells[idx] = cell;
+              self.render();
+            }
 
-            });
-          }, 10);
-        });
-        self.listenTo(self.model, 'pgadmin-session:model:duplicate', self.modelDuplicate);
-        self.listenTo(self.model, 'pgadmin-session:model:unique', self.modelUnique);
-      },
-      modelDuplicate: function() {
-        $(this.el).removeClass('new');
-        $(this.el).addClass(this.modelDuplicateClass);
-      },
-      modelUnique: function() {
-        $(this.el).removeClass(this.modelDuplicateClass);
-      },
+          });
+        }, 10);
+      });
+      self.listenTo(self.model, 'pgadmin-session:model:duplicate', self.modelDuplicate);
+      self.listenTo(self.model, 'pgadmin-session:model:unique', self.modelUnique);
+    },
+    modelDuplicate: function() {
+      $(this.el).removeClass('new');
+      $(this.el).addClass(this.modelDuplicateClass);
+    },
+    modelUnique: function() {
+      $(this.el).removeClass(this.modelDuplicateClass);
+    },
 
-    });
-      /**
+  });
+  /**
        *  VariableModel used to represent configuration parameters (variables tab)
        *  for database objects.
        **/
-    var VariableModel = pgNode.VariableModel = pgNode.Model.extend({
-      keys: ['name'],
-      defaults: {
-        name: undefined,
-        value: undefined,
-        role: null,
-        database: null,
-      },
-      schema: [
-        {
-          id: 'name', label: gettext('Name'), type:'text', cellHeaderClasses: 'width_percent_30',
-          editable: function(m) {
-            return (m instanceof Backbone.Collection) ? true : m.isNew();
-          },
-          cell: Backgrid.Extension.NodeAjaxOptionsCell.extend({
-            initialize: function() {
-              Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
+  var VariableModel = pgNode.VariableModel = pgNode.Model.extend({
+    keys: ['name'],
+    defaults: {
+      name: undefined,
+      value: undefined,
+      role: null,
+      database: null,
+    },
+    schema: [
+      {
+        id: 'name', label: gettext('Name'), type:'text', cellHeaderClasses: 'width_percent_30',
+        editable: function(m) {
+          return (m instanceof Backbone.Collection) ? true : m.isNew();
+        },
+        cell: Backgrid.Extension.NodeAjaxOptionsCell.extend({
+          initialize: function() {
+            Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
 
-              // Immediately process options as we need them before render.
+            // Immediately process options as we need them before render.
 
-              var opVals = _.clone(this.optionValues ||
+            var opVals = _.clone(this.optionValues ||
                 (_.isFunction(this.column.get('options')) ?
                   (this.column.get('options'))(this) :
-                    this.column.get('options')));
+                  this.column.get('options')));
 
-              this.column.set('options', opVals);
-            },
-          }),
-          url: 'vopts',
-          select2: { allowClear: false },
-          transform: function(vars, cell) {
-            var res = [],
-              availVariables = {};
-
-            _.each(vars, function(v) {
-              res.push({
-                'value': v.name,
-                'image': undefined,
-                'label': v.name,
-              });
-              availVariables[v.name] = v;
-            });
-
-            cell.column.set('availVariables', availVariables);
-            return res;
+            this.column.set('options', opVals);
           },
-        },
-        {
-          id: 'value', label: gettext('Value'), type: 'text', editable: true,
-          cellFunction: cellFunction, cellHeaderClasses: 'width_percent_40',
-        },
-        {id: 'database', label: gettext('Database'), type: 'text', editable: true,
-          node: 'database', cell: Backgrid.Extension.NodeListByNameCell,
-        },
-        {id: 'role', label: gettext('Role'), type: 'text', editable: true,
-          node: 'role', cell: Backgrid.Extension.NodeListByNameCell},
-      ],
-      toJSON: function() {
-        var d = Backbone.Model.prototype.toJSON.apply(this);
+        }),
+        url: 'vopts',
+        select2: { allowClear: false },
+        transform: function(vars, cell) {
+          var res = [],
+            availVariables = {};
 
-        // Remove not defined values from model values.
-        // i.e.
-        // role, database
-        if (_.isUndefined(d.database) || _.isNull(d.database)) {
-          delete d.database;
-        }
+          _.each(vars, function(v) {
+            res.push({
+              'value': v.name,
+              'image': undefined,
+              'label': v.name,
+            });
+            availVariables[v.name] = v;
+          });
 
-        if (_.isUndefined(d.role) || _.isNull(d.role)) {
-          delete d.role;
-        }
-
-        return d;
+          cell.column.set('availVariables', availVariables);
+          return res;
+        },
       },
-      validate: function() {
-        var msg = null;
-        if (_.isUndefined(this.get('name')) ||
+      {
+        id: 'value', label: gettext('Value'), type: 'text', editable: true,
+        cellFunction: cellFunction, cellHeaderClasses: 'width_percent_40',
+      },
+      {id: 'database', label: gettext('Database'), type: 'text', editable: true,
+        node: 'database', cell: Backgrid.Extension.NodeListByNameCell,
+      },
+      {id: 'role', label: gettext('Role'), type: 'text', editable: true,
+        node: 'role', cell: Backgrid.Extension.NodeListByNameCell},
+    ],
+    toJSON: function() {
+      var d = Backbone.Model.prototype.toJSON.apply(this);
+
+      // Remove not defined values from model values.
+      // i.e.
+      // role, database
+      if (_.isUndefined(d.database) || _.isNull(d.database)) {
+        delete d.database;
+      }
+
+      if (_.isUndefined(d.role) || _.isNull(d.role)) {
+        delete d.role;
+      }
+
+      return d;
+    },
+    validate: function() {
+      var msg = null;
+      if (_.isUndefined(this.get('name')) ||
           _.isNull(this.get('name')) ||
             String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-          msg = gettext('Please select a parameter name.');
-          this.errorModel.set('name', msg);
-        } else if (_.isUndefined(this.get('value')) ||
+        msg = gettext('Please select a parameter name.');
+        this.errorModel.set('name', msg);
+      } else if (_.isUndefined(this.get('value')) ||
               _.isNull(this.get('value')) ||
                 String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-          msg = ('Please enter a value for the parameter.');
-          this.errorModel.set('value', msg);
-          this.errorModel.unset('name');
-        } else {
-          this.errorModel.unset('name');
-          this.errorModel.unset('value');
-        }
+        msg = ('Please enter a value for the parameter.');
+        this.errorModel.set('value', msg);
+        this.errorModel.unset('name');
+      } else {
+        this.errorModel.unset('name');
+        this.errorModel.unset('value');
+      }
 
-        return msg;
-      },
-    });
+      return msg;
+    },
+  });
 
-      /**
+  /**
        * Variable Tab Control to set/update configuration values for database object.
        *
        **/
-    Backform.VariableCollectionControl =
+  Backform.VariableCollectionControl =
       Backform.UniqueColCollectionControl.extend({
 
         hasDatabase: false,
@@ -228,7 +228,7 @@ define([
           var self = this,
             keys = ['name'];
 
-            /*
+          /*
              * Read from field schema whether user wants to use database and role
              * fields in Variable control.
              */
@@ -247,9 +247,9 @@ define([
               opts.field.set({
                 model: pgNode.VariableModel.extend({keys:keys}),
               },
-                {
-                  silent: true,
-                });
+              {
+                silent: true,
+              });
             } else {
               opts.field.extend({
                 model: pgNode.VariableModel.extend({keys:keys}),
@@ -311,18 +311,18 @@ define([
               async: false,
               url: full_url,
             })
-            .done(function (res) {
-              data = res.data;
-            })
-            .fail(function() {
-              m.trigger('pgadmin-view:fetch:error', m, self.field);
-            });
+              .done(function (res) {
+                data = res.data;
+              })
+              .fail(function() {
+                m.trigger('pgadmin-view:fetch:error', m, self.field);
+              });
             m.trigger('pgadmin-view:fetched', m, self.field);
 
             if (data && _.isArray(data)) {
               self.collection.reset(data, {silent: true});
             }
-              /*
+            /*
                * Make sure - new data will be taken care by the session management
                */
             if (isTracking) {
@@ -483,5 +483,5 @@ define([
         },
       });
 
-    return VariableModel;
-  });
+  return VariableModel;
+});

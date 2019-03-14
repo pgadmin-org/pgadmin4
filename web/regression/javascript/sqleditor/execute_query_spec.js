@@ -1054,7 +1054,7 @@ describe('ExecuteQuery', () => {
         executeQuery.execute('', {});
 
         setTimeout(() => {
-          expect(wasNetworkCalled).toBe(false);
+          expect(wasNetworkCalled).toEqual(false);
           done();
         }, 0);
       });
@@ -1129,7 +1129,7 @@ describe('ExecuteQuery', () => {
         });
 
         it('reset the number of rows that were affected', () => {
-          expect(sqlEditorMock.rows_affected).toBe(0);
+          expect(sqlEditorMock.rows_affected).toEqual(0);
         });
 
         it('reset query start time', () => {
@@ -1157,21 +1157,21 @@ describe('ExecuteQuery', () => {
 
           it('should update the can edit flag', (done) => {
             setTimeout(() => {
-              expect(sqlEditorMock.can_edit).toBe(false);
+              expect(sqlEditorMock.can_edit).toEqual(false);
               done();
             }, 0);
           });
 
           it('should update the can filter flag', (done) => {
             setTimeout(() => {
-              expect(sqlEditorMock.can_filter).toBe(false);
+              expect(sqlEditorMock.can_filter).toEqual(false);
               done();
             }, 0);
           });
 
           it('should update information notifier timeout', (done) => {
             setTimeout(() => {
-              expect(sqlEditorMock.info_notifier_timeout).toBe(5);
+              expect(sqlEditorMock.info_notifier_timeout).toEqual(5);
               done();
             }, 0);
           });

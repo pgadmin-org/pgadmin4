@@ -66,22 +66,22 @@ describe('RowSelector', function () {
   });
 
   it('renders an additional column on the left', function () {
-    expect(columnDefinitions.length).toBe(3);
+    expect(columnDefinitions.length).toEqual(3);
 
     var leftmostColumn = columnDefinitions[0];
-    expect(leftmostColumn.id).toBe('row-header-column');
-    expect(leftmostColumn.name).toBe('');
-    expect(leftmostColumn.selectable).toBe(false);
+    expect(leftmostColumn.id).toEqual('row-header-column');
+    expect(leftmostColumn.name).toEqual('');
+    expect(leftmostColumn.selectable).toEqual(false);
   });
 
   it('renders a span on the leftmost column', function () {
-    expect(container.find('.slick-row').length).toBe(10);
-    expect(container.find('.slick-row .slick-cell:first-child span[data-cell-type="row-header-selector"]').length).toBe(10);
+    expect(container.find('.slick-row').length).toEqual(10);
+    expect(container.find('.slick-row .slick-cell:first-child span[data-cell-type="row-header-selector"]').length).toEqual(10);
   });
 
   it('preserves the other attributes of column definitions', function () {
-    expect(columnDefinitions[1].id).toBe('1');
-    expect(columnDefinitions[1].selectable).toBe(true);
+    expect(columnDefinitions[1].id).toEqual('1');
+    expect(columnDefinitions[1].selectable).toEqual(true);
   });
 
   describe('selecting rows', function () {
@@ -112,10 +112,10 @@ describe('RowSelector', function () {
         var row = selectedRanges[0];
 
         expect(selectedRanges.length).toEqual(1);
-        expect(row.fromCell).toBe(1);
-        expect(row.toCell).toBe(2);
-        expect(row.fromRow).toBe(1);
-        expect(row.toRow).toBe(1);
+        expect(row.fromCell).toEqual(1);
+        expect(row.toCell).toEqual(2);
+        expect(row.fromRow).toEqual(1);
+        expect(row.toRow).toEqual(1);
       });
 
       it('add selected class to parent of the span', function () {
@@ -139,7 +139,7 @@ describe('RowSelector', function () {
         });
 
         it('keeps the last row selected', function () {
-          expect(cellSelectionModel.getSelectedRanges().length).toBe(1);
+          expect(cellSelectionModel.getSelectedRanges().length).toEqual(1);
         });
 
         it('grows the selection down', function () {
@@ -148,10 +148,10 @@ describe('RowSelector', function () {
           var row = selectedRanges[0];
 
           expect(selectedRanges.length).toEqual(1);
-          expect(row.fromCell).toBe(1);
-          expect(row.toCell).toBe(2);
-          expect(row.fromRow).toBe(1);
-          expect(row.toRow).toBe(2);
+          expect(row.fromCell).toEqual(1);
+          expect(row.toCell).toEqual(2);
+          expect(row.fromRow).toEqual(1);
+          expect(row.toRow).toEqual(2);
         });
 
         it('keeps selected class on rows 1 and 2', function () {
@@ -175,14 +175,14 @@ describe('RowSelector', function () {
 
           var selectedRanges = cellSelectionModel.getSelectedRanges();
 
-          expect(selectedRanges.length).toBe(1);
+          expect(selectedRanges.length).toEqual(1);
 
           var newSelection = selectedRanges[0];
 
-          expect(newSelection.fromCell).toBe(1);
-          expect(newSelection.fromRow).toBe(5);
-          expect(newSelection.toCell).toBe(1);
-          expect(newSelection.toRow).toBe(5);
+          expect(newSelection.fromCell).toEqual(1);
+          expect(newSelection.fromRow).toEqual(5);
+          expect(newSelection.toCell).toEqual(1);
+          expect(newSelection.toRow).toEqual(5);
         });
 
         it('keep select class on row header', function () {
@@ -200,14 +200,14 @@ describe('RowSelector', function () {
 
           var selectedRanges = cellSelectionModel.getSelectedRanges();
 
-          expect(selectedRanges.length).toBe(1);
+          expect(selectedRanges.length).toEqual(1);
 
           var newSelection = selectedRanges[0];
 
-          expect(newSelection.fromCell).toBe(2);
-          expect(newSelection.fromRow).toBe(2);
-          expect(newSelection.toCell).toBe(2);
-          expect(newSelection.toRow).toBe(2);
+          expect(newSelection.fromCell).toEqual(2);
+          expect(newSelection.fromRow).toEqual(2);
+          expect(newSelection.toCell).toEqual(2);
+          expect(newSelection.toRow).toEqual(2);
         });
 
         it('remove select class on "some-column-name" column header', function () {
@@ -250,12 +250,12 @@ describe('RowSelector', function () {
         expect(selectedRanges.length).toEqual(2);
 
         var row1 = selectedRanges[0];
-        expect(row1.fromRow).toBe(4);
-        expect(row1.toRow).toBe(4);
+        expect(row1.fromRow).toEqual(4);
+        expect(row1.toRow).toEqual(4);
 
         var row2 = selectedRanges[1];
-        expect(row2.fromRow).toBe(0);
-        expect(row2.toRow).toBe(0);
+        expect(row2.fromRow).toEqual(0);
+        expect(row2.toRow).toEqual(0);
       });
     });
 
@@ -320,9 +320,9 @@ describe('RowSelector', function () {
     var row = selectedRanges[0];
 
     expect(selectedRanges.length).toEqual(1);
-    expect(row.fromCell).toBe(1);
-    expect(row.toCell).toBe(2);
-    expect(row.fromRow).toBe(0);
-    expect(row.toRow).toBe(0);
+    expect(row.fromCell).toEqual(1);
+    expect(row.toCell).toEqual(2);
+    expect(row.fromRow).toEqual(0);
+    expect(row.toRow).toEqual(0);
   }
 });

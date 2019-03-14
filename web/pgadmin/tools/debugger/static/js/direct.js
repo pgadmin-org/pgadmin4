@@ -55,17 +55,17 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status) {
+          .done(function(res) {
+            if (res.data.status) {
             // Breakpoint has been set by the user
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while setting debugging breakpoint.')
-          );
-        });
+            }
+          })
+          .fail(function() {
+            Alertify.alert(
+              gettext('Debugger Error'),
+              gettext('Error while setting debugging breakpoint.')
+            );
+          });
       },
 
       // Function to get the latest breakpoint information and update the
@@ -117,22 +117,22 @@ define([
           method: 'GET',
           async: false,
         })
-        .done(function(res) {
-          if (res.data.status === 'Success') {
-            result = res.data.result;
-          } else if (res.data.status === 'NotConnected') {
+          .done(function(res) {
+            if (res.data.status === 'Success') {
+              result = res.data.result;
+            } else if (res.data.status === 'NotConnected') {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while fetching breakpoint information.')
+              );
+            }
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while fetching breakpoint information.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while fetching breakpoint information.')
-          );
-        });
+          });
 
         return result;
       },
@@ -178,23 +178,23 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status === 'Success') {
+          .done(function(res) {
+            if (res.data.status === 'Success') {
             // If status is Success then find the port number to attach the executer.
-            self.execute_query(trans_id);
-          } else if (res.data.status === 'NotConnected') {
+              self.execute_query(trans_id);
+            } else if (res.data.status === 'NotConnected') {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while starting debugging session.')
+              );
+            }
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while starting debugging session.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while starting debugging session.')
-          );
-        });
+          });
       },
 
       // Execute the query and get the first functions debug information from the server
@@ -210,35 +210,35 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status === 'Success') {
+          .done(function(res) {
+            if (res.data.status === 'Success') {
             // set the return code to the code editor text area
-            if (
-              res.data.result[0].src != null &&
+              if (
+                res.data.result[0].src != null &&
               res.data.result[0].linenumber != null
-            ) {
-              pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
+              ) {
+                pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
 
-              self.setActiveLine(res.data.result[0].linenumber - 2);
+                self.setActiveLine(res.data.result[0].linenumber - 2);
+              }
+              // Call function to create and update local variables ....
+              self.GetStackInformation(trans_id);
+              if (pgTools.DirectDebug.debug_type) {
+                self.poll_end_execution_result(trans_id);
+              }
+            } else if (res.data.status === 'NotConnected') {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while executing requested debugging information.')
+              );
             }
-            // Call function to create and update local variables ....
-            self.GetStackInformation(trans_id);
-            if (pgTools.DirectDebug.debug_type) {
-              self.poll_end_execution_result(trans_id);
-            }
-          } else if (res.data.status === 'NotConnected') {
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while executing requested debugging information.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while executing requested debugging information.')
-          );
-        });
+          });
       },
 
       // Get the local variable information of the functions and update the grid
@@ -255,32 +255,32 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status === 'Success') {
+          .done(function(res) {
+            if (res.data.status === 'Success') {
             // Call function to create and update local variables
-            self.AddLocalVariables(res.data.result);
-            self.AddParameters(res.data.result);
-            // If debug function is restarted then again start listener to
-            // read the updated messages.
-            if (pgTools.DirectDebug.debug_restarted) {
-              if (pgTools.DirectDebug.debug_type) {
-                self.poll_end_execution_result(trans_id);
+              self.AddLocalVariables(res.data.result);
+              self.AddParameters(res.data.result);
+              // If debug function is restarted then again start listener to
+              // read the updated messages.
+              if (pgTools.DirectDebug.debug_restarted) {
+                if (pgTools.DirectDebug.debug_type) {
+                  self.poll_end_execution_result(trans_id);
+                }
+                pgTools.DirectDebug.debug_restarted = false;
               }
-              pgTools.DirectDebug.debug_restarted = false;
+            } else if (res.data.status === 'NotConnected') {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while fetching variable information.')
+              );
             }
-          } else if (res.data.status === 'NotConnected') {
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while fetching variable information.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while fetching variable information.')
-          );
-        });
+          });
       },
 
       // Get the stack information of the functions and update the grid
@@ -297,24 +297,24 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status === 'Success') {
+          .done(function(res) {
+            if (res.data.status === 'Success') {
             // Call function to create and update stack information
-            self.AddStackInformation(res.data.result);
-            self.GetLocalVariables(pgTools.DirectDebug.trans_id);
-          } else if (res.data.status === 'NotConnected') {
+              self.AddStackInformation(res.data.result);
+              self.GetLocalVariables(pgTools.DirectDebug.trans_id);
+            } else if (res.data.status === 'NotConnected') {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while fetching stack information.')
+              );
+            }
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while fetching stack information.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while fetching stack information.')
-          );
-        });
+          });
       },
 
       /*
@@ -358,91 +358,91 @@ define([
                 $('.debugger-container').addClass('show_progress');
               },
             })
-            .done(function(res) {
+              .done(function(res) {
               // remove progress cursor
-              $('.debugger-container').removeClass('show_progress');
+                $('.debugger-container').removeClass('show_progress');
 
-              if (res.data.status === 'Success') {
+                if (res.data.status === 'Success') {
                 // If no result then poll again to wait for results.
-                if (res.data.result == null || res.data.result.length == 0) {
-                  self.poll_result(trans_id);
-                } else {
-                  if (res.data.result[0].src != undefined || res.data.result[0].src != null) {
-                    pgTools.DirectDebug.polling_timeout_idle = false;
-                    pgTools.DirectDebug.docker.finishLoading(50);
-                    if (res.data.result[0].src != pgTools.DirectDebug.editor.getValue()) {
-                      pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
-                      self.UpdateBreakpoint(trans_id);
-                    }
-                    self.setActiveLine(res.data.result[0].linenumber - 2);
-                    // Update the stack, local variables and parameters information
-                    self.GetStackInformation(trans_id);
-
-                  } else if (!pgTools.DirectDebug.debug_type && !pgTools.DirectDebug.first_time_indirect_debug) {
-                    pgTools.DirectDebug.docker.finishLoading(50);
-                    self.setActiveLine(-1);
-                    self.clear_all_breakpoint(trans_id);
-                    self.execute_query(trans_id);
-                    pgTools.DirectDebug.first_time_indirect_debug = true;
-                    pgTools.DirectDebug.polling_timeout_idle = false;
+                  if (res.data.result == null || res.data.result.length == 0) {
+                    self.poll_result(trans_id);
                   } else {
-                    pgTools.DirectDebug.polling_timeout_idle = false;
-                    pgTools.DirectDebug.docker.finishLoading(50);
-                    // If the source is really changed then only update the breakpoint information
-                    if (res.data.result[0].src != pgTools.DirectDebug.editor.getValue()) {
-                      pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
-                      self.UpdateBreakpoint(trans_id);
+                    if (res.data.result[0].src != undefined || res.data.result[0].src != null) {
+                      pgTools.DirectDebug.polling_timeout_idle = false;
+                      pgTools.DirectDebug.docker.finishLoading(50);
+                      if (res.data.result[0].src != pgTools.DirectDebug.editor.getValue()) {
+                        pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
+                        self.UpdateBreakpoint(trans_id);
+                      }
+                      self.setActiveLine(res.data.result[0].linenumber - 2);
+                      // Update the stack, local variables and parameters information
+                      self.GetStackInformation(trans_id);
+
+                    } else if (!pgTools.DirectDebug.debug_type && !pgTools.DirectDebug.first_time_indirect_debug) {
+                      pgTools.DirectDebug.docker.finishLoading(50);
+                      self.setActiveLine(-1);
+                      self.clear_all_breakpoint(trans_id);
+                      self.execute_query(trans_id);
+                      pgTools.DirectDebug.first_time_indirect_debug = true;
+                      pgTools.DirectDebug.polling_timeout_idle = false;
+                    } else {
+                      pgTools.DirectDebug.polling_timeout_idle = false;
+                      pgTools.DirectDebug.docker.finishLoading(50);
+                      // If the source is really changed then only update the breakpoint information
+                      if (res.data.result[0].src != pgTools.DirectDebug.editor.getValue()) {
+                        pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
+                        self.UpdateBreakpoint(trans_id);
+                      }
+
+                      self.setActiveLine(res.data.result[0].linenumber - 2);
+                      // Update the stack, local variables and parameters information
+                      self.GetStackInformation(trans_id);
                     }
 
-                    self.setActiveLine(res.data.result[0].linenumber - 2);
-                    // Update the stack, local variables and parameters information
-                    self.GetStackInformation(trans_id);
+                    // Enable all the buttons as we got the results
+                    // TODO: Fix this properly so a timeout isn't required.
+                    setTimeout(function() {
+                      self.enable('stop', true);
+                      self.enable('step_over', true);
+                      self.enable('step_into', true);
+                      self.enable('continue', true);
+                      self.enable('toggle_breakpoint', true);
+                      self.enable('clear_all_breakpoints', true);
+                    }, 500);
                   }
+                } else if (res.data.status === 'Busy') {
+                  pgTools.DirectDebug.polling_timeout_idle = true;
+                  // If status is Busy then poll the result by recursive call to the poll function
+                  if (!pgTools.DirectDebug.debug_type) {
+                    pgTools.DirectDebug.docker.startLoading(
+                      gettext('Waiting for another session to invoke the target...')
+                    );
 
-                  // Enable all the buttons as we got the results
-                  // TODO: Fix this properly so a timeout isn't required.
-                  setTimeout(function() {
-                    self.enable('stop', true);
-                    self.enable('step_over', true);
-                    self.enable('step_into', true);
-                    self.enable('continue', true);
-                    self.enable('toggle_breakpoint', true);
-                    self.enable('clear_all_breakpoints', true);
-                  }, 500);
-                }
-              } else if (res.data.status === 'Busy') {
-                pgTools.DirectDebug.polling_timeout_idle = true;
-                // If status is Busy then poll the result by recursive call to the poll function
-                if (!pgTools.DirectDebug.debug_type) {
-                  pgTools.DirectDebug.docker.startLoading(
-                    gettext('Waiting for another session to invoke the target...')
+                    // As we are waiting for another session to invoke the target,disable all the buttons
+                    self.enable('stop', false);
+                    self.enable('step_over', false);
+                    self.enable('step_into', false);
+                    self.enable('continue', false);
+                    self.enable('toggle_breakpoint', false);
+                    self.enable('clear_all_breakpoints', false);
+                    pgTools.DirectDebug.first_time_indirect_debug = false;
+                    self.poll_result(trans_id);
+                  } else {
+                    self.poll_result(trans_id);
+                  }
+                } else if (res.data.status === 'NotConnected') {
+                  Alertify.alert(
+                    gettext('Debugger Error'),
+                    gettext('Error while polling result.')
                   );
-
-                  // As we are waiting for another session to invoke the target,disable all the buttons
-                  self.enable('stop', false);
-                  self.enable('step_over', false);
-                  self.enable('step_into', false);
-                  self.enable('continue', false);
-                  self.enable('toggle_breakpoint', false);
-                  self.enable('clear_all_breakpoints', false);
-                  pgTools.DirectDebug.first_time_indirect_debug = false;
-                  self.poll_result(trans_id);
-                } else {
-                  self.poll_result(trans_id);
                 }
-              } else if (res.data.status === 'NotConnected') {
+              })
+              .fail(function() {
                 Alertify.alert(
                   gettext('Debugger Error'),
                   gettext('Error while polling result.')
                 );
-              }
-            })
-            .fail(function() {
-              Alertify.alert(
-                gettext('Debugger Error'),
-                gettext('Error while polling result.')
-              );
-            });
+              });
           }, poll_timeout);
 
       },
@@ -505,49 +505,15 @@ define([
               url: baseUrl,
               method: 'GET',
             })
-            .done(function(res) {
-              if (res.data.status === 'Success') {
-                if (res.data.result == undefined) {
+              .done(function(res) {
+                if (res.data.status === 'Success') {
+                  if (res.data.result == undefined) {
                   /*
                    "result" is undefined only in case of EDB procedure.
                    As Once the EDB procedure execution is completed then we are
                    not getting any result so we need ignore the result.
                   */
-                  self.setActiveLine(-1);
-                  pgTools.DirectDebug.direct_execution_completed = true;
-                  pgTools.DirectDebug.polling_timeout_idle = true;
-
-                  //Set the alertify message to inform the user that execution is completed.
-                  Alertify.success(res.info, 3);
-
-                  // Update the message tab of the debugger
-                  if (res.data.status_message) {
-                    self.update_messages(res.data.status_message);
-                  }
-
-                  // remove progress cursor
-                  $('.debugger-container').removeClass('show_progress');
-
-                  // Execution completed so disable the buttons other than
-                  // "Continue/Start" button because user can still
-                  // start the same execution again.
-                  setTimeout(function() {
-                    self.enable('stop', false);
-                    self.enable('step_over', false);
-                    self.enable('step_into', false);
-                    self.enable('toggle_breakpoint', false);
-                    self.enable('clear_all_breakpoints', false);
-                    self.enable('continue', true);
-                  }, 500);
-
-                  // Stop further polling
-                  pgTools.DirectDebug.is_polling_required = false;
-                } else {
-                  // Call function to create and update local variables ....
-                  if (res.data.result != null) {
                     self.setActiveLine(-1);
-                    self.AddResults(res.data.col_info, res.data.result);
-                    pgTools.DirectDebug.results_panel.focus();
                     pgTools.DirectDebug.direct_execution_completed = true;
                     pgTools.DirectDebug.polling_timeout_idle = true;
 
@@ -574,68 +540,102 @@ define([
                       self.enable('continue', true);
                     }, 500);
 
-                    // Stop further pooling
+                    // Stop further polling
                     pgTools.DirectDebug.is_polling_required = false;
+                  } else {
+                  // Call function to create and update local variables ....
+                    if (res.data.result != null) {
+                      self.setActiveLine(-1);
+                      self.AddResults(res.data.col_info, res.data.result);
+                      pgTools.DirectDebug.results_panel.focus();
+                      pgTools.DirectDebug.direct_execution_completed = true;
+                      pgTools.DirectDebug.polling_timeout_idle = true;
+
+                      //Set the alertify message to inform the user that execution is completed.
+                      Alertify.success(res.info, 3);
+
+                      // Update the message tab of the debugger
+                      if (res.data.status_message) {
+                        self.update_messages(res.data.status_message);
+                      }
+
+                      // remove progress cursor
+                      $('.debugger-container').removeClass('show_progress');
+
+                      // Execution completed so disable the buttons other than
+                      // "Continue/Start" button because user can still
+                      // start the same execution again.
+                      setTimeout(function() {
+                        self.enable('stop', false);
+                        self.enable('step_over', false);
+                        self.enable('step_into', false);
+                        self.enable('toggle_breakpoint', false);
+                        self.enable('clear_all_breakpoints', false);
+                        self.enable('continue', true);
+                      }, 500);
+
+                      // Stop further pooling
+                      pgTools.DirectDebug.is_polling_required = false;
+                    }
                   }
-                }
-              } else if (res.data.status === 'Busy') {
+                } else if (res.data.status === 'Busy') {
                 // If status is Busy then poll the result by recursive call to
                 // the poll function
-                self.poll_end_execution_result(trans_id);
-                // Update the message tab of the debugger
-                if (res.data.status_message) {
-                  self.update_messages(res.data.status_message);
+                  self.poll_end_execution_result(trans_id);
+                  // Update the message tab of the debugger
+                  if (res.data.status_message) {
+                    self.update_messages(res.data.status_message);
+                  }
+                } else if (res.data.status === 'NotConnected') {
+                  Alertify.alert(
+                    gettext('Debugger poll end execution error'),
+                    res.data.result
+                  );
+                } else if (res.data.status === 'ERROR') {
+                  pgTools.DirectDebug.direct_execution_completed = true;
+                  self.setActiveLine(-1);
+
+                  //Set the Alertify message to inform the user that execution is
+                  // completed with error.
+                  if (!pgTools.DirectDebug.is_user_aborted_debugging) {
+                    Alertify.error(res.info, 3);
+                  }
+
+                  // Update the message tab of the debugger
+                  if (res.data.status_message) {
+                    self.update_messages(res.data.status_message);
+                  }
+
+                  pgTools.DirectDebug.messages_panel.focus();
+
+                  // remove progress cursor
+                  $('.debugger-container').removeClass('show_progress');
+
+                  // Execution completed so disable the buttons other than
+                  // "Continue/Start" button because user can still start the
+                  // same execution again.
+                  self.enable('stop', false);
+                  self.enable('step_over', false);
+                  self.enable('step_into', false);
+                  self.enable('toggle_breakpoint', false);
+                  self.enable('clear_all_breakpoints', false);
+                  // If debugging is stopped by user then do not enable
+                  // continue/restart button
+                  if (!pgTools.DirectDebug.is_user_aborted_debugging) {
+                    self.enable('continue', true);
+                    pgTools.DirectDebug.is_user_aborted_debugging = false;
+                  }
+
+                  // Stop further pooling
+                  pgTools.DirectDebug.is_polling_required = false;
                 }
-              } else if (res.data.status === 'NotConnected') {
+              })
+              .fail(function() {
                 Alertify.alert(
-                  gettext('Debugger poll end execution error'),
-                  res.data.result
+                  gettext('Debugger Error'),
+                  gettext('Error while polling result.')
                 );
-              } else if (res.data.status === 'ERROR') {
-                pgTools.DirectDebug.direct_execution_completed = true;
-                self.setActiveLine(-1);
-
-                //Set the Alertify message to inform the user that execution is
-                // completed with error.
-                if (!pgTools.DirectDebug.is_user_aborted_debugging) {
-                  Alertify.error(res.info, 3);
-                }
-
-                // Update the message tab of the debugger
-                if (res.data.status_message) {
-                  self.update_messages(res.data.status_message);
-                }
-
-                pgTools.DirectDebug.messages_panel.focus();
-
-                // remove progress cursor
-                $('.debugger-container').removeClass('show_progress');
-
-                // Execution completed so disable the buttons other than
-                // "Continue/Start" button because user can still start the
-                // same execution again.
-                self.enable('stop', false);
-                self.enable('step_over', false);
-                self.enable('step_into', false);
-                self.enable('toggle_breakpoint', false);
-                self.enable('clear_all_breakpoints', false);
-                // If debugging is stopped by user then do not enable
-                // continue/restart button
-                if (!pgTools.DirectDebug.is_user_aborted_debugging) {
-                  self.enable('continue', true);
-                  pgTools.DirectDebug.is_user_aborted_debugging = false;
-                }
-
-                // Stop further pooling
-                pgTools.DirectDebug.is_polling_required = false;
-              }
-            })
-            .fail(function() {
-              Alertify.alert(
-                gettext('Debugger Error'),
-                gettext('Error while polling result.')
-              );
-            });
+              });
           }, poll_end_timeout);
 
       },
@@ -654,69 +654,69 @@ define([
 
         // Clear msg tab
         pgTools.DirectDebug
-               .messages_panel
-               .$container
-               .find('.messages')
-               .html('');
+          .messages_panel
+          .$container
+          .find('.messages')
+          .html('');
 
         $.ajax({
           url: baseUrl,
         })
-        .done(function(res) {
+          .done(function(res) {
           // Restart the same function debugging with previous arguments
-          var restart_dbg = res.data.restart_debug ? 1 : 0;
+            var restart_dbg = res.data.restart_debug ? 1 : 0;
 
-          // Start pooling again
-          pgTools.DirectDebug.polling_timeout_idle = false;
-          pgTools.DirectDebug.is_polling_required = true;
-          self.poll_result(trans_id);
+            // Start pooling again
+            pgTools.DirectDebug.polling_timeout_idle = false;
+            pgTools.DirectDebug.is_polling_required = true;
+            self.poll_result(trans_id);
 
-          if (restart_dbg) {
-            pgTools.DirectDebug.debug_restarted = true;
-          }
+            if (restart_dbg) {
+              pgTools.DirectDebug.debug_restarted = true;
+            }
 
-          /*
+            /*
            Need to check if restart debugging really require to open the input
            dialog? If yes then we will get the previous arguments from database
            and populate the input dialog, If no then we should directly start the
            listener.
           */
-          if (res.data.result.require_input) {
-            debug_function_again(res.data.result, restart_dbg);
-          } else {
+            if (res.data.result.require_input) {
+              debug_function_again(res.data.result, restart_dbg);
+            } else {
             // Debugging of void function is started again so we need to start
             // the listener again
-            var baseUrl = url_for('debugger.start_listener', {
-              'trans_id': trans_id,
-            });
+              var baseUrl = url_for('debugger.start_listener', {
+                'trans_id': trans_id,
+              });
 
-            $.ajax({
-              url: baseUrl,
-              method: 'GET',
-            })
-            .done(function() {
-              if (pgTools.DirectDebug.debug_type) {
-                self.poll_end_execution_result(trans_id);
-              }
-            })
-            .fail(function() {
-              Alertify.alert(
-                gettext('Debugger Error'),
-                gettext('Error while polling result.')
-              );
-            });
-          }
-        })
-        .fail(function(xhr) {
-          try {
-            var err = JSON.parse(xhr.responseText);
-            if (err.success == 0) {
-              Alertify.alert(gettext('Debugger Error'), err.errormsg);
+              $.ajax({
+                url: baseUrl,
+                method: 'GET',
+              })
+                .done(function() {
+                  if (pgTools.DirectDebug.debug_type) {
+                    self.poll_end_execution_result(trans_id);
+                  }
+                })
+                .fail(function() {
+                  Alertify.alert(
+                    gettext('Debugger Error'),
+                    gettext('Error while polling result.')
+                  );
+                });
             }
-          } catch (e) {
-            console.warn(e.stack || e);
-          }
-        });
+          })
+          .fail(function(xhr) {
+            try {
+              var err = JSON.parse(xhr.responseText);
+              if (err.success == 0) {
+                Alertify.alert(gettext('Debugger Error'), err.errormsg);
+              }
+            } catch (e) {
+              console.warn(e.stack || e);
+            }
+          });
       },
 
       // Continue the execution until the next breakpoint
@@ -743,22 +743,22 @@ define([
             url: baseUrl,
             method: 'GET',
           })
-          .done(function(res) {
-            if (res.data.status) {
-              self.poll_result(trans_id);
-            } else {
+            .done(function(res) {
+              if (res.data.status) {
+                self.poll_result(trans_id);
+              } else {
+                Alertify.alert(
+                  gettext('Debugger Error'),
+                  gettext('Error while executing continue in debugging session.')
+                );
+              }
+            })
+            .fail(function() {
               Alertify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while executing continue in debugging session.')
               );
-            }
-          })
-          .fail(function() {
-            Alertify.alert(
-              gettext('Debugger Error'),
-              gettext('Error while executing continue in debugging session.')
-            );
-          });
+            });
         }
       },
 
@@ -780,22 +780,22 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status) {
-            self.poll_result(trans_id);
-          } else {
+          .done(function(res) {
+            if (res.data.status) {
+              self.poll_result(trans_id);
+            } else {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while executing step over in debugging session.')
+              );
+            }
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while executing step over in debugging session.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while executing step over in debugging session.')
-          );
-        });
+          });
       },
 
       Step_into: function(trans_id) {
@@ -816,22 +816,22 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status) {
-            self.poll_result(trans_id);
-          } else {
+          .done(function(res) {
+            if (res.data.status) {
+              self.poll_result(trans_id);
+            } else {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while executing step into in debugging session.')
+              );
+            }
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while executing step into in debugging session.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while executing step into in debugging session.')
-          );
-        });
+          });
       },
 
       Stop: function(trans_id) {
@@ -853,36 +853,36 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status) {
+          .done(function(res) {
+            if (res.data.status) {
             // Call function to create and update local variables ....
-            self.setActiveLine(-1);
-            pgTools.DirectDebug.direct_execution_completed = true;
-            pgTools.DirectDebug.is_user_aborted_debugging = true;
+              self.setActiveLine(-1);
+              pgTools.DirectDebug.direct_execution_completed = true;
+              pgTools.DirectDebug.is_user_aborted_debugging = true;
 
-            // Stop further pooling
-            pgTools.DirectDebug.is_polling_required = false;
+              // Stop further pooling
+              pgTools.DirectDebug.is_polling_required = false;
 
-            // Restarting debugging in the same transaction do not work
-            // We will give same behaviour as pgAdmin3 and disable all buttons
-            self.enable('continue', false);
+              // Restarting debugging in the same transaction do not work
+              // We will give same behaviour as pgAdmin3 and disable all buttons
+              self.enable('continue', false);
 
-            // Set the Alertify message to inform the user that execution
-            // is completed.
-            Alertify.success(res.info, 3);
-          } else if (res.data.status === 'NotConnected') {
+              // Set the Alertify message to inform the user that execution
+              // is completed.
+              Alertify.success(res.info, 3);
+            } else if (res.data.status === 'NotConnected') {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while executing stop in debugging session.')
+              );
+            }
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while executing stop in debugging session.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while executing stop in debugging session.')
-          );
-        });
+          });
       },
 
       toggle_breakpoint: function(trans_id) {
@@ -918,40 +918,40 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status) {
+          .done(function(res) {
+            if (res.data.status) {
             // Call function to create and update local variables ....
-            var info = pgTools.DirectDebug.editor.lineInfo(self.active_line_no);
+              var info = pgTools.DirectDebug.editor.lineInfo(self.active_line_no);
 
-            if (info.gutterMarkers != undefined) {
-              pgTools.DirectDebug.editor.setGutterMarker(self.active_line_no, 'breakpoints', null);
-            } else {
-              pgTools.DirectDebug.editor.setGutterMarker(self.active_line_no, 'breakpoints', function() {
-                var marker = document.createElement('div');
-                marker.style.color = '#822';
-                marker.innerHTML = '●';
-                return marker;
-              }());
+              if (info.gutterMarkers != undefined) {
+                pgTools.DirectDebug.editor.setGutterMarker(self.active_line_no, 'breakpoints', null);
+              } else {
+                pgTools.DirectDebug.editor.setGutterMarker(self.active_line_no, 'breakpoints', function() {
+                  var marker = document.createElement('div');
+                  marker.style.color = '#822';
+                  marker.innerHTML = '●';
+                  return marker;
+                }());
+              }
+              self.enable('stop', true);
+              self.enable('step_over', true);
+              self.enable('step_into', true);
+              self.enable('toggle_breakpoint', true);
+              self.enable('clear_all_breakpoints', true);
+              self.enable('continue', true);
+            } else if (res.data.status === 'NotConnected') {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while toggling breakpoint.')
+              );
             }
-            self.enable('stop', true);
-            self.enable('step_over', true);
-            self.enable('step_into', true);
-            self.enable('toggle_breakpoint', true);
-            self.enable('clear_all_breakpoints', true);
-            self.enable('continue', true);
-          } else if (res.data.status === 'NotConnected') {
+          })
+          .fail(function() {
             Alertify.alert(
               gettext('Debugger Error'),
               gettext('Error while toggling breakpoint.')
             );
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while toggling breakpoint.')
-          );
-        });
+          });
       },
 
       clear_all_breakpoint: function(trans_id) {
@@ -989,31 +989,31 @@ define([
             'breakpoint_list': breakpoint_list.join(),
           },
         })
-        .done(function(res) {
-          if (res.data.status) {
-            for (var i = 0; i < breakpoint_list.length; i++) {
-              var info = pgTools.DirectDebug.editor.lineInfo((breakpoint_list[i] - 1));
+          .done(function(res) {
+            if (res.data.status) {
+              for (var i = 0; i < breakpoint_list.length; i++) {
+                var info = pgTools.DirectDebug.editor.lineInfo((breakpoint_list[i] - 1));
 
-              if (info) {
-                if (info.gutterMarkers != undefined) {
-                  pgTools.DirectDebug.editor.setGutterMarker((breakpoint_list[i] - 1), 'breakpoints', null);
+                if (info) {
+                  if (info.gutterMarkers != undefined) {
+                    pgTools.DirectDebug.editor.setGutterMarker((breakpoint_list[i] - 1), 'breakpoints', null);
+                  }
                 }
               }
             }
-          }
-          self.enable('stop', true);
-          self.enable('step_over', true);
-          self.enable('step_into', true);
-          self.enable('toggle_breakpoint', true);
-          self.enable('clear_all_breakpoints', true);
-          self.enable('continue', true);
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while clearing all breakpoint.')
-          );
-        });
+            self.enable('stop', true);
+            self.enable('step_over', true);
+            self.enable('step_into', true);
+            self.enable('toggle_breakpoint', true);
+            self.enable('clear_all_breakpoints', true);
+            self.enable('continue', true);
+          })
+          .fail(function() {
+            Alertify.alert(
+              gettext('Debugger Error'),
+              gettext('Error while clearing all breakpoint.')
+            );
+          });
       },
 
       AddStackInformation: function(result) {
@@ -1238,9 +1238,9 @@ define([
 
         // Render the variables grid into local variables panel
         pgTools.DirectDebug.local_variables_panel
-                           .$container
-                           .find('.local_variables')
-                           .append(variable_grid.el);
+          .$container
+          .find('.local_variables')
+          .append(variable_grid.el);
       },
 
       AddParameters: function(result) {
@@ -1324,9 +1324,9 @@ define([
 
         // Render the parameters grid into parameter panel
         pgTools.DirectDebug.parameters_panel
-                           .$container
-                           .find('.parameters')
-                           .append(param_grid.el);
+          .$container
+          .find('.parameters')
+          .append(param_grid.el);
       },
       deposit_parameter_value: function(model) {
         var self = this;
@@ -1351,24 +1351,24 @@ define([
             'data': JSON.stringify(name_value_list),
           },
         })
-        .done(function(res) {
-          if (res.data.status) {
+          .done(function(res) {
+            if (res.data.status) {
             // Get the updated variables value
-            self.GetLocalVariables(pgTools.DirectDebug.trans_id);
-            // Show the message to the user that deposit value is success or failure
-            if (res.data.result) {
-              Alertify.success(res.data.info, 3);
-            } else {
-              Alertify.error(res.data.info, 3);
+              self.GetLocalVariables(pgTools.DirectDebug.trans_id);
+              // Show the message to the user that deposit value is success or failure
+              if (res.data.result) {
+                Alertify.success(res.data.info, 3);
+              } else {
+                Alertify.error(res.data.info, 3);
+              }
             }
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while depositing variable value.')
-          );
-        });
+          })
+          .fail(function() {
+            Alertify.alert(
+              gettext('Debugger Error'),
+              gettext('Error while depositing variable value.')
+            );
+          });
       },
 
       select_frame: function() {
@@ -1383,21 +1383,21 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status) {
-            pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
-            self.UpdateBreakpoint(pgTools.DirectDebug.trans_id);
-            self.setActiveLine(res.data.result[0].linenumber - 2);
-            // Call function to create and update local variables ....
-            self.GetLocalVariables(pgTools.DirectDebug.trans_id);
-          }
-        })
-        .fail(function() {
-          Alertify.alert(
-            gettext('Debugger Error'),
-            gettext('Error while selecting frame.')
-          );
-        });
+          .done(function(res) {
+            if (res.data.status) {
+              pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
+              self.UpdateBreakpoint(pgTools.DirectDebug.trans_id);
+              self.setActiveLine(res.data.result[0].linenumber - 2);
+              // Call function to create and update local variables ....
+              self.GetLocalVariables(pgTools.DirectDebug.trans_id);
+            }
+          })
+          .fail(function() {
+            Alertify.alert(
+              gettext('Debugger Error'),
+              gettext('Error while selecting frame.')
+            );
+          });
       },
     }
   );
@@ -1556,7 +1556,7 @@ define([
       this.function_name_with_arguments = function_name_with_arguments;
 
       let browser = window.opener ?
-              window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+        window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
       this.preferences = browser.get_preferences_for_module('sqleditor');
 
       this.docker = new wcDocker(
@@ -1583,25 +1583,25 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status) {
-            self.intializePanels();
-            controller.poll_result(trans_id);
-          }
-        })
-        .fail(function(xhr) {
-          try {
-            var err = JSON.parse(xhr.responseText);
-            if (err.success == 0) {
-              Alertify.alert(gettext('Debugger Error'), err.errormsg);
+          .done(function(res) {
+            if (res.data.status) {
+              self.intializePanels();
+              controller.poll_result(trans_id);
             }
-          } catch (e) {
-            Alertify.alert(
-              gettext('Debugger Error'),
-              gettext('Error while starting debugging listener.')
-            );
-          }
-        });
+          })
+          .fail(function(xhr) {
+            try {
+              var err = JSON.parse(xhr.responseText);
+              if (err.success == 0) {
+                Alertify.alert(gettext('Debugger Error'), err.errormsg);
+              }
+            } catch (e) {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while starting debugging listener.')
+              );
+            }
+          });
       } else if (trans_id != undefined && debug_type) {
         // Make ajax call to execute the and start the target for execution
         baseUrl = url_for('debugger.start_listener', {
@@ -1612,24 +1612,24 @@ define([
           url: baseUrl,
           method: 'GET',
         })
-        .done(function(res) {
-          if (res.data.status) {
-            self.messages(trans_id);
-          }
-        })
-        .fail(function(xhr) {
-          try {
-            var err = JSON.parse(xhr.responseText);
-            if (err.success == 0) {
-              Alertify.alert(gettext('Debugger Error'), err.errormsg);
+          .done(function(res) {
+            if (res.data.status) {
+              self.messages(trans_id);
             }
-          } catch (e) {
-            Alertify.alert(
-              gettext('Debugger Error'),
-              gettext('Error while starting debugging listener.')
-            );
-          }
-        });
+          })
+          .fail(function(xhr) {
+            try {
+              var err = JSON.parse(xhr.responseText);
+              if (err.success == 0) {
+                Alertify.alert(gettext('Debugger Error'), err.errormsg);
+              }
+            } catch (e) {
+              Alertify.alert(
+                gettext('Debugger Error'),
+                gettext('Error while starting debugging listener.')
+              );
+            }
+          });
       } else
         this.intializePanels();
     },
@@ -1647,27 +1647,27 @@ define([
         url: baseUrl,
         method: 'GET',
       })
-      .done(function(res) {
-        if (res.data.status === 'Success') {
-          self.intializePanels();
-          // If status is Success then find the port number to attach the executer.
-          controller.start_execution(trans_id, res.data.result);
-        } else if (res.data.status === 'Busy') {
+        .done(function(res) {
+          if (res.data.status === 'Success') {
+            self.intializePanels();
+            // If status is Success then find the port number to attach the executer.
+            controller.start_execution(trans_id, res.data.result);
+          } else if (res.data.status === 'Busy') {
           // If status is Busy then poll the result by recursive call to the poll function
-          self.messages(trans_id);
-        } else if (res.data.status === 'NotConnected') {
+            self.messages(trans_id);
+          } else if (res.data.status === 'NotConnected') {
+            Alertify.alert(
+              gettext('Not connected to server or connection with the server has been closed.'),
+              res.data.result
+            );
+          }
+        })
+        .fail(function() {
           Alertify.alert(
-            gettext('Not connected to server or connection with the server has been closed.'),
-            res.data.result
+            gettext('Debugger Error'),
+            gettext('Error while fetching messages information.')
           );
-        }
-      })
-      .fail(function() {
-        Alertify.alert(
-          gettext('Debugger Error'),
-          gettext('Error while fetching messages information.')
-        );
-      });
+        });
 
     },
 
@@ -1792,11 +1792,11 @@ define([
         }
       );
       self.messages_panel = self.docker.addPanel(
-          'messages', wcDocker.DOCK.STACKED, self.parameters_panel);
+        'messages', wcDocker.DOCK.STACKED, self.parameters_panel);
       self.results_panel = self.docker.addPanel(
-          'results', wcDocker.DOCK.STACKED, self.parameters_panel);
+        'results', wcDocker.DOCK.STACKED, self.parameters_panel);
       self.stack_pane_panel = self.docker.addPanel(
-          'stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
+        'stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
 
       var editor_pane = $('<div id="stack_editor_pane" ' +
         'class="pg-panel-content info"></div>');

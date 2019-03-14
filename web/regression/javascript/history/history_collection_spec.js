@@ -25,11 +25,11 @@ describe('historyCollection', function () {
     it('returns 0 when underlying history model has no elements', function () {
       historyCollection = new HistoryCollection([]);
 
-      expect(historyCollection.length()).toBe(0);
+      expect(historyCollection.length()).toEqual(0);
     });
 
     it('returns the length of the underlying history model', function () {
-      expect(historyCollection.length()).toBe(1);
+      expect(historyCollection.length()).toEqual(1);
     });
   });
 
@@ -61,7 +61,7 @@ describe('historyCollection', function () {
 
     it('drops the history', function () {
       expect(historyCollection.historyList).toEqual([]);
-      expect(historyCollection.length()).toBe(0);
+      expect(historyCollection.length()).toEqual(0);
     });
 
     it('calls the onReset function', function () {

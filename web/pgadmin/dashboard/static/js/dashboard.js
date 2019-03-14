@@ -95,17 +95,17 @@ define('pgadmin.dashboard', [
             url: action_url,
             type: 'DELETE',
           })
-          .done(function(res) {
-            if (res == gettext('Success')) {
-              Alertify.success(txtSuccess);
-              refresh_grid();
-            } else {
-              Alertify.error(txtError);
-            }
-          })
-          .fail(function(xhr, status, error) {
-            Alertify.pgRespErrorNotify(xhr, error);
-          });
+            .done(function(res) {
+              if (res == gettext('Success')) {
+                Alertify.success(txtSuccess);
+                refresh_grid();
+              } else {
+                Alertify.error(txtError);
+              }
+            })
+            .fail(function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(xhr, error);
+            });
         },
         function() {
           return true;
@@ -228,14 +228,14 @@ define('pgadmin.dashboard', [
             type: 'GET',
             dataType: 'html',
           })
-          .done(function(data) {
-            $(div).html(data);
-          })
-          .fail(function() {
-            $(div).html(
-              '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-            );
-          });
+            .done(function(data) {
+              $(div).html(data);
+            })
+            .fail(function() {
+              $(div).html(
+                '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+              );
+            });
 
           // Cache the current IDs for next time
           $(dashboardPanel).data('sid', -1);
@@ -342,15 +342,15 @@ define('pgadmin.dashboard', [
                   type: 'GET',
                   dataType: 'html',
                 })
-                .done(function(data) {
-                  $(div).html(data);
-                  self.init_dashboard();
-                })
-                .fail(function() {
-                  $(div).html(
-                    '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-                  );
-                });
+                  .done(function(data) {
+                    $(div).html(data);
+                    self.init_dashboard();
+                  })
+                  .fail(function() {
+                    $(div).html(
+                      '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+                    );
+                  });
                 $(dashboardPanel).data('server_status', true);
               }
             } else {
@@ -536,45 +536,45 @@ define('pgadmin.dashboard', [
           url: path,
           type: 'GET',
         })
-        .done(function(resp) {
-          last_poll_wait_counter = 0;
-          for(let chart_name in resp) {
-            let chart_obj = chart_store[chart_name].chart_obj;
-            $(chart_obj.getContainer()).removeClass('graph-error');
-            self.updateChart(chart_obj, resp[chart_name]);
-          }
-        })
-        .fail(function(xhr) {
-          last_poll_wait_counter = 0;
-          let err = '';
-          let msg = '';
-          let cls = 'info';
-
-          if (xhr.readyState === 0) {
-            msg = gettext('Not connected to the server or the connection to the server has been closed.');
-          } else {
-            err = JSON.parse(xhr.responseText);
-            msg = err.errormsg;
-
-            // If we get a 428, it means the server isn't connected
-            if (xhr.status === 428) {
-              if (_.isUndefined(msg) || _.isNull(msg)) {
-                msg = gettext('Please connect to the selected server to view the graph.');
-              }
-            } else {
-              msg = gettext('An error occurred whilst rendering the graph.');
-              cls = 'danger';
+          .done(function(resp) {
+            last_poll_wait_counter = 0;
+            for(let chart_name in resp) {
+              let chart_obj = chart_store[chart_name].chart_obj;
+              $(chart_obj.getContainer()).removeClass('graph-error');
+              self.updateChart(chart_obj, resp[chart_name]);
             }
-          }
+          })
+          .fail(function(xhr) {
+            last_poll_wait_counter = 0;
+            let err = '';
+            let msg = '';
+            let cls = 'info';
 
-          for(let chart_name in chart_store) {
-            let chart_obj = chart_store[chart_name].chart_obj;
-            $(chart_obj.getContainer()).addClass('graph-error');
-            $(chart_obj.getContainer()).html(
-              '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
-            );
-          }
-        });
+            if (xhr.readyState === 0) {
+              msg = gettext('Not connected to the server or the connection to the server has been closed.');
+            } else {
+              err = JSON.parse(xhr.responseText);
+              msg = err.errormsg;
+
+              // If we get a 428, it means the server isn't connected
+              if (xhr.status === 428) {
+                if (_.isUndefined(msg) || _.isNull(msg)) {
+                  msg = gettext('Please connect to the selected server to view the graph.');
+                }
+              } else {
+                msg = gettext('An error occurred whilst rendering the graph.');
+                cls = 'danger';
+              }
+            }
+
+            for(let chart_name in chart_store) {
+              let chart_obj = chart_store[chart_name].chart_obj;
+              $(chart_obj.getContainer()).addClass('graph-error');
+              $(chart_obj.getContainer()).html(
+                '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
+              );
+            }
+          });
         last_poll_wait_counter = WAIT_COUNTER;
       };
       /* Execute once for the first time as setInterval will not do */
@@ -586,8 +586,8 @@ define('pgadmin.dashboard', [
     add_new_server: function() {
       if (pgBrowser && pgBrowser.tree) {
         var i = pgBrowser.tree.selected().length != 0 ?
-          pgBrowser.tree.selected() :
-          pgBrowser.tree.first(null, false),
+            pgBrowser.tree.selected() :
+            pgBrowser.tree.first(null, false),
           serverModule = require('pgadmin.node.server'),
           itemData = pgBrowser.tree.itemData(i);
 

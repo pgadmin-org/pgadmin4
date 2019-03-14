@@ -63,8 +63,12 @@ def getEncoding(key):
     """
     :param key: Database Encoding
     :return:
-    [Postgres_encoding, Python_encoding] - Postgres and Python encoding
+    [Postgres_encoding, Python_encoding, typecast_encoding] -
+    Postgres encoding, Python encoding, type cast encoding
     """
+    #
+    # Reference: https://www.postgresql.org/docs/11/multibyte.html
+
     return encode_dict.get(key, ['UNICODE', 'utf-8', 'utf-8'])
 
 

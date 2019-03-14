@@ -35,7 +35,7 @@ function hasServerInformations(parentData) {
 }
 
 export function showQueryTool(datagrid, pgBrowser, alertify, url,
-                              aciTreeIdentifier, panelTitle) {
+  aciTreeIdentifier, panelTitle) {
   const sURL = url || '';
   const queryToolTitle = panelTitle || '';
 

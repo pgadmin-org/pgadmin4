@@ -96,7 +96,7 @@ define('pgadmin.node.foreign_table', [
       type: 'int', deps: ['datatype'],
       disabled: function(m) {
         var val = m.get('typlen');
-          // We will store type from selected from combobox
+        // We will store type from selected from combobox
         if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
             || _.isUndefined(m.get('inheritedfrom'))
@@ -115,14 +115,14 @@ define('pgadmin.node.foreign_table', [
         if(m.type_options) {
           m.set('is_tlength', false, {silent: true});
 
-            // iterating over all the types
+          // iterating over all the types
           _.each(m.type_options, function(o) {
-              // if type from selected from combobox matches in options
+            // if type from selected from combobox matches in options
             if ( of_type == o.value ) {
-                // if length is allowed for selected type
+              // if length is allowed for selected type
               if(o.length)
-                {
-                  // set the values in model
+              {
+                // set the values in model
                 has_length = true;
                 m.set('is_tlength', true, {silent: true});
                 m.set('min_val', o.min_val, {silent: true});
@@ -171,15 +171,15 @@ define('pgadmin.node.foreign_table', [
 
         if(m.type_options) {
           m.set('is_precision', false, {silent: true});
-            // iterating over all the types
+          // iterating over all the types
           _.each(m.type_options, function(o) {
-              // if type from selected from combobox matches in options
+            // if type from selected from combobox matches in options
             if ( of_type == o.value ) {
-                // if precession is allowed for selected type
+              // if precession is allowed for selected type
               if(o.precision)
-                {
+              {
                 has_precision = true;
-                  // set the values in model
+                // set the values in model
                 m.set('is_precision', true, {silent: true});
                 m.set('min_val', o.min_val, {silent: true});
                 m.set('max_val', o.max_val, {silent: true});
@@ -263,7 +263,7 @@ define('pgadmin.node.foreign_table', [
       }
 
       if (_.isUndefined(this.get('datatype')) || String(this.get('datatype'))
-      .replace(/^\s+|\s+$/g, '') == '') {
+        .replace(/^\s+|\s+$/g, '') == '') {
         errmsg = gettext('Column Datatype cannot be empty.');
         this.errorModel.set('datatype', errmsg);
       } else {
@@ -345,10 +345,10 @@ define('pgadmin.node.foreign_table', [
         var node = this.field.get('schema_node'),
           node_info = this.field.get('node_info'),
           full_url = node.generate_url.apply(
-              node, [
-                null, url, this.field.get('node_data'),
-                this.field.get('url_with_id') || false, node_info,
-              ]),
+            node, [
+              null, url, this.field.get('node_data'),
+              this.field.get('url_with_id') || false, node_info,
+            ]),
           cache_level = this.field.get('cache_level') || node.type,
           cache_node = this.field.get('cache_node');
 
@@ -363,17 +363,17 @@ define('pgadmin.node.foreign_table', [
           url: full_url,
           data: data,
         })
-        .done(function(res) {
+          .done(function(res) {
           /*
            * We will cache this data for short period of time for avoiding
            * same calls.
            */
-          data = cache_node.cache(url, node_info, cache_level, res.data);
+            data = cache_node.cache(url, node_info, cache_level, res.data);
 
-        })
-        .fail(function() {
-          m.trigger('pgadmin:view:fetch:error', m, self.field);
-        });
+          })
+          .fail(function() {
+            m.trigger('pgadmin:view:fetch:error', m, self.field);
+          });
         m.trigger('pgadmin:view:fetched', m, self.field);
 
         // To fetch only options from cache, we do not need time from 'at'
@@ -444,7 +444,7 @@ define('pgadmin.node.foreign_table', [
       }
 
       if (_.isUndefined(this.get('consrc')) || String(this.get('consrc'))
-      .replace(/^\s+|\s+$/g, '') == '') {
+        .replace(/^\s+|\s+$/g, '') == '') {
         err['consrc'] = gettext('Constraint Check cannot be empty.');
         errmsg = errmsg || err['consrc'];
       }
@@ -631,8 +631,8 @@ define('pgadmin.node.foreign_table', [
           mode: ['properties'], min_version: 90200,
         }, pgBrowser.SecurityGroupSchema, {
           id: 'acl', label: gettext('Privileges'), model: pgAdmin
-          .Browser.Node.PrivilegeRoleModel.extend(
-          {privileges: ['a','r','w','x']}), uniqueCol : ['grantee', 'grantor'],
+            .Browser.Node.PrivilegeRoleModel.extend(
+              {privileges: ['a','r','w','x']}), uniqueCol : ['grantee', 'grantor'],
           editable: false, type: 'collection', group: 'security',
           mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
@@ -657,7 +657,7 @@ define('pgadmin.node.foreign_table', [
           }
 
           if (_.isUndefined(this.get('basensp')) || String(this.get('basensp'))
-          .replace(/^\s+|\s+$/g, '') == '') {
+            .replace(/^\s+|\s+$/g, '') == '') {
             err['basensp'] = gettext('Schema cannot be empty.');
             errmsg = errmsg || err['basensp'];
           }

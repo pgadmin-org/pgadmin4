@@ -95,7 +95,7 @@ describe('#handleQueryOutputKeyboardEvent', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
         expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
-        expect(grid.getSelectionModel().getSelectedRanges().length).toBe(1);
+        expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
       });
     });
 
@@ -109,7 +109,7 @@ describe('#handleQueryOutputKeyboardEvent', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
         expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
-        expect(grid.getSelectionModel().getSelectedRanges().length).toBe(1);
+        expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
       });
     });
   });
@@ -125,7 +125,7 @@ describe('#handleQueryOutputKeyboardEvent', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
         expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
-        expect(grid.getSelectionModel().getSelectedRanges().length).toBe(1);
+        expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
       });
     });
 
@@ -139,7 +139,7 @@ describe('#handleQueryOutputKeyboardEvent', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
         expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
-        expect(grid.getSelectionModel().getSelectedRanges().length).toBe(1);
+        expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
       });
     });
   });

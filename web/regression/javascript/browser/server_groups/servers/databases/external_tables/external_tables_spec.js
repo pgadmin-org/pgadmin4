@@ -36,7 +36,7 @@ describe('when external tables is loaded', () => {
     });
 
     it('returns the not updated version of pgBrowser', () => {
-      expect(result).toBe(pgBrowser);
+      expect(result).toEqual(pgBrowser);
     });
   });
 

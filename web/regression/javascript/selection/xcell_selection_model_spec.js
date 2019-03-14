@@ -437,12 +437,12 @@ describe('XCellSelectionModel', function () {
       it('should call handleDragEnd from CellRangeSelector', function () {
         var newRange = grid.getSelectionModel().getSelectedRanges();
 
-        expect(newRange.length).toBe(1);
+        expect(newRange.length).toEqual(1);
 
-        expect(newRange[0].fromCell).toBe(1);
-        expect(newRange[0].toCell).toBe(3);
-        expect(newRange[0].fromRow).toBe(1);
-        expect(newRange[0].toRow).toBe(4);
+        expect(newRange[0].fromCell).toEqual(1);
+        expect(newRange[0].toCell).toEqual(3);
+        expect(newRange[0].fromRow).toEqual(1);
+        expect(newRange[0].toRow).toEqual(4);
       });
     });
   });
@@ -482,7 +482,7 @@ describe('XCellSelectionModel', function () {
 
       var selectedRanges = grid.getSelectionModel().getSelectedRanges();
 
-      expect(selectedRanges.length).toBe(2);
+      expect(selectedRanges.length).toEqual(2);
       expectRangeToMatch(selectedRanges[0], 0, 1, 0, 3);
       expectRangeToMatch(selectedRanges[1], 2, 1, 2, 3);
     });
@@ -505,14 +505,14 @@ describe('XCellSelectionModel', function () {
 
   function expectOneSelectedRange(fromRow, fromCell, toRow, toCell) {
     var selectedRanges = grid.getSelectionModel().getSelectedRanges();
-    expect(selectedRanges.length).toBe(1);
+    expect(selectedRanges.length).toEqual(1);
     expectRangeToMatch(selectedRanges[0], fromRow, fromCell, toRow, toCell);
   }
 
   function expectRangeToMatch(range, fromRow, fromCell, toRow, toCell) {
-    expect(range.fromRow).toBe(fromRow);
-    expect(range.toRow).toBe(toRow);
-    expect(range.fromCell).toBe(fromCell);
-    expect(range.toCell).toBe(toCell);
+    expect(range.fromRow).toEqual(fromRow);
+    expect(range.toRow).toEqual(toRow);
+    expect(range.fromCell).toEqual(fromCell);
+    expect(range.toCell).toEqual(toCell);
   }
 });

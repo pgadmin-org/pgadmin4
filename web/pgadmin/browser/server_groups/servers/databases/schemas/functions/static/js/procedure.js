@@ -15,7 +15,7 @@ define('pgadmin.node.procedure', [
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Function,
- schemaChild, schemaChildTreeNode) {
+  schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {
     pgAdmin.Browser.Nodes['coll-procedure'] =
@@ -83,7 +83,7 @@ define('pgadmin.node.procedure', [
         // Procedures supported only in PPAS and PG >= 11
         return (
           'server' in node_hierarchy && (
-          node_hierarchy['server'].server_type == 'ppas' ||
+            node_hierarchy['server'].server_type == 'ppas' ||
             (node_hierarchy['server'].server_type == 'pg' &&
              node_hierarchy['server'].version >= 110000)
           )
