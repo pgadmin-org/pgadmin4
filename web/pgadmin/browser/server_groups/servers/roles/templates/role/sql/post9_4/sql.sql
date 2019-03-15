@@ -17,7 +17,7 @@ FROM
 		-- PostgreSQL >=  9.1
 		CASE WHEN rolreplication THEN 'REPLICATION' ELSE 'NOREPLICATION' END ||
 		CASE WHEN rolconnlimit > 0 THEN E'\n  CONNECTION LIMIT ' || rolconnlimit ELSE '' END ||
-		CASE WHEN rolvaliduntil IS NOT NULL THEN E'\n  VALID UNTIL ' || quote_literal(rolvaliduntil::text) ELSE ';' END AS sql
+		CASE WHEN rolvaliduntil IS NOT NULL THEN E'\n  VALID UNTIL ' || quote_literal(rolvaliduntil::text) ELSE '' END || ';' AS sql
 FROM
 	pg_roles r
 WHERE

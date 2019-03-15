@@ -15,7 +15,7 @@ FROM
 		CASE WHEN rolcreatedb THEN 'CREATEDB' ELSE 'NOCREATEDB' END || E'\n  ' ||
 		CASE WHEN rolcreaterole THEN 'CREATEROLE' ELSE 'NOCREATEROLE' END || E'\n  ' ||
 		CASE WHEN rolconnlimit > 0 THEN E'\n  CONNECTION LIMIT ' || rolconnlimit ELSE '' END ||
-		CASE WHEN rolvaliduntil IS NOT NULL THEN E'\n  VALID UNTIL ' || quote_literal(rolvaliduntil::text) ELSE ';' END ||
+		CASE WHEN rolvaliduntil IS NOT NULL THEN E'\n  VALID UNTIL ' || quote_literal(rolvaliduntil::text) ELSE '' END || ';' ||
 		-- PostgreSQL < 9.5
 		CASE WHEN rolsuper AND NOT rolcatupdate THEN E'\n\nUPDATE pg_authid SET rolcatupdate=false WHERE rolname=' || pg_catalog.quote_literal(rolname) || ';' ELSE '' END AS sql
 FROM
