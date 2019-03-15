@@ -191,8 +191,8 @@ _complete_bundle() {
     ./complete-bundle.sh "$BUILDROOT/$APP_BUNDLE_NAME" || { echo complete-bundle.sh failed; exit 1; }
 
     pushd $SOURCEDIR/web
-        yarn install
-        yarn run bundle
+        yarn install || exit 1
+        yarn run bundle || exit 1
 
         curl https://curl.haxx.se/ca/cacert.pem -o cacert.pem -s || { echo Failed to download cacert.pem; exit 1; }
     popd
