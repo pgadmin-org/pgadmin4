@@ -15,6 +15,7 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils
 import json
 from pgadmin.utils import server_utils, IS_PY2
+import random
 
 
 class TestEncodingCharset(BaseTestGenerator):
@@ -223,7 +224,8 @@ class TestEncodingCharset(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self.encode_db_name = 'encoding_' + self.db_encoding
+        self.encode_db_name = 'encoding_' + self.db_encoding + \
+                              str(random.randint(10000, 65535))
         self.encode_sid = self.server_information['server_id']
 
         server_con = server_utils.connect_server(self, self.encode_sid)
