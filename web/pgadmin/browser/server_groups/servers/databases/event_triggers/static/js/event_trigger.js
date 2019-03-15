@@ -129,7 +129,10 @@ define('pgadmin.node.event_trigger', [
             {label: 'SQL DROP', value: 'SQL_DROP'},
           ],
         },{
-          id: 'when', label: gettext('When'), type: 'multiline', group: gettext('Definition'),
+          id: 'when', label: gettext('When'),  cell: 'string',
+          type: 'text', group: gettext('Definition'),
+          control: Backform.SqlFieldControl,
+          extraClasses:['custom_height_css_class'],
         },{
           id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',

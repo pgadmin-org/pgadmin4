@@ -22,6 +22,7 @@ Bug fixes
 | `Bug #3104 <https://redmine.postgresql.org/issues/3104>`_ - Improve a couple of German translations.
 | `Bug #3995 <https://redmine.postgresql.org/issues/3995>`_ - Avoid 'bogus varno' message from Postgres when viewing the SQL for a table with triggers.
 | `Bug #4019 <https://redmine.postgresql.org/issues/4019>`_ - Update all Python and JavaScript dependencies.
+| `Bug #4050 <https://redmine.postgresql.org/issues/4050>`_ - Make the WHEN field a CodeMirror control on the Event Trigger dialogue.
 | `Bug #4052 <https://redmine.postgresql.org/issues/4052>`_ - Fix the online help button on the resource group dialogue.
 | `Bug #4053 <https://redmine.postgresql.org/issues/4053>`_ - Enable the online help button on the index dialogue.
 | `Bug #4054 <https://redmine.postgresql.org/issues/4054>`_ - Handle resultsets with zero columns correctly in the Query Tool.
