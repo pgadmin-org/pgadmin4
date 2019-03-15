@@ -109,13 +109,6 @@ class TestEncodingCharset(BaseTestGenerator):
                 test_str='ЖИЙЮ'
             )),
         (
-            'With Encoding WIN1252',
-            dict(
-                db_encoding='WIN1252',
-                lc_collate='C',
-                test_str='ÆØÙü'
-            )),
-        (
             'With Encoding WIN1253',
             dict(
                 db_encoding='WIN1253',
