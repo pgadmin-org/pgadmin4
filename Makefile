@@ -60,7 +60,8 @@ clean: clean-appbundle clean-docker clean-dist clean-docs clean-node clean-pip c
 	rm -rf web/pgadmin/static/css/generated/.cache
 
 clean-runtime:
-	cd runtime && make clean
+	if [ -f runtime/Makefile ]; then (cd runtime && make clean); fi;
+	rm -rf build-*
 
 clean-appbundle:
 	rm -rf mac-build/
