@@ -248,7 +248,7 @@ def create_app(app_name=None):
     logger.addHandler(fh)
 
     # Console logging
-    ch = logging.StreamHandler()
+    ch = logging.StreamHandler(sys.stdout.reconfigure(encoding='utf-8'))
     ch.setLevel(config.CONSOLE_LOG_LEVEL)
     ch.setFormatter(logging.Formatter(config.CONSOLE_LOG_FORMAT))
     app.logger.addHandler(ch)
