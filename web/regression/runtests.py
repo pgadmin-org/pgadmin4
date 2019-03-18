@@ -365,9 +365,8 @@ if __name__ == '__main__':
     # Set basic logging configuration for log file
     logging.basicConfig(
         level=logging.DEBUG,
+        handlers=[logging.FileHandler(CURRENT_PATH + '/' + 'regression.log', 'w', 'utf-8')],
         format='%(asctime)s:%(levelname)s:%(name)s:%(message)s',
-        filename=CURRENT_PATH + "/" + "regression.log",
-        filemode='w'
     )
 
     # Create logger to write log in the logger file as well as on console
