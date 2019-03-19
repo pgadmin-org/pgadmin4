@@ -31,6 +31,12 @@ if 'SERVER_MODE' in globals():
 else:
     builtins.SERVER_MODE = None
 
+# Set null device file path to stdout, stdin, stderr if they are None
+for _name in ('stdin', 'stdout', 'stderr'):
+    if getattr(sys, _name) is None:
+        setattr(sys, _name, open(os.devnull,
+                                 'r' if _name == 'stdin' else 'w'))
+
 import config
 from pgadmin import create_app
 from pgadmin.utils import u, fs_encoding, file_quote
