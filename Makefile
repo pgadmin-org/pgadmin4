@@ -36,6 +36,7 @@ check: install-node bundle linter
 
 check-pep8:
 	cd web && pycodestyle --config=.pycodestyle .
+	cd tools && pycodestyle --config=../web/.pycodestyle .
 
 check-python:
 	cd web && python regression/runtests.py --exclude feature_tests
