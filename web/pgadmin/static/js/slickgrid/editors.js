@@ -796,7 +796,7 @@ import JSONBigNumber from 'json-bignumber';
     this.loadValue = function(item) {
       defaultValue = item[args.column.field];
 
-      if (args.column.is_array && !_.isNull(defaultValue) && !_.isUndefined(defaultValue)) {
+      if (Array.isArray(defaultValue) && !_.isNull(defaultValue) && !_.isUndefined(defaultValue)) {
         $input.val('{' + defaultValue.join() + '}');
       } else {
         $input.val(defaultValue);
@@ -811,23 +811,6 @@ import JSONBigNumber from 'json-bignumber';
 
       if (value === '') {
         return null;
-      }
-
-      if (args.column.is_array) {
-        // Remove leading { and trailing }.
-        // Also remove leading and trailing whitespaces.
-        var val = $.trim(value.slice(1, -1));
-
-        if (val == '') {
-          return [];
-        }
-        val = val.split(',');
-        for (var k in val) {
-          if (val[k] == '') {
-            val[k] = null; //empty string from editor is null value.
-          }
-        }
-        return val;
       }
 
       return value;
@@ -871,7 +854,7 @@ import JSONBigNumber from 'json-bignumber';
           };
         }
 
-        var val = $.trim(value.slice(1, -1)),
+        var val = value.trim().slice(1, -1),
           arr;
 
         if (val == '') {
