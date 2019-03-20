@@ -19,8 +19,9 @@ import re
 import codecs
 
 ALLOWED_FILE_EXTENSIONS = (
-    ".py", ".js", ".sql", ".cpp", ".h", ".rc", ".am", ".wsgi", ".pro", ".plist",
-    ".rst", ".sh", ".in", ".mako", ".ini", ".jsx", ".rtf", ".rst", "LICENSE"
+    ".py", ".js", ".sql", ".cpp", ".h", ".rc", ".am", ".wsgi", ".pro",
+    ".plist", ".rst", ".sh", ".in", ".mako", ".ini", ".jsx", ".rtf", ".rst",
+    "LICENSE"
 )
 
 EXCLUDE_DIR = ("node_modules")

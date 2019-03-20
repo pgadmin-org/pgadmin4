@@ -35,8 +35,8 @@ check: install-node bundle linter
 	cd web && pycodestyle --config=.pycodestyle . && yarn run karma start --single-run && python regression/runtests.py
 
 check-pep8:
-	cd web && pycodestyle --config=.pycodestyle .
-	cd tools && pycodestyle --config=../web/.pycodestyle .
+	cd web && pycodestyle --config=../.pycodestyle .
+	cd tools && pycodestyle --config=../.pycodestyle .
 
 check-python:
 	cd web && python regression/runtests.py --exclude feature_tests
