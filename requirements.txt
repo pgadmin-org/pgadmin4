@@ -29,8 +29,4 @@ SQLAlchemy>=1.2.18
 Flask-Security>=3.0.0
 sshtunnel>=0.1.4
 
-###############################################################
-# Modules specifically required for Python2.7
-###############################################################
-importlib==1.0.4;               python_version <= '2.7'
 

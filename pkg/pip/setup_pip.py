@@ -96,12 +96,6 @@ setup(
 
     install_requires=required,
 
-    extras_require={
-        ":python_version<='2.7'": [
-            "importlib==1.0.3"
-        ],
-    },
-
     entry_points={
         'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4.__init__:main'],
     },
