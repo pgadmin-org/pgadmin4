@@ -90,13 +90,14 @@ data 'STR#' (5002, "English") {
         $"2C20 7072 6573 7320 2244 6973 6167 7265"
         $"6522 2E"
 };\n\n""")
-            with open(license, 'r') as l:
+            with open(license, 'r') as lines:
                 kind = 'RTF ' if license.lower().endswith('.rtf') else 'TEXT'
                 f.write('data \'%s\' (5000, "English") {\n' % kind)
+
                 def escape(s):
                     return s.strip().replace('\\', '\\\\').replace('"', '\\"')
 
-                for line in l:
+                for line in lines:
                     if len(line) < 1000:
                         f.write('    "' + escape(line) + '\\n"\n')
                     else:
@@ -127,6 +128,7 @@ data 'STR#' (5002, "English") {
         print("Successfully added license to '%s'" % dmgFile)
     else:
         print("Failed to add license to '%s'" % dmgFile)
+
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()
