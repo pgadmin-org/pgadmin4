@@ -301,7 +301,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         if not status:
             return internal_server_error(errormsg=rset)
         if len(rset['rows']) == 0:
-                return gone(gettext("Could not find the table."))
+            return gone(gettext("Could not find the table."))
 
         table_information = rset['rows'][0]
         icon = self.get_icon_css_class(table_information)
@@ -574,7 +574,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-                return gone(gettext("The specified table could not be found."))
+            return gone(gettext("The specified table could not be found."))
 
         # We will check the threshold set by user before executing
         # the query because that can cause performance issues
@@ -1302,7 +1302,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-                return gone(gettext("The specified table could not be found."))
+            return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
 

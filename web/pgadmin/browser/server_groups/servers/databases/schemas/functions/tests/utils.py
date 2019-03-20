@@ -111,11 +111,11 @@ def create_procedure(server, db_name, schema_name, func_name, s_type,
                                              server['sslmode'])
         pg_cursor = connection.cursor()
         if s_type == 'pg':
-                query = "CREATE PROCEDURE {0}.{1}" \
-                        "({2})" \
-                        " LANGUAGE 'sql'" \
-                        " SECURITY DEFINER AS $$" \
-                        " SELECT 1; $$;".format(schema_name, func_name, args)
+            query = "CREATE PROCEDURE {0}.{1}" \
+                    "({2})" \
+                    " LANGUAGE 'sql'" \
+                    " SECURITY DEFINER AS $$" \
+                    " SELECT 1; $$;".format(schema_name, func_name, args)
         else:
             if s_version >= 90500:
                 query = "CREATE PROCEDURE {0}.{1}" \

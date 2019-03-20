@@ -587,7 +587,7 @@ class ForeignServerView(PGChildNodeView):
             if not isinstance(sql, (str, unicode)):
                 return sql
             if sql == '':
-                    sql = "--modified SQL"
+                sql = "--modified SQL"
 
             return make_json_response(
                 data=sql.strip('\n'),

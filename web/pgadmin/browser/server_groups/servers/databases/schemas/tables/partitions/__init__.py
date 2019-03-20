@@ -361,8 +361,8 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-                return gone(gettext(
-                    "The specified partitioned table could not be found."))
+            return gone(gettext(
+                "The specified partitioned table could not be found."))
 
         return super(PartitionsView, self).properties(
             gid, sid, did, scid, ptid, res)
@@ -392,8 +392,8 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-                return gone(gettext(
-                    "The specified partitioned table could not be found."))
+            return gone(gettext(
+                "The specified partitioned table could not be found."))
 
         data = res['rows'][0]
 

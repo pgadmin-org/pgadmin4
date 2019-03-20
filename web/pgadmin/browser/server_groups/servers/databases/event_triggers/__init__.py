@@ -541,7 +541,7 @@ class EventTriggerView(PGChildNodeView):
             )
 
         except Exception as e:
-                return internal_server_error(errormsg=str(e))
+            return internal_server_error(errormsg=str(e))
 
     @check_precondition
     def msql(self, gid, sid, did, etid=None):

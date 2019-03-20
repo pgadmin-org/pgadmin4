@@ -1,5 +1,5 @@
 [pycodestyle]
-ignore = E402
+ignore = E402,W504,W605
 max-line-length = 79
 statistics = True
 show-source = False
