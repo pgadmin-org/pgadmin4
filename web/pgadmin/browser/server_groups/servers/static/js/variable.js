@@ -360,7 +360,7 @@ function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode)
           // Insert Delete Cell into Grid
           if (data.disabled == false && data.canDelete) {
             gridSchema.columns.unshift({
-              name: 'pg-backform-delete', label: '',
+              name: 'pg-backform-delete width_percent_5', label: '',
               cell: Backgrid.Extension.DeleteCell,
               editable: false, cell_priority: -1,
             });

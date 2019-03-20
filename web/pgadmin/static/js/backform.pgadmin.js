@@ -1922,7 +1922,8 @@ define([
 
     onSelect: function (evt) {
       var sel2Options = this.field.get('select2');
-      if (sel2Options.multiple && sel2Options.preserveSelectionOrder) {
+      if (!_.isUndefined(sel2Options) && !_.isNull(sel2Options) &&
+          sel2Options.multiple && sel2Options.preserveSelectionOrder) {
         var element = evt.params.data.element;
         var $element = $(element);
 
