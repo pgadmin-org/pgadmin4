@@ -5,7 +5,10 @@ SELECT
     pg_get_userbyid(cfg.cfgowner) as owner,
     cfg.cfgparser as parser,
     cfg.cfgnamespace as schema,
-    parser.prsname as prsname,
+    CASE WHEN (np.nspname not in ('public', 'pg_catalog') AND length(parser.prsname) > 0
+    AND parser.prsname != 'default') THEN
+        concat(quote_ident(np.nspname), '.', quote_ident(parser.prsname))
+    ELSE parser.prsname END AS prsname,
     description
 FROM
     pg_ts_config cfg
@@ -13,6 +16,7 @@ FROM
     ON parser.oid=cfg.cfgparser
     LEFT OUTER JOIN pg_description des
     ON (des.objoid=cfg.oid AND des.classoid='pg_ts_config'::regclass)
+    LEFT OUTER JOIN pg_namespace np ON np.oid=parser.prsnamespace
 WHERE
 {% if scid %}
     cfg.cfgnamespace = {{scid}}::OID
