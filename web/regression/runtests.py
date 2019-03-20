@@ -363,12 +363,13 @@ if __name__ == '__main__':
         signal.signal(getattr(signal, sig), sig_handler)
 
     # Set basic logging configuration for log file
-    logging.basicConfig(
-        level=logging.DEBUG,
-        handlers=[logging.FileHandler(CURRENT_PATH + '/' +
-                                      'regression.log', 'w', 'utf-8')],
-        format='%(asctime)s:%(levelname)s:%(name)s:%(message)s',
-    )
+    fh = logging.FileHandler(CURRENT_PATH + '/' +
+                             'regression.log', 'w', 'utf-8')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
+
+    logger = logging.getLogger()
+    logger.addHandler(fh)
 
     # Create logger to write log in the logger file as well as on console
     stderr_logger = logging.getLogger('STDERR')
