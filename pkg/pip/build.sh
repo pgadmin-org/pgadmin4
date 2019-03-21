@@ -24,16 +24,16 @@ fi
 APP_RELEASE=`grep "^APP_RELEASE" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
 APP_REVISION=`grep "^APP_REVISION" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
 APP_NAME=`grep "^APP_NAME" web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //'`
-APP_LONG_VERSION=$APP_RELEASE.$APP_REVISION
-APP_SHORT_VERSION=`echo $APP_LONG_VERSION | cut -d . -f1,2`
+APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
+APP_SHORT_VERSION=`echo ${APP_LONG_VERSION} | cut -d . -f1,2`
 APP_SUFFIX=`grep "^APP_SUFFIX" web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g"`
-if [ ! -z $APP_SUFFIX ]; then
-    export APP_LONG_VERSION=$APP_LONG_VERSION-$APP_SUFFIX
+if [ ! -z ${APP_SUFFIX} ]; then
+    export APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
 fi
-TARBALL_NAME=`echo $APP_NAME-$APP_LONG_VERSION | sed 's/ //g' | awk '{print tolower($0)}'`
+TARBALL_NAME=`echo ${APP_NAME}-${APP_LONG_VERSION} | sed 's/ //g' | awk '{print tolower($0)}'`
 
 # Output basic details to show we're working
-echo Building tarballs for $APP_NAME version $APP_LONG_VERSION...
+echo Building tarballs for ${APP_NAME} version ${APP_LONG_VERSION}...
 
 # Create/clearout the build directory
 echo Creating/cleaning required directories...
@@ -52,9 +52,9 @@ mkdir pip-build/pgadmin4/docs
 cd web
 for FILE in `git ls-files`
 do
-    echo Adding $FILE
+    echo Adding ${FILE}
     # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents
-    tar cf - $FILE | (cd ../pip-build/pgadmin4; tar xf -)
+    tar cf - ${FILE} | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
 yarn install
@@ -62,32 +62,32 @@ yarn run bundle
 
 for FILE in `ls -d pgadmin/static/js/generated/*`
 do
-    echo Adding $FILE
-    tar cf - $FILE | (cd ../pip-build/pgadmin4; tar xf -)
+    echo Adding ${FILE}
+    tar cf - ${FILE} | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
 cd ../docs
 for FILE in `git ls-files`
 do
-    echo Adding $FILE
+    echo Adding ${FILE}
     # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents
-    tar cf - $FILE | (cd ../pip-build/pgadmin4/docs; tar xf -)
+    tar cf - ${FILE} | (cd ../pip-build/pgadmin4/docs; tar xf -)
 done
 
 for DIR in `ls -d ??_??/`
 do
-    if [ -d $DIR/_build/html ]; then
-        mkdir -p ../pip-build/pgadmin4/docs/$DIR/_build
-        cp -R $DIR/_build/html ../pip-build/pgadmin4/docs/$DIR/_build
+    if [ -d ${DIR}/_build/html ]; then
+        mkdir -p ../pip-build/pgadmin4/docs/${DIR}/_build
+        cp -R ${DIR}/_build/html ../pip-build/pgadmin4/docs/${DIR}/_build
     fi
 done
 
 cd ../
 for FILE in LICENSE README libraries.txt
 do
-    echo Adding $FILE
+    echo Adding ${FILE}
     # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents
-    tar cf - $FILE | (cd pip-build/pgadmin4; tar xf -)
+    tar cf - ${FILE} | (cd pip-build/pgadmin4; tar xf -)
 done
 
 # Create the distro config

@@ -21,7 +21,7 @@ find "${BUNDLE}/Contents/Frameworks"/*framework -type d -name "Versions" | while
 
   # Create framework 'Current' soft link
   VERSION_NUMBER=`ls -1`
-  ln -s $VERSION_NUMBER Current || { echo "link creation in framework-config.sh failed"; exit 1; }
+  ln -s ${VERSION_NUMBER} Current || { echo "link creation in framework-config.sh failed"; exit 1; }
 
   # Create "Resources" subdirectory
   if [ ! -d Current/Resources ]; then

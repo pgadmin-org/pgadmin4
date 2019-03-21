@@ -1,8 +1,8 @@
-#!/bin//sh
+#!/bin/bash
 
-DMG_VOLUME_NAME=$APP_NAME
-DMG_NAME=`echo $DMG_VOLUME_NAME | sed 's/ //g' | awk '{print tolower($0)}'`
-DMG_IMAGE=$DISTROOT/$DMG_NAME-$APP_LONG_VERSION.dmg
+DMG_VOLUME_NAME=${APP_NAME}
+DMG_NAME=`echo ${DMG_VOLUME_NAME} | sed 's/ //g' | awk '{print tolower($0)}'`
+DMG_IMAGE=${DISTROOT}/${DMG_NAME}-${APP_LONG_VERSION}.dmg
 
 if ! test -f "${DMG_IMAGE}" ; then
 	echo "${DMG_IMAGE} is no disk image!" >&2
@@ -22,7 +22,7 @@ codesign --sign "${DEVELOPER_ID}" --verbose --force "${DMG_IMAGE}"
 echo Verifying the signature
 codesign --verify --verbose --force "${DMG_IMAGE}"
 RETURN_STATUS=$?
-if [ $RETURN_STATUS -ne 0 ]; then
+if [ ${RETURN_STATUS} -ne 0 ]; then
   echo ERROR: Code signing did not work
   exit 1
 else

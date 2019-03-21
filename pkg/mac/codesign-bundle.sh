@@ -18,7 +18,7 @@ codesign --sign "${DEVELOPER_ID}" --verbose --deep --force "${BUNDLE}"
 echo Verifying the signature
 codesign --verify --verbose --deep --force "${BUNDLE}"
 RETURN_STATUS=$?
-if [ $RETURN_STATUS -ne 0 ]; then
+if [ ${RETURN_STATUS} -ne 0 ]; then
   echo Code signing did not work, check the log
   exit 1
 else
