@@ -37,7 +37,7 @@ the *Execute* icon:
 
 .. code-block:: sql
 
-	CREATE LANGUAGE plpgsql;
+    CREATE LANGUAGE plpgsql;
 
 If you are using an earlier version of PostgreSQL or pgAgent, use the
 *Open file* icon on the Query Tool toolbar to open a browser window and locate
