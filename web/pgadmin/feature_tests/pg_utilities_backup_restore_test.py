@@ -83,9 +83,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         status = self.page.find_by_css_selector(
             ".pg-bg-status-text").text
 
-        print("Debug: .pg-bg-status-text %s"%status)
-
-        #.pg-bg-status-text
         self.assertEquals(status, "Successfully completed.")
 
         self.page.find_by_css_selector(

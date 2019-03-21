@@ -176,11 +176,11 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
             Keys.CONTROL).send_keys(Keys.SPACE).key_up(Keys.CONTROL).perform()
 
         # if IntelliSense is present then verify this
-        if self.page.check_if_element_exist_by_xpath\
-                ("//ul[@class='CodeMirror-hints default']", 2):
+        if self.page.check_if_element_exist_by_xpath(
+                "//ul[@class='CodeMirror-hints default']", 2):
             self.page.find_by_xpath(
-            "//ul[contains(@class, 'CodeMirror-hints') and "
-            "contains(., '" + expected_string + "')]")
+                "//ul[contains(@class, 'CodeMirror-hints') and "
+                "contains(., '" + expected_string + "')]")
         else:
             # if no IntelliSense is present it means there is only one option
             #  so check if required string is present in codeMirror
@@ -188,6 +188,6 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
                 "//pre[@class=' CodeMirror-line ']/span")
             code_mirror_text = code_mirror.text
 
-            if not expected_string in code_mirror_text:
+            if expected_string not in code_mirror_text:
                 raise Exception("Required String %s is not "
-                                "present"%expected_string)
+                                "present" % expected_string)

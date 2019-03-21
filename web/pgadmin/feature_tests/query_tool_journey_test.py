@@ -93,14 +93,14 @@ class QueryToolJourneyTest(BaseFeatureTest):
             "does not exist", failed_history_detail_pane.text
         )
         self.page.wait_for_element(lambda driver: driver
-                                   .find_element_by_css_selector
-        ("#query_list> .query-group>ul>li"))
+                                   .find_element_by_css_selector(
+                                       "#query_list> .query-group>ul>li"))
 
         # get the query history rows and click the previous query row which
         # was executed and verify it
         history_rows = self.driver.find_elements_by_css_selector(
             "#query_list> .query-group>ul>li")
-        print("the number of history_rows are 10 %s"%len(history_rows))
+        print("the number of history_rows are 10 %s" % len(history_rows))
         history_rows[1].click()
 
         selected_history_entry = self.page.find_by_css_selector(

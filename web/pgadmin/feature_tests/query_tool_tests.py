@@ -183,7 +183,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         # wait for header of the table to be visible
         wait.until(EC.visibility_of_element_located(
-            (By.XPATH,'//div[@class="slick-header-columns"]')))
+            (By.XPATH, '//div[@class="slick-header-columns"]')))
 
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
@@ -209,7 +209,8 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         # wait for header of the table to be visible
         wait.until(EC.visibility_of_element_located(
-            (By.XPATH,'//div[@class="slick-header-columns"]')))
+            (By.XPATH, '//div[@class="slick-header-columns"]')))
+
         # wait for first row to contain value
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
@@ -234,7 +235,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         # wait for header of the table to be visible
         wait.until(EC.visibility_of_element_located(
-            (By.XPATH,'//div[@class="slick-header-columns"]')))
+            (By.XPATH, '//div[@class="slick-header-columns"]')))
 
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
@@ -426,9 +427,7 @@ SELECT relname FROM pg_class
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-
     def _query_tool_auto_commit_enabled(self):
-
         query = """-- 1. Enable auto commit.
 -- 2. END any open transaction.
 -- 3. Create table in public schema.
@@ -749,7 +748,7 @@ SELECT 1, pg_sleep(300)"""
             show_jit = pg_cursor.fetchone()
             if show_jit[0] == 'on':
                 jit_enabled = True
-        except:
+        except Exception as e:
             pass
 
         is_edb = False
