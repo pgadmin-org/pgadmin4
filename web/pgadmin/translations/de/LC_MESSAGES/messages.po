@@ -9228,7 +9228,7 @@ msgstr "Globale Objekte sichern..."
 #: pgadmin/tools/backup/static/js/backup.js:600
 #: pgadmin/tools/backup/static/js/backup_dialog.js:96
 msgid "Backup Server..."
-msgstr "Sicherungsserver..."
+msgstr "Server sichern..."
 
 #: pgadmin/tools/backup/static/js/backup.js:609
 #: pgadmin/tools/backup/static/js/backup.js:624
