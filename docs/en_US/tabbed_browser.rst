@@ -102,59 +102,63 @@ that is selected. Click a column heading to sort the table by the data displayed
 in the column; click again to reverse the sort order.  The following table lists
 some of the statistics that are available:
 
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| Panel                      | Description                                                                                                |
-+============================+============================================================================================================+
-| *PID*                      | The process ID associated with the row.                                                                    |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *User*                     | The name of the user that owns the object.                                                                 |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Database*                 | displays the database name.                                                                                |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Backends*                 | displays the number of current connections to the database.                                                |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Backend start*            | The start time of the backend process.                                                                     |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Xact Committed*           | displays the number of transactions committed to the database within the last week.                        |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Xact Rolled Back*         | displays the number of transactions rolled back within the last week.                                      |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Blocks Read*              | displays the number of blocks read from memory (in megabytes) within the last week.                        |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Blocks Hit*               | displays the number of blocks hit in the cache (in megabytes) within the last week.                        |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Tuples Returned*          | displays the number of tuples returned within the last week.                                               |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Tuples Fetched*           | displays the number of tuples fetched within the last week.                                                |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Tuples Inserted*          | displays the number of tuples inserted into the database within the last week.                             |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Tuples Updated*           | displays the number of tuples updated in the database within the last week.                                |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Tuples Deleted*           | displays the number of tuples deleted from the database within the last week.                              |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Last statistics reset*    | displays the time of the last statistics reset for the database.                                           |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Tablespace conflicts*     | displays the number of queries canceled because of recovery conflict with dropped tablespaces in database. |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Lock conflicts*           | displays the number of queries canceled because of recovery conflict with locks in database.               |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Snapshot conflicts*       | displays the number of queries canceled because of recovery conflict with old snapshots in database.       |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Bufferpin conflicts*      | displays the number of queries canceled because of recovery conflict with pinned buffers in database.      |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Temporary files*          | displays the total number of temporary files, including those used by the statistics collector.            |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Size of temporary files*  | displays the size of the temporary files.                                                                  |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Deadlocks*                | displays the number of queries canceled because of a recovery conflict with deadlocks in database.         |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Block read time*          | displays the number of milliseconds required to read the blocks read.                                      |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Block write time*         | displays the number of milliseconds required to write the blocks read.                                     |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
-| *Size*                     | displays the size (in megabytes) of the selected database.                                                 |
-+----------------------------+------------------------------------------------------------------------------------------------------------+
+.. table::
+   :class: longtable
+   :widths: 1 4
+
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | Panel                      | Description                                                                                                |
+   +============================+============================================================================================================+
+   | *PID*                      | The process ID associated with the row.                                                                    |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *User*                     | The name of the user that owns the object.                                                                 |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Database*                 | displays the database name.                                                                                |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Backends*                 | displays the number of current connections to the database.                                                |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Backend start*            | The start time of the backend process.                                                                     |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Xact Committed*           | displays the number of transactions committed to the database within the last week.                        |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Xact Rolled Back*         | displays the number of transactions rolled back within the last week.                                      |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Blocks Read*              | displays the number of blocks read from memory (in megabytes) within the last week.                        |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Blocks Hit*               | displays the number of blocks hit in the cache (in megabytes) within the last week.                        |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Tuples Returned*          | displays the number of tuples returned within the last week.                                               |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Tuples Fetched*           | displays the number of tuples fetched within the last week.                                                |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Tuples Inserted*          | displays the number of tuples inserted into the database within the last week.                             |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Tuples Updated*           | displays the number of tuples updated in the database within the last week.                                |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Tuples Deleted*           | displays the number of tuples deleted from the database within the last week.                              |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Last statistics reset*    | displays the time of the last statistics reset for the database.                                           |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Tablespace conflicts*     | displays the number of queries canceled because of recovery conflict with dropped tablespaces in database. |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Lock conflicts*           | displays the number of queries canceled because of recovery conflict with locks in database.               |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Snapshot conflicts*       | displays the number of queries canceled because of recovery conflict with old snapshots in database.       |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Bufferpin conflicts*      | displays the number of queries canceled because of recovery conflict with pinned buffers in database.      |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Temporary files*          | displays the total number of temporary files, including those used by the statistics collector.            |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Size of temporary files*  | displays the size of the temporary files.                                                                  |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Deadlocks*                | displays the number of queries canceled because of a recovery conflict with deadlocks in database.         |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Block read time*          | displays the number of milliseconds required to read the blocks read.                                      |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Block write time*         | displays the number of milliseconds required to write the blocks read.                                     |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
+   | *Size*                     | displays the size (in megabytes) of the selected database.                                                 |
+   +----------------------------+------------------------------------------------------------------------------------------------------------+
 
 .. image:: images/main_dependencies.png
     :alt: Dependencies panel

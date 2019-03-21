@@ -13,6 +13,7 @@ When using main browser window, the following keyboard shortcuts are available:
 
 .. table::
    :class: longtable
+   :widths: 2 3
 
    +----------------------------+-------------------------------------------------------+
    | Shortcut for all platforms | Function                                              |
@@ -53,6 +54,7 @@ Use the shortcuts below to navigate the tabsets on dialogs:
 
 .. table::
    :class: longtable
+   :widths: 2 3
 
    +----------------------------+-------------------------------------------------------+
    | Shortcut for all platforms | Function                                              |
@@ -69,6 +71,7 @@ When using the syntax-highlighting SQL editors, the following shortcuts are avai
 
 .. table::
    :class: longtable
+   :widths: 2 2 3
 
    +--------------------------+------------------+-------------------------------------+
    | Shortcut (Windows/Linux) | Shortcut (Mac)   | Function                            |
@@ -121,6 +124,7 @@ When using the Query Tool, the following shortcuts are available:
 
 .. table::
    :class: longtable
+   :widths: 2 2 3
 
    +--------------------------+--------------------+-----------------------------------+
    | Shortcut (Windows/Linux) | Shortcut (Mac)     | Function                          |
@@ -169,6 +173,7 @@ When using the Debugger, the following shortcuts are available:
 
 .. table::
    :class: longtable
+   :widths: 2 2 3
 
    +--------------------------+--------------------+-----------------------------------+
    | Shortcut (Windows/Linux) | Shortcut (Mac)     | Function                          |
@@ -196,6 +201,7 @@ for inner panel navigation:
 
 .. table::
    :class: longtable
+   :widths: 2 2 3
 
    +--------------------------+---------------------------+------------------------------+
    | Shortcut (Windows/Linux) | Shortcut (Mac)            | Function                     |
@@ -213,6 +219,7 @@ default access keys for supported browsers.
 
 .. table::
    :class: longtable
+   :widths: 2 1 1 1
 
    +-------------------+------------+------------+------------+
    |                   | Windows    | Linux      | Mac        |

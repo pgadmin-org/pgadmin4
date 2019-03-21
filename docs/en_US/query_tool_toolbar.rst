@@ -24,6 +24,7 @@ File Options
 
 .. table::
    :class: longtable
+   :widths: 1 4 1
 
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
@@ -44,25 +45,26 @@ Editing Options
 
 .. table::
    :class: longtable
+   :widths: 1 4 1
 
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
    | *Find*               | Use the *Find* menu to search, replace, or navigate the code displayed in the SQL Editor:         |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Find* to provide a search target, and search the SQL Editor contents.                  | Cmd+F          |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Find next* to locate the next occurrence of the search target.                         | Cmd+G          |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Find previous* to move to the last occurrence of the search target.                    | Cmd+Shift+G    |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Pesistent find* to identify all occurrences of the search target within the editor.    |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Replace* to locate and replace (with prompting) individual occurrences of the target.  | Cmd+Shift+F    |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Replace all* to locate and replace all occurrences of the target within the editor.    |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Jump* to navigate to the next occurrence of the search target.                         | Alt+G          |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Find* to provide a search target, and search the SQL Editor contents.                     | Cmd+F          |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Find next* to locate the next occurrence of the search target.                            | Cmd+G          |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Find previous* to move to the last occurrence of the search target.                       | Cmd+Shift+G    |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Pesistent find* to identify all occurrences of the search target within the editor.       |                |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Cmd+Shift+F    |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Replace all* to locate and replace all occurrences of the target within the editor.       |                |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Jump* to navigate to the next occurrence of the search target.                            | Alt+G          |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Copy*               | Click the *Copy* icon to copy the content that is currently highlighted in the Data Output panel. | Accesskey + C  |
    |                      | when in View/Edit data mode.                                                                      |                |
@@ -73,19 +75,18 @@ Editing Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Edit*               | Use options on the *Edit* menu to access text editing tools; the options operate on the text      |                |
    |                      | displayed in the SQL Editor panel when in Query Tool mode:                                        |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Indent Selection* to indent the currently selected text.                               | Tab            |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Unindent Selection* to remove indentation from the currently selected text.            | Shift+Tab      |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Inline Comment Selection* to enclose any lines that contain the selection in           | Cmd+/          |
-   |                      |    SQL style comment notation.                                                                    |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Inline Uncomment Selection* to remove SQL style comment notation from the              | Cmd+.          |
-   |                      |    selected line.                                                                                 |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Block Comment* to enclose all lines that contain the selection in C style              | Shift+Cmd+/    |
-   |                      |    comment notation.  This option acts as a toggle.                                               |                |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Indent Selection* to indent the currently selected text.                                  | Tab            |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Unindent Selection* to remove indentation from the currently selected text.               | Shift+Tab      |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Inline Comment Selection* to enclose any lines that contain the selection in SQL style    | Cmd+/          |
+   |                      | comment notation.                                                                                 |                |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Inline Uncomment Selection* to remove SQL style comment notation from the selected line.  | Cmd+.          |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Block Comment* to enclose all lines that contain the selection in C style comment         | Shift+Cmd+/    |
+   |                      | notation.  This option acts as a toggle.                                                          |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 View/Edit Data Resultset Control
@@ -93,6 +94,7 @@ View/Edit Data Resultset Control
 
 .. table::
    :class: longtable
+   :widths: 1 4 1
 
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
@@ -119,6 +121,7 @@ Query Execution
 
 .. table::
    :class: longtable
+   :widths: 1 4 1
 
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |

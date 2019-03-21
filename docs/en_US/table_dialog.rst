@@ -74,20 +74,24 @@ must satisfy for an *INSERT* or *UPDATE* operation to succeed. Select the
 appropriate constraint type by selecting one of the following tabs on the
 *Constraints* panel:
 
-+----------------+---------------------------------------------------------------------------------------------------------------------+
-| Tab Name       | Constraint                                                                                                          |
-+================+=====================================================================================================================+
-| *Primary Key*  | Provides a unique identifier for each row in the table.                                                             |
-+----------------+---------------------------------------------------------------------------------------------------------------------+
-| *Foreign Key*  | Maintains referential integrity between two tables.                                                                 |
-+----------------+---------------------------------------------------------------------------------------------------------------------+
-| *Check*        | Requires data satisfies an expression or condition before insertion or modification.                                |
-+----------------+---------------------------------------------------------------------------------------------------------------------+
-| *Unique*       | Ensures that the data contained in a column, or a group of columns, is unique among all the rows in the table.      |
-+----------------+---------------------------------------------------------------------------------------------------------------------+
-| *Exclude*      | Guarantees that if any two rows are compared on the specified column or expression (using the specified operator),  |
-|                | at least one of the operator comparisons will return false or null.                                                 |
-+----------------+---------------------------------------------------------------------------------------------------------------------+
+.. table::
+   :class: longtable
+   :widths: 1 4
+
+   +----------------+---------------------------------------------------------------------------------------------------------------------+
+   | Tab Name       | Constraint                                                                                                          |
+   +================+=====================================================================================================================+
+   | *Primary Key*  | Provides a unique identifier for each row in the table.                                                             |
+   +----------------+---------------------------------------------------------------------------------------------------------------------+
+   | *Foreign Key*  | Maintains referential integrity between two tables.                                                                 |
+   +----------------+---------------------------------------------------------------------------------------------------------------------+
+   | *Check*        | Requires data satisfies an expression or condition before insertion or modification.                                |
+   +----------------+---------------------------------------------------------------------------------------------------------------------+
+   | *Unique*       | Ensures that the data contained in a column, or a group of columns, is unique among all the rows in the table.      |
+   +----------------+---------------------------------------------------------------------------------------------------------------------+
+   | *Exclude*      | Guarantees that if any two rows are compared on the specified column or expression (using the specified operator),  |
+   |                | at least one of the operator comparisons will return false or null.                                                 |
+   +----------------+---------------------------------------------------------------------------------------------------------------------+
 
 To add a primary key for the table, select the *Primary Key* tab, and click the
 *Add* icon (+). To define the primary key, click the *Edit* icon to the left of
@@ -212,22 +216,26 @@ updated or deleted:
 
 The supported actions are:
 
-+-------------+------------------------------------------------------------------------------------------------------------+
-| NO ACTION   | Produce an error indicating that the deletion or update will create a foreign key constraint violation.    |
-|             | If the constraint is deferred, this error will be produced at constraint check time if any referencing     |
-|             | rows still exist.  This is the default.                                                                    |
-+-------------+------------------------------------------------------------------------------------------------------------+
-| RESTRICT    | Throw an error indicating that the deletion or update would create a foreign key constraint violation.     |
-|             | This is the same as NO ACTION except that the check is not deferrable.                                     |
-+-------------+------------------------------------------------------------------------------------------------------------+
-| CASCADE     | Delete any rows referencing the deleted row, or update the values of the referencing column(s) to the new  |
-|             | values of the referenced columns, respectively.                                                            |
-+-------------+------------------------------------------------------------------------------------------------------------+
-| SET NULL    | Set the referencing column(s) to null.                                                                     |
-+-------------+------------------------------------------------------------------------------------------------------------+
-| SET DEFAULT | Set the referencing column(s) to their default values.  There must be a row in the referenced table        |
-|             | that matches the default values (if they are not null), or the operation will fail.                        |
-+-------------+------------------------------------------------------------------------------------------------------------+
+.. table::
+   :class: longtable
+   :widths: 1 4
+
+   +-------------+------------------------------------------------------------------------------------------------------------+
+   | NO ACTION   | Produce an error indicating that the deletion or update will create a foreign key constraint violation.    |
+   |             | If the constraint is deferred, this error will be produced at constraint check time if any referencing     |
+   |             | rows still exist.  This is the default.                                                                    |
+   +-------------+------------------------------------------------------------------------------------------------------------+
+   | RESTRICT    | Throw an error indicating that the deletion or update would create a foreign key constraint violation.     |
+   |             | This is the same as NO ACTION except that the check is not deferrable.                                     |
+   +-------------+------------------------------------------------------------------------------------------------------------+
+   | CASCADE     | Delete any rows referencing the deleted row, or update the values of the referencing column(s) to the new  |
+   |             | values of the referenced columns, respectively.                                                            |
+   +-------------+------------------------------------------------------------------------------------------------------------+
+   | SET NULL    | Set the referencing column(s) to null.                                                                     |
+   +-------------+------------------------------------------------------------------------------------------------------------+
+   | SET DEFAULT | Set the referencing column(s) to their default values.  There must be a row in the referenced table        |
+   |             | that matches the default values (if they are not null), or the operation will fail.                        |
+   +-------------+------------------------------------------------------------------------------------------------------------+
 
 .. image:: images/table_check.png
     :alt: Table dialog check constraint
