@@ -230,9 +230,14 @@ def get_test_modules(arguments):
     if arguments['pkg'] is None or arguments['pkg'] == "all":
         TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs)
     else:
+        for_modules = []
+        if arguments['modules'] is not None:
+            for_modules = arguments['modules'].split(',')
+
         TestsGeneratorRegistry.load_generators('pgadmin.%s' %
                                                arguments['pkg'],
-                                               exclude_pkgs)
+                                               exclude_pkgs,
+                                               for_modules)
 
     # Sort module list so that test suite executes the test cases sequentially
     module_list = TestsGeneratorRegistry.registry.items()
@@ -262,6 +267,10 @@ def add_arguments():
     parser.add_argument(
         '--default_browser',
         help='Executes the feature test in specific browser'
+    )
+    parser.add_argument(
+        '--modules',
+        help='Executes the feature test for specific modules in pkg'
     )
     arg = parser.parse_args()
 

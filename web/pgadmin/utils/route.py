@@ -53,13 +53,20 @@ class TestsGeneratorRegistry(ABCMeta):
         ABCMeta.__init__(cls, name, bases, d)
 
     @classmethod
-    def load_generators(cls, pkg_root, exclude_pkgs):
+    def load_generators(cls, pkg_root, exclude_pkgs, for_modules=[]):
 
         cls.registry = dict()
 
         all_modules = []
 
         all_modules += find_modules(pkg_root, False, True)
+
+        # If specific modules are to be tested, exclude others
+        if len(for_modules) > 0:
+            all_modules = [module_name
+                           for module_name in all_modules
+                           for fmod in for_modules
+                           if module_name.endswith(fmod)]
 
         # Check for SERVER mode
         for module_name in all_modules:

@@ -15,6 +15,7 @@ from selenium.webdriver.common.keys import Keys
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+from .locators import QueryToolLocatorsCss
 
 
 class QueryToolJourneyTest(BaseFeatureTest):
@@ -73,44 +74,51 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _test_history_tab(self):
         self.__clear_query_tool()
-        editor_input = self.page.find_by_id("output-panel")
+        editor_input = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.query_editor_panel)
         self.page.click_element(editor_input)
         self._execute_query("SELECT * FROM table_that_doesnt_exist")
 
         self.page.click_tab("Query History")
         selected_history_entry = self.page.find_by_css_selector(
-            "#query_list .selected")
+            QueryToolLocatorsCss.query_history_selected)
         self.assertIn("SELECT * FROM table_that_doesnt_exist",
                       selected_history_entry.text)
-        failed_history_detail_pane = self.page.find_by_id("query_detail")
+
+        failed_history_detail_pane = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.query_history_detail)
 
         self.assertIn(
             "Error Message relation \"table_that_doesnt_exist\" "
             "does not exist", failed_history_detail_pane.text
         )
-        ActionChains(self.page.driver) \
-            .send_keys(Keys.ARROW_DOWN) \
-            .perform()
+        self.page.wait_for_element(lambda driver: driver
+                                   .find_element_by_css_selector
+        ("#query_list> .query-group>ul>li"))
+
+        # get the query history rows and click the previous query row which
+        # was executed and verify it
+        history_rows = self.driver.find_elements_by_css_selector(
+            "#query_list> .query-group>ul>li")
+        print("the number of history_rows are 10 %s"%len(history_rows))
+        history_rows[1].click()
+
         selected_history_entry = self.page.find_by_css_selector(
             "#query_list .selected")
         self.assertIn(("SELECT * FROM %s ORDER BY value" %
                        self.test_table_name),
                       selected_history_entry.text)
 
-        query_element = self.page.driver.\
-            find_element_by_xpath(
-                "//div[@id='history_grid']//div[@class='entry selected']"
-                "/div[@class='query']")
-
-        self.assertIn(("SELECT * FROM %s ORDER BY value"
-                       % self.test_table_name), query_element.text)
-
+        # check second(invalid) query also exist in the history tab with error
         newly_selected_history_entry = self.page.find_by_xpath(
-            "//*[@id='query_list']/ul/li[2]")
+            "//*[@id='query_list']/div/ul/li[1]")
         self.page.click_element(newly_selected_history_entry)
-        selected_history_detail_pane = self.page.find_by_id("query_detail")
+
+        selected_invalid_history_entry = self.page.find_by_css_selector(
+            "#query_list .selected .entry.error .query")
+
         self.assertIn("SELECT * FROM table_that_doesnt_exist",
-                      selected_history_detail_pane.get_attribute('innerHTML'))
+                      selected_invalid_history_entry.text)
 
         self.page.click_tab("Query Editor")
         self.__clear_query_tool()
@@ -118,13 +126,14 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self.page.fill_codemirror_area_with("SELECT * FROM hats")
         for _ in range(15):
-            self.page.find_by_id("btn-flash").click()
+            self.page.find_by_css_selector(
+                QueryToolLocatorsCss.btn_execute_query).click()
             self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         self.page.click_tab("Query History")
 
         query_we_need_to_scroll_to = self.page.find_by_xpath(
-            "//*[@id='query_list']/ul/li[17]")
+            "//*[@id='query_list']/div/ul/li[17]")
 
         self.page.click_element(query_we_need_to_scroll_to)
 
@@ -140,12 +149,13 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_element(editor_input)
         self.page.fill_codemirror_area_with("SELECT * FROM hats")
         for _ in range(15):
-            self.page.find_by_id("btn-flash").click()
+            self.page.find_by_css_selector(
+                QueryToolLocatorsCss.btn_execute_query).click()
             self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         self.page.click_tab("History")
         query_we_need_to_scroll_to = self.page.find_by_xpath(
-            "//*[@id='query_list']/ul/li[17]"
+            "//*[@id='query_list']/div/ul/li[17]"
         )
         for _ in range(17):
             ActionChains(self.page.driver) \
@@ -173,7 +183,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _execute_query(self, query):
         self.page.fill_codemirror_area_with(query)
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
     def _assert_clickable(self, element):
         self.page.click_element(element)

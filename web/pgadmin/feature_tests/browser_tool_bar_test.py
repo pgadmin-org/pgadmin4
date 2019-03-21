@@ -82,7 +82,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         self.page.select_tree_item(self.test_db)
         self.page.toggle_open_tree_item('Schemas')
         self.page.toggle_open_tree_item('public')
-        self.page.toggle_open_tree_item('Tables')
+        self.page.toggle_open_tables_node()
         self.page.select_tree_item(self.test_table_name)
 
         retry_count = 0

@@ -16,7 +16,7 @@ python-mimeparse==1.6.0
 testscenarios==0.5.0
 testtools==2.3.0
 traceback2==1.4.0
-selenium==3.11.0
+selenium==3.14.0
 
 ###############################################################
 # Modules specifically required for Python3.3 or lesser version
@@ -25,4 +25,4 @@ mock===2.0.0; python_version < '3.3'
 
 # Leave this at the end because there is a bug where the '--install-option'
 # is applied to all subsequent requirements
-chromedriver_installer==0.0.6 --install-option='--chromedriver-version=2.45'
+chromedriver_installer==0.0.6 --install-option='--chromedriver-version=2.46'

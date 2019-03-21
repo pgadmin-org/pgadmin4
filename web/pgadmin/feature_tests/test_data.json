@@ -9,7 +9,7 @@
       "6": ["\\\"\\\"", "\"\"", "text", "double backslash followed by a double quote"],
       "7": ["\\\\\"\\\\\"", "\\\\\"\\\\\"", "text", "double backslash followed by a double quote"],
       "8": ["", "[null]", "text"],
-      "9": ["", "[51,52]", "json"],
+      "9": ["", "[51, 52]", "json"],
       "10": ["[61,62]", "[61,62]", "json"],
       "11": ["", "true", "bool"],
       "12": ["", "[null]", "bool"],
@@ -18,7 +18,7 @@
       "15": ["{}", "{}", "text[]"],
       "16": ["{data,NULL,'',\"\"}", "{data,NULL,'',\"\"}", "text[]"],
       "17": ["{}", "{}", "int[]"],
-      "18": ["{123,,456}", "{123,NULL,456}", "int[]"],
+      "18": ["{123,123,456}", "{123,123,456}", "int[]"],
       "19": ["", "[null]", "boolean[]"],
       "20": ["{false,null,true}", "{f,NULL,t}", "boolean[]"]
     }

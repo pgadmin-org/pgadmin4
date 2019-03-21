@@ -17,6 +17,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+from .locators import QueryToolLocatorsCss
 
 
 class CheckFileManagerFeatureTest(BaseFeatureTest):
@@ -41,7 +42,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
             os.remove(self.XSS_FILE)
 
     def after(self):
-        self.page.close_query_tool('.sql', False)
+        self.page.close_query_tool(False)
         self.page.remove_server(self.server)
 
     def runTest(self):
@@ -64,14 +65,11 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.open_query_tool()
 
     def _create_new_file(self):
-        self.page.find_by_id("btn-save").click()
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.find_by_css_selector('.change_file_types')
+        self.page.find_by_css_selector(QueryToolLocatorsCss.btn_save).click()
         # Set the XSS value in input
-        self.page.find_by_id("file-input-path").clear()
-        self.page.find_by_id("file-input-path").send_keys(
-            self.XSS_FILE
-        )
+        print('Create file')
+        self.page.find_by_css_selector('.change_file_types')
+        self.page.fill_input_by_css_selector("#file-input-path", self.XSS_FILE)
         # Save the file
         self.page.click_modal('Create')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -79,13 +77,8 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
     def _open_file_manager_and_check_xss_file(self):
         self.page.find_by_id("btn-load-file").click()
         self.page.find_by_css_selector('.change_file_types')
-        self.page.find_by_id("file-input-path").clear()
-        self.page.find_by_id("file-input-path").send_keys(
-            '/tmp/'
-        )
-        self.page.find_by_id("file-input-path").send_keys(
-            Keys.RETURN
-        )
+        self.page.fill_input_by_css_selector("#file-input-path", "/tmp/",
+                                             key_after_input=Keys.RETURN)
 
         if self.page.driver.capabilities['browserName'] == 'firefox':
             table = self.page.wait_for_element_to_reload(

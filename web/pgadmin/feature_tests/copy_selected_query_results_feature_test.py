@@ -43,9 +43,6 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item(self.test_db)
         self.page.open_query_tool()
 
-        self.page.driver.switch_to_frame(
-            self.page.driver.find_element_by_tag_name("iframe"))
-
         self.page.fill_codemirror_area_with(
             "SELECT * FROM %s ORDER BY some_column" % self.test_table_name)
 

@@ -52,13 +52,21 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self._check_xss_in_browser_tree()
         self._check_xss_in_properties_tab()
         self._check_xss_in_sql_tab()
+
+        # sometime the tab for dependent does not show info, so refreshing
+        # the page and then again collapsing until the table node
+        self.page.refresh_page()
+        self.page.toggle_open_servers_group()
+        self._tables_node_expandable()
         self._check_xss_in_dependents_tab()
 
         # Query tool
+        self.page.open_query_tool()
         self._check_xss_in_query_tool()
         self.page.close_query_tool()
 
         # Explain module
+        self.page.open_query_tool()
         self._check_xss_in_explain_module()
         self.page.close_query_tool()
 
@@ -125,6 +133,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     # Create any constraint with xss name to test this
     def _check_xss_in_dependents_tab(self):
+
         print(
             "\n\tChecking the Dependents tab for the XSS",
             file=sys.stderr, end=""
@@ -142,17 +151,11 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "Dependents tab (BackGrid)"
         )
 
-    def _open_query_tool(self):
-        self.page.driver.find_element_by_link_text("Tools").click()
-        self.page.find_by_partial_link_text("Query Tool").click()
-        self.page.click_tab('Query -')
-
     def _check_xss_in_query_tool(self):
         print(
             "\n\tChecking the SlickGrid cell for the XSS",
             file=sys.stderr, end=""
         )
-        self._open_query_tool()
         self.page.fill_codemirror_area_with(
             "select '<img src=\"x\" onerror=\"console.log(1)\">'"
         )
@@ -179,13 +182,9 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "\n\tChecking the Graphical Explain plan for the XSS ...",
             file=sys.stderr, end=""
         )
-        self._open_query_tool()
         self.page.fill_codemirror_area_with(
             'select * from "{0}"'.format(self.test_table_name)
         )
-
-        query_op = self.page.find_by_id("btn-query-dropdown")
-        query_op.click()
 
         self.page.find_by_id("btn-explain").click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()

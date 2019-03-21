@@ -153,7 +153,14 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             self.page.find_by_id("btn-flash").click()
 
             wait = WebDriverWait(self.page.driver, 5)
-            wait.until(EC.presence_of_element_located(
+
+            # wait for the visibility of the grid to appear
+            wait.until(EC.visibility_of_element_located(
+                (By.XPATH,
+                 "//*[contains(@class,'column-type')]"
+                 )
+            ))
+            wait.until(EC.visibility_of_element_located(
                 (By.XPATH,
                  "//*[contains(@class,'column-type') and "
                  "contains(.,'{}')]".format(batch['datatype'][0])

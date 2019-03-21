@@ -54,14 +54,7 @@ define('pgadmin.datagrid', [
           self.preferences = pgBrowser.get_preferences_for_module('sqleditor');
         });
 
-        this.spinner_el =
-          `<div class="pg-sp-container">
-              <div class="pg-sp-content">
-                  <div class="row">
-                      <div class="col-12 pg-sp-icon"></div>
-                  </div>
-              </div>
-          </div>`;
+
         // Define list of nodes on which view data option appears
         var supported_nodes = [
             'table', 'view', 'mview',
@@ -518,17 +511,26 @@ define('pgadmin.datagrid', [
 
           var openQueryToolURL = function(j) {
             // add spinner element
-            $(j).data('embeddedFrame').$container.append(pgAdmin.DataGrid.spinner_el);
-            setTimeout(function() {
+            let $spinner_el =
+              $(`<div class="pg-sp-container">
+                    <div class="pg-sp-content">
+                        <div class="row">
+                            <div class="col-12 pg-sp-icon"></div>
+                        </div>
+                    </div>
+                </div>`).appendTo($(j).data('embeddedFrame').$container);
+
+            let init_poller_id = setInterval(function() {
               var frameInitialized = $(j).data('frameInitialized');
               if (frameInitialized) {
+                clearInterval(init_poller_id);
                 var frame = $(j).data('embeddedFrame');
                 if (frame) {
+                  frame.onLoaded(()=>{
+                    $spinner_el.remove();
+                  });
                   frame.openURL(baseUrl);
-                  frame.$container.find('.pg-sp-container').delay(1000).hide(1);
                 }
-              } else {
-                openQueryToolURL(j);
               }
             }, 100);
           };

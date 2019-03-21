@@ -21,7 +21,6 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
     """
         This feature test will test the query tool auto complete feature.
     """
-
     first_schema_name = ""
     second_schema_name = ""
     first_table_name = ""
@@ -175,6 +174,20 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         self.page.fill_codemirror_area_with(word)
         ActionChains(self.page.driver).key_down(
             Keys.CONTROL).send_keys(Keys.SPACE).key_up(Keys.CONTROL).perform()
-        self.page.find_by_xpath(
+
+        # if IntelliSense is present then verify this
+        if self.page.check_if_element_exist_by_xpath\
+                ("//ul[@class='CodeMirror-hints default']", 2):
+            self.page.find_by_xpath(
             "//ul[contains(@class, 'CodeMirror-hints') and "
             "contains(., '" + expected_string + "')]")
+        else:
+            # if no IntelliSense is present it means there is only one option
+            #  so check if required string is present in codeMirror
+            code_mirror = self.page.find_by_xpath(
+                "//pre[@class=' CodeMirror-line ']/span")
+            code_mirror_text = code_mirror.text
+
+            if not expected_string in code_mirror_text:
+                raise Exception("Required String %s is not "
+                                "present"%expected_string)

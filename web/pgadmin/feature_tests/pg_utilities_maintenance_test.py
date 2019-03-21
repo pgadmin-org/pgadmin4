@@ -84,7 +84,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
 
     def _verify_command(self):
         status = self.page.find_by_css_selector(
-            ".pg-bg-status .bg-success-light .pg-bg-status-text").text
+            ".pg-bg-status-text").text
         self.assertEquals(status, "Successfully completed.")
         self.page.find_by_css_selector(".pg-bg-more-details").click()
         command = self.page.find_by_css_selector(

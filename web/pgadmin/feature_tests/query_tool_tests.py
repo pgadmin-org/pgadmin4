@@ -18,6 +18,7 @@ from selenium.webdriver.common.by import By
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 import config
+from .locators import QueryToolLocatorsCss
 
 
 class QueryToolFeatureTest(BaseFeatureTest):
@@ -110,28 +111,34 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # this will set focus to correct iframe.
         self.page.fill_codemirror_area_with('')
 
-        explain_op = self.page.find_by_id("btn-explain-options-dropdown")
+        explain_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain_options_dropdown)
         explain_op.click()
 
         # disable Explain options and auto rollback only if they are enabled.
-        for op in ('explain-verbose', 'explain-costs',
-                   'explain-buffers', 'explain-timing'):
-            btn = self.page.find_by_id("btn-{}".format(op))
+        for op in (QueryToolLocatorsCss.btn_explain_verbose,
+                   QueryToolLocatorsCss.btn_explain_costs,
+                   QueryToolLocatorsCss.btn_explain_buffers,
+                   QueryToolLocatorsCss.btn_explain_timing):
+            btn = self.page.find_by_css_selector(op)
             check = btn.find_element_by_tag_name('i')
             if 'visibility-hidden' not in check.get_attribute('class'):
                 btn.click()
 
-        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_query_dropdown)
         query_op.click()
 
         # disable auto rollback only if they are enabled
-        btn = self.page.find_by_id("btn-auto-rollback")
+        btn = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_auto_rollback)
         check = btn.find_element_by_tag_name('i')
         if 'visibility-hidden' not in check.get_attribute('class'):
             btn.click()
 
         # enable autocommit only if it's disabled
-        btn = self.page.find_by_id("btn-auto-commit")
+        btn = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_auto_commit)
         check = btn.find_element_by_tag_name('i')
         if 'visibility-hidden' in check.get_attribute('class'):
             btn.click()
@@ -145,14 +152,14 @@ class QueryToolFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item(self.test_db)
 
     def _clear_query_tool(self):
-        self.page.click_element(
-            self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
+        self.page.click_element(self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_clear_dropdown)
         )
         ActionChains(self.driver) \
-            .move_to_element(self.page.find_by_xpath("//*[@id='btn-clear']")) \
-            .perform()
+            .move_to_element(self.page.find_by_css_selector(
+                QueryToolLocatorsCss.btn_clear)).perform()
         self.page.click_element(
-            self.page.find_by_xpath("//*[@id='btn-clear']")
+            self.page.find_by_css_selector(QueryToolLocatorsCss.btn_clear)
         )
         self.page.click_modal('Yes')
 
@@ -171,7 +178,12 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
         wait = WebDriverWait(self.page.driver, 10)
         self.page.fill_codemirror_area_with(query)
 
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
+
+        # wait for header of the table to be visible
+        wait.until(EC.visibility_of_element_located(
+            (By.XPATH,'//div[@class="slick-header-columns"]')))
 
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
@@ -192,8 +204,13 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         print("On demand result set on grid select all... ",
               file=sys.stderr, end="")
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
+        # wait for header of the table to be visible
+        wait.until(EC.visibility_of_element_located(
+            (By.XPATH,'//div[@class="slick-header-columns"]')))
+        # wait for first row to contain value
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
              '//span[@data-row="0" and text()="1"]'))
@@ -210,9 +227,14 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         print("On demand result set on column select all... ",
               file=sys.stderr, end="")
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
+
+        # wait for header of the table to be visible
+        wait.until(EC.visibility_of_element_located(
+            (By.XPATH,'//div[@class="slick-header-columns"]')))
 
         wait.until(EC.presence_of_element_located(
             (By.XPATH,
@@ -252,16 +274,19 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
 
-        explain_op = self.page.find_by_id("btn-explain-options-dropdown")
+        explain_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain_options_dropdown)
         explain_op.click()
 
         # disable Explain options and auto rollback only if they are enabled.
-        for op in ('explain-verbose', 'explain-costs'):
-            self.page.find_by_id("btn-{}".format(op)).click()
+        for op in (QueryToolLocatorsCss.btn_explain_verbose,
+                   QueryToolLocatorsCss.btn_explain_costs):
+            self.page.find_by_css_selector(op).click()
 
         explain_op.click()
 
-        self.page.find_by_id("btn-explain").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
@@ -285,16 +310,19 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
 
-        explain_op = self.page.find_by_id("btn-explain-options-dropdown")
+        explain_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain_options_dropdown)
         explain_op.click()
 
         # disable Explain options and auto rollback only if they are enabled.
-        for op in ('explain-buffers', 'explain-timing'):
-            self.page.find_by_id("btn-{}".format(op)).click()
+        for op in (QueryToolLocatorsCss.btn_explain_buffers,
+                   QueryToolLocatorsCss.btn_explain_timing):
+            self.page.find_by_css_selector(op).click()
 
         explain_op.click()
 
-        self.page.find_by_id("btn-explain-analyze").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain_analyze).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
@@ -324,14 +352,18 @@ CREATE TABLE public.{}();""".format(table_name)
 
         self.page.fill_codemirror_area_with(query)
 
-        query_op = self.page.find_by_id("btn-query-dropdown")
+        # open auto commit option and disable it
+        query_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_query_dropdown)
+        query_op.click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_auto_commit).click()
+        # close option
         query_op.click()
 
-        self.page.find_by_id("btn-auto-commit").click()
-
-        query_op.click()
-
-        self.page.find_by_id("btn-flash").click()
+        # execute query
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -340,6 +372,7 @@ CREATE TABLE public.{}();""".format(table_name)
             'contains(string(), "CREATE TABLE")]'
         )
 
+        # do the ROLLBACK and check if the table is present or not
         self._clear_query_tool()
         query = """-- 1. (Done) Disable auto commit.
 -- 2. (Done) Create table in public schema.
@@ -347,7 +380,8 @@ CREATE TABLE public.{}();""".format(table_name)
 -- 4. Check if table is *NOT* created.
 ROLLBACK;"""
         self.page.fill_codemirror_area_with(query)
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -364,7 +398,8 @@ ROLLBACK;"""
 SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Data Output')
@@ -379,6 +414,18 @@ SELECT relname FROM pg_class
                              "and without any explicit commit.".format(
             table_name
         )
+        # again roll back so that the auto commit drop down is enabled
+        query = """-- 1. (Done) Disable auto commit.
+        -- 2. (Done) Create table in public schema.
+        -- 3. ROLLBACK transaction.
+        -- 4. Check if table is *NOT* created.
+        ROLLBACK;"""
+        self.page.fill_codemirror_area_with(query)
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
+
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+
 
     def _query_tool_auto_commit_enabled(self):
 
@@ -393,14 +440,17 @@ END;"""
 
         wait = WebDriverWait(self.page.driver, 10)
 
-        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_query_dropdown)
         query_op.click()
 
-        self.page.find_by_id("btn-auto-commit").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_auto_commit).click()
 
         query_op.click()
 
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
@@ -416,7 +466,8 @@ CREATE TABLE public.{}();""".format(table_name)
 
         self.page.fill_codemirror_area_with(query)
 
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -433,7 +484,8 @@ CREATE TABLE public.{}();""".format(table_name)
 -- 5. Check if table is created event after ROLLBACK.
 ROLLBACK;"""
         self.page.fill_codemirror_area_with(query)
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -451,7 +503,8 @@ ROLLBACK;"""
 SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.click_tab('Data Output')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -479,16 +532,18 @@ END;"""
 
         self.page.fill_codemirror_area_with(query)
 
-        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_query_dropdown)
         query_op.click()
 
-        self.page.find_by_id("btn-auto-rollback").click()
-
-        self.page.find_by_id("btn-auto-commit").click()
+        # uncheckt auto commit and check auto-rollback
+        self.uncheck_execute_option('auto_commit')
+        self.check_execute_option('auto_rollback')
 
         query_op.click()
 
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self._clear_query_tool()
@@ -504,7 +559,8 @@ CREATE TABLE public.{}();""".format(table_name)
 
         self.page.fill_codemirror_area_with(query)
 
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -522,7 +578,8 @@ CREATE TABLE public.{}();""".format(table_name)
 -- 6. Check if table is *NOT* created after ending transaction.
 SELECT 1/0;"""
         self.page.fill_codemirror_area_with(query)
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -541,7 +598,8 @@ SELECT 1/0;"""
 END;"""
 
         self.page.fill_codemirror_area_with(query)
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -560,7 +618,8 @@ END;"""
 SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Data Output')
@@ -584,41 +643,27 @@ SELECT 1, pg_sleep(300)"""
 
         self.page.fill_codemirror_area_with(query)
 
-        query_op = self.page.find_by_id("btn-query-dropdown")
+        # query_button drop can be disabled so enable
+        commit_button = self.page.find_by_css_selector("#btn-commit")
+        if not commit_button.get_attribute('disabled'):
+            commit_button.click()
+
+        query_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_query_dropdown)
         query_op.click()
 
-        auto_rollback_btn = self.page.find_by_id("btn-auto-rollback")
-
-        auto_rollback_check = auto_rollback_btn.find_element_by_tag_name("i")
-
-        # if auto rollback is enabled then 'i' element will
-        # have 'auto-rollback fa fa-check' classes
-        # if auto rollback is disabled then 'i' element will
-        # have 'auto-rollback fa fa-check visibility-hidden' classes
-
-        if 'auto-rollback fa fa-check' == str(
-           auto_rollback_check.get_attribute('class')):
-            auto_rollback_btn.click()
-
-        auto_commit_btn = self.page.find_by_id("btn-auto-commit")
-
-        auto_commit_check = auto_commit_btn.find_element_by_tag_name("i")
-
-        # if auto commit is enabled then 'i' element will
-        # have 'auto-commit fa fa-check' classes
-        # if auto commit is disabled then 'i' element will
-        # have 'auto-commit fa fa-check visibility-hidden' classes
-
-        if 'auto-commit fa fa-check visibility-hidden' == str(
-           auto_commit_check.get_attribute('class')):
-            auto_commit_btn.click()
-
+        # enable auto-commit and disable auto-rollback
+        self.check_execute_option('auto_commit')
+        self.uncheck_execute_option('auto_rollback')
+        # close drop down
         query_op.click()
 
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.find_by_xpath("//*[@id='fetching_data']")
-        self.page.find_by_id("btn-cancel-query").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_cancel_query).click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.page.find_by_xpath(
@@ -643,7 +688,8 @@ SELECT 1, pg_sleep(300)"""
 
         print("\n\tListen on an event... ", file=sys.stderr, end="")
         self.page.fill_codemirror_area_with("LISTEN foo;")
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -656,7 +702,8 @@ SELECT 1, pg_sleep(300)"""
 
         print("\tNotify event without data... ", file=sys.stderr, end="")
         self.page.fill_codemirror_area_with("NOTIFY foo;")
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Notifications')
@@ -670,7 +717,8 @@ SELECT 1, pg_sleep(300)"""
         if self._supported_server_version():
             self.page.fill_codemirror_area_with("SELECT pg_notify('foo', "
                                                 "'Hello')")
-            self.page.find_by_id("btn-flash").click()
+            self.page.find_by_css_selector(
+                QueryToolLocatorsCss.btn_execute_query).click()
 
             self.page.wait_for_query_tool_loading_indicator_to_disappear()
             self.page.click_tab('Notifications')
@@ -690,10 +738,19 @@ SELECT 1, pg_sleep(300)"""
             self.server['port'],
             self.server['sslmode']
         )
-
         pg_cursor = connection.cursor()
         pg_cursor.execute('select version()')
         version_string = pg_cursor.fetchone()
+
+        # check if jit is turned on
+        jit_enabled = False
+        try:
+            pg_cursor.execute('show jit')
+            show_jit = pg_cursor.fetchone()
+            if show_jit[0] == 'on':
+                jit_enabled = True
+        except:
+            pass
 
         is_edb = False
         if len(version_string) > 0:
@@ -701,28 +758,42 @@ SELECT 1, pg_sleep(300)"""
 
         connection.close()
 
-        return connection.server_version >= 110000 and not is_edb
+        return connection.server_version >= 110000 and jit_enabled
 
     def _query_tool_explain_check_jit_stats(self):
         wait = WebDriverWait(self.page.driver, 10)
 
         self.page.fill_codemirror_area_with("SET jit_above_cost=10;")
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_execute_query).click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self._clear_query_tool()
 
         self.page.fill_codemirror_area_with("SELECT count(*) FROM pg_class;")
 
-        explain_op = self.page.find_by_id("btn-explain-options-dropdown")
+        explain_op = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain_options_dropdown)
         explain_op.click()
 
-        # disable Explain options and auto rollback only if they are enabled.
-        for op in ('explain-verbose', 'explain-costs', 'explain-analyze'):
-            self.page.find_by_id("btn-{}".format(op)).click()
+        # disable Explain options and only enable COST option
+        for op in (QueryToolLocatorsCss.btn_explain_verbose,
+                   QueryToolLocatorsCss.btn_explain_costs,
+                   QueryToolLocatorsCss.btn_explain_buffers,
+                   QueryToolLocatorsCss.btn_explain_timing):
+            btn = self.page.find_by_css_selector(op)
+            check = btn.find_element_by_tag_name('i')
+            if 'visibility-hidden' not in check.get_attribute('class'):
+                btn.click()
+        # click cost button
+        cost_btn = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain_costs)
+        cost_btn.click()
 
+        # close explain options
         explain_op.click()
 
-        self.page.find_by_id("btn-explain-analyze").click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain_analyze).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Data Output')
@@ -734,6 +805,38 @@ SELECT 1, pg_sleep(300)"""
         canvas.find_element_by_xpath("//*[contains(string(), 'JIT')]")
 
         self._clear_query_tool()
+
+    def check_execute_option(self, option):
+        """"This function will check auto commit or auto roll back based on
+        user input. If button is already checked, no action will be taken"""
+        if option == 'auto_commit':
+            check_status = self.driver.find_element_by_css_selector(
+                QueryToolLocatorsCss.btn_auto_commit_check_status)
+            if 'visibility-hidden' in check_status.get_attribute('class'):
+                self.page.find_by_css_selector(QueryToolLocatorsCss.
+                                               btn_auto_commit).click()
+        if option == 'auto_rollback':
+            check_status = self.driver.find_element_by_css_selector(
+                QueryToolLocatorsCss.btn_auto_rollback_check_status)
+            if 'visibility-hidden' in check_status.get_attribute('class'):
+                self.page.find_by_css_selector(QueryToolLocatorsCss.
+                                               btn_auto_rollback).click()
+
+    def uncheck_execute_option(self, option):
+        """"This function will uncheck auto commit or auto roll back based on
+        user input. If button is already unchecked, no action will be taken"""
+        if option == 'auto_commit':
+            check_status = self.driver.find_element_by_css_selector(
+                QueryToolLocatorsCss.btn_auto_commit_check_status)
+            if 'visibility-hidden' not in check_status.get_attribute('class'):
+                self.page.find_by_css_selector(QueryToolLocatorsCss.
+                                               btn_auto_commit).click()
+        if option == 'auto_rollback':
+            check_status = self.driver.find_element_by_css_selector(
+                QueryToolLocatorsCss.btn_auto_rollback_check_status)
+            if 'visibility-hidden' not in check_status.get_attribute('class'):
+                self.page.find_by_css_selector(QueryToolLocatorsCss.
+                                               btn_auto_rollback).click()
 
 
 class WaitForAnyElementWithText(object):

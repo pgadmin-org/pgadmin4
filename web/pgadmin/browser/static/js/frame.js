@@ -53,7 +53,7 @@ define([
 
             myPanel.closeable(!!that.isCloseable);
 
-            var $frameArea = $('<div style="position:absolute;top:0 !important;width:100%;height:100%;display:table">');
+            var $frameArea = $('<div style="position:absolute;top:0 !important;width:100%;height:100%;display:table;z-index:0;">');
             myPanel.layout().addItem($frameArea);
             that.panel = myPanel;
             var frame = new wcIFrame($frameArea, myPanel);

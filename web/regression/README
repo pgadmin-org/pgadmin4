@@ -167,6 +167,14 @@ Python Tests:
      Example 2) Run test framework for 'database' node
      run 'python runtests.py --pkg browser.server_groups.servers.databases.tests'
 
+- Execute test framework for certain modules of a test pkg
+
+     Example 1) Run test framework for 'sqleditor' package and test_start_running_query module
+     run 'python runtests.py --pkg tools.sqleditor --modules test_start_running_query'
+
+     Example 2) Run test framework for 'sqleditor' package and test_start_running_query,test_query_tool_fs_utils modules
+     run 'python runtests.py --pkg tools.sqleditor --modules test_start_running_query,test_query_tool_fs_utils'
+
 - Exclude a package and its subpackages when running tests:
 
     Example: exclude feature tests but run all others:
