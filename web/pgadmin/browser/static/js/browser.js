@@ -11,9 +11,9 @@ define('pgadmin.browser', [
   'sources/tree/tree',
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
-  'sources/check_node_visibility', './toolbar', 'pgadmin.browser.utils', 'wcdocker',
-  'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree', 'pgadmin.browser.preferences',
-  'pgadmin.browser.messages',
+  'sources/check_node_visibility', './toolbar', 'pgadmin.help', 'pgadmin.browser.utils',
+  'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
+  'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel',
   'pgadmin.browser.error', 'pgadmin.browser.frame',
   'pgadmin.browser.node', 'pgadmin.browser.collection',
@@ -21,8 +21,9 @@ define('pgadmin.browser', [
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state',
 ], function(
   tree,
-  gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
-  codemirror, checkNodeVisibility, toolBar
+  gettext, url_for, require, $, _, S,
+  Bootstrap, pgAdmin, Alertify, codemirror,
+  checkNodeVisibility, toolBar, help
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
@@ -653,14 +654,7 @@ define('pgadmin.browser', [
           baseUrl = pgBrowser.utils.edbas_help_path;
         }
 
-        var major = Math.floor(server.version / 10000),
-          minor = Math.floor(server.version / 100) - (major * 100);
-
-        baseUrl = baseUrl.replace('$VERSION$', major + '.' + minor);
-        if (!S(baseUrl).endsWith('/')) {
-          baseUrl = baseUrl + '/';
-        }
-        var fullUrl = baseUrl + url;
+        var fullUrl = help.getHelpUrl(baseUrl, url, server.version);
 
         window.open(fullUrl, 'postgres_help');
       } else if(type == 'dialog_help') {

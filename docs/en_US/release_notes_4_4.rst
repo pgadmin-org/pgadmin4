@@ -54,3 +54,4 @@ Bug fixes
 | `Bug #4073 <https://redmine.postgresql.org/issues/4073>`_ - Change the CodeMirror active line background colour to $color-danger-lighter so it doesn't conflict with the selection colour.
 | `Bug #4081 <https://redmine.postgresql.org/issues/4081>`_ - Fix the RE-SQL syntax for roles with a VALID UNTIL clause.
 | `Bug #4090 <https://redmine.postgresql.org/issues/4090>`_ - Improve the German translation for Backup Server.
+| `Bug #4099 <https://redmine.postgresql.org/issues/4099>`_ - Fix SQL help for EPAS 10+, and refactor the URL generation code into a testable function.

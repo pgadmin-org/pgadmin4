@@ -11,11 +11,14 @@ define('pgadmin.browser.node', [
   'sources/tree/pgadmin_tree_node', 'sources/url_for',
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
-  'backform', 'sources/browser/generate_url', 'sources/utils', 'pgadmin.browser.utils',
-  'pgadmin.backform',
+  'backform', 'sources/browser/generate_url', 'pgadmin.help', 'sources/utils',
+  'pgadmin.browser.utils', 'pgadmin.backform',
 ], function(
   pgadminTreeNode, url_for,
-  gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform, generateUrl, commonUtils
+  gettext, $, _, S, pgAdmin,
+  Menu, Backbone, Alertify, pgBrowser,
+  Backform, generateUrl, help,
+  commonUtils
 ) {
 
   var wcDocker = window.wcDocker,
@@ -1218,26 +1221,20 @@ define('pgadmin.browser.node', [
             url = pgBrowser.utils.edbas_help_path;
           }
 
-          var major = Math.floor(server.version / 10000),
-            minor = Math.floor(server.version / 100) - (major * 100);
-
-          url = url.replace('$VERSION$', major + '.' + minor);
-          if (!S(url).endsWith('/')) {
-            url = url + '/';
-          }
+          var fullUrl = '';
           if (that.sqlCreateHelp == '' && that.sqlAlterHelp != '') {
-            url = url + that.sqlAlterHelp;
+            fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version);
           } else if (that.sqlCreateHelp != '' && that.sqlAlterHelp == '') {
-            url = url + that.sqlCreateHelp;
+            fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version);
           } else {
             if (view.model.isNew()) {
-              url = url + that.sqlCreateHelp;
+              fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version);
             } else {
-              url = url + that.sqlAlterHelp;
+              fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version);
             }
           }
 
-          window.open(url, 'postgres_help');
+          window.open(fullUrl, 'postgres_help');
         }.bind(panel),
 
         onDialogHelp = function() {

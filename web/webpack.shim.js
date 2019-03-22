@@ -210,6 +210,7 @@ var webpackShimConfig = {
     'pgadmin.datagrid': path.join(__dirname, './pgadmin/tools/datagrid/static/js/datagrid'),
     'pgadmin.file_manager': path.join(__dirname, './pgadmin/misc/file_manager/static/js/file_manager'),
     'pgadmin.file_utility': path.join(__dirname, './pgadmin/misc/file_manager/static/js/utility'),
+    'pgadmin.help': path.join(__dirname, './pgadmin/help/static/js/help'),
     'pgadmin.misc.explain': path.join(__dirname, './pgadmin/misc/static/explain/js/explain'),
     'pgadmin.node.cast': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/casts/static/js/cast'),
     'pgadmin.node.catalog': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog'),

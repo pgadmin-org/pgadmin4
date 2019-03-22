@@ -189,7 +189,7 @@ define('pgadmin.node.pga_jobstep', [
           }, helpMessage: S(
             gettext('Please specify the connection string for the remote database server. Each parameter setting is in the form keyword = value. Spaces around the equal sign are optional. To write an empty value, or a value containing spaces, surround it with single quotes, e.g., keyword = \'a value\'. Single quotes and backslashes within the value must be escaped with a backslash, i.e., \' and \\.<br>For more information, please see the documentation on %s')
           ).sprintf(
-            '<a href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">libpq connection strings</a>'
+            '<a href="https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">libpq connection strings</a>'
           ).value(), mode: ['create', 'edit'],
         },{
           id: 'jstonerror', label: gettext('On error'), cell: 'select2',

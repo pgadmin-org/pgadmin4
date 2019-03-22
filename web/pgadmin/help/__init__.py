@@ -55,7 +55,7 @@ class HelpModule(PgAdminModule):
         self.pg_help_path = self.help_preference.register(
             'help', 'pg_help_path',
             gettext("PostgreSQL Help Path"), 'text',
-            'https://www.postgresql.org/docs/$VERSION$/static/',
+            'https://www.postgresql.org/docs/$VERSION$/',
             category_label=gettext('Help'),
             help_str=gettext(
                 'Path to the PostgreSQL documentation. $VERSION$ will be '
