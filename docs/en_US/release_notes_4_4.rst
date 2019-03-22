@@ -5,7 +5,26 @@ Version 4.4
 Release date: 2019-04-04
 
 This release contains a number of new features and fixes reported since the
-release of pgAdmin4 4.3
+release of pgAdmin4 4.3.
+
+.. warning:: This release includes a bug fix
+    (`Bug #3887 <https://redmine.postgresql.org/issues/3887>`_) which will
+    rename the per-user storage directories for existing users when running in
+    server mode. Previously, saved SQL queries were stored under the
+    *STORAGE_DIR* in a sub-directory named after the username part of the user's
+    email address. From this version onwards, the full email address is used,
+    with the @ replaced with an underscore. For example, in v.4.3 with
+    *STORAGE_DIR* set to */var/lib/pgadmin4* user files may be stored in:
+
+    .. code-block:: bash
+
+        /var/lib/pgadmin4/storage/username/
+
+    With the fix, that directory will be renamed (or created for new users) as:
+
+    .. code-block:: bash
+
+        /var/lib/pgadmin4/storage/username_example.com/
 
 Features
 ********
@@ -20,6 +39,7 @@ Bug fixes
 
 | `Bug #1269 <https://redmine.postgresql.org/issues/1269>`_ - Fix naming inconsistency for the column and FTS parser modules.
 | `Bug #3104 <https://redmine.postgresql.org/issues/3104>`_ - Improve a couple of German translations.
+| `Bug #3887 <https://redmine.postgresql.org/issues/3887>`_ - Use the user's full email address (not just the username part) as the basis for the storage directory name.
 | `Bug #3968 <https://redmine.postgresql.org/issues/3968>`_ - Update wcDocker to fix the issue where the Scratch Pad grows in size if the results panel is resized.
 | `Bug #3995 <https://redmine.postgresql.org/issues/3995>`_ - Avoid 'bogus varno' message from Postgres when viewing the SQL for a table with triggers.
 | `Bug #4019 <https://redmine.postgresql.org/issues/4019>`_ - Update all Python and JavaScript dependencies.

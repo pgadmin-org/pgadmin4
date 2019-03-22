@@ -11,7 +11,7 @@
 
 import os
 
-from flask import url_for
+from flask import current_app, url_for
 from flask_security import current_user, login_required
 
 
@@ -37,11 +37,27 @@ def get_storage_directory():
     if len(username) == 0 or username[0].isdigit():
         username = 'pga_user_' + username
 
-    storage_dir = os.path.join(
+    # Figure out the old-style storage directory name
+    old_storage_dir = os.path.join(
         storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode')
         else storage_dir,
         username
     )
+
+    # Figure out the new style storage directory name
+    storage_dir = os.path.join(
+        storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode')
+        else storage_dir,
+        current_user.email.replace('@', '_')
+    )
+
+    # Rename an old-style storage directory, if the new style doesn't exist
+    if os.path.exists(old_storage_dir) and not os.path.exists(storage_dir):
+        current_app.logger.warning(
+            'Renaming storage directory %s to %s.',
+            old_storage_dir, storage_dir
+        )
+        os.rename(old_storage_dir, storage_dir)
 
     if not os.path.exists(storage_dir):
         os.makedirs(storage_dir, int('700', 8))
