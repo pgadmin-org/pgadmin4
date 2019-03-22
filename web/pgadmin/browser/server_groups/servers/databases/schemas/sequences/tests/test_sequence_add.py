@@ -40,23 +40,6 @@ class SequenceAddTestCase(BaseTestGenerator):
                     "start": "100"
                 }
             )
-        ),
-        (
-            'Fetch sequence Node URL (invalid optional data)',
-            dict(
-                url='/browser/sequence/obj/',
-                # Optional fields should be int but we are passing empty str
-                data={
-                    "cache": "",
-                    "cycled": False,
-                    "increment": "",
-                    "maximum": "",
-                    "minimum": "",
-                    "name": "test_sequence_add_%s" % (str(uuid.uuid4())[1:8]),
-                    "securities": [],
-                    "start": ""
-                }
-            )
         )
     ]
 

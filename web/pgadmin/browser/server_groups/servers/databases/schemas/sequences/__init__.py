@@ -349,11 +349,16 @@ class SequenceView(PGChildNodeView):
                         "Could not find the required parameter (%s)." % arg
                     )
                 )
-        # The SQL below will execute CREATE DDL only
-        SQL = render_template(
-            "/".join([self.template_path, 'create.sql']),
-            data=data, conn=self.conn
-        )
+
+        try:
+            # The SQL below will execute CREATE DDL only
+            SQL = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data, conn=self.conn
+            )
+        except Exception as e:
+            return internal_server_error(errormsg=e)
+
         status, msg = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=msg)
