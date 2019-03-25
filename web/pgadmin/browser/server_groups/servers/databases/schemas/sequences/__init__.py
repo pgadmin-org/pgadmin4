@@ -364,7 +364,7 @@ class SequenceView(PGChildNodeView):
             return internal_server_error(errormsg=msg)
 
         if 'relacl' in data:
-            data['relacl'] = parse_priv_to_db(data['relacl'], 'DATABASE')
+            data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
         # The SQL below will execute rest DMLs because we cannot execute
         # CREATE with any other

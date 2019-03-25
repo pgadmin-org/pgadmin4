@@ -262,6 +262,9 @@ define('pgadmin.node.sequence', [
             start_lt = gettext('Start value cannot be less than minimum value.'),
             start_gt = gettext('Start value cannot be greater than maximum value.');
 
+          if (_.isEmpty(minimum) || _.isEmpty(maximum))
+            return null;
+
           if ((minimum == 0 && maximum == 0) ||
               (parseInt(minimum, 10) >= parseInt(maximum, 10))) {
             this.errorModel.set('minimum', min_lt);
