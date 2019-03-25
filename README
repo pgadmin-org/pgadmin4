@@ -26,7 +26,7 @@ Building the Runtime
 
 To build the runtime, the following packages must be installed:
 
-- QT 4.6 or above
+- QT 4.6 or above (Use the VC++ build on Windows, not MinGW).
 - Python 2.7 or 3.4+
 
 Assuming both qmake and python-config are in the path:
