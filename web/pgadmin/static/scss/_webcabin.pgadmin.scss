@@ -102,8 +102,8 @@
   & .wcFrameCornerNW,
   & .wcFrameCornerSE,
   & .wcFrameCornerSW {
-    height: $card-border-radius*2;
-    width: $card-border-radius*2;
+    height: $splitter-hover-width;
+    width: $splitter-hover-width;
     background: transparent;
   }
 
@@ -139,12 +139,12 @@
     border-bottom-left-radius: $card-border-radius;
   }
 
-  .wcFrameEdgeH {
+  .wcFrameEdgeN, .wcFrameEdgeS {
     left: $card-border-radius !important;
     right: $card-border-radius !important;
   }
 
-  .wcFrameEdgeV {
+  .wcFrameEdgeW, .wcFrameEdgeE {
     top: $card-border-radius !important;
     bottom: $card-border-radius !important;
   }
@@ -186,24 +186,41 @@
 }
 
 .wcFrameEdge {
-  background-color: $panel-border-color;
+  background-color: transparent;
   border: none;
+  z-index: 5;
 }
 
-.wcFrameEdgeH {
-  height: $panel-border-width;
+.wcFrameEdgeN, .wcFrameEdgeS {
+  height: $splitter-hover-width/2 + 1;
 }
 
-.wcFrameEdgeV {
-  width: $panel-border-width;
+.wcFrameEdgeN {
+  border-top: $panel-border;
+}
+
+.wcFrameEdgeS {
+  border-bottom: $panel-border;
+}
+
+.wcFrameEdgeW, .wcFrameEdgeE {
+  width: $splitter-hover-width/2 + 1;
+}
+
+.wcFrameEdgeW {
+  border-left: $panel-border;
+}
+
+.wcFrameEdgeE {
+  border-right: $panel-border;
 }
 
 .wcFrameCornerNW,
 .wcFrameCornerNE,
 .wcFrameCornerSW,
 .wcFrameCornerSE {
-  height: $panel-border-width;
-  width: $panel-border-width;
+  height: $splitter-hover-width;
+  width: $splitter-hover-width;
 }
 
 
