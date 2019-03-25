@@ -215,7 +215,7 @@ def create_app(app_name=None):
 
     # We won't care about errors in the logging system, we are more
     # interested in application errors.
-    logging.raiseException = False
+    logging.raiseExceptions = False
 
     # Add SQL level logging, and set the base logging level
     logging.addLevelName(25, 'SQL')
