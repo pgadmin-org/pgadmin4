@@ -166,7 +166,7 @@ _complete_bundle() {
     cd ${SOURCEDIR}/pkg/mac
 
     # Copy the binary utilities into place
-    mkdir -p "${BUILDROOT/${APP_BUNDLE_NAME}/Contents/SharedSupport/" || exit 1
+    mkdir -p "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/SharedSupport/" || exit 1
     cp "${PGDIR}/bin/pg_dump" "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/SharedSupport/" || exit 1
     cp "${PGDIR}/bin/pg_dumpall" "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/SharedSupport/" || exit 1
     cp "${PGDIR}/bin/pg_restore" "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/SharedSupport/" || exit 1
