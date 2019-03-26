@@ -17,7 +17,7 @@ define(
     pgAdmin.Browser.Panel = function(options) {
       var defaults = [
         'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-        'isPrivate', 'content', 'icon', 'events', 'onCreate', 'elContainer',
+        'isPrivate', 'isLayoutMember', 'content', 'icon', 'events', 'onCreate', 'elContainer',
         'canHide', 'limit', 'extraClasses',
       ];
       _.extend(this, _.pick(options, defaults));
@@ -31,6 +31,7 @@ define(
       showTitle: true,
       isCloseable: true,
       isPrivate: false,
+      isLayoutMember: true,
       content: '',
       icon: '',
       panel: null,
@@ -45,6 +46,7 @@ define(
             title: that.title,
             isPrivate: that.isPrivate,
             limit: that.limit,
+            isLayoutMember: that.isLayoutMember,
             onCreate: function(myPanel) {
               $(myPanel).data('pgAdminName', that.name);
               myPanel.initSize(that.width, that.height);
@@ -187,12 +189,10 @@ define(
           return;
 
         if (eventName == 'panelClosed') {
-          pgBrowser.save_current_layout(pgBrowser);
           /* Pass the closed flag also */
           pgAdmin.Dashboard.toggleVisibility(false, true);
         } else if (eventName == 'panelVisibilityChanged') {
           if (pgBrowser.tree) {
-            pgBrowser.save_current_layout(pgBrowser);
             var selectedNode = pgBrowser.tree.selected();
             if (!_.isUndefined(pgAdmin.Dashboard)) {
               pgAdmin.Dashboard.toggleVisibility(pgBrowser.panels.dashboard.panel.isVisible());

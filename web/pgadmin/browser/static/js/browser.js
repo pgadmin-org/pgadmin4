@@ -280,19 +280,19 @@ define('pgadmin.browser', [
       scripts[n].push({'name': m, 'path': p, loaded: false});
     },
     // Build the default layout
-    buildDefaultLayout: function() {
-      var browserPanel = this.docker.addPanel('browser', wcDocker.DOCK.LEFT);
-      var dashboardPanel = this.docker.addPanel(
+    buildDefaultLayout: function(docker) {
+      var browserPanel = docker.addPanel('browser', wcDocker.DOCK.LEFT);
+      var dashboardPanel = docker.addPanel(
         'dashboard', wcDocker.DOCK.RIGHT, browserPanel);
-      this.docker.addPanel('properties', wcDocker.DOCK.STACKED, dashboardPanel, {
+      docker.addPanel('properties', wcDocker.DOCK.STACKED, dashboardPanel, {
         tabOrientation: wcDocker.TAB.TOP,
       });
-      this.docker.addPanel('sql', wcDocker.DOCK.STACKED, dashboardPanel);
-      this.docker.addPanel(
+      docker.addPanel('sql', wcDocker.DOCK.STACKED, dashboardPanel);
+      docker.addPanel(
         'statistics', wcDocker.DOCK.STACKED, dashboardPanel);
-      this.docker.addPanel(
+      docker.addPanel(
         'dependencies', wcDocker.DOCK.STACKED, dashboardPanel);
-      this.docker.addPanel(
+      docker.addPanel(
         'dependents', wcDocker.DOCK.STACKED, dashboardPanel);
     },
     // Enable/disable menu options
@@ -351,15 +351,33 @@ define('pgadmin.browser', [
         $obj_mnu.append(create_submenu.$el);
       }
     },
-    save_current_layout: function(obj) {
-      if(obj.docker) {
-        var state = obj.docker.save();
-        var settings = { setting: 'Browser/Layout', value: state };
+    save_current_layout: function(layout_id, docker) {
+      if(docker) {
+        var layout = docker.save();
+        var settings = { setting: layout_id, value: layout };
         $.ajax({
           type: 'POST',
           url: url_for('settings.store_bulk'),
           data: settings,
         });
+      }
+    },
+    restore_layout: function(docker, layout, defaultLayoutCallback) {
+      // Try to restore the layout if there is one
+      if (layout != '') {
+        try {
+          docker.restore(layout);
+        }
+        catch(err) {
+          docker.clear();
+          if(defaultLayoutCallback) {
+            defaultLayoutCallback(docker);
+          }
+        }
+      } else {
+        if(defaultLayoutCallback) {
+          defaultLayoutCallback(docker);
+        }
       }
     },
     init: function() {
@@ -395,33 +413,10 @@ define('pgadmin.browser', [
 
         // Stored layout in database from the previous session
         var layout = pgBrowser.utils.layout;
+        obj.restore_layout(obj.docker, layout, obj.buildDefaultLayout.bind(obj));
 
-        // Try to restore the layout if there is one
-        if (layout != '') {
-          try {
-            obj.docker.restore(layout);
-          }
-          catch(err) {
-            obj.docker.clear();
-            obj.buildDefaultLayout();
-          }
-        } else {
-          obj.buildDefaultLayout();
-        }
-
-        // Listen to panel attach/detach event so that last layout will be remembered
-        _.each(obj.panels, function(panel) {
-          if (panel.panel) {
-            panel.panel.on(wcDocker.EVENT.ATTACHED, function() {
-              obj.save_current_layout(obj);
-            });
-            panel.panel.on(wcDocker.EVENT.DETACHED, function() {
-              obj.save_current_layout(obj);
-            });
-            panel.panel.on(wcDocker.EVENT.MOVE_ENDED, function() {
-              obj.save_current_layout(obj);
-            });
-          }
+        obj.docker.on(wcDocker.EVENT.LAYOUT_CHANGED, function() {
+          obj.save_current_layout('Browser/Layout', obj.docker);
         });
       }
 

@@ -9,7 +9,7 @@ try {
       var pgDirectDebug = pgDirectDebug || pgAdmin.Tools.DirectDebug;
       var $ = pgDirectDebug.jquery;
 
-      pgDirectDebug.init({{ uniqueId }}, {{ debug_type }}, '{{ function_name_with_arguments }}');
+      pgDirectDebug.load({{ uniqueId }}, {{ debug_type }}, '{{ function_name_with_arguments }}', '{{layout|safe}}');
       window.onbeforeunload = function(ev) {
         $.ajax({
           url: "{{ url_for('debugger.index') }}close/{{ uniqueId }}",

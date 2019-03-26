@@ -1534,7 +1534,7 @@ define([
 
   _.extend(DirectDebug.prototype, {
     /* We should get the transaction id from the server during initialization here */
-    init: function(trans_id, debug_type, function_name_with_arguments) {
+    load: function(trans_id, debug_type, function_name_with_arguments, layout) {
       // We do not want to initialize the module multiple times.
       var self = this;
       _.bindAll(pgTools.DirectDebug, 'messages');
@@ -1554,6 +1554,7 @@ define([
       this.is_user_aborted_debugging = false;
       this.is_polling_required = true; // Flag to stop unwanted ajax calls
       this.function_name_with_arguments = function_name_with_arguments;
+      this.layout = layout;
 
       let browser = window.opener ?
         window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
@@ -1710,6 +1711,18 @@ define([
       }
     },
 
+    buildDefaultLayout: function(docker) {
+      let code_editor_panel = docker.addPanel('code', wcDocker.DOCK.TOP);
+
+      let parameters_panel = docker.addPanel('parameters', wcDocker.DOCK.BOTTOM, code_editor_panel);
+      docker.addPanel('local_variables',wcDocker.DOCK.STACKED, parameters_panel, {
+        tabOrientation: wcDocker.TAB.TOP,
+      });
+      docker.addPanel('messages', wcDocker.DOCK.STACKED, parameters_panel);
+      docker.addPanel('results', wcDocker.DOCK.STACKED, parameters_panel);
+      docker.addPanel('stack_pane', wcDocker.DOCK.STACKED, parameters_panel);
+    },
+
     // Create the debugger layout with splitter and display the appropriate data received from server.
     intializePanels: function() {
       var self = this;
@@ -1780,23 +1793,19 @@ define([
           stack_pane.load(self.docker);
         });
 
-      self.code_editor_panel = self.docker.addPanel('code', wcDocker.DOCK.TOP);
-      self.parameters_panel = self.docker.addPanel(
-        'parameters', wcDocker.DOCK.BOTTOM, self.code_editor_panel
-      );
-      self.local_variables_panel = self.docker.addPanel(
-        'local_variables',
-        wcDocker.DOCK.STACKED,
-        self.parameters_panel, {
-          tabOrientation: wcDocker.TAB.TOP,
-        }
-      );
-      self.messages_panel = self.docker.addPanel(
-        'messages', wcDocker.DOCK.STACKED, self.parameters_panel);
-      self.results_panel = self.docker.addPanel(
-        'results', wcDocker.DOCK.STACKED, self.parameters_panel);
-      self.stack_pane_panel = self.docker.addPanel(
-        'stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
+      // restore the layout if present else fallback to buildDefaultLayout
+      pgBrowser.restore_layout(self.docker, self.layout, this.buildDefaultLayout.bind(this));
+
+      self.docker.on(wcDocker.EVENT.LAYOUT_CHANGED, function() {
+        pgBrowser.save_current_layout('Debugger/Layout', self.docker);
+      });
+
+      self.code_editor_panel = self.docker.findPanels('code')[0];
+      self.parameters_panel = self.docker.findPanels('parameters')[0];
+      self.local_variables_panel = self.docker.findPanels('local_variables')[0];
+      self.messages_panel = self.docker.findPanels('messages')[0];
+      self.results_panel = self.docker.findPanels('results')[0];
+      self.stack_pane_panel = self.docker.findPanels('stack_pane')[0];
 
       var editor_pane = $('<div id="stack_editor_pane" ' +
         'class="pg-panel-content info"></div>');

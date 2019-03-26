@@ -727,11 +727,13 @@ def reset_layout_db(user_id=None):
 
     if user_id is None:
         cur.execute(
-            'DELETE FROM SETTING WHERE SETTING="Browser/Layout"'
+            'DELETE FROM SETTING WHERE SETTING in '
+            '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
         )
     else:
         cur.execute(
-            'DELETE FROM SETTING WHERE SETTING="Browser/Layout"'
+            'DELETE FROM SETTING WHERE SETTING in '
+            '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
             ' AND USER_ID=?', user_id
         )
     conn.commit()

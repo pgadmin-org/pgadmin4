@@ -29,6 +29,7 @@ from pgadmin.model import Server
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.preferences import Preferences
+from pgadmin.settings import get_setting
 
 query_tool_close_session_lock = Lock()
 
@@ -283,6 +284,8 @@ def panel(trans_id, is_query_tool, editor_title):
                 bgcolor = s.bgcolor
             fgcolor = s.fgcolor or 'black'
 
+    layout = get_setting('SQLEditor/Layout')
+
     url_params = dict()
     if is_query_tool == 'true':
         url_params['sgid'] = trans_obj.sgid
@@ -309,7 +312,8 @@ def panel(trans_id, is_query_tool, editor_title):
         client_platform=user_agent.platform,
         bgcolor=bgcolor,
         fgcolor=fgcolor,
-        url_params=json.dumps(url_params)
+        url_params=json.dumps(url_params),
+        layout=layout,
     )
 
 

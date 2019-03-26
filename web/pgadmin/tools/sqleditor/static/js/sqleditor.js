@@ -76,6 +76,7 @@ define('tools.querytool', [
       this.preferences = browser.get_preferences_for_module('sqleditor');
       this.handler.preferences = this.preferences;
       this.connIntervalId = null;
+      this.layout = opts.layout;
     },
 
     // Bind all the events
@@ -149,6 +150,18 @@ define('tools.querytool', [
       }
     },
 
+    buildDefaultLayout: function(docker) {
+      let sql_panel_obj = docker.addPanel('sql_panel', wcDocker.DOCK.TOP);
+
+      docker.addPanel('scratch', wcDocker.DOCK.RIGHT, sql_panel_obj);
+      docker.addPanel('history', wcDocker.DOCK.STACKED, sql_panel_obj);
+
+      let data_output_panel = docker.addPanel('data_output', wcDocker.DOCK.BOTTOM);
+      docker.addPanel('explain', wcDocker.DOCK.STACKED, data_output_panel);
+      docker.addPanel('messages', wcDocker.DOCK.STACKED, data_output_panel);
+      docker.addPanel('notifications', wcDocker.DOCK.STACKED, data_output_panel);
+    },
+
     // This function is used to render the template.
     render: function() {
       var self = this;
@@ -170,7 +183,7 @@ define('tools.querytool', [
 
 
       // Create main wcDocker instance
-      var main_docker = new wcDocker(
+      self.docker = new wcDocker(
         '#editor-panel', {
           allowContextMenu: true,
           allowCollapse: false,
@@ -181,8 +194,8 @@ define('tools.querytool', [
           theme: 'webcabin.overrides.css',
         });
 
-      self.docker = main_docker;
 
+      // Create the panels
       var sql_panel = new pgAdmin.Browser.Panel({
         name: 'sql_panel',
         title: gettext('Query Editor'),
@@ -192,45 +205,6 @@ define('tools.querytool', [
         isPrivate: true,
       });
 
-      sql_panel.load(main_docker);
-      self.sql_panel_obj = main_docker.addPanel('sql_panel', wcDocker.DOCK.TOP);
-
-      var text_container = $('<textarea id="sql_query_tool" tabindex: "-1"></textarea>');
-      var output_container = $('<div id="output-panel" tabindex: "0"></div>').append(text_container);
-      self.sql_panel_obj.$container.find('.pg-panel-content').append(output_container);
-
-      self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
-        tabindex: '0',
-        lineNumbers: true,
-        styleSelectedText: true,
-        mode: self.handler.server_type === 'gpdb' ? 'text/x-gpsql' : 'text/x-pgsql',
-        foldOptions: {
-          widget: '\u2026',
-        },
-        foldGutter: {
-          rangeFinder: CodeMirror.fold.combine(
-            CodeMirror.pgadminBeginRangeFinder,
-            CodeMirror.pgadminIfRangeFinder,
-            CodeMirror.pgadminLoopRangeFinder,
-            CodeMirror.pgadminCaseRangeFinder
-          ),
-        },
-        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-        extraKeys: pgBrowser.editor_shortcut_keys,
-        scrollbarStyle: 'simple',
-      });
-
-      // Refresh Code mirror on SQL panel resize to
-      // display its value properly
-      self.sql_panel_obj.on(wcDocker.EVENT.RESIZE_ENDED, function() {
-        setTimeout(function() {
-          if (self && self.query_tool_obj) {
-            self.query_tool_obj.refresh();
-          }
-        }, 200);
-      });
-
-      // Create panels for 'Data Output', 'Explain', 'Messages', 'History' and 'Geometry Viewer'
       var data_output = new pgAdmin.Browser.Panel({
         name: 'data_output',
         title: gettext('Data Output'),
@@ -303,24 +277,66 @@ define('tools.querytool', [
       });
 
       // Load all the created panels
-      data_output.load(main_docker);
-      explain.load(main_docker);
-      messages.load(main_docker);
-      history.load(main_docker);
-      scratch.load(main_docker);
-      notifications.load(main_docker);
-      geometry_viewer.load(main_docker);
+      sql_panel.load(self.docker);
+      data_output.load(self.docker);
+      explain.load(self.docker);
+      messages.load(self.docker);
+      history.load(self.docker);
+      scratch.load(self.docker);
+      notifications.load(self.docker);
+      geometry_viewer.load(self.docker);
 
-      // Add all the panels to the docker
-      self.scratch_panel = main_docker.addPanel('scratch', wcDocker.DOCK.RIGHT, self.sql_panel_obj);
-      self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, self.sql_panel_obj);
-      self.data_output_panel = main_docker.addPanel('data_output', wcDocker.DOCK.BOTTOM);
-      self.explain_panel = main_docker.addPanel('explain', wcDocker.DOCK.STACKED, self.data_output_panel);
-      self.messages_panel = main_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.data_output_panel);
-      self.notifications_panel = main_docker.addPanel('notifications', wcDocker.DOCK.STACKED, self.data_output_panel);
+      // restore the layout if present else fallback to buildDefaultLayout
+      pgBrowser.restore_layout(self.docker, this.layout, this.buildDefaultLayout.bind(this));
+
+      self.docker.on(wcDocker.EVENT.LAYOUT_CHANGED, function() {
+        pgBrowser.save_current_layout('SQLEditor/Layout', self.docker);
+      });
+
+      self.sql_panel_obj = self.docker.findPanels('sql_panel')[0];
+      self.history_panel = self.docker.findPanels('history')[0];
+      self.data_output_panel = self.docker.findPanels('data_output')[0];
+      self.explain_panel = self.docker.findPanels('explain')[0];
+      self.messages_panel = self.docker.findPanels('messages')[0];
+      self.notifications_panel = self.docker.findPanels('notifications')[0];
+
+      // Refresh Code mirror on SQL panel resize to
+      // display its value properly
+      self.sql_panel_obj.on(wcDocker.EVENT.RESIZE_ENDED, function() {
+        setTimeout(function() {
+          if (self && self.query_tool_obj) {
+            self.query_tool_obj.refresh();
+          }
+        }, 200);
+      });
 
       self.render_history_grid();
       queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
+
+      var text_container = $('<textarea id="sql_query_tool" tabindex: "-1"></textarea>');
+      var output_container = $('<div id="output-panel" tabindex: "0"></div>').append(text_container);
+      self.sql_panel_obj.$container.find('.pg-panel-content').append(output_container);
+
+      self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
+        tabindex: '0',
+        lineNumbers: true,
+        styleSelectedText: true,
+        mode: self.handler.server_type === 'gpdb' ? 'text/x-gpsql' : 'text/x-pgsql',
+        foldOptions: {
+          widget: '\u2026',
+        },
+        foldGutter: {
+          rangeFinder: CodeMirror.fold.combine(
+            CodeMirror.pgadminBeginRangeFinder,
+            CodeMirror.pgadminIfRangeFinder,
+            CodeMirror.pgadminLoopRangeFinder,
+            CodeMirror.pgadminCaseRangeFinder
+          ),
+        },
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+        extraKeys: pgBrowser.editor_shortcut_keys,
+        scrollbarStyle: 'simple',
+      });
 
       if (!self.preferences.new_browser_tab) {
         // Listen on the panel closed event and notify user to save modifications.
@@ -2066,7 +2082,7 @@ define('tools.querytool', [
        * header and loading icon and start execution of the sql query.
        */
       start: function(transId, is_query_tool, editor_title, script_type_url,
-        server_type, url_params
+        server_type, url_params, layout
       ) {
         var self = this;
 
@@ -2087,6 +2103,7 @@ define('tools.querytool', [
         self.gridView = new SQLEditorView({
           el: self.container,
           handler: self,
+          layout: layout,
         });
         self.transId = self.gridView.transId = transId;
 

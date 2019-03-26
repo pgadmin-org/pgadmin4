@@ -399,7 +399,8 @@
         "{{ editor_title }}",
         script_type_url,
         "{{ server_type }}",
-        {{ url_params|safe}}
+        {{ url_params|safe}},
+        '{{ layout|safe }}'
     );
 });
 {% endblock %}

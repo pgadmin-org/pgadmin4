@@ -29,6 +29,7 @@ from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.ajax import make_json_response, \
     internal_server_error
 from pgadmin.utils.driver import get_driver
+from pgadmin.settings import get_setting
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, DebuggerFunctionArguments
@@ -589,6 +590,8 @@ def direct_new(trans_id):
 
     function_arguments += ')'
 
+    layout = get_setting('Debugger/Layout')
+
     return render_template(
         "debugger/direct.html",
         _=gettext,
@@ -598,7 +601,8 @@ def direct_new(trans_id):
         is_desktop_mode=current_app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
         client_platform=user_agent.platform,
-        function_name_with_arguments=obj['function_name'] + function_arguments
+        function_name_with_arguments=obj['function_name'] + function_arguments,
+        layout=layout
     )
 
 

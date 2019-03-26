@@ -71,7 +71,7 @@ def store_setting(setting, value):
     db.session.commit()
 
 
-def get_setting(setting, default=None):
+def get_setting(setting, default=''):
     """Retrieve a configuration setting for the current user, or return the
     default value specified by the caller."""
     data = Setting.query.filter_by(
@@ -137,12 +137,15 @@ def store(setting=None, value=None):
 def reset_layout():
     """Reset configuration setting"""
 
-    # There can be only one record at most
-    data = Setting.query.filter_by(user_id=current_user.id).first()
     try:
-        if data is not None:
-            db.session.delete(data)
-            db.session.commit()
+        db.session.query(Setting) \
+            .filter(Setting.user_id == current_user.id)\
+            .filter((Setting.setting == 'Browser/Layout') |
+                    (Setting.setting == 'SQLEditor/Layout') |
+                    (Setting.setting == 'Debugger/Layout'))\
+            .delete()
+
+        db.session.commit()
     except Exception as e:
         return make_json_response(
             status=410, success=0, errormsg=str(e)
