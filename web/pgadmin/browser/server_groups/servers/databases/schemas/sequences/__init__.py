@@ -229,7 +229,8 @@ class SequenceView(PGChildNodeView):
 
         for row in rset['rows']:
             if not self.blueprint.show_system_objects:
-                system_seq = self._get_dependency(row['oid'], show_system_objects=True)
+                system_seq = self._get_dependency(row['oid'],
+                                                  show_system_objects=True)
                 seq = filter(lambda dep: dep['type'] == 'column', system_seq)
                 if type(seq) is not list:
                     seq = list(seq)
@@ -775,7 +776,8 @@ class SequenceView(PGChildNodeView):
         )
 
     def _get_dependency(self, seid, show_system_objects=None):
-        dependencies_result = self.get_dependencies(self.conn, seid, None, show_system_objects)
+        dependencies_result = self.get_dependencies(self.conn, seid, None,
+                                                    show_system_objects)
 
         # Get missing dependencies.
         # A Corner case, reported by Guillaume Lelarge, could be found at:

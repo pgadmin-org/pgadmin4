@@ -360,7 +360,8 @@ class PGChildNodeView(NodeView):
             )
         )
 
-    def get_dependencies(self, conn, object_id, where=None, show_system_objects=None):
+    def get_dependencies(self, conn, object_id, where=None,
+                         show_system_objects=None):
         """
         This function is used to fetch the dependencies for the selected node.
 
@@ -383,7 +384,8 @@ class PGChildNodeView(NodeView):
         query = render_template("/".join([sql_path, 'dependencies.sql']),
                                 where_clause=where_clause)
         # fetch the dependency for the selected object
-        dependencies = self.__fetch_dependency(conn, query, show_system_objects)
+        dependencies = self.__fetch_dependency(conn, query,
+                                               show_system_objects)
 
         # fetch role dependencies
         if where_clause.find('subid') < 0:

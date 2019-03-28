@@ -22,7 +22,6 @@ from regression.python_test_utils import test_utils as utils
 from pgadmin.utils import server_utils as server_utils
 
 
-
 class ColumnAddTestCase(BaseTestGenerator):
     """This class will add new column under table node."""
     scenarios = [

@@ -23,7 +23,6 @@ from . import utils as columns_utils
 from pgadmin.utils import server_utils as server_utils
 
 
-
 class ColumnPutTestCase(BaseTestGenerator):
     """This class will update the column under table node."""
     scenarios = [
@@ -33,25 +32,25 @@ class ColumnPutTestCase(BaseTestGenerator):
                                            col_data_type='bigint',
                                            server_min_version=100000,
                                            identity_opt={
-                                              'attidentity': 'a',
-                                              'seqincrement': 1,
-                                              'seqstart': 1,
-                                              'seqmin': 1,
-                                              'seqmax': 10,
-                                              'seqcache': 1,
-                                              'seqcycle': True
+                                               'attidentity': 'a',
+                                               'seqincrement': 1,
+                                               'seqstart': 1,
+                                               'seqmin': 1,
+                                               'seqmax': 10,
+                                               'seqcache': 1,
+                                               'seqcycle': True
                                            })),
-        ('EDit column with Identity', dict(url='/browser/column/obj/',
+        ('Edit column with Identity', dict(url='/browser/column/obj/',
                                            server_min_version=100000,
                                            col_data_type='bigint',
                                            identity_opt={
-                                              'attidentity': 'd',
-                                              'seqincrement': 2,
-                                              'seqstart': 2,
-                                              'seqmin': 2,
-                                              'seqmax': 2000,
-                                              'seqcache': 1,
-                                              'seqcycle': True
+                                               'attidentity': 'd',
+                                               'seqincrement': 2,
+                                               'seqstart': 2,
+                                               'seqmin': 2,
+                                               'seqmax': 2000,
+                                               'seqcache': 1,
+                                               'seqcycle': True
                                            }))
     ]
 
