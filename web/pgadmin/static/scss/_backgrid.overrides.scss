@@ -234,6 +234,10 @@ span.form-control:disabled {
     & .tab-pane {
       padding: 0.5rem;
     }
+
+    fieldset.inline-fieldset {
+      background: $color-bg-theme;
+    }
 }
 .subnode-footer {
     height: 38px;

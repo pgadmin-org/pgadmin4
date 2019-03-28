@@ -185,6 +185,13 @@ define('pgadmin.node.column', [
           attnotnull: false,
           attlen: null,
           attprecision: null,
+          attidentity: undefined,
+          seqincrement: undefined,
+          seqstart: undefined,
+          seqmin: undefined,
+          seqmax: undefined,
+          seqcache: undefined,
+          seqcycle: undefined,
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
@@ -258,8 +265,7 @@ define('pgadmin.node.column', [
               return false;
             }
 
-            if(!m.inSchemaWithColumnCheck.apply(this, [m]) &&
-              !_.isUndefined(name) && !_.isNull(name) && name !== '') {
+            if(!m.inSchemaWithColumnCheck.apply(this, [m])) {
               return true;
             }
             return false;
@@ -479,6 +485,52 @@ define('pgadmin.node.column', [
           group: gettext('Definition'), editable: 'editable_check_for_table',
           options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success', offColor: 'primary' },
         },{
+          type: 'nested', control: 'fieldset', label: gettext('Identity'),
+          group: gettext('Definition'),
+          schema:[{
+            id: 'attidentity', label: gettext('Identity'), control: 'select2',
+            cell: 'select2', select2: { placeholder: 'Select identity',
+              allowClear: true,
+              width: '100%',
+            },
+            min_version: 100000, group: gettext('Identity'),
+            'options': [
+              {label: gettext('ALWAYS'), value: 'a'},
+              {label: gettext('BY DEFAULT'), value: 'd'},
+            ],
+          },{
+            id: 'seqincrement', label: gettext('Increment'), type: 'int',
+            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
+            min: 1, deps: ['attidentity'], disabled: 'isIdentityColumn',
+          },{
+            id: 'seqstart', label: gettext('Start'), type: 'int',
+            mode: ['properties', 'create'], group: gettext('Identity'),
+            disabled: function(m) {
+              if (!m.isNew())
+                return true;
+              let isIdentity = m.get('attidentity');
+              if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
+                return false;
+              return true;
+            }, deps: ['attidentity'],
+          },{
+            id: 'seqmin', label: gettext('Minimum'), type: 'int',
+            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
+            deps: ['attidentity'], disabled: 'isIdentityColumn',
+          },{
+            id: 'seqmax', label: gettext('Maximum'), type: 'int',
+            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
+            deps: ['attidentity'], disabled: 'isIdentityColumn',
+          },{
+            id: 'seqcache', label: gettext('Cache'), type: 'int',
+            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
+            min: 1, deps: ['attidentity'], disabled: 'isIdentityColumn',
+          },{
+            id: 'seqcycle', label: gettext('Cycled'), type: 'switch',
+            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
+            deps: ['attidentity'], disabled: 'isIdentityColumn',
+          }],
+        },{
           id: 'attstattarget', label: gettext('Statistics'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck', mode: ['properties', 'edit'],
           group: gettext('Definition'),
@@ -603,7 +655,84 @@ define('pgadmin.node.column', [
             }
           }
 
+          var  minimum = this.get('seqmin'),
+            maximum = this.get('seqmax'),
+            start = this.get('seqstart');
+
+          if (!this.isNew()) {
+            if (_.isUndefined(this.get('seqincrement'))
+              || String(this.get('seqincrement')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = gettext('Increment value cannot be empty.');
+              this.errorModel.set('seqincrement', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('seqincrement');
+            }
+
+            if (_.isUndefined(this.get('seqmin'))
+              || String(this.get('seqmin')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = gettext('Minimum value cannot be empty.');
+              this.errorModel.set('seqmin', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('seqmin');
+            }
+
+            if (_.isUndefined(this.get('seqmax'))
+              || String(this.get('seqmax')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = gettext('Maximum value cannot be empty.');
+              this.errorModel.set('seqmax', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('seqmax');
+            }
+
+            if (_.isUndefined(this.get('seqcache'))
+              || String(this.get('seqcache')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = gettext('Cache value cannot be empty.');
+              this.errorModel.set('seqcache', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('seqcache');
+            }
+          }
+          var min_lt = gettext('Minimum value must be less than maximum value.'),
+            start_lt = gettext('Start value cannot be less than minimum value.'),
+            start_gt = gettext('Start value cannot be greater than maximum value.');
+
+          if (_.isEmpty(minimum) || _.isEmpty(maximum))
+            return null;
+
+          if ((minimum == 0 && maximum == 0) ||
+              (parseInt(minimum, 10) >= parseInt(maximum, 10))) {
+            this.errorModel.set('seqmin', min_lt);
+            return min_lt;
+          } else {
+            this.errorModel.unset('seqmin');
+          }
+
+          if (start && minimum && parseInt(start) < parseInt(minimum)) {
+            this.errorModel.set('seqstart', start_lt);
+            return start_lt;
+          } else {
+            this.errorModel.unset('seqstart');
+          }
+
+          if (start && maximum && parseInt(start) > parseInt(maximum)) {
+            this.errorModel.set('seqstart', start_gt);
+            return start_gt;
+          } else {
+            this.errorModel.unset('seqstart');
+          }
+
           return null;
+        },
+        // Check whether the column is identity column or not
+        isIdentityColumn: function(m) {
+          let isIdentity = m.get('attidentity');
+          if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
+            return false;
+          return true;
         },
         // We will check if we are under schema node & in 'create' mode
         notInSchema: function() {

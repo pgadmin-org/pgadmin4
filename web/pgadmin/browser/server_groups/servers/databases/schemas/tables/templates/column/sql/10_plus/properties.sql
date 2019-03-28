@@ -5,15 +5,21 @@ SELECT att.attname as name, att.*, def.*, pg_catalog.pg_get_expr(def.adbin, def.
         CASE WHEN ty.typelem > 0 THEN ty.typelem ELSE ty.oid END as elemoid,
         tn.nspname as typnspname, et.typname as elemtypname,
         ty.typstorage AS defaultstorage, cl.relname, na.nspname,
-        quote_ident(na.nspname) || '.' || quote_ident(cl.relname) AS parent_tbl,
+        concat(quote_ident(na.nspname) ,'.', quote_ident(cl.relname)) AS parent_tbl,
 	att.attstattarget, description, cs.relname AS sername,
 	ns.nspname AS serschema,
 	(SELECT count(1) FROM pg_type t2 WHERE t2.typname=ty.typname) > 1 AS isdup,
-	indkey, NULL as attoptions,
+	indkey, coll.collname, nspc.nspname as collnspname , attoptions,
+	-- Start pgAdmin4, added to save time on client side parsing
+	CASE WHEN length(coll.collname) > 0 AND length(nspc.nspname) > 0  THEN
+	  concat(quote_ident(nspc.nspname),'.',quote_ident(coll.collname))
+	ELSE '' END AS collspcname,
 	format_type(ty.oid,att.atttypmod) AS cltype,
+	-- End pgAdmin4
 	EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid=att.attrelid AND contype='f' AND att.attnum=ANY(conkey)) As is_fk,
-	NULL AS seclabels,
-	(CASE WHEN (att.attnum < 1) THEN true ElSE false END) AS is_sys_column
+	(SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=att.attrelid AND sl1.objsubid=att.attnum) AS seclabels,
+	(CASE WHEN (att.attnum < 1) THEN true ElSE false END) AS is_sys_column,
+	seq.*
 FROM pg_attribute att
   JOIN pg_type ty ON ty.oid=atttypid
   JOIN pg_namespace tn ON tn.oid=ty.typnamespace
@@ -25,6 +31,9 @@ FROM pg_attribute att
   LEFT OUTER JOIN (pg_depend JOIN pg_class cs ON classid='pg_class'::regclass AND objid=cs.oid AND cs.relkind='S') ON refobjid=att.attrelid AND refobjsubid=att.attnum
   LEFT OUTER JOIN pg_namespace ns ON ns.oid=cs.relnamespace
   LEFT OUTER JOIN pg_index pi ON pi.indrelid=att.attrelid AND indisprimary
+  LEFT OUTER JOIN pg_collation coll ON att.attcollation=coll.oid
+  LEFT OUTER JOIN pg_namespace nspc ON coll.collnamespace=nspc.oid
+  LEFT OUTER JOIN pg_depend dep ON dep.refobjid = att.attrelid AND dep.refobjsubid = att.attnum AND dep.classid IN ( SELECT oid FROM pg_class WHERE relname IN ('pg_class')) LEFT JOIN pg_sequence seq ON dep.objid=seq.seqrelid
 WHERE att.attrelid = {{tid}}::oid
 {% if clid %}
     AND att.attnum = {{clid}}::int

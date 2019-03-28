@@ -32,6 +32,7 @@ Features
 | `Feature #2001 <https://redmine.postgresql.org/issues/2001>`_ - Add support for reverse proxied setups with Gunicorn, and document Gunicorn, uWSGI & NGINX configurations.
 | `Feature #4017 <https://redmine.postgresql.org/issues/4018>`_ - Make the Query Tool history persistent across sessions.
 | `Feature #4018 <https://redmine.postgresql.org/issues/4018>`_ - Remove the large and unnecessary dependency on React and 87 other related libraries.
+| `Feature #4030 <https://redmine.postgresql.org/issues/4030>`_ - Add support for IDENTITY columns.
 | `Feature #4075 <https://redmine.postgresql.org/issues/4075>`_ - Add an ePub doc build target.
 
 Bug fixes

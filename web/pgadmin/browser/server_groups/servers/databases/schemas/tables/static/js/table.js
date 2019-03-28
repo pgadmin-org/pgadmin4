@@ -716,7 +716,7 @@ define('pgadmin.node.table', [
         },{
           id: 'typname', label: gettext('Of type'), type: 'text',
           mode: ['properties', 'create', 'edit'],
-          disabled: 'checkOfType', url: 'get_oftype', group: 'advanced',
+          disabled: 'checkOfType', url: 'get_oftype', group: gettext('advanced'),
           deps: ['coll_inherits'], transform: function(data, cell) {
             var control = cell || this,
               m = control.model;
@@ -769,27 +769,27 @@ define('pgadmin.node.table', [
         },{
           id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
           mode: ['create', 'edit'], min: 10, max: 100,
-          disabled: 'inSchema',group: 'advanced',
+          disabled: 'inSchema', group: gettext('advanced'),
         },{
           id: 'relhasoids', label: gettext('Has OIDs?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema', group: 'advanced',
+          disabled: 'inSchema', group: gettext('advanced'),
         },{
           id: 'relpersistence', label: gettext('Unlogged?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchemaWithModelCheck',
-          group: 'advanced',
+          group: gettext('advanced'),
         },{
           id: 'conname', label: gettext('Primary key'), cell: 'string',
-          type: 'text', mode: ['properties'], group: 'advanced',
+          type: 'text', mode: ['properties'], group: gettext('advanced'),
           disabled: 'inSchema',
         },{
           id: 'reltuples', label: gettext('Rows (estimated)'), cell: 'string',
-          type: 'text', mode: ['properties'], group: 'advanced',
+          type: 'text', mode: ['properties'], group: gettext('advanced'),
           disabled: 'inSchema',
         },{
           id: 'rows_cnt', label: gettext('Rows (counted)'), cell: 'string',
-          type: 'text', mode: ['properties'], group: 'advanced',
+          type: 'text', mode: ['properties'], group: gettext('advanced'),
           disabled: 'inSchema', control: Backform.InputControl.extend({
             formatter: {
               fromRaw: function (rawData) {
@@ -811,7 +811,7 @@ define('pgadmin.node.table', [
           }),
         },{
           id: 'relhassubclass', label: gettext('Inherits tables?'), cell: 'switch',
-          type: 'switch', mode: ['properties'], group: 'advanced',
+          type: 'switch', mode: ['properties'], group: gettext('advanced'),
           disabled: 'inSchema',
         },{
           id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
@@ -819,7 +819,7 @@ define('pgadmin.node.table', [
           disabled: 'inSchema',
         },{
           type: 'nested', control: 'fieldset', label: gettext('Like'),
-          group: 'advanced',
+          group: gettext('advanced'),
           schema:[{
             id: 'like_relation', label: gettext('Relation'),
             type: 'text', mode: ['create', 'edit'], deps: ['typname'],

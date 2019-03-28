@@ -360,7 +360,7 @@ class PGChildNodeView(NodeView):
             )
         )
 
-    def get_dependencies(self, conn, object_id, where=None):
+    def get_dependencies(self, conn, object_id, where=None, show_system_objects=None):
         """
         This function is used to fetch the dependencies for the selected node.
 
@@ -383,7 +383,7 @@ class PGChildNodeView(NodeView):
         query = render_template("/".join([sql_path, 'dependencies.sql']),
                                 where_clause=where_clause)
         # fetch the dependency for the selected object
-        dependencies = self.__fetch_dependency(conn, query)
+        dependencies = self.__fetch_dependency(conn, query, show_system_objects)
 
         # fetch role dependencies
         if where_clause.find('subid') < 0:
@@ -440,7 +440,7 @@ class PGChildNodeView(NodeView):
 
         return dependents
 
-    def __fetch_dependency(self, conn, query):
+    def __fetch_dependency(self, conn, query, show_system_objects=None):
         """
         This function is used to fetch the dependency for the selected node.
 
@@ -545,13 +545,15 @@ class PGChildNodeView(NodeView):
                 ref_name += _ref_name
 
             dep_type = ''
+            if show_system_objects is None:
+                show_system_objects = self.blueprint.show_system_objects
             if dep_str[0] in dep_types:
 
                 # if dep_type is present in the dep_types dictionary, but it's
                 # value is None then it requires special handling.
                 if dep_types[dep_str[0]] is None:
                     if dep_str[0] == 'i':
-                        if self.blueprint.show_system_objects:
+                        if show_system_objects:
                             dep_type = 'internal'
                         else:
                             continue

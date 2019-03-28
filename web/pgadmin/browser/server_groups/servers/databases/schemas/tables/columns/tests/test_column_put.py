@@ -20,12 +20,39 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as columns_utils
+from pgadmin.utils import server_utils as server_utils
+
 
 
 class ColumnPutTestCase(BaseTestGenerator):
     """This class will update the column under table node."""
     scenarios = [
-        ('Put column Node URL', dict(url='/browser/column/obj/'))
+        ('Edit column Node URL', dict(url='/browser/column/obj/',
+                                      col_data_type='char')),
+        ('Edit column with Identity', dict(url='/browser/column/obj/',
+                                           col_data_type='bigint',
+                                           server_min_version=100000,
+                                           identity_opt={
+                                              'attidentity': 'a',
+                                              'seqincrement': 1,
+                                              'seqstart': 1,
+                                              'seqmin': 1,
+                                              'seqmax': 10,
+                                              'seqcache': 1,
+                                              'seqcycle': True
+                                           })),
+        ('EDit column with Identity', dict(url='/browser/column/obj/',
+                                           server_min_version=100000,
+                                           col_data_type='bigint',
+                                           identity_opt={
+                                              'attidentity': 'd',
+                                              'seqincrement': 2,
+                                              'seqstart': 2,
+                                              'seqmin': 2,
+                                              'seqmax': 2000,
+                                              'seqcache': 1,
+                                              'seqcycle': True
+                                           }))
     ]
 
     def setUp(self):
@@ -33,6 +60,17 @@ class ColumnPutTestCase(BaseTestGenerator):
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
+
+        if hasattr(self, 'server_min_version'):
+            server_con = server_utils.connect_server(self, self.server_id)
+            if not server_con["info"] == "Server connected.":
+                raise Exception("Could not connect to server to add "
+                                "a table.")
+            if server_con["data"]["version"] < self.server_min_version:
+                message = "Identity columns are not supported by " \
+                          "PPAS/PG 10.0 and below."
+                self.skipTest(message)
+
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
@@ -53,7 +91,8 @@ class ColumnPutTestCase(BaseTestGenerator):
                                                      self.db_name,
                                                      self.schema_name,
                                                      self.table_name,
-                                                     self.column_name)
+                                                     self.column_name,
+                                                     self.col_data_type)
 
     def runTest(self):
         """This function will update the column under table node."""
@@ -64,8 +103,11 @@ class ColumnPutTestCase(BaseTestGenerator):
         data = {
             "attnum": self.column_id,
             "name": self.column_name,
+            "attnotnull": True,
             "description": "This is test comment for column"
         }
+        if hasattr(self, 'identity_opt'):
+            data.update(self.identity_opt)
         response = self.tester.put(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' +
