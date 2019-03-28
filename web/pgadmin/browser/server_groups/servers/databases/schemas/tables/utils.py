@@ -609,20 +609,21 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         # 4) Find all the columns for tables and filter out columns which are
         #   not inherited from any table & format them one by one
 
+        other_columns = []
+        table_or_type = ''
         # Get of_type table columns and add it into columns dict
-        if data['typname']:
+        if data['typoid']:
             SQL = render_template("/".join([self.table_template_path,
                                             'get_columns_for_table.sql']),
-                                  tname=data['typname'])
+                                  tid=data['typoid'])
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
-            data['columns'] = res['rows']
-
+            other_columns = res['rows']
+            table_or_type = 'type'
         # Get inherited table(s) columns and add it into columns dict
         elif data['coll_inherits'] and len(data['coll_inherits']) > 0:
-            columns = []
             # Return all tables which can be inherited & do not show
             # system columns
             SQL = render_template("/".join([self.table_template_path,
@@ -645,8 +646,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     status, res = self.conn.execute_dict(SQL)
                     if not status:
                         return internal_server_error(errormsg=res)
-                    columns.extend(res['rows'][:])
-            data['columns'] = columns
+                    other_columns.extend(res['rows'][:])
+
+            table_or_type = 'table'
 
         # We will fetch all the columns for the table using
         # columns properties.sql, so we need to set template path
@@ -661,24 +663,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             return internal_server_error(errormsg=res)
         all_columns = res['rows']
 
-        # Filter inherited columns from all columns
-        if 'columns' in data and len(data['columns']) > 0 \
-                and len(all_columns) > 0:
-            for row in data['columns']:
-                for i, col in enumerate(all_columns):
-                    # If both name are same then remove it
-                    # as it is inherited from other table
-                    if col['name'] == row['name']:
-                        # Remove same column from all_columns as
-                        # already have it columns collection
-                        del all_columns[i]
+        # Add inheritedfrom details from other columns - type, table
+        for col in all_columns:
+            for other_col in other_columns:
+                if col['name'] == other_col['name']:
+                    col['inheritedfrom' + table_or_type] = \
+                        other_col['inheritedfrom']
 
-            # If any column is added then update columns collection
-            if len(all_columns) > 0:
-                data['columns'] += all_columns
-        # If no inherited columns found then add all columns
-        elif len(all_columns) > 0:
-            data['columns'] = all_columns
+        data['columns'] = all_columns
 
         if 'columns' in data and len(data['columns']) > 0:
             data = self._columns_formatter(tid, data)

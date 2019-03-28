@@ -38,15 +38,18 @@ Bug fixes
 *********
 
 | `Bug #1269 <https://redmine.postgresql.org/issues/1269>`_ - Fix naming inconsistency for the column and FTS parser modules.
+| `Bug #2627 <https://redmine.postgresql.org/issues/2627>`_ - Include inherited column comments and defaults in reverse engineered table SQL.
 | `Bug #3104 <https://redmine.postgresql.org/issues/3104>`_ - Improve a couple of German translations.
 | `Bug #3887 <https://redmine.postgresql.org/issues/3887>`_ - Use the user's full email address (not just the username part) as the basis for the storage directory name.
 | `Bug #3968 <https://redmine.postgresql.org/issues/3968>`_ - Update wcDocker to fix the issue where the Scratch Pad grows in size if the results panel is resized.
 | `Bug #3995 <https://redmine.postgresql.org/issues/3995>`_ - Avoid 'bogus varno' message from Postgres when viewing the SQL for a table with triggers.
 | `Bug #4019 <https://redmine.postgresql.org/issues/4019>`_ - Update all Python and JavaScript dependencies.
+| `Bug #4037 <https://redmine.postgresql.org/issues/4037>`_ - Include comment SQL for inherited columns in reverse engineered table SQL.
 | `Bug #4050 <https://redmine.postgresql.org/issues/4050>`_ - Make the WHEN field a CodeMirror control on the Event Trigger dialogue.
 | `Bug #4052 <https://redmine.postgresql.org/issues/4052>`_ - Fix the online help button on the resource group dialogue.
 | `Bug #4053 <https://redmine.postgresql.org/issues/4053>`_ - Enable the online help button on the index dialogue.
 | `Bug #4054 <https://redmine.postgresql.org/issues/4054>`_ - Handle resultsets with zero columns correctly in the Query Tool.
+| `Bug #4058 <https://redmine.postgresql.org/issues/4058>`_ - Include inherited columns in SELECT scripts.
 | `Bug #4060 <https://redmine.postgresql.org/issues/4060>`_ - Fix the latexpdf doc build.
 | `Bug #4062 <https://redmine.postgresql.org/issues/4062>`_ - Fix handling of numeric arrays in View/Edit Data.
 | `Bug #4063 <https://redmine.postgresql.org/issues/4063>`_ - Enlarge the grab handles for resizing dialogs etc.
