@@ -58,4 +58,5 @@ Bug fixes
 | `Bug #4090 <https://redmine.postgresql.org/issues/4090>`_ - Improve the German translation for Backup Server.
 | `Bug #4099 <https://redmine.postgresql.org/issues/4099>`_ - Fix SQL help for EPAS 10+, and refactor the URL generation code into a testable function.
 | `Bug #4100 <https://redmine.postgresql.org/issues/4100>`_ - Ensure sequences can be created with increment, start, minimum and maximum options set.
+| `Bug #4105 <https://redmine.postgresql.org/issues/4105>`_ - Fix an issue where JSON data would not be rendered in the Query Tool.
 | `Bug #4109 <https://redmine.postgresql.org/issues/4109>`_ - Ensure View/Materialized View node should be visible after updating any property.
