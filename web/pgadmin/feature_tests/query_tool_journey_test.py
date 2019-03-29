@@ -100,7 +100,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
         # was executed and verify it
         history_rows = self.driver.find_elements_by_css_selector(
             "#query_list> .query-group>ul>li")
-        print("the number of history_rows are 10 %s" % len(history_rows))
         history_rows[1].click()
 
         selected_history_entry = self.page.find_by_css_selector(
