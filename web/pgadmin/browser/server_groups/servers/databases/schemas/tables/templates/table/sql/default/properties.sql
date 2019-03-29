@@ -54,6 +54,7 @@ FROM (
 		array_to_string(rel.reloptions, ',') AS table_vacuum_settings_str,
 		array_to_string(tst.reloptions, ',') AS toast_table_vacuum_settings_str,
 		rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, NULL AS reloftype, NULL AS typname,
+		typ.typrelid AS typoid,
 		(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
 			-- Added for pgAdmin4
 		(CASE WHEN (substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)'))::boolean  THEN true ELSE false END) AS autovacuum_custom,
