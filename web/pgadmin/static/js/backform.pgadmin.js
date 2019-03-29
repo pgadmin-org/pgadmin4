@@ -2090,7 +2090,6 @@ define([
       Backform.Control.prototype.initialize.apply(
         this, arguments
       );
-      debugger;
       Backform.Dialog.prototype.initialize.apply(
         this, [{
           schema: opts.field.get('schema'),
