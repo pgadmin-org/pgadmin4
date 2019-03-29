@@ -705,6 +705,12 @@ WHERE
             )
             return False, errmsg
 
+        # http://initd.org/psycopg/docs/cursor.html#cursor.description
+        # to avoid no-op
+        if cur.description is None:
+            return False, \
+                gettext('The query executed did not return any data.')
+
         def handle_json_data(json_columns, results):
             """
             [ This is only for Python2.x]

@@ -2095,6 +2095,7 @@ define('tools.querytool', [
         self.server_type = server_type;
         self.url_params = url_params;
         self.script_type_url = script_type_url;
+        self.is_transaction_buttons_disabled = true;
 
         // We do not allow to call the start multiple times.
         if (self.gridView)
@@ -2604,6 +2605,19 @@ define('tools.querytool', [
         history.total_time = '-';
       },
 
+      set_sql_message(msg, append=false) {
+        if(append) {
+          $('.sql-editor-message').append(msg);
+        } else {
+          $('.sql-editor-message').text(msg);
+        }
+
+        // Scroll automatically when msgs appends to element
+        setTimeout(function() {
+          $('.sql-editor-message').scrollTop($('.sql-editor-message')[0].scrollHeight);
+        }, 10);
+      },
+
       // This function is used to raise appropriate message.
       update_msg_history: function(status, msg, clear_grid) {
         var self = this;
@@ -2622,16 +2636,10 @@ define('tools.querytool', [
           self.columns = undefined;
           self.collection = undefined;
 
-          $('.sql-editor-message').text(msg);
+          self.set_sql_message(msg);
         } else {
-          $('.sql-editor-message').append(_.escape(msg));
+          self.set_sql_message(_.escape(msg), true);
         }
-
-        // Scroll automatically when msgs appends to element
-        setTimeout(function() {
-          $('.sql-editor-message').scrollTop($('.sql-editor-message')[0].scrollHeight);
-
-        }, 10);
 
         if (status != 'Busy') {
           $('#btn-flash').prop('disabled', false);
@@ -2909,14 +2917,14 @@ define('tools.querytool', [
                 self.primary_keys_data = {};
 
                 // Clear msgs after successful save
-                $('.sql-editor-message').html('');
+                self.set_sql_message('');
 
                 alertify.success(gettext('Data saved successfully.'));
               } else {
               // Something went wrong while saving data on the db server
                 $('#btn-flash').prop('disabled', false);
                 $('#btn-download').prop('disabled', false);
-                $('.sql-editor-message').text(res.data.result);
+                self.set_sql_message(res.data.result);
                 var err_msg = S(gettext('%s.')).sprintf(res.data.result).value();
                 alertify.error(err_msg, 20);
                 grid.setSelectedRows([]);
@@ -3516,22 +3524,33 @@ define('tools.querytool', [
 
       // This function is used to enable/disable buttons
       disable_tool_buttons: function(disabled) {
-        $('#btn-clear-dropdown').prop('disabled', disabled);
-        $('#btn-explain').prop('disabled', disabled);
-        $('#btn-explain-analyze').prop('disabled', disabled);
-        $('#btn-explain-options-dropdown').prop('disabled', disabled);
-        $('#btn-edit-dropdown').prop('disabled', disabled);
-        $('#btn-load-file').prop('disabled', disabled);
-        $('#btn-save').prop('disabled', disabled);
-        $('#btn-file-menu-dropdown').prop('disabled', disabled);
-        $('#btn-find').prop('disabled', disabled);
-        $('#btn-find-menu-dropdown').prop('disabled', disabled);
+        let mode_disabled = disabled;
+
+        /* Buttons be always disabled in view/edit mode */
+        if(!this.is_query_tool) {
+          mode_disabled = true;
+        }
+
+        $('#btn-clear-dropdown').prop('disabled', mode_disabled);
+        $('#btn-explain').prop('disabled', mode_disabled);
+        $('#btn-explain-analyze').prop('disabled', mode_disabled);
+        $('#btn-explain-options-dropdown').prop('disabled', mode_disabled);
+        $('#btn-edit-dropdown').prop('disabled', mode_disabled);
+        $('#btn-load-file').prop('disabled', mode_disabled);
+        $('#btn-save').prop('disabled', mode_disabled);
+        $('#btn-file-menu-dropdown').prop('disabled', mode_disabled);
+        $('#btn-find').prop('disabled', mode_disabled);
+        $('#btn-find-menu-dropdown').prop('disabled', mode_disabled);
         if (this.is_query_tool) {
           // Cancel query tool needs opposite behaviour
           $('#btn-cancel-query').prop('disabled', !disabled);
-          $('#btn-query-dropdown').prop('disabled', !this.is_transaction_buttons_disabled);
+          if(this.is_transaction_buttons_disabled) {
+            $('#btn-query-dropdown').prop('disabled', disabled);
+          } else {
+            $('#btn-query-dropdown').prop('disabled', true);
+          }
         } else {
-          $('#btn-query-dropdown').prop('disabled', disabled);
+          $('#btn-query-dropdown').prop('disabled', mode_disabled);
         }
       },
 
@@ -3677,31 +3696,33 @@ define('tools.querytool', [
           }),
           data = { query: query, filename: filename };
 
+        // Disable the Execute button
+        $('#btn-flash').prop('disabled', true);
+        $('#btn-download').prop('disabled', true);
+        self.disable_tool_buttons(true);
+        self.set_sql_message('');
+        self.trigger(
+          'pgadmin-sqleditor:loading-icon:show',
+          gettext('Downloading CSV...')
+        );
+
         // Get the CSV file
         self.download_csv_obj = $.ajax({
           type: 'POST',
           url: url,
           data: data,
           cache: false,
-          async: true,
-          xhrFields: {
-            responseType: 'blob',
-          },
-          beforeSend: function() {
-            // Disable the Execute button
-            $('#btn-flash').prop('disabled', true);
-            $('#btn-download').prop('disabled', true);
-            self.disable_tool_buttons(true);
-
-            self.trigger(
-              'pgadmin-sqleditor:loading-icon:show',
-              gettext('Downloading CSV...')
-            );
-          },
-        })
-          .done(function(response) {
-            let urlCreator = window.URL || window.webkitURL,
-              url = urlCreator.createObjectURL(response),
+        }).done(function(response) {
+          // if response.data present, extract the message
+          if(!_.isUndefined(response.data)) {
+            if(!response.status) {
+              self._highlight_error(response.data.result);
+              self.set_sql_message(response.data.result);
+            }
+          } else {
+            let respBlob = new Blob([response], {type : 'text/csv'}),
+              urlCreator = window.URL || window.webkitURL,
+              url = urlCreator.createObjectURL(respBlob),
               current_browser = pgAdmin.Browser.get_browser(),
               link = document.createElement('a');
 
@@ -3709,7 +3730,7 @@ define('tools.querytool', [
 
             if (current_browser.name === 'IE' && window.navigator.msSaveBlob) {
             // IE10+ : (has Blob, but not a[download] or URL)
-              window.navigator.msSaveBlob(response, filename);
+              window.navigator.msSaveBlob(respBlob, filename);
             } else {
               link.setAttribute('href', url);
               link.setAttribute('download', filename);
@@ -3718,27 +3739,32 @@ define('tools.querytool', [
 
             document.body.removeChild(link);
             self.download_csv_obj = undefined;
-            // Enable the execute button
-            $('#btn-flash').prop('disabled', false);
-            $('#btn-download').prop('disabled', false);
-            self.disable_tool_buttons(false);
-            self.trigger(
-              'pgadmin-sqleditor:loading-icon:hide');
+          }
 
-          })
-          .fail(function(err) {
-            let msg = '';
+          // Enable the execute button
+          $('#btn-flash').prop('disabled', false);
+          $('#btn-download').prop('disabled', false);
+          self.disable_tool_buttons(false);
+          self.trigger('pgadmin-sqleditor:loading-icon:hide');
+        }).fail(function(err) {
+          let msg = '';
 
-            if (err.statusText == 'abort') {
-              msg = gettext('CSV Download cancelled.');
-            } else {
-              msg = httpErrorHandler.handleQueryToolAjaxError(
-                pgAdmin, self, err, gettext('Download CSV'), [], true
-              );
-            }
-            alertify.alert(gettext('Download CSV error'), msg);
-          });
+          // Enable the execute button
+          $('#btn-flash').prop('disabled', false);
+          $('#btn-download').prop('disabled', false);
+          self.disable_tool_buttons(false);
+          self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
+
+          if (err.statusText == 'abort') {
+            msg = gettext('CSV Download cancelled.');
+          } else {
+            msg = httpErrorHandler.handleQueryToolAjaxError(
+              pgAdmin, self, err, gettext('Download CSV'), [], true
+            );
+          }
+          alertify.alert(gettext('Download CSV error'), msg);
+        });
       },
 
       call_cache_preferences: function() {

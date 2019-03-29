@@ -1362,11 +1362,11 @@ def start_query_download_tool(trans_id):
                 )
 
                 if not status:
-                    r = Response('"{0}"'.format(gen), mimetype='text/csv')
-                    r.headers[
-                        "Content-Disposition"
-                    ] = "attachment;filename=error.csv"
-                    return r
+                    return make_json_response(
+                        data={
+                            'status': status, 'result': gen
+                        }
+                    )
 
                 r = Response(
                     gen(
@@ -1398,11 +1398,9 @@ def start_query_download_tool(trans_id):
                 ] = "attachment;filename={0}".format(filename)
 
                 return r
-
         except Exception as e:
-            r = Response('"{0}"'.format(e), mimetype='text/csv')
-            r.headers["Content-Disposition"] = "attachment;filename=error.csv"
-            return r
+            err_msg = "Error: {0}".format(e.strerror)
+            return internal_server_error(errormsg=err_msg)
     else:
         return internal_server_error(
             errormsg=gettext("Transaction status check failed.")

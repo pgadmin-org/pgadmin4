@@ -59,7 +59,9 @@ Bug fixes
 | `Bug #4073 <https://redmine.postgresql.org/issues/4073>`_ - Change the CodeMirror active line background colour to $color-danger-lighter so it doesn't conflict with the selection colour.
 | `Bug #4081 <https://redmine.postgresql.org/issues/4081>`_ - Fix the RE-SQL syntax for roles with a VALID UNTIL clause.
 | `Bug #4084 <https://redmine.postgresql.org/issues/4084>`_ - Overhaul the layout saving code so it includes the Query Tool and Debugger, and stores the layout when change events are detected rather than (unreliably) on exit.
+| `Bug #4085 <https://redmine.postgresql.org/issues/4085>`_ - Display errors during CSV download from the Query Tool in the UI rather than putting them in the CSV file.
 | `Bug #4090 <https://redmine.postgresql.org/issues/4090>`_ - Improve the German translation for Backup Server.
+| `Bug #4096 <https://redmine.postgresql.org/issues/4096>`_ - Ensure the toolbar buttons are properly reset following a CSV download in the Query Tool.
 | `Bug #4099 <https://redmine.postgresql.org/issues/4099>`_ - Fix SQL help for EPAS 10+, and refactor the URL generation code into a testable function.
 | `Bug #4100 <https://redmine.postgresql.org/issues/4100>`_ - Ensure sequences can be created with increment, start, minimum and maximum options set.
 | `Bug #4105 <https://redmine.postgresql.org/issues/4105>`_ - Fix an issue where JSON data would not be rendered in the Query Tool.
