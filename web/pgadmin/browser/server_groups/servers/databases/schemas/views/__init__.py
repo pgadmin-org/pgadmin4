@@ -531,18 +531,27 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/view_id.sql']), data=data)
+            status, res_data = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            view_id = res_data['rows'][0]['oid']
+            new_view_name = res_data['rows'][0]['relname']
+
             # Get updated schema oid
             SQL = render_template("/".join(
-                [self.template_path, 'sql/get_oid.sql']), vid=vid)
+                [self.template_path, 'sql/get_oid.sql']), vid=view_id)
             status, scid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
-                    vid,
+                    view_id,
                     scid,
-                    name,
+                    new_view_name,
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
                 )
