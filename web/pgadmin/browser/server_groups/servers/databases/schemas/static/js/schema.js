@@ -81,10 +81,11 @@ define('pgadmin.node.schema', [
         var grid = self.grid = new Backgrid.Grid({
           columns: self.grid_columns,
           collection: self.model.get(self.field.get('name')),
-          className: 'backgrid table-bordered table-noouter-border table-hover',
+          className: 'backgrid table table-bordered table-noouter-border table-hover',
         });
 
         // render grid
+        self.$el.addClass('mb-0');
         self.$el.append($(gridBody).append(grid.render().$el));
 
         return self;
@@ -158,6 +159,14 @@ define('pgadmin.node.schema', [
     disabled: function(m) {
       if(!m.top.inSchema.apply(this, [m]) &&
         m.get('autovacuum_custom') == true) {
+
+        // If reloptions is null then set the autovacuum_enabled to true.
+        if (!_.isUndefined(m.get('reloptions')) &&
+          _.isNull(m.get('reloptions'))) {
+          setTimeout(function() {
+            m.set('autovacuum_enabled', true);
+          }, 10);
+        }
         return false;
       }
 
@@ -167,6 +176,22 @@ define('pgadmin.node.schema', [
       }, 10);
       return true;
     },
+    control: Backform.SwitchControl.extend({
+      onChange: function() {
+        Backform.SwitchControl.prototype.onChange.apply(this, arguments);
+
+        let m = this.model;
+        // If value of autovacuum_enabled is false and reloptions is null
+        // then we should set the value of autovacuum_custom to false, as
+        // there is no query to run.
+        if (!m.get('autovacuum_enabled') && !_.isUndefined(m.get('reloptions'))
+          && _.isNull(m.get('reloptions'))) {
+          setTimeout(function() {
+            m.set('autovacuum_custom', false);
+          }, 10);
+        }
+      },
+    }),
   },{
     id: 'vacuum_table', label: '',
     model: Backform.VacuumTableModel, editable: false, type: 'collection',
@@ -222,6 +247,15 @@ define('pgadmin.node.schema', [
       // If in schema & in create mode then enable it
       if(!m.top.inSchema.apply(this, [m]) &&
           m.get('toast_autovacuum') === true) {
+
+        // If reloptions is null then set the autovacuum_enabled to true.
+        if (!_.isUndefined(m.get('toast_reloptions')) &&
+          _.isNull(m.get('toast_reloptions'))) {
+          setTimeout(function() {
+            m.set('toast_autovacuum_enabled', true);
+          }, 10);
+        }
+
         return false;
       }
 
@@ -233,6 +267,22 @@ define('pgadmin.node.schema', [
       }
       return true;
     },
+    control: Backform.SwitchControl.extend({
+      onChange: function() {
+        Backform.SwitchControl.prototype.onChange.apply(this, arguments);
+
+        let m = this.model;
+        // If value of autovacuum_enabled is false and reloptions is null
+        // then we should set the value of autovacuum_custom to false, as
+        // there is no query to run.
+        if (!m.get('toast_autovacuum_enabled') && !_.isUndefined(m.get('toast_reloptions'))
+          && _.isNull(m.get('toast_reloptions'))) {
+          setTimeout(function() {
+            m.set('toast_autovacuum', false);
+          }, 10);
+        }
+      },
+    }),
   },{
     id: 'vacuum_toast', label: '',
     model: Backform.VacuumTableModel, type: 'collection', editable: function(m) {

@@ -67,3 +67,4 @@ Bug fixes
 | `Bug #4100 <https://redmine.postgresql.org/issues/4100>`_ - Ensure sequences can be created with increment, start, minimum and maximum options set.
 | `Bug #4105 <https://redmine.postgresql.org/issues/4105>`_ - Fix an issue where JSON data would not be rendered in the Query Tool.
 | `Bug #4109 <https://redmine.postgresql.org/issues/4109>`_ - Ensure View/Materialized View node should be visible after updating any property.
+| `Bug #4110 <https://redmine.postgresql.org/issues/4110>`_ - Fix custom autovacuum configuration for Materialized Views.

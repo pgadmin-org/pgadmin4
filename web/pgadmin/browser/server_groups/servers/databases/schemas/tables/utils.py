@@ -1712,6 +1712,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         set(data['coll_inherits'])
                     )
 
+            # Update the vacuum table settings.
+            self.update_vacuum_settings('vacuum_table', old_data, data)
+            # Update the vacuum toast table settings.
+            self.update_vacuum_settings('vacuum_toast', old_data, data)
+
             SQL = render_template(
                 "/".join([self.table_template_path, 'update.sql']),
                 o_data=old_data, data=data, conn=self.conn
@@ -2454,3 +2459,34 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 return costrnt["idxname"]
 
         return None
+
+    def update_vacuum_settings(self, vacuum_key, old_data, data):
+        """
+        This function iterate the vacuum and vacuum toast table and create
+        two new dictionaries. One for set parameter and another for reset.
+
+        :param vacuum_key: Key to be checked.
+        :param old_data: Old data
+        :param data: New data
+        :return:
+        """
+
+        # Iterate vacuum table
+        if vacuum_key in data and 'changed' in data[vacuum_key] \
+                and vacuum_key in old_data:
+            set_values = []
+            reset_values = []
+            for data_row in data[vacuum_key]['changed']:
+                for old_data_row in old_data[vacuum_key]:
+                    if data_row['name'] == old_data_row['name']:
+                        if data_row['value'] is not None:
+                            set_values.append(data_row)
+                        elif data_row['value'] is None and \
+                                'value' in old_data_row:
+                            reset_values.append(data_row)
+
+            if len(set_values) > 0:
+                data[vacuum_key]['set_values'] = set_values
+
+            if len(reset_values) > 0:
+                data[vacuum_key]['reset_values'] = reset_values

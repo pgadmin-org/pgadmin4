@@ -1595,6 +1595,21 @@ class MViewNode(ViewNode, VacuumSettings):
             for item in result['vacuum_toast'] if
             'value' in item.keys() and item['value'] is not None]
 
+        if 'autovacuum_custom' in result and result['autovacuum_custom']:
+            vacuum_table.append(
+                {
+                    'name': 'autovacuum_enabled',
+                    'value': str(result['autovacuum_enabled'])
+                }
+            )
+        if 'toast_autovacuum' in result and result['toast_autovacuum']:
+            vacuum_table.append(
+                {
+                    'name': 'toast.autovacuum_enabled',
+                    'value': str(result['toast_autovacuum_enabled'])
+                }
+            )
+
         # add vacuum_toast dict to vacuum_data only if
         # toast's autovacuum is enabled
         if (

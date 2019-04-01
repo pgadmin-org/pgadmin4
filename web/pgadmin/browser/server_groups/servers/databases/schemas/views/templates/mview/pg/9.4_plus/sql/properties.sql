@@ -29,11 +29,11 @@ SELECT
     substring(array_to_string(c.reloptions, ',')
       FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS autovacuum_vacuum_threshold,
     substring(array_to_string(c.reloptions, ',')
-      FROM 'autovacuum_vacuum_scale_factor=([0-9]*[.][0-9]*)') AS autovacuum_vacuum_scale_factor,
+      FROM 'autovacuum_vacuum_scale_factor=([0-9]*[.]?[0-9]*)') AS autovacuum_vacuum_scale_factor,
     substring(array_to_string(c.reloptions, ',')
       FROM 'autovacuum_analyze_threshold=([0-9]*)') AS autovacuum_analyze_threshold,
     substring(array_to_string(c.reloptions, ',')
-      FROM 'autovacuum_analyze_scale_factor=([0-9]*[.][0-9]*)') AS autovacuum_analyze_scale_factor,
+      FROM 'autovacuum_analyze_scale_factor=([0-9]*[.]?[0-9]*)') AS autovacuum_analyze_scale_factor,
     substring(array_to_string(c.reloptions, ',')
       FROM 'autovacuum_vacuum_cost_delay=([0-9]*)') AS autovacuum_vacuum_cost_delay,
     substring(array_to_string(c.reloptions, ',')
@@ -49,11 +49,11 @@ SELECT
     substring(array_to_string(tst.reloptions, ',')
       FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS toast_autovacuum_vacuum_threshold,
     substring(array_to_string(tst.reloptions, ',')
-      FROM 'autovacuum_vacuum_scale_factor=([0-9]*[.][0-9]*)') AS toast_autovacuum_vacuum_scale_factor,
+      FROM 'autovacuum_vacuum_scale_factor=([0-9]*[.]?[0-9]*)') AS toast_autovacuum_vacuum_scale_factor,
     substring(array_to_string(tst.reloptions, ',')
       FROM 'autovacuum_analyze_threshold=([0-9]*)') AS toast_autovacuum_analyze_threshold,
     substring(array_to_string(tst.reloptions, ',')
-      FROM 'autovacuum_analyze_scale_factor=([0-9]*[.][0-9]*)') AS toast_autovacuum_analyze_scale_factor,
+      FROM 'autovacuum_analyze_scale_factor=([0-9]*[.]?[0-9]*)') AS toast_autovacuum_analyze_scale_factor,
     substring(array_to_string(tst.reloptions, ',')
       FROM 'autovacuum_vacuum_cost_delay=([0-9]*)') AS toast_autovacuum_vacuum_cost_delay,
     substring(array_to_string(tst.reloptions, ',')
@@ -66,10 +66,8 @@ SELECT
       FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
     c.reloptions AS reloptions, tst.reloptions AS toast_reloptions,
     (CASE WHEN c.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
-    (CASE WHEN (substring(array_to_string(c.reloptions, ',')
-      FROM 'autovacuum_enabled=([a-z|0-9]*)')) = 'true' THEN true ELSE false END) AS autovacuum_custom,
-    (CASE WHEN (substring(array_to_string(tst.reloptions, ',')
-      FROM 'autovacuum_enabled=([a-z|0-9]*)')) = 'true' THEN true ELSE false END) AS toast_autovacuum
+    (CASE WHEN array_length(c.reloptions, 1) > 0 THEN true ELSE false END) AS autovacuum_custom,
+    (CASE WHEN array_length(tst.reloptions, 1) > 0 AND c.reltoastrelid != 0 THEN true ELSE false END) AS toast_autovacuum
 FROM
     pg_class c
 LEFT OUTER JOIN pg_namespace nsp on nsp.oid = c.relnamespace

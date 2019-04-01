@@ -79,8 +79,7 @@ REFRESH MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} WITH{{ ' NO
 (data.toast_autovacuum is defined and data.toast_autovacuum|lower == 'false')
 ) %}
 {% if data.autovacuum_custom|lower == 'false' %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
-RESET(
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
   autovacuum_enabled,
   autovacuum_vacuum_threshold,
   autovacuum_analyze_threshold,
@@ -108,8 +107,7 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
 
 {% endif %}
 {% if data.toast_autovacuum|lower == 'false' %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
-RESET(
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
   toast.autovacuum_enabled,
   toast.autovacuum_vacuum_threshold,
   toast.autovacuum_analyze_threshold,
@@ -139,8 +137,7 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
 {% else %}
 {% if data['vacuum_data']['reset']|length == 0 and
 data['vacuum_data']['changed']|length == 0 and data['settings']|length > 0 %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
-SET(
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} SET(
 {% for field in data['settings'] %}
   {{ field }} = {{ data['settings'][field]|lower }}{% if not loop.last  %},{% endif %}{{ '\r' }}
 {% endfor %}
@@ -148,8 +145,7 @@ SET(
 
 {% endif %}
 {% if(data['vacuum_data']['changed']|length > 0) %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }}
-SET(
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
 {% for field in data['vacuum_data']['changed'] %}
 {% if field.value != None %}
   {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{% endif %}{{ '\r' }}
@@ -158,8 +154,7 @@ SET(
 );
 {% endif %}
 {% if data['vacuum_data']['reset']|length > 0 %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
-RESET(
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
 {% for field in data['vacuum_data']['reset'] %}
   {{ field.name }}{% if not loop.last  %},{% endif %}{{ '\r' }}
 {% endfor %}
