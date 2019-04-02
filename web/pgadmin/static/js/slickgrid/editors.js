@@ -14,6 +14,7 @@
  */
 
 import JSONBigNumber from 'json-bignumber';
+import gettext from 'sources/gettext';
 
 (function($, JSONBigNumber) {
   // register namespace
@@ -46,7 +47,7 @@ import JSONBigNumber from 'json-bignumber';
   // Generate and return editor buttons
   function getButtons(editable) {
     var $buttons = $('<div class=\'pg_buttons\' />'),
-      label = editable ? 'Cancel' : 'OK',
+      label = editable ? gettext('Cancel') : gettext('OK'),
       button_type = editable ? 'btn-secondary' : 'btn-primary',
       button_icon = editable ? 'fa-times' : 'fa-check';
 
@@ -56,8 +57,8 @@ import JSONBigNumber from 'json-bignumber';
       .appendTo($buttons);
 
     if (editable) {
-      $('<button class=\'btn btn-primary long_text_editor\' data-label="Save">'+
-        '<span class="fa fa-save pg-alertify-button"></span>&nbsp;Save'+
+      $('<button class=\'btn btn-primary long_text_editor\' data-label="' + gettext('OK') + '">'+
+        '<span class="fa fa-check pg-alertify-button"></span>&nbsp;' + gettext('OK') +
         '</button>')
         .appendTo($buttons);
     }
@@ -276,7 +277,7 @@ import JSONBigNumber from 'json-bignumber';
       if (args.column.is_array && !is_valid_array($input.val())) {
         return {
           valid: false,
-          msg: 'Array must start with \'{\' and end with \'}\'',
+          msg: gettext('Arrays must start with "{" and end with "}"'),
         };
       }
 
@@ -640,7 +641,7 @@ import JSONBigNumber from 'json-bignumber';
     var defaultValue;
 
     this.init = function() {
-      $input = $('<INPUT type=text class=\'editor-text\' readonly/>')
+      $input = $('<input type=text class=\'editor-text\' readonly/>')
         .appendTo(args.container)
         .on('keydown.nav', function(e) {
           if (e.keyCode === $.ui.keyCode.LEFT || e.keyCode === $.ui.keyCode.RIGHT) {
@@ -710,7 +711,7 @@ import JSONBigNumber from 'json-bignumber';
     var defaultValue;
 
     this.init = function() {
-      $select = $('<INPUT type=checkbox value=\'true\' class=\'editor-checkbox\' hideFocus disabled>');
+      $select = $('<input type=checkbox value=\'true\' class=\'editor-checkbox\' hideFocus disabled>');
       $select.appendTo(args.container);
       $select.trigger('focus');
     };
@@ -773,7 +774,7 @@ import JSONBigNumber from 'json-bignumber';
     var defaultValue;
 
     this.init = function() {
-      $input = $('<INPUT type=text class=\'editor-text\' />');
+      $input = $('<input type=text class=\'editor-text\' />');
 
       $input.on('keydown.nav', function(e) {
         if (e.keyCode === $.ui.keyCode.LEFT || e.keyCode === $.ui.keyCode.RIGHT) {
@@ -836,7 +837,7 @@ import JSONBigNumber from 'json-bignumber';
       if (!args.column.is_array && isNaN(value)) {
         return {
           valid: false,
-          msg: 'Please enter a valid number',
+          msg: gettext('Please enter a valid number'),
         };
       }
       if (args.column.validator) {
@@ -850,7 +851,7 @@ import JSONBigNumber from 'json-bignumber';
         if (!is_valid_array(value)) {
           return {
             valid: false,
-            msg: 'Array must start with \'{\' and end with \'}\'',
+            msg: gettext('Arrays must start with "{" and end with "}"'),
           };
         }
 
@@ -867,7 +868,7 @@ import JSONBigNumber from 'json-bignumber';
           if (isNaN(arr[k])) {
             return {
               valid: false,
-              msg: 'Please enter a valid numbers',
+              msg: gettext('Please enter a valid number'),
             };
           }
         }
