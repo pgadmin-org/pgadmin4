@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-04-01 15:13+0530\n"
-"PO-Revision-Date: 2019-03-04 23:59+0900\n"
+"PO-Revision-Date: 2019-04-01 23:38+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 #: pgadmin/__init__.py:500 pgadmin/__init__.py:553
 #, python-format
 msgid "Auto-detected %s installation with the data directory at %s"
-msgstr "自動検知されたインストール場所： %s (データディレクトリ： %s)"
+msgstr "自動検知されたインストール場所： %s （データディレクトリ： %s）"
 
 #: pgadmin/about/__init__.py:38
 #, python-format
@@ -225,7 +225,7 @@ msgstr "単一の子ノードしかないツリー表示を展開した時、そ
 
 #: pgadmin/browser/register_browser_preferences.py:63
 msgid "Count rows if estimated less than"
-msgstr "推定行数がこの値未満の時、実際の行数を計算する"
+msgstr "推定行数がこの値未満の時、実際の行数を算出する"
 
 #: pgadmin/browser/register_browser_preferences.py:64
 #: pgadmin/browser/register_browser_preferences.py:70
@@ -3205,25 +3205,25 @@ msgstr "信用"
 #: pgadmin/static/js/generated/app.bundle.js:2172
 #: pgadmin/static/js/generated/sqleditor.js:60134
 msgid "Handler function"
-msgstr ""
+msgstr "ハンドラ関数"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:176
 #: pgadmin/static/js/generated/app.bundle.js:2210
 #: pgadmin/static/js/generated/sqleditor.js:60172
 msgid "Inline function"
-msgstr ""
+msgstr "インライン関数"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:201
 #: pgadmin/static/js/generated/app.bundle.js:2248
 #: pgadmin/static/js/generated/sqleditor.js:60210
 msgid "Validator function"
-msgstr ""
+msgstr "検証関数"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:261
 #: pgadmin/static/js/generated/app.bundle.js:2332
 #: pgadmin/static/js/generated/sqleditor.js:60294
 msgid "Handler function cannot be empty."
-msgstr ""
+msgstr "ハンドラ関数は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:67
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:324
@@ -3548,7 +3548,7 @@ msgid ""
 "It may have been removed by another user or moved to another schema.\n"
 msgstr ""
 "\n"
-"データベースのドメインが見つかりませんでした。他のユーザによって削除されたか、他のスキーマに移動された可能性があります\n"
+"データベースのドメインが見つかりませんでした。他のユーザによって削除されたか、他のスキーマへ移動された可能性があります\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:622
 msgid "The specified domain could not be found.\n"
@@ -3629,7 +3629,7 @@ msgstr "検査"
 #: pgadmin/static/js/generated/sqleditor.js:61978
 #: pgadmin/static/js/generated/sqleditor.js:68606
 msgid "No inherit?"
-msgstr ""
+msgstr "継承しない"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:102
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:71
@@ -3938,7 +3938,7 @@ msgstr "全文検索設定ノードがデータベースノード内に見つか
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:433
 msgid "Provide at least copy config or parser."
-msgstr "コピー設定かパーサを選択してください"
+msgstr "コピーする設定かパーサを選択してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:521
 msgid "Could not find the FTS Configuration node to update."
@@ -4034,7 +4034,7 @@ msgstr "パーサ"
 #: pgadmin/static/js/generated/app.bundle.js:4917
 #: pgadmin/static/js/generated/sqleditor.js:62879
 msgid "Copy config"
-msgstr ""
+msgstr "コピーする設定"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:565
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:178
@@ -4401,7 +4401,7 @@ msgstr "モード"
 #: pgadmin/static/js/generated/app.bundle.js:5836
 #: pgadmin/static/js/generated/sqleditor.js:63798
 msgid "Argument name"
-msgstr ""
+msgstr "引数名"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:126
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:132
@@ -5206,7 +5206,7 @@ msgstr "ラベル"
 #: pgadmin/static/js/generated/sqleditor.js:66650
 #: pgadmin/static/js/generated/sqleditor.js:66699
 msgid "TOAST table"
-msgstr ""
+msgstr "TOAST テーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:352
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:357
@@ -5266,7 +5266,7 @@ msgstr "デフォルトのデータ型権限"
 #: pgadmin/static/js/generated/app.bundle.js:8967
 #: pgadmin/static/js/generated/sqleditor.js:66929
 msgid "Default privileges"
-msgstr ""
+msgstr "デフォルトの権限"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:443
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:49
@@ -5491,7 +5491,7 @@ msgstr "トリガが無効化されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1535
 msgid "Table rows counted"
-msgstr "テーブル行数がカウントされました"
+msgstr "テーブル行数が算出されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1178
 msgid "Table statistics have been reset"
@@ -5625,19 +5625,19 @@ msgstr "継承元"
 #: pgadmin/static/js/generated/sqleditor.js:68079
 #: pgadmin/static/js/generated/sqleditor.js:68088
 msgid "Identity"
-msgstr ""
+msgstr "アイデンティティ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:498
 #: pgadmin/static/js/generated/app.bundle.js:10068
 #: pgadmin/static/js/generated/sqleditor.js:68030
 msgid "ALWAYS"
-msgstr ""
+msgstr "ALWAYS"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:499
 #: pgadmin/static/js/generated/app.bundle.js:10071
 #: pgadmin/static/js/generated/sqleditor.js:68033
 msgid "BY DEFAULT"
-msgstr ""
+msgstr "BY DEFAULT"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:538
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:176
@@ -6567,7 +6567,7 @@ msgstr "テーブルサイズ"
 #: pgadmin/static/js/generated/sqleditor.js:75334
 #: pgadmin/static/js/generated/sqleditor.js:75348
 msgid "TOAST table size"
-msgstr ""
+msgstr "TOAST テーブルサイズ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:46
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:34
@@ -6726,7 +6726,7 @@ msgstr "パーティション %s を取り外しますか？"
 #: pgadmin/static/js/generated/sqleditor.js:73526
 #: pgadmin/static/js/generated/sqleditor.js:75715
 msgid "Partitioned table?"
-msgstr ""
+msgstr "パーティションテーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:415
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:843
@@ -6894,7 +6894,7 @@ msgstr "行（見積もり）"
 #: pgadmin/static/js/generated/sqleditor.js:73949
 #: pgadmin/static/js/generated/sqleditor.js:76225
 msgid "Rows (counted)"
-msgstr "行（カウント）"
+msgstr "行（算出）"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:741
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:813
@@ -7204,7 +7204,7 @@ msgstr "イベント"
 #: pgadmin/static/js/generated/app.bundle.js:16708
 #: pgadmin/static/js/generated/sqleditor.js:74670
 msgid "Do instead?"
-msgstr ""
+msgstr "代わりに実行"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:182
 #: pgadmin/static/js/generated/app.bundle.js:16713
@@ -7376,7 +7376,7 @@ msgstr "テーブル..."
 #: pgadmin/static/js/generated/app.bundle.js:17507
 #: pgadmin/static/js/generated/sqleditor.js:75469
 msgid "Count Rows"
-msgstr "行を数える"
+msgstr "行数を算出する"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:385
 #: pgadmin/static/js/generated/app.bundle.js:17783
@@ -7412,7 +7412,7 @@ msgstr "継承元を取得..."
 #: pgadmin/static/js/generated/sqleditor.js:76252
 #: pgadmin/static/js/generated/sqleditor.js:76265
 msgid "advanced"
-msgstr ""
+msgstr "詳細"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:738
 #: pgadmin/static/js/generated/app.bundle.js:18188
@@ -8127,7 +8127,7 @@ msgstr "複合型"
 #: pgadmin/static/js/generated/app.bundle.js:20145
 #: pgadmin/static/js/generated/sqleditor.js:78107
 msgid "Enumeration type"
-msgstr ""
+msgstr "列挙型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:407
 #: pgadmin/static/js/generated/app.bundle.js:20181
@@ -8515,7 +8515,7 @@ msgstr "システムビュー"
 #: pgadmin/static/js/generated/app.bundle.js:21201
 #: pgadmin/static/js/generated/sqleditor.js:79163
 msgid "With data?"
-msgstr ""
+msgstr "データあり"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:233
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:191
@@ -8557,7 +8557,7 @@ msgstr "ビュー..."
 #: pgadmin/static/js/generated/app.bundle.js:21544
 #: pgadmin/static/js/generated/sqleditor.js:79506
 msgid "Security barrier?"
-msgstr ""
+msgstr "セキュリティバリア"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:139
 #: pgadmin/static/js/generated/app.bundle.js:21551
@@ -9985,7 +9985,7 @@ msgstr "リソースグループ..."
 #: pgadmin/static/js/generated/app.bundle.js:23840
 #: pgadmin/static/js/generated/sqleditor.js:80490
 msgid "CPU rate limit (percentage)"
-msgstr ""
+msgstr "CPU 使用率制限 (パーセント)"
 
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:96
 #: pgadmin/static/js/generated/app.bundle.js:23847
@@ -9997,7 +9997,7 @@ msgstr "ダーティレート制限 (KB)"
 #: pgadmin/static/js/generated/app.bundle.js:23873
 #: pgadmin/static/js/generated/sqleditor.js:80523
 msgid "CPU rate limit cannot be empty."
-msgstr "CPU使用率制限は必須です"
+msgstr "CPU 使用率制限は必須です"
 
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:130
 #: pgadmin/static/js/generated/app.bundle.js:23883
@@ -10358,7 +10358,7 @@ msgstr "プロバイダ"
 #: pgadmin/static/js/generated/sqleditor.js:80594
 #: pgadmin/static/js/generated/sqleditor.js:81934
 msgid "Security label"
-msgstr ""
+msgstr "セキュリティラベル"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:52
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:62
@@ -10436,7 +10436,7 @@ msgstr "ログイン属性"
 #: pgadmin/static/js/generated/app.bundle.js:24347
 #: pgadmin/static/js/generated/sqleditor.js:80997
 msgid "Superuser?"
-msgstr ""
+msgstr "スーパーユーザ属性"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:439
 #: pgadmin/static/js/generated/app.bundle.js:24363
@@ -11189,7 +11189,7 @@ msgstr "オブジェクト所有者"
 #: pgadmin/static/js/generated/app.bundle.js:27481
 #: pgadmin/static/js/generated/sqleditor.js:84131
 msgid "Move objects to another tablespace"
-msgstr "別のテーブル空間にオブジェクトを移動"
+msgstr "別のテーブル空間へオブジェクトを移動"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:194
 #: pgadmin/browser/templates/browser/index.html:159
@@ -11221,7 +11221,7 @@ msgstr "オブジェクトを移動..."
 msgid ""
 "Are you sure you wish to move the objects from %(old_tablespace)s to "
 "%(new_tablespace)s?"
-msgstr "%(old_tablespace)s から %(new_tablespace)s にオブジェクトを移動しますか？"
+msgstr "%(old_tablespace)s から %(new_tablespace)s へオブジェクトを移動しますか？"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:347
 #: pgadmin/static/js/generated/app.bundle.js:27659
@@ -12278,7 +12278,7 @@ msgstr "状態"
 #: pgadmin/static/js/generated/sqleditor.js:92679
 #: pgadmin/static/js/generated/sqleditor.js:92922
 msgid "Wait event"
-msgstr ""
+msgstr "待機イベント"
 
 #: pgadmin/dashboard/static/js/dashboard.js:957
 #: pgadmin/dashboard/static/js/dashboard.js:1227
@@ -12893,7 +12893,7 @@ msgstr "パーミッションが拒否されました"
 
 #: pgadmin/misc/file_manager/__init__.py:706
 msgid "Access denied ({0})"
-msgstr "アクセスが拒否されました（{0})"
+msgstr "アクセスが拒否されました（{0}）"
 
 #: pgadmin/misc/file_manager/__init__.py:766
 #: pgadmin/misc/file_manager/__init__.py:851
@@ -13110,7 +13110,7 @@ msgstr "内部サーバエラー"
 #: pgadmin/static/js/generated/pgadmin_commons.js:9597
 #: pgadmin/static/js/generated/sqleditor.js:98256
 msgid "No updates."
-msgstr ""
+msgstr "更新なし"
 
 #: pgadmin/static/js/backform.pgadmin.js:1774
 #: pgadmin/static/js/generated/app.bundle.js:41830
@@ -13363,7 +13363,7 @@ msgstr "実行時"
 #: pgadmin/static/js/generated/app.bundle.js:37028
 #: pgadmin/static/js/generated/sqleditor.js:93413
 msgid "More details..."
-msgstr ""
+msgstr "さらに詳しく見る..."
 
 #: pgadmin/static/js/generated/app.bundle.js:47809
 #: pgadmin/static/js/generated/app.bundle.js:47870
@@ -14262,7 +14262,7 @@ msgstr "行を取得中です。お待ちください..."
 
 #: pgadmin/static/js/generated/app.bundle.js:53437
 msgid "Please select the objects to grant privileges to from the list below."
-msgstr ""
+msgstr "以下の一覧から、権限を付与するオブジェクトを選択してください"
 
 #: pgadmin/static/js/generated/app.bundle.js:53503
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:776
@@ -14855,7 +14855,7 @@ msgstr "ダイアログを閉じますか？保存されていない変更は破
 
 #: pgadmin/static/js/generated/file_utils.js:11889
 msgid "Show hidden files and folders"
-msgstr ""
+msgstr "隠しファイルとフォルダを表示"
 
 #: pgadmin/static/js/generated/sqleditor.js:102471
 #: pgadmin/static/js/selection/clipboard.js:81
@@ -14962,7 +14962,7 @@ msgstr "履歴を削除しますか？"
 msgid ""
 "This will remove all of your query history from this and other sessions "
 "for this database."
-msgstr ""
+msgstr "このデータベースを使用する、すべてのセッションのクエリ履歴が削除されます"
 
 #: pgadmin/static/js/generated/sqleditor.js:112073
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2009
@@ -15278,7 +15278,7 @@ msgstr "」を受信しました。送信元サーバのプロセス ID："
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:156
 msgid "Copy to Query Editor"
-msgstr ""
+msgstr "クエリエディタへコピー"
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:89
 msgid "Error resetting the tree saved state.\""
@@ -15770,7 +15770,7 @@ msgstr "有効なファイルを指定してください"
 
 #: pgadmin/tools/maintenance/__init__.py:85
 msgid "Maintenance ({0})"
-msgstr "メンテナンス ({0})"
+msgstr "メンテナンス（{0}）"
 
 #: pgadmin/tools/maintenance/__init__.py:90
 msgid "Analyze"
@@ -15786,7 +15786,7 @@ msgstr "CLUSTER"
 
 #: pgadmin/tools/maintenance/__init__.py:105
 msgid "VACUUM ({0})"
-msgstr "VACUUM ({0})"
+msgstr "VACUUM （{0}）"
 
 #: pgadmin/tools/maintenance/__init__.py:113
 #: pgadmin/tools/maintenance/__init__.py:120
@@ -15839,7 +15839,7 @@ msgstr "ファイルが見つかりませんでした"
 #: pgadmin/tools/restore/static/js/restore_dialog.js:70
 #, python-format
 msgid "Restore (%s: %s)"
-msgstr "リストア (%s: %s)"
+msgstr "リストア（%s： %s）"
 
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:149
 msgid "Restore job created."
@@ -16409,7 +16409,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "要求されたパラメータ（%s）が見つかりませんでした"
 
 #~ msgid "provide atleast copy config or parser"
-#~ msgstr "コピー設定かパーサを選択してください"
+#~ msgstr "コピーする設定かパーサを選択してください"
 
 #~ msgid "Token can not be empty!"
 #~ msgstr "トークンは必須です"
@@ -16610,7 +16610,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "-- 不完全な定義です"
 
 #~ msgid "Move objects to another tablespace"
-#~ msgstr "オブジェクトを他のテーブル空間に移動"
+#~ msgstr "オブジェクトを他のテーブル空間へ移動"
 
 #~ msgid "Are you sure you wish to move objects "
 #~ msgstr "オブジェクトを移動しますか？"
@@ -16805,7 +16805,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "スケールは %(value)s 以下を指定してください"
 
 #~ msgid "Move objects to another tablespace "
-#~ msgstr "オブジェクトを他のテーブルスペースに移動"
+#~ msgstr "オブジェクトを他のテーブル空間へ移動"
 
 #~ msgid "Session terminateed successfully."
 #~ msgstr "セッションの切断に成功しました"
@@ -17086,7 +17086,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "設定から EDB Advanced Server のバイナリパスを指定してください"
 
 #~ msgid "Backup (%s: %s)"
-#~ msgstr "バックアップ (%s: %s)"
+#~ msgstr "バックアップ（%s： %s）"
 
 #~ msgid "Restore Error"
 #~ msgstr "リストアエラー"
@@ -17206,7 +17206,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "詳細を見る"
 
 #~ msgid "Show hidden files and folders"
-#~ msgstr "隠しファイル、フォルダを表示"
+#~ msgstr "隠しファイルとフォルダを表示"
 
 #~ msgid "Please select any database object type."
 #~ msgstr "データベースオブジェクトのタイプを選択してください"
@@ -17326,7 +17326,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "継承しない"
 
 #~ msgid "Copy Config"
-#~ msgstr "コピー設定"
+#~ msgstr "コピーする設定"
 
 #~ msgid "Argument Name"
 #~ msgstr "引数名"
@@ -17383,7 +17383,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "セキュリティバリア"
 
 #~ msgid "CPU rate limit (%%)"
-#~ msgstr "CPU使用率制限 (パーセント)"
+#~ msgstr "CPU 使用率制限 (パーセント)"
 
 #~ msgid "Security Label"
 #~ msgstr "セキュリティラベル"
