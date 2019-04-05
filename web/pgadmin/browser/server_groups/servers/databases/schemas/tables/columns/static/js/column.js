@@ -240,7 +240,6 @@ define('pgadmin.node.column', [
             return false;
           },
           editable: function(m) {
-            var name = m.get('name');
             // If HeaderCell then allow True
             if(m instanceof Backbone.Collection) {
               return true;

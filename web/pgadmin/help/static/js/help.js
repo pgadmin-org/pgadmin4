@@ -24,4 +24,4 @@ export function getHelpUrl(base_path, file, version) {
   }
 
   return url + file;
-};
+}

@@ -38,7 +38,12 @@ define([], function() {
       var o, n, i, l, d, c = /^top|bottom/,
         f = ['paddingTop', 'paddingBottom', 'borderTop', 'borderBottom'],
         u = 4;
-      if (o = m ? m(t)[e] : (n = t.style['pixel' + e.charAt(0).toUpperCase() + e.slice(1)]) ? n + 'px' : 'fontSize' === e ? r(t, '1em', 'left', 1) + 'px' : t.currentStyle[e], i = (o.match(s) || [])[2], '%' === i && p)
+
+      n = t.style['pixel' + e.charAt(0).toUpperCase() + e.slice(1)];
+      o = m ? m(t)[e] : (n) ? n + 'px' : 'fontSize' === e ? r(t, '1em', 'left', 1) + 'px' : t.currentStyle[e];
+      i = (o.match(s) || [])[2];
+
+      if ('%' === i && p)
         if (c.test(e)) {
           for (l = (d = t.parentNode || t).offsetHeight; u--;) l -= parseFloat(a(d, f[u]));
           o = parseFloat(o) / 100 * l + 'px';

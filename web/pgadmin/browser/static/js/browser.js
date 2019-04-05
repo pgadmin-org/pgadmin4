@@ -1070,7 +1070,6 @@ define('pgadmin.browser', [
                     var loaded = this.t.wasLoad(parent),
                       onLoad = function() {
                         self.i = parent;
-                        self.d = self.d;
                         self.pathOfTreeItems.push({coll: false, item: parent, d: self.d});
                         self.success();
                         return;

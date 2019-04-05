@@ -14,6 +14,9 @@ module.exports = {
     'amd': true,
     'jasmine': true,
   },
+  'extends': [
+    'eslint:recommended',
+  ],
   'parserOptions': {
     'ecmaVersion': 2018,
     'sourceType': 'module',
@@ -43,5 +46,7 @@ module.exports = {
       'always-multiline'
     ],
     'no-console': ["error", { allow: ["warn", "error"] }],
+    // We need to exclude below for RegEx case
+    "no-useless-escape": 0,
   },
 };
