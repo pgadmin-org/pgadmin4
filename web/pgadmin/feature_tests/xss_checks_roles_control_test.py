@@ -21,6 +21,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     ]
 
     role = ""
+
     def before(self):
         with test_utils.Database(self.server) as (connection, _):
             if connection.server_version < 90100:
