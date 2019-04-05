@@ -182,7 +182,7 @@ class PgadminPage:
             ActionChains(self.driver).double_click(item).perform()
 
     def toggle_open_tables_node(self):
-        """The function will be used for opening Trees node only"""
+        """The function will be used for opening Tables node only"""
 
         # get the element which contains 'aria-expanded' info
         tables_expansion_ele = self.find_by_xpath("//div[div[div[div[div[div"
@@ -479,7 +479,7 @@ class PgadminPage:
         return element_selector(self.driver)
 
     def _wait_for(self, waiting_for_message, condition_met_function,
-                  timeout=None):
+                  timeout=3):
         if timeout is None:
             timeout = self.timeout
         return WebDriverWait(self.driver, timeout, 0.01).until(

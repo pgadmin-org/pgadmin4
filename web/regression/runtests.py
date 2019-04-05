@@ -219,6 +219,9 @@ def get_test_modules(arguments):
             options.add_argument("--window-size=1280,1024")
             driver = webdriver.Chrome(chrome_options=options)
 
+        # maximize browser window
+        driver.maximize_window()
+
         app_starter = AppStarter(driver, config)
         app_starter.start_app()
 

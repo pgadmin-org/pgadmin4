@@ -6,6 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+import random
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
@@ -19,35 +20,39 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
          dict())
     ]
 
+    role = ""
     def before(self):
         with test_utils.Database(self.server) as (connection, _):
             if connection.server_version < 90100:
                 self.skipTest(
                     "Membership is not present in Postgres below PG v9.1")
 
+        # create role
+        self.role = "test_role" + str(random.randint(10000, 65535))
+
         # Some test function is needed for debugger
         test_utils.create_role(self.server, "postgres",
-                               "test_role")
+                               self.role)
         test_utils.create_role(self.server, "postgres",
                                "<h1>test</h1>")
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
-        self._role_node_expandable()
+        self._role_node_expandable(self.role)
         self._check_role_membership_control()
 
     def after(self):
         self.page.remove_server(self.server)
         test_utils.drop_role(self.server, "postgres",
-                             "test_role")
+                             self.role)
         test_utils.drop_role(self.server, "postgres",
                              "<h1>test</h1>")
 
-    def _role_node_expandable(self):
+    def _role_node_expandable(self, role):
         self.page.toggle_open_server(self.server['name'])
         self.page.toggle_open_tree_item('Login/Group Roles')
-        self.page.select_tree_item("test_role")
+        self.page.select_tree_item(role)
 
     def _check_role_membership_control(self):
         self.page.driver.find_element_by_link_text("Object").click()

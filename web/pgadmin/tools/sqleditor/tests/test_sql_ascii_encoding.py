@@ -8,6 +8,8 @@
 ##########################################################################
 
 import sys
+import random
+
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils
 from pgadmin.utils import server_utils
@@ -56,7 +58,8 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self.encode_db_name = 'test_encoding_' + self.db_encoding
+        self.encode_db_name = 'test_encoding_' + self.db_encoding + \
+                              str(random.randint(1000, 65535))
         self.encode_sid = self.server_information['server_id']
 
         server_con = server_utils.connect_server(self, self.encode_sid)
