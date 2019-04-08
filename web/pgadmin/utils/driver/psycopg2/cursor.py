@@ -18,6 +18,8 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+import psycopg2
+
 from psycopg2.extensions import cursor as _cursor, encodings
 from .encoding import configureDriverEncodings
 
@@ -91,7 +93,25 @@ class _WrapperColumn(object):
         Generates an OrderedDict from the fields of the original objects
         with avoiding the duplicate name.
         """
-        ores = OrderedDict(self.orig_col._asdict())
+
+        # In psycopg2 2.8, the description of one result column,
+        # exposed as items of the cursor.description sequence.
+        # Before psycopg2 2.8 the description attribute was a sequence
+        # of simple tuples or namedtuples.
+        if psycopg2.__version__.find('2.8') != -1:
+            ores = OrderedDict()
+            ores['name'] = self.orig_col.name
+            ores['type_code'] = self.orig_col.type_code
+            ores['display_size'] = self.orig_col.display_size
+            ores['internal_size'] = self.orig_col.internal_size
+            ores['precision'] = self.orig_col.precision
+            ores['scale'] = self.orig_col.scale
+            ores['null_ok'] = self.orig_col.null_ok
+            ores['table_oid'] = self.orig_col.table_oid
+            ores['table_column'] = self.orig_col.table_column
+        else:
+            ores = OrderedDict(self.orig_col._asdict())
+
         name = ores['name']
         if self.dummy_name:
             ores['name'] = self.dummy_name

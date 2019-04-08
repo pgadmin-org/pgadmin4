@@ -21,7 +21,7 @@ sqlparse==0.2.4
 WTForms==2.2.1
 Flask-Paranoid==0.2.0
 psutil==5.5.1
-psycopg2>=2.7.7
+psycopg2>=2.8
 python-dateutil>=2.8.0
 htmlmin==0.1.12
 Flask-HTMLmin==1.5.0
