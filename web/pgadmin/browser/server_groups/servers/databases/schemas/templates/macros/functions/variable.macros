@@ -4,7 +4,10 @@
 {% macro SET(conn, object_type, object_name, options, schema, func_args) -%}
 
 {% for opt in options %}
-ALTER {{object_type}} {{ conn|qtIdent(schema, object_name) }}({{func_args}})
+ALTER {{object_type}} {{ conn|qtIdent(schema, object_name) }}{% if func_args is defined %}({{func_args}})
+{% else %}
+
+{% endif %}
     SET {{ conn|qtIdent(opt.name) }}={{ opt.value }};
 
 {% endfor %}
@@ -12,7 +15,10 @@ ALTER {{object_type}} {{ conn|qtIdent(schema, object_name) }}({{func_args}})
 {% macro UNSET(conn, object_type, object_name, options, schema, func_args) -%}
 
 {% for opt in options %}
-ALTER {{object_type}} {{ conn|qtIdent(schema, object_name) }}({{func_args}})
+ALTER {{object_type}} {{ conn|qtIdent(schema, object_name) }}{% if func_args is defined %}({{func_args}})
+{% else %}
+
+{% endif %}
     RESET {{ conn|qtIdent(opt.name) }};
 
 {% endfor %}

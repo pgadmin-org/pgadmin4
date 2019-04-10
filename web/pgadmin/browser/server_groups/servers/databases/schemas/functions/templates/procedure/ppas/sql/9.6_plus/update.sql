@@ -63,11 +63,11 @@ ALTER PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if o_data.proarg
 {% if data.variables %}
 {% if 'deleted' in data.variables and data.variables.deleted|length > 0 %}
 
-{{ VARIABLE.UNSET(conn, 'PROCEDURE', name, data.variables.deleted, o_data.pronamespace, o_data.proargtypenames) }}
+{{ VARIABLE.UNSET(conn, 'PROCEDURE', name, data.variables.deleted, o_data.pronamespace) }}
 {% endif -%}
 {% if 'merged_variables' in data and data.merged_variables|length > 0 %}
 
-{{ VARIABLE.SET(conn, 'PROCEDURE', name, data.merged_variables, o_data.pronamespace, o_data.proargtypenames) }}
+{{ VARIABLE.SET(conn, 'PROCEDURE', name, data.merged_variables, o_data.pronamespace) }}
 {% endif -%}
 {% endif -%}
 {% endif -%}
