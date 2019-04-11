@@ -242,6 +242,7 @@ define('pgadmin.node.table_partition_utils', [
       oid: undefined,
       is_attach: false,
       partition_name: undefined,
+      is_default: undefined,
       values_from: undefined,
       values_to: undefined,
       values_in: undefined,
@@ -252,8 +253,8 @@ define('pgadmin.node.table_partition_utils', [
     schema: [{
       id: 'oid', label: gettext('OID'), type: 'text',
     },{
-      id: 'is_attach', label:gettext('Operation'), cell: 'switch',
-      type: 'switch', options: { 'onText': gettext('Attach'), 'offText': gettext('Create')},
+      id: 'is_attach', label:gettext('Operation'), cell: 'switch', type: 'switch',
+      options: {'onText': gettext('Attach'), 'offText': gettext('Create'), 'width': 65},
       cellHeaderClasses: 'width_percent_5',
       editable: function(m) {
         if (m instanceof Backbone.Model && m.isNew() && !m.top.isNew())
@@ -269,38 +270,52 @@ define('pgadmin.node.table_partition_utils', [
         return false;
       }, cellFunction: getPartitionCell,
     },{
+      id: 'is_default', label: gettext('Default'), type: 'switch', cell:'switch',
+      cellHeaderClasses: 'width_percent_5',  min_version: 110000,
+      options: {'onText': gettext('Yes'), 'offText': gettext('No')},
+      editable: function(m) {
+        if(m.handler && m.handler.top &&
+          m.handler.top.attributes &&
+          (m.handler.top.attributes.partition_type === 'range' ||
+          m.handler.top.attributes.partition_type === 'list') &&
+          m instanceof Backbone.Model && m.isNew() &&
+          m.handler.top.node_info.server.version >= 110000)
+          return true;
+        return false;
+      },
+    },{
       id: 'values_from', label: gettext('From'), type:'text',
-      cell:Backgrid.Extension.StringDepCell,
+      cell:Backgrid.Extension.StringDepCell, deps: ['is_default'],
       cellHeaderClasses: 'width_percent_15',
       editable: function(m) {
         if(m.handler && m.handler.top &&
           m.handler.top.attributes &&
           m.handler.top.attributes.partition_type === 'range' &&
-          m instanceof Backbone.Model && m.isNew())
+          m instanceof Backbone.Model && m.isNew() && m.get('is_default') !== true)
           return true;
         return false;
       },
     },{
       id: 'values_to', label: gettext('To'), type:'text',
-      cell:Backgrid.Extension.StringDepCell,
+      cell:Backgrid.Extension.StringDepCell, deps: ['is_default'],
       cellHeaderClasses: 'width_percent_15',
       editable: function(m) {
         if(m.handler && m.handler.top &&
           m.handler.top.attributes &&
           m.handler.top.attributes.partition_type === 'range' &&
-          m instanceof Backbone.Model && m.isNew())
+          m instanceof Backbone.Model && m.isNew() && m.get('is_default') !== true)
           return true;
         return false;
       },
     },{
       id: 'values_in', label: gettext('In'), type:'text',
-      cell:Backgrid.Extension.StringDepCell,
+      cell:Backgrid.Extension.StringDepCell, deps: ['is_default'],
       cellHeaderClasses: 'width_percent_15',
       editable: function(m) {
         if(m.handler && m.handler.top &&
           m.handler.top.attributes &&
           m.handler.top.attributes.partition_type === 'list' &&
-          m instanceof Backbone.Model && m.isNew())
+          m instanceof Backbone.Model && m.isNew() && m.get('is_default') !== true)
           return true;
         return false;
       },
@@ -331,6 +346,7 @@ define('pgadmin.node.table_partition_utils', [
     }],
     validate: function() {
       var partition_name = this.get('partition_name'),
+        is_default = this.get('is_default'),
         values_from = this.get('values_from'),
         values_to = this.get('values_to'),
         values_in = this.get('values_in'),
@@ -350,20 +366,20 @@ define('pgadmin.node.table_partition_utils', [
       }
 
       if (this.top.get('partition_type') === 'range') {
-        if (_.isUndefined(values_from) || _.isNull(values_from) ||
-          String(values_from).replace(/^\s+|\s+$/g, '') === '') {
+        if (is_default !== true && (_.isUndefined(values_from) ||
+         _.isNull(values_from) || String(values_from).replace(/^\s+|\s+$/g, '') === '')) {
           msg = gettext('For range partition From field cannot be empty.');
           this.errorModel.set('values_from', msg);
           return msg;
-        } else if (_.isUndefined(values_to) || _.isNull(values_to) ||
-          String(values_to).replace(/^\s+|\s+$/g, '') === '') {
+        } else if (is_default !== true && (_.isUndefined(values_to) || _.isNull(values_to) ||
+          String(values_to).replace(/^\s+|\s+$/g, '') === '')) {
           msg = gettext('For range partition To field cannot be empty.');
           this.errorModel.set('values_to', msg);
           return msg;
         }
       } else if (this.top.get('partition_type') === 'list') {
-        if (_.isUndefined(values_in) || _.isNull(values_in) ||
-          String(values_in).replace(/^\s+|\s+$/g, '') === '') {
+        if (is_default !== true && (_.isUndefined(values_in) || _.isNull(values_in) ||
+          String(values_in).replace(/^\s+|\s+$/g, '') === '')) {
           msg = gettext('For list partition In field cannot be empty.');
           this.errorModel.set('values_in', msg);
           return msg;

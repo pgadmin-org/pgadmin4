@@ -31,6 +31,14 @@ class TableAddTestCase(BaseTestGenerator):
               partition_type='range'
               )
          ),
+        ('Create Range partitioned table with 1 default and 2'
+         ' value based partition',
+         dict(url='/browser/table/obj/',
+              server_min_version=110000,
+              partition_type='range',
+              is_default=True
+              )
+         ),
         ('Create List partitioned table with 2 partitions',
          dict(url='/browser/table/obj/',
               server_min_version=100000,
@@ -215,6 +223,24 @@ class TableAddTestCase(BaseTestGenerator):
                       'is_attach': False,
                       'partition_name': 'emp_2011'
                       }]
+                if hasattr(self, 'is_default'):
+                    data['partitions'] = \
+                        [{'values_from': "'2010-01-01'",
+                          'values_to': "'2010-12-31'",
+                          'is_attach': False,
+                          'partition_name': 'emp_2010_def'
+                          },
+                         {'values_from': "'2011-01-01'",
+                          'values_to': "'2011-12-31'",
+                          'is_attach': False,
+                          'partition_name': 'emp_2011_def'
+                          },
+                         {'values_from': "",
+                          'values_to': "",
+                          'is_attach': False,
+                          'is_default': True,
+                          'partition_name': 'emp_2012_def'
+                          }]
                 data['partition_keys'] = \
                     [{'key_type': 'column', 'pt_column': 'DOJ'}]
             elif self.partition_type == 'list':

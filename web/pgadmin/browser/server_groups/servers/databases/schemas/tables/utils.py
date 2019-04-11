@@ -2184,16 +2184,23 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     partition_name = row['schema_name'] + '.' + row['name']
 
                 if data['partition_type'] == 'range':
-                    range_part = row['partition_value'].split(
-                        'FOR VALUES FROM (')[1].split(') TO')
-                    range_from = range_part[0]
-                    range_to = range_part[1][2:-1]
+                    if row['partition_value'] == 'DEFAULT':
+                        is_default = True
+                        range_from = None
+                        range_to = None
+                    else:
+                        range_part = row['partition_value'].split(
+                            'FOR VALUES FROM (')[1].split(') TO')
+                        range_from = range_part[0]
+                        range_to = range_part[1][2:-1]
+                        is_default = False
 
                     partitions.append({
                         'oid': row['oid'],
                         'partition_name': partition_name,
                         'values_from': range_from,
-                        'values_to': range_to
+                        'values_to': range_to,
+                        'is_default': is_default
                     })
                 elif data['partition_type'] == 'list':
                     range_part = \
@@ -2251,15 +2258,22 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 part_data['relispartition'] = True
                 part_data['name'] = row['partition_name']
 
-            if partitions['partition_type'] == 'range':
+            if 'is_default' in row and row['is_default'] and (
+                    partitions['partition_type'] == 'range' or
+                    partitions['partition_type'] == 'list'):
+                part_data['partition_value'] = 'DEFAULT'
+            elif partitions['partition_type'] == 'range':
                 range_from = row['values_from'].split(',')
                 range_to = row['values_to'].split(',')
 
-                from_str = ', '.join("{0}".format(item) for item in range_from)
-                to_str = ', '.join("{0}".format(item) for item in range_to)
+                from_str = ', '.join("{0}".format(item) for
+                                     item in range_from)
+                to_str = ', '.join("{0}".format(item) for
+                                   item in range_to)
 
-                part_data['partition_value'] = 'FOR VALUES FROM (' + from_str \
-                                               + ') TO (' + to_str + ')'
+                part_data['partition_value'] = 'FOR VALUES FROM (' +\
+                                               from_str + ') TO (' +\
+                                               to_str + ')'
 
             elif partitions['partition_type'] == 'list':
                 range_in = row['values_in'].split(',')

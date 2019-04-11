@@ -442,6 +442,7 @@ icon (+) to add each partition:
 * Move the *Operation* switch to *attach* to attach the partition, by default it
   is *create*.
 * Use the *Name* field to add the name of the partition.
+* If partition type is Range or List then *Default* field will be enabled.
 * If partition type is Range then *From* and *To* fields will be enabled.
 * If partition type is List then *In* field will be enabled.
 * If partition type is Hash then *Modulus* and *Remainder* fields will be
