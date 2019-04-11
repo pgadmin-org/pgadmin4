@@ -37,6 +37,11 @@ with open(req_file, 'r') as reqf:
 for index, req in enumerate(required):
     if ";" in req or req.startswith("#") or req == "":
         required.remove(req)
+        continue
+
+    # Ensure the Wheel will use psycopg2-binary, not the source distro
+    if 'psycopg2' in req:
+        required[index] = req.replace('psycopg2', 'psycopg2-binary')
 
 # Get the app version
 if sys.version_info[:2] >= (3, 3):

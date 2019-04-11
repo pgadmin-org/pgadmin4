@@ -10,6 +10,7 @@ release of pgAdmin4 4.5
 Features
 ********
 
+| `Feature #4165 <https://redmine.postgresql.org/issues/4165>`_ - Depend on psycopg2-binary in the Python wheel, rather than psycopg2.
 
 Bug fixes
 *********
