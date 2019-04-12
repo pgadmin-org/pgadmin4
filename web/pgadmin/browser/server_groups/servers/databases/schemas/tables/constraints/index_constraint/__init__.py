@@ -576,7 +576,12 @@ class IndexConstraintView(PGChildNodeView):
 
         for k, v in data.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('comment',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -828,7 +833,12 @@ class IndexConstraintView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('comment',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 

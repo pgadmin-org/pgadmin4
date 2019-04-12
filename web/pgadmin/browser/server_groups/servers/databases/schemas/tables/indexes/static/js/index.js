@@ -230,6 +230,7 @@ define('pgadmin.node.index', [
       hasSQL:  true,
       hasDepends: true,
       hasStatistics: true,
+      width: pgBrowser.stdW.md + 'px',
       statsPrettifyFields: [gettext('Size'), gettext('Index size')],
       Init: function() {
         /* Avoid mulitple registration of menus */
