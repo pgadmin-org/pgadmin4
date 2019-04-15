@@ -29,7 +29,7 @@ for src in "${DMG_SOURCES}"; do
 done
 
 echo "Creating image"
-${HDIUTIL} create -quiet -srcfolder "$DMG_DIR" -format UDZO -volname "${DMG_VOLUME_NAME}" -ov "${DMG_IMAGE}" || exit 1
+${HDIUTIL} create -quiet -srcfolder "$DMG_DIR" -fs HFS+ -format UDZO -volname "${DMG_VOLUME_NAME}" -ov "${DMG_IMAGE}" || exit 1
 rm -rf "${DMG_DIR}" || exit 1
 
 echo "Attaching License to image"
