@@ -21,12 +21,14 @@ def create_app_data_directory(config):
     """
     # Create the directory containing the configuration file (if not present).
     _create_directory_if_not_exists(os.path.dirname(config.SQLITE_PATH))
+    os.chmod(os.path.dirname(config.SQLITE_PATH), 0o700)
 
     # Create the directory containing the log file (if not present).
     _create_directory_if_not_exists(os.path.dirname(config.LOG_FILE))
 
     # Create the session directory (if not present).
     _create_directory_if_not_exists(config.SESSION_DB_PATH)
+    os.chmod(os.path.dirname(config.SESSION_DB_PATH), 0o700)
 
     # Create the storage directory (if not present).
     _create_directory_if_not_exists(config.STORAGE_DIR)
