@@ -368,12 +368,24 @@
         msgDiv = loadingDiv.find('.sql-editor-busy-text');
 
     // Register unload event on window close.
-    window.onbeforeunload = function(ev) {
-      $.ajax({
-        url: "{{ url_for('datagrid.index') }}" + "close/" + {{ uniqueId }},
-        method: 'GET'
+    /* If opened in new tab, close the connection only on tab/window close and
+     * not on refresh attempt because the user may cancel the reload
+     */
+    if(window.opener) {
+      $(window).on('unload', function(ev) {
+        $.ajax({
+          method: 'DELETE',
+          url: "{{ url_for('datagrid.index') }}" + "close/" + {{ uniqueId }}
+        });
       });
-    };
+    } else {
+      $(window).on('beforeunload', function(ev) {
+        $.ajax({
+          method: 'DELETE',
+          url: "{{ url_for('datagrid.index') }}" + "close/" + {{ uniqueId }}
+        });
+      });
+    }
 
     // Get the controller object from pgAdmin.SqlEditor
     var sqlEditorController = pgAdmin.SqlEditor.create(editorPanel);

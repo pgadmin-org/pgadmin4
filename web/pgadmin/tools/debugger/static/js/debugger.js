@@ -196,14 +196,14 @@ define([
 
       let self = this;
       let cacheIntervalId = setInterval(function() {
-        try {
-          self.preferences = window.top.pgAdmin.Browser;
+        if(pgBrowser.preference_version() > 0) {
+          self.preferences = pgBrowser.get_preferences_for_module('debugger');
           clearInterval(cacheIntervalId);
         }
-        catch(err) {
-          clearInterval(cacheIntervalId);
-          throw err;
-        }
+      },0);
+
+      pgBrowser.onPreferencesChange('debugger', function() {
+        self.preferences = pgBrowser.get_preferences_for_module('debugger');
       });
     },
     // It will check weather the function is actually debuggable or not with pre-required condition.

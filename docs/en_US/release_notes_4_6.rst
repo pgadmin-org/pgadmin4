@@ -19,6 +19,7 @@ Bug fixes
 | `Bug #3582 <https://redmine.postgresql.org/issues/3582>`_ - Ensure that JSON strings as comments should be added properly for all the objects.
 | `Bug #3605 <https://redmine.postgresql.org/issues/3605>`_ - Fix an issue where Deleting N number of rows makes first N number of rows disable.
 | `Bug #3938 <https://redmine.postgresql.org/issues/3938>`_ - Added support for Default Partition.
+| `Bug #4101 <https://redmine.postgresql.org/issues/4101>`_ - Ensure that confirmation dialog should be popped up before reload of query tool or debugger if it is opened in a new browser tab.
 | `Bug #4104 <https://redmine.postgresql.org/issues/4104>`_ - Ensure that record should be add/edited for root partition table with primary keys.
 | `Bug #4121 <https://redmine.postgresql.org/issues/4121>`_ - Fixed alignment issue of columns in definition section of Index node.
 | `Bug #4134 <https://redmine.postgresql.org/issues/4134>`_ - Fixed 'Location cannot be empty' error when open Tablespace properties.

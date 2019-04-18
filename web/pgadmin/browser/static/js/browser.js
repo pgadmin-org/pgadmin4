@@ -1945,12 +1945,17 @@ define('pgadmin.browser', [
   }
 
   $(window).on('beforeunload', function(e) {
+    /* Can open you in new tab */
+    let openerBrowser = window.opener ?
+      window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+
     let tree_save_interval = pgBrowser.get_preference('browser', 'browser_tree_state_save_interval'),
-      confirm_on_refresh_close = pgBrowser.get_preference('browser', 'confirm_on_refresh_close');
+      confirm_on_refresh_close = openerBrowser.get_preference('browser', 'confirm_on_refresh_close');
+
     if (!_.isUndefined(tree_save_interval) && tree_save_interval.value !== -1)
       pgAdmin.Browser.browserTreeState.save_state();
 
-    if(confirm_on_refresh_close.value) {
+    if(!_.isUndefined(confirm_on_refresh_close) && confirm_on_refresh_close.value) {
       /* This message will not be displayed in Chrome, Firefox, Safari as they have disabled it*/
       let msg = S(gettext('Are you sure you want to close the %s browser?')).sprintf(pgBrowser.utils.app_name).value();
       e.originalEvent.returnValue = msg;

@@ -411,7 +411,7 @@ def initialize_query_tool(sgid, sid, did=None):
     )
 
 
-@blueprint.route('/close/<int:trans_id>', methods=["GET"], endpoint='close')
+@blueprint.route('/close/<int:trans_id>', methods=["DELETE"], endpoint='close')
 def close(trans_id):
     """
     This method is used to close the asynchronous connection

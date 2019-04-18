@@ -505,7 +505,7 @@ define('pgadmin.datagrid', [
           queryToolPanel.on(wcDocker.EVENT.CLOSED, function() {
             $.ajax({
               url: url_for('datagrid.close', {'trans_id': trans_obj.gridTransId}),
-              method: 'GET',
+              method: 'DELETE',
             });
           });
 
