@@ -29,6 +29,11 @@ class PermissionsTestCase(BaseTestGenerator):
             permissions='700'))
     ]
 
+    def before(self):
+        if os.name == 'nt':
+            self.skipTest("This test is skipped on Windows which doesn't "
+                          "Unix style file permissions.")
+
     def runTest(self):
         self.assertTrue(
             oct(os.stat(self.path)[ST_MODE])[-3:] == self.permissions
