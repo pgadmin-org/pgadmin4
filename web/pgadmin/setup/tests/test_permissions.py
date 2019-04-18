@@ -32,7 +32,7 @@ class PermissionsTestCase(BaseTestGenerator):
     def before(self):
         if os.name == 'nt':
             self.skipTest("This test is skipped on Windows which doesn't "
-                          "Unix style file permissions.")
+                          "support Unix style file permissions.")
 
     def runTest(self):
         self.assertTrue(
