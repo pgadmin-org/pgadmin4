@@ -29,7 +29,7 @@ class PermissionsTestCase(BaseTestGenerator):
             permissions='700'))
     ]
 
-    def before(self):
+    def setUp(self):
         if os.name == 'nt':
             self.skipTest("This test is skipped on Windows which doesn't "
                           "support Unix style file permissions.")
