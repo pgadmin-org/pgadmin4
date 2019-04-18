@@ -389,8 +389,9 @@ define('pgadmin.node.tablespace', [
             || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
-          } else if (_.isUndefined(this.get('spclocation'))
-              || String(this.get('spclocation')).replace(/^\s+|\s+$/g, '') == '') {
+          } else if (this.isNew() &&
+            (_.isUndefined(this.get('spclocation'))
+              || String(this.get('spclocation')).replace(/^\s+|\s+$/g, '') == '')) {
             msg = gettext('Location cannot be empty.');
             this.errorModel.set('spclocation', msg);
             this.errorModel.unset('name');
