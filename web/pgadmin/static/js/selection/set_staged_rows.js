@@ -96,7 +96,7 @@ define(
           this.selection.setSelectedRows([]);
         }
 
-        if (isEditMode()) {
+        if (isEditMode() && !_.isEmpty(stagedRows)) {
           enableButton('#btn-delete-row');
         }
       } else {

@@ -1372,11 +1372,11 @@ define('tools.querytool', [
       }
     },
 
-    // Callback function for Add New Row button click.
+    // Callback function for delete button click.
     on_delete: function() {
       var self = this;
 
-      // Trigger the addrow signal to the SqlEditorController class
+      // Trigger the deleterow signal to the SqlEditorController class
       self.handler.trigger(
         'pgadmin-sqleditor:button:deleterow',
         self,
@@ -2724,15 +2724,12 @@ define('tools.querytool', [
             if (key in self.data_store.staged_rows) {
               // Remove the row from data store so that we do not send it on server
               deleted_keys.push(key);
-              delete self.data_store.staged_rows[key];
-              delete self.data_store.added[key];
-              delete self.data_store.added_index[key];
             }
           });
         }
         // If only newly rows to delete and no data is there to send on server
         // then just re-render the grid
-        if (_.size(self.data_store.staged_rows) == 0) {
+        if (_.size(self.data_store.staged_rows) > 0 && (_.size(self.data_store.staged_rows) === _.size(deleted_keys))) {
           var grid = self.slickgrid,
             dataView = grid.getData();
 
@@ -2740,6 +2737,9 @@ define('tools.querytool', [
 
           dataView.beginUpdate();
           for (var i = 0; i < deleted_keys.length; i++) {
+            delete self.data_store.staged_rows[deleted_keys[i]];
+            delete self.data_store.added[deleted_keys[i]];
+            delete self.data_store.added_index[deleted_keys[i]];
             dataView.deleteItem(deleted_keys[i]);
           }
           dataView.endUpdate();
@@ -2760,31 +2760,35 @@ define('tools.querytool', [
           }
           alertify.success(gettext('Row(s) deleted.'));
         } else {
-          // There are other data to needs to be updated on server
-          if (is_updated) {
-            alertify.alert(gettext('Operation failed'),
-              gettext('There are unsaved changes in the grid. Please save them first to avoid data inconsistencies.')
-            );
-            return;
-          }
-          alertify.confirm(gettext('Delete Row(s)'),
-            gettext('Are you sure you wish to delete selected row(s)?'),
-            function() {
-              $('#btn-delete-row').prop('disabled', true);
-              $('#btn-copy-row').prop('disabled', true);
-              // Change the state
-              self.data_store.deleted = self.data_store.staged_rows;
-              self.data_store.staged_rows = {};
-              // Save the changes on server
-              self._save();
-            },
-            function() {
-              // Do nothing as user canceled the operation.
+
+          let strikeout = true;
+          _.each(_.keys(self.data_store.staged_rows), function(key) {
+            if(key in self.data_store.deleted) {
+              strikeout = false;
+              return;
             }
-          ).set('labels', {
-            ok: gettext('Yes'),
-            cancel: gettext('No'),
           });
+
+          if (!strikeout) {
+            $(self.gridView.grid.getCanvasNode()).find('div.selected').removeClass('strikeout');
+            _.each(_.keys(self.data_store.staged_rows), function(key) {
+              if(key in self.data_store.deleted) {
+                delete self.data_store.deleted[key];
+              }
+            });
+          } else {
+            // Strike out the rows to be deleted
+            self.data_store.deleted = Object.assign({}, self.data_store.deleted, self.data_store.staged_rows);
+            $(self.gridView.grid.getCanvasNode()).find('div.selected').addClass('strikeout');
+          }
+
+          if (_.size(self.data_store.added) || is_updated || _.size(self.data_store.deleted)) {
+            // Do not disable save button if there are
+            // any other changes present in grid data
+            $('#btn-save').prop('disabled', false);
+          } else {
+            $('#btn-save').prop('disabled', true);
+          }
         }
       },
 
@@ -2884,7 +2888,7 @@ define('tools.querytool', [
 
                 // Remove deleted rows from client as well
                 if (is_deleted) {
-                  var rows = grid.getSelectedRows();
+                  var rows = _.keys(self.data_store.deleted);
                   if (data_length == rows.length) {
                   // This means all the rows are selected, clear all data
                     data = [];

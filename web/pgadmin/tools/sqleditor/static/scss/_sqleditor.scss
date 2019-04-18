@@ -277,3 +277,18 @@ li.CodeMirror-hint-active {
 .geometry-viewer-container-plain-background {
   background: $color-bg;
 }
+
+
+div.strikeout:before {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  border-top: 1px solid $color-danger;
+  width: 100%;
+}
+
+div.strikeout:after {
+  content: "\00B7";
+  font-size: 1px;
+}
