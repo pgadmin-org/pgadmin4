@@ -17,7 +17,7 @@
     },
     "defseqacl": {
         "type": "SEQUENCE",
-        "acl": ["U", "r", "a"]
+        "acl": ["U", "r", "w"]
     },
     "deffuncacl": {
         "type": "FUNCTION",
