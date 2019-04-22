@@ -193,6 +193,15 @@ define('pgadmin.node.column', [
           seqcache: undefined,
           seqcycle: undefined,
         },
+        initialize: function(attrs) {
+          if (_.size(attrs) !== 0) {
+            this.set({
+              'old_attidentity': this.get('attidentity'),
+            }, {silent: true});
+          }
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
+
+        },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck',
@@ -658,7 +667,8 @@ define('pgadmin.node.column', [
             maximum = this.get('seqmax'),
             start = this.get('seqstart');
 
-          if (!this.isNew()) {
+          if (!this.isNew() && (this.get('old_attidentity') == 'a' || this.get('old_attidentity') == 'd') &&
+          (this.get('attidentity') == 'a' || this.get('attidentity') == 'd')) {
             if (_.isUndefined(this.get('seqincrement'))
               || String(this.get('seqincrement')).replace(/^\s+|\s+$/g, '') == '') {
               msg = gettext('Increment value cannot be empty.');
