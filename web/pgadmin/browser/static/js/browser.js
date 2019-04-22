@@ -539,6 +539,28 @@ define('pgadmin.browser', [
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode, obj);
 
+      obj.bind_beforeunload();
+    },
+
+    bind_beforeunload: function() {
+      $(window).on('beforeunload', function(e) {
+        /* Can open you in new tab */
+        let openerBrowser = window.opener ?
+          window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+
+        let tree_save_interval = pgBrowser.get_preference('browser', 'browser_tree_state_save_interval'),
+          confirm_on_refresh_close = openerBrowser.get_preference('browser', 'confirm_on_refresh_close');
+
+        if (!_.isUndefined(tree_save_interval) && tree_save_interval.value !== -1)
+          pgAdmin.Browser.browserTreeState.save_state();
+
+        if(!_.isUndefined(confirm_on_refresh_close) && confirm_on_refresh_close.value) {
+          /* This message will not be displayed in Chrome, Firefox, Safari as they have disabled it*/
+          let msg = S(gettext('Are you sure you want to close the %s browser?')).sprintf(pgBrowser.utils.app_name).value();
+          e.originalEvent.returnValue = msg;
+          return msg;
+        }
+      });
     },
 
     add_menu_category: function(
@@ -1943,25 +1965,6 @@ define('pgadmin.browser', [
   if (pgBrowser.utils.useSpaces == 'True') {
     pgAdmin.Browser.editor_shortcut_keys.Tab = 'insertSoftTab';
   }
-
-  $(window).on('beforeunload', function(e) {
-    /* Can open you in new tab */
-    let openerBrowser = window.opener ?
-      window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
-
-    let tree_save_interval = pgBrowser.get_preference('browser', 'browser_tree_state_save_interval'),
-      confirm_on_refresh_close = openerBrowser.get_preference('browser', 'confirm_on_refresh_close');
-
-    if (!_.isUndefined(tree_save_interval) && tree_save_interval.value !== -1)
-      pgAdmin.Browser.browserTreeState.save_state();
-
-    if(!_.isUndefined(confirm_on_refresh_close) && confirm_on_refresh_close.value) {
-      /* This message will not be displayed in Chrome, Firefox, Safari as they have disabled it*/
-      let msg = S(gettext('Are you sure you want to close the %s browser?')).sprintf(pgBrowser.utils.app_name).value();
-      e.originalEvent.returnValue = msg;
-      return msg;
-    }
-  });
 
   return pgAdmin.Browser;
 });

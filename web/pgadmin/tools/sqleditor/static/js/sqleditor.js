@@ -552,6 +552,8 @@ define('tools.querytool', [
         };
       });
 
+      pgBrowser.bind_beforeunload();
+
       /* If the screen width is small and we hover over the Explain Options,
         * the submenu goes behind the screen on the right side.
         * Below logic will make it appear on the left.

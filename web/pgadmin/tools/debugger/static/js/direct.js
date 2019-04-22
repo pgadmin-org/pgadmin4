@@ -1572,6 +1572,8 @@ define([
         });
       this.panels = [];
 
+      pgBrowser.bind_beforeunload();
+
       // Below code will be executed for indirect debugging
       // indirect debugging - 0  and for direct debugging - 1
       if (trans_id != undefined && !debug_type) {
