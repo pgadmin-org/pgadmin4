@@ -327,6 +327,28 @@ define([
     });
   };
 
+  /*
+  * Global function to make visible backgrid new row
+  */
+  $.fn.pgMakeBackgridVisible = function(cls) {
+    return this.each(function() {
+      if (!this || !$(this.length))
+        return;
+
+      var elem = $(this),
+        backgridDiv = $(this).offsetParent().parent(), // Backgrid div.subnode
+        backgridDivTop = backgridDiv.offset().top,
+        backgridDivHeight = backgridDiv.height(),
+        backformTab = $(this).closest(cls), // Backform-tab
+        gridScroll = backformTab[0].offsetHeight - backgridDivTop;
+
+      if (backgridDivHeight > gridScroll) {
+        var top = elem.get(0).offsetTop + elem.height();
+        backformTab.find('.tab-content').scrollTop(top);
+      }
+      return;
+    });
+  };
 
   /*
    * NodeAjaxOptionsCell

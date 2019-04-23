@@ -16,6 +16,7 @@ Bug fixes
 *********
 
 | `Bug #2392 <https://redmine.postgresql.org/issues/2392>`_ - Ensure that on clicking Delete button should not delete rows immediately from the database server, it should be deleted when Save button will be clicked.
+| `Bug #3327 <https://redmine.postgresql.org/issues/3327>`_ - Ensure that newly added row in backgrid should be visible.
 | `Bug #3582 <https://redmine.postgresql.org/issues/3582>`_ - Ensure that JSON strings as comments should be added properly for all the objects.
 | `Bug #3605 <https://redmine.postgresql.org/issues/3605>`_ - Fix an issue where Deleting N number of rows makes first N number of rows disable.
 | `Bug #3938 <https://redmine.postgresql.org/issues/3938>`_ - Added support for Default Partition.

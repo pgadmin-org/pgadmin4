@@ -1265,7 +1265,7 @@ define([
               newRow = self.grid.body.rows[idx].$el;
 
             newRow.addClass('new');
-            $(newRow).pgMakeVisible('backform-tab');
+            $(newRow).pgMakeBackgridVisible('.backform-tab');
 
             return false;
           }
@@ -1516,7 +1516,7 @@ define([
           newRow.attr('class', 'new').on('click',() => {
             $(this).attr('class', 'editable');
           });
-          $(newRow).pgMakeVisible('backform-tab');
+          $(newRow).pgMakeBackgridVisible('.backform-tab');
           return false;
         }
       });
