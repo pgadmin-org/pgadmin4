@@ -75,7 +75,6 @@
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
     "mousetrap": "^1.6.3",
-    "prop-types": "^15.7.2",
     "requirejs": "~2.3.6",
     "select2": "^4.0.6-rc.1",
     "shim-loader": "^1.0.1",
