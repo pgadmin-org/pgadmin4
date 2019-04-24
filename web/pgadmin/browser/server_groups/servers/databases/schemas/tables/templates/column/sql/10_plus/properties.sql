@@ -33,7 +33,7 @@ FROM pg_attribute att
   LEFT OUTER JOIN pg_index pi ON pi.indrelid=att.attrelid AND indisprimary
   LEFT OUTER JOIN pg_collation coll ON att.attcollation=coll.oid
   LEFT OUTER JOIN pg_namespace nspc ON coll.collnamespace=nspc.oid
-  LEFT OUTER JOIN pg_depend dep ON dep.refobjid = att.attrelid AND dep.refobjsubid = att.attnum AND dep.classid IN ( SELECT oid FROM pg_class WHERE relname IN ('pg_class')) LEFT JOIN pg_sequence seq ON dep.objid=seq.seqrelid
+  LEFT OUTER JOIN pg_sequence seq ON cs.oid=seq.seqrelid
 WHERE att.attrelid = {{tid}}::oid
 {% if clid %}
     AND att.attnum = {{clid}}::int

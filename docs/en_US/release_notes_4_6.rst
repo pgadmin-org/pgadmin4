@@ -28,4 +28,5 @@ Bug fixes
 | `Bug #4138 <https://redmine.postgresql.org/issues/4138>`_ - Fix an issue where the dropdown becomes misaligned/displaced.
 | `Bug #4160 <https://redmine.postgresql.org/issues/4160>`_ - Fixed 'Increment value cannot be empty' error for existing tables.
 | `Bug #4161 <https://redmine.postgresql.org/issues/4161>`_ - Ensure that parameters of procedures for EPAS server 10 and below should be set/reset properly.
+| `Bug #4163 <https://redmine.postgresql.org/issues/4163>`_ - Prevent duplicate columns being included in reverse engineered SQL for tables.
 | `Bug #4182 <https://redmine.postgresql.org/issues/4182>`_ - Ensure sanity of the permissions on the storage and session directories and the config database.
