@@ -183,8 +183,10 @@ class SequenceView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        sequence_nodes = self._get_sequence_nodes(res['rows'])
         return ajax_response(
-            response=res['rows'],
+            response=sequence_nodes,
             status=200
         )
 
@@ -227,16 +229,8 @@ class SequenceView(PGChildNodeView):
                 status=200
             )
 
-        for row in rset['rows']:
-            if not self.blueprint.show_system_objects:
-                system_seq = self._get_dependency(row['oid'],
-                                                  show_system_objects=True)
-                seq = filter(lambda dep: dep['type'] == 'column', system_seq)
-                if type(seq) is not list:
-                    seq = list(seq)
-                if len(seq) > 0:
-                    continue
-
+        sequence_nodes = self._get_sequence_nodes(rset['rows'])
+        for row in sequence_nodes:
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
@@ -249,6 +243,33 @@ class SequenceView(PGChildNodeView):
             data=res,
             status=200
         )
+
+    def _get_sequence_nodes(self, nodes):
+        """
+        This function is used to iterate through all the sequences node and
+        hiding sequences created as part of an IDENTITY column.
+        :param nodes:
+        :return:
+        """
+        # If show_system_objects is true then no need to hide any sequences.
+        if self.blueprint.show_system_objects:
+            return nodes
+
+        seq_nodes = []
+        for row in nodes:
+            system_seq = self._get_dependency(row['oid'],
+                                              show_system_objects=True)
+            seq = filter(lambda dep: dep['type'] == 'column' and
+                         dep['field'] == 'internal', system_seq)
+            if type(seq) is not list:
+                seq = list(seq)
+            if len(seq) > 0:
+                continue
+
+            # Append the node into the newly created list
+            seq_nodes.append(row)
+
+        return seq_nodes
 
     @check_precondition(action='properties')
     def properties(self, gid, sid, did, scid, seid):

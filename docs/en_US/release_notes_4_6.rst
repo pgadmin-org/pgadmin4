@@ -26,6 +26,7 @@ Bug fixes
 | `Bug #4121 <https://redmine.postgresql.org/issues/4121>`_ - Fixed alignment issue of columns in definition section of Index node.
 | `Bug #4134 <https://redmine.postgresql.org/issues/4134>`_ - Fixed 'Location cannot be empty' error when open Tablespace properties.
 | `Bug #4138 <https://redmine.postgresql.org/issues/4138>`_ - Fix an issue where the dropdown becomes misaligned/displaced.
+| `Bug #4154 <https://redmine.postgresql.org/issues/4154>`_ - Ensure the treeview shows all sequences except those used to implement IDENTITY columns (which can be edited as part of the column). Show all if Show System Objects is enabled.
 | `Bug #4160 <https://redmine.postgresql.org/issues/4160>`_ - Fixed 'Increment value cannot be empty' error for existing tables.
 | `Bug #4161 <https://redmine.postgresql.org/issues/4161>`_ - Ensure that parameters of procedures for EPAS server 10 and below should be set/reset properly.
 | `Bug #4163 <https://redmine.postgresql.org/issues/4163>`_ - Prevent duplicate columns being included in reverse engineered SQL for tables.
