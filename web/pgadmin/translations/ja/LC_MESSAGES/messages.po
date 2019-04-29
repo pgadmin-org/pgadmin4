@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-04-26 17:38+0530\n"
-"PO-Revision-Date: 2019-04-01 23:38+0900\n"
+"PO-Revision-Date: 2019-04-28 03:20+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -4442,23 +4442,23 @@ msgstr "パーティションテーブルは2種類のキーに対応してい�
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:966
 msgid "Column: "
-msgstr ""
+msgstr "列："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:967
 msgid "User can select any column from the list of available columns."
-msgstr ""
+msgstr "ユーザは、利用できる列の一覧から、任意の列を選択できます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:969
 msgid "Expression: "
-msgstr ""
+msgstr "式："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:970
 msgid "User can specify expression to create partition key."
-msgstr ""
+msgstr "ユーザは、パーティションキーを作成するための式を指定できます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:972
 msgid "Example: "
-msgstr ""
+msgstr "例："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:973
 msgid ""
@@ -4472,37 +4472,37 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1058
 msgid "Create a table: "
-msgstr ""
+msgstr "テーブルを作成："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1059
 msgid ""
 "User can create multiple partitions while creating new partitioned table."
 " Operation switch is disabled in this scenario."
-msgstr ""
+msgstr "ユーザは、新しいパーティションテーブルを作成する際に、複数のパーティションを作成できます。この時点では「処理」の切り替えができません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1061
 msgid "Edit existing table: "
-msgstr ""
+msgstr "既存のテーブルを編集："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1062
 msgid ""
 "User can create/attach/detach multiple partitions. In attach operation "
 "user can select table from the list of suitable tables to be attached."
-msgstr ""
+msgstr "ユーザは、複数のパーティションを作成・取り付け・取り外しできます。取り付ける際にユーザは、適切なテーブルの一覧から、取り付けるテーブルを選択できます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1064
 msgid "Default: "
-msgstr ""
+msgstr "デフォルト："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1065
 msgid ""
 "The default partition can store rows that do not fall into any existing "
 "partition’s range or list."
-msgstr ""
+msgstr "デフォルトパーティションには、既存のどのパーティションの範囲やリストに一致しない行を収納できます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1067
 msgid "From/To/In input: "
-msgstr ""
+msgstr "FROM/TO/IN 入力："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1068
 msgid ""
@@ -4512,31 +4512,31 @@ msgstr "FROM/TO/IN 入力： これらのフィールドはシングルクォー
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1070
 msgid "Example: From/To: "
-msgstr ""
+msgstr "例： FROM/TO："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1071
 msgid ""
 "Enabled for range partition. Consider partitioned table with multiple "
 "keys of type Integer, then values should be specified like '100','200'."
-msgstr ""
+msgstr "範囲パーティションで有効になります。例えば、整数型のキー複数でパーティショニングするテーブルでは、'100','200' のような値を指定しないといけません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1073
 msgid "In: "
-msgstr ""
+msgstr "IN："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1074
 msgid ""
 "Enabled for list partition. Values must be comma(,) separated and quoted "
 "with single quote."
-msgstr ""
+msgstr "リストパーティションで有効になります。値はコンマ（,）で区切り、シングルクォートで囲まないといけません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1076
 msgid "Modulus/Remainder: "
-msgstr ""
+msgstr "MODULUS/REMAINDER："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1077
 msgid "Enabled for hash partition."
-msgstr ""
+msgstr "ハッシュパーティションで有効になります"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/default/stats.sql:2
 msgid "Null fraction"
@@ -7477,7 +7477,7 @@ msgstr "データを表示"
 #: pgadmin/browser/static/js/toolbar.js:90
 #: pgadmin/tools/datagrid/static/js/datagrid.js:78
 msgid "Filtered Rows"
-msgstr "フィルタされた行"
+msgstr "フィルタリングした行"
 
 #: pgadmin/browser/static/js/browser.js:346
 msgid "No object selected"
@@ -8820,12 +8820,12 @@ msgstr "全選択/全解除"
 #: pgadmin/static/js/slickgrid/editors.js:280
 #: pgadmin/static/js/slickgrid/editors.js:854
 msgid "Arrays must start with \"{\" and end with \"}\""
-msgstr ""
+msgstr "配列は \"{\" で始まり、\"}\"" で終わる必要があります"
 
 #: pgadmin/static/js/slickgrid/editors.js:840
 #: pgadmin/static/js/slickgrid/editors.js:871
 msgid "Please enter a valid number"
-msgstr ""
+msgstr "有効な値を入力してください"
 
 #: pgadmin/static/js/sqleditor/call_render_after_poll.js:38
 #, python-format
@@ -9308,7 +9308,7 @@ msgstr "最後の 100 行"
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:175
 msgid "Filtered Rows..."
-msgstr "フィルタした行の表示..."
+msgstr "フィルタリングした行..."
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:179
 msgid "View/Edit Data"
@@ -11578,7 +11578,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "最後の 100 行"
 
 #~ msgid "View Filtered Rows..."
-#~ msgstr "フィルタした行の表示..."
+#~ msgstr "フィルタリングした行の表示..."
 
 #~ msgid "View Data"
 #~ msgstr "データの表示"
@@ -12257,9 +12257,6 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgid "Nothing changed."
 #~ msgstr "変更はありません"
 
-#~ msgid "More details..."
-#~ msgstr "さらに詳しく見る..."
-
 #~ msgid "Column: User can select any column from the list of available columns."
 #~ msgstr "列： 利用可能な列の一覧から選択することができます"
 
@@ -12305,6 +12302,9 @@ msgstr "指定されたデータベースが見つかりませんでした"
 
 #~ msgid "Modulus/Remainder: Enabled for hash partition."
 #~ msgstr "MODULUS/REMAINDER： ハッシュパーティションを有効化します"
+
+#~ msgid "More details..."
+#~ msgstr "さらに詳しく見る..."
 
 #~ msgid "Operation failed"
 #~ msgstr "処理に失敗しました"
