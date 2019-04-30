@@ -25,6 +25,7 @@ const extractStyle = new MiniCssExtractPlugin({
   allChunks: true,
 });
 const envType = PRODUCTION ? 'production': 'development';
+const devToolVal = PRODUCTION ? false : 'eval';
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 // Expose libraries in app context so they need not to
@@ -68,7 +69,7 @@ const hardSourceWebpackPlugin = new HardSourceWebpackPlugin({
 // Reference: https://webpack.js.org/plugins/source-map-dev-tool-plugin/#components/sidebar/sidebar.jsx
 const sourceMapDevToolPlugin = new webpack.SourceMapDevToolPlugin({
   filename: '[name].js.map',
-  exclude: ['vendor.js', 'codemirror.js'],
+  exclude: ['vendor.js', 'codemirror.js', 'popper.js'],
   columns: false,
 });
 
@@ -123,7 +124,7 @@ pushModulesCss(path.join(__dirname,'./pgadmin'), pgadminStyles);
 
 module.exports = {
   mode: envType,
-  devtool: false,
+  devtool: devToolVal,
   stats: { children: false },
   // The base directory, an absolute path, for resolving entry points and loaders
   // from configuration.

@@ -15,3 +15,4 @@ Bug fixes
 *********
 
 | `Bug #4218 <https://redmine.postgresql.org/issues/4218>`_ - Properly assign dropdownParent in Select2 controls.
+| `Bug #4219 <https://redmine.postgresql.org/issues/4219>`_ - Ensure popper.js is installed when needed.
