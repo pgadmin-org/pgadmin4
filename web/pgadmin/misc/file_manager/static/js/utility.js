@@ -1193,6 +1193,8 @@ define([
         Item Actions - Object events
       ---------------------------------------------------------*/
 
+      $('.file_manager').attr('data-platform', config.options.platform_type);
+
       // Switch to folder view
       $('.file_manager .fileinfo').on('click', function() {
         $('.file_manager #uploader .input-path').val($('.currentpath').val());
@@ -1388,7 +1390,7 @@ define([
                 path = '/';
               }
 
-              if (navigator.platform.toUpperCase().indexOf('WIN')!==-1) {
+              if (config.options.platform_type === 'win32') {
                 path = path.replace(/\//g, '\\');
               } else {
                 path = path.replace(/\\/g, '/');
@@ -1533,20 +1535,20 @@ define([
       $('.storage_dialog #uploader').find('a').remove();
       $('.storage_dialog #uploader').find('b').remove();
 
-      if (navigator.platform.toUpperCase().indexOf('WIN')!==-1) {
+      if (config.options.platform_type === 'win32') {
         path = path.replace(/\//g, '\\');
       } else {
         path = path.replace(/\\/g, '/');
       }
 
       path = decodeURI(path);
-      if (navigator.platform.toUpperCase().indexOf('WIN')!==-1) {
+      if (config.options.platform_type === 'win32') {
         if (config.options.show_volumes && path == '\\') {
           $('.storage_dialog #uploader .input-path').val('');
         } else {
           $('.storage_dialog #uploader .input-path').val(path);
         }
-      } else if (!(navigator.platform.toUpperCase().indexOf('WIN')!==-1) &&
+      } else if (!(config.options.platform_type === 'win32') &&
         (path == '' || !S.startsWith(path, '/'))) {
         path = '/' + path;
         $('.storage_dialog #uploader .input-path').val(path);
@@ -1706,7 +1708,7 @@ define([
     // helpful in show/hide toolbar button for Windows
     hideButtons: function() {
       return (
-        navigator.platform.toUpperCase().indexOf('WIN')!==-1 &&
+        this.config.options.platform_type === 'win32' &&
         $('.currentpath').val() === ''
       );
     },

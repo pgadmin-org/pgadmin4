@@ -157,7 +157,7 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
            extension isn't *, then we add the extension.
          */
 
-        if (navigator.platform.toUpperCase().indexOf('WIN')!==-1) {
+        if ($('.file_manager').attr('data-platform') === 'win32') {
           sep = '\\';
         }
 
