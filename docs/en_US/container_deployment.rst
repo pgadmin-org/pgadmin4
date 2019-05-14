@@ -101,7 +101,9 @@ required.
 
 If this file is mapped, server definitions found in it will be loaded at launch
 time. This allows connection information to be pre-loaded into the instance of
-pgAdmin in the container.
+pgAdmin in the container. Note that server definitions are only loaded on first
+launch, i.e. when the configuration database is created, and not on subsequent
+launches using the same configuration database.
 
 */certs/server.cert*
 
