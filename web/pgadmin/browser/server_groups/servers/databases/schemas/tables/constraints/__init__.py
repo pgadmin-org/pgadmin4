@@ -149,5 +149,5 @@ def module_js():
                 for n in ConstraintRegistry.registry
             ]
         ),
-        200, {'Content-Type': 'application/x-javascript'}
+        200, {'Content-Type': 'application/javascript'}
     )

@@ -219,7 +219,7 @@ class ResourceGroupView(NodeView):
                 "resource_groups/js/resource_groups.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):

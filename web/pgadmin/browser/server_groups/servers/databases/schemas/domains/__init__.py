@@ -255,7 +255,7 @@ class DomainView(PGChildNodeView, DataTypeReader):
                 "domains/js/domains.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):

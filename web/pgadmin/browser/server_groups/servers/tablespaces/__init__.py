@@ -105,7 +105,7 @@ class TablespaceView(PGChildNodeView):
                 "tablespaces/js/tablespaces.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):

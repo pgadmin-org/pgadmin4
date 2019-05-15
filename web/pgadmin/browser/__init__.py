@@ -623,14 +623,14 @@ def utils():
             pg_libpq_version=pg_libpq_version,
             support_ssh_tunnel=config.SUPPORT_SSH_TUNNEL
         ),
-        200, {'Content-Type': 'application/x-javascript'})
+        200, {'Content-Type': 'application/javascript'})
 
 
 @blueprint.route("/js/endpoints.js")
 def exposed_urls():
     return make_response(
         render_template('browser/js/endpoints.js'),
-        200, {'Content-Type': 'application/x-javascript'}
+        200, {'Content-Type': 'application/javascript'}
     )
 
 
@@ -639,7 +639,7 @@ def exposed_urls():
 def error_js():
     return make_response(
         render_template('browser/js/error.js', _=gettext),
-        200, {'Content-Type': 'application/x-javascript'})
+        200, {'Content-Type': 'application/javascript'})
 
 
 @blueprint.route("/js/node.js")
@@ -659,14 +659,14 @@ def node_js():
                         edbas_help_path=edbas_help_path,
                         _=gettext
                         ),
-        200, {'Content-Type': 'application/x-javascript'})
+        200, {'Content-Type': 'application/javascript'})
 
 
 @blueprint.route("/js/messages.js")
 def messages_js():
     return make_response(
         render_template('browser/js/messages.js', _=gettext),
-        200, {'Content-Type': 'application/x-javascript'})
+        200, {'Content-Type': 'application/javascript'})
 
 
 @blueprint.route("/js/collection.js")
@@ -674,7 +674,7 @@ def messages_js():
 def collection_js():
     return make_response(
         render_template('browser/js/collection.js', _=gettext),
-        200, {'Content-Type': 'application/x-javascript'})
+        200, {'Content-Type': 'application/javascript'})
 
 
 @blueprint.route("/browser.css")

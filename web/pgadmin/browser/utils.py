@@ -298,7 +298,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
             flask.render_template(
                 "{0}/js/{0}.js".format(self.node_type)
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def children(self, *args, **kwargs):

@@ -930,7 +930,7 @@ class ServerNode(PGChildNodeView):
                 "servers/supported_servers.js",
                 server_types=ServerType.types()
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def connect_status(self, gid, sid):

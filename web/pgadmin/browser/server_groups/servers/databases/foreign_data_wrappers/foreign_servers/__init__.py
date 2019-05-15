@@ -206,7 +206,7 @@ class ForeignServerView(PGChildNodeView):
                 "foreign_servers/js/foreign_servers.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):

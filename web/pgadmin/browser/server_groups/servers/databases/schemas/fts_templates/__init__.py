@@ -207,7 +207,7 @@ class FtsTemplateView(PGChildNodeView):
                 "fts_template/js/fts_templates.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):

@@ -328,7 +328,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                 "foreign_tables/js/foreign_tables.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):

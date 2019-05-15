@@ -223,7 +223,7 @@ class UserMappingView(PGChildNodeView):
                 "user_mappings/js/user_mappings.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):

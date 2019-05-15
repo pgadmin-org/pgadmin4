@@ -223,7 +223,7 @@ class ExclusionConstraintView(PGChildNodeView):
                 "exclusion_constraint/js/exclusion_constraint.js",
                 _=_
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):

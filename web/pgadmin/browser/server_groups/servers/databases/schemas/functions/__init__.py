@@ -313,7 +313,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 "function/js/functions.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):
@@ -1686,7 +1686,7 @@ class ProcedureView(FunctionView):
                 "procedure/js/procedures.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
 
@@ -1797,7 +1797,7 @@ class TriggerFunctionView(FunctionView):
                 "trigger_function/js/trigger_functions.js",
                 _=gettext
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
 

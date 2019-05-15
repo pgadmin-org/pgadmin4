@@ -245,7 +245,7 @@ class IndexConstraintView(PGChildNodeView):
                 node_type=self.node_type,
                 node_label=self.node_label
             ),
-            200, {'Content-Type': 'application/x-javascript'}
+            200, {'Content-Type': 'application/javascript'}
         )
 
     def check_precondition(f):
