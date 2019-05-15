@@ -26,9 +26,18 @@ export function findAndSetFocus(container) {
     var first_el = container
       .find('button.fa-plus:first');
 
+    /* Adding the tabindex condition makes sure that
+     * when testing accessibility it works consistently across all
+     * browser. For eg, in safari focus() works only when element has
+     * tabindex="0", whereas in Chrome it works in any case
+     */
     if (first_el.length == 0) {
       first_el = container
-        .find('.pgadmin-controls:first input:enabled,.CodeMirror-scroll');
+        .find(`
+          .pgadmin-controls:first input:enabled,
+          .pgadmin-controls:first .btn:not(.toggle),
+          .CodeMirror-scroll`)
+        .find('*[tabindex]:not([tabindex="-1"])');
     }
 
     if(first_el.length > 0) {

@@ -1092,12 +1092,10 @@ define('pgadmin.browser.node', [
             // All buttons will be created within a single
             // div area.
             var btnGroup =
-              $('<div tabindex="0"></div>').addClass(
-                'pg-prop-btn-group'
-              ),
+              $('<div class="pg-prop-btn-group"></div>'),
               // Template used for creating a button
               tmpl = _.template([
-                '<button type="<%= type %>" ',
+                '<button tabindex="0" type="<%= type %>" ',
                 'class="btn <%=extraClasses.join(\' \')%>"',
                 '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>">',
                 '<span class="<%= icon %>"></span><% if (label != "") { %>&nbsp;<%-label%><% } %></button>',

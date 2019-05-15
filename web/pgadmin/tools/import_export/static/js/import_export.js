@@ -591,6 +591,11 @@ define([
                   break;
                 }
               },
+
+              onshow: function() {
+                var container = $(this.elements.body).find('.tab-content:first > .tab-pane.active:first');
+                commonUtils.findAndSetFocus(container);
+              },
             },
 
             prepare: function() {
@@ -656,8 +661,6 @@ define([
               });
 
               view.$el.attr('tabindex', -1);
-              var container = view.$el.find('.tab-content:first > .tab-pane.active:first');
-              commonUtils.findAndSetFocus(container);
               setTimeout(function() {
                 pgBrowser.keyboardNavigation.getDialogTabNavigator($(self.elements.dialog));
               }, 200);
