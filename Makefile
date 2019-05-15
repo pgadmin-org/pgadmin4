@@ -31,8 +31,8 @@ bundle-dev:
 linter:
 	cd web && yarn run linter
 
-check: install-node bundle linter
-	cd web && pycodestyle --config=.pycodestyle . && yarn run karma start --single-run && python regression/runtests.py
+check: install-node bundle linter check-pep8
+	cd web && yarn run karma start --single-run && python regression/runtests.py
 
 check-pep8:
 	pycodestyle --config=.pycodestyle docs/
