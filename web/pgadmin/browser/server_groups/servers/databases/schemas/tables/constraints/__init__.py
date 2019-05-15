@@ -132,22 +132,3 @@ def proplist(**kwargs):
         response=res,
         status=200
     )
-
-
-@blueprint.route('/module.js')
-def module_js():
-    """
-      This property defines whether javascript exists for this node.
-
-    """
-    return make_response(
-        render_template(
-            "constraints/js/constraints.js",
-            _=gettext,
-            constraints=[
-                (ConstraintRegistry.registry[n])['blueprint'].NODE_TYPE
-                for n in ConstraintRegistry.registry
-            ]
-        ),
-        200, {'Content-Type': 'application/javascript'}
-    )

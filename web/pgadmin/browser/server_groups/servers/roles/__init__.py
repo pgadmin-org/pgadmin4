@@ -67,7 +67,7 @@ class RoleModule(CollectionNodeModule):
                 "browser/css/collection.css",
                 node_type=self.node_type
             ),
-            render_template("role/css/role.css")]
+            render_template("roles/css/role.css")]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -108,7 +108,6 @@ class RoleView(PGChildNodeView):
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'children': [{'get': 'children'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'vopts': [{}, {'get': 'voptions'}],
         'variables': [{'get': 'variables'}],
     })
@@ -470,20 +469,13 @@ rolmembership:{
                         _("Connection to the server has been lost.")
                     )
 
-                ver = self.manager.version
-
-                self.sql_path = 'role/sql/{0}/'.format(
-                    'post9_4' if ver >= 90500 else
-                    'post9_1' if ver >= 90200 else
-                    'post9_0' if ver >= 90100 else
-                    'post8_4'
-                )
+                self.sql_path = 'roles/sql/#{0}#'.format(self.manager.version)
 
                 self.alterKeys = [
                     u'rolcanlogin', u'rolsuper', u'rolcreatedb',
                     u'rolcreaterole', u'rolinherit', u'rolreplication',
                     u'rolconnlimit', u'rolvaliduntil', u'rolpassword'
-                ] if ver >= 90200 else [
+                ] if self.manager.version >= 90200 else [
                     u'rolcanlogin', u'rolsuper', u'rolcreatedb',
                     u'rolcreaterole', u'rolinherit', u'rolconnlimit',
                     u'rolvaliduntil', u'rolpassword'

@@ -112,9 +112,6 @@ class CheckConstraintView(PGChildNodeView):
     Methods:
     -------
 
-    * module_js():
-      - Load JS file (check_constraint.js) for this module.
-
     * check_precondition(f):
       - Works as a decorator.
       -  Checks database connection status.
@@ -183,21 +180,8 @@ class CheckConstraintView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'validate': [{'get': 'validate_check_constraint'}],
     })
-
-    def module_js(self):
-        """
-        Load JS file (check_constraint.js) for this module.
-        """
-        return make_response(
-            render_template(
-                "check_constraint/js/check_constraint.js",
-                _=_
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

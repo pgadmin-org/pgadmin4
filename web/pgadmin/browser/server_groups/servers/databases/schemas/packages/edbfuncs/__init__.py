@@ -138,9 +138,6 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
       - Works as a decorator.
         Validating request on the request of create, update and modified SQL.
 
-    * module_js():
-      - Overrides this property to define javascript for Functions node.
-
     * check_precondition(f):
       - Works as a decorator.
       - Checks database connection status.
@@ -187,22 +184,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}]
+        'dependent': [{'get': 'dependents'}]
     })
-
-    def module_js(self):
-        """
-        Load JS file (functions.js) for this module.
-        """
-
-        return make_response(
-            render_template(
-                "edbfunc/js/edbfunc.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """
@@ -232,9 +215,14 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
 
             # Set template path for sql scripts depending
             # on the server version.
+            template_initial = None
+            if self.node_type == 'edbfunc':
+                template_initial = 'edbfuncs'
+            elif self.node_type == 'edbproc':
+                template_initial = 'edbprocs'
 
             self.sql_template_path = "/".join([
-                self.node_type,
+                template_initial,
                 self.manager.server_type,
                 '#{0}#'
             ]).format(self.manager.version)
@@ -698,19 +686,6 @@ procedure_blueprint = EdbProcModule(__name__)
 
 class EdbProcView(EdbFuncView):
     node_type = procedure_blueprint.node_type
-
-    def module_js(self):
-        """
-        Load JS file (procedures.js) for this module.
-        """
-
-        return make_response(
-            render_template(
-                "edbproc/js/edbproc.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
 
 EdbProcView.register_node_view(procedure_blueprint)

@@ -51,6 +51,6 @@ class TestColumnAclSql(SQLTemplateTestBase):
     @staticmethod
     def get_template_file(version, filename):
         return os.path.join(
-            os.path.dirname(__file__), "..", "templates", "column", "sql",
+            os.path.dirname(__file__), "..", "templates", "columns", "sql",
             version, filename
         )

@@ -131,9 +131,6 @@ class FunctionView(PGChildNodeView, DataTypeReader):
       - Works as a decorator.
         Validating request on the request of create, update and modified SQL.
 
-    * module_js():
-      - Overrides this property to define javascript for Functions node.
-
     * check_precondition(f):
       - Works as a decorator.
       - Checks database connection status.
@@ -207,7 +204,6 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_types': [{'get': 'types'}, {'get': 'types'}],
         'get_languages': [{'get': 'get_languages'}, {'get': 'get_languages'}],
         'vopts': [{}, {'get': 'variable_options'}],
@@ -303,19 +299,6 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
         return wrap
 
-    def module_js(self):
-        """
-        Load JS file (functions.js) for this module.
-        """
-
-        return make_response(
-            render_template(
-                "function/js/functions.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
-
     def check_precondition(f):
         """
         Works as a decorator.
@@ -334,12 +317,17 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             self.qtIdent = driver.qtIdent
             self.qtLiteral = driver.qtLiteral
 
+            template_initial = None
+            if self.node_type == 'function':
+                template_initial = 'functions'
+            elif self.node_type == 'procedure':
+                template_initial = 'procedures'
+            elif self.node_type == 'trigger_function':
+                template_initial = 'trigger_functions'
+
             # Set the template path for the SQL scripts
-            self.template_path = "/".join([
-                self.node_type
-            ])
             self.sql_template_path = "/".join([
-                self.template_path,
+                template_initial,
                 self.manager.server_type,
                 'sql',
                 '#{0}#'
@@ -1676,19 +1664,6 @@ class ProcedureView(FunctionView):
                 'lanname',
                 'prosrc']
 
-    def module_js(self):
-        """
-        Load JS file (procedures.js) for this module.
-        """
-
-        return make_response(
-            render_template(
-                "procedure/js/procedures.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
-
 
 ProcedureView.register_node_view(procedure_blueprint)
 
@@ -1786,19 +1761,6 @@ class TriggerFunctionView(FunctionView):
                 'pronamespace',
                 'lanname',
                 'prosrc']
-
-    def module_js(self):
-        """
-        Load JS file (trigger_function.js) for this module.
-        """
-
-        return make_response(
-            render_template(
-                "trigger_function/js/trigger_functions.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
 
 TriggerFunctionView.register_node_view(trigger_function_blueprint)

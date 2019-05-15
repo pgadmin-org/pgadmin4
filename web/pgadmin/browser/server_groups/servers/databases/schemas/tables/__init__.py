@@ -99,10 +99,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
     * __init__(**kwargs)
       - Method is used to initialize the TableView and it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * list()
       - This function is used to list all the Table nodes within that
       collection.
@@ -222,7 +218,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_oftype': [{'get': 'get_oftype'}, {'get': 'get_oftype'}],
         'get_inherits': [{'get': 'get_inherits'}, {'get': 'get_inherits'}],
         'get_relations': [{'get': 'get_relations'}, {'get': 'get_relations'}],

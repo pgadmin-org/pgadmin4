@@ -175,7 +175,6 @@ class SynonymView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_target_objects': [{'get': 'get_target_objects'},
                                {'get': 'get_target_objects'}]
     })
@@ -204,7 +203,7 @@ class SynonymView(PGChildNodeView):
                 )
 
             # we will set template path for sql scripts
-            self.template_path = 'synonym/sql/#{0}#'.format(
+            self.template_path = 'synonyms/sql/#{0}#'.format(
                 self.manager.version)
 
             return f(*args, **kwargs)

@@ -31,7 +31,7 @@ def backend_supported(module, manager, **kwargs):
             module, manager, **kwargs):
         conn = manager.connection(did=kwargs['did'])
 
-        template_path = 'partition/sql/{0}/#{0}#{1}#'.format(
+        template_path = 'partitions/sql/{0}/#{0}#{1}#'.format(
             manager.server_type, manager.version
         )
         SQL = render_template("/".join(

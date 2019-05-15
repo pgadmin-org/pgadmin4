@@ -69,7 +69,7 @@ class TestBackendSupport(BaseTestGenerator):
              expect_error_response=False,
              expected_number_calls_on_render_template=1,
              expect_render_template_to_be_called_with=call(
-                 'partition/sql/gpdb/#gpdb#5#/backend_support.sql', tid=123
+                 'partitions/sql/gpdb/#gpdb#5#/backend_support.sql', tid=123
              )
          )),
         ('when error happens while querying the database, '
@@ -88,7 +88,7 @@ class TestBackendSupport(BaseTestGenerator):
              expect_error_response=True,
              expected_number_calls_on_render_template=1,
              expect_render_template_to_be_called_with=call(
-                 'partition/sql/pg/#pg#10#/backend_support.sql', tid=123
+                 'partitions/sql/pg/#pg#10#/backend_support.sql', tid=123
              )
          ))
     ]

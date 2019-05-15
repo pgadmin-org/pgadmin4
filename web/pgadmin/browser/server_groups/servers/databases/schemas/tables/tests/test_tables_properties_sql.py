@@ -70,6 +70,6 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
     @staticmethod
     def get_template_file(version, filename):
         return os.path.join(
-            os.path.dirname(__file__), "..", "templates", "table", "sql",
+            os.path.dirname(__file__), "..", "templates", "tables", "sql",
             version, filename
         )

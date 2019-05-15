@@ -114,10 +114,6 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     * __init__(**kwargs)
       - Method is used to initialize the ColumnView and it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -189,8 +185,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
+        'dependent': [{'get': 'dependents'}]
     })
 
     def check_precondition(f):
@@ -213,7 +208,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             self.qtTypeIdent = driver.qtTypeIdent
 
             # Set the template path for the SQL scripts
-            self.template_path = 'column/sql/#{0}#'.format(
+            self.template_path = 'columns/sql/#{0}#'.format(
                 self.manager.version)
 
             # Allowed ACL for column 'Select/Update/Insert/References'

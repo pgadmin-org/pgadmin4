@@ -120,9 +120,6 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
       - Works as a decorator.
         Validating request on the request of create, update and modified SQL.
 
-    * module_js():
-      - Overrides this property to define javascript for Functions node.
-
     * check_precondition(f):
       - Works as a decorator.
       - Checks database connection status.
@@ -161,22 +158,8 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
             {'get': 'list'}
         ],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
-        'sql': [{'get': 'sql'}],
-        'module.js': [{}, {}, {'get': 'module_js'}]
+        'sql': [{'get': 'sql'}]
     })
-
-    def module_js(self):
-        """
-        Load JS file (edbvar.js) for this module.
-        """
-
-        return make_response(
-            render_template(
-                "edbvar/js/edbvar.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """
@@ -204,7 +187,7 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
                     )
                 )
 
-            self.sql_template_path = "/edbvar/ppas"
+            self.sql_template_path = "/edbvars/ppas"
 
             return f(*args, **kwargs)
 

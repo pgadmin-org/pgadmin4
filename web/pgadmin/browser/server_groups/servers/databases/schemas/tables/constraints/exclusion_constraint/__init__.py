@@ -123,10 +123,6 @@ class ExclusionConstraintView(PGChildNodeView):
       - Method is used to initialize the ForeignKeyConstraintView and
       it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -209,22 +205,8 @@ class ExclusionConstraintView(PGChildNodeView):
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}]
+        'dependent': [{'get': 'dependents'}]
     })
-
-    def module_js(self):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return make_response(
-            render_template(
-                "exclusion_constraint/js/exclusion_constraint.js",
-                _=_
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

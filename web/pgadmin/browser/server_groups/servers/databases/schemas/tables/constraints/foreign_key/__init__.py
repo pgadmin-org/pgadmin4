@@ -146,10 +146,6 @@ class ForeignKeyConstraintView(PGChildNodeView):
       - Method is used to initialize the ForeignKeyConstraintView and
       it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -217,24 +213,10 @@ class ForeignKeyConstraintView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'indices': [{}, {'get': 'get_indices'}],
         'validate': [{'get': 'validate_foreign_key'}],
         'get_coveringindex': [{}, {'get': 'get_coveringindex'}]
     })
-
-    def module_js(self):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return make_response(
-            render_template(
-                "foreign_key/js/foreign_key.js",
-                _=_
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

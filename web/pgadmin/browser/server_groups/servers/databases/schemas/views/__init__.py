@@ -106,12 +106,12 @@ class ViewModule(SchemaChildModule):
                 _=gettext
             ),
             render_template(
-                "view/css/view.css",
+                "views/css/view.css",
                 node_type=self.node_type,
                 _=gettext
             ),
             render_template(
-                "mview/css/mview.css",
+                "mviews/css/mview.css",
                 node_type='mview',
                 _=gettext
             )
@@ -189,7 +189,7 @@ def check_precondition(f):
             _temp = self.pg_template_path(self.manager.version)
         self.template_path = self.template_initial + '/' + _temp
 
-        self.column_template_path = 'column/sql/#{0}#'.format(
+        self.column_template_path = 'columns/sql/#{0}#'.format(
             self.manager.version)
 
         return f(*args, **kwargs)
@@ -205,10 +205,6 @@ class ViewNode(PGChildNodeView, VacuumSettings):
     -------
     * __init__(**kwargs)
       - Method is used to initialize the ViewNode and it's base view.
-
-    * module_js()
-      - Request handler for module.js routes for the view node module
-      javascript, which returns javscript for this module.
 
     * list()
       - This function is used to list all the view nodes within the
@@ -282,7 +278,6 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'configs': [{'get': 'configs'}],
         'get_tblspc': [{'get': 'get_tblspc'}, {'get': 'get_tblspc'}],
         'select_sql': [{'get': 'select_sql'}, {'get': 'select_sql'}],
@@ -305,7 +300,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         self.manager = None
         self.conn = None
         self.template_path = None
-        self.template_initial = 'view'
+        self.template_initial = 'views'
 
     @staticmethod
     def ppas_template_path(ver):
@@ -1298,10 +1293,6 @@ class MViewNode(ViewNode, VacuumSettings):
     * __init__(**kwargs)
       - Method is used to initialize the MView and it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * create(gid, sid, did, scid)
       - Raise an error - we cannot create a material view.
 
@@ -1327,7 +1318,7 @@ class MViewNode(ViewNode, VacuumSettings):
 
         super(MViewNode, self).__init__(*args, **kwargs)
 
-        self.template_initial = 'mview'
+        self.template_initial = 'mviews'
 
     @staticmethod
     def ppas_template_path(ver):

@@ -150,10 +150,6 @@ class IndexConstraintView(PGChildNodeView):
       - Method is used to initialize the PrimaryKeyConstraintView and
       it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -229,24 +225,8 @@ class IndexConstraintView(PGChildNodeView):
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}]
+        'dependent': [{'get': 'dependents'}]
     })
-
-    def module_js(self):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return make_response(
-            render_template(
-                "index_constraint/js/index_constraint.js",
-                _=_,
-                node_type=self.node_type,
-                node_label=self.node_label
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

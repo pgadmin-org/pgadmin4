@@ -129,10 +129,6 @@ class ResourceGroupView(NodeView):
     * __init__(**kwargs)
       - Method is used to initialize the ResourceGroupView and it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -191,8 +187,7 @@ class ResourceGroupView(NodeView):
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}]
+        'dependent': [{'get': 'dependents'}]
     })
 
     def __init__(self, **kwargs):
@@ -208,19 +203,6 @@ class ResourceGroupView(NodeView):
         self.template_path = None
 
         super(ResourceGroupView, self).__init__(**kwargs)
-
-    def module_js(self):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return make_response(
-            render_template(
-                "resource_groups/js/resource_groups.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

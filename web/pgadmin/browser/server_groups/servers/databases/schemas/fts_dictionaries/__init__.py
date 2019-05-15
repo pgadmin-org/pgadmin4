@@ -105,10 +105,6 @@ class FtsDictionaryView(PGChildNodeView):
     * __init__(**kwargs)
       - Method is used to initialize the FtsDictionaryView and it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -192,7 +188,6 @@ class FtsDictionaryView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'fetch_templates': [{'get': 'fetch_templates'},
                             {'get': 'fetch_templates'}],
     })
@@ -202,18 +197,6 @@ class FtsDictionaryView(PGChildNodeView):
         self.template_path = None
         self.manager = None
         super(FtsDictionaryView, self).__init__(**kwargs)
-
-    def module_js(self):
-        """
-        Load JS file (fts_dictionary.js) for this module.
-        """
-        return make_response(
-            render_template(
-                "fts_dictionary/js/fts_dictionary.js",
-                _=_
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """
@@ -232,7 +215,7 @@ class FtsDictionaryView(PGChildNodeView):
             driver = get_driver(PG_DEFAULT_DRIVER)
             self.qtIdent = driver.qtIdent
             # Set the template path for the SQL scripts
-            self.template_path = 'fts_dictionary/sql/#{0}#'.format(
+            self.template_path = 'fts_dictionaries/sql/#{0}#'.format(
                 self.manager.version)
 
             return f(*args, **kwargs)

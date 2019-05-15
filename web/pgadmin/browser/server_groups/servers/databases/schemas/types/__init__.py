@@ -200,7 +200,6 @@ class TypeView(PGChildNodeView, DataTypeReader):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_types': [{'get': 'get_types'}, {'get': 'get_types'}],
         'get_stypes': [{'get': 'get_subtypes'}, {'get': 'get_subtypes'}],
         'get_subopclass': [{'get': 'get_subtype_opclass'},
@@ -244,7 +243,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
             ver = self.manager.version
             server_type = self.manager.server_type
             # Set the template path for the SQL scripts
-            self.template_path = 'type/sql/' + (
+            self.template_path = 'types/sql/' + (
                 '#{0}#{1}#'.format(server_type, ver)
                 if server_type == 'gpdb' else
                 '#{0}#'.format(ver)

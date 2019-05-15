@@ -105,10 +105,6 @@ class FtsTemplateView(PGChildNodeView):
     * __init__(**kwargs)
       - Method is used to initialize the FtsTemplateView and it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -187,7 +183,6 @@ class FtsTemplateView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_lexize': [{'get': 'get_lexize'}, {'get': 'get_lexize'}],
         'get_init': [{'get': 'get_init'}, {'get': 'get_init'}],
     })
@@ -197,18 +192,6 @@ class FtsTemplateView(PGChildNodeView):
         self.template_path = None
         self.manager = None
         super(FtsTemplateView, self).__init__(**kwargs)
-
-    def module_js(self):
-        """
-        This property defines whether javascript exists for this node.
-        """
-        return make_response(
-            render_template(
-                "fts_template/js/fts_templates.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """
@@ -224,7 +207,7 @@ class FtsTemplateView(PGChildNodeView):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'fts_template/sql/#{0}#'.format(
+            self.template_path = 'fts_templates/sql/#{0}#'.format(
                 self.manager.version)
 
             return f(*args, **kwargs)

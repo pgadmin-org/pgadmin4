@@ -142,10 +142,6 @@ class IndexesView(PGChildNodeView):
     * __init__(**kwargs)
       - Method is used to initialize the IndexView and it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -221,7 +217,6 @@ class IndexesView(PGChildNodeView):
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_collations': [{'get': 'get_collations'},
                            {'get': 'get_collations'}],
         'get_access_methods': [{'get': 'get_access_methods'},
@@ -253,7 +248,7 @@ class IndexesView(PGChildNodeView):
 
             # we will set template path for sql scripts
             self.template_path = compile_template_path(
-                'index/sql/',
+                'indexes/sql/',
                 self.manager.server_type,
                 self.manager.version
             )

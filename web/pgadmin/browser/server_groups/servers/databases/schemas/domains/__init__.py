@@ -95,9 +95,6 @@ class DomainView(PGChildNodeView, DataTypeReader):
       - Works as a decorator.
         Validating request on the request of create, update and modified SQL.
 
-    * module_js():
-      - Load JS file (domains.js) for this module.
-
     * check_precondition(f):
       - Works as a decorator.
       -  Checks database connection status.
@@ -168,7 +165,6 @@ class DomainView(PGChildNodeView, DataTypeReader):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_types': [{'get': 'types'}, {'get': 'types'}],
         'get_collations': [
             {'get': 'get_collations'},
@@ -245,18 +241,6 @@ class DomainView(PGChildNodeView, DataTypeReader):
             return f(self, **kwargs)
 
         return wrap
-
-    def module_js(self):
-        """
-        Load JS file (domains.js) for this module.
-        """
-        return make_response(
-            render_template(
-                "domains/js/domains.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

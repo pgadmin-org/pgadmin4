@@ -109,9 +109,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
       - Works as a decorator.
         Validating request on the request of create, update and modified SQL.
 
-    * module_js():
-      - Overrides this property to define javascript for Foreign Table node.
-
     * check_precondition(f):
       - Works as a decorator.
       - Checks database connection status.
@@ -204,7 +201,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_collations': [
             {'get': 'get_collations'},
             {'get': 'get_collations'}
@@ -318,18 +314,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             return f(self, **kwargs)
 
         return wrap
-
-    def module_js(self):
-        """
-        Load JS file (foreign_tables.js) for this module.
-        """
-        return make_response(
-            render_template(
-                "foreign_tables/js/foreign_tables.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

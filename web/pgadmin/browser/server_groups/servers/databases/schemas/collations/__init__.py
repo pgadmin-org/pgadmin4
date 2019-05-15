@@ -171,7 +171,6 @@ class CollationView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_collations': [{'get': 'get_collation'},
                            {'get': 'get_collation'}]
     })
@@ -193,7 +192,7 @@ class CollationView(PGChildNodeView):
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
             self.template_path = compile_template_path(
-                'collation/sql/',
+                'collations/sql/',
                 self.manager.server_type,
                 self.manager.version
             )

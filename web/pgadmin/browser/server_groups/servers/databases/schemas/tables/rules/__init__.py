@@ -175,21 +175,8 @@ class RuleView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'configs': [{'get': 'configs'}]
     })
-
-    def module_js(self):
-        """
-        This property defines whether Javascript exists for this node.
-        """
-        return make_response(
-            render_template(
-                "rules/js/rules.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

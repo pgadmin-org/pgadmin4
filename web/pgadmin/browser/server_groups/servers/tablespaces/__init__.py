@@ -89,24 +89,10 @@ class TablespaceView(PGChildNodeView):
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'vopts': [{}, {'get': 'variable_options'}],
         'move_objects': [{'put': 'move_objects'}],
         'move_objects_sql': [{'get': 'move_objects_sql'}],
     })
-
-    def module_js(self):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return make_response(
-            render_template(
-                "tablespaces/js/tablespaces.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
 
     def check_precondition(f):
         """

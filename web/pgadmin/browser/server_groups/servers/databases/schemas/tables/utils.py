@@ -110,17 +110,17 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             ver = self.manager.version
             server_type = self.manager.server_type
             # Set the template path for the SQL scripts
-            self.table_template_path = compile_template_path('table/sql',
+            self.table_template_path = compile_template_path('tables/sql',
                                                              server_type, ver)
             self.data_type_template_path = compile_template_path(
                 'datatype/sql',
                 server_type, ver)
             self.partition_template_path = \
-                'partition/sql/{0}/#{0}#{1}#'.format(server_type, ver)
+                'partitions/sql/{0}/#{0}#{1}#'.format(server_type, ver)
 
             # Template for Column ,check constraint and exclusion
             # constraint node
-            self.column_template_path = 'column/sql/#{0}#'.format(ver)
+            self.column_template_path = 'columns/sql/#{0}#'.format(ver)
             self.check_constraint_template_path = compile_template_path(
                 'check_constraint/sql', server_type, ver)
             self.exclusion_constraint_template_path = compile_template_path(
@@ -136,11 +136,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
             # Template for index node
             self.index_template_path = compile_template_path(
-                'index/sql', server_type, ver)
+                'indexes/sql', server_type, ver)
 
             # Template for trigger node
             self.trigger_template_path = compile_template_path(
-                'trigger/sql', server_type, ver)
+                'triggers/sql', server_type, ver)
 
             # Template for rules node
             self.rules_template_path = 'rules/sql'

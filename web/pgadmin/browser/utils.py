@@ -289,18 +289,6 @@ class NodeView(with_metaclass(MethodViewType, View)):
                     methods=c['methods']
                 )
 
-    def module_js(self, **kwargs):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return flask.make_response(
-            flask.render_template(
-                "{0}/js/{0}.js".format(self.node_type)
-            ),
-            200, {'Content-Type': 'application/javascript'}
-        )
-
     def children(self, *args, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
         children = []

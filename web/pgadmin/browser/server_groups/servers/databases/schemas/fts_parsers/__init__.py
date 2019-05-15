@@ -98,10 +98,6 @@ class FtsParserView(PGChildNodeView):
     * __init__(**kwargs)
       - Method is used to initialize the FtsParserView and it's base view.
 
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
-
     * check_precondition()
       - This function will behave as a decorator which will checks
         database connection before running view, it will also attaches
@@ -194,7 +190,6 @@ class FtsParserView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'start_functions': [{'get': 'start_functions'},
                             {'get': 'start_functions'}],
         'token_functions': [{'get': 'token_functions'},
@@ -234,7 +229,7 @@ class FtsParserView(PGChildNodeView):
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
-            self.template_path = 'fts_parser/sql/#{0}#'.format(
+            self.template_path = 'fts_parsers/sql/#{0}#'.format(
                 self.manager.version)
 
             return f(*args, **kwargs)

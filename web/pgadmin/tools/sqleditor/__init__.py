@@ -444,7 +444,7 @@ def poll(trans_id):
                     command_obj = pickle.loads(session_obj['command_obj'])
                     if hasattr(command_obj, 'obj_id'):
                         # Get the template path for the column
-                        template_path = 'column/sql/#{0}#'.format(
+                        template_path = 'columns/sql/#{0}#'.format(
                             conn.manager.version
                         )
 

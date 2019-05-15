@@ -42,6 +42,6 @@ class TestTriggerNodesSql(SQLTemplateTestBase):
     @staticmethod
     def get_template_file(version, filename):
         return os.path.join(
-            os.path.dirname(__file__), "..", "templates", "trigger", "sql",
+            os.path.dirname(__file__), "..", "templates", "triggers", "sql",
             version, filename
         )
