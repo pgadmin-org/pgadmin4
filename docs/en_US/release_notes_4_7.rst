@@ -20,5 +20,6 @@ Bug fixes
 | `Bug #4219 <https://redmine.postgresql.org/issues/4219>`_ - Ensure popper.js is installed when needed.
 | `Bug #4227 <https://redmine.postgresql.org/issues/4227>`_ - Fixed Tab key navigation for Maintenance dialog.
 | `Bug #4244 <https://redmine.postgresql.org/issues/4244>`_ - Fix Tab key issue for Toggle switch controls and button on the dialog footer in Safari browser.
+| `Bug #4245 <https://redmine.postgresql.org/issues/4245>`_ - Ensure that element should get highlighted when they get focus on using Tab key.
 | `Bug #4246 <https://redmine.postgresql.org/issues/4246>`_ - Fixed console error when subnode control is used in panels.
 | `Bug #4261 <https://redmine.postgresql.org/issues/4261>`_ - Stop using application/x-javascript as a mime type and use the RFC-compliant application/javascript instead.

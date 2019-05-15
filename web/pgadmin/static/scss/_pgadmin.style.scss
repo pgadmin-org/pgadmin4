@@ -657,8 +657,12 @@ fieldset.inline-fieldset > div {
   outline: none;
 }
 
-input[type="checkbox"]:focus {
-    outline: $color-primary auto 5px !important;
+input[type="checkbox"]:focus,
+a:focus {
+    &.navbar-brand, &.dropdown-item {
+        outline: none !important;
+    }
+    outline: $input-focus-border-color auto 5px !important;
 }
 
 div.rolmembership {

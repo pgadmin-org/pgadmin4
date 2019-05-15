@@ -54,7 +54,7 @@ define(
               if (!that.showTitle)
                 myPanel.title(false);
               else {
-                var title_elem = '<a href="#" tabindex="0" class="panel-link-heading">' + (title || that.title) + '</a>';
+                var title_elem = '<a href="#" tabindex="-1" class="panel-link-heading">' + (title || that.title) + '</a>';
                 myPanel.title(title_elem);
                 if (that.icon != '')
                   myPanel.icon(that.icon);
