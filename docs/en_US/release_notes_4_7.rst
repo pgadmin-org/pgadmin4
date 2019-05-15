@@ -23,3 +23,4 @@ Bug fixes
 | `Bug #4245 <https://redmine.postgresql.org/issues/4245>`_ - Ensure that element should get highlighted when they get focus on using Tab key.
 | `Bug #4246 <https://redmine.postgresql.org/issues/4246>`_ - Fixed console error when subnode control is used in panels.
 | `Bug #4261 <https://redmine.postgresql.org/issues/4261>`_ - Stop using application/x-javascript as a mime type and use the RFC-compliant application/javascript instead.
+| `Bug #4262 <https://redmine.postgresql.org/issues/4262>`_ - Fixed error on displaying table properties of a table partitioned by list having a default partition.

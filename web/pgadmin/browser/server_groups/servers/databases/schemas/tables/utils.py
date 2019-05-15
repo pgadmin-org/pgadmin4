@@ -2203,14 +2203,20 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         'is_default': is_default
                     })
                 elif data['partition_type'] == 'list':
-                    range_part = \
-                        row['partition_value'].split('FOR VALUES IN (')[1]
+                    if row['partition_value'] == 'DEFAULT':
+                        is_default = True
+                        range_in = None
+                    else:
+                        range_part = row['partition_value'].split(
+                            'FOR VALUES IN (')[1]
+                        range_in = range_part[:-1]
+                        is_default = False
 
-                    range_in = range_part[:-1]
                     partitions.append({
                         'oid': row['oid'],
                         'partition_name': partition_name,
-                        'values_in': range_in
+                        'values_in': range_in,
+                        'is_default': is_default
                     })
                 else:
                     range_part = row['partition_value'].split(
