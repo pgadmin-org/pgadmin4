@@ -13,7 +13,7 @@ import $ from 'jquery';
 import Mousetrap from 'mousetrap';
 import * as commonUtils from '../../../static/js/utils';
 import dialogTabNavigator from '../../../static/js/dialog_tab_navigator';
-import {default as keyboardFunc} from 'sources/keyboard_shortcuts';
+import * as keyboardFunc from 'sources/keyboard_shortcuts';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
