@@ -88,7 +88,6 @@ instances:
 This is the working directory in which pgAdmin stores session data, user files,
 configuration files, and it's configuration database. Mapping this directory
 onto the host machine gives you an easy way to maintain configuration between
-
 invocations of the container.
 
 */pgadmin4/config_local.py*
