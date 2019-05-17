@@ -545,20 +545,24 @@ define([
         }
 
         if (gotoCell) {
+          let command = new Backgrid.Command({
+            key: 'Tab',
+            keyCode: 9,
+            which: 9,
+            shiftKey: e.shiftKey,
+          });
           setTimeout(function() {
+            // When we have Editable Cell
             if (gotoCell.hasClass('editable')) {
               e.preventDefault();
               e.stopPropagation();
-              var command = new Backgrid.Command({
-                key: 'Tab',
-                keyCode: 9,
-                which: 9,
-                shiftKey: e.shiftKey,
-              });
               self.model.trigger('backgrid:edited', self.model,
                 self.column, command);
-              this.exitEditMode();
               gotoCell.trigger('focus');
+            } else {
+              // When we have Non-Editable Cell
+              self.model.trigger('backgrid:edited', self.model,
+                self.column, command);
             }
           }, 20);
         }
