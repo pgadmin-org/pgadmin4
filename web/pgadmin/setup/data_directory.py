@@ -8,6 +8,7 @@
 ##########################################################################
 
 import os
+from flask import current_app
 
 
 def _create_directory_if_not_exists(_path):
@@ -21,7 +22,15 @@ def create_app_data_directory(config):
     """
     # Create the directory containing the configuration file (if not present).
     _create_directory_if_not_exists(os.path.dirname(config.SQLITE_PATH))
-    os.chmod(os.path.dirname(config.SQLITE_PATH), 0o700)
+    # Try to set the permissions on the direectory, but don't complain
+    # if we can't. This may be the case on a mounted directory, e.g. in
+    # OpenShift. We'll still secure the config database anyway.
+    try:
+        os.chmod(os.path.dirname(config.SQLITE_PATH), 0o700)
+    except Exception as e:
+        # The flask app isn't setup yet, so we can't use the logger
+        print('WARNING: Failed to set ACL on the directory containing the '
+              'configuration database: {}'.format(e))
 
     # Create the directory containing the log file (if not present).
     _create_directory_if_not_exists(os.path.dirname(config.LOG_FILE))

@@ -25,3 +25,4 @@ Bug fixes
 | `Bug #4261 <https://redmine.postgresql.org/issues/4261>`_ - Stop using application/x-javascript as a mime type and use the RFC-compliant application/javascript instead.
 | `Bug #4262 <https://redmine.postgresql.org/issues/4262>`_ - Fixed error on displaying table properties of a table partitioned by list having a default partition.
 | `Bug #4269 <https://redmine.postgresql.org/issues/4269>`_ - Fix navigation of switch cells in grids.
+| `Bug #4276 <https://redmine.postgresql.org/issues/4276>`_ - Relax the permission check on the directory containing the config database, as it may fail in some environments such as OpenShift.
