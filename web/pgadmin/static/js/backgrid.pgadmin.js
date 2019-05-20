@@ -1256,6 +1256,7 @@ define([
     editor: Backgrid.InputCellEditor.extend({
       attributes: {
         type: 'password',
+        autocomplete: 'new-password',
       },
 
       render: function() {
