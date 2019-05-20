@@ -338,7 +338,8 @@ def create_app(app_name=None):
                 set_version(CURRENT_SCHEMA_VERSION)
                 db.session.commit()
 
-        os.chmod(config.SQLITE_PATH, 0o600)
+        if os.name != 'nt':
+            os.chmod(config.SQLITE_PATH, 0o600)
 
     Mail(app)
 

@@ -369,7 +369,8 @@ def setup_db():
                 version.value = CURRENT_SCHEMA_VERSION
                 db.session.commit()
 
-        os.chmod(config.SQLITE_PATH, 0o600)
+        if os.name != 'nt':
+            os.chmod(config.SQLITE_PATH, 0o600)
 
 
 if __name__ == '__main__':
