@@ -33,8 +33,9 @@ Click the *Definition* tab to continue.
 Use the fields in the *Definition* tab to define the check constraint:
 
 * Provide the expression that a row must satisfy in the *Check* field.
-* Move the *No Inherit?* switch to the *Yes* position to specify this constraint
-  is automatically inherited by a table's children. The default is *No*.
+* Move the *No Inherit?* switch to the *Yes* position to specify that this
+  constraint is not automatically inherited by a table's children. The default
+  is *No*, meaning that the constraint will be inherited by any children.
 * Move the *Don't validate?* switch to the *No* position to skip validation of
   existing data; the constraint may not hold for all rows in the table. The
   default is *Yes*.
