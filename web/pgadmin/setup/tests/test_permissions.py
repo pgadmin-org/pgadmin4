@@ -25,7 +25,7 @@ class PermissionsTestCase(BaseTestGenerator):
             path=os.path.dirname(config.TEST_SQLITE_PATH),
             permissions='700')),
         ('Check session directory', dict(
-            path=os.path.dirname(config.SESSION_DB_PATH),
+            path=config.SESSION_DB_PATH,
             permissions='700'))
     ]
 
