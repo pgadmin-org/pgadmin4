@@ -58,7 +58,8 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     def _check_role_membership_control(self):
         self.page.driver.find_element_by_link_text("Object").click()
         self.page.driver.find_element_by_link_text("Properties...").click()
-        self.page.find_by_partial_link_text("Membership").click()
+        # self.page.find_by_partial_link_text("Membership").click()
+        self.click_membership_tab()
         # Fetch the source code for our custom control
         source_code = self.page.find_by_xpath(
             "//div[contains(@class,'rolmembership')]"
@@ -78,3 +79,19 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         # For XSS we need to search against element's html code
         assert source_code.find(string_to_find) != - \
             1, "{0} might be vulnerable to XSS ".format(source)
+
+    def click_membership_tab(self):
+        """This will click and open membership tab of role"""
+        success = False
+        attempts = 3
+        while not success and attempts > 0:
+            membership_tab_link = self.page.find_by_xpath(
+                "//a[normalize-space(text())='Membership']")
+            membership_tab_link.click()
+            try:
+                self.page.find_by_xpath("//input[@placeholder="
+                                        "'Select members']")
+                break
+            except Exception as e:
+                attempts -= 1
+                pass

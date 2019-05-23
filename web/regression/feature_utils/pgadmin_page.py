@@ -9,6 +9,7 @@
 
 import time
 
+from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, \
     WebDriverException, TimeoutException, NoSuchWindowException, \
     StaleElementReferenceException
@@ -71,7 +72,8 @@ class PgadminPage:
             .perform()
         self.find_by_partial_link_text("Server...").click()
 
-        self.fill_input_by_field_name("name", server_config['name'])
+        self.fill_input_by_field_name("name", server_config['name'],
+                                      loose_focus=True)
         self.find_by_partial_link_text("Connection").click()
         self.fill_input_by_field_name("host", server_config['host'])
         self.fill_input_by_field_name("port", server_config['port'])
@@ -151,7 +153,18 @@ class PgadminPage:
             "//*[@id='tree']//*[contains(text(), '" + tree_item_text + "')]"
             "/parent::span[@class='aciTreeItem']")
         self.driver.execute_script("arguments[0].scrollIntoView()", item)
-        item.click()
+        # unexpected exception like element overlapping, click attempts more
+        # than one time
+        attempts = 3
+        while attempts > 0:
+            try:
+                item.click()
+                break
+            except Exception as e:
+                attempts -= 1
+                time.sleep(.4)
+                if attempts == 0:
+                    raise Exception(e)
 
     def toggle_open_servers_group(self):
         """This will open Servers group to display underlying nodes"""
@@ -197,13 +210,66 @@ class PgadminPage:
                 "='Tables']]]/span[@class='aciTreeButton']")
             ActionChains(self.driver).click(item_button).perform()
 
+    def toggle_open_function_node(self):
+        """The function will be used for opening Functions node only"""
+        node_expanded = False
+        attempts = 3
+
+        xpath_for_functions_node = \
+            "//span[@class='aciTreeText' and starts-with(text()," \
+            "'Functions')]"
+        xpath_for_exp = "//div[div[div[div[div[div[div[div[span[span[" \
+                        "(@class='aciTreeText') and starts-with(text()," \
+                        "'Functions')]]]]]]]]]]"
+        xpath_for_button = "//div[span[span[(@class='aciTreeText') " \
+                           "and starts-with(text(),'Functions')]]]" \
+                           "/span[@class='aciTreeButton']"
+
+        while node_expanded is not True and attempts > 0:
+            # get the element which contains 'aria-expanded' info
+
+            xpath_for_refresh_btn = "//li[@class='context-menu-item']" \
+                                    "/span[text()='Refresh...']"
+
+            # add code to refresh button, sometime the the collapsing button
+            #  is not visible even if there is sub node.
+            functions_node_ele = self.find_by_xpath(xpath_for_functions_node)
+
+            webdriver.ActionChains(self.driver).move_to_element(
+                functions_node_ele).context_click().perform()
+            refresh_btn = self.find_by_xpath(xpath_for_refresh_btn)
+            refresh_btn.click()
+            time.sleep(.5)
+
+            # get the expansion status
+            function_expansion_ele = self.find_by_xpath(xpath_for_exp)
+
+            # look into the attribute and check if it is already expanded or
+            #  not
+            if function_expansion_ele.get_attribute('aria-expanded') \
+                    == 'false':
+                # button element of the Function node to open it
+                item_button = self.find_by_xpath(xpath_for_button)
+                ActionChains(self.driver).click(item_button).perform()
+                # Expansion of element on GUI takes sometime, so put small
+                # sleep
+                time.sleep(.5)
+                function_expansion_ele = self.find_by_xpath(
+                    xpath_for_exp)
+                if function_expansion_ele.get_attribute('aria-expanded') \
+                        == 'true':
+                    break
+                else:
+                    attempts -= 1
+            else:
+                node_expanded = True
+
     def toggle_open_server(self, tree_item_text):
         def check_for_password_dialog_or_tree_open(driver):
             try:
                 dialog = driver.find_element_by_id("frmPassword")
             except WebDriverException:
                 dialog = None
-
             try:
                 database_node = driver.find_element_by_xpath(
                     "//*[@id='tree']//*[.='Databases']"
@@ -284,8 +350,15 @@ class PgadminPage:
 
     def fill_input(self, field, field_content, input_keys=False,
                    key_after_input=Keys.ARROW_DOWN):
-        field.click()
-
+        try:
+            attempt = 0
+            for attempt in range(0, 3):
+                field.click()
+                break
+        except Exception as e:
+            time.sleep(.2)
+            if attempt == 2:
+                raise Exception(e)
         # Use send keys if input_keys true, else use javascript to set content
         if input_keys:
             backspaces = [Keys.BACKSPACE] * len(field.get_attribute('value'))

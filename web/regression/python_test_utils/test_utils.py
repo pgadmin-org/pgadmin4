@@ -319,6 +319,26 @@ def drop_debug_function(server, db_name, function_name="test_func"):
         traceback.print_exc(file=sys.stderr)
 
 
+def does_function_exist(server, db_name, fun_name):
+    query = "select exists(select * " \
+            "from pg_proc where proname = '%s');" % fun_name
+
+    connection = get_db_connection(
+        db_name,
+        server['username'],
+        server['db_password'],
+        server['host'],
+        server['port'],
+        server['sslmode']
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return str(result[0][0])
+
+
 def create_role(server, db_name, role_name="test_role"):
     try:
         connection = get_db_connection(
@@ -1006,3 +1026,22 @@ def check_binary_path_or_skip_test(cls, utility_name):
         retVal = is_utility_exists(binary_path)
         if retVal is not None:
             cls.skipTest(retVal)
+
+
+def get_watcher_dialogue_status(self):
+    """This will get watcher dialogue status"""
+    import time
+    attempts = 120
+
+    while attempts > 0:
+        status = self.page.find_by_css_selector(
+            ".pg-bg-status-text").text
+
+        if 'Failed' in status:
+            break
+        if status == 'Started' or status == 'Running...':
+            attempts -= 1
+            time.sleep(.5)
+        else:
+            break
+    return status

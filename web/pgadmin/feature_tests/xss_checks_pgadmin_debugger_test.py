@@ -36,6 +36,10 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
             self.server, "postgres", "a_test_function"
         )
 
+        if test_utils.does_function_exist(self.server, 'postgres',
+                                          'a_test_function') != 'True':
+            raise Exception("The required function is not found")
+
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
@@ -53,7 +57,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item('postgres')
         self.page.toggle_open_tree_item('Schemas')
         self.page.toggle_open_tree_item('public')
-        self.page.toggle_open_tree_item('Functions')
+        self.page.toggle_open_function_node()
         self.page.select_tree_item("a_test_function()")
 
     def _debug_function(self):
