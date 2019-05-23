@@ -24,6 +24,7 @@ Bug fixes
 | `Bug #4246 <https://redmine.postgresql.org/issues/4246>`_ - Fixed console error when subnode control is used in panels.
 | `Bug #4261 <https://redmine.postgresql.org/issues/4261>`_ - Stop using application/x-javascript as a mime type and use the RFC-compliant application/javascript instead.
 | `Bug #4262 <https://redmine.postgresql.org/issues/4262>`_ - Fixed error on displaying table properties of a table partitioned by list having a default partition.
+| `Bug #4263 <https://redmine.postgresql.org/issues/4263>`_ - Fix handling of JSON in the Query Tool with NULL elements.
 | `Bug #4269 <https://redmine.postgresql.org/issues/4269>`_ - Fix navigation of switch cells in grids.
 | `Bug #4275 <https://redmine.postgresql.org/issues/4275>`_ - Clarify wording for the NO INHERIT option on constraints, per Michel Feinstein.
 | `Bug #4276 <https://redmine.postgresql.org/issues/4276>`_ - Relax the permission check on the directory containing the config database, as it may fail in some environments such as OpenShift.

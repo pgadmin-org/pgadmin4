@@ -2424,7 +2424,7 @@ define('tools.querytool', [
 
             if(data.types[0] && data.types[0].typname === 'json') {
               /* json is sent as text, parse it */
-              explain_data_json = JSON.parse(data.result[0]);
+              explain_data_json = JSON.parse(data.result[0][0]);
             }
 
             if (explain_data_json && explain_data_json[0] &&
