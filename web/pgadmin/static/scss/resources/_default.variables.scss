@@ -102,7 +102,13 @@ $card-cap-bg: $color-bg-theme;
 $card-bg: $color-bg-theme;
 
 
+$navbar-padding-y: 0rem;
+$navbar-padding-x: 0rem;
 $navbar-brand-padding-y: 0rem;
+$navbar-toggler-padding-y: 0rem;
+$navbar-toggler-padding-x: 0rem;
+$navbar-toggler-font-size: $font-size-base;
+$navbar-dark-toggler-border-color: tranparent;
 
 $nav-tabs-border-color: $border-color;
 $nav-tabs-border-width: 1px;
@@ -166,8 +172,8 @@ $navbar-color-bg: $color-primary;
 $navbar-font-size: 0.925rem;
 $navbar-user-font-size: 0.875rem;
 
-$navbar-height: 40px;
-$navbar-dropdown-top: 110%;
+$navbar-height: 32px;
+$navbar-dropdown-top: 100%;
 $dropdown-submenu-top: -$dropdown-spacer;
 
 $table-bg: $color-bg-theme;
