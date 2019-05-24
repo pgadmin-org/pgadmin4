@@ -4,16 +4,13 @@ Version 4.7
 
 Release date: 2019-05-30
 
-This release contains a number of new features and fixes reported since the
-release of pgAdmin4 4.6
-
-Features
-********
+This release contains a number of bug fixes since the release of pgAdmin4 4.6.
 
 
 Bug fixes
 *********
 
+| `Bug #3885 <https://redmine.postgresql.org/issues/3885>`_ - Fix the responsive layout of the main menu bar.
 | `Bug #4164 <https://redmine.postgresql.org/issues/4164>`_ - Fix file browser path issue which occurs when client is on Windows and server is on Mac/Linux.
 | `Bug #4194 <https://redmine.postgresql.org/issues/4194>`_ - Fix accessibility issue for menu navigation.
 | `Bug #4208 <https://redmine.postgresql.org/issues/4208>`_ - Update the UI logo.
