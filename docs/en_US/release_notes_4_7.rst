@@ -11,6 +11,7 @@ Bug fixes
 *********
 
 | `Bug #3885 <https://redmine.postgresql.org/issues/3885>`_ - Fix the responsive layout of the main menu bar.
+| `Bug #4162 <https://redmine.postgresql.org/issues/4162>`_ - Fix syntax error when adding more than one column to the existing table.
 | `Bug #4164 <https://redmine.postgresql.org/issues/4164>`_ - Fix file browser path issue which occurs when client is on Windows and server is on Mac/Linux.
 | `Bug #4194 <https://redmine.postgresql.org/issues/4194>`_ - Fix accessibility issue for menu navigation.
 | `Bug #4208 <https://redmine.postgresql.org/issues/4208>`_ - Update the UI logo.
@@ -27,3 +28,4 @@ Bug fixes
 | `Bug #4275 <https://redmine.postgresql.org/issues/4275>`_ - Clarify wording for the NO INHERIT option on constraints, per Michel Feinstein.
 | `Bug #4276 <https://redmine.postgresql.org/issues/4276>`_ - Relax the permission check on the directory containing the config database, as it may fail in some environments such as OpenShift.
 | `Bug #4278 <https://redmine.postgresql.org/issues/4278>`_ - Prevent Backgrid Password cells from losing focus if the browser opens an autocomplete list.
+| `Bug #4284 <https://redmine.postgresql.org/issues/4284>`_ - Fix syntax error when creating a table with a serial column.
