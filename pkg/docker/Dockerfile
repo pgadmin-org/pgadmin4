@@ -23,7 +23,7 @@ FROM python:3.7-alpine3.9 as docs-builder
 
 # Install only dependencies absolutely required for documentation building
 RUN apk add --no-cache make && \
-    pip install --no-cache-dir sphinx flask_security flask_paranoid python-dateutil flask_sqlalchemy flask_gravatar flask_migrate simplejson cryptography
+    pip install --no-cache-dir sphinx flask_security flask_paranoid python-dateutil flask_sqlalchemy flask_gravatar flask_migrate simplejson cryptography build-deps build-base libffi-dev
 
 COPY ./pgadmin4/ /pgadmin4
 
