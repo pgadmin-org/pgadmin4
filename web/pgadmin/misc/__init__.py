@@ -92,6 +92,7 @@ def index():
 # A special URL used to "ping" the server
 ##########################################################################
 @blueprint.route("/ping")
+@pgCSRFProtect.exempt
 def ping():
     """Generate a "PING" response to indicate that the server is alive."""
     return "PING"
@@ -129,6 +130,7 @@ def explain_js():
 # A special URL used to shut down the server
 ##########################################################################
 @blueprint.route("/shutdown", methods=('get', 'post'))
+@pgCSRFProtect.exempt
 def shutdown():
     if config.SERVER_MODE is not True:
         func = request.environ.get('werkzeug.server.shutdown')
