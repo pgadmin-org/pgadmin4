@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-05-28 12:05+0530\n"
-"PO-Revision-Date: 2019-04-28 03:20+0900\n"
+"PO-Revision-Date: 2019-05-28 19:22+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -111,35 +111,35 @@ msgstr "ノード"
 
 #: pgadmin/browser/__init__.py:693
 msgid "Set Master Password"
-msgstr ""
+msgstr "マスタパスワードを設定"
 
 #: pgadmin/browser/__init__.py:695
 msgid "Please set a master password for pgAdmin."
-msgstr ""
+msgstr "pgAdmin にマスタパスワードを設定してください"
 
 #: pgadmin/browser/__init__.py:696
 msgid ""
 "This will be used to secure and later unlock saved passwords and other "
 "credentials."
-msgstr ""
+msgstr "これはセキュリティの強化に役立ちます。また、保存されたパスワードや認証情報を解除する際にも使用します"
 
 #: pgadmin/browser/__init__.py:700
 msgid "Unlock Saved Passwords"
-msgstr ""
+msgstr "保存されたパスワードを解除"
 
 #: pgadmin/browser/__init__.py:702
 msgid "Please enter your master password."
-msgstr ""
+msgstr "マスタパスワードを入力してください"
 
 #: pgadmin/browser/__init__.py:703
 msgid ""
 "This is required to unlock saved passwords and reconnect to the database "
 "server(s)."
-msgstr ""
+msgstr "これは保存されたパスワードを解除し、データベースサーバへ再接続するために必要です"
 
 #: pgadmin/browser/__init__.py:766
 msgid "Incorrect master password"
-msgstr ""
+msgstr "マスタパスワードが違います"
 
 #: pgadmin/browser/__init__.py:845 pgadmin/browser/__init__.py:937
 #: pgadmin/browser/__init__.py:1008
@@ -4533,7 +4533,7 @@ msgstr "デフォルト："
 msgid ""
 "The default partition can store rows that do not fall into any existing "
 "partition’s range or list."
-msgstr "デフォルトパーティションには、既存のどのパーティションの範囲やリストに一致しない行を収納できます"
+msgstr "デフォルトパーティションには、既存のパーティションすべての範囲やリストに一致しない行を収納できます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1067
 msgid "From/To/In input: "
@@ -7524,7 +7524,7 @@ msgstr "オブジェクトが選択されていません"
 #: pgadmin/browser/static/js/browser.js:569
 #: pgadmin/browser/static/js/browser.js:623
 msgid "Reset Master Password"
-msgstr ""
+msgstr "マスタパスワードを初期化"
 
 #: pgadmin/browser/static/js/browser.js:624
 msgid ""
@@ -7532,6 +7532,8 @@ msgid ""
 "established connections to the server and you may need to reconnect "
 "again. Do you wish to continue ?"
 msgstr ""
+"これにより、保存されたパスワードはすべて削除されます。また、サーバへの接続もすべて切断されるので、必要に応じて接続し直さなければなりません。"
+"続行しますか？"
 
 #: pgadmin/browser/static/js/browser.js:725
 #, python-format
@@ -8003,7 +8005,7 @@ msgstr "ダッシュボードの読み込み中にエラーが発生しました
 #: pgadmin/dashboard/static/js/dashboard.js:252
 #: pgadmin/dashboard/static/js/dashboard.js:383
 msgid "Loading dashboard..."
-msgstr ""
+msgstr "ダッシュボードを読み込み中..."
 
 #: pgadmin/dashboard/static/js/dashboard.js:398
 msgid "Please connect to the selected server to view the dashboard."
@@ -8882,7 +8884,7 @@ msgstr "配列は \"{\" で始まり、\"}\"\" で終わる必要があります
 #: pgadmin/static/js/slickgrid/editors.js:840
 #: pgadmin/static/js/slickgrid/editors.js:871
 msgid "Please enter a valid number"
-msgstr "有効な値を入力してください"
+msgstr "有効な数字を入力してください"
 
 #: pgadmin/static/js/sqleditor/call_render_after_poll.js:38
 #, python-format
@@ -8983,7 +8985,7 @@ msgstr "ツリー状態の保存中にエラーが発生しました\""
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:149
 msgid "Error fetching the tree state."
-msgstr ""
+msgstr "ツリー状態の取得中にエラーが発生しました"
 
 #: pgadmin/templates/security/change_password.html:9
 #: pgadmin/templates/security/panel.html:9
@@ -9999,7 +10001,7 @@ msgstr "行を取得中です。お待ちください..."
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:627
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:631
 msgid "Unable to fetch the database objects"
-msgstr ""
+msgstr "データベースオブジェクトを取得できませんでした"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:661
 msgid "Object Selection (step 1 of 3)"
@@ -11139,7 +11141,7 @@ msgstr "ホスト「{0}」に対する SSH トンネルへの接続が失われ�
 
 #: pgadmin/utils/exception.py:99
 msgid "Crypt key is missing."
-msgstr ""
+msgstr "暗号キーが欠けています"
 
 #: pgadmin/utils/preferences.py:171
 msgid "Invalid value for a boolean option."
