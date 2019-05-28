@@ -105,20 +105,13 @@ class ChangePasswordTestCase(BaseTestGenerator):
             )
             user_id = json.loads(response.data.decode('utf-8'))['id']
             # Logout the Administrator before login normal user
-            test_utils.logout_tester_account(self.tester)
-            response = self.tester.post(
-                '/login',
-                data=dict(
-                    email=self.username,
-                    password=self.password
-                ),
-                follow_redirects=True
-            )
+            self.tester.logout()
+            response = self.tester.login(self.username, self.password, True)
             self.assertEquals(response.status_code, 200)
             # test the 'change password' test case
             utils.change_password(self)
             # Delete the normal user after changing it's password
-            test_utils.logout_tester_account(self.tester)
+            self.tester.logout()
             # Login the Administrator before deleting normal user
             test_utils.login_tester_account(self.tester)
             response = self.tester.delete(
@@ -131,4 +124,6 @@ class ChangePasswordTestCase(BaseTestGenerator):
 
     @classmethod
     def tearDownClass(cls):
+        # Make sure - we're already logged out before running
+        cls.tester.logout()
         test_utils.login_tester_account(cls.tester)

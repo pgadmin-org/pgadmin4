@@ -267,7 +267,8 @@ define([
         $.ajax({
           url: urlBase,
           type: 'GET',
-          beforeSend: function() {
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
             // Generate a timer for the request
             timer = setTimeout(function() {
               // notify user if request is taking longer than 1 second

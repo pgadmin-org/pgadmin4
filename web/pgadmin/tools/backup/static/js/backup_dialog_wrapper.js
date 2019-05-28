@@ -142,8 +142,7 @@ export class BackupDialogWrapper extends DialogWrapper {
 
       this.setExtraParameters(selectedTreeNode, treeInfo);
 
-      let service = axios.create({});
-      service.post(
+      axios.post(
         baseUrl,
         this.view.model.toJSON()
       ).then(function (res) {

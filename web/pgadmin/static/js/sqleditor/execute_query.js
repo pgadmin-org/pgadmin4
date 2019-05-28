@@ -57,13 +57,12 @@ class ExecuteQuery {
     if (sqlStatement.length <= 0) return;
 
     const self = this;
-    let service = axios.create({});
     self.explainPlan = explainPlan;
 
     const sqlStatementWithAnalyze = ExecuteQuery.prepareAnalyzeSql(sqlStatement, explainPlan);
 
     self.initializeExecutionOnSqlEditor(sqlStatementWithAnalyze);
-    service.post(
+    axios.post(
       this.generateURLReconnectionFlag(connect),
       JSON.stringify(sqlStatementWithAnalyze),
       {headers: {'Content-Type': 'application/json'}})
@@ -113,8 +112,7 @@ class ExecuteQuery {
 
   poll() {
     const self = this;
-    let service = axios.create({});
-    service.get(
+    axios.get(
       url_for('sqleditor.poll', {
         'trans_id': self.sqlServerObject.transId,
       })

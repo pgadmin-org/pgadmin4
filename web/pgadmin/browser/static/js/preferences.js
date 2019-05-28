@@ -12,6 +12,7 @@ import url_for from 'sources/url_for';
 import $ from 'jquery';
 import * as Alertify from 'pgadmin.alertifyjs';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
+
 var modifyAnimation = require('sources/modify_animation');
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -88,10 +89,14 @@ _.extend(pgBrowser, {
 
   // Get and cache the preferences
   cache_preferences: function (modulesChanged) {
-    var self = this;
+    var self = this,
+      headers = {};
+    headers[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
+
     setTimeout(function() {
       $.ajax({
         url: url_for('preferences.get_all'),
+        headers: headers,
       })
         .done(function(res) {
           self.preferences_cache = res;

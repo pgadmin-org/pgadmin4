@@ -146,7 +146,7 @@ _.extend(pgBrowser.browserTreeState, {
           }
         }
         console.warn(
-          gettext('Error fetching the tree state."'), msg);
+          gettext('Error fetching the tree state.'), msg);
       });
   },
   update_cache: function(item) {

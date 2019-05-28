@@ -41,7 +41,7 @@ class TestLoginUserImage(BaseTestGenerator):
     @classmethod
     def setUpClass(cls):
         "Logout first if already logged in"
-        utils.logout_tester_account(cls.tester)
+        cls.tester.logout()
 
     # No need to call baseclass setup function
     def setUp(self):
@@ -49,13 +49,8 @@ class TestLoginUserImage(BaseTestGenerator):
 
     def runTest(self):
         # Login and check type of image in response
-        response = self.tester.post(
-            '/login', data=dict(
-                email=self.email,
-                password=self.password
-            ),
-            follow_redirects=True
-        )
+        response = self.tester.login(self.email, self.password, True)
+
         # Should have gravatar image
         if config.SHOW_GRAVATAR_IMAGE:
             self.assertIn(self.respdata, response.data.decode('utf8'))
@@ -69,4 +64,6 @@ class TestLoginUserImage(BaseTestGenerator):
         We need to again login the test client as soon as test scenarios
         finishes.
         """
+        # Make sure - we're already logged out
+        cls.tester.logout()
         utils.login_tester_account(cls.tester)

@@ -22,6 +22,7 @@ import config
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, bad_request, internal_server_error
+from pgadmin.utils.csrf import pgCSRFProtect
 
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting
@@ -136,6 +137,7 @@ def script():
 
 
 @blueprint.route("/current_user.js")
+@pgCSRFProtect.exempt
 @login_required
 def current_user_info():
     return Response(

@@ -22,12 +22,14 @@ import loading_icon from 'acitree/image/load-root.gif';
 define([
   'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'sources/gettext', 'sources/url_for', 'dropzone', 'sources/pgadmin',
-  'tablesorter',
-], function($, _, S, Alertify, gettext, url_for, Dropzone, pgAdmin) {
+  'sources/csrf', 'tablesorter',
+], function($, _, S, Alertify, gettext, url_for, Dropzone, pgAdmin, csrfToken) {
 
   /*---------------------------------------------------------
     Define functions used for various operations
   ---------------------------------------------------------*/
+  // Set the CSRF Token
+  csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
 
   // Return file extension
   var getFileExtension = function(name) {

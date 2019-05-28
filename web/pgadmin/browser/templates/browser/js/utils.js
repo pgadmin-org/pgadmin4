@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
+
 define('pgadmin.browser.utils',
   ['sources/pgadmin'], function(pgAdmin) {
 
@@ -15,6 +16,8 @@ define('pgadmin.browser.utils',
   /* Add hooked-in panels by extensions */
   pgBrowser['panels_items'] = '{{ current_app.panels|tojson }}';
 
+  pgAdmin['csrf_token_header'] = '{{ current_app.config.get('WTF_CSRF_HEADERS')[0] }}';
+  pgAdmin['csrf_token'] = '{{ csrf_token() }}';
 
   // Define list of nodes on which Query tool option doesn't appears
   var unsupported_nodes = pgAdmin.unsupported_nodes = [

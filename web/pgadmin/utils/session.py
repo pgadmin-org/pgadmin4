@@ -153,7 +153,7 @@ class CachingSessionManager(SessionManager):
         with sess_lock:
             if sid in self._cache:
                 session = self._cache[sid]
-                if session.hmac_digest != digest:
+                if session and session.hmac_digest != digest:
                     session = None
 
                 # reset order in Dict

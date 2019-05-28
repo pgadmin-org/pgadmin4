@@ -11,7 +11,8 @@ define('pgadmin.browser', [
   'sources/tree/tree',
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
-  'sources/check_node_visibility', './toolbar', 'pgadmin.help', 'pgadmin.browser.utils',
+  'sources/check_node_visibility', './toolbar', 'pgadmin.help',
+  'sources/csrf', 'pgadmin.browser.utils',
   'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel',
@@ -23,7 +24,7 @@ define('pgadmin.browser', [
   tree,
   gettext, url_for, require, $, _, S,
   Bootstrap, pgAdmin, Alertify, codemirror,
-  checkNodeVisibility, toolBar, help
+  checkNodeVisibility, toolBar, help, csrfToken
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
@@ -35,6 +36,8 @@ define('pgadmin.browser', [
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
   var select_object_msg = gettext('Please select an object in the tree view.');
+
+  csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
 
   var panelEvents = {};
   panelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
@@ -353,8 +356,8 @@ define('pgadmin.browser', [
     },
     save_current_layout: function(layout_id, docker) {
       if(docker) {
-        var layout = docker.save();
-        var settings = { setting: layout_id, value: layout };
+        var layout = docker.save(),
+          settings = { setting: layout_id, value: layout };
         $.ajax({
           type: 'POST',
           url: url_for('settings.store_bulk'),
@@ -525,11 +528,15 @@ define('pgadmin.browser', [
       pgBrowser.utils.registerScripts(this);
       pgBrowser.utils.addMenus(obj);
 
+      let headers = {};
+      headers[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
+
       // Ping the server every 5 minutes
       setInterval(function() {
         $.ajax({
           url: url_for('misc.cleanup'),
           type:'POST',
+          headers: headers,
         })
           .done(function() {})
           .fail(function() {});

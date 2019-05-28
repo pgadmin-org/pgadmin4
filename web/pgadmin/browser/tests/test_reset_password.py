@@ -11,7 +11,6 @@ import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils.test_utils import login_tester_account
-from regression.python_test_utils.test_utils import logout_tester_account
 from regression.test_setup import config_data
 
 
@@ -40,7 +39,7 @@ class ResetPasswordTestCase(BaseTestGenerator):
 
     @classmethod
     def setUpClass(cls):
-        logout_tester_account(cls.tester)
+        cls.tester.logout()
 
     # No need to call baseclass setup function
     def setUp(self):
@@ -50,8 +49,13 @@ class ResetPasswordTestCase(BaseTestGenerator):
         """This function checks reset password functionality."""
 
         response = self.tester.get('/browser/reset_password')
-        self.assertTrue('Recover pgAdmin 4 Password' in response.data.decode(
-            'utf-8'))
+        self.assertTrue(
+            'Recover Password' in response.data.decode('utf-8')
+        )
+        self.assertTrue(
+            'Enter the email address for the user account you wish to '
+            'recover the password for' in response.data.decode('utf-8')
+        )
         response = self.tester.post(
             '/browser/reset_password', data=dict(email=self.email),
             follow_redirects=True)

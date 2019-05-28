@@ -123,6 +123,10 @@ if (not hasattr(builtins, 'SERVER_MODE')) or builtins.SERVER_MODE is None:
 else:
     SERVER_MODE = builtins.SERVER_MODE
 
+# HTTP headers to search for CSRF token when it is not provided in the form.
+# Default is ['X-CSRFToken', 'X-CSRF-Token']
+WTF_CSRF_HEADERS = ['X-pgA-CSRFToken']
+
 # User ID (email address) to use for the default user in desktop mode.
 # The default should be fine here, as it's not exposed in the app.
 DESKTOP_USER = 'pgadmin4@pgadmin.org'
@@ -140,9 +144,6 @@ DEFAULT_SERVER = '127.0.0.1'
 # The default port on which the app server will listen if not set in the
 # environment by the runtime
 DEFAULT_SERVER_PORT = 5050
-
-# Enable CSRF protection?
-CSRF_ENABLED = True
 
 # Enable X-Frame-Option protection.
 # Set to one of "SAMEORIGIN", "ALLOW-FROM origin" or "" to disable.

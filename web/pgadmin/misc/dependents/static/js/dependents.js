@@ -9,8 +9,8 @@
 
 define('misc.dependents', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'backbone',
-  'pgadmin.browser', 'pgadmin.alertifyjs', 'pgadmin.backgrid',
-], function(gettext, _, S, $, Backbone, pgBrowser, Alertify, Backgrid) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs', 'pgadmin.backgrid',
+], function(gettext, _, S, $, Backbone, pgAdmin, pgBrowser, Alertify, Backgrid) {
 
   if (pgBrowser.NodeDependents)
     return pgBrowser.NodeDependents;
@@ -156,7 +156,8 @@ define('misc.dependents', [
           $.ajax({
             url: url,
             type: 'GET',
-            beforeSend: function() {
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
               // Generate a timer for the request
               timer = setTimeout(function() {
                 // notify user if request is taking longer than 1 second

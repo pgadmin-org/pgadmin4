@@ -43,8 +43,7 @@ export class RestoreDialog extends Dialog {
     const baseUrl = this.url_for_utility_exists(sid);
     // Check pg_restore utility exists or not.
     let that = this;
-    let service = axios.create({});
-    service.get(
+    axios.get(
       baseUrl
     ).then(function(res) {
       if (!res.data.success) {

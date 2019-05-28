@@ -353,7 +353,10 @@ define([
             $.ajax({
               url: baseUrl,
               method: 'GET',
-              beforeSend: function() {
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader(
+                  pgAdmin.csrf_token_header, pgAdmin.csrf_token
+                );
                 // set cursor to progress before every poll.
                 $('.debugger-container').addClass('show_progress');
               },

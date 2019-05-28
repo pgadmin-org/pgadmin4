@@ -8,7 +8,7 @@
 ##########################################################################
 
 import uuid
-
+import config as app_config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression.test_setup import config_data
@@ -28,6 +28,7 @@ class LoginTestCase(BaseTestGenerator):
                 config_data['pgAdmin4_login_credentials']
                 ['login_username']),
             password=str(uuid.uuid4())[4:8],
+            is_gravtar_image_check=False,
             respdata='Invalid password')),
 
         # This test case validates the empty password field
@@ -35,6 +36,7 @@ class LoginTestCase(BaseTestGenerator):
             email=(
                 config_data['pgAdmin4_login_credentials']
                 ['login_username']), password='',
+            is_gravtar_image_check=False,
             respdata='Password not provided')),
 
         # This test case validates blank email field
@@ -42,11 +44,13 @@ class LoginTestCase(BaseTestGenerator):
             email='', password=(
                 config_data['pgAdmin4_login_credentials']
                 ['login_password']),
+            is_gravtar_image_check=False,
             respdata='Email not provided')),
 
         # This test case validates empty email and password
         ('Empty_Credentials', dict(
             email='', password='',
+            is_gravtar_image_check=False,
             respdata='Email not provided')),
 
         # This test case validates the invalid/incorrect email id
@@ -55,12 +59,14 @@ class LoginTestCase(BaseTestGenerator):
             password=(
                 config_data['pgAdmin4_login_credentials']
                 ['login_password']),
+            is_gravtar_image_check=False,
             respdata='Specified user does not exist')),
 
         # This test case validates invalid email and password
         ('Invalid_Credentials', dict(
             email=str(uuid.uuid4())[1:8] + '@xyz.com',
             password=str(uuid.uuid4())[4:8],
+            is_gravtar_image_check=False,
             respdata='Specified user does not exist')),
 
         # This test case validates the valid/correct credentials and allow user
@@ -72,9 +78,13 @@ class LoginTestCase(BaseTestGenerator):
             password=(
                 config_data['pgAdmin4_login_credentials']
                 ['login_password']),
+            is_gravtar_image_check=True,
+            respdata_without_gravtar=config_data['pgAdmin4_login_credentials']
+            ['login_username'],
             respdata='Gravatar image for %s' %
                      config_data['pgAdmin4_login_credentials']
-                     ['login_username']))
+                     ['login_username']),
+         )
     ]
 
     @classmethod
@@ -84,7 +94,7 @@ class LoginTestCase(BaseTestGenerator):
         logging in the client like invalid password, invalid emails,
         empty credentials etc.
         """
-        utils.logout_tester_account(cls.tester)
+        cls.tester.logout()
 
     # No need to call base class setup function
     def setUp(self):
@@ -92,15 +102,14 @@ class LoginTestCase(BaseTestGenerator):
 
     def runTest(self):
         """This function checks login functionality."""
-        response = self.tester.post(
-            '/login',
-            data=dict(
-                email=self.email,
-                password=self.password
-            ),
-            follow_redirects=True
-        )
-        self.assertTrue(self.respdata in response.data.decode('utf8'))
+        res = self.tester.login(self.email, self.password, True)
+        if self.is_gravtar_image_check:
+            if app_config.SHOW_GRAVATAR_IMAGE:
+                self.assertTrue(self.respdata in res.data.decode('utf8'))
+            else:
+                print(self.respdata_without_gravtar in res.data.decode('utf8'))
+        else:
+            self.assertTrue(self.respdata in res.data.decode('utf8'))
 
     @classmethod
     def tearDownClass(cls):
@@ -108,4 +117,5 @@ class LoginTestCase(BaseTestGenerator):
         We need to again login the test client as soon as test scenarios
         finishes.
         """
+        cls.tester.logout()
         utils.login_tester_account(cls.tester)

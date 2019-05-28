@@ -37,6 +37,7 @@ from pgadmin import current_blueprint
 from pgadmin.settings import get_setting
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.preferences import Preferences
 from pgadmin.browser.register_browser_preferences import \
     register_browser_preferences
@@ -478,6 +479,7 @@ class BrowserPluginModule(PgAdminModule):
 
 
 @blueprint.route("/")
+@pgCSRFProtect.exempt
 @login_required
 def index():
     """Render and process the main browser window."""
@@ -561,6 +563,7 @@ def index():
 
 
 @blueprint.route("/js/utils.js")
+@pgCSRFProtect.exempt
 @login_required
 def utils():
     layout = get_setting('Browser/Layout', default='')
@@ -627,6 +630,7 @@ def utils():
 
 
 @blueprint.route("/js/endpoints.js")
+@pgCSRFProtect.exempt
 def exposed_urls():
     return make_response(
         render_template('browser/js/endpoints.js'),
@@ -635,6 +639,7 @@ def exposed_urls():
 
 
 @blueprint.route("/js/error.js")
+@pgCSRFProtect.exempt
 @login_required
 def error_js():
     return make_response(
@@ -642,42 +647,16 @@ def error_js():
         200, {'Content-Type': 'application/javascript'})
 
 
-@blueprint.route("/js/node.js")
-@login_required
-def node_js():
-    prefs = Preferences.module('paths')
-
-    pg_help_path_pref = prefs.preference('pg_help_path')
-    pg_help_path = pg_help_path_pref.get()
-
-    edbas_help_path_pref = prefs.preference('edbas_help_path')
-    edbas_help_path = edbas_help_path_pref.get()
-
-    return make_response(
-        render_template('browser/js/node.js',
-                        pg_help_path=pg_help_path,
-                        edbas_help_path=edbas_help_path,
-                        _=gettext
-                        ),
-        200, {'Content-Type': 'application/javascript'})
-
-
 @blueprint.route("/js/messages.js")
+@pgCSRFProtect.exempt
 def messages_js():
     return make_response(
         render_template('browser/js/messages.js', _=gettext),
         200, {'Content-Type': 'application/javascript'})
 
 
-@blueprint.route("/js/collection.js")
-@login_required
-def collection_js():
-    return make_response(
-        render_template('browser/js/collection.js', _=gettext),
-        200, {'Content-Type': 'application/javascript'})
-
-
 @blueprint.route("/browser.css")
+@pgCSRFProtect.exempt
 @login_required
 def browser_css():
     """Render and return CSS snippets from the nodes and modules."""
@@ -711,6 +690,7 @@ def get_nodes():
 if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
     @blueprint.route("/change_password", endpoint="change_password",
                      methods=['GET', 'POST'])
+    @pgCSRFProtect.exempt
     @login_required
     def change_password():
         """View function which handles a change password request."""
@@ -794,6 +774,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
     @blueprint.route("/reset_password", endpoint="forgot_password",
                      methods=['GET', 'POST'])
+    @pgCSRFProtect.exempt
     @anonymous_user_required
     def forgot_password():
         """View function that handles a forgotten password request."""
@@ -860,10 +841,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
         methods=['GET', 'POST'],
         endpoint='reset_password'
     )
+    @pgCSRFProtect.exempt
     @anonymous_user_required
     def reset_password(token):
         """View function that handles a reset password request."""
-
         expired, invalid, user = reset_password_token_status(token)
 
         if invalid:

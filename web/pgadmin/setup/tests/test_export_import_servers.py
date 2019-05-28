@@ -11,6 +11,7 @@ from pgadmin.utils.route import BaseTestGenerator
 import os
 import json
 import tempfile
+import config
 
 
 class ImportExportServersTestCase(BaseTestGenerator):
@@ -24,12 +25,20 @@ class ImportExportServersTestCase(BaseTestGenerator):
     ]
 
     def runTest(self):
+
+        if config.SERVER_MODE is True:
+            self.skipTest(
+                "Can not run import-export of servers in the SERVER mode."
+            )
+
         path = os.path.dirname(__file__)
         setup = os.path.realpath(os.path.join(path, "../../../setup.py"))
 
         # Load the servers
-        os.system("python %s --load-servers %s 2> %s" %
-                  (setup, os.path.join(path, "servers.json"), os.devnull))
+        os.system(
+            "python %s --load-servers %s 2> %s" %
+            (setup, os.path.join(path, "servers.json"), os.devnull)
+        )
 
         # And dump them again
         tf = tempfile.NamedTemporaryFile(delete=False)

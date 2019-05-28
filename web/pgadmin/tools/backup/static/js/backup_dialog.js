@@ -43,8 +43,7 @@ export class BackupDialog extends Dialog {
     const baseUrl = this.url_for_utility_exists(sid, params);
     // Check pg_dump or pg_dumpall utility exists or not.
     let that = this;
-    let service = axios.create({});
-    service.get(
+    axios.get(
       baseUrl
     ).then(function(res) {
       if (!res.data.success) {

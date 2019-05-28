@@ -51,26 +51,13 @@ def login_tester_account(tester):
        os.environ['PGADMIN_SETUP_PASSWORD']:
         email = os.environ['PGADMIN_SETUP_EMAIL']
         password = os.environ['PGADMIN_SETUP_PASSWORD']
-        tester.post('/login', data=dict(email=email, password=password),
-                    follow_redirects=True)
+        tester.login(email, password)
     else:
         from regression.runtests import app_starter
         print("Unable to login test client, email and password not found.",
               file=sys.stderr)
         _cleanup(tester, app_starter)
         sys.exit(1)
-
-
-def logout_tester_account(tester):
-    """
-    This function logout the test account
-
-    :param tester: test client
-    :type tester: flask test client object
-    :return: None
-    """
-
-    tester.get('/logout')
 
 
 def get_config_data():
@@ -802,7 +789,8 @@ def _cleanup(tester, app_starter):
         traceback.print_exc(file=sys.stderr)
     finally:
         # Logout the test client
-        logout_tester_account(tester)
+        tester.logout()
+
         # Remove SQLite db file
         remove_db_file()
         if app_starter:

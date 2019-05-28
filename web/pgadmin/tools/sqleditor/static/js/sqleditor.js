@@ -35,6 +35,7 @@ define('tools.querytool', [
   'sources/sqleditor/calculate_query_run_time',
   'sources/sqleditor/call_render_after_poll',
   'sources/sqleditor/query_tool_preferences',
+  'sources/csrf',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
   'backgrid.sizeable.columns',
@@ -49,7 +50,7 @@ define('tools.querytool', [
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   GeometryViewer, historyColl, queryHist,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
-  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref) {
+  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, csrfToken) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -62,6 +63,8 @@ define('tools.querytool', [
     Slick = window.Slick,
     HistoryCollection = historyColl.default,
     QueryHistory = queryHist.default;
+
+  csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
 
   var is_query_running = false;
 
@@ -1892,6 +1895,7 @@ define('tools.querytool', [
         var self = this;
         this.container = container;
         this.state = {};
+        this.csrf_token = pgAdmin.csrf_token;
         // Disable animation first
         modifyAnimation.modifyAlertifyAnimation();
 

@@ -9,10 +9,10 @@
 
 define('misc.statistics', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'backbone',
-  'pgadmin.browser', 'pgadmin.backgrid', 'alertify', 'sources/size_prettify',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backgrid', 'alertify', 'sources/size_prettify',
   'sources/misc/statistics/statistics',
 ], function(
-  gettext, _, S, $, Backbone, pgBrowser, Backgrid, Alertify, sizePrettify,
+  gettext, _, S, $, Backbone, pgAdmin, pgBrowser, Backgrid, Alertify, sizePrettify,
   statisticsHelper
 ) {
 
@@ -235,7 +235,10 @@ define('misc.statistics', [
           $.ajax({
             url: url,
             type: 'GET',
-            beforeSend: function() {
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader(
+                pgAdmin.csrf_token_header, pgAdmin.csrf_token
+              );
               // Generate a timer for the request
               timer = setTimeout(function() {
                 // notify user if request is taking longer than 1 second

@@ -24,6 +24,7 @@ from flask_mail import Mail
 from flask_paranoid import Paranoid
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_security.utils import login_user
+
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
@@ -37,6 +38,7 @@ from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
 from datetime import timedelta
 from pgadmin.setup import get_version, set_version
 from pgadmin.utils.ajax import internal_server_error
+from pgadmin.utils.csrf import pgCSRFProtect
 
 
 # If script is running under python3, it will not have the xrange function
@@ -367,7 +369,10 @@ def create_app(app_name=None):
         'CSRF_SESSION_KEY': config.CSRF_SESSION_KEY,
         'SECRET_KEY': config.SECRET_KEY,
         'SECURITY_PASSWORD_SALT': config.SECURITY_PASSWORD_SALT,
-        'SESSION_COOKIE_DOMAIN': config.SESSION_COOKIE_DOMAIN
+        'SESSION_COOKIE_DOMAIN': config.SESSION_COOKIE_DOMAIN,
+        # CSRF Token expiration till session expires
+        'WTF_CSRF_TIME_LIMIT': getattr(config, 'CSRF_TIME_LIMIT', None),
+        'WTF_CSRF_METHODS': ['GET', 'POST', 'PUT', 'DELETE'],
     }))
 
     security.init_app(app, user_datastore)
@@ -707,7 +712,12 @@ def create_app(app_name=None):
         return e
 
     ##########################################################################
+    # Protection against CSRF attacks
+    ##########################################################################
+    with app.app_context():
+        pgCSRFProtect.init_app(app)
+
+    ##########################################################################
     # All done!
     ##########################################################################
-
     return app

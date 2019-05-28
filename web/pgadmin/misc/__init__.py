@@ -13,6 +13,7 @@ import pgadmin.utils.driver as driver
 from flask import url_for, render_template, Response, request
 from flask_babelex import gettext
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import cleanup_session_files
 
@@ -98,6 +99,7 @@ def ping():
 
 # For Garbage Collecting closed connections
 @blueprint.route("/cleanup", methods=['POST'])
+@pgCSRFProtect.exempt
 def cleanup():
     driver.ping()
     # Cleanup session files.
