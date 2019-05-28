@@ -59,6 +59,8 @@ if config.SERVER_MODE is True:
     config.SECURITY_CHANGEABLE = True
     config.SECURITY_POST_CHANGE_VIEW = 'browser.change_password'
 
+# disable master password for test cases
+config.MASTER_PASSWORD_REQUIRED = False
 
 from regression import test_setup
 from regression.feature_utils.app_starter import AppStarter
@@ -187,7 +189,14 @@ def get_test_modules(arguments):
     global driver, app_starter, handle_cleanup
 
     if not config.SERVER_MODE:
-        exclude_pkgs.append("browser.tests")
+        # following test cases applicable only for server mode
+        exclude_pkgs.extend([
+            "browser.tests.test_change_password",
+            "browser.tests.test_gravatar_image_display",
+            "browser.tests.test_login",
+            "browser.tests.test_logout",
+            "browser.tests.test_reset_password",
+        ])
     if arguments['exclude'] is not None:
         exclude_pkgs += arguments['exclude'].split(',')
 

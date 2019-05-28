@@ -119,31 +119,28 @@ define('misc.sql', [
 
               sql = '';
               var timer;
-
-              $.ajax({
-                url: url,
-                type: 'GET',
-                beforeSend: function(xhr) {
-                  xhr.setRequestHeader(
-                    pgAdmin.csrf_token_header, pgAdmin.csrf_token
-                  );
-                  // Generate a timer for the request
-                  timer = setTimeout(function() {
-                    // Notify user if request is taking longer than 1 second
-
-                    pgAdmin.Browser.editor.setValue(
-                      gettext('Retrieving data from the server...')
+              var ajaxHook = function() {
+                $.ajax({
+                  url: url,
+                  type: 'GET',
+                  beforeSend: function(xhr) {
+                    xhr.setRequestHeader(
+                      pgAdmin.csrf_token_header, pgAdmin.csrf_token
                     );
-                  }, 1000);
-                },
-              })
-                .done(function(res) {
+                    // Generate a timer for the request
+                    timer = setTimeout(function() {
+                      // Notify user if request is taking longer than 1 second
+                      pgAdmin.Browser.editor.setValue(
+                        gettext('Retrieving data from the server...')
+                      );
+                    }, 1000);
+                  },
+                }).done(function(res) {
                   if (pgAdmin.Browser.editor.getValue() != res) {
                     pgAdmin.Browser.editor.setValue(res);
                   }
                   clearTimeout(timer);
-                })
-                .fail(function(xhr, error, message) {
+                }).fail(function(xhr, error, message) {
                   var _label = treeHierarchy[n_type].label;
                   pgBrowser.Events.trigger(
                     'pgadmin:node:retrieval:error', 'sql', xhr, error, message, item
@@ -156,11 +153,18 @@ define('misc.sql', [
                       error, xhr,
                       S(gettext('Error retrieving the information - %s')).sprintf(
                         message || _label
-                      ).value(),
-                      function() {}
+                      ).value(), function(msg) {
+                        if(msg === 'CRYPTKEY_SET') {
+                          ajaxHook();
+                        } else {
+                          console.warn(arguments);
+                        }
+                      }
                     );
                   }
                 });
+              };
+              ajaxHook();
             }
           }
 

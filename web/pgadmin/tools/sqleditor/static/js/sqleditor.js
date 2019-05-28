@@ -2008,6 +2008,11 @@ define('tools.querytool', [
           this.warn_before_continue();
         }
       },
+      handle_cryptkey_missing: function() {
+        pgBrowser.set_master_password('', ()=>{
+          this.warn_before_continue();
+        });
+      },
       warn_before_continue: function() {
         var self = this;
 

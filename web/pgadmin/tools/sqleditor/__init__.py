@@ -8,10 +8,8 @@
 ##########################################################################
 
 """A blueprint module implementing the sqleditor frame."""
-import codecs
 import os
 import pickle
-import random
 import sys
 
 import simplejson as json
@@ -32,10 +30,11 @@ from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    success_return, internal_server_error, unauthorized
+    success_return, internal_server_error
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import MenuItem
-from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
+    CryptKeyMissing
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
     RegisterQueryToolPreferences
@@ -176,7 +175,7 @@ def check_transaction_status(trans_id):
             use_binary_placeholder=True,
             array_to_string=True
         )
-    except (ConnectionLost, SSHTunnelConnectionLost) as e:
+    except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
         raise
     except Exception as e:
         current_app.logger.error(e)

@@ -28,16 +28,17 @@ from pgadmin.utils.crypto import decrypt
 from psycopg2.extensions import adapt, encodings
 
 import config
-from pgadmin.model import Server, User
-from pgadmin.utils.exception import ConnectionLost
+from pgadmin.model import User
+from pgadmin.utils.exception import ConnectionLost, CryptKeyMissing
 from pgadmin.utils import get_complete_file_path
-from ..abstract import BaseDriver, BaseConnection
+from ..abstract import BaseConnection
 from .cursor import DictCursor
 from .typecast import register_global_typecasters, \
     register_string_typecasters, register_binary_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
 from .encoding import getEncoding, configureDriverEncodings
 from pgadmin.utils import csv
+from pgadmin.utils.master_password import get_crypt_key
 
 if sys.version_info < (3,):
     from StringIO import StringIO
@@ -242,9 +243,15 @@ class Connection(BaseConnection):
         if encpass is None:
             encpass = self.password or getattr(manager, 'password', None)
 
+        self.password = encpass
+
         # Reset the existing connection password
         if self.reconnecting is not False:
             self.password = None
+
+        crypt_key_present, crypt_key = get_crypt_key()
+        if not crypt_key_present:
+            raise CryptKeyMissing()
 
         if encpass:
             # Fetch Logged in User Details.
@@ -254,14 +261,13 @@ class Connection(BaseConnection):
                 return False, gettext("Unauthorized request.")
 
             try:
-                password = decrypt(encpass, user.password)
+                password = decrypt(encpass, crypt_key)
                 # Handling of non ascii password (Python2)
                 if hasattr(str, 'decode'):
                     password = password.decode('utf-8').encode('utf-8')
                 # password is in bytes, for python3 we need it in string
                 elif isinstance(password, bytes):
                     password = password.decode()
-
             except Exception as e:
                 manager.stop_ssh_tunnel()
                 current_app.logger.exception(e)
@@ -520,6 +526,9 @@ WHERE
         return True, None
 
     def __cursor(self, server_cursor=False):
+
+        if not get_crypt_key()[0]:
+            raise CryptKeyMissing()
 
         # Check SSH Tunnel is alive or not. If used by the database
         # server for the connection.
@@ -1081,7 +1090,7 @@ WHERE
             current_app.logger.exception(e)
             self.reconnecting = False
 
-            current_app.warning(
+            current_app.logger.warning(
                 "Failed to reconnect the database server "
                 "(#{server_id})".format(
                     server_id=self.manager.sid,
@@ -1283,7 +1292,11 @@ WHERE
             if user is None:
                 return False, gettext("Unauthorized request.")
 
-            password = decrypt(password, user.password).decode()
+            crypt_key_present, crypt_key = get_crypt_key()
+            if not crypt_key_present:
+                return False, crypt_key
+
+            password = decrypt(password, crypt_key).decode()
 
         try:
             pg_conn = psycopg2.connect(
@@ -1567,7 +1580,12 @@ Failed to reset the connection to the server due to following error:
                 if user is None:
                     return False, gettext("Unauthorized request.")
 
-                password = decrypt(password, user.password).decode()
+                crypt_key_present, crypt_key = get_crypt_key()
+                if not crypt_key_present:
+                    return False, crypt_key
+
+                password = decrypt(password, crypt_key)\
+                    .decode()
 
             try:
                 pg_conn = psycopg2.connect(

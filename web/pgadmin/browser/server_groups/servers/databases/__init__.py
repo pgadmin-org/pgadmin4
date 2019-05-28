@@ -166,7 +166,6 @@ class DatabaseView(PGChildNodeView):
         def wrap(f):
             @wraps(f)
             def wrapped(self, *args, **kwargs):
-
                 self.manager = get_driver(
                     PG_DEFAULT_DRIVER
                 ).connection_manager(

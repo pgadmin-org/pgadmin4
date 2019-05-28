@@ -14,7 +14,8 @@ object.
 
 """
 import datetime
-from flask import session
+from flask import session, request
+from flask_login import current_user
 from flask_babelex import gettext
 import psycopg2
 from psycopg2.extensions import adapt
@@ -74,23 +75,25 @@ class Driver(BaseDriver):
         assert (sid is not None and isinstance(sid, int))
         managers = None
 
+        server_data = Server.query.filter_by(id=sid).first()
+        if server_data is None:
+            return None
+
         if session.sid not in self.managers:
             self.managers[session.sid] = managers = dict()
             if '__pgsql_server_managers' in session:
                 session_managers = session['__pgsql_server_managers'].copy()
-                session['__pgsql_server_managers'] = dict()
 
-                for server_id in session_managers:
-                    s = Server.query.filter_by(id=server_id).first()
-
-                    if not s:
-                        continue
-
-                    manager = managers[str(server_id)] = ServerManager(s)
-                    manager._restore(session_managers[server_id])
+                manager = managers[str(sid)] = ServerManager(server_data)
+                if sid in session_managers:
+                    manager._restore(session_managers[sid])
                     manager.update_session()
         else:
             managers = self.managers[session.sid]
+            if str(sid) in managers:
+                manager = managers[str(sid)]
+                manager._restore_connections()
+                manager.update_session()
 
         managers['pinged'] = datetime.datetime.now()
         if str(sid) not in managers:

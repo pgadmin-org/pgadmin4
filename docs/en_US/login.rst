@@ -16,6 +16,7 @@ Use the fields in the *Login* dialog to authenticate your connection:
   field.
 * Provide your password in the *Password* field.
 * Click the *Login* button to securely log into pgAdmin.
+* Please note that, if the pgAdmin server is restarted then you will be logged out. You need to re-login to continue.
 
 Recovering a Lost Password
 **************************

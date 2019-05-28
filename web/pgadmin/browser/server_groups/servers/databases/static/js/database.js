@@ -489,11 +489,15 @@ define('pgadmin.node.database', [
 
             Alertify.pgNotifier('error', xhr, error, function(msg) {
               setTimeout(function() {
-                Alertify.dlgServerPass(
-                  gettext('Connect to database'),
-                  msg, _model, _data, _tree, _item, _status,
-                  onSuccess, onFailure, onCancel
-                ).resizeTo();
+                if (msg == 'CRYPTKEY_SET') {
+                  connect_to_database(_model, _data, _tree, _item, _wasConnected);
+                } else {
+                  Alertify.dlgServerPass(
+                    gettext('Connect to database'),
+                    msg, _model, _data, _tree, _item, _status,
+                    onSuccess, onFailure, onCancel
+                  ).resizeTo();
+                }
               }, 100);
             });
           },

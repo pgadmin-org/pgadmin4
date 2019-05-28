@@ -24,6 +24,13 @@ dialog, right-click on the *Servers* node of the tree control, and select
 
    server_dialog
 
+A master password is required to secure and later unlock saved server passwords.
+It is set by the user and can be disabled using config.
+
+.. toctree::
+
+    master_password
+
 After defining a server connection, right-click on the server name, and select
 *Connect to server* to authenticate with the server, and start using pgAdmin to
 manage objects that reside on the server.

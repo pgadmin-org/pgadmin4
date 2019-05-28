@@ -262,7 +262,6 @@ define('pgadmin.browser', [
           });
         }
       });
-
     },
     menu_categories: {
       /* name, label (pair) */
@@ -282,6 +281,7 @@ define('pgadmin.browser', [
       scripts[n] = _.isArray(scripts[n]) ? scripts[n] : [];
       scripts[n].push({'name': m, 'path': p, loaded: false});
     },
+    masterpass_callback_queue: [],
     // Build the default layout
     buildDefaultLayout: function(docker) {
       var browserPanel = docker.addPanel('browser', wcDocker.DOCK.LEFT);
@@ -492,8 +492,8 @@ define('pgadmin.browser', [
           node = obj.Nodes[d._type];
 
           /* If the node specific callback returns false, we will also return
-             * false for further processing.
-             */
+           * false for further processing.
+           */
           if (_.isObject(node.callbacks) &&
             eventName in node.callbacks &&
               typeof node.callbacks[eventName] == 'function' &&
@@ -542,11 +542,170 @@ define('pgadmin.browser', [
           .fail(function() {});
       }, 300000);
 
+      obj.set_master_password('');
+
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode, obj);
+      obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode, obj);
 
       obj.bind_beforeunload();
+    },
+
+    init_master_password: function() {
+      let self = this;
+      // Master password dialog
+      if (!Alertify.dlgMasterPass) {
+        Alertify.dialog('dlgMasterPass', function factory() {
+          return {
+            main: function(title, message, reset) {
+              this.set('title', title);
+              this.message = message;
+              this.reset = reset;
+            },
+            setup:function() {
+              return {
+                buttons:[{
+                  text: gettext('Reset Master Password'), className: 'btn btn-secondary fa fa-trash-o pg-alertify-button pull-left',
+                },{
+                  text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
+                  key: 27,
+                },{
+                  text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
+                }],
+                focus: {element: '#password', select: true},
+                options: {
+                  modal: true, resizable: false, maximizable: false, pinnable: false,
+                },
+              };
+            },
+            prepare:function() {
+              let self = this;
+              let $password = null;
+              let $okBtn = $(self.__internal.buttons[2].element);
+
+              self.setContent(self.message);
+              $password = $(self.elements.body).find('#password');
+
+              /* Reset button hide */
+              if(!self.reset) {
+                $(self.__internal.buttons[0].element).addClass('d-none');
+              } else {
+                $(self.__internal.buttons[0].element).removeClass('d-none');
+              }
+
+              /* Enable ok only if password entered */
+              $okBtn.prop('disabled', true);
+              $password.on('input', ()=>{
+                if($password.val() != '') {
+                  $okBtn.prop('disabled', false);
+                } else {
+                  $okBtn.prop('disabled', true);
+                }
+              });
+            },
+            callback: function(event) {
+              let parentDialog = this;
+
+              if (event.index == 2) {
+                /* OK Button */
+                self.set_master_password(
+                  $('#frmMasterPassword #password').val(),
+                  parentDialog.set_callback,
+                );
+              } else if(event.index == 1) {
+                /* Cancel button */
+                self.masterpass_callback_queue = [];
+              } else if(event.index == 0) {
+                /* Reset Button */
+                event.cancel = true;
+
+                Alertify.confirm(gettext('Reset Master Password'),
+                  gettext('This will remove all the saved passwords. This will also remove established connections to '
+                    + 'the server and you may need to reconnect again. Do you wish to continue ?'),
+                  function() {
+                    /* If user clicks Yes */
+                    self.reset_master_password();
+                    parentDialog.close();
+                    return true;
+                  },
+                  function() {/* If user clicks No */ return true;}
+                ).set('labels', {
+                  ok: gettext('Yes'),
+                  cancel: gettext('No'),
+                });
+              }
+            },
+          };
+        });
+      }
+    },
+
+    check_master_password: function(on_resp_callback) {
+      $.ajax({
+        url: url_for('browser.check_master_password'),
+        type: 'GET',
+        contentType: 'application/json',
+      }).done((res)=> {
+        if(on_resp_callback) {
+          if(res.data) {
+            on_resp_callback(true);
+          } else {
+            on_resp_callback(false);
+          }
+        }
+      }).fail(function(xhr, status, error) {
+        Alertify.pgRespErrorNotify(xhr, error);
+      });
+    },
+
+    reset_master_password: function() {
+      let self = this;
+      $.ajax({
+        url: url_for('browser.set_master_password'),
+        type: 'DELETE',
+        contentType: 'application/json',
+      }).done((res)=> {
+        if(!res.data) {
+          self.set_master_password('');
+        }
+      }).fail(function(xhr, status, error) {
+        Alertify.pgRespErrorNotify(xhr, error);
+      });
+    },
+
+    set_master_password: function(password='', set_callback=()=>{}) {
+      let data=null, self = this;
+
+      if(password != null || password!='') {
+        data = JSON.stringify({
+          'password': password,
+        });
+      }
+
+      self.masterpass_callback_queue.push(set_callback);
+
+      $.ajax({
+        url: url_for('browser.set_master_password'),
+        type: 'POST',
+        data: data,
+        dataType: 'json',
+        contentType: 'application/json',
+      }).done((res)=> {
+        if(!res.data.present) {
+          self.init_master_password();
+          Alertify.dlgMasterPass(res.data.title, res.data.content, res.data.reset);
+        } else {
+          setTimeout(()=>{
+            while(self.masterpass_callback_queue.length > 0) {
+              let callback = self.masterpass_callback_queue.shift();
+              callback();
+            }
+          }, 500);
+        }
+      }).fail(function(xhr, status, error) {
+        Alertify.pgRespErrorNotify(xhr, error);
+      });
     },
 
     bind_beforeunload: function() {
@@ -1619,10 +1778,13 @@ define('pgadmin.browser', [
                 });
               }
 
-              Alertify.pgNotifier(
-                error, xhr, gettext('Error retrieving details for the node.'),
-                function() { console.warn(arguments); }
-              );
+              Alertify.pgNotifier(error, xhr, gettext('Error retrieving details for the node.'), function (msg) {
+                if (msg == 'CRYPTKEY_SET') {
+                  fetchNodeInfo(_i, _d, _n);
+                } else {
+                  console.warn(arguments);
+                }
+              });
             }
           });
       }.bind(this);
@@ -1663,6 +1825,21 @@ define('pgadmin.browser', [
       } else {
         fetchNodeInfo(_i, d, n);
       }
+    },
+
+    onLoadFailNode: function(_nodeData) {
+      let self = this,
+        isSelected = self.tree.isSelected(_nodeData);
+
+      /** Check if master password set **/
+      self.check_master_password((is_set)=>{
+        if(!is_set) {
+          self.set_master_password('', ()=>{
+            if(isSelected) { self.tree.select(_nodeData); }
+            self.tree.open(_nodeData);
+          });
+        }
+      });
     },
 
     removeChildTreeNodesById: function(_parentNode, _collType, _childIds) {

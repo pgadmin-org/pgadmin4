@@ -14,6 +14,8 @@ from operator import attrgetter
 
 from flask import Blueprint, current_app
 from flask_babelex import gettext
+from flask_security import current_user, login_required
+from threading import Lock
 
 from .paths import get_storage_directory
 from .preferences import Preferences
@@ -330,3 +332,46 @@ SHORTCUT_FIELDS = [
         'label': gettext('Alt/Option')
     }
 ]
+
+
+class KeyManager:
+    def __init__(self):
+        self.users = dict()
+        self.lock = Lock()
+
+    @login_required
+    def get(self):
+        user = self.users.get(current_user.id, None)
+        if user is not None:
+            return user.get('key', None)
+
+    @login_required
+    def set(self, _key, _new_login=True):
+        with self.lock:
+            user = self.users.get(current_user.id, None)
+            if user is None:
+                self.users[current_user.id] = dict(
+                    session_count=1, key=_key)
+            else:
+                if _new_login:
+                    user['session_count'] += 1
+                user['key'] = _key
+
+    @login_required
+    def reset(self):
+        with self.lock:
+            user = self.users.get(current_user.id, None)
+
+            if user is not None:
+                # This will not decrement if session expired
+                user['session_count'] -= 1
+                if user['session_count'] == 0:
+                    del self.users[current_user.id]
+
+    @login_required
+    def hard_reset(self):
+        with self.lock:
+            user = self.users.get(current_user.id, None)
+
+            if user is not None:
+                del self.users[current_user.id]

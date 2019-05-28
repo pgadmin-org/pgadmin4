@@ -404,50 +404,59 @@ define('pgadmin.browser.node', [
               }
             }, 1000, ctx);
 
-            newModel.fetch({
-              success: function() {
-                // Clear timeout and remove message
-                clearTimeout(timer);
-                $msgDiv.addClass('d-none');
 
-                // We got the latest attributes of the object. Render the view
-                // now.
-                view.render();
-                setFocusOnEl();
-                newModel.startNewSession();
-              },
-              error: function(xhr, error, message) {
-                var _label = that && item ?
-                  that.getTreeNodeHierarchy(
-                    item
-                  )[that.type].label : '';
-                pgBrowser.Events.trigger(
-                  'pgadmin:node:retrieval:error', 'properties',
-                  xhr, error, message, item
-                );
-                if (!Alertify.pgHandleItemError(
-                  xhr, error, message, {
-                    item: item,
-                    info: info,
-                  }
-                )) {
-                  Alertify.pgNotifier(
-                    error, xhr,
-                    S(
-                      gettext('Error retrieving properties - %s')
-                    ).sprintf(message || _label).value(),
-                    function() {}
+            var fetchAjaxHook = function() {
+              newModel.fetch({
+                success: function() {
+                  // Clear timeout and remove message
+                  clearTimeout(timer);
+                  $msgDiv.addClass('d-none');
+
+                  // We got the latest attributes of the object. Render the view
+                  // now.
+                  view.render();
+                  setFocusOnEl();
+                  newModel.startNewSession();
+                },
+                error: function(model, xhr, options) {
+                  var _label = that && item ?
+                    that.getTreeNodeHierarchy(
+                      item
+                    )[that.type].label : '';
+                  pgBrowser.Events.trigger(
+                    'pgadmin:node:retrieval:error', 'properties',
+                    xhr, options.textStatus, options.errorThrown, item
                   );
-                }
-                // Close the panel (if could not fetch properties)
-                if (cancelFunc) {
-                  cancelFunc();
-                }
-              },
-            });
+                  if (!Alertify.pgHandleItemError(
+                    xhr, options.textStatus, options.errorThrown, {
+                      item: item,
+                      info: info,
+                    }
+                  )) {
+                    Alertify.pgNotifier(
+                      options.textStatus, xhr,
+                      S(
+                        gettext('Error retrieving properties - %s')
+                      ).sprintf(options.errorThrown || _label).value(), function(msg) {
+                        if(msg === 'CRYPTKEY_SET') {
+                          fetchAjaxHook();
+                        } else {
+                          console.warn(arguments);
+                        }
+                      }
+                    );
+                  }
+                  // Close the panel (if could not fetch properties)
+                  if (cancelFunc) {
+                    cancelFunc();
+                  }
+                },
+              });
+            };
+
+            fetchAjaxHook();
           } else {
             // Yay - render the view now!
-            // $(el).focus();
             view.render();
             setFocusOnEl();
             newModel.startNewSession();

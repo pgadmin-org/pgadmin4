@@ -420,6 +420,12 @@ SUPPORT_SSH_TUNNEL = True
 ALLOW_SAVE_TUNNEL_PASSWORD = False
 
 ##########################################################################
+# Master password is used to encrypt/decrypt saved server passwords
+# Applicable for desktop mode only
+##########################################################################
+MASTER_PASSWORD_REQUIRED = True
+
+##########################################################################
 # Local config settings
 ##########################################################################
 

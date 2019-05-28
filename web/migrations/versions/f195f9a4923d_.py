@@ -31,7 +31,10 @@ def upgrade():
         Security(app, user_datastore, register_blueprint=False)
     else:
         app.config['SECURITY_PASSWORD_SALT'] = current_salt
-    users = User.query.all()
+
+    users = User.query.with_entities(
+        User.id, User.email, User.password, User.active, User.confirmed_at)\
+        .all()
     # This will upgrade the plaintext password of all the user as per the
     # SECURITY_PASSWORD_HASH.
     for user in users:

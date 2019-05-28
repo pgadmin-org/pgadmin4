@@ -23,15 +23,14 @@ from flask_login import user_logged_in, user_logged_out
 from flask_mail import Mail
 from flask_paranoid import Paranoid
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
-from flask_security.utils import login_user
-
+from flask_security.utils import login_user, logout_user
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
 
 from pgadmin.model import db, Role, Server, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-from pgadmin.utils import PgAdminModule, driver
+from pgadmin.utils import PgAdminModule, driver, KeyManager
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -575,11 +574,22 @@ def create_app(app_name=None):
     def force_session_write(app, user):
         session.force_write = True
 
+    @user_logged_in.connect_via(app)
+    def store_crypt_key(app, user):
+        # in desktop mode, master password is used to encrypt/decrypt
+        # and is stored in the keyManager memory
+        if config.SERVER_MODE:
+            if 'password' in request.form:
+                current_app.keyManager.set(request.form['password'])
+
     @user_logged_out.connect_via(app)
     def current_user_cleanup(app, user):
         from config import PG_DEFAULT_DRIVER
         from pgadmin.utils.driver import get_driver
         from flask import current_app
+
+        # remove key
+        current_app.keyManager.reset()
 
         for mdl in current_app.logout_hooks:
             try:
@@ -630,6 +640,12 @@ def create_app(app_name=None):
                 )
                 abort(401)
             login_user(user)
+
+        # if the server is restarted the in memory key will be lost
+        # but the user session may still be active. Logout the user
+        # to get the key again when login
+        if config.SERVER_MODE and current_app.keyManager.get() is None:
+            logout_user()
 
     @app.after_request
     def after_request(response):
@@ -710,6 +726,9 @@ def create_app(app_name=None):
     def http_exception_handler(e):
         current_app.logger.error(e, exc_info=True)
         return e
+
+    # Intialize the key manager
+    app.keyManager = KeyManager()
 
     ##########################################################################
     # Protection against CSRF attacks

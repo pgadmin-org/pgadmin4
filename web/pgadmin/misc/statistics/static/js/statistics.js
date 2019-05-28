@@ -232,97 +232,106 @@ define('misc.statistics', [
           msg = '';
           var timer;
           // Set the url, fetch the data and update the collection
-          $.ajax({
-            url: url,
-            type: 'GET',
-            beforeSend: function(xhr) {
-              xhr.setRequestHeader(
-                pgAdmin.csrf_token_header, pgAdmin.csrf_token
-              );
-              // Generate a timer for the request
-              timer = setTimeout(function() {
-                // notify user if request is taking longer than 1 second
-
-                $msgContainer.text(gettext('Retrieving data from the server...'));
-                $msgContainer.removeClass('d-none');
-                if (self.grid) {
-                  self.grid.remove();
-                }
-              }, 1000);
-            },
-          })
-            .done(function(res) {
-            // clear timer and reset message.
-              clearTimeout(timer);
-              $msgContainer.text('');
-              if (res.data) {
-                var data = self.data = res.data;
-                if (node.hasCollectiveStatistics || data['rows'].length > 1) {
-                // Listen scroll event to load more rows
-                  pgBrowser.Events.on(
-                    'pgadmin-browser:panel-statistics:' +
-                  wcDocker.EVENT.SCROLLED,
-                    self.__loadMoreRows
-                  );
-                  self.__createMultiLineStatistics.call(self, data, node.statsPrettifyFields);
-                } else {
-                // Do not listen the scroll event
-                  pgBrowser.Events.off(
-                    'pgadmin-browser:panel-statistics:' +
-                  wcDocker.EVENT.SCROLLED,
-                    self.__loadMoreRows
-                  );
-                  self.__createSingleLineStatistics.call(self, data, node.statsPrettifyFields);
-                }
-
-                if (self.grid) {
-                  delete self.grid;
-                  self.grid = null;
-                }
-
-                self.grid = new Backgrid.Grid({
-                  emptyText: 'No data found',
-                  columns: self.columns,
-                  collection: self.collection,
-                  className: GRID_CLASSES,
-                });
-                self.grid.render();
-                $gridContainer.empty();
-                $gridContainer.append(self.grid.$el);
-
-                if (!$msgContainer.hasClass('d-none')) {
-                  $msgContainer.addClass('d-none');
-                }
-                $gridContainer.removeClass('d-none');
-
-              } else if (res.info) {
-                if (!$gridContainer.hasClass('d-none')) {
-                  $gridContainer.addClass('d-none');
-                }
-                $msgContainer.text(res.info);
-                $msgContainer.removeClass('d-none');
-              }
-            })
-            .fail(function(xhr, error, message) {
-              var _label = treeHierarchy[n_type].label;
-              pgBrowser.Events.trigger(
-                'pgadmin:node:retrieval:error', 'statistics', xhr, error, message, item
-              );
-              if (!Alertify.pgHandleItemError(xhr, error, message, {
-                item: item,
-                info: treeHierarchy,
-              })) {
-                Alertify.pgNotifier(
-                  error, xhr,
-                  S(gettext('Error retrieving the information - %s')).sprintf(
-                    message || _label
-                  ).value(),
-                  function() {}
+          var ajaxHook = function() {
+            $.ajax({
+              url: url,
+              type: 'GET',
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader(
+                  pgAdmin.csrf_token_header, pgAdmin.csrf_token
                 );
-              }
-              // show failed message.
-              $msgContainer.text(gettext('Failed to retrieve data from the server.'));
-            });
+                // Generate a timer for the request
+                timer = setTimeout(function() {
+                  // notify user if request is taking longer than 1 second
+
+                  $msgContainer.text(gettext('Retrieving data from the server...'));
+                  $msgContainer.removeClass('d-none');
+                  if (self.grid) {
+                    self.grid.remove();
+                  }
+                }, 1000);
+              },
+            })
+              .done(function(res) {
+              // clear timer and reset message.
+                clearTimeout(timer);
+                $msgContainer.text('');
+                if (res.data) {
+                  var data = self.data = res.data;
+                  if (node.hasCollectiveStatistics || data['rows'].length > 1) {
+                  // Listen scroll event to load more rows
+                    pgBrowser.Events.on(
+                      'pgadmin-browser:panel-statistics:' +
+                    wcDocker.EVENT.SCROLLED,
+                      self.__loadMoreRows
+                    );
+                    self.__createMultiLineStatistics.call(self, data, node.statsPrettifyFields);
+                  } else {
+                  // Do not listen the scroll event
+                    pgBrowser.Events.off(
+                      'pgadmin-browser:panel-statistics:' +
+                    wcDocker.EVENT.SCROLLED,
+                      self.__loadMoreRows
+                    );
+                    self.__createSingleLineStatistics.call(self, data, node.statsPrettifyFields);
+                  }
+
+                  if (self.grid) {
+                    delete self.grid;
+                    self.grid = null;
+                  }
+
+                  self.grid = new Backgrid.Grid({
+                    emptyText: 'No data found',
+                    columns: self.columns,
+                    collection: self.collection,
+                    className: GRID_CLASSES,
+                  });
+                  self.grid.render();
+                  $gridContainer.empty();
+                  $gridContainer.append(self.grid.$el);
+
+                  if (!$msgContainer.hasClass('d-none')) {
+                    $msgContainer.addClass('d-none');
+                  }
+                  $gridContainer.removeClass('d-none');
+
+                } else if (res.info) {
+                  if (!$gridContainer.hasClass('d-none')) {
+                    $gridContainer.addClass('d-none');
+                  }
+                  $msgContainer.text(res.info);
+                  $msgContainer.removeClass('d-none');
+                }
+              })
+              .fail(function(xhr, error, message) {
+                var _label = treeHierarchy[n_type].label;
+                pgBrowser.Events.trigger(
+                  'pgadmin:node:retrieval:error', 'statistics', xhr, error, message, item
+                );
+                if (!Alertify.pgHandleItemError(xhr, error, message, {
+                  item: item,
+                  info: treeHierarchy,
+                })) {
+                  Alertify.pgNotifier(
+                    error, xhr,
+                    S(gettext('Error retrieving the information - %s')).sprintf(
+                      message || _label
+                    ).value(), function(msg) {
+                      if(msg === 'CRYPTKEY_SET') {
+                        ajaxHook();
+                      } else {
+                        console.warn(arguments);
+                      }
+                    }
+                  );
+                }
+                // show failed message.
+                $msgContainer.text(gettext('Failed to retrieve data from the server.'));
+              });
+          };
+
+          ajaxHook();
         }
       }
       if (msg != '') {

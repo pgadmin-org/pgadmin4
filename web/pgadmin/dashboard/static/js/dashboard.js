@@ -223,19 +223,35 @@ define('pgadmin.dashboard', [
         var div = dashboardPanel.layout().scene().find('.pg-panel-content');
 
         if (div) {
-          $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: 'html',
-          })
-            .done(function(data) {
-              $(div).html(data);
+          var ajaxHook = function() {
+            $.ajax({
+              url: url,
+              type: 'GET',
+              dataType: 'html',
             })
-            .fail(function() {
-              $(div).html(
-                '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-              );
-            });
+              .done(function(data) {
+                $(div).html(data);
+              })
+              .fail(function(xhr, error) {
+                Alertify.pgNotifier(
+                  error, xhr,
+                  gettext('An error occurred whilst loading the dashboard.'),
+                  function(msg) {
+                    if(msg === 'CRYPTKEY_SET') {
+                      ajaxHook();
+                    } else {
+                      $(div).html(
+                        '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+                      );
+                    }
+                  }
+                );
+              });
+          };
+          $(div).html(
+            '<div class="alert alert-info pg-panel-message" role="alert">' + gettext('Loading dashboard...') + '</div>'
+          );
+          ajaxHook();
 
           // Cache the current IDs for next time
           $(dashboardPanel).data('sid', -1);
@@ -337,20 +353,36 @@ define('pgadmin.dashboard', [
                 /* Clear all the charts previous dashboards */
                 self.clearChartFromStore();
 
-                $.ajax({
-                  url: url,
-                  type: 'GET',
-                  dataType: 'html',
-                })
-                  .done(function(data) {
-                    $(div).html(data);
-                    self.init_dashboard();
+                let ajaxHook = function() {
+                  $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'html',
                   })
-                  .fail(function() {
-                    $(div).html(
-                      '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-                    );
-                  });
+                    .done(function(data) {
+                      $(div).html(data);
+                      self.init_dashboard();
+                    })
+                    .fail(function(xhr, error) {
+                      Alertify.pgNotifier(
+                        error, xhr,
+                        gettext('An error occurred whilst loading the dashboard.'),
+                        function(msg) {
+                          if(msg === 'CRYPTKEY_SET') {
+                            ajaxHook();
+                          } else {
+                            $(div).html(
+                              '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+                            );
+                          }
+                        }
+                      );
+                    });
+                };
+                $(div).html(
+                  '<div class="alert alert-info pg-panel-message" role="alert">' + gettext('Loading dashboard...') + '</div>'
+                );
+                ajaxHook();
                 $(dashboardPanel).data('server_status', true);
               }
             } else {

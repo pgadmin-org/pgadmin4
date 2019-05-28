@@ -1126,10 +1126,14 @@ define('pgadmin.node.server', [
 
           Alertify.pgNotifier('error', xhr, error, function(msg) {
             setTimeout(function() {
-              Alertify.dlgServerPass(
-                gettext('Connect to Server'),
-                msg, _node, _data, _tree, _item, _wasConnected
-              ).resizeTo();
+              if (msg == 'CRYPTKEY_SET') {
+                connect_to_server(_node, _data, _tree, _item, _wasConnected);
+              } else {
+                Alertify.dlgServerPass(
+                  gettext('Connect to Server'),
+                  msg, _node, _data, _tree, _item, _wasConnected
+                ).resizeTo();
+              }
             }, 100);
           });
         },

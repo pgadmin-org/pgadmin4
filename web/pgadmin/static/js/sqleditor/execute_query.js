@@ -230,6 +230,12 @@ class ExecuteQuery {
       this.sqlServerObject.handle_connection_lost(false, httpMessage);
     }
 
+    if(this.isCryptKeyMissing(httpMessage)) {
+      this.sqlServerObject.saveState('execute', [this.explainPlan]);
+      this.sqlServerObject.handle_cryptkey_missing();
+      return;
+    }
+
     let msg = httpMessage.response.data.errormsg;
     this.sqlServerObject.update_msg_history(false, msg);
   }
@@ -238,6 +244,12 @@ class ExecuteQuery {
     return httpMessage.response.status === 503 &&
       httpMessage.response.data.info !== undefined &&
       httpMessage.response.data.info === 'CONNECTION_LOST';
+  }
+
+  isCryptKeyMissing(httpMessage) {
+    return httpMessage.response.status === 503 &&
+      httpMessage.response.data.info !== undefined &&
+      httpMessage.response.data.info === 'CRYPTKEY_MISSING';
   }
 
   removeGridViewMarker() {

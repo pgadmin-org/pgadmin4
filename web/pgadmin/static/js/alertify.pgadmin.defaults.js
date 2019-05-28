@@ -107,7 +107,15 @@ define([
           if (contentType.indexOf('application/json') == 0) {
             var resp = JSON.parse(msg);
 
-            if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
+            if(resp.info == 'CRYPTKEY_MISSING') {
+              var pgBrowser = window.pgAdmin.Browser;
+              pgBrowser.set_master_password('', ()=> {
+                if(onJSONResult && typeof(onJSONResult) == 'function') {
+                  onJSONResult('CRYPTKEY_SET');
+                }
+              });
+              return;
+            } else if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
               onJSONResult && typeof(onJSONResult) == 'function') {
               return onJSONResult(resp.result);
             }
@@ -375,6 +383,11 @@ define([
           reconnectServer();
         });
       return true;
+    } else if (jsonResp && jsonResp.info == 'CRYPTKEY_MISSING' && xhr.status == 503) {
+      /* Suppress the error here and handle in Alertify.pgNotifier wherever
+       * required, as it has callback option
+       */
+      return false;
     }
     return false;
   };

@@ -8,6 +8,9 @@
 ##########################################################################
 
 """Server helper utilities"""
+from pgadmin.utils.crypto import encrypt, decrypt
+import config
+from pgadmin.model import db, Server
 
 
 def parse_priv_from_db(db_privileges):
@@ -177,3 +180,70 @@ def validate_options(options, option_name, option_value):
         is_valid_options = True
 
     return is_valid_options, valid_options
+
+
+def reencrpyt_server_passwords(user_id, old_key, new_key):
+    """
+    This function will decrypt the saved passwords in SQLite with old key
+    and then encrypt with new key
+    """
+    from pgadmin.utils.driver import get_driver
+    driver = get_driver(config.PG_DEFAULT_DRIVER)
+
+    for server in Server.query.filter_by(user_id=user_id).all():
+        manager = driver.connection_manager(server.id)
+
+        # Check if old password was stored in pgadmin4 sqlite database.
+        # If yes then update that password.
+        if server.password is not None:
+            password = decrypt(server.password, old_key)
+
+            if isinstance(password, bytes):
+                password = password.decode()
+
+            password = encrypt(password, new_key)
+            setattr(server, 'password', password)
+            manager.password = password
+        elif manager.password is not None:
+            password = decrypt(manager.password, old_key)
+
+            if isinstance(password, bytes):
+                password = password.decode()
+
+            password = encrypt(password, new_key)
+            manager.password = password
+
+        if server.tunnel_password is not None:
+            tunnel_password = decrypt(server.tunnel_password, old_key)
+            if isinstance(tunnel_password, bytes):
+                tunnel_password = tunnel_password.decode()
+
+            tunnel_password = encrypt(tunnel_password, new_key)
+            setattr(server, 'tunnel_password', tunnel_password)
+            manager.tunnel_password = tunnel_password
+        elif manager.tunnel_password is not None:
+            tunnel_password = decrypt(manager.tunnel_password, old_key)
+
+            if isinstance(tunnel_password, bytes):
+                tunnel_password = tunnel_password.decode()
+
+            tunnel_password = encrypt(tunnel_password, new_key)
+            manager.tunnel_password = tunnel_password
+
+        db.session.commit()
+        manager.update_session()
+
+
+def remove_saved_passwords(user_id):
+    """
+    This function will remove all the saved passwords for the server
+    """
+
+    try:
+        db.session.query(Server) \
+            .filter(Server.user_id == user_id) \
+            .update({Server.password: None, Server.tunnel_password: None})
+        db.session.commit()
+    except Exception as _:
+        db.session.rollback()
+        raise

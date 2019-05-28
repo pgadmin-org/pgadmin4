@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 22
+SCHEMA_VERSION = 23
 
 ##########################################################################
 #
@@ -70,6 +70,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(256))
     active = db.Column(db.Boolean(), nullable=False)
     confirmed_at = db.Column(db.DateTime())
+    masterpass_check = db.Column(db.String(256))
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 

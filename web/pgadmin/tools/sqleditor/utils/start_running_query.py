@@ -25,7 +25,8 @@ from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
     update_session_grid_transaction
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
+    CryptKeyMissing
 
 
 class StartRunningQuery:
@@ -63,7 +64,7 @@ class StartRunningQuery:
                                           auto_reconnect=False,
                                           use_binary_placeholder=True,
                                           array_to_string=True)
-            except (ConnectionLost, SSHTunnelConnectionLost):
+            except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
                 raise
             except Exception as e:
                 self.logger.error(e)
@@ -134,7 +135,7 @@ class StartRunningQuery:
         # and formatted_error is True.
         try:
             status, result = conn.execute_async(sql)
-        except (ConnectionLost, SSHTunnelConnectionLost):
+        except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
             raise
 
         # If the transaction aborted for some reason and

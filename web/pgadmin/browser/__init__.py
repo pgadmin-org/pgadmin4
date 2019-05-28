@@ -18,7 +18,7 @@ from socket import error as SOCKETErrorException
 
 import six
 from flask import current_app, render_template, url_for, make_response, \
-    flash, Response, request, after_this_request, redirect
+    flash, Response, request, after_this_request, redirect, session
 from flask_babelex import gettext
 from flask_gravatar import Gravatar
 from flask_login import current_user, login_required
@@ -41,6 +41,9 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.preferences import Preferences
 from pgadmin.browser.register_browser_preferences import \
     register_browser_preferences
+from pgadmin.utils.master_password import validate_master_password, \
+    set_masterpass_check_text, cleanup_master_password, get_crypt_key, \
+    set_crypt_key, process_masterpass_disabled
 
 try:
     import urllib.request as urlreq
@@ -220,7 +223,10 @@ class BrowserModule(PgAdminModule):
         Returns:
             list: a list of url endpoints exposed to the client.
         """
-        return ['browser.index', 'browser.nodes']
+        return ['browser.index', 'browser.nodes',
+                'browser.check_master_password',
+                'browser.set_master_password',
+                'browser.reset_master_password']
 
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
@@ -682,6 +688,133 @@ def get_nodes():
     return make_json_response(data=nodes)
 
 
+def form_master_password_response(existing=True, present=False, errmsg=None):
+    content_new = (
+        gettext("Set Master Password"),
+        "<br/>".join([
+            gettext("Please set a master password for pgAdmin."),
+            gettext("This will be used to secure and later unlock saved "
+                    "passwords and other credentials.")])
+    )
+    content_existing = (
+        gettext("Unlock Saved Passwords"),
+        "<br/>".join([
+            gettext("Please enter your master password."),
+            gettext("This is required to unlock saved passwords and "
+                    "reconnect to the database server(s).")])
+    )
+
+    return make_json_response(data={
+        'present': present,
+        'title': content_existing[0] if existing else content_new[0],
+        'content': render_template(
+            'browser/master_password.html',
+            content_text=content_existing[1] if existing else content_new[1],
+            errmsg=errmsg
+        ),
+        'reset': existing
+    })
+
+
+@blueprint.route("/master_password", endpoint="check_master_password",
+                 methods=["GET"])
+def check_master_password():
+    """
+    Checks if the master password is available in the memory
+    This password will be used to encrypt/decrypt saved server passwords
+    """
+    return make_json_response(data=get_crypt_key()[0])
+
+
+@blueprint.route("/master_password", endpoint="reset_master_password",
+                 methods=["DELETE"])
+def reset_master_password():
+    """
+    Removes the master password and remove all saved passwords
+    This password will be used to encrypt/decrypt saved server passwords
+    """
+    cleanup_master_password()
+    return make_json_response(data=get_crypt_key()[0])
+
+
+@blueprint.route("/master_password", endpoint="set_master_password",
+                 methods=["POST"])
+def set_master_password():
+    """
+    Set the master password and store in the memory
+    This password will be used to encrypt/decrypt saved server passwords
+    """
+
+    data = None
+
+    if hasattr(request.data, 'decode'):
+        data = request.data.decode('utf-8')
+
+    if data != '':
+        data = json.loads(data)
+
+    # Master password is not applicable for server mode
+    if not config.SERVER_MODE and config.MASTER_PASSWORD_REQUIRED:
+
+        if data != '' and data.get('password', '') != '':
+            # if master pass is set previously
+            if current_user.masterpass_check is not None:
+                if not validate_master_password(data.get('password')):
+                    return form_master_password_response(
+                        existing=True,
+                        present=False,
+                        errmsg=gettext("Incorrect master password")
+                    )
+
+            # store the master pass in the memory
+            set_crypt_key(data.get('password'))
+
+            if current_user.masterpass_check is None:
+                # master check is not set, which means the server password
+                # data is old and is encrypted with old key
+                # Re-encrypt with new key
+
+                from pgadmin.browser.server_groups.servers.utils \
+                    import reencrpyt_server_passwords
+                reencrpyt_server_passwords(
+                    current_user.id, current_user.password,
+                    data.get('password'))
+
+            # set the encrypted sample text with the new
+            # master pass
+            set_masterpass_check_text(data.get('password'))
+
+        elif not get_crypt_key()[0] and \
+                current_user.masterpass_check is not None:
+            return form_master_password_response(
+                existing=True,
+                present=False,
+            )
+        elif not get_crypt_key()[0]:
+            return form_master_password_response(
+                existing=False,
+                present=False,
+            )
+
+    # if master password is disabled now, but was used once then
+    # remove all the saved passwords
+    process_masterpass_disabled()
+
+    if config.SERVER_MODE and current_user.masterpass_check is None:
+
+        crypt_key = get_crypt_key()[1]
+        from pgadmin.browser.server_groups.servers.utils \
+            import reencrpyt_server_passwords
+        reencrpyt_server_passwords(
+            current_user.id, current_user.password, crypt_key)
+
+        set_masterpass_check_text(crypt_key)
+
+    return form_master_password_response(
+        present=True,
+    )
+
+
 # Only register route if SECURITY_CHANGEABLE is set to True
 # We can't access app context here so cannot
 # use app.config['SECURITY_CHANGEABLE']
@@ -740,6 +873,15 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
             if request.json is None and not has_error:
                 after_this_request(_commit)
                 do_flash(*get_message('PASSWORD_CHANGE'))
+
+                old_key = get_crypt_key()[1]
+                set_crypt_key(form.new_password.data, False)
+
+                from pgadmin.browser.server_groups.servers.utils \
+                    import reencrpyt_server_passwords
+                reencrpyt_server_passwords(
+                    current_user.id, old_key, form.new_password.data)
+
                 return redirect(get_url(_security.post_change_view) or
                                 get_url(_security.post_login_view))
 

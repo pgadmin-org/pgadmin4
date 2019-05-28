@@ -80,3 +80,28 @@ class SSHTunnelConnectionLost(HTTPException):
     def __repr__(self):
         return "Connection to the SSH Tunnel for host '{0}' has been lost. " \
                "Reconnect to the database server".format(self.tunnel_host)
+
+
+class CryptKeyMissing(HTTPException):
+    """
+    Exception
+    """
+
+    def __init__(self):
+        HTTPException.__init__(self)
+
+    @property
+    def name(self):
+        return HTTP_STATUS_CODES.get(503, 'Service Unavailable')
+
+    def get_response(self, environ=None):
+        return service_unavailable(
+            _("Crypt key is missing."),
+            info="CRYPTKEY_MISSING",
+        )
+
+    def __str__(self):
+        return "Crypt key is missing."
+
+    def __repr__(self):
+        return "Crypt key is missing."

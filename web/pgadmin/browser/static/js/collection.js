@@ -263,25 +263,24 @@ define([
         content.find('.pg-prop-coll-container').append(that.grid.render().$el);
 
         var timer;
+        var getAjaxHook = function() {
+          $.ajax({
+            url: urlBase,
+            type: 'GET',
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
+              // Generate a timer for the request
+              timer = setTimeout(function() {
+                // notify user if request is taking longer than 1 second
 
-        $.ajax({
-          url: urlBase,
-          type: 'GET',
-          beforeSend: function(xhr) {
-            xhr.setRequestHeader(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
-            // Generate a timer for the request
-            timer = setTimeout(function() {
-              // notify user if request is taking longer than 1 second
-
-              $msgContainer.text(gettext('Retrieving data from the server...'));
-              $msgContainer.removeClass('d-none');
-              if (self.grid) {
-                self.grid.remove();
-              }
-            }, 1000);
-          },
-        })
-          .done(function(res) {
+                $msgContainer.text(gettext('Retrieving data from the server...'));
+                $msgContainer.removeClass('d-none');
+                if (self.grid) {
+                  self.grid.remove();
+                }
+              }, 1000);
+            },
+          }).done(function(res) {
             clearTimeout(timer);
 
             if (_.isUndefined(that.grid) || _.isNull(that.grid)) return;
@@ -307,8 +306,7 @@ define([
               $msgContainer.text(gettext('No properties are available for the selected object.'));
 
             }
-          })
-          .fail(function(xhr, error) {
+          }).fail(function(xhr, error) {
             pgBrowser.Events.trigger(
               'pgadmin:node:retrieval:error', 'properties', xhr, error.message, item, that
             );
@@ -317,17 +315,24 @@ define([
               info: info,
             })) {
               Alertify.pgNotifier(
-                error, xhr,
-                S(gettext('Error retrieving properties - %s')).sprintf(
-                  error.message || that.label).value(), function() {
-                  console.warn(arguments);
-                });
+                error, xhr, S(gettext('Error retrieving properties - %s')).sprintf(
+                  error.message || that.label).value(),
+                function(msg) {
+                  if(msg === 'CRYPTKEY_SET') {
+                    getAjaxHook();
+                  } else {
+                    console.warn(arguments);
+                  }
+                }
+              );
             }
             // show failed message.
             $msgContainer.text(gettext('Failed to retrieve data from the server.'));
           });
+        };
+        getAjaxHook();
 
-        var onDrop = function(type) {
+        var onDrop = function(type, confirm=true) {
           let sel_row_models = this.grid.getSelectedModels(),
             sel_rows = [],
             item = pgBrowser.tree.selected(),
@@ -356,18 +361,32 @@ define([
             title = gettext('DROP multiple objects?');
           }
 
-
-          Alertify.confirm(title, msg,
-            function() {
-              $.ajax({
-                url: url,
-                type: 'DELETE',
-                data: JSON.stringify({'ids': sel_rows}),
-                contentType: 'application/json; charset=utf-8',
-              })
-                .done(function(res) {
-                  if (res.success == 0) {
-                    pgBrowser.report_error(res.errormsg, res.info);
+          let dropAjaxHook = function() {
+            $.ajax({
+              url: url,
+              type: 'DELETE',
+              data: JSON.stringify({'ids': sel_rows}),
+              contentType: 'application/json; charset=utf-8',
+            }).done(function(res) {
+              if (res.success == 0) {
+                pgBrowser.report_error(res.errormsg, res.info);
+              } else {
+                $(pgBrowser.panels['properties'].panel).removeData('node-prop');
+                pgBrowser.Events.trigger(
+                  'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                    success: function() {
+                      node.callbacks.selected.apply(node, [item]);
+                    },
+                  });
+              }
+              return true;
+            }).fail(function(xhr, error) {
+              Alertify.pgNotifier(
+                error, xhr,
+                S(gettext('Error dropping %s'))
+                  .sprintf(d._label.toLowerCase()).value(), function(msg) {
+                  if (msg == 'CRYPTKEY_SET') {
+                    onDrop(type, false);
                   } else {
                     $(pgBrowser.panels['properties'].panel).removeData('node-prop');
                     pgBrowser.Events.trigger(
@@ -375,37 +394,19 @@ define([
                         success: function() {
                           node.callbacks.selected.apply(node, [item]);
                         },
-                      });
+                      }
+                    );
                   }
-                  return true;
-                })
-                .fail(function(jqx) {
-                  var msg = jqx.responseText;
-                  /* Error from the server */
-                  if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-                    try {
-                      var data = JSON.parse(jqx.responseText);
-                      msg = data.errormsg;
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
-                  }
-                  pgBrowser.report_error(
-                    S(gettext('Error dropping %s'))
-                      .sprintf(d._label.toLowerCase())
-                      .value(), msg);
+                }
+              );
+            });
+          };
 
-                  $(pgBrowser.panels['properties'].panel).removeData('node-prop');
-                  pgBrowser.Events.trigger(
-                    'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
-                      success: function() {
-                        node.callbacks.selected.apply(node, [item]);
-                      },
-                    }
-                  );
-                });
-            },
-            null).show();
+          if(confirm) {
+            Alertify.confirm(title, msg, dropAjaxHook, null).show();
+          } else {
+            dropAjaxHook();
+          }
           return;
         }.bind(that);
       },

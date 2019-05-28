@@ -215,8 +215,13 @@ define('misc.dependencies', [
                 Alertify.pgNotifier(
                   error, xhr,
                   S(gettext('Error retrieving data from the server: %s')).sprintf(
-                    message || _label).value(), function() {
-                    console.warn(arguments);
+                    message || _label).value(),
+                  function(msg) {
+                    if(msg === 'CRYPTKEY_SET') {
+                      self.showDependencies(item, data, node);
+                    } else {
+                      console.warn(arguments);
+                    }
                   });
               }
               // show failed message.
