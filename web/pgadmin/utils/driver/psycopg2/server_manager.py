@@ -449,9 +449,11 @@ WHERE db.oid = {0}""".format(did))
 
     def export_password_env(self, env):
         if self.password:
-            password = decrypt(
-                self.password, current_user.password
-            ).decode()
+            crypt_key_present, crypt_key = get_crypt_key()
+            if not crypt_key_present:
+                return False, crypt_key
+
+            password = decrypt(self.password, crypt_key).decode()
             os.environ[str(env)] = password
 
     def create_ssh_tunnel(self, tunnel_password):
