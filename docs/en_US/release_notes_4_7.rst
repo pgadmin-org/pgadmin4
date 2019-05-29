@@ -10,7 +10,7 @@ This release contains a number of bug fixes since the release of pgAdmin4 4.6.
 Bug fixes
 *********
 
-| `Bug #3377 <https://redmine.postgresql.org/issues/3377>`_ - In server(web) mode, update all the saved server credentials when user password is changed.
+| `Bug #3377 <https://redmine.postgresql.org/issues/3377>`_ - In server mode, update all the saved server credentials when user password is changed.
 | `Bug #3885 <https://redmine.postgresql.org/issues/3885>`_ - Fix the responsive layout of the main menu bar.
 | `Bug #4162 <https://redmine.postgresql.org/issues/4162>`_ - Fix syntax error when adding more than one column to the existing table.
 | `Bug #4164 <https://redmine.postgresql.org/issues/4164>`_ - Fix file browser path issue which occurs when client is on Windows and server is on Mac/Linux.
