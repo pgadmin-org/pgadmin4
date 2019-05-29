@@ -17,7 +17,7 @@ Bug fixes
 | `Bug #4184 <https://redmine.postgresql.org/issues/4184>`_ - Added Master Password to increase the security of saved passwords.
 | `Bug #4194 <https://redmine.postgresql.org/issues/4194>`_ - Fix accessibility issue for menu navigation.
 | `Bug #4208 <https://redmine.postgresql.org/issues/4208>`_ - Update the UI logo.
-| `Bug #4217 <https://redmine.postgresql.org/issues/4217>`_ - Fixed CSRF security vulnerability issue.
+| `Bug #4217 <https://redmine.postgresql.org/issues/4217>`_ - Fixed CSRF security vulnerability issue, per Alvin Lindstam
 | `Bug #4218 <https://redmine.postgresql.org/issues/4218>`_ - Properly assign dropdownParent in Select2 controls.
 | `Bug #4219 <https://redmine.postgresql.org/issues/4219>`_ - Ensure popper.js is installed when needed.
 | `Bug #4227 <https://redmine.postgresql.org/issues/4227>`_ - Fixed Tab key navigation for Maintenance dialog.
