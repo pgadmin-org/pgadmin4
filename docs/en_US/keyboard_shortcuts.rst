@@ -203,7 +203,7 @@ for inner panel navigation:
    :class: longtable
    :widths: 2 2 3
 
-   +--------------------------+-------------- ------+------------------------------+
+   +--------------------------+---------------------+------------------------------+
    | Shortcut (Windows/Linux) | Shortcut (Mac)      | Function                     |
    +==========================+=====================+==============================+
    | Alt + Shift + Right      | Alt + Shift + Right | Move to next inner panel     |
