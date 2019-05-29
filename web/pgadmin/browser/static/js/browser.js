@@ -566,6 +566,17 @@ define('pgadmin.browser', [
             setup:function() {
               return {
                 buttons:[{
+                  text: '',
+                  className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
+                  attrs: {
+                    name: 'dialog_help',
+                    type: 'button',
+                    label: gettext('Master password'),
+                    url: url_for('help.static', {
+                      'filename': 'master_password.html',
+                    }),
+                  },
+                },{
                   text: gettext('Reset Master Password'), className: 'btn btn-secondary fa fa-trash-o pg-alertify-button pull-left',
                 },{
                   text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
@@ -582,16 +593,16 @@ define('pgadmin.browser', [
             prepare:function() {
               let self = this;
               let $password = null;
-              let $okBtn = $(self.__internal.buttons[2].element);
+              let $okBtn = $(self.__internal.buttons[3].element);
 
               self.setContent(self.message);
               $password = $(self.elements.body).find('#password');
 
               /* Reset button hide */
               if(!self.reset) {
-                $(self.__internal.buttons[0].element).addClass('d-none');
+                $(self.__internal.buttons[1].element).addClass('d-none');
               } else {
-                $(self.__internal.buttons[0].element).removeClass('d-none');
+                $(self.__internal.buttons[1].element).removeClass('d-none');
               }
 
               /* Enable ok only if password entered */
@@ -607,16 +618,16 @@ define('pgadmin.browser', [
             callback: function(event) {
               let parentDialog = this;
 
-              if (event.index == 2) {
+              if (event.index == 3) {
                 /* OK Button */
                 self.set_master_password(
                   $('#frmMasterPassword #password').val(),
                   parentDialog.set_callback,
                 );
-              } else if(event.index == 1) {
+              } else if(event.index == 2) {
                 /* Cancel button */
                 self.masterpass_callback_queue = [];
-              } else if(event.index == 0) {
+              } else if(event.index == 1) {
                 /* Reset Button */
                 event.cancel = true;
 
@@ -634,6 +645,15 @@ define('pgadmin.browser', [
                   ok: gettext('Yes'),
                   cancel: gettext('No'),
                 });
+              } else if(event.index == 0) {
+                /* help Button */
+                event.cancel = true;
+                self.showHelp(
+                  event.button.element.name,
+                  event.button.element.getAttribute('url'),
+                  null, null
+                );
+                return;
               }
             },
           };
