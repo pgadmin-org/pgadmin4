@@ -12,7 +12,7 @@ define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
   'sources/check_node_visibility', './toolbar', 'pgadmin.help',
-  'sources/csrf', 'pgadmin.browser.utils',
+  'sources/csrf', 'sources/keyboard_shortcuts', 'pgadmin.browser.utils',
   'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel',
@@ -24,7 +24,7 @@ define('pgadmin.browser', [
   tree,
   gettext, url_for, require, $, _, S,
   Bootstrap, pgAdmin, Alertify, codemirror,
-  checkNodeVisibility, toolBar, help, csrfToken
+  checkNodeVisibility, toolBar, help, csrfToken, keyboardFunc
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
@@ -607,7 +607,9 @@ define('pgadmin.browser', [
 
               /* Enable ok only if password entered */
               $okBtn.prop('disabled', true);
-              $password.on('input', ()=>{
+              $password.on('input change keyup', (event)=>{
+                keyboardFunc._stopEventPropagation(event);
+
                 if($password.val() != '') {
                   $okBtn.prop('disabled', false);
                 } else {
