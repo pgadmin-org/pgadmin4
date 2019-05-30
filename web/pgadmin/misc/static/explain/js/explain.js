@@ -10,11 +10,13 @@
 define('pgadmin.misc.explain', [
   'sources/url_for', 'jquery', 'underscore', 'underscore.string',
   'sources/pgadmin', 'backbone', 'snapsvg', 'explain_statistics',
-  'svg_downloader',
-], function(url_for, $, _, S, pgAdmin, Backbone, Snap, StatisticsModel, svgDownloader) {
+  'svg_downloader', 'image_maper',
+], function(url_for, $, _, S, pgAdmin, Backbone, Snap, StatisticsModel,
+  svgDownloader, imageMapper) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
   svgDownloader = svgDownloader.default;
+  var pgBrowser = pgAdmin.Browser;
 
   // Snap.svg plug-in to write multitext as image name
   Snap.plugin(function(Snap, Element, Paper) {
@@ -97,279 +99,9 @@ define('pgadmin.misc.explain', [
   var pgExplain = pgAdmin.Explain = {
     // Prefix path where images are stored
     prefix: url_for('misc.index') + 'static/explain/img/',
-  };
-
-  /*
-   * A map which is used to fetch the image to be drawn and
-   * text which will appear below it
-   */
-  var imageMapper = {
-    'Aggregate': {
-      'image': 'ex_aggregate.svg',
-      'image_text': 'Aggregate',
-    },
-    'Append': {
-      'image': 'ex_append.svg',
-      'image_text': 'Append',
-    },
-    'Bitmap Index Scan': function(data) {
-      return {
-        'image': 'ex_bmp_index.svg',
-        'image_text': data['Index Name'],
-      };
-    },
-    'Bitmap Heap Scan': function(data) {
-      return {
-        'image': 'ex_bmp_heap.svg',
-        'image_text': data['Relation Name'],
-      };
-    },
-    'BitmapAnd': {
-      'image': 'ex_bmp_and.svg',
-      'image_text': 'Bitmap AND',
-    },
-    'BitmapOr': {
-      'image': 'ex_bmp_or.svg',
-      'image_text': 'Bitmap OR',
-    },
-    'CTE Scan': {
-      'image': 'ex_cte_scan.svg',
-      'image_text': 'CTE Scan',
-    },
-    'Function Scan': {
-      'image': 'ex_result.svg',
-      'image_text': 'Function Scan',
-    },
-    'Foreign Scan': {
-      'image': 'ex_foreign_scan.svg',
-      'image_text': 'Foreign Scan',
-    },
-    'Gather': {
-      'image': 'ex_gather_motion.svg',
-      'image_text': 'Gather',
-    },
-    'Group': {
-      'image': 'ex_group.svg',
-      'image_text': 'Group',
-    },
-    'GroupAggregate': {
-      'image': 'ex_aggregate.svg',
-      'image_text': 'Group Aggregate',
-    },
-    'Hash': {
-      'image': 'ex_hash.svg',
-      'image_text': 'Hash',
-    },
-    'Hash Join': function(data) {
-      if (!data['Join Type']) return {
-        'image': 'ex_join.svg',
-        'image_text': 'Join',
-      };
-      switch (data['Join Type']) {
-      case 'Anti':
-        return {
-          'image': 'ex_hash_anti_join.svg',
-          'image_text': 'Hash Anti Join',
-        };
-      case 'Semi':
-        return {
-          'image': 'ex_hash_semi_join.svg',
-          'image_text': 'Hash Semi Join',
-        };
-      default:
-        return {
-          'image': 'ex_hash.svg',
-          'image_text': String('Hash ' + data['Join Type'] + ' Join'),
-        };
-      }
-    },
-    'HashAggregate': {
-      'image': 'ex_aggregate.svg',
-      'image_text': 'Hash Aggregate',
-    },
-    'Index Only Scan': function(data) {
-      return {
-        'image': 'ex_index_only_scan.svg',
-        'image_text': data['Index Name'],
-      };
-    },
-    'Index Scan': function(data) {
-      return {
-        'image': 'ex_index_scan.svg',
-        'image_text': data['Index Name'],
-      };
-    },
-    'Index Scan Backword': {
-      'image': 'ex_index_scan.svg',
-      'image_text': 'Index Backward Scan',
-    },
-    'Limit': {
-      'image': 'ex_limit.svg',
-      'image_text': 'Limit',
-    },
-    'LockRows': {
-      'image': 'ex_lock_rows.svg',
-      'image_text': 'Lock Rows',
-    },
-    'Materialize': {
-      'image': 'ex_materialize.svg',
-      'image_text': 'Materialize',
-    },
-    'Merge Append': {
-      'image': 'ex_merge_append.svg',
-      'image_text': 'Merge Append',
-    },
-    'Merge Join': function(data) {
-      switch (data['Join Type']) {
-      case 'Anti':
-        return {
-          'image': 'ex_merge_anti_join.svg',
-          'image_text': 'Merge Anti Join',
-        };
-      case 'Semi':
-        return {
-          'image': 'ex_merge_semi_join.svg',
-          'image_text': 'Merge Semi Join',
-        };
-      default:
-        return {
-          'image': 'ex_merge.svg',
-          'image_text': String('Merge ' + data['Join Type'] + ' Join'),
-        };
-      }
-    },
-    'ModifyTable': function(data) {
-      switch (data['Operation']) {
-      case 'Insert':
-        return {
-          'image': 'ex_insert.svg',
-          'image_text': 'Insert',
-        };
-      case 'Update':
-        return {
-          'image': 'ex_update.svg',
-          'image_text': 'Update',
-        };
-      case 'Delete':
-        return {
-          'image': 'ex_delete.svg',
-          'image_text': 'Delete',
-        };
-      }
-    },
-    'Nested Loop': function(data) {
-      switch (data['Join Type']) {
-      case 'Anti':
-        return {
-          'image': 'ex_nested_loop_anti_join.svg',
-          'image_text': 'Nested Loop Anti Join',
-        };
-      case 'Semi':
-        return {
-          'image': 'ex_nested_loop_semi_join.svg',
-          'image_text': 'Nested Loop Semi Join',
-        };
-      default:
-        return {
-          'image': 'ex_nested.svg',
-          'image_text': 'Nested Loop ' + data['Join Type'] + ' Join',
-        };
-      }
-    },
-    'Recursive Union': {
-      'image': 'ex_recursive_union.svg',
-      'image_text': 'Recursive Union',
-    },
-    'Result': {
-      'image': 'ex_result.svg',
-      'image_text': 'Result',
-    },
-    'Sample Scan': {
-      'image': 'ex_scan.svg',
-      'image_text': 'Sample Scan',
-    },
-    'Scan': {
-      'image': 'ex_scan.svg',
-      'image_text': 'Scan',
-    },
-    'Seek': {
-      'image': 'ex_seek.svg',
-      'image_text': 'Seek',
-    },
-    'SetOp': function(data) {
-      var strategy = data['Strategy'],
-        command = data['Command'];
-
-      if (strategy == 'Hashed') {
-        if (S.startsWith(command, 'Intersect')) {
-          if (command == 'Intersect All')
-            return {
-              'image': 'ex_hash_setop_intersect_all.svg',
-              'image_text': 'Hashed Intersect All',
-            };
-          return {
-            'image': 'ex_hash_setop_intersect.svg',
-            'image_text': 'Hashed Intersect',
-          };
-        } else if (S.startsWith(command, 'Except')) {
-          if (command == 'Except All')
-            return {
-              'image': 'ex_hash_setop_except_all.svg',
-              'image_text': 'Hashed Except All',
-            };
-          return {
-            'image': 'ex_hash_setop_except.svg',
-            'image_text': 'Hash Except',
-          };
-        }
-        return {
-          'image': 'ex_hash_setop_unknown.svg',
-          'image_text': 'Hashed SetOp Unknown',
-        };
-      }
-      return {
-        'image': 'ex_setop.svg',
-        'image_text': 'SetOp',
-      };
-    },
-    'Seq Scan': function(data) {
-      return {
-        'image': 'ex_scan.svg',
-        'image_text': data['Relation Name'],
-      };
-    },
-    'Subquery Scan': {
-      'image': 'ex_subplan.svg',
-      'image_text': 'SubQuery Scan',
-    },
-    'Sort': {
-      'image': 'ex_sort.svg',
-      'image_text': 'Sort',
-    },
-    'Tid Scan': {
-      'image': 'ex_tid_scan.svg',
-      'image_text': 'Tid Scan',
-    },
-    'Unique': {
-      'image': 'ex_unique.svg',
-      'image_text': 'Unique',
-    },
-    'Values Scan': {
-      'image': 'ex_values_scan.svg',
-      'image_text': 'Values Scan',
-    },
-    'WindowAgg': {
-      'image': 'ex_window_aggregate.svg',
-      'image_text': 'Window Aggregate',
-    },
-    'WorkTable Scan': {
-      'image': 'ex_worktable_scan.svg',
-      'image_text': 'WorkTable Scan',
-    },
-    'Undefined': {
-      'image': 'ex_unknown.svg',
-      'image_text': 'Undefined',
-    },
+    totalNodes: 0,
+    totalDownloadedNodes: 0,
+    isDownloaded: false,
   };
 
   // Some predefined constants used to calculate image location and its border
@@ -433,9 +165,10 @@ define('pgadmin.misc.explain', [
         node_type = node_type.substring(0, 7);
 
       // Get the image information for current node
-      var mappedImage = (_.isFunction(imageMapper[node_type]) &&
-          imageMapper[node_type].apply(undefined, [data])) ||
-        imageMapper[node_type] || {
+      let imageStore = imageMapper.default;
+      var mappedImage = (_.isFunction(imageStore[node_type]) &&
+          imageStore[node_type].apply(undefined, [data])) ||
+        imageStore[node_type] || {
         'image': 'ex_unknown.svg',
         'image_text': node_type,
       };
@@ -576,34 +309,7 @@ define('pgadmin.misc.explain', [
         });
       }
 
-      /* Check the current browser, if it is Internet Explorer then we will not
-       * embed the SVG files for download feature as we are not bale to figure
-       * out the solution for IE.
-       */
-      var current_browser = pgAdmin.Browser.get_browser();
-      if (current_browser.name === 'IE' ||
-        (current_browser.name === 'Safari' && parseInt(current_browser.version) < 10)) {
-        this.draw_image(g, pgExplain.prefix + this.get('image'), currentXpos, currentYpos, graphContainer, toolTipContainer);
-      } else {
-        /* This function is a callback function called when we load any svg file
-         * using Snap. In this function we append the SVG binary data to the new
-         * temporary Snap object and then embedded it to the original Snap() object.
-         */
-        var that = this;
-        var onSVGLoaded = function(data) {
-          var svg_image = Snap();
-          svg_image.append(data);
-
-          that.draw_image(g, svg_image.toDataURL(), currentXpos, currentYpos, graphContainer, toolTipContainer);
-
-          // This attribute is required to download the file as SVG image.
-          s.parent().attr({'xmlns:xlink':'http://www.w3.org/1999/xlink'});
-        };
-
-        var svg_file = pgExplain.prefix + this.get('image');
-        // Load the SVG file for explain plan
-        Snap.load(svg_file, onSVGLoaded);
-      }
+      this.draw_image(g, pgExplain.prefix + this.get('image'), currentXpos, currentYpos, graphContainer, toolTipContainer);
 
       // Draw text below the node
       var node_label = this.get('Schema') == undefined ?
@@ -760,6 +466,224 @@ define('pgadmin.misc.explain', [
     },
   });
 
+
+  /*
+   * NOTE: embedding using .toDataURL() method hits the performance of the
+   * plan rendering a lot, that is why we have written seprate Model for the same
+   * which is used only when downloading of SVG is called
+   */
+  // We override the PlanModel's draw() function so that we can embbed all the
+  // svg in to main one SVG so that we can download it.
+  let DownloadPlanModel = PlanModel.extend({
+    // Draw image, its name and its tooltip
+    parse: function(data) {
+      var idx = 1,
+        lvl = data.level = data.level || [idx],
+        plans = [],
+        node_type = data['Node Type'],
+        // Calculating relative xpos of current node from top node
+        xpos = data.xpos = data.xpos - pWIDTH,
+        // Calculating relative ypos of current node from top node
+        ypos = data.ypos,
+        maxChildWidth = 0;
+
+      data['width'] = pWIDTH;
+      data['height'] = pHEIGHT;
+
+      /*
+       * calculating xpos, ypos, width and height if current node is a subplan
+       */
+      if (data['Parent Relationship'] === 'SubPlan') {
+        data['width'] += (xMargin * 2) + (xMargin / 2);
+        data['height'] += (yMargin * 2);
+        data['ypos'] += yMargin;
+        xpos -= xMargin;
+        ypos += yMargin;
+      }
+
+      if (S.startsWith(node_type, '(slice'))
+        node_type = node_type.substring(0, 7);
+      // Get the image information for current node
+      let imageStore = imageMapper.default;
+      var mappedImage = (_.isFunction(imageStore[node_type]) &&
+          imageStore[node_type].apply(undefined, [data])) ||
+        imageStore[node_type] || {
+        'image': 'ex_unknown.svg',
+        'image_text': node_type,
+      };
+
+      data['image'] = mappedImage['image'];
+      data['image_text'] = mappedImage['image_text'];
+      pgExplain.totalNodes++;
+
+      // Start calculating xpos, ypos, width and height for child plans if any
+      if ('Plans' in data) {
+
+        data['width'] += offsetX;
+
+        _.each(data['Plans'], function(p) {
+          var level = _.clone(lvl),
+            plan = new DownloadPlanModel({ 'parse': true });
+
+          level.push(idx);
+          plan.set(plan.parse(_.extend(
+            p, {
+              'level': level,
+              xpos: xpos - offsetX,
+              ypos: ypos,
+            })));
+
+          if (maxChildWidth < plan.get('width')) {
+            maxChildWidth = plan.get('width');
+          }
+
+          var childHeight = plan.get('height');
+
+          if (idx !== 1) {
+            data['height'] = data['height'] + childHeight + offsetY;
+          } else if (childHeight > data['height']) {
+            data['height'] = childHeight;
+          }
+          ypos += childHeight + offsetY;
+
+          plans.push(plan);
+          idx++;
+        });
+      }
+
+      // Final Width and Height of current node
+      data['width'] += maxChildWidth;
+      data['Plans'] = plans;
+
+      return data;
+    },
+    draw: function(s, xpos, ypos, pXpos, pYpos, graphContainer, toolTipContainer) {
+      var g = s.g();
+      var currentXpos = xpos + this.get('xpos'),
+        currentYpos = ypos + this.get('ypos'),
+        isSubPlan = (this.get('Parent Relationship') === 'SubPlan');
+
+      // Draw the subplan rectangle
+      if (isSubPlan) {
+        g.rect(
+          currentXpos - this.get('width') + pWIDTH + xMargin,
+          currentYpos - this.get('height') + pHEIGHT + yMargin - TXT_ALIGN,
+          this.get('width') - xMargin,
+          this.get('height') + (currentYpos - yMargin),
+          5
+        ).attr({
+          stroke: '#444444',
+          'strokeWidth': 1.2,
+          fill: 'gray',
+          fillOpacity: 0.2,
+        });
+
+        // Provide subplan name
+        g.text(
+          currentXpos + pWIDTH - (this.get('width') / 2) - xMargin,
+          currentYpos + pHEIGHT - (this.get('height') / 2) - yMargin,
+          this.get('Subplan Name')
+        ).attr({
+          fontSize: TXT_SIZE,
+          'text-anchor': 'start',
+          fill: 'red',
+        });
+      }
+
+      /* Check the current browser, if it is Internet Explorer then we will not
+       * embed the SVG files for download feature as we are not bale to figure
+       * out the solution for IE.
+       */
+
+      var current_browser = pgAdmin.Browser.get_browser();
+      if (current_browser.name === 'IE' ||
+        (current_browser.name === 'Safari' && parseInt(current_browser.version) < 10)) {
+        this.draw_image(g, pgExplain.prefix + this.get('image'), currentXpos, currentYpos, graphContainer, toolTipContainer);
+      } else {
+        /* This function is a callback function called when we load any svg file
+         * using Snap. In this function we append the SVG binary data to the new
+         * temporary Snap object and then embedded it to the original Snap() object.
+         */
+        var that = this;
+        var onSVGLoaded = function(data) {
+          var svg_image = Snap();
+          svg_image.append(data);
+
+          that.draw_image(g, svg_image.toDataURL(), currentXpos, currentYpos, graphContainer, toolTipContainer);
+          pgExplain.totalDownloadedNodes++;
+
+          // This attribute is required to download the file as SVG image.
+          s.parent().attr({'xmlns:xlink':'http://www.w3.org/1999/xlink'});
+          setTimeout(() => {
+            pgBrowser.Events.trigger('pga:explain_plan:node_icon:fetched');
+          }, 100);
+        };
+
+        var svg_file = pgExplain.prefix + this.get('image');
+        // Load the SVG file for explain plan
+        Snap.load(svg_file, onSVGLoaded);
+      }
+
+      // Draw text below the node
+      var node_label = this.get('Schema') == undefined ?
+        this.get('image_text') :
+        (this.get('Schema') + '.' + this.get('image_text'));
+      g.multitext(
+        currentXpos + (pWIDTH / 2) + TXT_ALIGN,
+        currentYpos + pHEIGHT - TXT_ALIGN,
+        node_label,
+        150, {
+          'font-size': TXT_SIZE,
+          'text-anchor': 'middle',
+        }
+      );
+
+      // Draw Arrow to parent only its not the first node
+      if (!_.isUndefined(pYpos)) {
+        var startx = currentXpos + pWIDTH;
+        var starty = currentYpos + (pHEIGHT / 2);
+        var endx = pXpos - ARROW_WIDTH;
+        var endy = pYpos + (pHEIGHT / 2);
+        var start_cost = this.get('Startup Cost'),
+          total_cost = this.get('Total Cost');
+        var arrow_size = DEFAULT_ARROW_SIZE;
+
+        // Calculate arrow width according to cost of a particular plan
+        if (start_cost != undefined && total_cost != undefined) {
+          arrow_size = Math.round(Math.log((start_cost + total_cost) / 2 + start_cost));
+          arrow_size = arrow_size < 1 ? 1 : arrow_size > 10 ? 10 : arrow_size;
+        }
+
+        var arrow_view_box = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT];
+        var opts = {
+            stroke: '#000000',
+            strokeWidth: arrow_size + 2,
+          },
+          subplanOpts = {
+            stroke: '#866486',
+            strokeWidth: arrow_size + 2,
+          },
+          arrowOpts = {
+            viewBox: arrow_view_box.join(' '),
+          };
+
+        // Draw an arrow from current node to its parent
+        this.drawPolyLine(
+          g, startx, starty, endx, endy,
+          isSubPlan ? subplanOpts : opts, arrowOpts
+        );
+      }
+
+      var plans = this.get('Plans');
+
+      // Draw nodes for current plan's children
+      _.each(plans, function(p) {
+        p.draw(s, xpos, ypos, currentXpos, currentYpos, graphContainer, toolTipContainer);
+      });
+    },
+
+  });
+
   // Main backbone model to store JSON object
   var MainPlanModel = Backbone.Model.extend({
     defaults: {
@@ -840,8 +764,12 @@ define('pgadmin.misc.explain', [
   // Parse and draw full graphical explain
   _.extend(pgExplain, {
     // Assumption container is a jQuery object
-    DrawJSONPlan: function(container, plan) {
+    DrawJSONPlan: function(container, plan, isDownload) {
+      pgExplain.totalNodes = 0;
+      pgExplain.totalDownloadedNodes = 0;
+      pgExplain.isDownloaded = false;
       container.empty();
+      var orignalPlan = $.extend(true, [], plan);
       var curr_zoom_factor = 1.0;
 
       var zoomArea = $('<div></div>', {
@@ -931,7 +859,20 @@ define('pgadmin.misc.explain', [
         h = yMargin;
 
       _.each(plan, function(p) {
-        var main_plan = new MainPlanModel();
+        var main_plan;
+        if(isDownload) {
+          // If user opt to download then we will use the DownloadPlanModel model
+          // so that it will embed the images while regenrating the plan
+          let DownloadMainPlanModel = MainPlanModel.extend({
+            initialize: function() {
+              this.set('Plan', new DownloadPlanModel({ parse: true }));
+              this.set('Statistics', new StatisticsModel());
+            },
+          });
+          main_plan = new DownloadMainPlanModel({ 'parse': true });
+        } else {
+          main_plan = new MainPlanModel();
+        }
 
         // Parse JSON data to backbone model
         main_plan.set(main_plan.parse(p));
@@ -1018,14 +959,20 @@ define('pgadmin.misc.explain', [
         });
 
         downloadBtn.on('click', function() {
-          var s = Snap('.pgadmin-explain-container svg');
-          var today  = new Date();
-          var filename = 'explain_plan_' + today.getTime() + '.svg';
-          svgDownloader.downloadSVG(s.toString(), filename);
-          downloadBtn.trigger('blur');
+          // Lets regenrate the plan with embedded images
+          pgExplain.DrawJSONPlan(container, orignalPlan, true);
+          pgBrowser.Events.on('pga:explain_plan:node_icon:fetched', function() {
+            if (!pgExplain.isDownloaded && pgExplain.totalNodes === pgExplain.totalDownloadedNodes) {
+              pgExplain.isDownloaded = true;
+              var s = Snap('.pgadmin-explain-container svg');
+              var today  = new Date();
+              var filename = 'explain_plan_' + today.getTime() + '.svg';
+              svgDownloader.downloadSVG(s.toString(), filename);
+              downloadBtn.trigger('blur');
+            }
+          });
         });
       });
-
     },
   });
 
