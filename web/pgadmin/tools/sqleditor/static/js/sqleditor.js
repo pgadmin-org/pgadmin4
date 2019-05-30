@@ -276,6 +276,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: true,
         isPrivate: true,
+        isLayoutMember: false,
         content: '<div id ="geometry_viewer_panel" class="sql-editor-geometry-viewer" tabindex: "0"></div>',
       });
 
