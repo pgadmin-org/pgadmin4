@@ -1540,7 +1540,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             # Get schema name
             status, schema_name = self.conn.execute_scalar(
                 render_template(
-                    'schema/pg/#{0}#/sql/get_name.sql'.format(
+                    'schemas/pg/#{0}#/sql/get_name.sql'.format(
                         self.manager.version),
                     scid=scid
                 )

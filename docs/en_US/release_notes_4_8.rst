@@ -12,3 +12,4 @@ Bug fixes
 
 | `Bug #4169 <https://redmine.postgresql.org/issues/4169>`_ - Omit the geometry viewer in the Query Tool from layout saving.
 | `Bug #4307 <https://redmine.postgresql.org/issues/4307>`_ - Improve the performance of explain plan by embedding the images only when downloading it.
+| `Bug #4308 <https://redmine.postgresql.org/issues/4308>`_ - Fix the issue of accessing the SQL for Views and Materialized Views. Regression of pluralisation of folder names.

@@ -771,7 +771,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             Updated properties data with column details
         """
 
-        self.index_temp_path = 'index'
+        self.index_temp_path = 'indexes'
         SQL = render_template("/".join([self.index_temp_path,
                                         'sql/#{0}#/column_details.sql'.format(
                                             self.manager.version)]), idx=idx)
@@ -825,7 +825,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             Updated properties data with column
         """
 
-        self.trigger_temp_path = 'schema/trigger'
+        self.trigger_temp_path = 'schemas/triggers'
         SQL = render_template("/".join([self.trigger_temp_path,
                                         'get_columns.sql']),
                               tid=tid, clist=clist)
@@ -887,7 +887,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             import trigger_definition
 
         # Define template path
-        self.trigger_temp_path = 'trigger'
+        self.trigger_temp_path = 'triggers'
 
         SQL_data = ''
         SQL = render_template("/".join(
@@ -970,7 +970,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         into sql tab
         """
 
-        self.index_temp_path = 'index'
+        self.index_temp_path = 'indexes'
         SQL_data = ''
         SQL = render_template("/".join(
             [self.index_temp_path,
