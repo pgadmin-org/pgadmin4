@@ -71,7 +71,8 @@ def register_browser_preferences(self):
             {'label': gettext('None'), 'value': LOCK_LAYOUT_LEVEL['NONE']},
             {'label': gettext('Prevent Docking'),
              'value': LOCK_LAYOUT_LEVEL['PREVENT_DOCKING']},
-            {'label': gettext('Full Lock'), 'value': LOCK_LAYOUT_LEVEL['FULL']},
+            {'label': gettext('Full Lock'),
+             'value': LOCK_LAYOUT_LEVEL['FULL']},
         ],
         help_str=gettext(
             'Lock the UI layout at different levels'
