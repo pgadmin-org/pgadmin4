@@ -236,6 +236,7 @@ def create_app(app_name=None):
         os.environ['PGADMIN_TESTING_MODE'] == '1'
     ):
         config.SQLITE_PATH = config.TEST_SQLITE_PATH
+        config.MASTER_PASSWORD_REQUIRED = False
 
     # Ensure the various working directories exist
     from pgadmin.setup import create_app_data_directory, db_upgrade
