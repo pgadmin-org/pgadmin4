@@ -39,7 +39,7 @@ class SettingsModule(PgAdminModule):
             'file_items': [
                 MenuItem(
                     name='mnu_resetlayout',
-                    priority=999,
+                    priority=998,
                     module="pgAdmin.Settings",
                     callback='show',
                     icon='fa fa-retweet',

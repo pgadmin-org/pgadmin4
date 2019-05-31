@@ -190,6 +190,7 @@ var webpackShimConfig = {
     'pgadmin.browser.error': path.join(__dirname, './pgadmin/browser/static/js/error'),
     'pgadmin.browser.frame': path.join(__dirname, './pgadmin/browser/static/js/frame'),
     'pgadmin.browser.keyboard': path.join(__dirname, './pgadmin/browser/static/js/keyboard'),
+    'pgadmin.browser.layout': path.join(__dirname, './pgadmin/browser/static/js/layout'),
     'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
     'pgadmin.browser.menu': path.join(__dirname, './pgadmin/browser/static/js/menu'),
     'pgadmin.browser.messages': '/browser/js/messages',

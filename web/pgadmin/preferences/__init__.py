@@ -48,7 +48,7 @@ class PreferencesModule(PgAdminModule):
         return {
             'file_items': [
                 MenuItem(name='mnu_preferences',
-                         priority=999,
+                         priority=997,
                          module="pgAdmin.Preferences",
                          callback='show',
                          icon='fa fa-cog',

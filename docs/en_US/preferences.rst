@@ -38,16 +38,29 @@ Use the fields on the *Display* panel to specify general display preferences:
   attempt to catch browser close or refresh events and prompt before allowing
   them to continue.
 
-* When the *Show system objects?* switch is set to *True*, the client will
-  display system objects such as system schemas (for example, *pg_temp*) or
-  system columns (for example,  *xmin* or *ctid*) in the tree control.
-
 * When the *Enable browser tree animation?* switch is set to *True*, the client
   will display the animated tree control otherwise it will be unanimated.
 
 * When the *Enable dialogue/notification animation?* switch is set to *True*,
   the client will display the animated dialogues/notifications otherwise it
   will be unanimated.
+
+* Use the *Lock layout* field to lock the UI layout at different levels. This
+  can also be changed from File menu on the :ref:`menu bar <menu_bar>`
+
++---------------------+-------------------------------------------------------------------+
+| Option              | Action                                                            |
++=====================+===================================================================+
+| *None*              | No locking. Every panel is resizable and dockable.                |
++---------------------+-------------------------------------------------------------------+
+| *Prevent docking*   | This will disable the docking/undocking of the panels             |
++---------------------+-------------------------------------------------------------------+
+| *Full*              | This will disable resizing, docking/undocking of the panels       |
++---------------------+-------------------------------------------------------------------+
+
+* When the *Show system objects?* switch is set to *True*, the client will
+  display system objects such as system schemas (for example, *pg_temp*) or
+  system columns (for example,  *xmin* or *ctid*) in the tree control.
 
 Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 main window navigation:

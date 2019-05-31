@@ -8,6 +8,12 @@
 ##########################################################################
 from flask_babelex import gettext
 
+LOCK_LAYOUT_LEVEL = {
+    'PREVENT_DOCKING': 'docking',
+    'FULL': 'full',
+    'NONE': 'none'
+}
+
 
 def register_browser_preferences(self):
     self.show_system_objects = self.preference.register(
@@ -55,6 +61,20 @@ def register_browser_preferences(self):
         help_str=gettext(
             'If a treeview node is expanded and has only a single '
             'child, automatically expand the child node as well.'
+        )
+    )
+
+    self.lock_layout = self.preference.register(
+        'display', 'lock_layout',
+        gettext('Lock Layout'), 'radioModern', LOCK_LAYOUT_LEVEL['NONE'],
+        category_label=gettext('Display'), options=[
+            {'label': gettext('None'), 'value': LOCK_LAYOUT_LEVEL['NONE']},
+            {'label': gettext('Prevent Docking'),
+             'value': LOCK_LAYOUT_LEVEL['PREVENT_DOCKING']},
+            {'label': gettext('Full Lock'), 'value': LOCK_LAYOUT_LEVEL['FULL']},
+        ],
+        help_str=gettext(
+            'Lock the UI layout at different levels'
         )
     )
 

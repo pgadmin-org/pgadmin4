@@ -39,6 +39,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.menu import MenuItem
 from pgadmin.browser.register_browser_preferences import \
     register_browser_preferences
 from pgadmin.utils.master_password import validate_master_password, \
@@ -215,6 +216,40 @@ class BrowserModule(PgAdminModule):
             scripts.extend(module.get_own_javascripts())
         return scripts
 
+    def get_own_menuitems(self):
+        return {
+            'file_items': [
+                MenuItem(
+                    name='mnu_locklayout',
+                    module='pgAdmin.Browser',
+                    label=gettext('Lock Layout'),
+                    priority=999,
+                    menu_items=[MenuItem(
+                        name='mnu_lock_none',
+                        module='pgAdmin.Browser',
+                        callback='mnu_lock_none',
+                        priority=0,
+                        label=gettext('None'),
+                        checked=True
+                    ), MenuItem(
+                        name='mnu_lock_docking',
+                        module='pgAdmin.Browser',
+                        callback='mnu_lock_docking',
+                        priority=1,
+                        label=gettext('Prevent Docking'),
+                        checked=False
+                    ), MenuItem(
+                        name='mnu_lock_full',
+                        module='pgAdmin.Browser',
+                        callback='mnu_lock_full',
+                        priority=2,
+                        label=gettext('Full Lock'),
+                        checked=False
+                    )]
+                )
+            ]
+        }
+
     def register_preferences(self):
         register_browser_preferences(self)
 
@@ -226,7 +261,8 @@ class BrowserModule(PgAdminModule):
         return ['browser.index', 'browser.nodes',
                 'browser.check_master_password',
                 'browser.set_master_password',
-                'browser.reset_master_password']
+                'browser.reset_master_password',
+                'browser.lock_layout']
 
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
@@ -813,6 +849,21 @@ def set_master_password():
     return form_master_password_response(
         present=True,
     )
+
+
+@blueprint.route("/lock_layout", endpoint="lock_layout", methods=["PUT"])
+def lock_layout():
+    data = None
+
+    if hasattr(request.data, 'decode'):
+        data = request.data.decode('utf-8')
+
+    if data != '':
+        data = json.loads(data)
+
+    blueprint.lock_layout.set(data['value'])
+
+    return make_json_response()
 
 
 # Only register route if SECURITY_CHANGEABLE is set to True

@@ -428,7 +428,7 @@ class Preferences(object):
         assert _type is not None, "Type for a preference cannot be none!"
         assert _type in (
             'boolean', 'integer', 'numeric', 'date', 'datetime',
-            'options', 'multiline', 'switch', 'node', 'text',
+            'options', 'multiline', 'switch', 'node', 'text', 'radioModern',
             'keyboardshortcut'
         ), "Type cannot be found in the defined list!"
 

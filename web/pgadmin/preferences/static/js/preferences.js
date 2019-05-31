@@ -271,6 +271,8 @@ define('pgadmin.preferences', [
               return 'switch';
             case 'keyboardshortcut':
               return 'keyboardShortcut';
+            case 'radioModern':
+              return 'radioModern';
             default:
               if (console && console.warn) {
                 // Warning for developer only.

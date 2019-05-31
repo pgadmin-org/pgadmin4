@@ -15,7 +15,7 @@ define('pgadmin.browser', [
   'sources/csrf', 'sources/keyboard_shortcuts', 'pgadmin.browser.utils',
   'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
-  'pgadmin.browser.menu', 'pgadmin.browser.panel',
+  'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
   'pgadmin.browser.error', 'pgadmin.browser.frame',
   'pgadmin.browser.node', 'pgadmin.browser.collection',
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
@@ -282,22 +282,6 @@ define('pgadmin.browser', [
       scripts[n].push({'name': m, 'path': p, loaded: false});
     },
     masterpass_callback_queue: [],
-    // Build the default layout
-    buildDefaultLayout: function(docker) {
-      var browserPanel = docker.addPanel('browser', wcDocker.DOCK.LEFT);
-      var dashboardPanel = docker.addPanel(
-        'dashboard', wcDocker.DOCK.RIGHT, browserPanel);
-      docker.addPanel('properties', wcDocker.DOCK.STACKED, dashboardPanel, {
-        tabOrientation: wcDocker.TAB.TOP,
-      });
-      docker.addPanel('sql', wcDocker.DOCK.STACKED, dashboardPanel);
-      docker.addPanel(
-        'statistics', wcDocker.DOCK.STACKED, dashboardPanel);
-      docker.addPanel(
-        'dependencies', wcDocker.DOCK.STACKED, dashboardPanel);
-      docker.addPanel(
-        'dependents', wcDocker.DOCK.STACKED, dashboardPanel);
-    },
     // Enable/disable menu options
     enable_disable_menus: function(item) {
       // Mechanism to enable/disable menus depending on the condition.
@@ -352,35 +336,6 @@ define('pgadmin.browser', [
             update: function() {},
           }], false);
         $obj_mnu.append(create_submenu.$el);
-      }
-    },
-    save_current_layout: function(layout_id, docker) {
-      if(docker) {
-        var layout = docker.save(),
-          settings = { setting: layout_id, value: layout };
-        $.ajax({
-          type: 'POST',
-          url: url_for('settings.store_bulk'),
-          data: settings,
-        });
-      }
-    },
-    restore_layout: function(docker, layout, defaultLayoutCallback) {
-      // Try to restore the layout if there is one
-      if (layout != '') {
-        try {
-          docker.restore(layout);
-        }
-        catch(err) {
-          docker.clear();
-          if(defaultLayoutCallback) {
-            defaultLayoutCallback(docker);
-          }
-        }
-      } else {
-        if(defaultLayoutCallback) {
-          defaultLayoutCallback(docker);
-        }
       }
     },
     init: function() {
@@ -799,8 +754,8 @@ define('pgadmin.browser', [
               menus = pgMenu[a];
             }
 
-            if (!_.has(menus, m.name)) {
-              menus[m.name] = new MenuItem({
+            let get_menuitem_obj = function(m) {
+              return new MenuItem({
                 name: m.name, label: m.label, module: m.module,
                 category: m.category, callback: m.callback,
                 priority: m.priority, data: m.data, url: m.url || '#',
@@ -808,8 +763,21 @@ define('pgadmin.browser', [
                 enable: (m.enable == '' ? true : (_.isString(m.enable) &&
                     m.enable.toLowerCase() == 'false') ?
                   false : m.enable),
-                node: m.node,
+                node: m.node, checked: m.checked,
               });
+            };
+
+            if (!_.has(menus, m.name)) {
+              menus[m.name] = get_menuitem_obj(m);
+
+              if(m.menu_items) {
+                let sub_menu_items = [];
+
+                for(let i=0; i<m.menu_items.length; i++) {
+                  sub_menu_items.push(get_menuitem_obj(m.menu_items[i]));
+                }
+                menus[m.name]['menu_items'] = sub_menu_items;
+              }
             }
           } else  {
             console.warn(

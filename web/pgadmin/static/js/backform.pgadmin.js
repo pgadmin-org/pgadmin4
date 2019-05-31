@@ -60,6 +60,7 @@ define([
     'select2': 'select2',
     'note': 'note',
     'color': 'color',
+    'radioModern': 'radioModern',
   };
 
   Backform.getMappedControl = function(type, mode) {
@@ -94,6 +95,17 @@ define([
     }
     return type;
   };
+
+  /* Returns raw data as it is */
+  var RawFormatter = Backform.RawFormatter = function() {};
+  _.extend(RawFormatter.prototype, {
+    fromRaw: function(rawData) {
+      return rawData;
+    },
+    toRaw: function(formattedData) {
+      return formattedData;
+    },
+  });
 
 
   var BackformControlInit = Backform.Control.prototype.initialize,
@@ -421,6 +433,48 @@ define([
         });
       },
     });
+
+
+  Backform.RadioModernControl = Backform.RadioControl.extend({
+    defaults: {
+      controlLabelClassName: Backform.controlLabelClassName,
+      controlsClassName: Backform.controlsClassName,
+      extraClasses: [],
+      helpMessage: '',
+      name: '',
+    },
+    template: _.template([
+      '<label class="<%=controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
+      ' <div class="btn-group pgadmin-controls-radio-none"  data-toggle="buttons">',
+      '  <% for (var i=0; i < options.length; i++) { %>',
+      '  <% var option = options[i]; %>',
+      '  <label class="btn btn-primary<% if (option.value == value) { %> active<%}%>" tabindex="0">',
+      '   <input type="radio" name="<%=name%>" autocomplete="off" value=<%-formatter.fromRaw(option.value)%> <% if (option.value == value) { %> checked<%}%> > <%-option.label%>',
+      '  </label>',
+      '  <% } %>',
+      ' </div>',
+      ' <% if (helpMessage && helpMessage.length) { %>',
+      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      ' <% } %>',
+      '</div>',
+    ].join('\n')),
+    formatter: RawFormatter,
+    getValueFromDOM: function() {
+      return this.formatter.toRaw(this.$el.find('input[type="radio"]:checked').attr('value'), this.model);
+    },
+    render: function() {
+      Backform.RadioControl.prototype.render.apply(this, arguments);
+      this.$el.find('.btn').on('keyup', (e)=>{
+        switch(e.keyCode) {
+        case 32: /* Spacebar click */
+          $(e.currentTarget).trigger('click');
+          break;
+        }
+      });
+      return this;
+    },
+  });
 
   // Requires the Bootstrap Switch to work.
   Backform.SwitchControl = Backform.InputControl.extend({

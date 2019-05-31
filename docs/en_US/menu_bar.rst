@@ -25,6 +25,9 @@ Use the *File* menu to access the following options:
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 | *Reset Layout*          | If you have modified the workspace, click to restore the default layout.                                |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Lock Layout*           | Click to open a submenu to select the level for locking the UI layout                                   |
+|                         | This can also be changed from browser display :ref:`preferences <preferences>`                          |
++-------------------------+---------------------------------------------------------------------------------------------------------+
 
 The Object Menu
 ***************

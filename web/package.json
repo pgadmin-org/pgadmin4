@@ -89,7 +89,7 @@
     "underscore": "^1.9.1",
     "underscore.string": "^3.3.5",
     "watchify": "~3.11.1",
-    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#e191a1063c111d5542ff26a7c163940be180333d",
+    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#f3c79e4b9a9e76a8e34736fc33473e65c524050c",
     "wkx": "^0.4.6"
   },
   "scripts": {

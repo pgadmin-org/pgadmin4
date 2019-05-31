@@ -72,6 +72,7 @@ module.exports = {
     alias: {
       'top': path.join(__dirname, './pgadmin'),
       'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
+      'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker'),
       'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
       'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.3.0'),
       'jquery.ui': path.join(__dirname, './node_modules/slickgrid/lib/jquery-ui-1.11.3'),
@@ -100,6 +101,7 @@ module.exports = {
       'pgadmin.backform': sourcesDir + '/js/backform.pgadmin',
       'pgbrowser': path.resolve(__dirname, 'regression/javascript/fake_browser'),
       'pgadmin.schema.dir': path.resolve(__dirname, 'pgadmin/browser/server_groups/servers/databases/schemas/static/js'),
+      'pgadmin.browser.layout': path.join(__dirname, './pgadmin/browser/static/js/layout'),
       'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
       'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
     },

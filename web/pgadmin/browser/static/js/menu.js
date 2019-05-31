@@ -19,6 +19,7 @@ define([
     var menu_opts = [
         'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
         'category', 'target', 'url' /* Do not show icon in the menus, 'icon' */ , 'node',
+        'checked', 'menu_items',
       ],
       defaults = {
         url: '#',
@@ -55,31 +56,48 @@ define([
      * Create the jquery element for the menu-item.
      */
     create_el: function(node, item) {
-      var url = $('<a></a>', {
-        'id': this.name,
-        'href': this.url,
-        'target': this.target,
-        'data-toggle': 'pg-menu',
-      }).data('pgMenu', {
-        module: this.module || pgAdmin.Browser,
-        cb: this.callback,
-        data: this.data,
-      }).addClass('dropdown-item');
 
-      this.is_disabled = this.disabled(node, item);
-      if (this.icon) {
-        url.append($('<i></i>', {
-          'class': this.icon,
-        }));
+      if(this.menu_items) {
+        _.each(this.menu_items, function(submenu_item){
+          submenu_item.generate(node, item);
+        });
+        var create_submenu = pgAdmin.Browser.MenuGroup({
+          'label': this.label,
+          'id': this.name,
+        }, this.menu_items);
+        this.$el = create_submenu.$el;
+      } else {
+        var url = $('<a></a>', {
+          'id': this.name,
+          'href': this.url,
+          'target': this.target,
+          'data-toggle': 'pg-menu',
+        }).data('pgMenu', {
+          module: this.module || pgAdmin.Browser,
+          cb: this.callback,
+          data: this.data,
+        }).addClass('dropdown-item');
+
+        this.is_disabled = this.disabled(node, item);
+        if (this.icon) {
+          url.append($('<i></i>', {
+            'class': this.icon,
+          }));
+        } else if(!_.isUndefined(this.checked)) {
+          url.append($('<i></i>', {
+            'class': 'fa fa-check '+ (this.checked?'':'visibility-hidden'),
+          }));
+        }
+
+        url.addClass((this.is_disabled ? ' disabled' : ''));
+
+        var textSpan = $('<span data-test="menu-item-text"></span>').text('  ' + this.label);
+
+        url.append(textSpan);
+
+        this.$el = $('<li/>').append(url);
       }
 
-      url.addClass((this.is_disabled ? ' disabled' : ''));
-
-      var textSpan = $('<span data-test="menu-item-text"></span>').text('  ' + this.label);
-
-      url.append(textSpan);
-
-      this.$el = $('<li/>').append(url);
     },
     /*
      * Updates the enable/disable state of the menu-item based on the current
@@ -153,6 +171,20 @@ define([
       if (this.module && _.isFunction(this.module[this.enable])) return !(this.module[this.enable]).apply(this.module, [node, item, this.data]);
 
       return false;
+    },
+
+    /*
+     * Change the checked value and update the checked icon on the menu
+     */
+    change_checked(isChecked) {
+      if(!_.isUndefined(this.checked)) {
+        this.checked = isChecked;
+        if(this.checked) {
+          this.$el.find('.fa-check').removeClass('visibility-hidden');
+        } else {
+          this.$el.find('.fa-check').addClass('visibility-hidden');
+        }
+      }
     },
   });
 

@@ -310,3 +310,8 @@ td.switch-cell > div.toggle {
 .btn.disabled, .btn:disabled, .btn[disabled] {
   opacity: $btn-disabled-opacity;
 }
+
+.btn-group label.btn.btn-primary.active {
+  background-color: $color-primary-light;
+  color: $color-primary;
+}

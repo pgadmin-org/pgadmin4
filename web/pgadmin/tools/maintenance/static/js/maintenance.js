@@ -51,8 +51,11 @@ define([
       id: 'op',
       label: gettext('Maintenance operation'),
       cell: 'string',
-      type: 'text',
+      type: 'radioModern',
+      controlsClassName: 'pgadmin-controls col-12 col-sm-8',
+      controlLabelClassName: 'control-label col-sm-4 col-12',
       group: gettext('Options'),
+      value: 'VACUUM',
       options: [{
         'label': 'VACUUM',
         'value': 'VACUUM',
@@ -70,30 +73,6 @@ define([
         'value': 'CLUSTER',
       },
       ],
-      control: Backform.RadioControl.extend({
-        template: _.template([
-          '<label class="control-label col-sm-4 col-12"><%=label%></label>',
-          '<div class="pgadmin-controls col-12 col-sm-8 btn-group pg-maintenance-op pgadmin-controls-radio-none" data-toggle="buttons">',
-          ' <% for (var i=0; i < options.length; i++) { %>',
-          ' <% var option = options[i]; %>',
-          ' <label class="btn btn-primary<% if (i == 0) { %> active<%}%>" tabindex="0">',
-          '  <input type="radio" name="op" id="op" autocomplete="off" value=<%-formatter.fromRaw(option.value)%><% if (i == 0) { %> selected<%}%> > <%-option.label%>',
-          ' </label>',
-          ' <% } %>',
-          '</div>',
-        ].join('\n')),
-        render: function() {
-          Backform.RadioControl.prototype.render.apply(this, arguments);
-          this.$el.find('.pg-maintenance-op .btn').on('keyup', (e)=>{
-            switch(e.keyCode) {
-            case 32: /* Spacebar click */
-              $(e.currentTarget).trigger('click');
-              break;
-            }
-          });
-          return this;
-        },
-      }),
     },
     {
       type: 'nested',

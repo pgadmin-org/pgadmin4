@@ -4,8 +4,12 @@ Version 4.8
 
 Release date: 2019-06-27
 
-This release contains a number of bug fixes since the release of pgAdmin4 4.7.
+This release contains a number of bug fixes and new features since the release of pgAdmin4 4.7.
 
+New features
+************
+
+| `Feature #2653 <https://redmine.postgresql.org/issues/2653>`_ - Allow the UI layout to be fully locked or to prevent docking changes.
 
 Bug fixes
 *********
