@@ -117,10 +117,10 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         iteration = 0
         success = False
         while not success and iteration < 4:
-            self.page.find_by_xpath("//th[@data-column='0']"
-                                    "/div/span[text()='Name']").click()
             # Check for sort Ascending
             try:
+                self.page.find_by_xpath("//th[@data-column='0']"
+                                        "/div/span[text()='Name']").click()
                 self.wait.until(
                     EC.presence_of_element_located((
                         By.CSS_SELECTOR,

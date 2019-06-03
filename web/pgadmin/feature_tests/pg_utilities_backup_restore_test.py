@@ -161,6 +161,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 os.remove(backup_file)
 
     def after(self):
+        test_gui_helper.close_bgprocess_popup(self)
         self.page.remove_server(self.server)
         connection = test_utils.get_db_connection(
             self.server['db'],
