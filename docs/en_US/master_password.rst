@@ -25,10 +25,15 @@ passwords. This is applicable only for desktop mode users.
 .. note:: If the master password is disabled, then all the saved passwords will
     be removed.
 
-.. warning:: If master password is disabled, then the saved passwords will be
-    encrypted using a key which may not be as secure as master password. It is
-    strongly recommended to use master password if you use the *Save Password*
-    option.
+.. warning:: If the master password is disabled, then the saved passwords will
+    be encrypted using a key which is derived from information within the
+    configuration database. Use of a master password ensures that the encryption
+    key does not need to be stored anywhere, and thus prevents possible access
+    to server credentials if the configuration database becomes available to an
+    attacker.
+
+    It is **strongly** recommended that you use the master password if you use
+    the *Save Password* option.
 
 * The master password is not stored anywhere on the physical storage. It is
   temporarily stored in the application memory and it does not get saved when
