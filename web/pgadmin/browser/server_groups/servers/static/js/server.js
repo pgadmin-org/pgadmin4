@@ -918,19 +918,19 @@ define('pgadmin.node.server', [
           id: 'tunnel_host', label: gettext('Tunnel host'), type: 'text', group: gettext('SSH Tunnel'),
           mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
+            return !model.get('use_ssh_tunnel') || model.get('connected');
           },
         },{
           id: 'tunnel_port', label: gettext('Tunnel port'), type: 'int', group: gettext('SSH Tunnel'),
           mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'], max: 65535,
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
+            return !model.get('use_ssh_tunnel') || model.get('connected');
           },
         },{
           id: 'tunnel_username', label: gettext('Username'), type: 'text', group: gettext('SSH Tunnel'),
           mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
+            return !model.get('use_ssh_tunnel') || model.get('connected');
           },
         },{
           id: 'tunnel_authentication', label: gettext('Authentication'), type: 'switch',
@@ -939,7 +939,7 @@ define('pgadmin.node.server', [
             'offText':  gettext('Password'), 'size': 'mini', width: '90'},
           deps: ['use_ssh_tunnel'],
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
+            return !model.get('use_ssh_tunnel') || model.get('connected');
           },
         }, {
           id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'text',
@@ -963,7 +963,7 @@ define('pgadmin.node.server', [
           group: gettext('SSH Tunnel'), control: 'input', mode: ['create'],
           deps: ['use_ssh_tunnel'],
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
+            return !model.get('use_ssh_tunnel') || model.get('connected');
           },
         }, {
           id: 'save_tunnel_password', controlLabel: gettext('Save password?'),

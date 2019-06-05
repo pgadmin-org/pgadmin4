@@ -87,9 +87,12 @@ class ServerManager(object):
         if config.SUPPORT_SSH_TUNNEL:
             self.use_ssh_tunnel = server.use_ssh_tunnel
             self.tunnel_host = server.tunnel_host
-            self.tunnel_port = server.tunnel_port
+            self.tunnel_port = \
+                22 if server.tunnel_port is None else server.tunnel_port
             self.tunnel_username = server.tunnel_username
-            self.tunnel_authentication = server.tunnel_authentication
+            self.tunnel_authentication = 0 \
+                if server.tunnel_authentication is None \
+                else server.tunnel_authentication
             self.tunnel_identity_file = server.tunnel_identity_file
             self.tunnel_password = server.tunnel_password
         else:
@@ -469,8 +472,12 @@ WHERE db.oid = {0}""".format(did))
             return False, gettext("Unauthorized request.")
 
         if tunnel_password is not None and tunnel_password != '':
+            crypt_key_present, crypt_key = get_crypt_key()
+            if not crypt_key_present:
+                raise CryptKeyMissing()
+
             try:
-                tunnel_password = decrypt(tunnel_password, user.password)
+                tunnel_password = decrypt(tunnel_password, crypt_key)
                 # Handling of non ascii password (Python2)
                 if hasattr(str, 'decode'):
                     tunnel_password = \
