@@ -68,11 +68,15 @@ pgAdmin. These are as follows:
 
 * ``config_distro.py``: This file is read after ``config.py`` and is intended for
   packagers to change any settings that are required for their pgAdmin distribution.
-  This may typically include certain paths and file locations.
+  This may typically include certain paths and file locations. This file is optional,
+  and may be created by packagers in the same directory as ``config.py`` if
+  needed.
 
 * ``config_local.py``: This file is read after ``config_distro.py`` and is intended
   for end users to change any default or packaging specific settings that they may
-  wish to adjust to meet local preferences or standards.
+  wish to adjust to meet local preferences or standards. This file is optional,
+  and may be created by administrators in the same directory as ``config.py`` if
+  needed.
 
 Python
 ------
