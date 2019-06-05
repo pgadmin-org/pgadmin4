@@ -45,6 +45,8 @@ let GeometryViewer = {
       geometry_viewer_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function (visible) {
         if (visible) {
           self.map_component.resizeMap();
+        } else {
+          self.map_component.loseFocus();
         }
       });
     }
@@ -184,6 +186,10 @@ function initMapComponent() {
       lmap.closePopup();
       infoControl.remove();
       vectorLayer.clearLayers();
+    },
+
+    'loseFocus': function() {
+      lmap.fire('blur');
     },
 
     'renderMap': function (dataObj) {
