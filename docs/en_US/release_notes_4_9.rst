@@ -13,5 +13,6 @@ New features
 Bug fixes
 *********
 
+| `Bug #4253 <https://redmine.postgresql.org/issues/4253>`_ - Fix issue where new column should be created with Default value.
 | `Bug #4255 <https://redmine.postgresql.org/issues/4255>`_ - Prevent the geometry viewer grabbing key presses when not in focus under Firefox, IE and Edge.
 | `Bug #4320 <https://redmine.postgresql.org/issues/4320>`_ - Fix issue where SSH tunnel connection using password is failing, it's regression of Master Password.
