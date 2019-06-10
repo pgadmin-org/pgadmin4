@@ -30,7 +30,10 @@ class TestTriggerNodesSql(SQLTemplateTestBase):
         self.table_id = cursor.fetchone()[0]
 
     def generate_sql(self, version):
-        template_file = self.get_template_file(version, "nodes.sql")
+        file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
+                                 "triggers", "sql")
+        template_file = self.get_template_file(version, file_path,
+                                               "nodes.sql")
         template = file_as_template(template_file)
         sql = template.render(tid=self.table_id)
 
@@ -38,10 +41,3 @@ class TestTriggerNodesSql(SQLTemplateTestBase):
 
     def assertions(self, fetch_result, descriptions):
         self.assertEqual(0, len(fetch_result))
-
-    @staticmethod
-    def get_template_file(version, filename):
-        return os.path.join(
-            os.path.dirname(__file__), "..", "templates", "triggers", "sql",
-            version, filename
-        )

@@ -615,8 +615,14 @@ class TableCommand(GridCommand):
         This function checks whether the table has oids or not.
         """
         driver = get_driver(PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(self.sid)
+
+        # Remove the special behavior of OID columns from
+        # PostgreSQL 12 onwards, so returning False.
+        if manager.sversion >= 120000:
+            return False
+
         if default_conn is None:
-            manager = driver.connection_manager(self.sid)
             conn = manager.connection(did=self.did, conn_id=self.conn_id)
         else:
             conn = default_conn

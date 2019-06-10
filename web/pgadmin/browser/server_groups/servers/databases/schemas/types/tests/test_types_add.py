@@ -51,7 +51,7 @@ class TypesAddTestCase(BaseTestGenerator):
                 "typtype": "c",
                 "typeowner": db_user,
                 "schema": self.schema_name,
-                "composite": [{"member_name": "one", "type": "abstime",
+                "composite": [{"member_name": "one", "type": "bigint",
                                "is_tlength": False, "is_precision": False},
                               {"member_name": "two", "type": "\"char\"[]",
                                "is_tlength": False, "is_precision": False}],

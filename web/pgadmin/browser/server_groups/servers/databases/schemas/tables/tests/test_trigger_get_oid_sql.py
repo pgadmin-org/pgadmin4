@@ -35,7 +35,10 @@ class TestTriggerGetOidSql(SQLTemplateTestBase):
         self.table_id, self.column_id = cursor.fetchone()
 
     def generate_sql(self, version):
-        template_file = self.get_template_file(version, "get_oid.sql")
+        file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
+                                 "triggers", "sql")
+        template_file = self.get_template_file(version, file_path,
+                                               "get_oid.sql")
         jinja2.filters.FILTERS['qtLiteral'] = lambda value: "NULL"
         template = file_as_template(template_file)
 
@@ -47,10 +50,3 @@ class TestTriggerGetOidSql(SQLTemplateTestBase):
 
     def assertions(self, fetch_result, descriptions):
         self.assertEqual(0, len(fetch_result))
-
-    @staticmethod
-    def get_template_file(version, filename):
-        return os.path.join(
-            os.path.dirname(__file__), "..", "templates", "triggers", "sql",
-            version, filename
-        )

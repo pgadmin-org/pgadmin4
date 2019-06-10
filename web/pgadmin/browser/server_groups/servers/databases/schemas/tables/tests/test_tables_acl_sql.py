@@ -30,7 +30,10 @@ class TestTablesAclSql(SQLTemplateTestBase):
         self.table_id = cursor.fetchone()[0]
 
     def generate_sql(self, version):
-        template_file = self.get_template_file(version, "acl.sql")
+        file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
+                                 "tables", "sql")
+        template_file = self.get_template_file(version, file_path,
+                                               "acl.sql")
         template = file_as_template(template_file)
         public_schema_id = 2200
         sql = template.render(scid=public_schema_id,
@@ -53,10 +56,3 @@ class TestTablesAclSql(SQLTemplateTestBase):
         self.assertEqual(['r'], new_acl_map['privileges'])
         self.assertEqual([False], new_acl_map['grantable'])
         return public_acls
-
-    @staticmethod
-    def get_template_file(version, filename):
-        return os.path.join(
-            os.path.dirname(__file__), "..", "templates", "tables", "sql",
-            version, filename
-        )

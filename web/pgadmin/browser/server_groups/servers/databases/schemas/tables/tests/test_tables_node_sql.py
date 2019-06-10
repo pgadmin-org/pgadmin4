@@ -28,7 +28,10 @@ class TestTablesNodeSql(SQLTemplateTestBase):
         pass
 
     def generate_sql(self, version):
-        template_file = self.get_template_file(version, "nodes.sql")
+        file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
+                                 "tables", "sql")
+        template_file = self.get_template_file(version, file_path,
+                                               "nodes.sql")
         template = file_as_template(template_file)
         public_schema_id = 2200
         sql = template.render(scid=public_schema_id)
@@ -50,10 +53,3 @@ class TestTablesNodeSql(SQLTemplateTestBase):
         # triggercount is sometimes returned as a string for some reason
         self.assertEqual(0, long(triggercount))
         self.assertIsNotNone(long(has_enable_triggers))
-
-    @staticmethod
-    def get_template_file(version, filename):
-        return os.path.join(
-            os.path.dirname(__file__), "..", "templates", "tables", "sql",
-            version, filename
-        )

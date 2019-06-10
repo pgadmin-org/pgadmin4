@@ -68,6 +68,15 @@ def get_version_mapping(template):
     if len(template_path_parts) == 4:
         _, server_type, _, _ = template_path_parts
 
+    return get_version_mapping_directories(server_type)
+
+
+def get_version_mapping_directories(server_type):
+    """
+    This function will return all the version mapping directories
+    :param server_type:
+    :return:
+    """
     if server_type == 'gpdb':
         return (
             {'name': "gpdb_5.0_plus", 'number': 80323},
@@ -75,7 +84,8 @@ def get_version_mapping(template):
             {'name': "default", 'number': 0}
         )
 
-    return ({'name': "11_plus", 'number': 110000},
+    return ({'name': "12_plus", 'number': 120000},
+            {'name': "11_plus", 'number': 110000},
             {'name': "10_plus", 'number': 100000},
             {'name': "9.6_plus", 'number': 90600},
             {'name': "9.5_plus", 'number': 90500},

@@ -44,7 +44,10 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
         self.assertEqual([], first_row['coll_inherits'])
 
     def generate_sql(self, version):
-        template_file = self.get_template_file(version, "properties.sql")
+        file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
+                                 "tables", "sql")
+        template_file = self.get_template_file(version, file_path,
+                                               "properties.sql")
         template = file_as_template(template_file)
         public_schema_id = 2200
         sql = template.render(scid=public_schema_id,
@@ -66,10 +69,3 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
 
         cursor.execute("SELECT oid FROM pg_class where relname='test_table'")
         self.table_id = cursor.fetchone()[0]
-
-    @staticmethod
-    def get_template_file(version, filename):
-        return os.path.join(
-            os.path.dirname(__file__), "..", "templates", "tables", "sql",
-            version, filename
-        )

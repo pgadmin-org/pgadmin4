@@ -342,11 +342,31 @@ define('pgadmin.node.table', [
           }, cache_node: 'database', cache_level: 'database',
         },{
           id: 'spcname', label: gettext('Tablespace'), node: 'tablespace',
-          type: 'text', control: 'node-list-by-name', disabled: 'inSchema',
+          type: 'text', control: 'node-list-by-name',
           mode: ['properties', 'create', 'edit'],
           filter: function(d) {
             // If tablespace name is not "pg_global" then we need to exclude them
             return (!(d && d.label.match(/pg_global/)));
+          },
+          deps: ['is_partitioned'],
+          disabled: function(m) {
+            if(this.node_info &&  'catalog' in this.node_info) {
+              return true;
+            }
+
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+                m.node_info.server.version >= 120000 &&
+                m.get('is_partitioned')) {
+
+              setTimeout( function() {
+                m.set('spcname', undefined);
+              }, 10);
+
+              return true;
+            }
+
+            return false;
           },
         },{
           id: 'partition', type: 'group', label: gettext('Partition'),
@@ -773,7 +793,15 @@ define('pgadmin.node.table', [
         },{
           id: 'relhasoids', label: gettext('Has OIDs?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema', group: gettext('advanced'),
+          group: gettext('advanced'),
+          disabled: function(m) {
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+                m.node_info.server.version >= 120000)
+              return true;
+
+            return m.inSchema();
+          },
         },{
           id: 'relpersistence', label: gettext('Unlogged?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],

@@ -7,9 +7,13 @@
 #
 ##########################################################################
 
+import os
+
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils
 from pgadmin.utils.driver import DriverRegistry
+from pgadmin.utils.versioned_template_loader \
+    import get_version_mapping_directories
 
 DriverRegistry.load_drivers()
 
@@ -22,7 +26,6 @@ class SQLTemplateTestBase(BaseTestGenerator):
     def __init__(self):
         super(SQLTemplateTestBase, self).__init__()
         self.database_name = -1
-        self.versions_to_test = -1
 
     def test_setup(self, connection, cursor):
         pass
@@ -41,19 +44,37 @@ class SQLTemplateTestBase(BaseTestGenerator):
             test_utils.create_table(self.server, database_name, "test_table")
             self.database_name = database_name
 
-            if connection.server_version < 90100:
-                self.versions_to_test = ['default']
-            else:
-                self.versions_to_test = ['9.1_plus']
-
             cursor = connection.cursor()
             self.test_setup(connection, cursor)
 
-            for version in self.versions_to_test:
-                sql = self.generate_sql(version)
+            sql = self.generate_sql(connection.server_version)
 
-                cursor = connection.cursor()
-                cursor.execute(sql)
-                fetch_result = cursor.fetchall()
+            cursor = connection.cursor()
+            cursor.execute(sql)
+            fetch_result = cursor.fetchall()
 
-                self.assertions(fetch_result, cursor.description)
+            self.assertions(fetch_result, cursor.description)
+
+    def get_template_file(self, version, file_path, filename):
+        """
+        This function check the specified file in the server mapping directory
+        and if file exists then return that path.
+        :param version:
+        :param file_path:
+        :param filename:
+        :return:
+        """
+        # Iterate all the mapping directories and check the file is exist
+        # in the specified folder. If it exists then return the path.
+        for directory in get_version_mapping_directories(self.server['type']):
+            if directory['number'] > version:
+                continue
+
+            template_path = '/'.join([
+                file_path,
+                directory['name'],
+                filename
+            ])
+
+            if os.path.exists(template_path):
+                return template_path

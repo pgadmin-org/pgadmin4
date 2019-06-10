@@ -31,7 +31,10 @@ class TestDependentsSql(SQLTemplateTestBase):
         self.table_id = cursor.fetchone()[0]
 
     def generate_sql(self, version):
-        template_file = self.get_template_file(version, "dependents.sql")
+        file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
+                                 "depends", "sql")
+        template_file = self.get_template_file(version, file_path,
+                                               "dependents.sql")
         template = file_as_template(template_file)
         sql = template.render(
             where_clause="WHERE dep.objid=%s::oid" % self.table_id)
@@ -47,8 +50,3 @@ class TestDependentsSql(SQLTemplateTestBase):
 
         self.assertEqual('n', first_row["deptype"])
         self.assertEqual('test_table', first_row["refname"])
-
-    @staticmethod
-    def get_template_file(version, filename):
-        return os.path.join(os.path.dirname(__file__), "..", "templates",
-                            "depends", "sql", version, filename)
