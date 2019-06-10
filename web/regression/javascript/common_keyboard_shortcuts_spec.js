@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 import * as keyboardShortcuts from 'sources/keyboard_shortcuts';
+import $ from 'jquery';
 
 describe('the keyboard shortcuts', () => {
   const F1_KEY = 112;
@@ -45,9 +46,30 @@ describe('the keyboard shortcuts', () => {
   });
 
   describe('when user wants to goto next panel', function () {
-
-    it('returns panel id', function () {
-      expect(keyboardShortcuts.getInnerPanel(debuggerElementSpy, 'right')).toEqual(false);
+    let dockerSpy = {
+      '_focusFrame': {
+        '_curTab': 0,
+        '_panelList': [
+          {$container: $('<b/>'), '_type': 'type1', 'focus': function() {return true;}},
+          {$container: $('<b/>'), '_type': 'type2', 'focus': function() {return true;}},
+        ],
+      },
+    };
+    it('right key', function () {
+      dockerSpy._focusFrame._curTab = 0;
+      expect(keyboardShortcuts.focusDockerPanel(dockerSpy, 'right')).toEqual('type2');
+    });
+    it('left key', function () {
+      dockerSpy._focusFrame._curTab = 1;
+      expect(keyboardShortcuts.focusDockerPanel(dockerSpy, 'left')).toEqual('type1');
+    });
+    it('left key cycle', function () {
+      dockerSpy._focusFrame._curTab = 0;
+      expect(keyboardShortcuts.focusDockerPanel(dockerSpy, 'left')).toEqual('type2');
+    });
+    it('right key cycle', function () {
+      dockerSpy._focusFrame._curTab = 1;
+      expect(keyboardShortcuts.focusDockerPanel(dockerSpy, 'left')).toEqual('type1');
     });
   });
 

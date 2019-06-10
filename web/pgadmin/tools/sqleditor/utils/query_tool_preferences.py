@@ -354,8 +354,8 @@ def RegisterQueryToolPreferences(self):
             'shift': True,
             'control': False,
             'key': {
-                'key_code': 37,
-                'char': 'ArrowLeft'
+                'key_code': 219,
+                'char': '['
             }
         },
         category_label=gettext('Keyboard shortcuts'),
@@ -372,8 +372,26 @@ def RegisterQueryToolPreferences(self):
             'shift': True,
             'control': False,
             'key': {
-                'key_code': 39,
-                'char': 'ArrowRight'
+                'key_code': 221,
+                'char': ']'
+            }
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'switch_panel',
+        gettext('Switch Panel'),
+        'keyboardshortcut',
+        {
+            'alt': True,
+            'shift': True,
+            'control': False,
+            'key': {
+                'key_code': 9,
+                'char': 'Tab'
             }
         },
         category_label=gettext('Keyboard shortcuts'),

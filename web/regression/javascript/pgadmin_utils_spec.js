@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getEpoch, getGCD } from 'sources/utils';
+import { getEpoch, getGCD, getMod } from 'sources/utils';
 
 describe('getEpoch', function () {
   it('should return non zero', function () {
@@ -31,5 +31,23 @@ describe('getGCD', function () {
   it('for more than two numbers', function () {
     let nos = [9, 24, 33];
     expect(getGCD(nos)).toEqual(3);
+  });
+});
+
+describe('getMod', function () {
+  it('complete divisible', function () {
+    expect(getMod(5,5)).toEqual(0);
+  });
+
+  it('incomplete divisible less divisor', function () {
+    expect(getMod(7,5)).toEqual(2);
+  });
+
+  it('incomplete divisible greater divisor', function () {
+    expect(getMod(5,7)).toEqual(5);
+  });
+
+  it('negative number', function () {
+    expect(getMod(-7,5)).toEqual(3);
   });
 });

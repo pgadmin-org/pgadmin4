@@ -78,7 +78,7 @@ class _Preference(object):
         # Look into the configuration table to find out the id of the specific
         # preference.
         res = PrefTable.query.filter_by(
-            name=name
+            name=name, cid=cid
         ).first()
 
         if res is None:

@@ -9,6 +9,7 @@
 
 import $ from 'jquery';
 import gettext from 'sources/gettext';
+import { getMod } from 'sources/utils';
 
 const PERIOD_KEY = 190,
   FWD_SLASH_KEY = 191,
@@ -116,9 +117,52 @@ function validateShortcutKeys(user_defined_shortcut, event) {
     user_defined_shortcut.key.key_code == keyCode;
 }
 
+// Finds the desired panel on which user wants to navigate to
+function focusDockerPanel(docker, op) {
+  if(!docker) {
+    return;
+  }
+
+  // If no frame in focus, focus the first one
+  if(!docker._focusFrame) {
+    if(docker._frameList.length == 0 && docker._frameList[0]._panelList.length == 0) {
+      return;
+    }
+    docker._frameList[0]._panelList[docker._frameList[0]._curTab].focus();
+  }
+
+  let focus_frame = docker._focusFrame,
+    focus_id = 0,
+    flash = false;
+
+  // Mod is used to cycle the op
+  if (op == 'switch') {
+    let i = 0, total_frames = docker._frameList.length;
+
+    for(i = 0; i < total_frames; i++) {
+      if(focus_frame === docker._frameList[i]) break;
+    }
+    focus_frame = docker._frameList[getMod(i+1,total_frames)];
+    focus_id = focus_frame._curTab;
+    flash = true;
+  } else if (op == 'left') {
+    focus_id = getMod(focus_frame._curTab-1, focus_frame._panelList.length);
+    flash = false;
+  } else if (op == 'right') {
+    focus_id = getMod(focus_frame._curTab+1, focus_frame._panelList.length);
+    flash = false;
+  }
+
+  let focus_panel = focus_frame._panelList[focus_id];
+
+  focus_panel.$container.find('*[tabindex]:not([tabindex="-1"])').trigger('focus');
+  focus_panel.focus(flash);
+  return focus_panel._type;
+}
+
 /* Debugger: Keyboard Shortcuts handling */
-function keyboardShortcutsDebugger($el, event, preferences) {
-  let panel_id, panel_content, $input;
+function keyboardShortcutsDebugger($el, event, preferences, docker) {
+  let panel_type = '', panel_content, $input;
 
   if(this.validateShortcutKeys(preferences.edit_grid_values, event)) {
     this._stopEventPropagation(event);
@@ -132,54 +176,32 @@ function keyboardShortcutsDebugger($el, event, preferences) {
     }
   } else if(this.validateShortcutKeys(preferences.move_next, event)) {
     this._stopEventPropagation(event);
-    panel_id = this.getInnerPanel($el, 'right');
+    panel_type = focusDockerPanel(docker, 'right');
   } else if(this.validateShortcutKeys(preferences.move_previous, event)) {
     this._stopEventPropagation(event);
-    panel_id = this.getInnerPanel($el, 'left');
+    panel_type = focusDockerPanel(docker, 'left');
+  } else if(this.validateShortcutKeys(preferences.switch_panel, event)) {
+    this._stopEventPropagation(event);
+    panel_type = focusDockerPanel(docker, 'switch');
   }
-  return panel_id;
-}
-
-// Finds the desired panel on which user wants to navigate to
-function getInnerPanel($el, direction) {
-  if(!$el || !$el.length)
-    return false;
-
-  let total_panels = $el.find('.wcPanelTab');
-  // If no panels found OR if single panel
-  if (!total_panels.length || total_panels.length == 1)
-    return false;
-
-  let active_panel = $(total_panels).filter('.wcPanelTabActive'),
-    id = parseInt($(active_panel).attr('id')),
-    fist_panel = 0,
-    last_panel = total_panels.length - 1;
-
-  // Find desired panel
-  if (direction == 'left') {
-    if(id > fist_panel)
-      id--;
-  } else {
-    if (id < last_panel)
-      id++;
-  }
-  return id;
+  return panel_type;
 }
 
 /* Query tool: Keyboard Shortcuts handling */
 function keyboardShortcutsQueryTool(
-  sqlEditorController, queryToolActions, event
+  sqlEditorController, queryToolActions, event, docker
 ) {
   if (sqlEditorController.isQueryRunning()) {
     return;
   }
-  let keyCode = event.which || event.keyCode, panel_id;
+  let keyCode = event.which || event.keyCode, panel_type = '';
   let executeKeys = sqlEditorController.preferences.execute_query;
   let explainKeys = sqlEditorController.preferences.explain_query;
   let explainAnalyzeKeys = sqlEditorController.preferences.explain_analyze_query;
   let downloadCsvKeys = sqlEditorController.preferences.download_csv;
-  let nextPanelKeys = sqlEditorController.preferences.move_next;
-  let previousPanelKeys = sqlEditorController.preferences.move_previous;
+  let nextTabKeys = sqlEditorController.preferences.move_next;
+  let previousTabKeys = sqlEditorController.preferences.move_previous;
+  let switchPanelKeys = sqlEditorController.preferences.switch_panel;
   let toggleCaseKeys = sqlEditorController.preferences.toggle_case;
   let commitKeys = sqlEditorController.preferences.commit_transaction;
   let rollbackKeys = sqlEditorController.preferences.rollback_transaction;
@@ -236,12 +258,15 @@ function keyboardShortcutsQueryTool(
         && $(event.target).closest('.dropdown-submenu').length > 0) {
       $(event.target).closest('.dropdown-submenu').find('.dropdown-menu').removeClass('show');
     }
-  } else if(this.validateShortcutKeys(nextPanelKeys, event)) {
+  } else if(this.validateShortcutKeys(nextTabKeys, event)) {
     this._stopEventPropagation(event);
-    panel_id = this.getInnerPanel(sqlEditorController.container, 'right');
-  } else if(this.validateShortcutKeys(previousPanelKeys, event)) {
+    panel_type = focusDockerPanel(docker, 'right');
+  } else if(this.validateShortcutKeys(previousTabKeys, event)) {
     this._stopEventPropagation(event);
-    panel_id = this.getInnerPanel(sqlEditorController.container, 'left');
+    panel_type = focusDockerPanel(docker, 'left');
+  } else if(this.validateShortcutKeys(switchPanelKeys, event)) {
+    this._stopEventPropagation(event);
+    panel_type = focusDockerPanel(docker, 'switch');
   } else if(keyCode === UP_KEY || keyCode === DOWN_KEY) {
     /*Apply only for dropdown*/
     if($(event.target).closest('.dropdown-menu').length > 0) {
@@ -293,13 +318,13 @@ function keyboardShortcutsQueryTool(
     }
   }
 
-  return panel_id;
+  return panel_type;
 }
 
 export {
   keyboardShortcutsDebugger as processEventDebugger,
   keyboardShortcutsQueryTool as processEventQueryTool,
-  getInnerPanel, validateShortcutKeys,
+  focusDockerPanel, validateShortcutKeys,
   _stopEventPropagation, isMac, isKeyCtrlAlt, isKeyAltShift, isKeyCtrlShift,
   isKeyCtrlAltShift, isAltShiftBoth, isCtrlShiftBoth, isCtrlAltBoth,
   shortcut_key, shortcut_title, shortcut_accesskey_title,

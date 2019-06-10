@@ -195,8 +195,8 @@ define('tools.querytool', [
             'filename': 'css',
           }),
           theme: 'webcabin.overrides.css',
-        });
-
+        }
+      );
 
       // Create the panels
       var sql_panel = new pgAdmin.Browser.Panel({
@@ -216,7 +216,7 @@ define('tools.querytool', [
         isCloseable: false,
         isPrivate: true,
         extraClasses: 'hide-vertical-scrollbar',
-        content: '<div id ="datagrid" class="sql-editor-grid-container text-12" tabindex: "0"></div>',
+        content: '<div id ="datagrid" class="sql-editor-grid-container text-12" tabindex="0"></div>',
       });
 
       var explain = new pgAdmin.Browser.Panel({
@@ -226,7 +226,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="sql-editor-explain" tabindex: "0"></div>',
+        content: '<div class="sql-editor-explain" tabindex="0"></div>',
       });
 
       var messages = new pgAdmin.Browser.Panel({
@@ -236,7 +236,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="sql-editor-message" tabindex: "0"></div>',
+        content: '<div class="sql-editor-message" tabindex="0"></div>',
       });
 
       var history = new pgAdmin.Browser.Panel({
@@ -246,7 +246,7 @@ define('tools.querytool', [
         height: '33%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div id ="history_grid" class="sql-editor-history-container" tabindex: "0"></div>',
+        content: '<div id ="history_grid" class="sql-editor-history-container" tabindex="0"></div>',
       });
 
       var scratch = new pgAdmin.Browser.Panel({
@@ -256,7 +256,7 @@ define('tools.querytool', [
         height: '33%',
         isCloseable: true,
         isPrivate: false,
-        content: '<div class="sql-scratch" tabindex: "0"><textarea wrap="off"></textarea></div>',
+        content: '<div class="sql-scratch"><textarea wrap="off" tabindex="0"></textarea></div>',
       });
 
       var notifications = new pgAdmin.Browser.Panel({
@@ -266,7 +266,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div id ="notification_grid" class="sql-editor-notifications" tabindex: "0"></div>',
+        content: '<div id ="notification_grid" class="sql-editor-notifications" tabindex="0"></div>',
       });
 
       var geometry_viewer = new pgAdmin.Browser.Panel({
@@ -277,7 +277,7 @@ define('tools.querytool', [
         isCloseable: true,
         isPrivate: true,
         isLayoutMember: false,
-        content: '<div id ="geometry_viewer_panel" class="sql-editor-geometry-viewer" tabindex: "0"></div>',
+        content: '<div id ="geometry_viewer_panel" class="sql-editor-geometry-viewer" tabindex="0"></div>',
       });
 
       // Load all the created panels
@@ -317,8 +317,8 @@ define('tools.querytool', [
       self.render_history_grid();
       queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
 
-      var text_container = $('<textarea id="sql_query_tool" tabindex: "-1"></textarea>');
-      var output_container = $('<div id="output-panel" tabindex: "0"></div>').append(text_container);
+      var text_container = $('<textarea id="sql_query_tool" tabindex="-1"></textarea>');
+      var output_container = $('<div id="output-panel" tabindex="0"></div>').append(text_container);
       self.sql_panel_obj.$container.find('.pg-panel-content').append(output_container);
 
       self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
@@ -340,6 +340,10 @@ define('tools.querytool', [
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
         extraKeys: pgBrowser.editor_shortcut_keys,
         scrollbarStyle: 'simple',
+      });
+
+      pgBrowser.Events.on('pgadmin:query_tool:sql_panel:focus', ()=>{
+        self.query_tool_obj.focus();
       });
 
       if (!self.preferences.new_browser_tab) {
@@ -1852,23 +1856,19 @@ define('tools.querytool', [
     },
 
     keyAction: function(event) {
-      var panel_id, self = this;
-      panel_id = keyboardShortcuts.processEventQueryTool(
-        this.handler, queryToolActions, event
+      var panel_type='';
+
+      panel_type = keyboardShortcuts.processEventQueryTool(
+        this.handler, queryToolActions, event, this.docker
       );
 
-      // If it return panel id then focus it
-      if(!_.isNull(panel_id) && !_.isUndefined(panel_id)) {
-        // Returned panel index, by incrementing it by 1 we will get actual panel
-        panel_id++;
-        this.docker.findPanels()[panel_id].focus();
-        // We set focus on history tab so we need to set the focus on
-        // editor explicitly
-        if(panel_id == 3) {
-          setTimeout(function() { self.query_tool_obj.focus(); }, 100);
-        }
+      if(!_.isNull(panel_type) && !_.isUndefined(panel_type) && panel_type != '') {
+        setTimeout(function() {
+          pgBrowser.Events.trigger(`pgadmin:query_tool:${panel_type}:focus`);
+        }, 100);
       }
     },
+
     // Callback function for the commit button click.
     on_commit_transaction: function() {
       queryToolActions.executeCommit(this.handler);
@@ -2125,6 +2125,16 @@ define('tools.querytool', [
 
         // Render the header
         self.gridView.render();
+
+        /* wcDocker focuses on window always, and all our shortcuts are
+         * bind to editor-panel. So when we use wcDocker focus, editor-panel
+         * loses focus and events don't work.
+         */
+        $(window).on('keydown', (e)=>{
+          if(self.gridView.keyAction) {
+            self.gridView.keyAction(e);
+          }
+        });
 
         if (self.is_query_tool) {
           // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)

@@ -79,3 +79,7 @@ export function getGCD(inp_arr) {
 
   return result;
 }
+
+export function getMod(no, divisor) {
+  return ((no % divisor) + divisor) % divisor;
+}

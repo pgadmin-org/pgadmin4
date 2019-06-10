@@ -193,8 +193,8 @@ When using the Debugger, the following shortcuts are available:
    | Alt + Shift + q          | Option + Shift + q | Enter or Edit values in Grid      |
    +--------------------------+--------------------+-----------------------------------+
 
-Inner Panel Navigation
-**********************
+Inner Tab and Panel Navigation
+******************************
 
 When using the Query Tool and Debugger, the following shortcuts are available
 for inner panel navigation:
@@ -203,13 +203,15 @@ for inner panel navigation:
    :class: longtable
    :widths: 2 2 3
 
-   +--------------------------+---------------------+------------------------------+
-   | Shortcut (Windows/Linux) | Shortcut (Mac)      | Function                     |
-   +==========================+=====================+==============================+
-   | Alt + Shift + Right      | Alt + Shift + Right | Move to next inner panel     |
-   +--------------------------+---------------------+------------------------------+
-   | Alt + Shift + Left       | Alt + Shift + Left  | Move to previous inner panel |
-   +--------------------------+---------------------+------------------------------+
+   +--------------------------+---------------------------+------------------------------------+
+   | Shortcut (Windows/Linux) | Shortcut (Mac)            | Function                           |
+   +==========================+===========================+====================================+
+   | Alt + Shift + ]          | Alt + Shift + ]           | Move to next tab within a panel    |
+   +--------------------------+---------------------------+------------------------------------+
+   | Alt + Shift + [          | Alt + Shift + [           | Move to previous tab within a panel|
+   +--------------------------+---------------------------+------------------------------------+
+   | Alt + Shift + Tab        | Alt + Shift + Tab         | Move between inner panels          |
+   +--------------------------+---------------------------+------------------------------------+
 
 Access Key
 **********
