@@ -12,7 +12,7 @@ define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
   'sources/check_node_visibility', './toolbar', 'pgadmin.help',
-  'sources/csrf', 'sources/keyboard_shortcuts', 'pgadmin.browser.utils',
+  'sources/csrf', 'pgadmin.browser.utils',
   'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
@@ -24,7 +24,7 @@ define('pgadmin.browser', [
   tree,
   gettext, url_for, require, $, _, S,
   Bootstrap, pgAdmin, Alertify, codemirror,
-  checkNodeVisibility, toolBar, help, csrfToken, keyboardFunc
+  checkNodeVisibility, toolBar, help, csrfToken
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
@@ -518,6 +518,9 @@ define('pgadmin.browser', [
               this.message = message;
               this.reset = reset;
             },
+            build: function() {
+              Alertify.pgDialogBuild.apply(this);
+            },
             setup:function() {
               return {
                 buttons:[{
@@ -547,30 +550,13 @@ define('pgadmin.browser', [
             },
             prepare:function() {
               let self = this;
-              let $password = null;
-              let $okBtn = $(self.__internal.buttons[3].element);
-
               self.setContent(self.message);
-              $password = $(self.elements.body).find('#password');
-
               /* Reset button hide */
               if(!self.reset) {
                 $(self.__internal.buttons[1].element).addClass('d-none');
               } else {
                 $(self.__internal.buttons[1].element).removeClass('d-none');
               }
-
-              /* Enable ok only if password entered */
-              $okBtn.prop('disabled', true);
-              $password.on('input change keyup', (event)=>{
-                keyboardFunc._stopEventPropagation(event);
-
-                if($password.val() != '') {
-                  $okBtn.prop('disabled', false);
-                } else {
-                  $okBtn.prop('disabled', true);
-                }
-              });
             },
             callback: function(event) {
               let parentDialog = this;

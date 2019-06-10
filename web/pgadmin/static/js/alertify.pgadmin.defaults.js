@@ -266,6 +266,17 @@ define([
     this.set('onresized', alertifyDialogResized.bind(this, true));
     this.set('onmaximized', alertifyDialogResized);
     this.set('onrestored', alertifyDialogResized);
+
+    /* Set the key to null if it is not defined
+     * When Browser autofill drop down value is clicked it raises a keyup event
+     * with undefined keyCode. The undefined keyCode matches the undefined key
+     * of alertify and triggers the button
+     */
+    for(let i=0; i<this.__internal.buttons.length; i++) {
+      if(_.isUndefined(this.__internal.buttons[i]['key'])) {
+        this.__internal.buttons[i]['key'] = null;
+      }
+    }
   };
 
   alertify.pgHandleItemError = function(xhr, error, message, args) {
