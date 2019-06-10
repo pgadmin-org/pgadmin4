@@ -1192,7 +1192,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
         if db_variables is not None:
             for row in db_variables:
-                var_name, var_value = row.split("=")
+                # The value may contain equals in string, split on
+                # first equals only
+                var_name, var_value = row.split("=", 1)
 
                 var_dict = {'option': var_name, 'value': var_value}
 
