@@ -163,11 +163,11 @@ define([
     }
   };
 
-  var res = function(debug_info, restart_debug, is_edb_proc) {
+  var res = function(debug_info, restart_debug, is_edb_proc, trans_id) {
     if (!Alertify.debuggerInputArgsDialog) {
       Alertify.dialog('debuggerInputArgsDialog', function factory() {
         return {
-          main: function(title, debug_info, restart_debug, is_edb_proc) {
+          main: function(title, debug_info, restart_debug, is_edb_proc, trans_id) {
             this.preferences = window.top.pgAdmin.Browser.get_preferences_for_module('debugger');
             this.set('title', title);
 
@@ -175,6 +175,7 @@ define([
             // other functions other than main function.
             this.set('debug_info', debug_info);
             this.set('restart_debug', restart_debug);
+            this.set('trans_id', trans_id);
 
             // Variables to store the data sent from sqlite database
             var func_args_data = this.func_args_data = [];
@@ -579,6 +580,7 @@ define([
           settings: {
             debug_info: undefined,
             restart_debug: undefined,
+            trans_id: undefined,
           },
           setup: function() {
             return {
@@ -706,6 +708,7 @@ define([
                 if (d._type == 'function') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
+                    'trans_id': self.setting('trans_id'),
                     'sid': treeInfo.server._id,
                     'did': treeInfo.database._id,
                     'scid': treeInfo.schema._id,
@@ -714,6 +717,7 @@ define([
                 } else if (d._type == 'procedure') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
+                    'trans_id': self.setting('trans_id'),
                     'sid': treeInfo.server._id,
                     'did': treeInfo.database._id,
                     'scid': treeInfo.schema._id,
@@ -722,6 +726,7 @@ define([
                 } else if (d._type == 'edbfunc') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
+                    'trans_id': self.setting('trans_id'),
                     'sid': treeInfo.server._id,
                     'did': treeInfo.database._id,
                     'scid': treeInfo.schema._id,
@@ -730,6 +735,7 @@ define([
                 } else if (d._type == 'edbproc') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
+                    'trans_id': self.setting('trans_id'),
                     'sid': treeInfo.server._id,
                     'did': treeInfo.database._id,
                     'scid': treeInfo.schema._id,
@@ -885,7 +891,12 @@ define([
             }
 
             if (e.button.text === gettext('Cancel')) {
-              //close the dialog...
+              /* Clear the trans id */
+              $.ajax({
+                method: 'DELETE',
+                url: url_for('debugger.close', {'trans_id': this.setting('trans_id')}),
+              });
+
               return false;
             }
           },
@@ -959,7 +970,7 @@ define([
     }
 
     Alertify.debuggerInputArgsDialog(
-      gettext('Debugger'), debug_info, restart_debug, is_edb_proc
+      gettext('Debugger'), debug_info, restart_debug, is_edb_proc, trans_id
     ).resizeTo(pgBrowser.stdW.md,pgBrowser.stdH.md);
 
   };

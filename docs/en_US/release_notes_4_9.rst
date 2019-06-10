@@ -23,3 +23,4 @@ Bug fixes
 | `Bug #4310 <https://redmine.postgresql.org/issues/4310>`_ - Ensure that the Return key can be used to submit the Master Password dialogue.
 | `Bug #4317 <https://redmine.postgresql.org/issues/4317>`_ - Ensure that browser auto-fill doesn't cause Help pages to be opened unexpectedly.
 | `Bug #4320 <https://redmine.postgresql.org/issues/4320>`_ - Fix issue where SSH tunnel connection using password is failing, it's regression of Master Password.
+| `Bug #4329 <https://redmine.postgresql.org/issues/4329>`_ - Fix an initialisation error when two functions with parameters are debugged in parallel.

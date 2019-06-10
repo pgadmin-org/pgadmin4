@@ -15,7 +15,6 @@ import simplejson as json
 import random
 import re
 
-from threading import Lock
 from flask import url_for, Response, render_template, request, session, \
     current_app
 from flask_babelex import gettext
@@ -33,10 +32,10 @@ from pgadmin.settings import get_setting
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, DebuggerFunctionArguments
+from pgadmin.tools.debugger.utils.debugger_instance import DebuggerInstance
 
 # Constants
 ASYNC_OK = 1
-debugger_close_session_lock = Lock()
 
 
 class DebuggerModule(PgAdminModule):
@@ -252,14 +251,7 @@ class DebuggerModule(PgAdminModule):
         :param user:
         :return:
         """
-        with debugger_close_session_lock:
-            if 'debuggerData' in session:
-                for trans_id in session['debuggerData']:
-                    close_debugger_session(trans_id)
-
-                # Delete the all debugger data from session variable
-                del session['debuggerData']
-                del session['functionData']
+        close_debugger_session(None, close_all=True)
 
 
 blueprint = DebuggerModule(MODULE_NAME, __name__)
@@ -309,26 +301,6 @@ def script_debugger_direct_js():
     )
 
 
-def update_session_debugger_transaction(trans_id, data):
-    """
-    Update the session variables required for debugger with transaction ID
-    """
-    debugger_data = session['debuggerData']
-    debugger_data[str(trans_id)] = data
-
-    session['debuggerData'] = debugger_data
-
-
-def update_session_function_transaction(trans_id, data):
-    """
-    Update the session variables of functions required to debug with
-    transaction ID
-    """
-    function_data = session['functionData']
-    function_data[str(trans_id)] = data
-    session['functionData'] = function_data
-
-
 @blueprint.route(
     '/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>',
     methods=['GET'], endpoint='init_for_function'
@@ -350,6 +322,8 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     not require these data because user will
     provide all the arguments and other functions information through another
     session to invoke the target.
+    It will also create a unique transaction id and store the information
+    into session variable.
 
     Parameters:
         node_type
@@ -422,10 +396,19 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
     # Check that the function is actually debuggable...
     if r_set['rows'][0]:
+        # If func/proc is not defined in package body
+        # then it is not debuggable
+        if (r_set['rows'][0]['pkgname'] is not None or
+            r_set['rows'][0]['pkgname'] != '') and \
+                r_set['rows'][0]['prosrc'] == '':
+            ret_status = False
+            msg = r_set['rows'][0]['name'] + ' ' + \
+                gettext("is not defined in package body.")
+
         # Function with a colon in the name cannot be debugged.
         # If this is an EDB wrapped function, no debugging allowed
         # Function with return type "trigger" cannot be debugged.
-        if ":" in r_set['rows'][0]['name']:
+        elif ":" in r_set['rows'][0]['name']:
             ret_status = False
             msg = gettext(
                 "Functions with a colon in the name cannot be debugged.")
@@ -487,12 +470,6 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         current_app.logger.debug(msg)
         return internal_server_error(msg)
 
-    # Store the function information in session variable
-    if 'funcData' not in session:
-        function_data = dict()
-    else:
-        function_data = session['funcData']
-
     data = {'name': r_set['rows'][0]['proargnames'],
             'type': r_set['rows'][0]['proargtypenames'],
             'use_default': r_set['rows'][0]['pronargdefaults'],
@@ -520,7 +497,9 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
     r_set['rows'][0]['require_input'] = data['require_input']
 
-    function_data = {
+    # Create a debugger instance
+    de_inst = DebuggerInstance()
+    de_inst.function_data = {
         'oid': fid,
         'name': r_set['rows'][0]['name'],
         'is_func': r_set['rows'][0]['isfunc'],
@@ -540,10 +519,11 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         'args_value': ''
     }
 
-    session['funcData'] = function_data
-
     return make_json_response(
-        data=r_set['rows'],
+        data=dict(
+            debug_info=r_set['rows'],
+            trans_id=de_inst.trans_id
+        ),
         status=200
     )
 
@@ -551,16 +531,15 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 @blueprint.route('/direct/<int:trans_id>', methods=['GET'], endpoint='direct')
 @login_required
 def direct_new(trans_id):
-    debugger_data = session['debuggerData']
-    # Return from the function if transaction id not found
-    if str(trans_id) not in debugger_data:
-        return make_json_response(data={'status': True})
+    de_inst = DebuggerInstance(trans_id)
 
-    obj = debugger_data[str(trans_id)]
+    # Return from the function if transaction id not found
+    if de_inst.debugger_data is None:
+        return make_json_response(data={'status': True})
 
     # if indirect debugging pass value 0 to client and for direct debugging
     # pass it to 1
-    debug_type = 0 if obj['debug_type'] == 'indirect' else 1
+    debug_type = 0 if de_inst.debugger_data['debug_type'] == 'indirect' else 1
 
     """
     Animations and transitions are not automatically GPU accelerated and by
@@ -590,12 +569,11 @@ def direct_new(trans_id):
 
     function_arguments = '('
     if 'functionData' in session:
-        session_function_data = session['functionData'][str(trans_id)]
-        if 'args_name' in session_function_data and \
-            session_function_data['args_name'] is not None and \
-                session_function_data['args_name'] != '':
-            args_name_list = session_function_data['args_name'].split(",")
-            args_type_list = session_function_data['args_type'].split(",")
+        if 'args_name' in de_inst.function_data and \
+            de_inst.function_data['args_name'] is not None and \
+                de_inst.function_data['args_name'] != '':
+            args_name_list = de_inst.function_data['args_name'].split(",")
+            args_type_list = de_inst.function_data['args_type'].split(",")
             index = 0
             for args_name in args_name_list:
                 function_arguments = '{}{} {}, '.format(function_arguments,
@@ -610,40 +588,42 @@ def direct_new(trans_id):
 
     layout = get_setting('Debugger/Layout')
 
+    function_name_with_arguments = \
+        de_inst.debugger_data['function_name'] + function_arguments
+
     return render_template(
         "debugger/direct.html",
         _=gettext,
-        function_name=obj['function_name'],
+        function_name=de_inst.debugger_data['function_name'],
         uniqueId=trans_id,
         debug_type=debug_type,
         is_desktop_mode=current_app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
         client_platform=user_agent.platform,
-        function_name_with_arguments=obj['function_name'] + function_arguments,
+        function_name_with_arguments=function_name_with_arguments,
         layout=layout
     )
 
 
 @blueprint.route(
-    '/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/'
-    '<int:func_id>',
+    '/initialize_target/<debug_type>/<int:trans_id>/<int:sid>/<int:did>/'
+    '<int:scid>/<int:func_id>',
     methods=['GET', 'POST'],
     endpoint='initialize_target_for_function'
 )
 @blueprint.route(
-    '/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/'
-    '<int:func_id>/<int:tri_id>',
+    '/initialize_target/<debug_type>/<int:trans_id>/<int:sid>/<int:did>/'
+    '<int:scid>/<int:func_id>/<int:tri_id>',
     methods=['GET', 'POST'],
     endpoint='initialize_target_for_trigger'
 )
 @login_required
-def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
+def initialize_target(debug_type, trans_id, sid, did,
+                      scid, func_id, tri_id=None):
     """
     initialize_target(debug_type, sid, did, scid, func_id, tri_id)
 
     This method is responsible for creating an asynchronous connection.
-    It will also create a unique transaction id and store the information
-    into session variable.
 
     Parameters:
         debug_type
@@ -736,16 +716,6 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
 
         func_id = tr_set['rows'][0]['tgfoid']
 
-    # Create a unique id for the transaction
-    trans_id = str(random.randint(1, 9999999))
-
-    # If there is no debugging information in session variable then create
-    # the store that information
-    if 'debuggerData' not in session:
-        debugger_data = dict()
-    else:
-        debugger_data = session['debuggerData']
-
     status = True
 
     # Find out the debugger version and store it in session variables
@@ -774,6 +744,7 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
     # Add the debugger version information to pgadmin4 log file
     current_app.logger.debug("Debugger version is: %d", debugger_version)
 
+    de_inst = DebuggerInstance(trans_id)
     # We need to pass the value entered by the user in dialog for direct
     # debugging, Here we get the value in case of direct debugging so update
     # the session variables accordingly, For indirect debugging user will
@@ -782,65 +753,26 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
     if request.method == 'POST':
         data = json.loads(request.values['data'], encoding='utf-8')
         if data:
-            d = session['funcData']
-            d['args_value'] = data
-            session['funcData'] = d
+            de_inst.function_data['args_value'] = data
 
     # Update the debugger data session variable
     # Here frame_id is required when user debug the multilevel function.
     # When user select the frame from client we need to update the frame
     # here and set the breakpoint information on that function oid
-    debugger_data[str(trans_id)] = {
+    de_inst.debugger_data = {
         'conn_id': conn_id,
         'server_id': sid,
         'database_id': did,
         'schema_id': scid,
         'function_id': func_id,
-        'function_name': session['funcData']['name'],
+        'function_name': de_inst.function_data['name'],
         'debug_type': debug_type,
         'debugger_version': debugger_version,
         'frame_id': 0,
         'restart_debug': 0
     }
 
-    # Store the grid dictionary into the session variable
-    session['debuggerData'] = debugger_data
-
-    # Update the function session  information with same transaction id
-    func_data = session['funcData']
-
-    # Store the function information in session variable
-    if 'functionData' not in session:
-        function_data = dict()
-    else:
-        function_data = session['functionData']
-
-    function_data[str(trans_id)] = {
-        'oid': func_data['oid'],
-        'name': func_data['name'],
-        'is_func': func_data['is_func'],
-        'is_ppas_database': func_data['is_ppas_database'],
-        'is_callable': func_data['is_callable'],
-        'schema': func_data['schema'],
-        'language': func_data['language'],
-        'return_type': func_data['return_type'],
-        'args_type': func_data['args_type'],
-        'args_name': func_data['args_name'],
-        'arg_mode': func_data['arg_mode'],
-        'use_default': func_data['use_default'],
-        'default_value': func_data['default_value'],
-        'pkgname': func_data['pkgname'],
-        'pkg': func_data['pkg'],
-        'require_input': func_data['require_input'],
-        'args_value': func_data['args_value']
-    }
-
-    # Update the session variable of function information
-    session['functionData'] = function_data
-
-    # Delete the 'funcData' session variables as it is not used now as target
-    # is initialized
-    del session['funcData']
+    de_inst.update_session()
 
     return make_json_response(data={'status': status,
                                     'debuggerTransId': trans_id})
@@ -861,24 +793,9 @@ def close(trans_id):
         trans_id
         - unique transaction id.
     """
-    # As debugger data is not in session that means we have already
-    # deleted and close the target
-    if 'debuggerData' not in session:
-        return make_json_response(data={'status': True})
 
-    # Return from the function if transaction id not found
-    if str(trans_id) not in session['debuggerData']:
-        return make_json_response(data={'status': True})
-
-    with debugger_close_session_lock:
-        try:
-            close_debugger_session(trans_id)
-            # Delete the existing debugger data in session variable
-            del session['debuggerData'][str(trans_id)]
-            del session['functionData'][str(trans_id)]
-            return make_json_response(data={'status': True})
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+    close_debugger_session(trans_id)
+    return make_json_response(data={'status': True})
 
 
 @blueprint.route(
@@ -896,8 +813,8 @@ def restart_debugging(trans_id):
         - Transaction ID
     """
 
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': False,
@@ -907,44 +824,39 @@ def restart_debugging(trans_id):
                 )
             }
         )
-    obj = debugger_data[str(trans_id)]
 
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
-    conn = manager.connection(did=obj['database_id'], conn_id=obj['conn_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
+    conn = manager.connection(
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['conn_id'])
 
     if conn.connected():
         # Update the session variable "restart_debug" to know that same
         # function debugging has been restarted. Delete the existing debugger
         # data in session variable and update with new data
-        if obj['restart_debug'] == 0:
-            debugger_data = session['debuggerData']
-            session_obj = debugger_data[str(trans_id)]
-            session_obj['restart_debug'] = 1
-            update_session_debugger_transaction(trans_id, session_obj)
+        if de_inst.debugger_data['restart_debug'] == 0:
+            de_inst.debugger_data['restart_debug'] = 1
+            de_inst.update_session()
 
-        # Store the function information in session variable
-        if 'functionData' not in session:
-            function_data = dict()
-        else:
-            session_function_data = session['functionData'][str(trans_id)]
-            function_data = {
-                'server_id': obj['server_id'],
-                'database_id': obj['database_id'],
-                'schema_id': obj['schema_id'],
-                'function_id': obj['function_id'],
-                'trans_id': str(trans_id),
-                'proargmodes': session_function_data['arg_mode'],
-                'proargtypenames': session_function_data['args_type'],
-                'pronargdefaults': session_function_data['use_default'],
-                'proargdefaults': session_function_data['default_value'],
-                'proargnames': session_function_data['args_name'],
-                'require_input': session_function_data['require_input']
-            }
+        de_inst.function_data = {
+            'server_id': de_inst.debugger_data['server_id'],
+            'database_id': de_inst.debugger_data['database_id'],
+            'schema_id': de_inst.debugger_data['schema_id'],
+            'function_id': de_inst.debugger_data['function_id'],
+            'trans_id': str(trans_id),
+            'proargmodes': de_inst.function_data['arg_mode'],
+            'proargtypenames': de_inst.function_data['args_type'],
+            'pronargdefaults': de_inst.function_data['use_default'],
+            'proargdefaults': de_inst.function_data['default_value'],
+            'proargnames': de_inst.function_data['args_name'],
+            'require_input': de_inst.function_data['require_input']
+        }
 
         return make_json_response(
             data={
-                'status': True, 'restart_debug': True, 'result': function_data
+                'status': True, 'restart_debug': True,
+                'result': de_inst.function_data
             }
         )
     else:
@@ -953,8 +865,7 @@ def restart_debugging(trans_id):
             'Not connected to server or connection with the server has '
             'been closed.'
         )
-
-    return make_json_response(data={'status': status})
+        return make_json_response(data={'status': status, 'result': result})
 
 
 @blueprint.route(
@@ -974,8 +885,8 @@ def start_debugger_listener(trans_id):
         - Transaction ID
     """
 
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': False,
@@ -985,17 +896,18 @@ def start_debugger_listener(trans_id):
                 )
             }
         )
-    obj = debugger_data[str(trans_id)]
 
     driver = get_driver(PG_DEFAULT_DRIVER)
-    manager = driver.connection_manager(obj['server_id'])
-    conn = manager.connection(did=obj['database_id'], conn_id=obj['conn_id'])
+    manager = driver.connection_manager(de_inst.debugger_data['server_id'])
+    conn = manager.connection(
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['conn_id'])
 
     ver = manager.version
     server_type = manager.server_type
 
     # find the debugger version and execute the query accordingly
-    dbg_version = obj['debugger_version']
+    dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
         template_path = 'debugger/sql/v1'
     else:
@@ -1006,94 +918,91 @@ def start_debugger_listener(trans_id):
     if request.method == 'POST':
         data = json.loads(request.values['data'], encoding='utf-8')
         if data:
-            function_data = session['functionData']
-            session_obj = function_data[str(trans_id)]
-            session_obj['args_value'] = data
-            update_session_function_transaction(trans_id, session_obj)
+            de_inst.function_data['args_value'] = data
+            de_inst.update_session()
 
     if conn.connected():
 
         # For the direct debugging extract the function arguments values from
         # user and pass to jinja template to create the query for execution.
-        if obj['debug_type'] == 'direct':
+        if de_inst.debugger_data['debug_type'] == 'direct':
             str_query = ''
-            session_function_data = session['functionData'][str(trans_id)]
-            if session_function_data['pkg'] == 0:
+            if de_inst.function_data['pkg'] == 0:
                 # Form the function name with schema name
                 func_name = driver.qtIdent(
                     conn,
-                    session_function_data['schema'],
-                    session_function_data['name']
+                    de_inst.function_data['schema'],
+                    de_inst.function_data['name']
                 )
             else:
                 # Form the edb package function/procedure name with schema name
                 func_name = driver.qtIdent(
-                    conn, session_function_data['schema'],
-                    session_function_data['pkgname'],
-                    session_function_data['name']
+                    conn, de_inst.function_data['schema'],
+                    de_inst.function_data['pkgname'],
+                    de_inst.function_data['name']
                 )
 
-            if obj['restart_debug'] == 0:
+            if de_inst.debugger_data['restart_debug'] == 0:
                 # render the SQL template and send the query to server
-                if session_function_data['language'] == 'plpgsql':
+                if de_inst.function_data['language'] == 'plpgsql':
                     sql = render_template(
                         "/".join([template_path,
                                   'debug_plpgsql_execute_target.sql']),
-                        packge_oid=session_function_data['pkg'],
-                        function_oid=obj['function_id']
+                        packge_oid=de_inst.function_data['pkg'],
+                        function_oid=de_inst.debugger_data['function_id']
                     )
                 else:
                     sql = render_template(
                         "/".join([template_path,
                                   'debug_spl_execute_target.sql']),
-                        packge_oid=session_function_data['pkg'],
-                        function_oid=obj['function_id']
+                        packge_oid=de_inst.function_data['pkg'],
+                        function_oid=de_inst.debugger_data['function_id']
                     )
                 status, res = conn.execute_dict(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
 
-            if session_function_data['arg_mode']:
+            if de_inst.function_data['arg_mode']:
                 # In EDBAS 90, if an SPL-function has both an OUT-parameter
                 # and a return value (which is not possible on PostgreSQL
                 # otherwise), the return value is transformed into an extra
                 # OUT-parameter named "_retval_"
-                if session_function_data['args_name']:
-                    arg_name = session_function_data['args_name'].split(",")
+                if de_inst.function_data['args_name']:
+                    arg_name = de_inst.function_data['args_name'].split(",")
                     if '_retval_' in arg_name:
-                        arg_mode = session_function_data['arg_mode'].split(",")
+                        arg_mode = de_inst.function_data['arg_mode'].split(",")
                         arg_mode.pop()
                     else:
-                        arg_mode = session_function_data['arg_mode'].split(",")
+                        arg_mode = de_inst.function_data['arg_mode'].split(",")
                 else:
-                    arg_mode = session_function_data['arg_mode'].split(",")
+                    arg_mode = de_inst.function_data['arg_mode'].split(",")
             else:
                 arg_mode = ['i'] * len(
-                    session_function_data['args_type'].split(",")
+                    de_inst.function_data['args_type'].split(",")
                 )
 
-            if session_function_data['args_type']:
-                if session_function_data['args_name']:
-                    arg_name = session_function_data['args_name'].split(",")
+            if de_inst.function_data['args_type']:
+                if de_inst.function_data['args_name']:
+                    arg_name = de_inst.function_data['args_name'].split(",")
                     if '_retval_' in arg_name:
-                        arg_type = session_function_data[
+                        arg_type = de_inst.function_data[
                             'args_type'].split(",")
                         arg_type.pop()
                     else:
-                        arg_type = session_function_data[
+                        arg_type = de_inst.function_data[
                             'args_type'].split(",")
                 else:
-                    arg_type = session_function_data['args_type'].split(",")
+                    arg_type = de_inst.function_data['args_type'].split(",")
 
             # Below are two different template to execute and start executer
             if manager.server_type != 'pg' and manager.version < 90300:
                 str_query = render_template(
                     "/".join(['debugger/sql', 'execute_edbspl.sql']),
                     func_name=func_name,
-                    is_func=session_function_data['is_func'],
-                    lan_name=session_function_data['language'],
-                    ret_type=session_function_data['return_type'],
-                    data=session_function_data['args_value'],
+                    is_func=de_inst.function_data['is_func'],
+                    lan_name=de_inst.function_data['language'],
+                    ret_type=de_inst.function_data['return_type'],
+                    data=de_inst.function_data['args_value'],
                     arg_type=arg_type,
                     args_mode=arg_mode
                 )
@@ -1101,10 +1010,10 @@ def start_debugger_listener(trans_id):
                 str_query = render_template(
                     "/".join(['debugger/sql', 'execute_plpgsql.sql']),
                     func_name=func_name,
-                    is_func=session_function_data['is_func'],
-                    ret_type=session_function_data['return_type'],
-                    data=session_function_data['args_value'],
-                    is_ppas_database=session_function_data['is_ppas_database']
+                    is_func=de_inst.function_data['is_func'],
+                    ret_type=de_inst.function_data['return_type'],
+                    data=de_inst.function_data['args_value'],
+                    is_ppas_database=de_inst.function_data['is_ppas_database']
                 )
 
             status, result = conn.execute_async(str_query)
@@ -1135,7 +1044,7 @@ def start_debugger_listener(trans_id):
                     sql = render_template(
                         "/".join([template_path, 'add_breakpoint_edb.sql']),
                         session_id=int_session_id,
-                        function_oid=obj['function_id']
+                        function_oid=de_inst.debugger_data['function_id']
                     )
 
                     status, res = conn.execute_dict(sql)
@@ -1145,7 +1054,7 @@ def start_debugger_listener(trans_id):
                     sql = render_template(
                         "/".join([template_path, 'add_breakpoint_pg.sql']),
                         session_id=int_session_id,
-                        function_oid=obj['function_id']
+                        function_oid=de_inst.debugger_data['function_id']
                     )
 
                     status, res = conn.execute_dict(sql)
@@ -1162,13 +1071,12 @@ def start_debugger_listener(trans_id):
                 if not status:
                     return internal_server_error(errormsg=res)
 
-                debugger_data = session['debuggerData']
-                session_obj = debugger_data[str(trans_id)]
-                session_obj['exe_conn_id'] = obj['conn_id']
-                session_obj['restart_debug'] = 1
-                session_obj['frame_id'] = 0
-                session_obj['session_id'] = int_session_id
-                update_session_debugger_transaction(trans_id, session_obj)
+                de_inst.debugger_data['exe_conn_id'] = \
+                    de_inst.debugger_data['conn_id']
+                de_inst.debugger_data['restart_debug'] = 1
+                de_inst.debugger_data['frame_id'] = 0
+                de_inst.debugger_data['session_id'] = int_session_id
+                de_inst.update_session()
                 return make_json_response(
                     data={'status': status, 'result': res}
                 )
@@ -1214,8 +1122,8 @@ def execute_debugger_query(trans_id, query_type):
         - Type of query to execute
     """
 
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': False,
@@ -1225,15 +1133,15 @@ def execute_debugger_query(trans_id, query_type):
                 )
             }
         )
-    obj = debugger_data[str(trans_id)]
 
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
     conn = manager.connection(
-        did=obj['database_id'], conn_id=obj['exe_conn_id'])
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    dbg_version = obj['debugger_version']
+    dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
         template_path = 'debugger/sql/v1'
     else:
@@ -1242,7 +1150,7 @@ def execute_debugger_query(trans_id, query_type):
     if conn.connected():
         sql = render_template(
             "/".join([template_path, query_type + ".sql"]),
-            session_id=obj['session_id']
+            session_id=de_inst.debugger_data['session_id']
         )
         # As the query type is continue or step_into or step_over then we
         # may get result after some time so poll the result.
@@ -1251,10 +1159,9 @@ def execute_debugger_query(trans_id, query_type):
         if query_type == 'continue' or query_type == 'step_into' or \
                 query_type == 'step_over':
             # We should set the frame_id to 0 when execution starts.
-            if obj['frame_id'] != 0:
-                session_obj = debugger_data[str(trans_id)]
-                session_obj['frame_id'] = 0
-                update_session_debugger_transaction(trans_id, session_obj)
+            if de_inst.debugger_data['frame_id'] != 0:
+                de_inst.debugger_data['frame_id'] = 0
+                de_inst.update_session()
 
             status, result = conn.execute_async(sql)
             if not status:
@@ -1300,8 +1207,8 @@ def messages(trans_id):
         - unique transaction id.
     """
 
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': 'NotConnected',
@@ -1311,11 +1218,12 @@ def messages(trans_id):
                 )
             }
         )
-    obj = debugger_data[str(trans_id)]
 
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
-    conn = manager.connection(did=obj['database_id'], conn_id=obj['conn_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
+    conn = manager.connection(
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['conn_id'])
 
     port_number = ''
 
@@ -1375,8 +1283,8 @@ def start_execution(trans_id, port_num):
         - Port number to attach
     """
 
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': 'NotConnected',
@@ -1386,16 +1294,15 @@ def start_execution(trans_id, port_num):
                 )
             }
         )
-    obj = debugger_data[str(trans_id)]
-
-    dbg_version = obj['debugger_version']
 
     # Create asynchronous connection using random connection id.
     exe_conn_id = str(random.randint(1, 9999999))
     try:
-        manager = get_driver(
-            PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
-        conn = manager.connection(did=obj['database_id'], conn_id=exe_conn_id)
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+            de_inst.debugger_data['server_id'])
+        conn = manager.connection(
+            did=de_inst.debugger_data['database_id'],
+            conn_id=exe_conn_id)
     except Exception as e:
         return internal_server_error(errormsg=str(e))
 
@@ -1404,13 +1311,8 @@ def start_execution(trans_id, port_num):
     if not status:
         return internal_server_error(errormsg=str(msg))
 
-    if 'debuggerData' not in session:
-        debugger_data = dict()
-    else:
-        debugger_data = session['debuggerData']
-
     # find the debugger version and execute the query accordingly
-    dbg_version = obj['debugger_version']
+    dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
         template_path = 'debugger/sql/v1'
     else:
@@ -1423,13 +1325,13 @@ def start_execution(trans_id, port_num):
     if not status_port:
         return internal_server_error(errormsg=res_port)
 
-    session_obj = debugger_data[str(trans_id)]
-    session_obj['restart_debug'] = 0
-    session_obj['frame_id'] = 0
-    session_obj['exe_conn_id'] = exe_conn_id
-    session_obj['debugger_version'] = dbg_version
-    session_obj['session_id'] = res_port['rows'][0]['pldbg_attach_to_port']
-    update_session_debugger_transaction(trans_id, session_obj)
+    de_inst.debugger_data['restart_debug'] = 0
+    de_inst.debugger_data['frame_id'] = 0
+    de_inst.debugger_data['exe_conn_id'] = exe_conn_id
+    de_inst.debugger_data['debugger_version'] = dbg_version
+    de_inst.debugger_data['session_id'] = \
+        res_port['rows'][0]['pldbg_attach_to_port']
+    de_inst.update_session()
 
     return make_json_response(
         data={
@@ -1459,8 +1361,9 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
         - 0 - clear the breakpoint, 1 - set the breakpoint
     """
 
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': False,
@@ -1470,15 +1373,15 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
                 )
             }
         )
-    obj = debugger_data[str(trans_id)]
 
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
     conn = manager.connection(
-        did=obj['database_id'], conn_id=obj['exe_conn_id'])
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    dbg_version = obj['debugger_version']
+    dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
         template_path = 'debugger/sql/v1'
     else:
@@ -1492,7 +1395,7 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     # session variable and pass tha appropriate foid to set the breakpoint.
     sql_ = render_template(
         "/".join([template_path, "get_stack_info.sql"]),
-        session_id=obj['session_id']
+        session_id=de_inst.debugger_data['session_id']
     )
     status, res_stack = conn.execute_dict(sql_)
     if not status:
@@ -1501,7 +1404,7 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     # For multilevel function debugging, we need to fetch current selected
     # frame's function oid for setting the breakpoint. For single function
     # the frame id will be 0.
-    foid = res_stack['rows'][obj['frame_id']]['func']
+    foid = res_stack['rows'][de_inst.debugger_data['frame_id']]['func']
 
     # Check the result of the stack before setting the breakpoint
     if conn.connected():
@@ -1512,7 +1415,7 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
 
         sql = render_template(
             "/".join([template_path, query_type + ".sql"]),
-            session_id=obj['session_id'],
+            session_id=de_inst.debugger_data['session_id'],
             foid=foid, line_number=line_no
         )
 
@@ -1546,8 +1449,9 @@ def clear_all_breakpoint(trans_id):
         trans_id
         - Transaction ID
     """
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': False,
@@ -1557,21 +1461,18 @@ def clear_all_breakpoint(trans_id):
                 )
             }
         )
-    obj = debugger_data[str(trans_id)]
-
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
     conn = manager.connection(
-        did=obj['database_id'], conn_id=obj['exe_conn_id'])
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    dbg_version = obj['debugger_version']
+    dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
         template_path = 'debugger/sql/v1'
     else:
         template_path = 'debugger/sql/v2'
-
-    query_type = ''
 
     if conn.connected():
         # get the data sent through post from client
@@ -1580,8 +1481,9 @@ def clear_all_breakpoint(trans_id):
             for line_no in line_numbers:
                 sql = render_template(
                     "/".join([template_path, "clear_breakpoint.sql"]),
-                    session_id=obj['session_id'],
-                    foid=obj['function_id'], line_number=line_no
+                    session_id=de_inst.debugger_data['session_id'],
+                    foid=de_inst.debugger_data['function_id'],
+                    line_number=line_no
                 )
 
                 status, result = conn.execute_dict(sql)
@@ -1615,8 +1517,9 @@ def deposit_parameter_value(trans_id):
         trans_id
         - Transaction ID
     """
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': False,
@@ -1624,21 +1527,18 @@ def deposit_parameter_value(trans_id):
                                   'with the server has been closed.')
             }
         )
-    obj = debugger_data[str(trans_id)]
-
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
     conn = manager.connection(
-        did=obj['database_id'], conn_id=obj['exe_conn_id'])
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    dbg_version = obj['debugger_version']
+    dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
         template_path = 'debugger/sql/v1'
     else:
         template_path = 'debugger/sql/v2'
-
-    query_type = ''
 
     if conn.connected():
         # get the data sent through post from client
@@ -1647,7 +1547,7 @@ def deposit_parameter_value(trans_id):
         if data:
             sql = render_template(
                 "/".join([template_path, "deposit_value.sql"]),
-                session_id=obj['session_id'],
+                session_id=de_inst.debugger_data['session_id'],
                 var_name=data[0]['name'], line_number=-1,
                 val=data[0]['value']
             )
@@ -1696,8 +1596,8 @@ def select_frame(trans_id, frame_id):
         frame_id
         - Frame id selected
     """
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': False,
@@ -1707,28 +1607,27 @@ def select_frame(trans_id, frame_id):
                 )
             }
         )
-    obj = debugger_data[str(trans_id)]
 
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
     conn = manager.connection(
-        did=obj['database_id'], conn_id=obj['exe_conn_id'])
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    dbg_version = obj['debugger_version']
+    dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
         template_path = 'debugger/sql/v1'
     else:
         template_path = 'debugger/sql/v2'
 
-    session_obj = debugger_data[str(trans_id)]
-    session_obj['frame_id'] = frame_id
-    update_session_debugger_transaction(trans_id, session_obj)
+    de_inst.debugger_data['frame_id'] = frame_id
+    de_inst.update_session()
 
     if conn.connected():
         sql = render_template(
             "/".join([template_path, "select_frame.sql"]),
-            session_id=obj['session_id'],
+            session_id=de_inst.debugger_data['session_id'],
             frame_id=frame_id
         )
 
@@ -1968,8 +1867,8 @@ def poll_end_execution_result(trans_id):
         - unique transaction id.
     """
 
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={'status': 'NotConnected',
                   'result': gettext(
@@ -1977,11 +1876,12 @@ def poll_end_execution_result(trans_id):
                       'server has been closed.')
                   }
         )
-    obj = debugger_data[str(trans_id)]
 
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
-    conn = manager.connection(did=obj['database_id'], conn_id=obj['conn_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
+    conn = manager.connection(
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['conn_id'])
 
     if conn.connected():
         statusmsg = conn.status_message()
@@ -1998,11 +1898,10 @@ def poll_end_execution_result(trans_id):
                 }
             )
 
-        session_function_data = session['functionData'][str(trans_id)]
         if status == ASYNC_OK and \
-            not session_function_data['is_func'] and\
-            (session_function_data['language'] == 'edbspl' or
-                session_function_data['language'] == 'plpgsql'):
+            not de_inst.function_data['is_func'] and\
+            (de_inst.function_data['language'] == 'edbspl' or
+                de_inst.function_data['language'] == 'plpgsql'):
             status = 'Success'
             additional_msgs = conn.messages()
             if len(additional_msgs) > 0:
@@ -2095,8 +1994,8 @@ def poll_result(trans_id):
         - unique transaction id.
     """
 
-    debugger_data = session['debuggerData']
-    if str(trans_id) not in debugger_data:
+    de_inst = DebuggerInstance(trans_id)
+    if de_inst.debugger_data is None:
         return make_json_response(
             data={
                 'status': 'NotConnected',
@@ -2104,12 +2003,12 @@ def poll_result(trans_id):
                                   'with the server has been closed.')
             }
         )
-    obj = debugger_data[str(trans_id)]
 
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        de_inst.debugger_data['server_id'])
     conn = manager.connection(
-        did=obj['database_id'], conn_id=obj['exe_conn_id'])
+        did=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['exe_conn_id'])
 
     if conn.connected():
         status, result = conn.poll()
@@ -2135,7 +2034,7 @@ def poll_result(trans_id):
     )
 
 
-def close_debugger_session(trans_id):
+def close_debugger_session(_trans_id, close_all=False):
     """
     This function is used to cancel the debugger transaction and
     release the connection.
@@ -2143,21 +2042,41 @@ def close_debugger_session(trans_id):
     :param trans_id: Transaction id
     :return:
     """
-    dbg_obj = session['debuggerData'][str(trans_id)]
 
-    manager = get_driver(
-        PG_DEFAULT_DRIVER).connection_manager(dbg_obj['server_id'])
+    if close_all:
+        trans_ids = DebuggerInstance.get_trans_ids()
+    else:
+        trans_ids = [_trans_id]
 
-    if manager is not None:
-        conn = manager.connection(
-            did=dbg_obj['database_id'], conn_id=dbg_obj['conn_id'])
-        if conn.connected():
-            conn.cancel_transaction(dbg_obj['conn_id'],
-                                    dbg_obj['database_id'])
-        conn = manager.connection(
-            did=dbg_obj['database_id'], conn_id=dbg_obj['exe_conn_id'])
-        if conn.connected():
-            conn.cancel_transaction(dbg_obj['exe_conn_id'],
-                                    dbg_obj['database_id'])
-        manager.release(conn_id=dbg_obj['conn_id'])
-        manager.release(conn_id=dbg_obj['exe_conn_id'])
+    for trans_id in trans_ids:
+        de_inst = DebuggerInstance(trans_id)
+        dbg_obj = de_inst.debugger_data
+
+        try:
+            if dbg_obj is not None:
+                manager = get_driver(PG_DEFAULT_DRIVER).\
+                    connection_manager(dbg_obj['server_id'])
+
+                if manager is not None:
+                    conn = manager.connection(
+                        did=dbg_obj['database_id'],
+                        conn_id=dbg_obj['conn_id'])
+                    if conn.connected():
+                        conn.cancel_transaction(
+                            dbg_obj['conn_id'],
+                            dbg_obj['database_id'])
+                    manager.release(conn_id=dbg_obj['conn_id'])
+
+                    if 'exe_conn_id' in dbg_obj:
+                        conn = manager.connection(
+                            did=dbg_obj['database_id'],
+                            conn_id=dbg_obj['exe_conn_id'])
+                        if conn.connected():
+                            conn.cancel_transaction(
+                                dbg_obj['exe_conn_id'],
+                                dbg_obj['database_id'])
+                        manager.release(conn_id=dbg_obj['exe_conn_id'])
+        except Exception as _:
+            raise
+        finally:
+            de_inst.clear()
