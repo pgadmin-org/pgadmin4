@@ -230,6 +230,7 @@ define('pgadmin.node.column', [
             if (
               m.top && ((
                 !_.isUndefined(m.top.get('oid')) &&
+                  !_.isUndefined(m.top.get('primary_key')) &&
                   m.top.get('primary_key').length > 0 &&
                   !_.isUndefined(m.top.get('primary_key').first().get('oid'))
               ) || (
@@ -255,6 +256,7 @@ define('pgadmin.node.column', [
             }
             // If primary key already exist then disable.
             if (m.top && !_.isUndefined(m.top.get('oid')) &&
+                      !_.isUndefined(m.top.get('primary_key')) &&
                       m.top.get('primary_key').length > 0 &&
                       !_.isUndefined(m.top.get('primary_key').first().get('oid'))) {
 

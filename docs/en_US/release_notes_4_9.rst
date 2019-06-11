@@ -24,3 +24,4 @@ Bug fixes
 | `Bug #4317 <https://redmine.postgresql.org/issues/4317>`_ - Ensure that browser auto-fill doesn't cause Help pages to be opened unexpectedly.
 | `Bug #4320 <https://redmine.postgresql.org/issues/4320>`_ - Fix issue where SSH tunnel connection using password is failing, it's regression of Master Password.
 | `Bug #4329 <https://redmine.postgresql.org/issues/4329>`_ - Fix an initialisation error when two functions with parameters are debugged in parallel.
+| `Bug #4343 <https://redmine.postgresql.org/issues/4343>`_ - Fix issue where property dialog of column should open properly for EPAS v12.
