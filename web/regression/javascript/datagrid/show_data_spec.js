@@ -63,6 +63,7 @@ describe('#show_data', () => {
       label: 'server1',
       server_type: 'pg',
       _id: 2,
+      user: {name: 'someuser'},
     }, ['parent', 'server_group1']);
     pgBrowser.treeMenu.addChild(serverGroup1, server1);
 
@@ -133,7 +134,7 @@ describe('#show_data', () => {
         'false',
         'pg',
         '',
-        'schema1.schema1',
+        'schema1.schema1/database1/someuser@server1',
         ''
       );
     });
@@ -148,7 +149,7 @@ describe('#show_data', () => {
         'false',
         'pg',
         '',
-        'view1.view1',
+        'view1.view1/database1/someuser@server1',
         ''
       );
     });
@@ -163,7 +164,7 @@ describe('#show_data', () => {
         'false',
         'pg',
         '',
-        'catalog1.catalog1',
+        'catalog1.catalog1/database1/someuser@server1',
         ''
       );
     });

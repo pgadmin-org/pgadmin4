@@ -11,6 +11,7 @@
     color: $color-primary-fg;
     overflow: hidden;
     white-space: nowrap;
+    text-overflow: ellipsis;
     border-radius: 0rem;
     border-top-left-radius: $panel-border-radius;
     border-top-right-radius: $panel-border-radius;

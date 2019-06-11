@@ -15,6 +15,7 @@ Bug fixes
 
 | `Bug #4171 <https://redmine.postgresql.org/issues/4171>`_ - Fix issue where reverse engineered SQL was failing for foreign tables, if it had "=" in the options.
 | `Bug #4195 <https://redmine.postgresql.org/issues/4195>`_ - Fix keyboard navigation in "inner" tabsets such as the Query Tool and Debugger.
+| `Bug #4228 <https://redmine.postgresql.org/issues/4228>`_ - Ensure the correct label is used in panel headers when viewing filtered rows.
 | `Bug #4253 <https://redmine.postgresql.org/issues/4253>`_ - Fix issue where new column should be created with Default value.
 | `Bug #4283 <https://redmine.postgresql.org/issues/4283>`_ - Initial support for PostgreSQL 12.
 | `Bug #4288 <https://redmine.postgresql.org/issues/4288>`_ - Initial support for PostgreSQL 12.

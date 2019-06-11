@@ -18,8 +18,10 @@ function isServerInformationAvailable(parentData) {
   return parentData.server === undefined;
 }
 
-export function getPanelTitle(pgBrowser) {
-  const selected_item = pgBrowser.treeMenu.selected();
+export function getPanelTitle(pgBrowser, selected_item=null) {
+  if(selected_item == null) {
+    selected_item = pgBrowser.treeMenu.selected();
+  }
 
   const parentData = getTreeNodeHierarchyFromIdentifier
     .call(pgBrowser, selected_item);

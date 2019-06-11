@@ -10,6 +10,7 @@
 import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
 import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
+import {getPanelTitle} from './get_panel_title';
 
 function hasDatabaseInformation(parentData) {
   return parentData.database;
@@ -34,10 +35,14 @@ function hasServerInformations(parentData) {
   return parentData.server === undefined;
 }
 
-export function showQueryTool(datagrid, pgBrowser, alertify, url,
-  aciTreeIdentifier, panelTitle) {
+function generateTitle(pgBrowser, aciTreeIdentifier) {
+  const baseTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
+  return baseTitle;
+}
+
+export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentifier) {
   const sURL = url || '';
-  const queryToolTitle = panelTitle || '';
+  const queryToolTitle = generateTitle(pgBrowser, aciTreeIdentifier);
 
   const currentNode = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
   if (currentNode === undefined) {

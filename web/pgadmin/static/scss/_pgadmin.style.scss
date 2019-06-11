@@ -968,3 +968,18 @@ table.table-empty-rows{
     bottom: 0;
   }
 }
+
+.filter-textarea {
+    height: 100%;
+    & .CodeMirror-scroll {
+      min-height: 120px;
+      max-height: 120px;
+    }
+}
+
+.dataview_filter_dialog {
+  left: 0 !important;
+  right: 0 !important;
+  padding: 0px !important;
+  position: absolute;
+}

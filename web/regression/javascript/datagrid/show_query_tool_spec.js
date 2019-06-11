@@ -51,6 +51,8 @@ describe('#showQueryTool', () => {
       label: 'server1',
       server_type: 'pg',
       _id: 2,
+      user: {name: 'someuser'},
+      db: 'otherdblabel',
     });
     pgBrowser.treeMenu.addChild(serverGroup1, server1);
 
@@ -64,7 +66,7 @@ describe('#showQueryTool', () => {
 
   context('cannot find the tree node', () => {
     beforeEach(() => {
-      showQueryTool(queryTool, pgBrowser, alertify, '', [{id: '10'}], 'title');
+      showQueryTool(queryTool, pgBrowser, alertify, '', [{id: '10'}]);
     });
     it('does not create a transaction', () => {
       expect(queryTool.create_transaction).not.toHaveBeenCalled();
@@ -92,14 +94,14 @@ describe('#showQueryTool', () => {
   context('current node is underneath a server', () => {
     context('current node is not underneath a database', () => {
       it('creates a transaction', () => {
-        showQueryTool(queryTool, pgBrowser, alertify, 'http://someurl', [{id: 'server1'}], 'title');
+        showQueryTool(queryTool, pgBrowser, alertify, 'http://someurl', [{id: 'server1'}]);
         expect(queryTool.create_transaction).toHaveBeenCalledWith(
           '/initialize/query_tool/1/2',
           null,
           'true',
           'pg',
           'http://someurl',
-          'title',
+          'otherdblabel/someuser@server1',
           '',
           false
         );
@@ -115,7 +117,7 @@ describe('#showQueryTool', () => {
           'true',
           'pg',
           'http://someurl',
-          'title',
+          'database1/someuser@server1',
           '',
           false
         );

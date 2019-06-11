@@ -12,18 +12,16 @@ define('pgadmin.datagrid', [
   'pgadmin.alertifyjs', 'sources/pgadmin', 'bundled_codemirror',
   'sources/sqleditor_utils', 'backbone',
   'tools/datagrid/static/js/show_data',
-  'tools/datagrid/static/js/get_panel_title',
   'tools/datagrid/static/js/show_query_tool', 'pgadmin.browser.toolbar',
   'wcdocker',
 ], function(
   gettext, url_for, $, _, alertify, pgAdmin, codemirror, sqlEditorUtils,
-  Backbone, showData, panelTitle, showQueryTool, toolBar
+  Backbone, showData, showQueryTool, toolBar
 ) {
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
   var wcDocker = window.wcDocker,
-    pgBrowser = pgAdmin.Browser,
-    CodeMirror = codemirror.default;
+    pgBrowser = pgAdmin.Browser;
 
   /* Return back, this has been called more than once */
   if (pgAdmin.DataGrid)
@@ -202,188 +200,14 @@ define('pgadmin.datagrid', [
 
       // This is a callback function to show filtered data when user click on menu item.
       show_filtered_row: function(data, i) {
-        var self = this,
-          d = pgAdmin.Browser.tree.itemData(i);
-        if (d === undefined) {
-          alertify.alert(
-            gettext('Data Grid Error'),
-            gettext('No object selected.')
-          );
-          return;
-        }
-
-        // Get the parent data from the tree node hierarchy.
-        var node = pgBrowser.Nodes[d._type],
-          parentData = node.getTreeNodeHierarchy(i);
-
-        // If server or database is undefined then return from the function.
-        if (parentData.server === undefined || parentData.database === undefined) {
-          return;
-        }
-
-        // If schema, view, catalog object all are undefined then return from the function.
-        if (parentData.schema === undefined && parentData.view === undefined &&
-             parentData.catalog === undefined) {
-          return;
-        }
-
-        let nsp_name = showData.retrieveNameSpaceName(parentData);
-
-        var url_params = {
-          'cmd_type': data.mnuid,
-          'obj_type': d._type,
-          'sgid': parentData.server_group._id,
-          'sid': parentData.server._id,
-          'did': parentData.database._id,
-          'obj_id': d._id,
-        };
-
-        var baseUrl = url_for('datagrid.initialize_datagrid', url_params);
-
-        // Create url to validate the SQL filter
-        var validateUrl = url_for('datagrid.filter_validate', {
-          'sid': url_params['sid'],
-          'did': url_params['did'],
-          'obj_id': url_params['obj_id'],
-        });
-
-        let grid_title = showData.generateDatagridTitle(parentData, nsp_name, d);
-
-        // Create filter dialog using alertify
-        if (!alertify.filterDialog) {
-          alertify.dialog('filterDialog', function factory() {
-            return {
-              main: function(title, message, baseUrl, validateUrl) {
-                this.set('title', title);
-                this.message = message;
-                this.baseUrl = baseUrl;
-                this.validateUrl = validateUrl;
-              },
-
-              setup:function() {
-                return {
-                  buttons:[{
-                    text: gettext('Cancel'),
-                    key: 27,
-                    className: 'btn btn-secondary fa fa-times pg-alertify-button',
-                  },{
-                    text: gettext('OK'),
-                    key: 13,
-                    className: 'btn btn-primary fa fa-check pg-alertify-button',
-                  }],
-                  options: {
-                    modal: 0,
-                    resizable: true,
-                    maximizable: false,
-                    pinnable: false,
-                    autoReset: false,
-                  },
-                };
-              },
-              build: function() {
-                alertify.pgDialogBuild.apply(this);
-              },
-              prepare:function() {
-                var that = this,
-                  $content = $(this.message),
-                  $sql_filter = $content.find('#sql_filter');
-
-                $(this.elements.header).attr('data-title', this.get('title'));
-                $(this.elements.body.childNodes[0]).addClass(
-                  'dataview_filter_dialog'
-                );
-
-                this.setContent($content.get(0));
-                // Disable OK button
-                that.__internal.buttons[1].element.disabled = true;
-
-                // Apply CodeMirror to filter text area.
-                this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
-                  lineNumbers: true,
-                  mode: 'text/x-pgsql',
-                  extraKeys: pgBrowser.editor_shortcut_keys,
-                  indentWithTabs: !self.preferences.use_spaces,
-                  indentUnit: self.preferences.tab_size,
-                  tabSize: self.preferences.tab_size,
-                  lineWrapping: self.preferences.wrap_code,
-                  autoCloseBrackets: self.preferences.insert_pair_brackets,
-                  matchBrackets: self.preferences.brace_matching,
-                });
-
-                let sql_font_size = sqlEditorUtils.calcFontSize(self.preferences.sql_font_size);
-                $(this.filter_obj.getWrapperElement()).css('font-size', sql_font_size);
-
-                setTimeout(function() {
-                  // Set focus on editor
-                  that.filter_obj.refresh();
-                  that.filter_obj.focus();
-                }, 500);
-
-                that.filter_obj.on('change', function() {
-                  if (that.filter_obj.getValue() !== '') {
-                    that.__internal.buttons[1].element.disabled = false;
-                  } else {
-                    that.__internal.buttons[1].element.disabled = true;
-                  }
-                });
-              },
-
-              callback: function(closeEvent) {
-
-                if (closeEvent.button.text == gettext('OK')) {
-                  var sql = this.filter_obj.getValue();
-                  var that = this;
-                  closeEvent.cancel = true; // Do not close dialog
-
-                  // Make ajax call to include the filter by selection
-                  $.ajax({
-                    url: that.validateUrl,
-                    method: 'POST',
-                    async: false,
-                    contentType: 'application/json',
-                    data: JSON.stringify(sql),
-                  })
-                    .done(function(res) {
-                      if (res.data.status) {
-                      // Initialize the data grid.
-                        self.create_transaction(that.baseUrl, null, 'false', parentData.server.server_type, '', grid_title, sql, false);
-                        that.close(); // Close the dialog
-                      }
-                      else {
-                        alertify.alert(
-                          gettext('Validation Error'),
-                          res.data.result
-                        );
-                      }
-                    })
-                    .fail(function(e) {
-                      alertify.alert(
-                        gettext('Validation Error'),
-                        e
-                      );
-                    });
-                }
-              },
-            };
-          });
-        }
-
-        $.get(url_for('datagrid.filter'),
-          function(data) {
-            alertify.filterDialog('Data Filter', data, baseUrl, validateUrl)
-              .resizeTo(pgBrowser.stdW.sm,pgBrowser.stdH.sm);
-          }
-        );
+        showData.showDataGrid(this, pgBrowser, alertify, data, i, true, this.preferences);
       },
 
-      get_panel_title: function() {
-        return panelTitle.getPanelTitle(pgBrowser);
-      },
       // This is a callback function to show query tool when user click on menu item.
-      show_query_tool: function(url, aciTreeIdentifier, panelTitle) {
-        showQueryTool.showQueryTool(this, pgBrowser, alertify, url,
-          aciTreeIdentifier, panelTitle);
+      show_query_tool: function(url, aciTreeIdentifier) {
+        showQueryTool.showQueryTool(this, pgBrowser, alertify, url, aciTreeIdentifier);
       },
+
       create_transaction: function(baseUrl, target, is_query_tool, server_type, sURL, panel_title, sql_filter, recreate) {
         var self = this;
         target =  target || self;
@@ -439,28 +263,20 @@ define('pgadmin.datagrid', [
       launch_grid: function(trans_obj) {
         var self = this,
           panel_title = trans_obj.panel_title,
-          grid_title = self.get_panel_title(),
+          grid_title = trans_obj.panel_title,
           panel_icon = '',
           panel_tooltip = '';
 
         if (trans_obj.is_query_tool == 'false') {
           // Edit grid titles
-          grid_title = panel_title + '/' + grid_title;
           panel_tooltip = gettext('View/Edit Data - ') + grid_title;
           panel_title = grid_title;
           panel_icon = 'fa fa-table';
         } else {
-          if (panel_title) {
-            // Script titles
-            panel_tooltip = panel_title.toUpperCase() + ' ' + gettext('Script - ') + grid_title;
-            panel_title = grid_title;
-            panel_icon = 'fa fa-file-text-o';
-          } else {
-            // Query tool titles
-            panel_tooltip = gettext('Query Tool - ') + grid_title;
-            panel_title = grid_title;
-            panel_icon = 'fa fa-bolt';
-          }
+          // Query tool titles
+          panel_tooltip = gettext('Query Tool - ') + grid_title;
+          panel_title = grid_title;
+          panel_icon = 'fa fa-bolt';
         }
 
         // Open the panel if frame is initialized

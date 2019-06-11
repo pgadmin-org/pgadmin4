@@ -70,7 +70,8 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         while retry_count < 5:
             try:
                 self.page.find_by_css_selector(
-                    ".wcFrameButton[title='Query Tool']").click()
+                    ".wcFrameButton[title='Query Tool']:not(.disabled)")\
+                    .click()
                 break
             except StaleElementReferenceException:
                 retry_count += 1
@@ -89,7 +90,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         while retry_count < 5:
             try:
                 self.page.find_by_css_selector(
-                    ".wcFrameButton[title='View Data']").click()
+                    ".wcFrameButton[title='View Data']:not(.disabled)").click()
                 break
             except StaleElementReferenceException:
                 retry_count += 1
@@ -102,12 +103,13 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         while retry_count < 5:
             try:
                 self.page.find_by_css_selector(
-                    ".wcFrameButton[title='Filtered Rows']").click()
+                    ".wcFrameButton[title='Filtered Rows']:not(.disabled)")\
+                    .click()
                 break
             except StaleElementReferenceException:
                 retry_count += 1
 
         time.sleep(0.5)
         self.page.find_by_css_selector(
-            ".alertify .ajs-header[data-title='Data Filter']")
+            ".alertify .ajs-header[data-title~='Filter']")
         self.page.click_modal('Cancel')
