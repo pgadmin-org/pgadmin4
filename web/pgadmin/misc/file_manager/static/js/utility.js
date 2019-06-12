@@ -1466,9 +1466,14 @@ define([
             '<a href="javascript:void(0);" class="fa fa-trash dz_file_remove" data-dz-remove></a>' +
             '</div>';
 
+          // We need to append our csrf token with dropzone's ajax request header
+          let csrfToken = {};
+          csrfToken[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
+
           $('div#multiple-uploads').dropzone({
             paramName: 'newfile',
             url: pgAdmin.FileUtils.fileConnector,
+            headers: csrfToken,
             maxFilesize: fileSize,
             maxFiles: config.upload.number,
             addRemoveLinks: true,
