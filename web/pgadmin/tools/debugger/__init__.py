@@ -568,7 +568,7 @@ def direct_new(trans_id):
     user_agent = UserAgent(request.headers.get('User-Agent'))
 
     function_arguments = '('
-    if 'functionData' in session:
+    if de_inst.function_data is not None:
         if 'args_name' in de_inst.function_data and \
             de_inst.function_data['args_name'] is not None and \
                 de_inst.function_data['args_name'] != '':
