@@ -84,10 +84,11 @@ class Driver(BaseDriver):
             if '__pgsql_server_managers' in session:
                 session_managers = session['__pgsql_server_managers'].copy()
 
-                manager = managers[str(sid)] = ServerManager(server_data)
-                if sid in session_managers:
-                    manager._restore(session_managers[sid])
-                    manager.update_session()
+                for server in Server.query.filter_by(user_id=current_user.id):
+                    manager = managers[str(server.id)] = ServerManager(server)
+                    if server.id in session_managers:
+                        manager._restore(session_managers[server.id])
+                        manager.update_session()
         else:
             managers = self.managers[session.sid]
             if str(sid) in managers:
