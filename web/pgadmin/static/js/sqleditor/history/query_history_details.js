@@ -117,7 +117,7 @@ export default class QueryHistoryDetails {
   updateMessageContent() {
     this.$message_content
       .empty()
-      .append(`<pre class='content-value'>${this.entry.message}</pre>`);
+      .append(`<pre class='content-value'>${_.escape(this.entry.message)}</pre>`);
   }
 
   updateErrorMessage() {
@@ -125,10 +125,8 @@ export default class QueryHistoryDetails {
       this.$errMsgBlock.removeClass('d-none');
       this.$errMsgBlock.empty().append(
         `<div class='history-error-text'>
-                    <span>Error Message</span> ${this.parseErrorMessage(
-    this.entry.message
-  )}
-                </div>`
+            <span>Error Message</span>${_.escape(this.parseErrorMessage(this.entry.message))}
+        </div>`
       );
     } else {
       this.$errMsgBlock.addClass('d-none');

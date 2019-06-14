@@ -26,5 +26,5 @@ Bug fixes
 | `Bug #4320 <https://redmine.postgresql.org/issues/4320>`_ - Fix issue where SSH tunnel connection using password is failing, it's regression of Master Password.
 | `Bug #4329 <https://redmine.postgresql.org/issues/4329>`_ - Fix an initialisation error when two functions with parameters are debugged in parallel.
 | `Bug #4343 <https://redmine.postgresql.org/issues/4343>`_ - Fix issue where property dialog of column should open properly for EPAS v12.
-| `Bug #4350 <https://redmine.postgresql.org/issues/4350>`_ - Ensure we include the CSRF token when uploading files.
-| `Bug #4357 <https://redmine.postgresql.org/issues/4357>`_ - Fix connection restoration issue when pgAdmin server is restarted and the page is refreshed.
+| `Bug #4349 <https://redmine.postgresql.org/issues/4349>`_ - Ensure strings are properly encoded in the Query History.
+| `Bug #4350 <https://redmine.postgresql.org/issues/4350>`_ - Ensure we include the CSRF token when uploading files.| `Bug #4357 <https://redmine.postgresql.org/issues/4357>`_ - Fix connection restoration issue when pgAdmin server is restarted and the page is refreshed.

@@ -63,6 +63,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         # Query tool
         self.page.open_query_tool()
         self._check_xss_in_query_tool()
+        self._check_xss_in_query_tool_history()
         self.page.close_query_tool()
 
         # Explain module
@@ -176,6 +177,61 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             '&lt;img src="x" onerror="console.log(1)"&gt;',
             "Query tool (SlickGrid)"
         )
+
+    def _check_xss_in_query_tool_history(self):
+        print(
+            "\n\tChecking the query tool history for the XSS",
+            file=sys.stderr, end=""
+        )
+
+        self.page.fill_codemirror_area_with(
+            "select '<script>alert(1)</script>"
+        )
+        self.page.find_by_id("btn-flash").click()
+
+        self.page.click_tab('Query History')
+
+        # Check for history entry
+        history_ele = self.page.find_by_css_selector(
+            ".query-history div.query-group:first-child"
+            " .list-item.selected .query"
+        )
+
+        source_code = history_ele.get_attribute('innerHTML')
+
+        self._check_escaped_characters(
+            source_code,
+            '&lt;script&gt;alert(1)&lt;/script&gt;',
+            "Query tool (History Entry)"
+        )
+
+        # Check for history details message
+        history_ele = self.page.find_by_css_selector(
+            ".query-detail .content-value"
+        )
+
+        source_code = history_ele.get_attribute('innerHTML')
+
+        self._check_escaped_characters(
+            source_code,
+            '&lt;script&gt;alert(1)&lt;/script&gt;',
+            "Query tool (History Details-Message)"
+        )
+
+        # Check for history details error message
+        history_ele = self.page.find_by_css_selector(
+            ".query-detail .history-error-text"
+        )
+
+        source_code = history_ele.get_attribute('innerHTML')
+
+        self._check_escaped_characters(
+            source_code,
+            '&lt;script&gt;alert(1)&lt;/script&gt;',
+            "Query tool (History Details-Error)"
+        )
+
+        self.page.click_tab('Query Editor')
 
     def _check_xss_in_explain_module(self):
         print(

@@ -1,5 +1,6 @@
 import moment from 'moment';
 import $ from 'jquery';
+import _ from 'underscore';
 
 const ARROWUP = 38;
 const ARROWDOWN = 40;
@@ -68,7 +69,7 @@ export class QueryHistoryItem {
     this.$el = $(
       `<li class='list-item' tabindex='0' data-key='${this.dataKey()}'>
           <div class='entry ${this.entry.status ? '' : 'error'}'>
-              <div class='query'>${this.entry.query}</div>
+              <div class='query'>${_.escape(this.entry.query)}</div>
               <div class='other-info'>
               <div class='timestamp'>${this.formatDate(this.entry.start_time)}</div>
               </div>
