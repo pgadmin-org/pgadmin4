@@ -646,8 +646,11 @@ def create_app(app_name=None):
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
         # to get the key again when login
-        if config.SERVER_MODE and current_app.keyManager.get() is None:
-            logout_user()
+        if config.SERVER_MODE and current_user.is_authenticated:
+            if current_app.keyManager.get() is None and \
+                    request.endpoint not in ('security.login',
+                                             'security.logout'):
+                logout_user()
 
     @app.after_request
     def after_request(response):

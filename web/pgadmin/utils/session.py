@@ -364,7 +364,10 @@ def pga_unauthorised():
             info='PGADMIN_LOGIN_REQUIRED'
         )
 
-    if login_message:
+    # flash messages are only required if the request was from a
+    # security page, otherwise it will be redirected to login page
+    # anyway
+    if login_message and 'security' in request.endpoint:
         flash(login_message, category=lm.login_message_category)
 
     return redirect(login_url(lm.login_view, request.url))

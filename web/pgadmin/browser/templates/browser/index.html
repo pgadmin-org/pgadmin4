@@ -78,7 +78,6 @@ require.onResourceLoad = function (context, map, depMaps) {
 window.onload = function(e){
  setTimeout(function() {
    var gravatarImg = {{ IMG.PREPARE_HTML()|safe }}
-   //$('#navbar-menu .navbar-right > li > a').html(gravatarImg);
    var navbarUser = document.getElementById("navbar-user");
    if (navbarUser) {
      navbarUser.innerHTML = gravatarImg;
@@ -86,6 +85,10 @@ window.onload = function(e){
  }, 1000);
 };
 {% endif %}
+{% endblock %}
+
+{% block css_link %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
 {% endblock %}
 
 {% block body %}

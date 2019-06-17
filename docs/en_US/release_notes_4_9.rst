@@ -23,6 +23,7 @@ Bug fixes
 | `Bug #4288 <https://redmine.postgresql.org/issues/4288>`_ - Initial support for PostgreSQL 12.
 | `Bug #4290 <https://redmine.postgresql.org/issues/4290>`_ - Initial support for PostgreSQL 12.
 | `Bug #4255 <https://redmine.postgresql.org/issues/4255>`_ - Prevent the geometry viewer grabbing key presses when not in focus under Firefox, IE and Edge.
+| `Bug #4306 <https://redmine.postgresql.org/issues/4306>`_ - Prevent the "Please login to access this page" message displaying multiple times.
 | `Bug #4310 <https://redmine.postgresql.org/issues/4310>`_ - Ensure that the Return key can be used to submit the Master Password dialogue.
 | `Bug #4317 <https://redmine.postgresql.org/issues/4317>`_ - Ensure that browser auto-fill doesn't cause Help pages to be opened unexpectedly.
 | `Bug #4320 <https://redmine.postgresql.org/issues/4320>`_ - Fix issue where SSH tunnel connection using password is failing, it's regression of Master Password.
