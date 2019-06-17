@@ -461,10 +461,12 @@ class PGChildNodeView(NodeView):
             'S': 'sequence',
             'v': 'view',
             'x': 'external_table',
-            'p': 'function',
+            'p': 'partition',
+            'P': 'function',
             'n': 'schema',
             'y': 'type',
             'd': 'domain',
+            't': 'trigger_function',
             'T': 'trigger',
             'l': 'language',
             'f': 'foreign_data_wrapper',
@@ -500,6 +502,7 @@ class PGChildNodeView(NodeView):
                 ref_name = nsp_name + '.'
 
             type_name = ''
+            icon = None
 
             # Fetch the type name from the dictionary
             # if type is not present in the types dictionary then
@@ -514,6 +517,25 @@ class PGChildNodeView(NodeView):
                             type_name = 'column'
                         else:
                             type_name = 'table'
+                            if 'is_inherits' in row \
+                                    and row['is_inherits'] == '1':
+                                if 'is_inherited' in row \
+                                        and row['is_inherited'] == '1':
+                                    icon = 'icon-table-multi-inherit'
+                                # For tables under partitioned tables,
+                                # is_inherits will be true and dependency
+                                # will be auto as it inherits from parent
+                                # partitioned table
+                                elif ('is_inherited' in row and
+                                      row['is_inherited'] == '0')\
+                                        and dep_str == 'a':
+                                    type_name = 'partition'
+                                else:
+                                    icon = 'icon-table-inherits'
+                            elif 'is_inherited' in row \
+                                    and row['is_inherited'] == '1':
+                                icon = 'icon-table-inherited'
+
                     elif type_str[0] == 'R':
                         type_name = 'rule'
                         ref_name = \
@@ -569,7 +591,8 @@ class PGChildNodeView(NodeView):
                 {
                     'type': type_name,
                     'name': ref_name,
-                    'field': dep_type
+                    'field': dep_type,
+                    'icon': icon,
                 }
             )
 

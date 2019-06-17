@@ -17,7 +17,7 @@ class BasePartitionTable:
             return True
         return False
 
-    def get_icon_css_class(self, table_info):
+    def get_icon_css_class(self, table_info, default_val='icon-table'):
         if self.is_table_partitioned(table_info):
             return 'icon-partition'
-        return 'icon-table'
+        return default_val

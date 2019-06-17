@@ -46,10 +46,12 @@ define('misc.dependencies', [
         // This function is used to fetch/set the icon for the type(Function, Role, Database, ....)
         parse: function(res) {
           var node = pgBrowser.Nodes[res.type];
-          res.icon = node ? (_.isFunction(node['node_image']) ?
-            (node['node_image']).apply(node, [null, null]) :
-            (node['node_image'] || ('icon-' + res.type))) :
-            ('icon-' + res.type);
+          if(res.icon == null || res.icon == '') {
+            res.icon = node ? (_.isFunction(node['node_image']) ?
+              (node['node_image']).apply(node, [null, null]) :
+              (node['node_image'] || ('icon-' + res.type))) :
+              ('icon-' + res.type);
+          }
           res.type = S.titleize(res.type.replace(/_/g, ' '), true);
           return res;
         },

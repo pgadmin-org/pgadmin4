@@ -1,5 +1,8 @@
-.icon-{{node_type}} {
-  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % node_type )}}') !important;
+{% if file_name is not defined %}
+{% set file_name=node_type %}
+{% endif %}
+.icon-{{file_name}} {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % file_name )}}') !important;
   background-repeat: no-repeat;
   background-size: 20px !important;
   align-content: center;
@@ -7,8 +10,8 @@
   height: 15px;
 }
 
-.pgadmin-node-select option[node="{{node_type}}"] {
-  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % node_type )}}') !important;
+.pgadmin-node-select option[node="{{file_name}}"] {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % file_name )}}') !important;
   background-repeat: no-repeat;
   background-size: 20px !important;
   background-position: center left;

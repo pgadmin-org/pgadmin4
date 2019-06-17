@@ -74,6 +74,42 @@ class TableModule(SchemaChildModule):
         """
         return database.DatabaseModule.NODE_TYPE
 
+    @property
+    def csssnippets(self):
+        """
+        Returns a snippet of css to include in the page
+        """
+        snippets = [
+            render_template(
+                "browser/css/collection.css",
+                node_type=self.node_type,
+            ),
+            render_template(
+                "browser/css/node.css",
+                node_type=self.node_type,
+            ),
+            render_template(
+                "browser/css/node.css",
+                node_type='table',
+                file_name='table-inherited',
+            ),
+            render_template(
+                "browser/css/node.css",
+                node_type='table',
+                file_name='table-inherits',
+            ),
+            render_template(
+                "browser/css/node.css",
+                node_type='table',
+                file_name='table-multi-inherit',
+            ),
+        ]
+
+        for submodule in self.submodules:
+            snippets.extend(submodule.csssnippets)
+
+        return snippets
+
     def get_own_javascripts(self):
         scripts = SchemaChildModule.get_own_javascripts(self)
 
@@ -270,6 +306,28 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             response=res['rows'],
             status=200
         )
+
+    def get_icon_css_class(self, table_info, default_val='icon-table'):
+        if ('is_inherits' in table_info and
+            table_info['is_inherits'] == '1') or \
+                ('coll_inherits' in table_info and
+                 len(table_info['coll_inherits']) > 0):
+
+            if ('is_inherited' in table_info and
+                table_info['is_inherited'] == '1')\
+                    or ('inherited_tables_cnt' in table_info and
+                        len(table_info['inherited_tables_cnt']) > 0):
+                default_val = 'icon-table-multi-inherit'
+            else:
+                default_val = 'icon-table-inherits'
+        elif ('is_inherited' in table_info and
+              table_info['is_inherited'] == '1')\
+                or ('inherited_tables_cnt' in table_info and
+                    len(table_info['inherited_tables_cnt']) > 0):
+            default_val = 'icon-table-inherited'
+
+        return super(TableView, self).\
+            get_icon_css_class(table_info, default_val)
 
     @BaseTableView.check_precondition
     def node(self, gid, sid, did, scid, tid):

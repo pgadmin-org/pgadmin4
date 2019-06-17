@@ -9,10 +9,12 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Feature #3174 <https://redmine.postgresql.org/issues/3174>`_ - Visually distinguish simple tables from tables that are inherited and from which other tables are inherited.
 
 Bug fixes
 *********
 
+| `Bug #3994 <https://redmine.postgresql.org/issues/3994>`_ - Fix issue where the dependencies tab for inherited tables/foreign keys shows partial text.
 | `Bug #4171 <https://redmine.postgresql.org/issues/4171>`_ - Fix issue where reverse engineered SQL was failing for foreign tables, if it had "=" in the options.
 | `Bug #4195 <https://redmine.postgresql.org/issues/4195>`_ - Fix keyboard navigation in "inner" tabsets such as the Query Tool and Debugger.
 | `Bug #4228 <https://redmine.postgresql.org/issues/4228>`_ - Ensure the correct label is used in panel headers when viewing filtered rows.
