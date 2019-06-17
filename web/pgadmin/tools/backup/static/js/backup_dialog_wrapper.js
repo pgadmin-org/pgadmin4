@@ -27,6 +27,14 @@ export class BackupDialogWrapper extends DialogWrapper {
   }
 
   setup() {
+    let get_help_file = function (dialog_type) {
+      if (dialog_type == 'globals') {
+        return 'backup_globals_dialog.html';
+      } else if (dialog_type == 'server') {
+        return 'backup_server_dialog.html';
+      }
+      return 'backup_dialog.html';
+    };
     return {
       buttons: [{
         text: '',
@@ -46,7 +54,7 @@ export class BackupDialogWrapper extends DialogWrapper {
           type: 'button',
           label: gettext('Backup'),
           url: url_for('help.static', {
-            'filename': 'backup_dialog.html',
+            'filename': get_help_file(this.typeOfDialog),
           }),
         },
       }, {
