@@ -10,6 +10,7 @@ New features
 ************
 
 | `Feature #3174 <https://redmine.postgresql.org/issues/3174>`_ - Visually distinguish simple tables from tables that are inherited and from which other tables are inherited.
+| `Feature #4202 <https://redmine.postgresql.org/issues/4202>`_ - Add a framework for testing reversed engineered SQL and CRUD API endpoints.
 
 Bug fixes
 *********

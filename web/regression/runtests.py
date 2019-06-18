@@ -249,6 +249,10 @@ def get_test_modules(arguments):
     # Load the test modules which are in given package(i.e. in arguments.pkg)
     if arguments['pkg'] is None or arguments['pkg'] == "all":
         TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs)
+    elif arguments['pkg'] is not None and arguments['pkg'] == "resql":
+        # Load the reverse engineering sql test module
+        TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs,
+                                               is_resql_only=True)
     else:
         for_modules = []
         if arguments['modules'] is not None:
@@ -437,6 +441,9 @@ if __name__ == '__main__':
                 server['port'],
                 server['sslmode']
             )
+
+            # Add the server version in server information
+            server_information['server_version'] = connection.server_version
 
             # Drop the database if already exists.
             test_utils.drop_database(connection, test_db_name)

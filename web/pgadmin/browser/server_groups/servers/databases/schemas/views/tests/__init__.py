@@ -11,6 +11,5 @@ from pgadmin.utils.route import BaseTestGenerator
 
 
 class ViewsTestGenerator(BaseTestGenerator):
-
-    def generate_tests(self):
+    def runTest(self):
         return

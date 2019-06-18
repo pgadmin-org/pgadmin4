@@ -148,6 +148,9 @@ Python Tests:
      run 'python runtests.py --pkg all' or just:
          'python runtests.py'
 
+- Execute only reverse engineered sql test framework for all nodes
+     run 'python runtests.py --pkg resql'
+
 - Execute test framework for entire package
 
      Example 1) Run test framework for 'browser' package

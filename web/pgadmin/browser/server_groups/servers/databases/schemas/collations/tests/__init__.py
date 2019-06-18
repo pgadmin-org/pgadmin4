@@ -11,6 +11,5 @@ from pgadmin.utils.route import BaseTestGenerator
 
 
 class CollationTestGenerator(BaseTestGenerator):
-
-    def generate_tests(self):
+    def runTest(self):
         return

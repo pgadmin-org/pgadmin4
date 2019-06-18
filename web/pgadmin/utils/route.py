@@ -53,13 +53,16 @@ class TestsGeneratorRegistry(ABCMeta):
         ABCMeta.__init__(cls, name, bases, d)
 
     @classmethod
-    def load_generators(cls, pkg_root, exclude_pkgs, for_modules=[]):
+    def load_generators(cls, pkg_root, exclude_pkgs, for_modules=[],
+                        is_resql_only=False):
 
         cls.registry = dict()
 
         all_modules = []
 
         all_modules += find_modules(pkg_root, False, True)
+        # Append reverse engineered test case module
+        all_modules.append('regression.re_sql.tests.test_resql')
 
         # If specific modules are to be tested, exclude others
         if len(for_modules) > 0:
@@ -68,17 +71,30 @@ class TestsGeneratorRegistry(ABCMeta):
                            for fmod in for_modules
                            if module_name.endswith(fmod)]
 
-        # Check for SERVER mode
-        for module_name in all_modules:
+        # Set the module list and exclude packages in the BaseTestGenerator
+        # for Reverse Engineer SQL test cases.
+        BaseTestGenerator.setReSQLModuleList(all_modules)
+        BaseTestGenerator.setExcludePkgs(exclude_pkgs)
+
+        # Check if only reverse engineered sql test cases to run
+        # if yes then import only that module
+        if is_resql_only:
             try:
-                if "tests." in str(module_name) and not any(
-                    str(module_name).startswith(
-                        'pgadmin.' + str(exclude_pkg)
-                    ) for exclude_pkg in exclude_pkgs
-                ):
-                    import_module(module_name)
+                import_module('regression.re_sql.tests.test_resql')
             except ImportError:
                 traceback.print_exc(file=sys.stderr)
+        else:
+            # Check for SERVER mode
+            for module_name in all_modules:
+                try:
+                    if "tests." in str(module_name) and not any(
+                        str(module_name).startswith(
+                            'pgadmin.' + str(exclude_pkg)
+                        ) for exclude_pkg in exclude_pkgs
+                    ):
+                        import_module(module_name)
+                except ImportError:
+                    traceback.print_exc(file=sys.stderr)
 
 
 @six.add_metaclass(TestsGeneratorRegistry)
@@ -123,3 +139,11 @@ class BaseTestGenerator(unittest.TestCase):
     @classmethod
     def setTestDatabaseName(cls, database_name):
         cls.test_db = database_name
+
+    @classmethod
+    def setReSQLModuleList(cls, module_list):
+        cls.re_sql_module_list = module_list
+
+    @classmethod
+    def setExcludePkgs(cls, exclude_pkgs):
+        cls.exclude_pkgs = exclude_pkgs

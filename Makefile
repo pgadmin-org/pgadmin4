@@ -43,6 +43,9 @@ check-pep8:
 check-python:
 	cd web && python regression/runtests.py --exclude feature_tests
 
+check-resql:
+	cd web && python regression/runtests.py --pkg resql --exclude feature_tests
+
 check-feature: install-node bundle
 	cd web && python regression/runtests.py --pkg feature_tests
 
