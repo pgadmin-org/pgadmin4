@@ -33,4 +33,5 @@ Bug fixes
 | `Bug #4349 <https://redmine.postgresql.org/issues/4349>`_ - Ensure strings are properly encoded in the Query History.
 | `Bug #4350 <https://redmine.postgresql.org/issues/4350>`_ - Ensure we include the CSRF token when uploading files.
 | `Bug #4357 <https://redmine.postgresql.org/issues/4357>`_ - Fix connection restoration issue when pgAdmin server is restarted and the page is refreshed.
+| `Bug #4360 <https://redmine.postgresql.org/issues/4360>`_ - Ensure the debugger control buttons are only enabled once initialisation is complete.
 | `Bug #4365 <https://redmine.postgresql.org/issues/4365>`_ - Fix help links for backup globals and backup server.

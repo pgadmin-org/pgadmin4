@@ -839,7 +839,7 @@ def restart_debugging(trans_id):
             de_inst.debugger_data['restart_debug'] = 1
             de_inst.update_session()
 
-        de_inst.function_data = {
+        de_inst.function_data.update({
             'server_id': de_inst.debugger_data['server_id'],
             'database_id': de_inst.debugger_data['database_id'],
             'schema_id': de_inst.debugger_data['schema_id'],
@@ -851,7 +851,7 @@ def restart_debugging(trans_id):
             'proargdefaults': de_inst.function_data['default_value'],
             'proargnames': de_inst.function_data['args_name'],
             'require_input': de_inst.function_data['require_input']
-        }
+        })
 
         return make_json_response(
             data={

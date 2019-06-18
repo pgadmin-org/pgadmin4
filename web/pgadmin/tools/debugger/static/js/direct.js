@@ -39,6 +39,26 @@ define([
         this.trigger('pgDebugger:button:state:' + btn, enable);
       },
 
+      enable_toolbar_buttons: function() {
+        var self = this;
+        self.enable('stop', true);
+        self.enable('step_over', true);
+        self.enable('step_into', true);
+        self.enable('toggle_breakpoint', true);
+        self.enable('clear_all_breakpoints', true);
+        self.enable('continue', true);
+      },
+
+      disable_toolbar_buttons: function() {
+        var self = this;
+        self.enable('stop', false);
+        self.enable('step_over', false);
+        self.enable('step_into', false);
+        self.enable('toggle_breakpoint', false);
+        self.enable('clear_all_breakpoints', false);
+        self.enable('continue', false);
+      },
+
       /*
         Function to set the breakpoint and send the line no. which is set to server
         trans_id :- Unique Transaction ID, line_no - line no. to set the breakpoint,
@@ -405,12 +425,7 @@ define([
                     // Enable all the buttons as we got the results
                     // TODO: Fix this properly so a timeout isn't required.
                     setTimeout(function() {
-                      self.enable('stop', true);
-                      self.enable('step_over', true);
-                      self.enable('step_into', true);
-                      self.enable('continue', true);
-                      self.enable('toggle_breakpoint', true);
-                      self.enable('clear_all_breakpoints', true);
+                      self.enable_toolbar_buttons();
                     }, 500);
                   }
                 } else if (res.data.status === 'Busy') {
@@ -422,12 +437,7 @@ define([
                     );
 
                     // As we are waiting for another session to invoke the target,disable all the buttons
-                    self.enable('stop', false);
-                    self.enable('step_over', false);
-                    self.enable('step_into', false);
-                    self.enable('continue', false);
-                    self.enable('toggle_breakpoint', false);
-                    self.enable('clear_all_breakpoints', false);
+                    self.disable_toolbar_buttons();
                     pgTools.DirectDebug.first_time_indirect_debug = false;
                     self.poll_result(trans_id);
                   } else {
@@ -648,12 +658,7 @@ define([
         var self = this,
           baseUrl = url_for('debugger.restart', {'trans_id': trans_id});
 
-        self.enable('stop', false);
-        self.enable('step_over', false);
-        self.enable('step_into', false);
-        self.enable('toggle_breakpoint', false);
-        self.enable('clear_all_breakpoints', false);
-        self.enable('continue', false);
+        self.disable_toolbar_buttons();
 
         // Clear msg tab
         pgTools.DirectDebug
@@ -725,12 +730,7 @@ define([
       // Continue the execution until the next breakpoint
       Continue: function(trans_id) {
         var self = this;
-        self.enable('stop', false);
-        self.enable('step_over', false);
-        self.enable('step_into', false);
-        self.enable('toggle_breakpoint', false);
-        self.enable('clear_all_breakpoints', false);
-        self.enable('continue', false);
+        self.disable_toolbar_buttons();
 
         //Check first if previous execution was completed or not
         if (pgTools.DirectDebug.direct_execution_completed &&
@@ -767,12 +767,7 @@ define([
 
       Step_over: function(trans_id) {
         var self = this;
-        self.enable('stop', false);
-        self.enable('step_over', false);
-        self.enable('step_into', false);
-        self.enable('toggle_breakpoint', false);
-        self.enable('clear_all_breakpoints', false);
-        self.enable('continue', false);
+        self.disable_toolbar_buttons();
 
         // Make ajax call to listen the database message
         var baseUrl = url_for('debugger.execute_query', {
@@ -803,12 +798,7 @@ define([
 
       Step_into: function(trans_id) {
         var self = this;
-        self.enable('stop', false);
-        self.enable('step_over', false);
-        self.enable('step_into', false);
-        self.enable('toggle_breakpoint', false);
-        self.enable('clear_all_breakpoints', false);
-        self.enable('continue', false);
+        self.disable_toolbar_buttons();
 
         // Make ajax call to listen the database message
         var baseUrl = url_for('debugger.execute_query', {
@@ -839,12 +829,7 @@ define([
 
       Stop: function(trans_id) {
         var self = this;
-        self.enable('stop', false);
-        self.enable('step_over', false);
-        self.enable('step_into', false);
-        self.enable('toggle_breakpoint', false);
-        self.enable('clear_all_breakpoints', false);
-        self.enable('continue', false);
+        self.disable_toolbar_buttons();
 
         // Make ajax call to listen the database message
         var baseUrl = url_for(
@@ -890,12 +875,7 @@ define([
 
       toggle_breakpoint: function(trans_id) {
         var self = this;
-        self.enable('stop', false);
-        self.enable('step_over', false);
-        self.enable('step_into', false);
-        self.enable('toggle_breakpoint', false);
-        self.enable('clear_all_breakpoints', false);
-        self.enable('continue', false);
+        self.disable_toolbar_buttons();
 
 
         var info = pgTools.DirectDebug.editor.lineInfo(self.active_line_no);
@@ -936,12 +916,8 @@ define([
                   return marker;
                 }());
               }
-              self.enable('stop', true);
-              self.enable('step_over', true);
-              self.enable('step_into', true);
-              self.enable('toggle_breakpoint', true);
-              self.enable('clear_all_breakpoints', true);
-              self.enable('continue', true);
+
+              self.enable_toolbar_buttons();
             } else if (res.data.status === 'NotConnected') {
               Alertify.alert(
                 gettext('Debugger Error'),
@@ -965,12 +941,7 @@ define([
         if ((br_list.length == 1) && (br_list[0].linenumber == -1))
           return;
 
-        self.enable('stop', false);
-        self.enable('step_over', false);
-        self.enable('step_into', false);
-        self.enable('toggle_breakpoint', false);
-        self.enable('clear_all_breakpoints', false);
-        self.enable('continue', false);
+        self.disable_toolbar_buttons();
 
         var breakpoint_list = new Array();
 
@@ -1004,12 +975,7 @@ define([
                 }
               }
             }
-            self.enable('stop', true);
-            self.enable('step_over', true);
-            self.enable('step_into', true);
-            self.enable('toggle_breakpoint', true);
-            self.enable('clear_all_breakpoints', true);
-            self.enable('continue', true);
+            self.enable_toolbar_buttons();
           })
           .fail(function() {
             Alertify.alert(
@@ -1561,7 +1527,7 @@ define([
 
       let browser = window.opener ?
         window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
-      this.preferences = browser.get_preferences_for_module('sqleditor');
+      this.preferences = browser.get_preferences_for_module('debugger');
 
       this.docker = new wcDocker(
         '#container', {
@@ -1592,6 +1558,7 @@ define([
           .done(function(res) {
             if (res.data.status) {
               self.intializePanels();
+              controller.enable_toolbar_buttons();
               controller.poll_result(trans_id);
             }
           })
@@ -1656,6 +1623,7 @@ define([
         .done(function(res) {
           if (res.data.status === 'Success') {
             self.intializePanels();
+            controller.enable_toolbar_buttons();
             // If status is Success then find the port number to attach the executer.
             controller.start_execution(trans_id, res.data.result);
           } else if (res.data.status === 'Busy') {
