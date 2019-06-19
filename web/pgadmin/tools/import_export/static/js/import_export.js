@@ -544,11 +544,11 @@ define([
                 })
                   .done(function(res) {
                     if (res.success) {
-                      Alertify.success(gettext('Import/export job created.'), 5);
+                      Alertify.success(gettext('Import/Export job created.'), 5);
                       pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                     } else {
                       Alertify.alert(
-                        gettext('Import/export job creation failed.'),
+                        gettext('Import/Export job creation failed.'),
                         res.errormsg
                       );
                     }
@@ -557,7 +557,7 @@ define([
                     try {
                       var err = JSON.parse(xhr.responseText);
                       Alertify.alert(
-                        gettext('Import/export job failed.'),
+                        gettext('Import/Export job failed.'),
                         err.errormsg
                       );
                     } catch (e) {
