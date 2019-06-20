@@ -260,7 +260,7 @@ describe('QueryHistory', () => {
           });
 
           it('displays the error message on top of the details pane', () => {
-            expect(queryDetail.text()).toContain('Error Messagemessage from second sql query');
+            expect(queryDetail.text()).toContain('Error Message message from second sql query');
           });
         });
       });
@@ -322,7 +322,7 @@ describe('QueryHistory', () => {
         });
 
         it('displays fourth query SQL in the right pane', () => {
-          expect(queryDetail.text()).toContain('Error Messageunexpected error from fourth sql message');
+          expect(queryDetail.text()).toContain('Error Message unexpected error from fourth sql message');
         });
       });
     });
