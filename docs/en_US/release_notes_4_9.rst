@@ -36,5 +36,6 @@ Bug fixes
 | `Bug #4350 <https://redmine.postgresql.org/issues/4350>`_ - Ensure we include the CSRF token when uploading files.
 | `Bug #4357 <https://redmine.postgresql.org/issues/4357>`_ - Fix connection restoration issue when pgAdmin server is restarted and the page is refreshed.
 | `Bug #4360 <https://redmine.postgresql.org/issues/4360>`_ - Ensure the debugger control buttons are only enabled once initialisation is complete.
+| `Bug #4362 <https://redmine.postgresql.org/issues/4362>`_ - Remove additional "SETOF" included when generating CREATE scripts for trigger functions.
 | `Bug #4365 <https://redmine.postgresql.org/issues/4365>`_ - Fix help links for backup globals and backup server.
 | `Bug #4367 <https://redmine.postgresql.org/issues/4367>`_ - Fix an XSS issue seen in View/Edit data mode if a column name includes HTML.

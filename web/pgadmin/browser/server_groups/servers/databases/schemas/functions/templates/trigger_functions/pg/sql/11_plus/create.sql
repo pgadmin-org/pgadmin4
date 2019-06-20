@@ -4,7 +4,8 @@
 {% set is_columns = [] %}
 {% if data %}
 CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.proargnames %}{{data.proargnames}}{% endif %})
-    RETURNS{% if data.proretset %} SETOF{% endif %} {{ conn|qtTypeIdent(data.prorettypename) }}
+    RETURNS{% if data.proretset and data.prorettypename.startswith('SETOF ') %} {{ data.prorettypename }} {% elif data.proretset %} SETOF {{ data.prorettypename }}{% else %} {{ data.prorettypename }}{% endif %}
+
     LANGUAGE {{ data.lanname|qtLiteral }}
 {% if data.procost %}
     COST {{data.procost}}
