@@ -31,6 +31,7 @@ class TestViewDataTemplates(BaseTestGenerator):
     data_to_be_saved = OrderedDict()
     data_to_be_saved['id'] = '1'
     data_to_be_saved['text'] = 'just test'
+    pgadmin_alias = {k: k for k in data_to_be_saved}
     scenarios = [
         (
             'When inserting and selecting table data with only PK',
@@ -38,6 +39,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                 insert_template_path='sqleditor/sql/default/insert.sql',
                 insert_parameters=dict(
                     data_to_be_saved=data_to_be_saved,
+                    pgadmin_alias=pgadmin_alias,
                     primary_keys=None,
                     object_name='test_table',
                     nsp_name='test_schema',
@@ -68,6 +70,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                 insert_template_path='sqleditor/sql/default/insert.sql',
                 insert_parameters=dict(
                     data_to_be_saved=data_to_be_saved,
+                    pgadmin_alias=pgadmin_alias,
                     primary_keys=None,
                     object_name='test_table',
                     nsp_name='test_schema',
@@ -100,6 +103,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                 insert_template_path='sqleditor/sql/default/insert.sql',
                 insert_parameters=dict(
                     data_to_be_saved=data_to_be_saved,
+                    pgadmin_alias=pgadmin_alias,
                     primary_keys=None,
                     object_name='test_table',
                     nsp_name='test_schema',
@@ -130,6 +134,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                 insert_template_path='sqleditor/sql/default/insert.sql',
                 insert_parameters=dict(
                     data_to_be_saved=data_to_be_saved,
+                    pgadmin_alias=pgadmin_alias,
                     primary_keys=None,
                     object_name='test_table',
                     nsp_name='test_schema',
