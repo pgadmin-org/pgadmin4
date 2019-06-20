@@ -677,6 +677,11 @@ class TableCommand(GridCommand):
         list_of_sql = {}
         _rowid = None
 
+        pgadmin_alias = {
+            col_name: col_info['pgadmin_alias']
+            for col_name, col_info in columns_info
+            .items()
+        }
         if conn.connected():
 
             # Start the transaction
@@ -745,6 +750,7 @@ class TableCommand(GridCommand):
                         sql = render_template(
                             "/".join([self.sql_path, 'insert.sql']),
                             data_to_be_saved=column_data,
+                            pgadmin_alias=pgadmin_alias,
                             primary_keys=None,
                             object_name=self.object_name,
                             nsp_name=self.nsp_name,
@@ -774,11 +780,17 @@ class TableCommand(GridCommand):
                     list_of_sql[of_type] = []
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
-                        pk = changed_data[of_type][each_row]['primary_keys']
+                        pk_escaped = {
+                            pk: pk_val.replace('%', '%%')
+                            for pk, pk_val in
+                            changed_data[of_type][each_row]['primary_keys']
+                            .items()
+                        }
                         sql = render_template(
                             "/".join([self.sql_path, 'update.sql']),
                             data_to_be_saved=data,
-                            primary_keys=pk,
+                            pgadmin_alias=pgadmin_alias,
+                            primary_keys=pk_escaped,
                             object_name=self.object_name,
                             nsp_name=self.nsp_name,
                             data_type=column_type
@@ -831,17 +843,14 @@ class TableCommand(GridCommand):
             for opr, sqls in list_of_sql.items():
                 for item in sqls:
                     if item['sql']:
+                        item['data'] = {
+                            pgadmin_alias[k] if k in pgadmin_alias else k: v
+                            for k, v in item['data'].items()
+                        }
+
                         row_added = None
 
-                        # Fetch oids/primary keys
-                        if 'select_sql' in item and item['select_sql']:
-                            status, res = conn.execute_dict(
-                                item['sql'], item['data'])
-                        else:
-                            status, res = conn.execute_void(
-                                item['sql'], item['data'])
-
-                        if not status:
+                        def failure_handle():
                             conn.execute_void('ROLLBACK;')
                             # If we roll backed every thing then update the
                             # message for each sql query.
@@ -860,6 +869,21 @@ class TableCommand(GridCommand):
                                 _rowid = 0
 
                             return status, res, query_res, _rowid
+
+                        try:
+                            # Fetch oids/primary keys
+                            if 'select_sql' in item and item['select_sql']:
+                                status, res = conn.execute_dict(
+                                    item['sql'], item['data'])
+                            else:
+                                status, res = conn.execute_void(
+                                    item['sql'], item['data'])
+                        except Exception as _:
+                            failure_handle()
+                            raise
+
+                        if not status:
+                            return failure_handle()
 
                         # Select added row from the table
                         if 'select_sql' in item:

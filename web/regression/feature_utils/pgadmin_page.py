@@ -97,6 +97,28 @@ class PgadminPage:
 
         self.find_by_partial_link_text("Query Tool").click()
 
+    def open_view_data(self, table_name):
+        self.driver.find_element_by_link_text("Object").click()
+        ActionChains(
+            self.driver
+        ).move_to_element(
+            self.driver.find_element_by_link_text("View/Edit Data")
+        ).perform()
+        self.find_by_partial_link_text("All Rows").click()
+        time.sleep(1)
+        # wait until datagrid frame is loaded.
+
+        self.click_tab(table_name)
+
+        WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, 'iframe')
+            ), "Timed out waiting for div element to appear"
+        )
+        self.driver.switch_to.frame(
+            self.driver.find_element_by_tag_name('iframe')
+        )
+
     def enable_menu_item(self, menu_item, wait_time):
         start_time = time.time()
         # wait until menu becomes enabled.

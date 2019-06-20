@@ -16,6 +16,7 @@ Bug fixes
 *********
 
 | `Bug #3994 <https://redmine.postgresql.org/issues/3994>`_ - Fix issue where the dependencies tab for inherited tables/foreign keys shows partial text.
+| `Bug #4036 <https://redmine.postgresql.org/issues/4036>`_ - Allow editing of data where a primary key column includes a % sign in the value.
 | `Bug #4171 <https://redmine.postgresql.org/issues/4171>`_ - Fix issue where reverse engineered SQL was failing for foreign tables, if it had "=" in the options.
 | `Bug #4195 <https://redmine.postgresql.org/issues/4195>`_ - Fix keyboard navigation in "inner" tabsets such as the Query Tool and Debugger.
 | `Bug #4228 <https://redmine.postgresql.org/issues/4228>`_ - Ensure the correct label is used in panel headers when viewing filtered rows.
@@ -36,3 +37,4 @@ Bug fixes
 | `Bug #4357 <https://redmine.postgresql.org/issues/4357>`_ - Fix connection restoration issue when pgAdmin server is restarted and the page is refreshed.
 | `Bug #4360 <https://redmine.postgresql.org/issues/4360>`_ - Ensure the debugger control buttons are only enabled once initialisation is complete.
 | `Bug #4365 <https://redmine.postgresql.org/issues/4365>`_ - Fix help links for backup globals and backup server.
+| `Bug #4367 <https://redmine.postgresql.org/issues/4367>`_ - Fix an XSS issue seen in View/Edit data mode if a column name includes HTML.

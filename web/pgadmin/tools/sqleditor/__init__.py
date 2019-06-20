@@ -11,6 +11,7 @@
 import os
 import pickle
 import sys
+import re
 
 import simplejson as json
 from flask import Response, url_for, render_template, session, request, \
@@ -478,7 +479,7 @@ def poll(trans_id):
                     if not st:
                         return internal_server_error(types)
 
-                    for col_info in columns.values():
+                    for col_name, col_info in columns.items():
                         for col_type in types:
                             if col_type['oid'] == col_info['type_code']:
                                 typname = col_type['typname']
@@ -487,6 +488,10 @@ def poll(trans_id):
 
                                 col_info['type_name'] = typname
 
+                        # Using characters %, (, ) in the argument names is not
+                        # supported in psycopg2
+                        col_info['pgadmin_alias'] = \
+                            re.sub("[%()]+", "|", col_name)
                     session_obj['columns_info'] = columns
                 # status of async_fetchmany_2darray is True and result is none
                 # means nothing to fetch

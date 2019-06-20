@@ -36,7 +36,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def before(self):
         test_utils.create_table(
-            self.server, self.test_db, self.test_table_name
+            self.server, self.test_db, self.test_table_name,
+            ['"<script>alert(1)</script>" char']
         )
         # This is needed to test dependents tab (eg: BackGrid)
         test_utils.create_constraint(
@@ -65,6 +66,11 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self._check_xss_in_query_tool()
         self._check_xss_in_query_tool_history()
         self.page.close_query_tool()
+
+        # Query tool view/edit data
+        self.page.open_view_data(self.test_table_name)
+        self._check_xss_view_data()
+        self.page.close_data_grid()
 
         # Explain module
         self.page.open_query_tool()
@@ -232,6 +238,26 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         )
 
         self.page.click_tab('Query Editor')
+
+    def _check_xss_view_data(self):
+        print(
+            "\n\tChecking the SlickGrid cell for the XSS",
+            file=sys.stderr, end=""
+        )
+
+        self.page.find_by_css_selector(".slick-header-column")
+        cells = self.driver.\
+            find_elements_by_css_selector(".slick-header-column")
+
+        # remove first element as it is row number.
+        # currently 4th col
+        source_code = cells[4].get_attribute('innerHTML')
+
+        self._check_escaped_characters(
+            source_code,
+            '&lt;script&gt;alert(1)&lt;/script&gt;',
+            "View Data (SlickGrid)"
+        )
 
     def _check_xss_in_explain_module(self):
         print(

@@ -196,6 +196,9 @@ class DictCursor(_cursor):
         Execute function
         """
         self._odt_desc = None
+        if params is not None and len(params) == 0:
+            params = None
+
         return _cursor.execute(self, query, params)
 
     def executemany(self, query, params=None):

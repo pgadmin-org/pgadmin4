@@ -783,7 +783,7 @@ define('tools.querytool', [
           pos: c.pos,
           field: c.name,
           name: c.label,
-          display_name: c.display_name,
+          display_name: _.escape(c.display_name),
           column_type: c.column_type,
           column_type_internal: c.column_type_internal,
           not_null: c.not_null,
@@ -794,7 +794,7 @@ define('tools.querytool', [
         // Get the columns width based on longer string among data type or
         // column name.
         var column_type = c.column_type.trim();
-        var label = c.name.length > column_type.length ? c.name : column_type;
+        var label = c.name.length > column_type.length ? _.escape(c.display_name) : column_type;
 
         if (_.isUndefined(column_size[table_name][c.name])) {
           options['width'] = SqlEditorUtils.calculateColumnWidth(label);

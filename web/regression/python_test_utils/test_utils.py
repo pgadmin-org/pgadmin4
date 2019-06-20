@@ -144,7 +144,7 @@ def create_database(server, db_name, encoding=None):
         traceback.print_exc(file=sys.stderr)
 
 
-def create_table(server, db_name, table_name):
+def create_table(server, db_name, table_name, extra_columns=[]):
     """
     This function create the table in given database name
     :param server: server details
@@ -166,18 +166,25 @@ def create_table(server, db_name, table_name):
         )
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
+
+        extra_columns_sql = ", " + ", ".join(extra_columns) \
+            if len(extra_columns) > 0 else ''
+
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             '''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC,
-            details VARCHAR)''' % table_name)
+            details VARCHAR%s)''' % (table_name, extra_columns_sql))
         pg_cursor.execute(
-            '''INSERT INTO "%s" VALUES ('Some-Name', 6, 'some info')'''
+            '''INSERT INTO "%s"(some_column, value, details)
+            VALUES ('Some-Name', 6, 'some info')'''
             % table_name)
         pg_cursor.execute(
-            '''INSERT INTO "%s" VALUES ('Some-Other-Name', 22,
+            '''INSERT INTO "%s"(some_column, value, details)
+            VALUES ('Some-Other-Name', 22,
             'some other info')''' % table_name)
         pg_cursor.execute(
-            '''INSERT INTO "%s" VALUES ('Yet-Another-Name', 14,
+            '''INSERT INTO "%s"(some_column, value, details)
+            VALUES ('Yet-Another-Name', 14,
             'cool info')''' % table_name)
 
         connection.set_isolation_level(old_isolation_level)
