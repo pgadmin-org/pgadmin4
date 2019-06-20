@@ -1767,7 +1767,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                             return internal_server_error(errormsg=res)
                         old_col_data = res['rows'][0]
 
-                        old_col_data['cltype'], old_col_data['hasSqrBracket'] = \
+                        old_col_data['cltype'], \
+                            old_col_data['hasSqrBracket'] = \
                             self._cltype_formatter(old_col_data['cltype'])
                         old_col_data = \
                             BaseTableView.convert_length_precision_to_string(
@@ -1792,7 +1793,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         # old length and precision
                         if 'elemoid' in old_col_data and 'cltype' not in c:
                             length, precision, typeval = \
-                                self.get_length_precision(old_col_data['elemoid'])
+                                self.get_length_precision(
+                                    old_col_data['elemoid'])
 
                             # If we have length & precision both
                             if length and precision:
@@ -1833,9 +1835,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                             if not precision:
                                 old_col_data['attprecision'] = None
 
-                        old_col_data['cltype'] = DataTypeReader.parse_type_name(
-                            old_col_data['cltype']
-                        )
+                        old_col_data['cltype'] = \
+                            DataTypeReader.parse_type_name(
+                                old_col_data['cltype'])
 
                         if int(old_col_data['attlen']) == -1:
                             old_col_data['attlen'] = None
