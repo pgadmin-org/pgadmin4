@@ -1765,21 +1765,21 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         status, res = self.conn.execute_dict(properties_sql)
                         if not status:
                             return internal_server_error(errormsg=res)
-                        old_data = res['rows'][0]
+                        old_col_data = res['rows'][0]
 
-                        old_data['cltype'], old_data['hasSqrBracket'] = \
-                            self._cltype_formatter(old_data['cltype'])
-                        old_data = \
+                        old_col_data['cltype'], old_col_data['hasSqrBracket'] = \
+                            self._cltype_formatter(old_col_data['cltype'])
+                        old_col_data = \
                             BaseTableView.convert_length_precision_to_string(
-                                old_data
+                                old_col_data
                             )
 
                         fulltype = self.get_full_type(
-                            old_data['typnspname'],
-                            old_data['typname'],
-                            old_data['isdup'],
-                            old_data['attndims'],
-                            old_data['atttypmod']
+                            old_col_data['typnspname'],
+                            old_col_data['typname'],
+                            old_col_data['isdup'],
+                            old_col_data['attndims'],
+                            old_col_data['atttypmod']
                         )
 
                         def get_type_attr(key, data):
@@ -1790,9 +1790,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                         # If the column data type has not changed then fetch
                         # old length and precision
-                        if 'elemoid' in old_data and 'cltype' not in c:
+                        if 'elemoid' in old_col_data and 'cltype' not in c:
                             length, precision, typeval = \
-                                self.get_length_precision(old_data['elemoid'])
+                                self.get_length_precision(old_col_data['elemoid'])
 
                             # If we have length & precision both
                             if length and precision:
@@ -1828,25 +1828,25 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                             # datatype to new one.
 
                             if not length:
-                                old_data['attlen'] = -1
+                                old_col_data['attlen'] = -1
 
                             if not precision:
-                                old_data['attprecision'] = None
+                                old_col_data['attprecision'] = None
 
-                        old_data['cltype'] = DataTypeReader.parse_type_name(
-                            old_data['cltype']
+                        old_col_data['cltype'] = DataTypeReader.parse_type_name(
+                            old_col_data['cltype']
                         )
 
-                        if int(old_data['attlen']) == -1:
-                            old_data['attlen'] = None
-                        if 'attprecision' not in old_data:
-                            old_data['attprecision'] = None
+                        if int(old_col_data['attlen']) == -1:
+                            old_col_data['attlen'] = None
+                        if 'attprecision' not in old_col_data:
+                            old_col_data['attprecision'] = None
 
                         # Sql for alter column
                         if 'inheritedfrom' not in c:
                             column_sql += render_template("/".join(
                                 [self.column_template_path, 'update.sql']),
-                                data=c, o_data=old_data, conn=self.conn
+                                data=c, o_data=old_col_data, conn=self.conn
                             ).strip('\n') + '\n\n'
 
                 # If column(s) is/are added
@@ -1911,7 +1911,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         self.get_partitions_sql(temp_data).strip('\n') + '\n\n'
 
                 # Combine all the SQL together
-                SQL += partitions_sql.strip('\n')
+                SQL += '\n' + partitions_sql.strip('\n')
 
             # Check if index constraints are added/changed/deleted
             index_constraint_sql = self.get_index_constraint_sql(
