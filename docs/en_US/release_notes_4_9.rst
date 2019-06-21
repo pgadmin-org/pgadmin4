@@ -39,4 +39,5 @@ Bug fixes
 | `Bug #4362 <https://redmine.postgresql.org/issues/4362>`_ - Remove additional "SETOF" included when generating CREATE scripts for trigger functions.
 | `Bug #4365 <https://redmine.postgresql.org/issues/4365>`_ - Fix help links for backup globals and backup server.
 | `Bug #4367 <https://redmine.postgresql.org/issues/4367>`_ - Fix an XSS issue seen in View/Edit data mode if a column name includes HTML.
+| `Bug #4378 <https://redmine.postgresql.org/issues/4378>`_ - Ensure Python escaping matched JS escaping and fix a minor XSS issue in the Query Tool that required superuser access to trigger.
 | `Bug #4380 <https://redmine.postgresql.org/issues/4380>`_ - Ensure that both columns and partitions can be edited at the same time in the table dialog.

@@ -313,7 +313,7 @@ define('pgadmin.datagrid', [
           var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
           // Set panel title and icon
-          queryToolPanel.title('<span title="'+panel_tooltip+'">'+panel_title+'</span>');
+          queryToolPanel.title('<span title="'+_.escape(panel_tooltip)+'">'+_.escape(panel_title)+'</span>');
           queryToolPanel.icon(panel_icon);
           queryToolPanel.focus();
 

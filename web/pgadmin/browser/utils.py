@@ -22,6 +22,31 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 
 
+def underscore_escape(text):
+    """
+    This function mimics the behaviour of underscore js escape function
+    The html escaped by jinja is not compatible for underscore unescape
+    function
+    :param text: input html text
+    :return: escaped text
+    """
+    html_map = {
+        '&': "&amp;",
+        '<': "&lt;",
+        '>': "&gt;",
+        '"': "&quot;",
+        '`': "&#96;",
+        "'": "&#x27;"
+    }
+
+    # always replace & first
+    for c, r in sorted(html_map.items(),
+                       key=lambda x: 0 if x[0] == '&' else 1):
+        text = text.replace(c, r)
+
+    return text
+
+
 def is_version_in_range(sversion, min_ver, max_ver):
     assert (max_ver is None or isinstance(max_ver, int))
     assert (min_ver is None or isinstance(min_ver, int))

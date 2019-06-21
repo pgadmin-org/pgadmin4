@@ -30,6 +30,8 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.preferences import Preferences
 from pgadmin.settings import get_setting
+from pgadmin.browser.utils import underscore_escape
+
 
 query_tool_close_session_lock = Lock()
 
@@ -304,7 +306,7 @@ def panel(trans_id, is_query_tool, editor_title):
         _=gettext,
         uniqueId=trans_id,
         is_query_tool=is_query_tool,
-        editor_title=editor_title,
+        editor_title=underscore_escape(editor_title),
         script_type_url=sURL,
         is_desktop_mode=app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
