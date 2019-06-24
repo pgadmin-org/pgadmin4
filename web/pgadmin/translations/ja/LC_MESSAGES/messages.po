@@ -1,17 +1,17 @@
 # Japanese translations for pgAdmin 4.
-# Copyright (C) 2017 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+# Copyright (C) 2019 The pgAdmin Development Team
+# This file is distributed under the same license as the pgAdmin 4 project.
+# FIRST AUTHOR <www.postgresql.jp>, 2017.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Project-Id-Version: pgAdmin 4\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-21 14:59+0530\n"
-"PO-Revision-Date: 2019-05-28 19:22+0900\n"
+"PO-Revision-Date: 2019-06-23 00:28+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -106,22 +106,22 @@ msgstr "ブラウザ"
 #: pgadmin/browser/__init__.py:225
 #: pgadmin/browser/register_browser_preferences.py:69
 msgid "Lock Layout"
-msgstr ""
+msgstr "レイアウトを固定"
 
 #: pgadmin/browser/__init__.py:232
 #: pgadmin/browser/register_browser_preferences.py:71
 msgid "None"
-msgstr ""
+msgstr "なし"
 
 #: pgadmin/browser/__init__.py:239
 #: pgadmin/browser/register_browser_preferences.py:72
 msgid "Prevent Docking"
-msgstr ""
+msgstr "ドッキングさせない"
 
 #: pgadmin/browser/__init__.py:246
 #: pgadmin/browser/register_browser_preferences.py:74
 msgid "Full Lock"
-msgstr ""
+msgstr "完全に固定"
 
 #: pgadmin/browser/__init__.py:519 pgadmin/browser/collection.py:251
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:110
@@ -141,7 +141,7 @@ msgstr "pgAdmin にマスタパスワードを設定してください"
 msgid ""
 "This will be used to secure and later unlock saved passwords and other "
 "credentials."
-msgstr "これはセキュリティの強化に役立ちます。また、保存されたパスワードや認証情報を解除する際にも使用します"
+msgstr "パスワードや認証情報を保存・解除する際に、このマスタパスワードが使用されます"
 
 #: pgadmin/browser/__init__.py:736
 msgid "Unlock Saved Passwords"
@@ -250,7 +250,7 @@ msgstr "単一の子ノードしかないツリー表示を展開した時、そ
 
 #: pgadmin/browser/register_browser_preferences.py:77
 msgid "Lock the UI layout at different levels"
-msgstr ""
+msgstr "UI のレイアウトをどこまで固定するかを選択します"
 
 #: pgadmin/browser/register_browser_preferences.py:84
 msgid "Count rows if estimated less than"
@@ -3982,7 +3982,7 @@ msgstr "指定されたパーティションが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:643
 msgid "Partition dropped"
-msgstr ""
+msgstr "パーティションが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:41
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:386
@@ -7554,7 +7554,7 @@ msgstr "オブジェクトが選択されていません"
 
 #: pgadmin/browser/static/js/browser.js:532
 msgid "Master password"
-msgstr ""
+msgstr "マスタパスワード"
 
 #: pgadmin/browser/static/js/browser.js:538
 #: pgadmin/browser/static/js/browser.js:577
@@ -7619,7 +7619,7 @@ msgstr "プロパティの取得エラー - %s"
 #: pgadmin/misc/dependents/static/js/dependents.js:236
 #: pgadmin/misc/statistics/static/js/statistics.js:330
 msgid "Failed to retrieve data from the server."
-msgstr "サーバからデータを取得するのに失敗しました"
+msgstr "サーバからのデータ取得に失敗しました"
 
 #: pgadmin/browser/static/js/collection.js:348
 msgid "Drop Multiple"
@@ -7662,7 +7662,7 @@ msgstr "追加情報"
 
 #: pgadmin/browser/static/js/layout.js:141
 msgid "Failed to save the lock layout setting."
-msgstr ""
+msgstr "レイアウト固定の設定を保存できませんでした"
 
 #: pgadmin/browser/static/js/node.js:130
 msgid "Properties..."
@@ -8586,7 +8586,7 @@ msgstr "ファイル名変更の際にエラーが発生しました："
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:139
 #: pgadmin/misc/file_manager/static/js/utility.js:431
 msgid "Error occurred while checking access permission."
-msgstr "アクセス権限のチェック中にエラーが発生しました"
+msgstr "アクセス権限の確認中にエラーが発生しました"
 
 #: pgadmin/misc/file_manager/static/js/select_dialogue.js:90
 #: pgadmin/misc/file_manager/static/js/select_dialogue.js:115
@@ -8799,7 +8799,7 @@ msgstr "予期しないエラーが発生しました - アプリケーション
 #: pgadmin/tools/sqleditor/__init__.py:1465
 #: pgadmin/tools/sqleditor/__init__.py:1469
 msgid "Transaction status check failed."
-msgstr "トランザクション状態のチェックに失敗しました"
+msgstr "トランザクション状態を確認できませんでした"
 
 #: pgadmin/static/js/alertify/dialog.js:59
 #: pgadmin/static/js/alertify/dialog.js:143
@@ -8901,15 +8901,15 @@ msgstr "実行時"
 
 #: pgadmin/static/js/generated/vendor.js:155
 msgid "Network Error"
-msgstr ""
+msgstr "ネットワークエラー"
 
 #: pgadmin/static/js/generated/vendor.js:155
 msgid "timeout of ms exceeded"
-msgstr ""
+msgstr "ミリ秒のタイムアウトを超過しました"
 
 #: pgadmin/static/js/generated/vendor.js:155
 msgid "length"
-msgstr ""
+msgstr "長さ"
 
 #: pgadmin/static/js/selection/clipboard.js:80
 #: pgadmin/tools/user_management/static/js/user_management.js:548
@@ -9682,11 +9682,11 @@ msgstr "次のタブ"
 #: pgadmin/tools/debugger/__init__.py:215
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:386
 msgid "Switch Panel"
-msgstr ""
+msgstr "パネルの切り替え"
 
 #: pgadmin/tools/debugger/__init__.py:406
 msgid "is not defined in package body."
-msgstr ""
+msgstr "はパッケージボディに定義されていません"
 
 #: pgadmin/tools/debugger/__init__.py:413
 msgid "Functions with a colon in the name cannot be debugged."
@@ -10244,15 +10244,15 @@ msgstr "ツリーからサーバか子ノードを選択してください"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:547
 msgid "Import/Export job created."
-msgstr ""
+msgstr "インポート/エクスポートジョブが作成されました"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:551
 msgid "Import/Export job creation failed."
-msgstr ""
+msgstr "インポート/エクスポートジョブの作成に失敗しました"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:560
 msgid "Import/Export job failed."
-msgstr ""
+msgstr "インポート/エクスポートジョブが失敗しました"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:647
 msgid "Escape should contain only one character"
@@ -11265,7 +11265,7 @@ msgid ""
 "the server#{1}:{2}:\n"
 "{0}"
 msgstr ""
-"サーバ#{1}:{2}の psycopg2 接続のためのカーソルの作成に失敗しました\n"
+"サーバ#{1}:{2}の psycopg2 接続に対するカーソルの作成に失敗しました\n"
 "エラー： {0}"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:596
