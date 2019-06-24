@@ -10,7 +10,7 @@
 import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
 import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
-import {getPanelTitle} from './get_panel_title';
+import {getPanelTitle} from './datagrid_panel_title';
 
 function hasDatabaseInformation(parentData) {
   return parentData.database;

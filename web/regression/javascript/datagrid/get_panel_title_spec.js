@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {getPanelTitle} from '../../../pgadmin/tools/datagrid/static/js/get_panel_title';
+import {getPanelTitle} from '../../../pgadmin/tools/datagrid/static/js/datagrid_panel_title';
 import {TreeFake} from '../tree/tree_fake';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree';
 

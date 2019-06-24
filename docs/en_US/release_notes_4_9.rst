@@ -41,3 +41,4 @@ Bug fixes
 | `Bug #4367 <https://redmine.postgresql.org/issues/4367>`_ - Fix an XSS issue seen in View/Edit data mode if a column name includes HTML.
 | `Bug #4378 <https://redmine.postgresql.org/issues/4378>`_ - Ensure Python escaping matched JS escaping and fix a minor XSS issue in the Query Tool that required superuser access to trigger.
 | `Bug #4380 <https://redmine.postgresql.org/issues/4380>`_ - Ensure that both columns and partitions can be edited at the same time in the table dialog.
+| `Bug #4386 <https://redmine.postgresql.org/issues/4386>`_ - Fix an XSS issue when username contains XSS vulnerable text.

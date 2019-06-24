@@ -36,6 +36,7 @@ define('tools.querytool', [
   'sources/sqleditor/call_render_after_poll',
   'sources/sqleditor/query_tool_preferences',
   'sources/csrf',
+  'tools/datagrid/static/js/datagrid_panel_title',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
   'backgrid.sizeable.columns',
@@ -50,7 +51,7 @@ define('tools.querytool', [
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   GeometryViewer, historyColl, queryHist,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
-  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, csrfToken) {
+  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, csrfToken, panelTitleFunc) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -3046,7 +3047,7 @@ define('tools.querytool', [
       },
 
       // Set panel title.
-      setTitle: function(title, unsafe) {
+      setTitle: function(title, is_file) {
         var self = this;
 
         if (self.preferences.new_browser_tab) {
@@ -3054,10 +3055,7 @@ define('tools.querytool', [
         } else {
           _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
             if (p.isVisible()) {
-              if(unsafe) {
-                title = _.escape(title);
-              }
-              p.title(title);
+              panelTitleFunc.setQueryToolDockerTitle(p, self.is_query_tool, title, is_file);
             }
           });
         }
