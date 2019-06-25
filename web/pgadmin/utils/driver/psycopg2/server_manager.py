@@ -348,7 +348,9 @@ WHERE db.oid = {0}""".format(did))
                         # Check SSH Tunnel needs to be created
                         if self.use_ssh_tunnel == 1 and \
                            not self.tunnel_created:
-                            status, error = self.create_ssh_tunnel()
+                            status, error = self.create_ssh_tunnel(
+                                self.tunnel_password
+                            )
 
                             # Check SSH Tunnel is alive or not.
                             self.check_ssh_tunnel_alive()
