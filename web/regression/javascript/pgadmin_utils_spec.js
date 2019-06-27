@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getEpoch, getGCD, getMod } from 'sources/utils';
+import { getEpoch, getGCD, getMod, quote_ident, parseFuncParams } from 'sources/utils';
 
 describe('getEpoch', function () {
   it('should return non zero', function () {
@@ -49,5 +49,89 @@ describe('getMod', function () {
 
   it('negative number', function () {
     expect(getMod(-7,5)).toEqual(3);
+  });
+});
+
+describe('quote_ident', function () {
+  it('normal string', function () {
+    expect(quote_ident('abcd')).toEqual('abcd');
+  });
+
+  it('contains certain characters string', function () {
+    expect(quote_ident('Abcd')).toEqual('"Abcd"');
+    expect(quote_ident('abc$d')).toEqual('"abc$d"');
+    expect(quote_ident('ab cd')).toEqual('"ab cd"');
+  });
+
+  it('starts with number', function () {
+    expect(quote_ident('1a')).toEqual('"1a"');
+    expect(quote_ident('a1')).toEqual('a1');
+  });
+});
+
+describe('parseFuncParams', function () {
+  let funcLabel = '',
+    expectedObj = {};
+
+  it('function with params', function () {
+    funcLabel = 'func1(a integer, b text)';
+    expectedObj = {
+      'func_name': 'func1',
+      'param_string': 'a integer, b text',
+      'params': [
+        ['a', 'integer'],
+        ['b', 'text'],
+      ],
+    };
+    expect(parseFuncParams(funcLabel)).toEqual(expectedObj);
+  });
+
+  it('function without params', function () {
+    funcLabel = 'func1()';
+    expectedObj = {
+      'func_name': 'func1',
+      'param_string': '',
+      'params': [],
+    };
+    expect(parseFuncParams(funcLabel)).toEqual(expectedObj);
+  });
+
+  it('function name special chars', function () {
+    funcLabel = 'fun(c1(a integer, b text)';
+    expectedObj = {
+      'func_name': 'fun(c1',
+      'param_string': 'a integer, b text',
+      'params': [
+        ['a', 'integer'],
+        ['b', 'text'],
+      ],
+    };
+    expect(parseFuncParams(funcLabel)).toEqual(expectedObj);
+  });
+
+  it('function params special chars', function () {
+    funcLabel = 'func1("a(b" integer, "a b" text)';
+    expectedObj = {
+      'func_name': 'func1',
+      'param_string': '"a(b" integer, "a b" text',
+      'params': [
+        ['"a(b"', 'integer'],
+        ['"a b"', 'text'],
+      ],
+    };
+    expect(parseFuncParams(funcLabel)).toEqual(expectedObj);
+  });
+
+  it('function params with modes', function () {
+    funcLabel = 'func1(IN a integer, OUT b text)';
+    expectedObj = {
+      'func_name': 'func1',
+      'param_string': 'IN a integer, OUT b text',
+      'params': [
+        ['a', 'integer'],
+        ['b', 'text'],
+      ],
+    };
+    expect(parseFuncParams(funcLabel)).toEqual(expectedObj);
   });
 });

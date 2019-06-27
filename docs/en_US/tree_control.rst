@@ -19,6 +19,12 @@ view:
   control.
 * Click the minus sign (-) to the left of a node to close that node.
 
+You can also **drag and drop** certain objects to the Query Tool which
+can save time in typing long object names. Text containing the object name will be
+fully qualified with schema. Double quotes will be added if required.
+For functions and procedures, the function name along with parameter names will
+be pasted in the Query Tool.
+
 Access context-sensitive menus by right-clicking on a node of the tree control
 to perform common tasks. Menus display options that include one or more of the
 following selections (options appear in alphabetical order):

@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 import _ from 'underscore';
+import { getTreeNodeHierarchyFromIdentifier } from 'sources/tree/pgadmin_tree_node';
 
 export function parseShortcutValue(obj) {
   var shortcut = '';
@@ -82,4 +83,119 @@ export function getGCD(inp_arr) {
 
 export function getMod(no, divisor) {
   return ((no % divisor) + divisor) % divisor;
+}
+
+export function parseFuncParams(label) {
+  let paramArr = [],
+    funcName = '',
+    paramStr = '';
+
+  if(label.endsWith('()')) {
+    funcName = label.substring(0, label.length-2);
+  } else if(!label.endsWith(')')) {
+    funcName = label;
+  } else if(!label.endsWith('()') && label.endsWith(')')) {
+    let i = 0,
+      startBracketPos = label.length;
+
+    /* Parse through the characters in reverse to find the param start bracket */
+    i = label.length-2;
+    while(i >= 0) {
+      if(label[i] == '(') {
+        startBracketPos = i;
+        break;
+      } else if(label[i] == '"') {
+        /* If quotes, skip all the chars till next quote */
+        i--;
+        while(label[i] != '"') i--;
+      }
+      i--;
+    }
+
+    funcName = label.substring(0, startBracketPos);
+    paramStr = label.substring(startBracketPos+1, label.length-1);
+
+    let paramStart = 0,
+      paramName = '',
+      paramModes = ['IN', 'OUT', 'INOUT', 'VARIADIC'];
+
+    paramStart = i = 0;
+    while(i < paramStr.length) {
+      if(paramStr[i] == '"') {
+        /* If quotes, skip all the chars till next quote */
+        i++;
+        while(paramStr[i] != '"') i++;
+      } else if (paramStr[i] == ' ') {
+        /* if paramName is already set, ignore till comma
+         * Or if paramName is parsed as one of the modes, reset.
+         */
+        if(paramName == '' || paramModes.indexOf(paramName) > -1 ) {
+          paramName = paramStr.substring(paramStart, i);
+          paramStart = i+1;
+        }
+      }
+      else if (paramStr[i] == ',') {
+        paramArr.push([paramName, paramStr.substring(paramStart, i)]);
+        paramName = '';
+        paramStart = i+1;
+      }
+      i++;
+    }
+    paramArr.push([paramName, paramStr.substring(paramStart)]);
+  }
+
+  return {
+    'func_name': funcName,
+    'param_string': paramStr,
+    'params': paramArr,
+  };
+}
+
+export function quote_ident(value) {
+  /* check if the string is number or not */
+  let quoteIt = false;
+  if (!isNaN(parseInt(value))){
+    quoteIt = true;
+  }
+
+  if(value.search(/[^a-z0-9_]/g) > -1) {
+    /* escape double quotes */
+    value = value.replace(/"/g, '""');
+    quoteIt = true;
+  }
+
+  if(quoteIt) {
+    return `"${value}"`;
+  } else {
+    return value;
+  }
+}
+
+export function fully_qualify(pgBrowser, data, item) {
+  const parentData = getTreeNodeHierarchyFromIdentifier.call(pgBrowser, item);
+  let namespace = '';
+
+  if (parentData.schema !== undefined) {
+    namespace = quote_ident(parentData.schema._label);
+  }
+  else if (parentData.view !== undefined) {
+    namespace = quote_ident(parentData.view._label);
+  }
+  else if (parentData.catalog !== undefined) {
+    namespace = quote_ident(parentData.catalog._label);
+  }
+
+  if (parentData.package !== undefined && data._type != 'package') {
+    if(namespace == '') {
+      namespace = quote_ident(parentData.package._label);
+    } else {
+      namespace += '.' + quote_ident(parentData.package._label);
+    }
+  }
+
+  if(namespace != '') {
+    return namespace + '.' + quote_ident(data._label);
+  } else {
+    return quote_ident(data._label);
+  }
 }

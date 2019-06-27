@@ -12,7 +12,7 @@ define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
   'sources/check_node_visibility', './toolbar', 'pgadmin.help',
-  'sources/csrf', 'pgadmin.browser.utils',
+  'sources/csrf', 'sources/utils', 'pgadmin.browser.utils',
   'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
@@ -24,7 +24,7 @@ define('pgadmin.browser', [
   tree,
   gettext, url_for, require, $, _, S,
   Bootstrap, pgAdmin, Alertify, codemirror,
-  checkNodeVisibility, toolBar, help, csrfToken
+  checkNodeVisibility, toolBar, help, csrfToken, pgadminUtils,
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
@@ -102,6 +102,46 @@ define('pgadmin.browser', [
 
       b.tree = $('#tree').aciTree('api');
       b.treeMenu.register($('#tree'));
+
+      b.treeMenu.registerDraggableType({
+        'table partition type sequence package view mview foreign_table edbvar' : (data, item)=>{
+          return pgadminUtils.fully_qualify(b, data, item);
+        },
+        'schema column' : (data)=>{
+          return pgadminUtils.quote_ident(data._label);
+        },
+        'edbfunc function edbproc procedure' : (data, item)=>{
+          let newData = {...data},
+            parsedFunc = null,
+            dropVal = '',
+            curPos = {from: 0, to: 0};
+
+          parsedFunc = pgadminUtils.parseFuncParams(newData._label);
+          newData._label = parsedFunc.func_name;
+          dropVal = pgadminUtils.fully_qualify(b, newData, item);
+
+          if(parsedFunc.params.length > 0) {
+            dropVal = dropVal + '(';
+            curPos.from =  dropVal.length;
+            dropVal = dropVal + parsedFunc.params[0][0];
+            curPos.to = dropVal.length;
+
+            for(let i=1; i<parsedFunc.params.length; i++) {
+              dropVal = dropVal + ', ' + parsedFunc.params[i][0];
+            }
+
+            dropVal = dropVal + ')';
+          } else {
+            dropVal = dropVal + '()';
+            curPos.from = curPos.to = dropVal.length + 1;
+          }
+
+          return {
+            text: dropVal,
+            cur: curPos,
+          };
+        },
+      });
     };
 
   // Extend the browser class attributes

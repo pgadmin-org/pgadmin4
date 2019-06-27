@@ -983,3 +983,15 @@ table.table-empty-rows{
   padding: 0px !important;
   position: absolute;
 }
+
+.drag-tree-node {
+  position: absolute;
+  top:-100px;
+  left:0;
+  z-index: 99999;
+  color: $input-focus-color;
+  background: $input-bg;
+  border: $input-border-width solid $input-focus-border-color;
+  border-radius: $input-border-radius;
+  padding: $input-btn-padding-y $input-btn-padding-x;
+}

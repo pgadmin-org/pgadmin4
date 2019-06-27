@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 import {isValidData} from 'sources/utils';
+import $ from 'jquery';
 
 export class TreeNode {
   constructor(id, data, domNode, parent) {
@@ -97,6 +98,87 @@ export class Tree {
   constructor() {
     this.rootNode = new TreeNode(undefined, {});
     this.aciTreeApi = undefined;
+    this.draggableTypes = {};
+  }
+
+  /*
+   *
+   * The dropDetailsFunc should return an object of sample
+   * {text: 'xyz', cur: {from:0, to:0} where text is the drop text and
+   * cur is selection range of text after dropping. If returned as
+   * string, by default cursor will be set to the end of text
+   */
+  registerDraggableType(typeOrTypeDict, dropDetailsFunc=null) {
+    if(typeof typeOrTypeDict == 'object') {
+      Object.keys(typeOrTypeDict).forEach((type)=>{
+        this.registerDraggableType(type, typeOrTypeDict[type]);
+      });
+    } else {
+      if(dropDetailsFunc != null) {
+        typeOrTypeDict.replace(/ +/, ' ').split(' ').forEach((type)=>{
+          this.draggableTypes[type] = dropDetailsFunc;
+        });
+      }
+    }
+  }
+
+  getDraggable(type) {
+    if(this.draggableTypes[type]) {
+      return this.draggableTypes[type];
+    } else {
+      return null;
+    }
+  }
+
+  prepareDraggable(data, item) {
+    let dropDetailsFunc = this.getDraggable(data._type);
+
+    if(dropDetailsFunc != null) {
+      item.find('.aciTreeItem')
+        .attr('draggable', true)
+        .on('dragstart', (e)=> {
+          let dropDetails = dropDetailsFunc(data, item);
+          let origEvent = e.originalEvent;
+
+          if(typeof dropDetails == 'string') {
+            dropDetails = {
+              text:dropDetails,
+              cur:{
+                from:dropDetails.length,
+                to: dropDetails.length,
+              },
+            };
+          } else {
+            if(!dropDetails.cur) {
+              dropDetails = {
+                ...dropDetails,
+                cur:{
+                  from:dropDetails.text.length,
+                  to: dropDetails.text.length,
+                },
+              };
+            }
+          }
+
+          origEvent.dataTransfer.setData('text', JSON.stringify(dropDetails));
+
+          /* setDragImage is not supported in IE. We leave it to
+           * its default look and feel
+           */
+          if(origEvent.dataTransfer.setDragImage) {
+            let dragItem = $(`
+              <div class="drag-tree-node">
+                <span>${dropDetails.text}</span>
+              </div>`
+            );
+
+            $('body .drag-tree-node').remove();
+            $('body').append(dragItem);
+
+            origEvent.dataTransfer.setDragImage(dragItem[0], 0, 0);
+          }
+        });
+    }
   }
 
   addNewNode(id, data, domNode, parentPath) {
@@ -163,6 +245,9 @@ export class Tree {
         if (eventName === 'added') {
           const id = api.getId(item);
           const data = api.itemData(item);
+
+          this.prepareDraggable(data, item);
+
           const parentId = this.translateTreeNodeIdFromACITree(api.parent(item));
           this.addNewNode(id, data, item, parentId);
         }

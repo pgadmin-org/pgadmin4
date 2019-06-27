@@ -96,6 +96,11 @@ and commenting:
 * Implement or remove SQL style or toggle C style comment notation within your
   code.
 
+You can also **drag and drop** certain objects from the treeview which
+can save time in typing long object names. Text containing the object name will be
+fully qualified with schema. Double quotes will be added if required.
+For functions and procedures, the function name along with parameter names will
+be pasted in the Query Tool.
 
 The Data Output Panel
 *********************

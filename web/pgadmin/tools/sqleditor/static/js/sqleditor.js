@@ -341,7 +341,30 @@ define('tools.querytool', [
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
         extraKeys: pgBrowser.editor_shortcut_keys,
         scrollbarStyle: 'simple',
+        dragDrop: false,
       });
+
+      if(self.handler.is_query_tool) {
+        self.query_tool_obj.setOption('dragDrop', true);
+        self.query_tool_obj.on('drop', (editor, e) => {
+          var cursor = editor.coordsChar({
+            left: e.x,
+            top: e.y,
+          });
+          var dropDetails = JSON.parse(e.dataTransfer.getData('text'));
+          e.codemirrorIgnore = true;
+          e.dataTransfer.clearData('text');
+          editor.replaceRange(dropDetails.text, cursor);
+          editor.focus();
+          editor.setSelection({
+            ...cursor,
+            ch: cursor.ch + dropDetails.cur.from,
+          },{
+            ...cursor,
+            ch: cursor.ch +dropDetails.cur.to,
+          });
+        });
+      }
 
       pgBrowser.Events.on('pgadmin:query_tool:sql_panel:focus', ()=>{
         self.query_tool_obj.focus();
