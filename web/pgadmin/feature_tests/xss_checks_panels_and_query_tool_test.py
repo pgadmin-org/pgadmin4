@@ -66,9 +66,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self._check_xss_in_query_tool()
         self._check_xss_in_query_tool_history()
         self.page.close_query_tool()
-
         # Query tool view/edit data
-        self.page.open_view_data(self.test_table_name)
+        self.page.open_view_data(self.test_db)
         self._check_xss_view_data()
         self.page.close_data_grid()
 
@@ -189,7 +188,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "\n\tChecking the query tool history for the XSS",
             file=sys.stderr, end=""
         )
-
         self.page.fill_codemirror_area_with(
             "select '<script>alert(1)</script>"
         )
@@ -212,9 +210,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         )
 
         # Check for history details message
-        history_ele = self.page.find_by_css_selector(
-            ".query-detail .content-value"
-        )
+        history_ele = self.driver\
+            .find_element_by_css_selector(".query-detail .content-value")
 
         source_code = history_ele.get_attribute('innerHTML')
 
