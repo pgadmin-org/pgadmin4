@@ -10,6 +10,7 @@ New features
 ************
 
 | `Feature #4139 <https://redmine.postgresql.org/issues/4139>`_ -  Allow some objects to be dragged/dropped into the Query Tool to insert their signature into the query text.
+| `Feature #4400 <https://redmine.postgresql.org/issues/4400>`_ -  Allow the path to /pgadmin4/servers.json to be overridden in the container distribution.
 
 Bug fixes
 *********

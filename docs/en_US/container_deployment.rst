@@ -68,6 +68,13 @@ Default: 80 or 443 (if TLS is enabled)
 Allows the port that the server listens on to be set to a specific value rather
 than using the default.
 
+*PGADMIN_SERVER_JSON_FILE*
+
+Default: /pgadmin4/servers.json
+
+Override the default file path for the server definition list. See the
+/pgadmin4/servers.json mapped file below for more information.
+
 *GUNICORN_THREADS*
 
 Default: 25
