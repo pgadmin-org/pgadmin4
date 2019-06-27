@@ -781,7 +781,8 @@ class TableCommand(GridCommand):
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
                         pk_escaped = {
-                            pk: pk_val.replace('%', '%%')
+                            pk: pk_val.replace('%', '%%') if hasattr(
+                                pk_val, 'replace') else pk_val
                             for pk, pk_val in
                             changed_data[of_type][each_row]['primary_keys']
                             .items()

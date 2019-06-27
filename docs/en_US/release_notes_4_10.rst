@@ -15,3 +15,4 @@ Bug fixes
 *********
 
 | `Bug #4403 <https://redmine.postgresql.org/issues/4403>`_ - Ensure the browser close confirmation is only shown when closing a Query Tool which is running in a separate browser tab.
+| `Bug #4404 <https://redmine.postgresql.org/issues/4404>`_ - Prevent an error that may occur when editing data with an integer primary key.
