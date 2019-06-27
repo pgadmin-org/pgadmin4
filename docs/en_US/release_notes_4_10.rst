@@ -13,3 +13,5 @@ New features
 
 Bug fixes
 *********
+
+| `Bug #4403 <https://redmine.postgresql.org/issues/4403>`_ - Ensure the browser close confirmation is only shown when closing a Query Tool which is running in a separate browser tab.
