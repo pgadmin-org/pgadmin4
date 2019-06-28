@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-06-21 14:59+0530\n"
+"POT-Creation-Date: 2019-06-28 09:36-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1232
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:199
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:276
-#: pgadmin/browser/static/js/browser.js:543
+#: pgadmin/browser/static/js/browser.js:583
 #: pgadmin/static/js/slickgrid/editors.js:50
 #: pgadmin/static/js/slickgrid/editors.js:60
 #: pgadmin/static/js/slickgrid/editors.js:61
@@ -51,8 +51,8 @@ msgstr ""
 #: pgadmin/tools/datagrid/static/js/show_data.js:206
 #: pgadmin/tools/import_export/static/js/import_export.js:499
 #: pgadmin/tools/maintenance/static/js/maintenance.js:301
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1916
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1946
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1939
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1969
 msgid "OK"
 msgstr ""
 
@@ -98,7 +98,7 @@ msgstr ""
 msgid "logo"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:58 pgadmin/browser/static/js/browser.js:142
+#: pgadmin/browser/__init__.py:58 pgadmin/browser/static/js/browser.js:182
 msgid "Browser"
 msgstr ""
 
@@ -251,7 +251,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:85
 #: pgadmin/browser/register_browser_preferences.py:91
-#: pgadmin/browser/static/js/browser.js:155
+#: pgadmin/browser/static/js/browser.js:195
 msgid "Properties"
 msgstr ""
 
@@ -613,7 +613,7 @@ msgstr ""
 #: pgadmin/utils/driver/psycopg2/connection.py:261
 #: pgadmin/utils/driver/psycopg2/connection.py:1293
 #: pgadmin/utils/driver/psycopg2/connection.py:1581
-#: pgadmin/utils/driver/psycopg2/server_manager.py:472
+#: pgadmin/utils/driver/psycopg2/server_manager.py:474
 msgid "Unauthorized request."
 msgstr ""
 
@@ -2226,7 +2226,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:223
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:544
-#: pgadmin/browser/static/js/browser.js:170
+#: pgadmin/browser/static/js/browser.js:210
 #: pgadmin/misc/statistics/static/js/statistics.js:129
 msgid "Statistics"
 msgstr ""
@@ -3227,14 +3227,14 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:789
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:806
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:275
-#: pgadmin/browser/static/js/browser.js:588
+#: pgadmin/browser/static/js/browser.js:628
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:71
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:78
 #: pgadmin/static/js/backform.pgadmin.js:484
 #: pgadmin/static/js/backgrid.pgadmin.js:461
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1685
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1730
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2240
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1708
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1753
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2263
 msgid "Yes"
 msgstr ""
 
@@ -3245,14 +3245,14 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:807
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:275
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:147
-#: pgadmin/browser/static/js/browser.js:589
+#: pgadmin/browser/static/js/browser.js:629
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:70
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:77
 #: pgadmin/static/js/backform.pgadmin.js:485
 #: pgadmin/static/js/backgrid.pgadmin.js:462
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1686
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1731
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2241
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1709
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1754
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2264
 msgid "No"
 msgstr ""
 
@@ -4386,7 +4386,7 @@ msgid "Attach"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:257
-#: pgadmin/browser/static/js/browser.js:269
+#: pgadmin/browser/static/js/browser.js:309
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:28
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:144
 msgid "Create"
@@ -6280,7 +6280,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:146
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:139
-#: pgadmin/browser/static/js/browser.js:181
+#: pgadmin/browser/static/js/browser.js:221
 #: pgadmin/dashboard/static/js/dashboard.js:184
 #: pgadmin/static/js/backform.pgadmin.js:1915
 msgid "SQL"
@@ -6895,7 +6895,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/server.js:434
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1207
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:197
-#: pgadmin/browser/static/js/browser.js:540
+#: pgadmin/browser/static/js/browser.js:580
 #: pgadmin/browser/static/js/node.js:1402
 #: pgadmin/browser/static/js/wizard.js:137
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:24
@@ -6912,9 +6912,9 @@ msgstr ""
 #: pgadmin/tools/import_export/static/js/import_export.js:494
 #: pgadmin/tools/maintenance/static/js/maintenance.js:296
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:55
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:632
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1921
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2060
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:655
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1944
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2083
 msgid "Cancel"
 msgstr ""
 
@@ -7135,7 +7135,7 @@ msgid "Connection timeout (seconds)"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1133
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2088
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2111
 msgid "Connect to Server"
 msgstr ""
 
@@ -7375,54 +7375,54 @@ msgstr ""
 msgid "Please select an object in the tree view."
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:191
+#: pgadmin/browser/static/js/browser.js:231
 msgid "Dependencies"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:202
+#: pgadmin/browser/static/js/browser.js:242
 msgid "Dependents"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:305
+#: pgadmin/browser/static/js/browser.js:345
 #: pgadmin/browser/static/js/toolbar.js:29
 #: pgadmin/browser/static/js/toolbar.js:88
 #: pgadmin/tools/datagrid/static/js/datagrid.js:75
 msgid "View Data"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:306
+#: pgadmin/browser/static/js/browser.js:346
 #: pgadmin/browser/static/js/toolbar.js:20
 #: pgadmin/browser/static/js/toolbar.js:90
 #: pgadmin/tools/datagrid/static/js/datagrid.js:76
 msgid "Filtered Rows"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:333
+#: pgadmin/browser/static/js/browser.js:373
 msgid "No object selected"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:532
+#: pgadmin/browser/static/js/browser.js:572
 msgid "Master password"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:538
-#: pgadmin/browser/static/js/browser.js:577
+#: pgadmin/browser/static/js/browser.js:578
+#: pgadmin/browser/static/js/browser.js:617
 msgid "Reset Master Password"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:578
+#: pgadmin/browser/static/js/browser.js:618
 msgid ""
 "This will remove all the saved passwords. This will also remove "
 "established connections to the server and you may need to reconnect "
 "again. Do you wish to continue ?"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:688
+#: pgadmin/browser/static/js/browser.js:728
 #, python-format
 msgid "Are you sure you want to close the %s browser?"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:1757
+#: pgadmin/browser/static/js/browser.js:1797
 msgid "Error retrieving details for the node."
 msgstr ""
 
@@ -7617,7 +7617,7 @@ msgstr ""
 #: pgadmin/preferences/static/js/preferences.js:431
 #: pgadmin/preferences/static/js/preferences.js:456
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:37
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:640
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:663
 msgid "Save"
 msgstr ""
 
@@ -9272,11 +9272,15 @@ msgstr ""
 msgid "Query Tool initialization error"
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:272
+#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:42
+msgid "File - "
+msgstr ""
+
+#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:47
 msgid "View/Edit Data - "
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:277
+#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:51
 msgid "Query Tool - "
 msgstr ""
 
@@ -9846,7 +9850,7 @@ msgid "Local variables"
 msgstr ""
 
 #: pgadmin/tools/debugger/static/js/direct.js:1731
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:234
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:235
 msgid "Messages"
 msgstr ""
 
@@ -10346,15 +10350,15 @@ msgstr ""
 msgid "Data cannot be saved for the current object."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:204
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:205
 msgid "Query Editor"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:213
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:214
 msgid "Data Output"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:224
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:225
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:44
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:50
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:56
@@ -10362,228 +10366,228 @@ msgstr ""
 msgid "Explain"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:244
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:245
 msgid "Query History"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:254
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:255
 msgid "Scratch Pad"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:264
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:265
 msgid "Notifications"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:274
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:275
 msgid "Geometry Viewer"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:362
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:386
 msgid "The data has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:367
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:391
 msgid "The text has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:637
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:660
 msgid "Don't save"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:670
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:693
 msgid "Save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1228
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1251
 msgid "Fetching all records..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1674
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2229
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3074
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1697
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2252
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3094
 msgid "Unsaved changes"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1675
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3075
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1698
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3095
 msgid "Are you sure you wish to discard the current changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1703
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1726
 msgid "Clear history"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1704
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1727
 msgid "Are you sure you wish to clear the history?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1705
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1728
 msgid ""
 "This will remove all of your query history from this and other sessions "
 "for this database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2021
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2044
 msgid "Connection Warning"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2028
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2051
 msgid "The application has lost the database connection:"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2032
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2055
 msgid "⁃ If the connection was idle it may have been forcibly disconnected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2034
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2057
 msgid "⁃ The application server or database server may have been restarted."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2036
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2059
 msgid "⁃ The user session may have timed out."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2040
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2063
 msgid "Do you want to continue and establish a new session?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2059
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2082
 msgid "Continue"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2163
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2186
 #, python-format
 msgid "Error fetching SQL for script: %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2230
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2253
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2267
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2290
 msgid "Running query..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2275
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2298
 msgid "Waiting for the query to complete..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2410
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2433
 msgid "Loading data from the database server and rendering..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2419
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2442
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2420
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2443
 #, python-format
 msgid "%s rows affected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2783
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2806
 msgid "Row(s) deleted."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2858
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2881
 msgid "Saving the updated data..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2948
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2971
 msgid "Data saved successfully."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2954
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2977
 #, python-format
 msgid "%s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3113
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3133
 msgid "Loading the file..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3164
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3184
 msgid "Saving the queries in the file..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3176
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3196
 msgid "File saved successfully."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3297
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3356
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3317
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3376
 msgid "Applying the new filter..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3317
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3327
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3337
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3347
 msgid "Filter By Selection Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3376
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3386
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3396
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3406
 msgid "Filter Exclude Selection Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3396
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3416
 msgid "Removing the filter..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3414
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3424
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3434
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3444
 msgid "Remove Filter Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3519
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3539
 msgid "Setting the limit on the result..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3538
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3547
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3558
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3567
 msgid "Change limit Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3694
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3713
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3714
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3733
 msgid "Cancel Query Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3732
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3752
 msgid "Downloading CSV..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3786
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3806
 msgid "CSV Download cancelled."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3789
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3809
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:332
 msgid "Download CSV"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3792
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3812
 msgid "Download CSV error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3827
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3834
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3847
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3854
 msgid "Auto Rollback Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3860
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3866
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3880
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3886
 msgid "Auto Commit Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3883
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3895
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3903
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3915
 msgid "Explain options error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3884
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3904
 #, python-format
 msgid "Error occurred while setting %(subItem)s option in explain."
 msgstr ""
