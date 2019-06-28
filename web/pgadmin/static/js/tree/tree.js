@@ -168,7 +168,7 @@ export class Tree {
           if(origEvent.dataTransfer.setDragImage) {
             let dragItem = $(`
               <div class="drag-tree-node">
-                <span>${dropDetails.text}</span>
+                <span>${_.escape(dropDetails.text)}</span>
               </div>`
             );
 
