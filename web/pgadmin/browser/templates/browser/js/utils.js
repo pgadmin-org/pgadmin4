@@ -15,11 +15,11 @@
   {% endif %}{% if item.target %}target: "{{ item.target }}",
   {% endif %}{% if item.callback %}callback: "{{ item.callback }}",
   {% endif %}{% if item.category %}category: "{{ item.category }}",
-  {% endif %}{% if item.icon %}icon: '{{ item.icon }}',
+  {% endif %}{% if item.icon %}icon: "{{ item.icon }}",
   {% endif %}{% if item.data %}data: {{ item.data }},
-  {% endif %}label: '{{ item.label }}', applies: ['{{ key.lower() }}'],
+  {% endif %}label: "{{ item.label }}", applies: ["{{ key.lower() }}"],
   priority: {{ item.priority }},
-  enable: '{{ item.enable }}',
+  enable: "{{ item.enable }}",
   {% if item.checked is defined %}checked: {% if item.checked %}true{% else %}false{% endif %},
   {% endif %}
   {% if item.menu_items %}menu_items: {{MENU_ITEMS(key, item.menu_items)}}
