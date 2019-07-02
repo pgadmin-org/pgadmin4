@@ -64,6 +64,82 @@ Root: HKLM; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; 
 var
   UpgradeMode: Boolean;
 
+// Procedure to split a string into an array of integers
+procedure Explode(var Dest: TArrayOfInteger; Text: String; Separator: String);
+var
+  i, p: Integer;
+begin
+  i := 0;
+  repeat
+    SetArrayLength(Dest, i+1);
+    p := Pos(Separator,Text);
+    if p > 0 then begin
+      Dest[i] := StrToInt(Copy(Text, 1, p-1));
+      Text := Copy(Text, p + Length(Separator), Length(Text));
+      i := i + 1;
+    end else begin
+      Dest[i] := StrToInt(Text);
+      Text := '';
+    end;
+  until Length(Text)=0;
+end;
+
+// Function compares version strings numerically:
+//     * when v1 = v2, result = 0
+//     * when v1 < v2, result = -1
+//     * when v1 > v2, result = 1
+//
+// Supports version numbers with trailing zeroes, for example 1.02.05.
+// Supports comparison of two version number of different lengths,
+// for example CompareVersions('1.2', '2.0.3')
+// When any of the parameters is '' (empty string) it considers version
+// number as 0
+function CompareVersions(v1: String; v2: String): Integer;
+var
+  v1parts: TArrayOfInteger;
+  v2parts: TArrayOfInteger;
+  i: Integer;
+begin
+  if v1 = '' then
+  begin
+    v1 := '0';
+  end;
+
+  if v2 = '' then
+  begin
+    v2 := '0';
+  end;
+
+  Explode(v1parts, v1, '.');
+  Explode(v2parts, v2, '.');
+
+  if (GetArrayLength(v1parts) > GetArrayLength(v2parts)) then
+  begin
+    SetArrayLength(v2parts, GetArrayLength(v1parts))
+  end else if (GetArrayLength(v2parts) > GetArrayLength(v1parts)) then
+  begin
+    SetArrayLength(v1parts, GetArrayLength(v2parts))
+  end;
+
+  for i := 0 to GetArrayLength(v1parts) - 1 do
+  begin
+    if v1parts[i] > v2parts[i] then
+    begin
+      { v1 is greater }
+      Result := 1;
+      exit;
+    end else if v1parts[i] < v2parts[i] then
+    begin
+      { v2 is greater }
+      Result := -1;
+      exit;
+    end;
+  end;
+
+  { Are Equal }
+  Result := 0;
+end;
+
 function IsPathValid(Path: string): Boolean;
 var
   I: Integer;
@@ -103,7 +179,7 @@ begin
   begin
 	UpgradeMode := True;
     RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
-    if Version > '{#MyAppFullVersion}' then
+    if CompareVersions(Version, '{#MyAppFullVersion}') = -1 then
     begin
       MsgBox(ExpandConstant('{cm:NewerVersionExists}' + '(v' + Version + ') is already installed' ), mbInformation, MB_OK);
       Result := False;
