@@ -179,7 +179,7 @@ begin
   begin
 	UpgradeMode := True;
     RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
-    if CompareVersions(Version, '{#MyAppFullVersion}') = -1 then
+    if CompareVersions(Version, '{#MyAppFullVersion}') = 1 then
     begin
       MsgBox(ExpandConstant('{cm:NewerVersionExists}' + '(v' + Version + ') is already installed' ), mbInformation, MB_OK);
       Result := False;
