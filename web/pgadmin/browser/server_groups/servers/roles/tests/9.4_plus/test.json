@@ -1,0 +1,124 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Role",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+          "rolname": "test_resql_role_pg95",
+          "rolcanlogin": false,
+          "rolpassword": null,
+          "rolconnlimit": -1,
+          "rolsuper": false,
+          "rolcreaterole": false,
+          "rolcreatedb": false,
+          "rolinherit": true,
+          "rolcatupdate": false,
+          "rolreplication": false,
+          "rolmembership": [],
+          "rolvaliduntil": null,
+          "seclabels": [],
+          "variables": []
+      },
+      "expected_sql_file": "create_role.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role description",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "description": "This is detailed description"
+      },
+      "expected_sql_file": "alter_role_description.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role name",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolname": "new_test_resql_role_pg95"
+      },
+      "expected_sql_file": "alter_role_name.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role superuser, createdb etc options",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolsuper": true,
+        "rolcreatedb": true
+      },
+      "expected_sql_file": "alter_role_options.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Role",
+      "endpoint": "NODE-role.obj_id",
+      "data": {}
+    },
+    {
+      "type": "create",
+      "name": "Create User",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+          "rolname": "test_resql_user_pg95",
+          "rolcanlogin": true,
+          "rolpassword": null,
+          "rolconnlimit": -1,
+          "rolsuper": true,
+          "rolcreaterole": true,
+          "rolcreatedb": true,
+          "rolinherit": true,
+          "rolcatupdate": true,
+          "rolreplication": true,
+          "rolmembership": [],
+          "rolvaliduntil": null,
+          "seclabels": [],
+          "variables": []
+      },
+      "expected_sql_file": "create_user.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter User description",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "description": "This is detailed description"
+      },
+      "expected_sql_file": "alter_user_description.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter User name",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolname": "new_test_resql_user_pg95"
+      },
+      "expected_sql_file": "alter_user_name.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter User superuser, createdb etc options",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolsuper": false,
+        "rolcreatedb": false
+      },
+      "expected_sql_file": "alter_user_options.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop User",
+      "endpoint": "NODE-role.obj_id",
+      "data": {}
+    }
+  ]
+}

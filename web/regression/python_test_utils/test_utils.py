@@ -991,6 +991,8 @@ def get_server_type(server):
         pg_cursor.execute("SELECT version()")
         version_string = pg_cursor.fetchone()
         connection.close()
+        if type(version_string) == tuple:
+            version_string = version_string[0]
 
         if "Greenplum Database" in version_string:
             return 'gpdb'

@@ -6,10 +6,10 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
+from __future__ import print_function
 import json
 import os
-
+import sys
 from flask import url_for
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -64,6 +64,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
     def runTest(self):
         # Create the module list on which reverse engineering sql test
         # cases will be executed.
+        server_info = self.server_information
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
             BaseTestGenerator.exclude_pkgs)
@@ -84,8 +85,69 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                                                       filename)
                     with open(complete_file_name) as jsonfp:
                         data = json.load(jsonfp)
-                        for key, scenarios in data.items():
-                            self.execute_test_case(scenarios)
+                        # CHECK SERVER VERSION & TYPE PRECONDITION
+                        flag = False
+                        if 'prerequisite' in data and \
+                                data['prerequisite'] is not None:
+                            prerequisite_data = data['prerequisite']
+
+                            module_str = module.replace('_', ' ').capitalize()
+                            db_type = server_info['type'].upper()
+                            min_ver = prerequisite_data['minVer']
+                            max_ver = prerequisite_data['maxVer']
+
+                            if 'type' in prerequisite_data and \
+                                    prerequisite_data['type']:
+                                if server_info['type'] != \
+                                        prerequisite_data['type']:
+                                    flag = True
+                                    print(
+                                        "\n\n"
+                                        "{0} are not supported by {1} - "
+                                        "Skipped".format(
+                                            module_str,
+                                            db_type
+                                        ),
+                                        file=sys.stderr
+                                    )
+
+                            if 'minVer' in prerequisite_data and \
+                                    prerequisite_data['minVer']:
+                                if server_info['server_version'] < \
+                                        prerequisite_data['minVer']:
+                                    if not flag:
+                                        flag = True
+                                        print(
+                                            "\n\n"
+                                            "{0} are not supported by"
+                                            " {1} server less than"
+                                            " {2} - Skipped".format(
+                                                module_str, db_type, min_ver
+                                            ),
+                                            file=sys.stderr
+                                        )
+
+                            if 'maxVer' in prerequisite_data and \
+                                    prerequisite_data['maxVer']:
+                                if server_info['server_version'] > \
+                                        prerequisite_data['maxVer']:
+                                    if not flag:
+                                        flag = True
+                                        print(
+                                            "\n\n"
+                                            "{0} are not supported by"
+                                            " {1} server greater than"
+                                            " {2} - Skipped".format(
+                                                module_str, db_type, max_ver
+                                            ),
+                                            file=sys.stderr
+                                        )
+
+                        if not flag:
+                            tests_scenarios = {}
+                            tests_scenarios['scenarios'] = data['scenarios']
+                            for key, scenarios in tests_scenarios.items():
+                                self.execute_test_case(scenarios)
 
     def tearDown(self):
         database_utils.disconnect_database(
@@ -207,6 +269,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Remove first and last double quotes
         if resp_sql.startswith('"') and resp_sql.endswith('"'):
             resp_sql = resp_sql[1:-1]
+            resp_sql = resp_sql.rstrip()
 
         # Check if expected sql is given in JSON file or path of the output
         # file is given

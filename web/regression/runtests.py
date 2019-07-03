@@ -444,6 +444,7 @@ if __name__ == '__main__':
 
             # Add the server version in server information
             server_information['server_version'] = connection.server_version
+            server_information['type'] = server['type']
 
             # Drop the database if already exists.
             test_utils.drop_database(connection, test_db_name)

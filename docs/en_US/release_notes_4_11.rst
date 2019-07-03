@@ -10,6 +10,8 @@ New features
 ************
 
 | `Feature #4335 <https://redmine.postgresql.org/issues/4335>`_ -  Add EXPLAIN options for SETTINGS and SUMMARY.
+| `Feature #4415 <https://redmine.postgresql.org/issues/4415>`_ -  Add Reverse Engineered SQL tests for Roles and Resource Groups.
+
 
 Bug fixes
 *********

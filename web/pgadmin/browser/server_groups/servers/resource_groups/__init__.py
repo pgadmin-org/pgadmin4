@@ -226,8 +226,9 @@ class ResourceGroupView(NodeView):
                         "Connection to the server has been lost."
                     )
                 )
-
-            self.template_path = 'resource_groups/sql'
+            self.sql_path = 'resource_groups/sql/#{0}#'.format(
+                self.manager.version
+            )
             return f(*args, **kwargs)
 
         return wrap
@@ -242,7 +243,7 @@ class ResourceGroupView(NodeView):
             gid: Server Group ID
             sid: Server ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']))
+        sql = render_template("/".join([self.sql_path, 'properties.sql']))
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -263,7 +264,7 @@ class ResourceGroupView(NodeView):
             sid: Server ID
         """
 
-        sql = render_template("/".join([self.template_path, 'nodes.sql']),
+        sql = render_template("/".join([self.sql_path, 'nodes.sql']),
                               rgid=rg_id)
         status, result = self.conn.execute_2darray(sql)
         if not status:
@@ -295,7 +296,7 @@ class ResourceGroupView(NodeView):
             sid: Server ID
         """
         res = []
-        sql = render_template("/".join([self.template_path, 'nodes.sql']))
+        sql = render_template("/".join([self.sql_path, 'nodes.sql']))
         status, result = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -326,7 +327,7 @@ class ResourceGroupView(NodeView):
             rg_id: Resource Group ID
         """
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']), rgid=rg_id)
+            "/".join([self.sql_path, 'properties.sql']), rgid=rg_id)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -368,7 +369,7 @@ class ResourceGroupView(NodeView):
         try:
             # Below logic will create new resource group
             sql = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.sql_path, 'create.sql']),
                 rgname=data['name'], conn=self.conn
             )
             if sql and sql.strip('\n') and sql.strip(' '):
@@ -380,7 +381,7 @@ class ResourceGroupView(NodeView):
             # resource group you can't run multiple commands in one
             # transaction.
             sql = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.sql_path, 'update.sql']),
                 data=data, conn=self.conn
             )
             # Checking if we are not executing empty query
@@ -391,7 +392,7 @@ class ResourceGroupView(NodeView):
             # Below logic is used to fetch the oid of the newly created
             # resource group
             sql = render_template(
-                "/".join([self.template_path, 'getoid.sql']),
+                "/".join([self.sql_path, 'getoid.sql']),
                 rgname=data['name']
             )
             # Checking if we are not executing empty query
@@ -431,7 +432,7 @@ class ResourceGroupView(NodeView):
 
         try:
             sql = render_template(
-                "/".join([self.template_path, 'properties.sql']), rgid=rg_id)
+                "/".join([self.sql_path, 'properties.sql']), rgid=rg_id)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -442,7 +443,7 @@ class ResourceGroupView(NodeView):
 
             if data['name'] != old_data['name']:
                 sql = render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.sql_path, 'update.sql']),
                     oldname=old_data['name'], newname=data['name'],
                     conn=self.conn
                 )
@@ -458,7 +459,7 @@ class ResourceGroupView(NodeView):
             if data['cpu_rate_limit'] != old_data['cpu_rate_limit'] or \
                     data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
                 sql = render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.sql_path, 'update.sql']),
                     data=data, conn=self.conn
                 )
                 if sql and sql.strip('\n') and sql.strip(' '):
@@ -499,7 +500,7 @@ class ResourceGroupView(NodeView):
             for rg_id in data['ids']:
                 # Get name for resource group from rg_id
                 sql = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.sql_path, 'delete.sql']),
                     rgid=rg_id, conn=self.conn
                 )
                 status, rgname = self.conn.execute_scalar(sql)
@@ -520,7 +521,7 @@ class ResourceGroupView(NodeView):
 
                 # drop resource group
                 sql = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.sql_path, 'delete.sql']),
                     rgname=rgname, conn=self.conn
                 )
                 status, res = self.conn.execute_scalar(sql)
@@ -580,7 +581,7 @@ class ResourceGroupView(NodeView):
         ]
         if rg_id is not None:
             sql = render_template(
-                "/".join([self.template_path, 'properties.sql']), rgid=rg_id)
+                "/".join([self.sql_path, 'properties.sql']), rgid=rg_id)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -599,7 +600,7 @@ class ResourceGroupView(NodeView):
             if data['name'] != old_data['name']:
                 name_changed = True
                 sql = render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.sql_path, 'update.sql']),
                     oldname=old_data['name'], newname=data['name'],
                     conn=self.conn
                 )
@@ -609,12 +610,12 @@ class ResourceGroupView(NodeView):
                     sql += "\n-- Following query will be executed in a " \
                            "separate transaction\n"
                 sql += render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.sql_path, 'update.sql']),
                     data=data, conn=self.conn
                 )
         else:
             sql = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.sql_path, 'create.sql']),
                 rgname=data['name'], conn=self.conn
             )
 
@@ -630,7 +631,7 @@ class ResourceGroupView(NodeView):
                 sql += "\n-- Following query will be executed in a " \
                        "separate transaction\n"
                 sql += render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.sql_path, 'update.sql']),
                     data=data, conn=self.conn
                 )
 
@@ -647,7 +648,7 @@ class ResourceGroupView(NodeView):
             rg_id: Resource Group ID
         """
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']), rgid=rg_id
+            "/".join([self.sql_path, 'properties.sql']), rgid=rg_id
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -661,13 +662,13 @@ class ResourceGroupView(NodeView):
         old_data = dict(res['rows'][0])
 
         sql = render_template(
-            "/".join([self.template_path, 'create.sql']),
+            "/".join([self.sql_path, 'create.sql']),
             display_comments=True,
             rgname=old_data['name'], conn=self.conn
         )
         sql += "\n"
         sql += render_template(
-            "/".join([self.template_path, 'update.sql']),
+            "/".join([self.sql_path, 'update.sql']),
             data=old_data, conn=self.conn
         )
 
