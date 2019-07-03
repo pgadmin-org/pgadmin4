@@ -55,6 +55,8 @@ describe('queryToolActions', () => {
         spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
         spyOn(queryToolActions, '_buffers').and.returnValue(false);
         spyOn(queryToolActions, '_timing').and.returnValue(false);
+        spyOn(queryToolActions, '_summary').and.returnValue(false);
+        spyOn(queryToolActions, '_settings').and.returnValue(false);
       });
 
       it('calls the execute function', () => {
@@ -69,19 +71,22 @@ describe('queryToolActions', () => {
           buffers: false,
           timing: false,
           summary: false,
+          settings: false,
         };
 
         expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
     });
 
-    describe('when verbose and costs and buffers and timing are all selected', () => {
+    describe('when all options are selected', () => {
       beforeEach(() => {
         setUpSpies('', '');
         spyOn(queryToolActions, '_verbose').and.returnValue(true);
         spyOn(queryToolActions, '_costsEnabled').and.returnValue(true);
         spyOn(queryToolActions, '_buffers').and.returnValue(true);
         spyOn(queryToolActions, '_timing').and.returnValue(true);
+        spyOn(queryToolActions, '_summary').and.returnValue(true);
+        spyOn(queryToolActions, '_settings').and.returnValue(true);
       });
       it('calls the execute function', () => {
         queryToolActions.explainAnalyze(sqlEditorController);
@@ -92,7 +97,8 @@ describe('queryToolActions', () => {
           costs: true,
           buffers: true,
           timing: true,
-          summary: false,
+          summary: true,
+          settings: true,
         };
         expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
@@ -105,6 +111,8 @@ describe('queryToolActions', () => {
         spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
         spyOn(queryToolActions, '_buffers').and.returnValue(true);
         spyOn(queryToolActions, '_timing').and.returnValue(false);
+        spyOn(queryToolActions, '_summary').and.returnValue(false);
+        spyOn(queryToolActions, '_settings').and.returnValue(false);
       });
       it('calls the execute function', () => {
         queryToolActions.explainAnalyze(sqlEditorController);
@@ -117,6 +125,7 @@ describe('queryToolActions', () => {
           buffers: true,
           timing: false,
           summary: false,
+          settings: false,
         };
 
         expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
@@ -130,6 +139,8 @@ describe('queryToolActions', () => {
         spyOn(queryToolActions, '_costsEnabled').and.returnValue(true);
         spyOn(queryToolActions, '_buffers').and.returnValue(false);
         spyOn(queryToolActions, '_timing').and.returnValue(true);
+        spyOn(queryToolActions, '_summary').and.returnValue(false);
+        spyOn(queryToolActions, '_settings').and.returnValue(false);
       });
       it('calls the execute function', () => {
         queryToolActions.explainAnalyze(sqlEditorController);
@@ -142,6 +153,35 @@ describe('queryToolActions', () => {
           buffers: false,
           timing: true,
           summary: false,
+          settings: false,
+        };
+
+        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+      });
+    });
+
+    describe('when all are not selected except summary and settings', () => {
+      beforeEach(() => {
+        setUpSpies('', '');
+        spyOn(queryToolActions, '_verbose').and.returnValue(false);
+        spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
+        spyOn(queryToolActions, '_buffers').and.returnValue(false);
+        spyOn(queryToolActions, '_timing').and.returnValue(false);
+        spyOn(queryToolActions, '_summary').and.returnValue(true);
+        spyOn(queryToolActions, '_settings').and.returnValue(true);
+      });
+      it('calls the execute function', () => {
+        queryToolActions.explainAnalyze(sqlEditorController);
+
+        const explainObject = {
+          format: 'json',
+          analyze: true,
+          verbose: false,
+          costs: false,
+          buffers: false,
+          timing: false,
+          summary: true,
+          settings: true,
         };
 
         expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
@@ -155,6 +195,10 @@ describe('queryToolActions', () => {
         setUpSpies('', '');
         spyOn(queryToolActions, '_verbose').and.returnValue(true);
         spyOn(queryToolActions, '_costsEnabled').and.returnValue(true);
+        spyOn(queryToolActions, '_summary').and.returnValue(false);
+        spyOn(queryToolActions, '_settings').and.returnValue(false);
+        spyOn(queryToolActions, '_summary').and.returnValue(false);
+        spyOn(queryToolActions, '_settings').and.returnValue(false);
       });
 
       it('calls the execute function', () => {
@@ -167,6 +211,7 @@ describe('queryToolActions', () => {
           buffers: false,
           timing: false,
           summary: false,
+          settings: false,
         };
         expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });
@@ -177,6 +222,8 @@ describe('queryToolActions', () => {
         setUpSpies('', '');
         spyOn(queryToolActions, '_verbose').and.returnValue(false);
         spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
+        spyOn(queryToolActions, '_summary').and.returnValue(false);
+        spyOn(queryToolActions, '_settings').and.returnValue(false);
       });
 
       it('calls the execute function', () => {
@@ -189,6 +236,7 @@ describe('queryToolActions', () => {
           buffers: false,
           timing: false,
           summary: false,
+          settings: false,
         };
 
         expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
@@ -200,6 +248,8 @@ describe('queryToolActions', () => {
         setUpSpies('', '');
         spyOn(queryToolActions, '_verbose').and.returnValue(true);
         spyOn(queryToolActions, '_costsEnabled').and.returnValue(false);
+        spyOn(queryToolActions, '_summary').and.returnValue(false);
+        spyOn(queryToolActions, '_settings').and.returnValue(false);
       });
 
       it('calls the execute function', () => {
@@ -212,6 +262,7 @@ describe('queryToolActions', () => {
           buffers: false,
           timing: false,
           summary: false,
+          settings: false,
         };
         expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
       });

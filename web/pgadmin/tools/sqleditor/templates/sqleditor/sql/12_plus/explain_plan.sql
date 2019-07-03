@@ -13,4 +13,6 @@ EXPLAIN ({% if format -%}
   , BUFFERS {{ UTILS.BOOL_TEXT(buffers) }}
 {%- endif %}{% if summary is defined -%}
   , SUMMARY {{ UTILS.BOOL_TEXT(summary) }}
+{%- endif %}{% if settings is defined -%}
+  , SETTINGS {{ UTILS.BOOL_TEXT(settings) }}
 {%- endif %}) {{ sql }}

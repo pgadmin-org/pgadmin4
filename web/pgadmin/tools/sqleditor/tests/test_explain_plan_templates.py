@@ -10,10 +10,11 @@
 import os
 
 from flask import Flask, render_template
-from jinja2 import FileSystemLoader
+from jinja2 import FileSystemLoader, ChoiceLoader
 
 from pgadmin import VersionedTemplateLoader
 from pgadmin.utils.route import BaseTestGenerator
+from pgadmin import tools
 
 
 class TestExplainPlanTemplates(BaseTestGenerator):
@@ -34,9 +35,9 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                 ),
                 sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(FORMAT XML,ANALYZE True,'
-                                      'VERBOSE True,COSTS False,'
-                                      'BUFFERS True) SELECT * FROM places'
+                                      '(FORMAT XML, ANALYZE true, '
+                                      'VERBOSE true, COSTS false, '
+                                      'BUFFERS true) SELECT * FROM places'
             )
         ),
         (
@@ -52,7 +53,7 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                 ),
                 sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(FORMAT JSON,BUFFERS True) '
+                                      '(FORMAT JSON, BUFFERS true) '
                                       'SELECT * FROM places'
             )
         ),
@@ -70,8 +71,8 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                 ),
                 sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(FORMAT JSON,TIMING False,'
-                                      'BUFFERS True) SELECT * FROM places'
+                                      '(FORMAT JSON, TIMING false, '
+                                      'BUFFERS true) SELECT * FROM places'
             )
         ),
         (
@@ -89,8 +90,30 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                 ),
                 sql_statement='SELECT * FROM places',
                 expected_return_value='EXPLAIN '
-                                      '(FORMAT YAML,TIMING False,'
-                                      'SUMMARY True,BUFFERS True) '
+                                      '(FORMAT YAML, TIMING false, '
+                                      'BUFFERS true, SUMMARY true) '
+                                      'SELECT * FROM places'
+            )
+        ),
+        (
+            'When rendering Postgres 12 template, '
+            'when settings is present,'
+            'it returns the explain plan with settings',
+            dict(
+                template_path='sqleditor/sql/12_plus/explain_plan.sql',
+                input_parameters=dict(
+                    sql='SELECT * FROM places',
+                    format='json',
+                    buffers=False,
+                    timing=False,
+                    summary=False,
+                    settings=True
+                ),
+                sql_statement='SELECT * FROM places',
+                expected_return_value='EXPLAIN '
+                                      '(FORMAT JSON, TIMING false, '
+                                      'BUFFERS false, SUMMARY false, '
+                                      'SETTINGS true) '
                                       'SELECT * FROM places'
             )
         ),
@@ -153,6 +176,11 @@ class TestExplainPlanTemplates(BaseTestGenerator):
 class FakeApp(Flask):
     def __init__(self):
         super(FakeApp, self).__init__("")
-        self.jinja_loader = FileSystemLoader(
-            os.path.dirname(os.path.realpath(__file__)) + "/../templates"
-        )
+        self.jinja_loader = ChoiceLoader([
+            FileSystemLoader(
+                os.path.dirname(os.path.realpath(__file__)) + "/../templates"
+            ),
+            FileSystemLoader(
+                os.path.join(os.path.dirname(tools.__file__), 'templates')
+            )
+        ])

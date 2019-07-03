@@ -282,8 +282,9 @@ function keyboardShortcutsQueryTool(
         currLi = currLi.next();
       }
 
-      /*do not focus on divider and disabled */
+      /*do not focus on divider, disabled and d-none */
       while(currLi.hasClass('dropdown-divider')
+        || currLi.hasClass('d-none')
         || currLi.find('.dropdown-item').first().hasClass('disabled')) {
         if(keyCode === UP_KEY) {
           currLi = currLi.prev();

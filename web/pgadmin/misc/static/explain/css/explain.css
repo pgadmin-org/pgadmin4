@@ -30,7 +30,6 @@
 .pg-explain-stats-btn {
   top: 5px;
   min-width: 25px;
-  border: 1px solid transparent;
   pointer-events: none;
   font-size: 0.75rem;
 }

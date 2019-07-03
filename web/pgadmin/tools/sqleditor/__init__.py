@@ -95,7 +95,6 @@ class SqlEditorModule(PgAdminModule):
         return [
             'sqleditor.view_data_start',
             'sqleditor.query_tool_start',
-            'sqleditor.query_tool_preferences',
             'sqleditor.poll',
             'sqleditor.fetch',
             'sqleditor.fetch_all',
@@ -328,38 +327,6 @@ def extract_sql_from_network_parameters(request_data, request_arguments,
         return sql_parameters
     else:
         return request_arguments or request_form_data
-
-
-@blueprint.route(
-    '/query_tool/preferences/<int:trans_id>',
-    methods=["PUT"], endpoint='query_tool_preferences'
-)
-@login_required
-def preferences(trans_id):
-    """
-        This method is used to get/put explain options from/to preferences
-
-        Args:
-            trans_id: unique transaction id
-    """
-
-    data = None
-    if request.data:
-        data = json.loads(request.data, encoding='utf-8')
-    else:
-        data = request.args or request.form
-    for k, v in data.items():
-        v = bool(v)
-        if k == 'explain_verbose':
-            blueprint.explain_verbose.set(v)
-        elif k == 'explain_costs':
-            blueprint.explain_costs.set(v)
-        elif k == 'explain_buffers':
-            blueprint.explain_buffers.set(v)
-        elif k == 'explain_timing':
-            blueprint.explain_timing.set(v)
-
-    return success_return()
 
 
 @blueprint.route('/poll/<int:trans_id>', methods=["GET"], endpoint='poll')

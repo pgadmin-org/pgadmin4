@@ -275,6 +275,7 @@ define('pgadmin.datagrid', [
           baseUrl = url_for('datagrid.panel', url_params) +
             '?' + 'query_url=' + encodeURI(trans_obj.sURL) +
             '&server_type=' + encodeURIComponent(trans_obj.server_type) +
+            '&server_ver=' + trans_obj.serverVersion+
             '&fslashes=' + titileForURLObj.slashLocations;
 
         if (self.preferences.new_browser_tab) {
@@ -283,12 +284,6 @@ define('pgadmin.datagrid', [
           // add a load listener to the window so that the title gets changed on page load
           newWin.addEventListener('load', function() {
             newWin.document.title = panel_title;
-
-            /* Set the initial version of pref cache the new window is having
-             * This will be used by the poller to compare with window openers
-             * pref cache version
-             */
-            //newWin.pgAdmin.Browser.preference_version(pgBrowser.preference_version());
           });
 
         } else {

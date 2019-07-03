@@ -427,14 +427,7 @@ define('pgadmin.misc.explain', [
 
         // Calculate co-ordinates for tooltip
         var toolTipX = ((currentXpos + pWIDTH) * zoomFactor - graphContainer.scrollLeft());
-        var toolTipY = ((currentYpos + pHEIGHT) * zoomFactor - graphContainer.scrollTop());
-
-        // Recalculate x.y if tooltip is going out of screen
-        if (graphContainer.width() < (toolTipX + toolTipContainer[0].clientWidth))
-          toolTipX -= (toolTipContainer[0].clientWidth + (pWIDTH * zoomFactor));
-        //if(document.children[0].clientHeight < (toolTipY + toolTipContainer[0].clientHeight))
-        if (graphContainer.height() < (toolTipY + toolTipContainer[0].clientHeight))
-          toolTipY -= (toolTipContainer[0].clientHeight + ((pHEIGHT / 2) * zoomFactor));
+        var toolTipY = ((currentYpos) * zoomFactor - graphContainer.scrollTop());
 
         toolTipX = toolTipX < 0 ? 0 : (toolTipX);
         toolTipY = toolTipY < 0 ? 0 : (toolTipY);
@@ -725,6 +718,19 @@ define('pgadmin.misc.explain', [
       if (data && 'Triggers' in data) {
         statistics.set('Triggers', data['Triggers']);
         delete data ['Triggers'];
+      }
+
+      if(data) {
+        let summKeys = ['Planning Time', 'Execution Time'],
+          summary = {};
+
+        summKeys.forEach((key)=>{
+          if (key in data) {
+            summary[key] = data[key];
+          }
+        });
+
+        statistics.set('Summary', summary);
       }
 
       return data;

@@ -26,6 +26,14 @@ let queryToolActions = {
     return !$('.explain-timing').hasClass('visibility-hidden');
   },
 
+  _summary: function () {
+    return !$('.explain-summary').hasClass('visibility-hidden');
+  },
+
+  _settings: function () {
+    return !$('.explain-settings').hasClass('visibility-hidden');
+  },
+
   _clearMessageTab: function () {
     $('.sql-editor-message').html('');
   },
@@ -41,36 +49,31 @@ let queryToolActions = {
   },
 
   explainAnalyze: function (sqlEditorController) {
-    let costEnabled = this._costsEnabled();
-    let verbose = this._verbose();
-    let buffers = this._buffers();
-    let timing = this._timing();
     const explainObject = {
       format: 'json',
       analyze: true,
-      verbose: verbose,
-      costs: costEnabled,
-      buffers: buffers,
-      timing: timing,
-      summary: false,
+      verbose: this._verbose(),
+      costs: this._costsEnabled(),
+      buffers: this._buffers(),
+      timing: this._timing(),
+      summary: this._summary(),
+      settings: this._settings(),
     };
     this._clearMessageTab();
     sqlEditorController.execute(explainObject);
   },
 
   explain: function (sqlEditorController) {
-    let costEnabled = this._costsEnabled();
-    let verbose = this._verbose();
-
     // let explainQuery = `EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE ${verbose}, COSTS ${costEnabled}, BUFFERS OFF, TIMING OFF) `;
     const explainObject = {
       format: 'json',
       analyze: false,
-      verbose: verbose,
-      costs: costEnabled,
+      verbose: this._verbose(),
+      costs: this._costsEnabled(),
       buffers: false,
       timing: false,
-      summary: false,
+      summary: this._summary(),
+      settings: this._settings(),
     };
     this._clearMessageTab();
     sqlEditorController.execute(explainObject);

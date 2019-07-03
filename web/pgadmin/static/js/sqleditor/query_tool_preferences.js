@@ -134,6 +134,20 @@ function updateUIPreferences(sqlEditor) {
     $el.find('.explain-timing').addClass('visibility-hidden');
   }
 
+  if (preferences.explain_summary) {
+    $el.find('.explain-summary').removeClass('visibility-hidden');
+  }
+  else {
+    $el.find('.explain-summary').addClass('visibility-hidden');
+  }
+
+  if (preferences.explain_settings) {
+    $el.find('.explain-settings').removeClass('visibility-hidden');
+  }
+  else {
+    $el.find('.explain-settings').addClass('visibility-hidden');
+  }
+
   /* Connection status check */
   /* remove the status checker if present */
   if(sqlEditor.connIntervalId != null) {

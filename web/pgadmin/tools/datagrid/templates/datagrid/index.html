@@ -285,6 +285,18 @@
                             <span> {{ _('Timing') }} </span>
                         </a>
                     </li>
+                    <li data-min-ver="100000">
+                        <a class="dropdown-item" id="btn-explain-summary" href="#" tabindex="0">
+                            <i class="explain-summary fa fa-check visibility-hidden" aria-hidden="true"></i>
+                            <span> {{ _('Summary') }} </span>
+                        </a>
+                    </li>
+                    <li data-min-ver="120000">
+                        <a class="dropdown-item" id="btn-explain-settings" href="#" tabindex="0">
+                            <i class="explain-settings fa fa-check visibility-hidden" aria-hidden="true"></i>
+                            <span> {{ _('Settings') }} </span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="btn-group mr-1" role="group" aria-label="">
@@ -412,7 +424,8 @@
         script_type_url,
         "{{ server_type }}",
         {{ url_params|safe}},
-        '{{ layout|safe }}'
+        '{{ layout|safe }}',
+        {{ server_ver }}
     );
 });
 {% endblock %}

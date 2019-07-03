@@ -234,6 +234,11 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         server_type = None
 
+    if request.args and 'server_ver' in request.args:
+        server_ver = request.args['server_ver']
+    else:
+        server_ver = 0
+
     # If title has slash(es) in it then replace it
     if request.args and request.args['fslashes'] != '':
         try:
@@ -311,6 +316,7 @@ def panel(trans_id, is_query_tool, editor_title):
         is_desktop_mode=app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
         server_type=server_type,
+        server_ver=server_ver,
         client_platform=user_agent.platform,
         bgcolor=bgcolor,
         fgcolor=fgcolor,
@@ -408,7 +414,8 @@ def initialize_query_tool(sgid, sid, did=None):
 
     return make_json_response(
         data={
-            'gridTransId': trans_id
+            'gridTransId': trans_id,
+            'serverVersion': manager.version,
         }
     )
 

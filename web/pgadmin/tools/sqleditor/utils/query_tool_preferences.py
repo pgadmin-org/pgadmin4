@@ -62,6 +62,18 @@ def RegisterQueryToolPreferences(self):
         category_label=gettext('Explain')
     )
 
+    self.explain_summary = self.preference.register(
+        'Explain', 'explain_summary',
+        gettext("Show summary?"), 'boolean', False,
+        category_label=gettext('Explain')
+    )
+
+    self.explain_settings = self.preference.register(
+        'Explain', 'explain_settings',
+        gettext("Show settings?"), 'boolean', False,
+        category_label=gettext('Explain')
+    )
+
     self.auto_commit = self.preference.register(
         'Options', 'auto_commit',
         gettext("Auto commit?"), 'boolean', True,
