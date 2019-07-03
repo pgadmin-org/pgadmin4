@@ -15,17 +15,19 @@ from selenium.webdriver import ActionChains
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from .locators import QueryToolLocatorsCss
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-try:
-    with open(CURRENT_PATH + '/test_data.json') as data_file:
-        config_data = json.load(data_file)[
-            'table_insert_update_cases']['add_update']
-except Exception as e:
-    print(str(e))
+config_data = config_data_json = {}
+# try:
+with open(CURRENT_PATH + '/test_data.json') as data_file:
+    config_data_json = json.load(data_file)
+# except Exception as e:
+#     print(str(e))
 
 
 class CheckForViewDataTest(BaseFeatureTest):
@@ -80,6 +82,15 @@ CREATE TABLE public.defaults_{0}
     CONSTRAINT defaults_pkey_{0} PRIMARY KEY ({1})
 )
 """
+    non_int_pkey_table = """
+CREATE TABLE public.nonintpkey
+(
+    charid text COLLATE pg_catalog."default" NOT NULL,
+    col1 text,
+    col2 numeric(100),
+    CONSTRAINT nonintpkey_pkey PRIMARY KEY (charid)
+)
+    """
 
     def before(self):
         with test_utils.Database(self.server) as (connection, _):
@@ -95,6 +106,12 @@ CREATE TABLE public.defaults_{0}
                 self.test_db,
                 CheckForViewDataTest.defaults_query.format(k, v))
 
+        test_utils.create_table_with_query(
+            self.server,
+            self.test_db,
+            CheckForViewDataTest.non_int_pkey_table
+        )
+
         # Initialize an instance of WebDriverWait with timeout of 3 seconds
         self.wait = WebDriverWait(self.driver, 3)
 
@@ -105,20 +122,15 @@ CREATE TABLE public.defaults_{0}
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
         self._tables_node_expandable()
+
+        self._load_config_data('table_insert_update_cases')
         # iterate on both tables
         for cnt in (1, 2):
-            self.page.select_tree_item('defaults_{0}'.format(str(cnt)))
-            # Open Object -> View/Edit data
-            self._view_data_grid('defaults_{0}'.format(str(cnt)))
+            self._perform_test_for_table('defaults_{0}'.format(str(cnt)))
 
-            self.page.wait_for_query_tool_loading_indicator_to_disappear()
-            # Run test to insert a new row in table with default values
-            self._add_row()
-            self._verify_row_data(True)
-
-            # Run test to copy/paste a row
-            self._copy_paste_row()
-            self.page.close_data_grid()
+        # test nonint pkey table
+        self._load_config_data('table_insert_update_nonint')
+        self._perform_test_for_table('nonintpkey')
 
     def after(self):
         self.page.remove_server(self.server)
@@ -138,6 +150,36 @@ CREATE TABLE public.defaults_{0}
         xpath_cell = '{0}{1}'.format(xpath_grid_row, xpath_row_cell)
 
         return xpath_cell
+
+    @staticmethod
+    def _load_config_data(config_key):
+        global config_data
+        config_data = config_data_json[config_key]
+
+    def _perform_test_for_table(self, table_name):
+        self.page.select_tree_item(table_name)
+        # Open Object -> View/Edit data
+        self._view_data_grid(table_name)
+
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        # Run test to insert a new row in table with default values
+        self._add_row()
+        self._verify_row_data(True, config_data['add'])
+
+        # Run test to copy/paste a row
+        self._copy_paste_row()
+
+        self._update_row()
+        self.page.click_tab("Messages")
+        self._verify_messsages("")
+        self.page.click_tab("Data Output")
+        updated_row_data = {
+            i: config_data['update'][i] if i in config_data['update'] else val
+            for i, val in config_data['add'].items()
+        }
+        self._verify_row_data(False, updated_row_data)
+
+        self.page.close_data_grid()
 
     def _compare_cell_value(self, xpath, value):
         # Initialize an instance of WebDriverWait with timeout of 5 seconds
@@ -181,10 +223,12 @@ CREATE TABLE public.defaults_{0}
             if value == 'clear':
                 cell_el.find_element_by_css_selector('input').clear()
             else:
-                ActionChains(self.driver).send_keys(value).perform()
+                ActionChains(self.driver).send_keys(value).\
+                    send_keys(Keys.ENTER).perform()
         elif cell_type in ['text', 'json', 'text[]', 'boolean[]']:
             text_area_ele = self.page.find_by_css_selector(
                 ".pg-text-editor > textarea")
+            text_area_ele.clear()
             text_area_ele.click()
             text_area_ele.send_keys(value)
 
@@ -238,47 +282,28 @@ CREATE TABLE public.defaults_{0}
 
     def _copy_paste_row(self):
         row0_cell0_xpath = CheckForViewDataTest._get_cell_xpath("r0", 1)
-        row1_cell1_xpath = CheckForViewDataTest._get_cell_xpath("r1", 2)
-        row1_cell2_xpath = CheckForViewDataTest._get_cell_xpath("r2", 2)
 
         self.page.find_by_xpath(row0_cell0_xpath).click()
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
         self.page.find_by_xpath("//*[@id='btn-paste-row']").click()
+
         # Update primary key of copied cell
-        self._update_cell(row1_cell1_xpath, [2, "", "int"])
-        self.page.find_by_xpath(
-            CheckForViewDataTest._get_cell_xpath("r1", "3")
-        ).click()
-
-        # Check if removing a cell value with default value sets
-        # markup to [default] if cell is cleared
-        self._update_cell(row1_cell2_xpath, ["clear", "", "int"])
-        # click outside
-        self.page.find_by_xpath(
-            CheckForViewDataTest._get_cell_xpath("r1", "3")
-        ).click()
-
-        self._compare_cell_value(row1_cell2_xpath, "[default]")
-        # reset cell value to previous one
-        self._update_cell(row1_cell2_xpath, ["1", "", "int"])
-
-        self.page.find_by_id("btn-save").click()  # Save data
-        # There should be some delay after save button is clicked, as it
-        # takes some time to complete save ajax call otherwise discard unsaved
-        # changes dialog will appear if we try to execute query before previous
-        # save ajax is completed.
-        time.sleep(2)
+        self._add_update_save_row(config_data['copy'], row=2)
 
         # Verify row 1 and row 2 data
-        self._verify_row_data(False)
+        updated_row_data = {
+            i: config_data['copy'][i] if i in config_data['copy'] else val
+            for i, val in config_data['add'].items()
+        }
+        self._verify_row_data(False, updated_row_data)
 
-    def _add_row(self):
-        for idx in range(1, len(config_data.keys()) + 1):
+    def _add_update_save_row(self, data, row=1):
+        for idx in data.keys():
             cell_xpath = CheckForViewDataTest._get_cell_xpath(
-                'r' + str(idx), 1
+                'r' + str(idx), row
             )
             time.sleep(0.2)
-            self._update_cell(cell_xpath, config_data[str(idx)])
+            self._update_cell(cell_xpath, data[str(idx)])
         self.page.find_by_id("btn-save").click()  # Save data
         # There should be some delay after save button is clicked, as it
         # takes some time to complete save ajax call otherwise discard unsaved
@@ -286,7 +311,18 @@ CREATE TABLE public.defaults_{0}
         # save ajax is completed.
         time.sleep(2)
 
-    def _verify_row_data(self, is_new_row):
+    def _add_row(self):
+        self._add_update_save_row(config_data['add'], 1)
+
+    def _update_row(self):
+        self._add_update_save_row(config_data['update'], 1)
+
+    def _verify_messsages(self, text):
+        messages_ele = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.query_messages_panel)
+        self.assertEquals(text, messages_ele.text)
+
+    def _verify_row_data(self, is_new_row, config_check_data):
         self.page.find_by_id("btn-flash").click()
 
         # First row if row height = 0, second row if its 25
@@ -300,21 +336,17 @@ CREATE TABLE public.defaults_{0}
         result_row = self.page.find_by_xpath(xpath)
 
         # List of row values in an array
-        for idx in range(1, len(config_data.keys()) + 1):
-            # after copy & paste row, the first cell of row 1 and
-            # row 2(being primary keys) won't match
-            # see if cell values matched to actual value
+        for idx in config_check_data.keys():
             element = result_row.find_element_by_class_name("r" + str(idx))
             self.page.driver.execute_script(
                 "arguments[0].scrollIntoView(false)", element)
 
-            if (idx != 1 and not is_new_row) or is_new_row:
-                self.assertEquals(element.text, config_data[str(idx)][1])
-                self.assertEquals(element.text, config_data[str(idx)][1])
+            self.assertEquals(element.text, config_check_data[str(idx)][1])
+            self.assertEquals(element.text, config_check_data[str(idx)][1])
 
         # scroll browser back to the left
         # to reset position so other assertions can succeed
-        for idx in range(len(config_data.keys()), 1, -1):
+        for idx in reversed(list(config_check_data.keys())):
             element = result_row.find_element_by_class_name("r" + str(idx))
             self.page.driver.execute_script(
                 "arguments[0].scrollIntoView(false)", element)

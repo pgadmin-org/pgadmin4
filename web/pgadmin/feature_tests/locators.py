@@ -20,3 +20,4 @@ class QueryToolLocatorsCss:
     query_history_selected = "#query_list .selected"
     query_history_detail = "#query_detail"
     editor_panel = "#output-panel"
+    query_messages_panel = ".sql-editor-message"
