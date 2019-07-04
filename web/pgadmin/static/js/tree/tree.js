@@ -161,6 +161,10 @@ export class Tree {
           }
 
           origEvent.dataTransfer.setData('text', JSON.stringify(dropDetails));
+          /* Required by Firefox */
+          if(origEvent.dataTransfer.dropEffect) {
+            origEvent.dataTransfer.dropEffect = 'move';
+          }
 
           /* setDragImage is not supported in IE. We leave it to
            * its default look and feel
