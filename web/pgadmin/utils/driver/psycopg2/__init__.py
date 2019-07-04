@@ -228,7 +228,7 @@ class Driver(BaseDriver):
                 mgr.release()
 
     @staticmethod
-    def qtLiteral(value):
+    def qtLiteral(value, forceQuote=False):
         adapted = adapt(value)
 
         # Not all adapted objects have encoding
@@ -242,7 +242,14 @@ class Driver(BaseDriver):
         res = adapted.getquoted()
 
         if isinstance(res, bytes):
-            return res.decode('utf-8')
+            res = res.decode('utf-8')
+
+        if forceQuote is True:
+            # Convert the input to the string to use the startsWith(...)
+            res = str(res)
+            if not res.startswith("'"):
+                return "'" + res + "'"
+
         return res
 
     @staticmethod
@@ -343,6 +350,10 @@ class Driver(BaseDriver):
         value = None
 
         for val in args:
+            # DataType doesn't have len function then convert it to string
+            if not hasattr(val, '__len__'):
+                val = str(val)
+
             if len(val) == 0:
                 continue
             if hasattr(str, 'decode') and not isinstance(val, unicode):
@@ -354,7 +365,7 @@ class Driver(BaseDriver):
                     val = str(val).decode('utf-8')
             value = val
 
-            if (Driver.needsQuoting(val, True)):
+            if Driver.needsQuoting(val, True):
                 value = value.replace("\"", "\"\"")
                 value = "\"" + value + "\""
 
@@ -372,6 +383,11 @@ class Driver(BaseDriver):
         for val in args:
             if type(val) == list:
                 return map(lambda w: Driver.qtIdent(conn, w), val)
+
+            # DataType doesn't have len function then convert it to string
+            if not hasattr(val, '__len__'):
+                val = str(val)
+
             if hasattr(str, 'decode') and not isinstance(val, unicode):
                 # Handling for python2
                 try:
@@ -385,7 +401,7 @@ class Driver(BaseDriver):
 
             value = val
 
-            if (Driver.needsQuoting(val, False)):
+            if Driver.needsQuoting(val, False):
                 value = value.replace("\"", "\"\"")
                 value = "\"" + value + "\""
 

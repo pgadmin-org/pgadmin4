@@ -4,7 +4,7 @@
 {% macro APPLY(conn, database, role, param, value) -%}
 ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
 
-    SET {{ conn|qtIdent(param) }} TO {{ value }};
+    SET {{ conn|qtIdent(param) }} TO {{ value|qtLiteral }};
 {%- endmacro %}
 {% macro RESET(conn, database, role, param) -%}
 ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
