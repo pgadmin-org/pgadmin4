@@ -315,15 +315,15 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
 
             if ('is_inherited' in table_info and
                 table_info['is_inherited'] == '1')\
-                    or ('inherited_tables_cnt' in table_info and
-                        len(table_info['inherited_tables_cnt']) > 0):
+                    or ('relhassubclass' in table_info and
+                        table_info['relhassubclass']):
                 default_val = 'icon-table-multi-inherit'
             else:
                 default_val = 'icon-table-inherits'
         elif ('is_inherited' in table_info and
               table_info['is_inherited'] == '1')\
-                or ('inherited_tables_cnt' in table_info and
-                    len(table_info['inherited_tables_cnt']) > 0):
+                or ('relhassubclass' in table_info and
+                    table_info['relhassubclass']):
             default_val = 'icon-table-inherited'
 
         return super(TableView, self).\

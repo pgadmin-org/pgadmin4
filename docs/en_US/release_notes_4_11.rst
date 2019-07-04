@@ -18,3 +18,4 @@ Bug fixes
 
 | `Bug #4224 <https://redmine.postgresql.org/issues/4224>`_ -  Prevent flickering of large tooltips on the Graphical EXPLAIN canvas.
 | `Bug #4395 <https://redmine.postgresql.org/issues/4395>`_ -  EXPLAIN options should be Query Tool instance-specific.
+| `Bug #4437 <https://redmine.postgresql.org/issues/4437>`_ -  Fix table icon issue when updating any existing field.
