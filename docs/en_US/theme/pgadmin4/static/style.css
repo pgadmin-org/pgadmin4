@@ -447,21 +447,21 @@ span.pre{
 }
 
 a.internal span {
-    text-decoration: underline;
-    color: #e94b24;
+    text-decoration: none;
+    color: #295c85;
 }
 
 a.external {
-    text-decoration: underline;
-    color: #e94b24;
+    text-decoration: none;
+    color: #295c85;
 }
 
 a.reference:hover {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 a.internal span:hover {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 i, cite, em, var, address, dfn {
@@ -523,4 +523,10 @@ div.genindex-jumpbox a:hover{
 ul.search li {
     padding: 5px 0px 5px 0px;
     background-image: none !important;
+}
+
+/* Notes */
+
+div.topic {
+    background-color: #f3f5f9;
 }
