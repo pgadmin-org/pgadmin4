@@ -11,6 +11,8 @@ import json
 import os
 import sys
 from flask import url_for
+import regression
+from regression import parent_node_dict
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
@@ -55,6 +57,15 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         self.db_con = database_utils.connect_database(
             self, utils.SERVER_GROUP, self.server_information['server_id'],
             self.server_information['db_id'])
+
+        self.database_info = parent_node_dict["database"][-1]
+        self.db_name = self.database_info["db_name"]
+        self.connection = utils.get_db_connection(self.db_name,
+                                                  self.server['username'],
+                                                  self.server['db_password'],
+                                                  self.server['host'],
+                                                  self.server['port'])
+
         if not self.db_con['info'] == "Database connected.":
             raise Exception("Could not connect to database.")
 
@@ -173,7 +184,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 elif arg == 'did':
                     options['did'] = int(self.server_information['db_id'])
                 elif arg == 'scid':
-                    options['scid'] = int(self.server_information['schema_id'])
+                    options['scid'] = int(self.schema_id)
                 else:
                     if object_id is not None:
                         options[arg] = int(object_id)
@@ -197,6 +208,23 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         for scenario in scenarios:
             print(scenario['name'])
+
+            if scenario['data'] and 'schema' in scenario['data']:
+                # If schema is already exist then fetch the oid
+                schema = regression.schema_utils.verify_schemas(
+                    self.server, self.db_name,
+                    scenario['data']['schema'])
+
+                if schema:
+                    self.schema_id = schema[0]
+                else:
+                    # If schema doesn't exist then create it
+                    schema = regression.schema_utils.create_schema(
+                        self.connection,
+                        scenario['data']['schema'])
+                    self.schema_id = schema[0]
+            else:
+                self.schema_id = self.server_information['schema_id']
 
             if 'type' in scenario and scenario['type'] == 'create':
                 # Get the url and create the specific node.
