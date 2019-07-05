@@ -1,9 +1,4 @@
 {
-  "prerequisite": {
-    "minVer": 90400,
-    "maxVer": null,
-    "type": "ppas"
-  },
   "scenarios": [
     {
       "type": "create",

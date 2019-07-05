@@ -96,69 +96,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                                                       filename)
                     with open(complete_file_name) as jsonfp:
                         data = json.load(jsonfp)
-                        # CHECK SERVER VERSION & TYPE PRECONDITION
-                        flag = False
-                        if 'prerequisite' in data and \
-                                data['prerequisite'] is not None:
-                            prerequisite_data = data['prerequisite']
-
-                            module_str = module.replace('_', ' ').capitalize()
-                            db_type = server_info['type'].upper()
-                            min_ver = prerequisite_data['minVer']
-                            max_ver = prerequisite_data['maxVer']
-
-                            if 'type' in prerequisite_data and \
-                                    prerequisite_data['type']:
-                                if server_info['type'] != \
-                                        prerequisite_data['type']:
-                                    flag = True
-                                    print(
-                                        "\n\n"
-                                        "{0} are not supported by {1} - "
-                                        "Skipped".format(
-                                            module_str,
-                                            db_type
-                                        ),
-                                        file=sys.stderr
-                                    )
-
-                            if 'minVer' in prerequisite_data and \
-                                    prerequisite_data['minVer']:
-                                if server_info['server_version'] < \
-                                        prerequisite_data['minVer']:
-                                    if not flag:
-                                        flag = True
-                                        print(
-                                            "\n\n"
-                                            "{0} are not supported by"
-                                            " {1} server less than"
-                                            " {2} - Skipped".format(
-                                                module_str, db_type, min_ver
-                                            ),
-                                            file=sys.stderr
-                                        )
-
-                            if 'maxVer' in prerequisite_data and \
-                                    prerequisite_data['maxVer']:
-                                if server_info['server_version'] > \
-                                        prerequisite_data['maxVer']:
-                                    if not flag:
-                                        flag = True
-                                        print(
-                                            "\n\n"
-                                            "{0} are not supported by"
-                                            " {1} server greater than"
-                                            " {2} - Skipped".format(
-                                                module_str, db_type, max_ver
-                                            ),
-                                            file=sys.stderr
-                                        )
-
-                        if not flag:
-                            tests_scenarios = {}
-                            tests_scenarios['scenarios'] = data['scenarios']
-                            for key, scenarios in tests_scenarios.items():
-                                self.execute_test_case(scenarios)
+                        for key, scenarios in data.items():
+                            self.execute_test_case(scenarios)
 
     def tearDown(self):
         database_utils.disconnect_database(
@@ -209,7 +148,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         for scenario in scenarios:
             print(scenario['name'])
 
-            if scenario['data'] and 'schema' in scenario['data']:
+            if 'data' in scenario and 'schema' in scenario['data']:
                 # If schema is already exist then fetch the oid
                 schema = regression.schema_utils.verify_schemas(
                     self.server, self.db_name,
@@ -265,8 +204,16 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         :param module_path: Path of the module to be tested.
         :return:
         """
-        # Join the application path and the module path
-        absolute_path = os.path.join(self.apppath, module_path)
+        # Join the application path, module path and tests folder
+        tests_folder_path = os.path.join(self.apppath, module_path, 'tests')
+
+        # A folder name matching the Server Type (pg, ppas) takes priority so
+        # check whether that exists or not. If so, than check the version
+        # folder in it, else look directly in the 'tests' folder.
+        absolute_path = os.path.join(tests_folder_path, self.server['type'])
+        if not os.path.exists(absolute_path):
+            absolute_path = tests_folder_path
+
         # Iterate the version mapping directories.
         for version_mapping in get_version_mapping_directories(
                 self.server['type']):
@@ -274,7 +221,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     self.server_information['server_version']:
                 continue
 
-            complete_path = os.path.join(absolute_path, 'tests',
+            complete_path = os.path.join(absolute_path,
                                          version_mapping['name'])
 
             if os.path.exists(complete_path):

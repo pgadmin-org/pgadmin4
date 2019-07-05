@@ -98,7 +98,10 @@
     },{
       "type": "delete",
       "name": "Drop FDW",
-      "endpoint": "NODE-foreign_data_wrapper.delete_id"
+      "endpoint": "NODE-foreign_data_wrapper.delete_id",
+      "data": {
+        "name": "Fdw2_$%{}[]()&*^!@\"'`\\/#"
+      }
     }
   ]
 }
