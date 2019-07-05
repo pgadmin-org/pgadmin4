@@ -10,14 +10,14 @@ release of pgAdmin4 4.2
 Features
 ********
 
-| `Feature #1825 <https://redmine.postgresql.org/issues/1825>`_ - Install a script to start pgAdmin (pgadmin4) from the command line when installed from the Python wheel.
-| `Feature #2233 <https://redmine.postgresql.org/issues/2233>`_ - Add a "scratch pad" to the Query Tool to hold text snippets whilst editing.
-| `Feature #2418 <https://redmine.postgresql.org/issues/2418>`_ - Add Commit and Rollback buttons to the Query Tool.
-| `Feature #3439 <https://redmine.postgresql.org/issues/3439>`_ - Allow X-FRAME-OPTIONS to be set for security. Default to SAMEORIGIN.
-| `Feature #3559 <https://redmine.postgresql.org/issues/3559>`_ - Automatically expand child nodes as well as the selected node on the treeview if there is only one.
-| `Feature #3886 <https://redmine.postgresql.org/issues/3886>`_ - Include multiple versions of the PG utilties in containers.
-| `Feature #3991 <https://redmine.postgresql.org/issues/3991>`_ - Update Alpine Linux version in the docker container.
-| `Feature #4034 <https://redmine.postgresql.org/issues/4034>`_ - Support double-click on Query Tool result grid column resize handles to auto-size to the content.
+| `Issue #1825 <https://redmine.postgresql.org/issues/1825>`_ - Install a script to start pgAdmin (pgadmin4) from the command line when installed from the Python wheel.
+| `Issue #2233 <https://redmine.postgresql.org/issues/2233>`_ - Add a "scratch pad" to the Query Tool to hold text snippets whilst editing.
+| `Issue #2418 <https://redmine.postgresql.org/issues/2418>`_ - Add Commit and Rollback buttons to the Query Tool.
+| `Issue #3439 <https://redmine.postgresql.org/issues/3439>`_ - Allow X-FRAME-OPTIONS to be set for security. Default to SAMEORIGIN.
+| `Issue #3559 <https://redmine.postgresql.org/issues/3559>`_ - Automatically expand child nodes as well as the selected node on the treeview if there is only one.
+| `Issue #3886 <https://redmine.postgresql.org/issues/3886>`_ - Include multiple versions of the PG utilties in containers.
+| `Issue #3991 <https://redmine.postgresql.org/issues/3991>`_ - Update Alpine Linux version in the docker container.
+| `Issue #4034 <https://redmine.postgresql.org/issues/4034>`_ - Support double-click on Query Tool result grid column resize handles to auto-size to the content.
 
 Bug fixes
 *********
