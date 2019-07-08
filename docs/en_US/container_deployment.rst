@@ -187,7 +187,7 @@ reverse proxy listening for all hostnames with Nginx:
     }
 
 If you wish to host pgAdmin under a subdirectory rather than on the root of the
-server, you must specify the location and set the X-Script-Name header which
+server, you must specify the location and set the *X-Script-Name* header which
 tells the pgAdmin container how to rewrite paths:
 
 .. code-block:: nginx
@@ -198,6 +198,45 @@ tells the pgAdmin container how to rewrite paths:
 
         location /pgadmin4/ {
             proxy_set_header X-Script-Name /pgadmin4;
+            proxy_set_header Host $host;
+            proxy_pass http://localhost:5050/;
+            proxy_redirect off;
+        }
+    }
+
+HTTPS via Nginx
+---------------
+
+The following configuration can be used to serve pgAdmin over HTTPS to the user
+whilst the backend container is serving plain HTTP to the proxy server. In this
+configuration we not only set *X-Script-Name*, but also *X-Scheme* to tell the
+pgAdmin server to generate any URLs using the correct scheme. A redirect from
+HTTP to HTTPS is also included. The certificate and key paths may need to be
+adjusted as appropriate to the specific deployment:
+
+.. code-block:: nginx
+
+    server {
+        listen 80;
+        return 301 https://$host$request_uri;
+    }
+
+    server {
+        listen 443;
+        server_name _;
+
+        ssl_certificate /etc/nginx/server.crt;
+        ssl_certificate_key /etc/nginx/server.key;
+
+        ssl on;
+        ssl_session_cache builtin:1000 shared:SSL:10m;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+        ssl_prefer_server_ciphers on;
+
+        location /pgadmin4/ {
+            proxy_set_header X-Script-Name /pgadmin4;
+            proxy_set_header X-Scheme $scheme;
             proxy_set_header Host $host;
             proxy_pass http://localhost:5050/;
             proxy_redirect off;
