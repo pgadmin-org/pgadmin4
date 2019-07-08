@@ -149,3 +149,57 @@ Run a TLS secured container using a shared config/storage directory in
         -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
         -e "PGADMIN_ENABLE_TLS=True" \
         -d dpage/pgadmin4
+
+Reverse Proxying
+****************
+
+Sometimes it's desirable to have users connect to pgAdmin through a reverse
+proxy rather than directly to the container it's running in. The following
+examples show how this can be achieved. In all cases, pgAdmin is running in a
+container on the same host, with port 5050 on the host mapped to port 80 on the
+container, for example:
+
+.. code-block:: bash
+
+    docker pull dpage/pgadmin4
+    docker run -p 5050:80 \
+        -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
+        -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
+        -d dpage/pgadmin4
+
+HTTP via Nginx
+--------------
+
+A configuration similar to the following can be used to create a simple HTTP
+reverse proxy listening for all hostnames with Nginx:
+
+.. code-block:: nginx
+
+    server {
+        listen 80;
+        server_name _;
+
+        location / {
+            proxy_set_header Host $host;
+            proxy_pass http://localhost:5050/;
+            proxy_redirect off;
+        }
+    }
+
+If you wish to host pgAdmin under a subdirectory rather than on the root of the
+server, you must specify the location and set the X-Script-Name header which
+tells the pgAdmin container how to rewrite paths:
+
+.. code-block:: nginx
+
+    server {
+        listen 80;
+        server_name _;
+
+        location /pgadmin4/ {
+            proxy_set_header X-Script-Name /pgadmin4;
+            proxy_set_header Host $host;
+            proxy_pass http://localhost:5050/;
+            proxy_redirect off;
+        }
+    }
