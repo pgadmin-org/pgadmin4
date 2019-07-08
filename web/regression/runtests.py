@@ -200,7 +200,9 @@ def get_test_modules(arguments):
     if arguments['exclude'] is not None:
         exclude_pkgs += arguments['exclude'].split(',')
 
-    if 'feature_tests' not in exclude_pkgs:
+    if 'feature_tests' not in exclude_pkgs and \
+            (arguments['pkg'] == "all" or
+             arguments['pkg'] == "feature_tests"):
         default_browser = 'chrome'
 
         # Check default browser provided through command line. If provided

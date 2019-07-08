@@ -27,3 +27,4 @@ Bug fixes
 | `Issue #4395 <https://redmine.postgresql.org/issues/4395>`_ -  EXPLAIN options should be Query Tool instance-specific.
 | `Issue #4429 <https://redmine.postgresql.org/issues/4429>`_ -  Ensure drag/drop from the treeview works as expected on Firefox.
 | `Issue #4437 <https://redmine.postgresql.org/issues/4437>`_ -  Fix table icon issue when updating any existing field.
+| `Issue #4442 <https://redmine.postgresql.org/issues/4442>`_ -  Ensure browser should not be started by Selenium when feature tests are excluded from a test run.
