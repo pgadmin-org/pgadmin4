@@ -6,7 +6,7 @@
       "endpoint": "NODE-resource_group.obj",
       "sql_endpoint": "NODE-resource_group.sql_id",
       "data": {
-          "name": "test_resql_resource_group",
+          "name": "Rg1_$%{}[]()&*^!@\"'`\\/#",
           "cpu_rate_limit": 0,
           "dirty_rate_limit": 0
       },
@@ -18,7 +18,7 @@
       "endpoint": "NODE-resource_group.obj_id",
       "sql_endpoint": "NODE-resource_group.sql_id",
       "data": {
-        "name": "new_test_resql_resource_group"
+        "name": "Rg2_$%{}[]()&*^!@\"'`\\/#"
       },
       "expected_sql_file": "alter_resource_group_name.sql"
     },

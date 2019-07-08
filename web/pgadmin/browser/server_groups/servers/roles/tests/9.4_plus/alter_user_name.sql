@@ -1,7 +1,7 @@
--- User: new_test_resql_user_pg95
--- DROP USER new_test_resql_user_pg95;
+-- User: "Role2_$%{}[]()&*^!@""'`\/#"
+-- DROP USER "Role2_$%{}[]()&*^!@""'`\/#";
 
-CREATE USER new_test_resql_user_pg95 WITH
+CREATE USER "Role2_$%{}[]()&*^!@""'`\/#" WITH
   LOGIN
   SUPERUSER
   INHERIT
@@ -9,4 +9,4 @@ CREATE USER new_test_resql_user_pg95 WITH
   CREATEROLE
   REPLICATION;
 
-COMMENT ON ROLE new_test_resql_user_pg95 IS 'This is detailed description';
+COMMENT ON ROLE "Role2_$%{}[]()&*^!@""'`\/#" IS 'This is detailed description';

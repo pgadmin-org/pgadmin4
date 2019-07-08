@@ -1,7 +1,7 @@
--- Role: new_test_resql_role_pg91
--- DROP ROLE new_test_resql_role_pg91;
+-- Role: "Role2_$%{}[]()&*^!@""'`\/#"
+-- DROP ROLE "Role2_$%{}[]()&*^!@""'`\/#";
 
-CREATE ROLE new_test_resql_role_pg91 WITH
+CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
   NOLOGIN
   NOSUPERUSER
   INHERIT
@@ -9,4 +9,4 @@ CREATE ROLE new_test_resql_role_pg91 WITH
   NOCREATEROLE
   NOREPLICATION;
 
-COMMENT ON ROLE new_test_resql_role_pg91 IS 'This is detailed description';
+COMMENT ON ROLE "Role2_$%{}[]()&*^!@""'`\/#" IS 'This is detailed description';

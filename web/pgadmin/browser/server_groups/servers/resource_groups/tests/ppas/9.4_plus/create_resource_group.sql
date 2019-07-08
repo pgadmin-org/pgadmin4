@@ -1,8 +1,8 @@
--- RESOURCE GROUP: test_resql_resource_group
+-- RESOURCE GROUP: Rg1_$%{}[]()&*^!@"'`\/#
 
--- DROP RESOURCE GROUP test_resql_resource_group
+-- DROP RESOURCE GROUP "Rg1_$%{}[]()&*^!@""'`\/#"
 
-CREATE RESOURCE GROUP test_resql_resource_group;
+CREATE RESOURCE GROUP "Rg1_$%{}[]()&*^!@""'`\/#";
 
-ALTER RESOURCE GROUP test_resql_resource_group
+ALTER RESOURCE GROUP "Rg1_$%{}[]()&*^!@""'`\/#"
     SET cpu_rate_limit = 0, dirty_rate_limit = 0;

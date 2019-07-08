@@ -1,7 +1,7 @@
--- User: test_resql_user_pg95
--- DROP USER test_resql_user_pg95;
+-- User: "Role1_$%{}[]()&*^!@""'`\/#"
+-- DROP USER "Role1_$%{}[]()&*^!@""'`\/#";
 
-CREATE USER test_resql_user_pg95 WITH
+CREATE USER "Role1_$%{}[]()&*^!@""'`\/#" WITH
   LOGIN
   SUPERUSER
   INHERIT

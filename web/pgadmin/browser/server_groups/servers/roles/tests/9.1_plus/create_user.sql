@@ -1,7 +1,7 @@
--- User: test_resql_user_pg91
--- DROP USER test_resql_user_pg91;
+-- User: "Role1_$%{}[]()&*^!@""'`\/#"
+-- DROP USER "Role1_$%{}[]()&*^!@""'`\/#";
 
-CREATE USER test_resql_user_pg91 WITH
+CREATE USER "Role1_$%{}[]()&*^!@""'`\/#" WITH
   LOGIN
   SUPERUSER
   INHERIT
@@ -10,4 +10,4 @@ CREATE USER test_resql_user_pg91 WITH
   REPLICATION;
 
 
-UPDATE pg_authid SET rolcatupdate=false WHERE rolname = test_resql_user_pg91;
+UPDATE pg_authid SET rolcatupdate=false WHERE rolname = 'Role1_$%{}[]()&*^!@"''`\/#'';

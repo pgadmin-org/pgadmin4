@@ -1,7 +1,7 @@
--- Role: new_test_resql_role_pg91
--- DROP ROLE new_test_resql_role_pg91;
+-- Role: "Role2_$%{}[]()&*^!@""'`\/#"
+-- DROP ROLE "Role2_$%{}[]()&*^!@""'`\/#";
 
-CREATE ROLE new_test_resql_role_pg91 WITH
+CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
   NOLOGIN
   SUPERUSER
   INHERIT
@@ -10,6 +10,6 @@ CREATE ROLE new_test_resql_role_pg91 WITH
   NOREPLICATION;
 
 
-UPDATE pg_authid SET rolcatupdate=false WHERE rolname = new_test_resql_role_pg91;
+UPDATE pg_authid SET rolcatupdate=false WHERE rolname = 'Role2_$%{}[]()&*^!@"''`\/#';
 
-COMMENT ON ROLE new_test_resql_role_pg91 IS 'This is detailed description';
+COMMENT ON ROLE "Role2_$%{}[]()&*^!@""'`\/#" IS 'This is detailed description';

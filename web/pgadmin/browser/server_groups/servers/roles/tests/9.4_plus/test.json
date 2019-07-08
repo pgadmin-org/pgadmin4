@@ -6,7 +6,7 @@
       "endpoint": "NODE-role.obj",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
-          "rolname": "test_resql_role_pg95",
+          "rolname": "Role1_$%{}[]()&*^!@\"'`\\/#",
           "rolcanlogin": false,
           "rolpassword": null,
           "rolconnlimit": -1,
@@ -39,7 +39,7 @@
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
-        "rolname": "new_test_resql_role_pg95"
+        "rolname": "Role2_$%{}[]()&*^!@\"'`\\/#"
       },
       "expected_sql_file": "alter_role_name.sql"
     },
@@ -66,7 +66,7 @@
       "endpoint": "NODE-role.obj",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
-          "rolname": "test_resql_user_pg95",
+          "rolname": "Role1_$%{}[]()&*^!@\"'`\\/#",
           "rolcanlogin": true,
           "rolpassword": null,
           "rolconnlimit": -1,
@@ -99,7 +99,7 @@
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
-        "rolname": "new_test_resql_user_pg95"
+        "rolname": "Role2_$%{}[]()&*^!@\"'`\\/#"
       },
       "expected_sql_file": "alter_user_name.sql"
     },

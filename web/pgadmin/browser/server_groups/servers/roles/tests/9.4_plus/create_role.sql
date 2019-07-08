@@ -1,7 +1,7 @@
--- Role: test_resql_role_pg95
--- DROP ROLE test_resql_role_pg95;
+-- Role: "Role1_$%{}[]()&*^!@""'`\/#"
+-- DROP ROLE "Role1_$%{}[]()&*^!@""'`\/#";
 
-CREATE ROLE test_resql_role_pg95 WITH
+CREATE ROLE "Role1_$%{}[]()&*^!@""'`\/#" WITH
   NOLOGIN
   NOSUPERUSER
   INHERIT
