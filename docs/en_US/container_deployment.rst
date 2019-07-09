@@ -171,7 +171,8 @@ HTTP via Nginx
 --------------
 
 A configuration similar to the following can be used to create a simple HTTP
-reverse proxy listening for all hostnames with Nginx:
+reverse proxy listening for all hostnames with `Nginx
+<https://www.nginx.com/>`_:
 
 .. code-block:: nginx
 
@@ -242,3 +243,33 @@ adjusted as appropriate to the specific deployment:
             proxy_redirect off;
         }
     }
+
+Traefik
+-------
+
+Configuring `Traefik <https://traefik.io/>`_ is straightforward for either HTTP
+or HTTPS when running pgAdmin in a container as it will automatically configure
+itself to serve content from containers that are running on the local machine,
+virtual hosting them at *<container_name>.<domain_name>*, where the domain
+name is that specified in the Traefik configuration.
+
+The following configuration snippet will listen on ports 80 and 443, redirecting
+80 to 443, using the default certificate shipped with Traefik. See the Traefik
+documentation for options to use certificates from LetsEncrypt or other issuers.
+
+.. code-block:: ini
+
+    defaultEntryPoints = ["http", "https"]
+
+    [entryPoints]
+      [entryPoints.http]
+        address = ":80"
+          [entryPoints.http.redirect]
+            entryPoint = "https"
+      [entryPoints.https]
+        address = ":443"
+          [entryPoints.https.tls]
+
+    [docker]
+    domain = "domain_name"
+    watch = true
