@@ -1,0 +1,43 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Resource groups",
+      "endpoint": "NODE-resource_group.obj",
+      "sql_endpoint": "NODE-resource_group.sql_id",
+      "data": {
+          "name": "Rg1_$%{}[]()&*^!@\"'`\\/#",
+          "cpu_rate_limit": 0,
+          "dirty_rate_limit": 0
+      },
+      "expected_sql_file": "create_resource_group.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Resource groups name",
+      "endpoint": "NODE-resource_group.obj_id",
+      "sql_endpoint": "NODE-resource_group.sql_id",
+      "data": {
+        "name": "Rg2_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_resource_group_name.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Resource groups options",
+      "endpoint": "NODE-resource_group.obj_id",
+      "sql_endpoint": "NODE-resource_group.sql_id",
+      "data": {
+        "cpu_rate_limit": 1,
+        "dirty_rate_limit": 5
+      },
+      "expected_sql_file": "alter_resource_group_options.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Resource groups",
+      "endpoint": "NODE-resource_group.obj_id",
+      "data": {}
+    }
+  ]
+}

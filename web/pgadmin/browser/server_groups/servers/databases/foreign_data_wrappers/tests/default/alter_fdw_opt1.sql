@@ -3,10 +3,10 @@
 -- DROP FOREIGN DATA WRAPPER Fdw1_$%{}[]()&*^!@"'`\/#
 
 CREATE FOREIGN DATA WRAPPER "Fdw1_$%{}[]()&*^!@""'`\/#"
-    OPTIONS (opt1 'val1', opt2 'valopt2');
+    OPTIONS (opt1 'val1');
 
 ALTER FOREIGN DATA WRAPPER "Fdw1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON FOREIGN DATA WRAPPER "Fdw1_$%{}[]()&*^!@""'`\/#"
     IS 'a comment';

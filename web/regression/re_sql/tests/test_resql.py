@@ -9,7 +9,7 @@
 from __future__ import print_function
 import json
 import os
-import sys
+import traceback
 from flask import url_for
 import regression
 from regression import parent_node_dict
@@ -52,6 +52,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         ('Reverse Engineered SQL Test Cases', dict())
     ]
 
+    @classmethod
+    def setUpClass(cls):
+        cls.maxDiff = None
+
     def setUp(self):
         # Get the database connection
         self.db_con = database_utils.connect_database(
@@ -65,6 +69,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         # Get the application path
         self.apppath = os.getcwd()
+        # Status of the test case
+        self.final_test_status = True
 
     def runTest(self):
         """ Create the module list on which reverse engineering sql test
@@ -72,9 +78,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         # Schema ID placeholder in JSON file which needs to be replaced
         # while running the test cases
-        self.JSON_PLACEHOLDERS = {'schema_id': '<SCHEMA_ID>'}
+        self.JSON_PLACEHOLDERS = {'schema_id': '<SCHEMA_ID>',
+                                  'owner': '<OWNER>'}
 
-        server_info = self.server_information
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
             BaseTestGenerator.exclude_pkgs)
@@ -97,6 +103,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                         data = json.load(jsonfp)
                         for key, scenarios in data.items():
                             self.execute_test_case(scenarios)
+
+        # Check the final status of the test case
+        self.assertEqual(self.final_test_status, True)
 
     def tearDown(self):
         database_utils.disconnect_database(
@@ -160,8 +169,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         print("\n")
 
         for scenario in scenarios:
-            print(scenario['name'])
-
             if 'type' in scenario and scenario['type'] == 'create':
                 # Get the url and create the specific node.
 
@@ -193,30 +200,66 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 response = self.tester.post(create_url,
                                             data=json.dumps(scenario['data']),
                                             content_type='html/json')
-                self.assertEquals(response.status_code, 200)
+                try:
+                    self.assertEquals(response.status_code, 200)
+                except Exception as e:
+                    self.final_test_status = False
+                    print(scenario['name'] + "..............FAIL")
+                    traceback.print_exc()
+                    continue
+
                 resp_data = json.loads(response.data.decode('utf8'))
                 object_id = resp_data['node']['_id']
 
                 # Compare the reverse engineering SQL
-                self.check_re_sql(scenario, object_id)
+                if not self.check_re_sql(scenario, object_id):
+                    print_msg = scenario['name']
+                    if 'expected_sql_file' in scenario:
+                        print_msg = print_msg + "  Expected SQL File:" + \
+                                                scenario['expected_sql_file']
+                    print_msg = print_msg + " ..............FAIL"
+                    print(print_msg)
+                    continue
             elif 'type' in scenario and scenario['type'] == 'alter':
                 # Get the url and create the specific node.
                 alter_url = self.get_url(scenario['endpoint'], object_id)
                 response = self.tester.put(alter_url,
                                            data=json.dumps(scenario['data']),
                                            follow_redirects=True)
-                self.assertEquals(response.status_code, 200)
+                try:
+                    self.assertEquals(response.status_code, 200)
+                except Exception as e:
+                    self.final_test_status = False
+                    print(scenario['name'] + "..............FAIL")
+                    traceback.print_exc()
+                    continue
+
                 resp_data = json.loads(response.data.decode('utf8'))
                 object_id = resp_data['node']['_id']
 
                 # Compare the reverse engineering SQL
-                self.check_re_sql(scenario, object_id)
+                if not self.check_re_sql(scenario, object_id):
+                    print_msg = scenario['name']
+                    if 'expected_sql_file' in scenario:
+                        print_msg = print_msg + "  Expected SQL File:" + \
+                                                scenario['expected_sql_file']
+                    print_msg = print_msg + " ..............FAIL"
+                    print(print_msg)
+                    continue
             elif 'type' in scenario and scenario['type'] == 'delete':
                 # Get the delete url and delete the object created above.
                 delete_url = self.get_url(scenario['endpoint'], object_id)
                 delete_response = self.tester.delete(delete_url,
                                                      follow_redirects=True)
-                self.assertEquals(delete_response.status_code, 200)
+                try:
+                    self.assertEquals(delete_response.status_code, 200)
+                except Exception as e:
+                    self.final_test_status = False
+                    print(scenario['name'] + "..............FAIL")
+                    traceback.print_exc()
+                    continue
+
+            print(scenario['name'] + "..............OK")
 
     def get_test_folder(self, module_path):
         """
@@ -260,7 +303,13 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         """
         sql_url = self.get_url(scenario['sql_endpoint'], object_id)
         response = self.tester.get(sql_url)
-        self.assertEquals(response.status_code, 200)
+        try:
+            self.assertEquals(response.status_code, 200)
+        except Exception as e:
+            self.final_test_status = False
+            traceback.print_exc()
+            return False
+
         resp_sql = response.data.decode('unicode_escape')
 
         # Remove first and last double quotes
@@ -278,8 +327,36 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 fp = open(output_file, "r")
                 # Used rstrip to remove trailing \n
                 sql = fp.read().rstrip()
-                self.assertEquals(sql, resp_sql)
+                # Replace place holder <owner> with the current username
+                # used to connect to the database
+                if 'username' in self.server:
+                    sql = sql.replace(self.JSON_PLACEHOLDERS['owner'],
+                                      self.server['username'])
+                try:
+                    self.assertEquals(sql, resp_sql)
+                except Exception as e:
+                    self.final_test_status = False
+                    traceback.print_exc()
+                    return False
             else:
-                self.assertFalse("Expected SQL File not found")
+                try:
+                    self.assertFalse("Expected SQL File not found")
+                except Exception as e:
+                    self.final_test_status = False
+                    traceback.print_exc()
+                    return False
         elif 'expected_sql' in scenario:
-            self.assertEquals(scenario['expected_sql'], resp_sql)
+            exp_sql = scenario['expected_sql']
+            # Replace place holder <owner> with the current username
+            # used to connect to the database
+            if 'username' in self.server:
+                exp_sql = exp_sql.replace(self.JSON_PLACEHOLDERS['owner'],
+                                          self.server['username'])
+            try:
+                self.assertEquals(exp_sql, resp_sql)
+            except Exception as e:
+                self.final_test_status = False
+                traceback.print_exc()
+                return False
+
+        return True

@@ -7,7 +7,6 @@
       "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
       "data": {
         "name": "Fdw1_$%{}[]()&*^!@\"'`\\/#",
-        "fdwowner": "postgres",
         "fdwacl": [],
         "fdwoptions": []
       },

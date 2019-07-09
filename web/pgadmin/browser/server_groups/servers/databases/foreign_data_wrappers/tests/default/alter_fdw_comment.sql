@@ -5,4 +5,7 @@
 CREATE FOREIGN DATA WRAPPER "Fdw1_$%{}[]()&*^!@""'`\/#";
 
 ALTER FOREIGN DATA WRAPPER "Fdw1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
+
+COMMENT ON FOREIGN DATA WRAPPER "Fdw1_$%{}[]()&*^!@""'`\/#"
+    IS 'a comment';
