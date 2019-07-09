@@ -9,7 +9,7 @@ server mode and then deploying it either behind a webserver running as a reverse
 proxy, or using the WSGI interface.
 
 The following instructions demonstrate how pgAdmin may be run as a WSGI 
-application under ``Apache HTTP``, using ``mod_wsgi``, standalone using ``uWSGI``
+application under ``Apache HTTPD``, using ``mod_wsgi``, standalone using ``uWSGI``
 or ``Gunicorn``, or under ``NGINX`` using using ``uWSGI`` or ``Gunicorn``.
 
 
