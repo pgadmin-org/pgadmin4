@@ -18,6 +18,7 @@ Housekeeping
 
 | `Issue #4415 <https://redmine.postgresql.org/issues/4415>`_ -  Add Reverse Engineered SQL tests for Roles and Resource Groups.
 | `Issue #4441 <https://redmine.postgresql.org/issues/4441>`_ -  Add Reverse Engineered SQL tests for FDWs.
+| `Issue #4453 <https://redmine.postgresql.org/issues/4453>`_ -  Add Reverse Engineered SQL tests for Extensions.
 
 Bug fixes
 *********
