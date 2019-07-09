@@ -1,0 +1,99 @@
+{
+  "scenarios": [{
+      "type": "create",
+      "name": "Create FTS Configuration",
+      "endpoint": "NODE-fts_configuration.obj",
+      "sql_endpoint": "NODE-fts_configuration.sql_id",
+      "data": {
+        "name": "test_fts_conf_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "test",
+        "schema_id": "<SCHEMA_ID>",
+        "prsname": "default",
+        "tokens": []
+      },
+      "expected_sql_file": "create_fts_conf.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop FTS Configuration",
+      "endpoint": "NODE-fts_configuration.delete_id",
+      "data": {
+        "name": "test_fts_conf_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create FTS Configuration with Parser",
+      "endpoint": "NODE-fts_configuration.obj",
+      "sql_endpoint": "NODE-fts_configuration.sql_id",
+      "data": {
+        "name": "test_fts_configuration_def1",
+        "schema": "test",
+        "schema_id": "<SCHEMA_ID>",
+        "prsname": "default",
+        "tokens": []
+      },
+      "expected_sql_file": "create_fts_conf_def1.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter FTS Configuration add comment",
+      "endpoint": "NODE-fts_configuration.obj_id",
+      "sql_endpoint": "NODE-fts_configuration.sql_id",
+      "data": {
+        "description": "test comment"
+      },
+      "expected_sql_file": "alter_fts_conf_add_comment.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter FTS Configuration add token file",
+      "endpoint": "NODE-fts_configuration.obj_id",
+      "sql_endpoint": "NODE-fts_configuration.sql_id",
+      "data": {
+        "tokens": {"added": [{"token": "file", "dictname": ["english_stem"]}]}
+      },
+      "expected_sql_file": "alter_fts_conf_add_token.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter FTS Configuration Rename",
+      "endpoint": "NODE-fts_configuration.obj_id",
+      "sql_endpoint": "NODE-fts_configuration.sql_id",
+      "data": {
+        "name": "test_fts_configuration"
+      },
+      "expected_sql_file": "alter_fts_conf_rename.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop FTS Configuration with parser",
+      "endpoint": "NODE-fts_configuration.delete_id",
+      "data": {
+        "name": "test_fts_configuration_def1"
+      }
+    }, {
+      "type": "create",
+      "name": "Create FTS Configuration with copy config",
+      "endpoint": "NODE-fts_configuration.obj",
+      "sql_endpoint": "NODE-fts_configuration.sql_id",
+      "data": {
+        "name": "test_fts_configuration_def2",
+        "schema": "test",
+        "schema_id": "<SCHEMA_ID>",
+        "copy_config": "english"
+      },
+      "expected_sql_file": "create_fts_conf_def2.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter FTS Configuration remove token file",
+      "endpoint": "NODE-fts_configuration.obj_id",
+      "sql_endpoint": "NODE-fts_configuration.sql_id",
+      "data": {
+        "tokens": {"deleted": [{"token": "word", "dictname": ["english_stem"]}]}
+      },
+      "expected_sql_file": "alter_fts_conf_remove_token.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop FTS Configuration with copy config",
+      "endpoint": "NODE-fts_configuration.delete_id",
+      "data": {
+        "name": "test_fts_configuration_def2"
+      }
+    }
+  ]
+}
