@@ -95,6 +95,34 @@
       },
       "expected_sql_file": "alter_fdw_rename.sql"
     },{
+      "type": "alter",
+      "name": "Alter FDW add privileges",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "fdwacl": {
+          "added":[{
+            "grantee": "PUBLIC",
+            "grantor": "enterprisedb",
+            "privileges":[
+              {
+                "privilege_type": "U",
+                "privilege": true,
+                "with_grant": false
+              }]
+          },{
+            "grantee": "enterprisedb",
+            "grantor": "enterprisedb",
+            "privileges":[{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": true
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_fdw_privileges.sql"
+    },{
       "type": "delete",
       "name": "Drop FDW",
       "endpoint": "NODE-foreign_data_wrapper.delete_id",
