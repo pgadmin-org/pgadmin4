@@ -722,6 +722,13 @@ class LanguageView(PGChildNodeView):
             else:
                 old_data[row['deftype']] = [priv]
 
+        # To format privileges
+        if 'lanacl' in old_data:
+            old_data['lanacl'] = parse_priv_to_db(
+                old_data['lanacl'],
+                ['U']
+            )
+
         seclabels = []
         if 'seclabels' in old_data and old_data['seclabels'] is not None:
             import re

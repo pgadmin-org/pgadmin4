@@ -5,7 +5,7 @@
 -- DROP LANGUAGE {{ conn|qtIdent(data.name) }}
 
 {# ============= CREATE LANGUAGE Query ============= #}
-CREATE {% if data.trusted %}TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIdent(data.name) }}
+CREATE{% if data.trusted %} TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIdent(data.name) }}
 {% if data.lanproc %}
     HANDLER {{ conn|qtIdent(data.lanproc) }}
 {% endif %}
@@ -14,7 +14,7 @@ CREATE {% if data.trusted %}TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIde
 {% endif %}
 {% if data.lanval %}
     VALIDATOR {{ conn|qtIdent(data.lanval) }}{% endif %};
-  {# ============= ALTER LANGUAGE Query ============= #}
+{# ============= ALTER LANGUAGE Query ============= #}
 {% if data.lanowner %}
 
 ALTER LANGUAGE {{ conn|qtIdent(data.name) }}
@@ -30,7 +30,7 @@ COMMENT ON LANGUAGE {{ conn|qtIdent(data.name) }}
 {% if data.lanacl and data.lanacl|length > 0 %}
 
 {% for priv in data.lanacl %}
-{{ PRIVILEGE.RESETALL(conn, 'LANGUAGE', priv.grantee, data.name) }}
+{{ PRIVILEGE.APPLY(conn, 'LANGUAGE', priv.grantee, data.name, priv.without_grant, priv.with_grant) }}
 {% endfor %}
 {% endif %}
 {# ============= PRIVILEGES on LANGUAGE ============= #}

@@ -1,0 +1,85 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create trusted language",
+      "endpoint": "NODE-language.obj",
+      "sql_endpoint": "NODE-language.sql_id",
+      "data": {
+          "name": "Lan1_$%{}[]()&*^!@\"'`\\/#",
+          "trusted": true,
+          "lanproc": "spl_call_handler",
+          "laninl": "spl_inline_handler",
+          "lanval": "spl_validator",
+          "is_template": false
+      },
+      "expected_sql_file": "create_trusted_language.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter trusted language name",
+      "endpoint": "NODE-language.obj_id",
+      "sql_endpoint": "NODE-language.sql_id",
+      "data": {
+        "name": "Lan2_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_trusted_lan_name.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter comment and privileges",
+      "endpoint": "NODE-language.obj_id",
+      "sql_endpoint": "NODE-language.sql_id",
+      "data": {
+        "description": "This is comment on custom trusted language",
+        "lanacl": {
+          "added":[{
+            "grantee": "PUBLIC",
+            "grantor": "enterprisedb",
+            "privileges":[{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+            }]
+          },{
+            "grantee": "enterprisedb",
+            "grantor": "enterprisedb",
+            "privileges":[{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": true
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_comment_privileges.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop trusted language",
+      "endpoint": "NODE-language.obj_id",
+      "data": {}
+    },
+    {
+      "type": "create",
+      "name": "Create untrusted language",
+      "endpoint": "NODE-language.obj",
+      "sql_endpoint": "NODE-language.sql_id",
+      "data": {
+          "name": "Lan1_$%{}[]()&*^!@\"'`\\/#",
+          "trusted": false,
+          "lanproc": "spl_call_handler",
+          "laninl": "spl_inline_handler",
+          "lanval": "spl_validator",
+          "is_template": false
+      },
+      "expected_sql_file": "create_untrusted_language.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop untrusted language",
+      "endpoint": "NODE-language.obj_id",
+      "data": {}
+    }
+  ]
+}
