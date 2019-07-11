@@ -72,6 +72,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Status of the test case
         self.final_test_status = True
 
+        # Added line break after scenario name
+        print("")
+
     def runTest(self):
         """ Create the module list on which reverse engineering sql test
         cases will be executed."""
@@ -165,8 +168,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         :return:
         """
         object_id = None
-        # Added line break after scenario name
-        print("\n")
 
         for scenario in scenarios:
             if 'type' in scenario and scenario['type'] == 'create':
@@ -204,7 +205,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     self.assertEquals(response.status_code, 200)
                 except Exception as e:
                     self.final_test_status = False
-                    print(scenario['name'] + "..............FAIL")
+                    print(scenario['name'] + "... FAIL")
                     traceback.print_exc()
                     continue
 
@@ -217,7 +218,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     if 'expected_sql_file' in scenario:
                         print_msg = print_msg + "  Expected SQL File:" + \
                                                 scenario['expected_sql_file']
-                    print_msg = print_msg + " ..............FAIL"
+                    print_msg = print_msg + "... FAIL"
                     print(print_msg)
                     continue
             elif 'type' in scenario and scenario['type'] == 'alter':
@@ -230,7 +231,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     self.assertEquals(response.status_code, 200)
                 except Exception as e:
                     self.final_test_status = False
-                    print(scenario['name'] + "..............FAIL")
+                    print(scenario['name'] + "... FAIL")
                     traceback.print_exc()
                     continue
 
@@ -243,7 +244,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     if 'expected_sql_file' in scenario:
                         print_msg = print_msg + "  Expected SQL File:" + \
                                                 scenario['expected_sql_file']
-                    print_msg = print_msg + " ..............FAIL"
+                    print_msg = print_msg + "... FAIL"
                     print(print_msg)
                     continue
             elif 'type' in scenario and scenario['type'] == 'delete':
@@ -255,11 +256,11 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     self.assertEquals(delete_response.status_code, 200)
                 except Exception as e:
                     self.final_test_status = False
-                    print(scenario['name'] + "..............FAIL")
+                    print(scenario['name'] + "... FAIL")
                     traceback.print_exc()
                     continue
 
-            print(scenario['name'] + "..............OK")
+            print(scenario['name'] + "... ok")
 
     def get_test_folder(self, module_path):
         """
