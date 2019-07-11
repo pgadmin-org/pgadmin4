@@ -21,6 +21,7 @@ Housekeeping
 | `Issue #4452 <https://redmine.postgresql.org/issues/4452>`_ -  Add Reverse Engineered SQL tests for Languages.
 | `Issue #4453 <https://redmine.postgresql.org/issues/4453>`_ -  Add Reverse Engineered SQL tests for Extensions.
 | `Issue #4454 <https://redmine.postgresql.org/issues/4454>`_ -  Add Reverse Engineered SQL tests for FTS Configurations.
+| `Issue #4456 <https://redmine.postgresql.org/issues/4456>`_ -  Add Reverse Engineered SQL tests for Packages.
 
 Bug fixes
 *********

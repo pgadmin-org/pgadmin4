@@ -1,0 +1,43 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Packages",
+      "endpoint": "NODE-package.obj",
+      "sql_endpoint": "NODE-package.sql_id",
+      "data":
+      {
+        "name": "pkg_emp_$%{}[]()&*^!@\"'`\\/#",
+        "description": "test comment",
+        "owner": "enterprisedb",
+        "pkgacl": [{
+          "grantee": "aq_administrator_role",
+          "grantor": "enterprisedb",
+          "privileges": [{
+            "privilege_type": "X",
+            "privilege": true,
+            "with_grant": true
+          }]
+        }],
+        "pkgbodysrc": "FUNCTION func1(v1 integer) RETURN integer IS BEGIN RETURN V1+10;END FUNC1;",
+        "pkgheadsrc": "FUNCTION func1(v1 integer) RETURN integer;",
+        "schema": "public"
+      },
+      "expected_sql_file": "create_package_with_all_options.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Packages",
+      "endpoint": "NODE-package.obj_id",
+      "sql_endpoint": "NODE-package.sql_id",
+      "data":
+      {
+        "description": "test comment updated",
+        "owner": "enterprisedb",
+        "pkgheadsrc": "PROCEDURE get_name(p_empno numeric);",
+        "schema": "public"
+      },
+      "expected_sql_file": "alter_package_headers_and_comment.sql"
+    }
+  ]
+}
