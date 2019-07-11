@@ -46,13 +46,13 @@ class dialogTabNavigator {
 
     if(childTabData) {
       var res = this.navigate(shortcut, childTabData.childTab,
-        childTabData.childTabPane);
+        childTabData.childTabPane, event);
 
       if (!res) {
-        this.navigate(shortcut, this.tabs, currentTabPane);
+        this.navigate(shortcut, this.tabs, currentTabPane, event);
       }
     } else {
-      this.navigate(shortcut, this.tabs, currentTabPane);
+      this.navigate(shortcut, this.tabs, currentTabPane, event);
     }
   }
 
@@ -73,16 +73,16 @@ class dialogTabNavigator {
     return null;
   }
 
-  navigate(shortcut, tabs, tab_pane) {
-    if(shortcut == this.dialogTabBackward) {
-      return this.navigateBackward(tabs, tab_pane);
-    }else if (shortcut == this.dialogTabForward) {
-      return this.navigateForward(tabs, tab_pane);
+  navigate(shortcut, tabs, tab_pane, event) {
+    if (shortcut == this.dialogTabBackward) {
+      return this.navigateBackward(tabs, tab_pane, event);
+    } else if (shortcut == this.dialogTabForward) {
+      return this.navigateForward(tabs, tab_pane, event);
     }
     return false;
   }
 
-  navigateBackward(tabs, tab_pane) {
+  navigateBackward(tabs, tab_pane, event) {
     var self = this,
       nextTabPane,
       innerTabContainer,
@@ -105,6 +105,7 @@ class dialogTabNavigator {
         self.tabSwitching = false;
       }, 200);
 
+      event.stopPropagation();
       return true;
     }
 
@@ -112,7 +113,7 @@ class dialogTabNavigator {
     return false;
   }
 
-  navigateForward(tabs, tab_pane) {
+  navigateForward(tabs, tab_pane, event) {
     var self = this,
       nextTabPane,
       innerTabContainer,
@@ -134,6 +135,8 @@ class dialogTabNavigator {
       setTimeout(function() {
         self.tabSwitching = false;
       }, 200);
+
+      event.stopPropagation();
 
       return true;
     }

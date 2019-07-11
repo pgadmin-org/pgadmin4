@@ -288,6 +288,10 @@ table.backgrid {
     background-color: $color-bg-theme !important;
   }
 
+  & td.edit-cell.editor:focus {
+    outline: $input-focus-border-color auto 5px !important;
+  }
+
   tr.editor-row  {
     background-color: $color-gray-light !important;
     & > td {

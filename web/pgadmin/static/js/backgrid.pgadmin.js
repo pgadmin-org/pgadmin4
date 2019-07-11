@@ -9,15 +9,18 @@
 
 define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-  'moment', 'bignumber', 'bootstrap.datetimepicker', 'backgrid.filter',
-  'bootstrap.toggle',
+  'moment', 'bignumber', 'sources/utils', 'sources/keyboard_shortcuts',
+  'bootstrap.datetimepicker', 'backgrid.filter', 'bootstrap.toggle',
 ], function(
-  gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber
+  gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber,
+  commonUtils, keyboardShortcuts
 ) {
   /*
    * Add mechanism in backgrid to render different types of cells in
    * same column;
    */
+  let pgAdmin = (window.pgAdmin = window.pgAdmin || {}),
+    pgBrowser = pgAdmin.Browser;
 
   // Add new property cellFunction in Backgrid.Column.
   _.extend(Backgrid.Column.prototype.defaults, {
@@ -33,6 +36,18 @@ define([
         ($el.innerWidth() + 1) < $el[0].scrollWidth
       ) {
         $el.attr('title', $.trim($el.text()));
+      }
+    },
+  });
+
+  // bind shortcut in cell edit mode
+  _.extend(Backgrid.InputCellEditor.prototype.events, {
+    'keydown': function(e) {
+      let preferences = pgBrowser.get_preferences_for_module('browser');
+      if(keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,e)) {
+        pgBrowser.keyboardNavigation.bindAddGridRow();
+      } else {
+        Backgrid.InputCellEditor.prototype.saveOrCancel.apply(this, arguments);
       }
     },
   });
@@ -151,6 +166,62 @@ define([
         }
       };
     },
+    moveToNextCell: function (model, column, command) {
+      var i = this.collection.indexOf(model);
+      var j = this.columns.indexOf(column);
+      var cell, renderable, editable, m, n;
+
+      // return if model being edited in a different grid
+      if (j === -1) return this;
+
+      this.rows[i].cells[j].exitEditMode();
+
+      if (command.moveUp() || command.moveDown() || command.moveLeft() ||
+          command.moveRight() || command.save()) {
+        var l = this.columns.length;
+        var maxOffset = l * this.collection.length;
+
+        if (command.moveUp() || command.moveDown()) {
+          m = i + (command.moveUp() ? -1 : 1);
+          var row = this.rows[m];
+          if (row) {
+            cell = row.cells[j];
+            if (Backgrid.callByNeed(cell.column.editable(), cell.column, model)) {
+              cell.enterEditMode();
+              model.trigger('backgrid:next', m, j, false);
+            }
+          }
+          else model.trigger('backgrid:next', m, j, true);
+        }
+        else if (command.moveLeft() || command.moveRight()) {
+          var right = command.moveRight();
+          for (var offset = i * l + j + (right ? 1 : -1);
+            offset >= 0 && offset < maxOffset;
+            right ? offset++ : offset--) {
+            m = ~~(offset / l);
+            n = offset - m * l;
+            cell = this.rows[m].cells[n];
+            renderable = Backgrid.callByNeed(cell.column.renderable(), cell.column, cell.model);
+            editable = Backgrid.callByNeed(cell.column.editable(), cell.column, model);
+            if(cell && cell.$el.hasClass('edit-cell') &&
+              !cell.$el.hasClass('privileges') || cell.$el.hasClass('delete-cell')) {
+              model.trigger('backgrid:next', m, n, false);
+              break;
+            } else if (renderable && editable) {
+              cell.enterEditMode();
+              model.trigger('backgrid:next', m, n, false);
+              break;
+            }
+          }
+
+          if (offset == maxOffset) {
+            model.trigger('backgrid:next', ~~(offset / l), offset - m * l, true);
+          }
+        }
+      }
+
+      return this;
+    },
   });
 
   _.extend(Backgrid.Row.prototype, {
@@ -189,7 +260,7 @@ define([
 
   var ObjectCellEditor = Backgrid.Extension.ObjectCellEditor = Backgrid.CellEditor.extend({
     modalTemplate: _.template([
-      '<div class="subnode-dialog" tabindex="1">',
+      '<div class="subnode-dialog" tabindex="0">',
       '    <div class="subnode-body"></div>',
       '</div>',
     ].join('\n')),
@@ -234,6 +305,14 @@ define([
         schema: schema,
         tabPanelClassName: function() {
           return 'sub-node-form col-sm-12';
+        },
+        events: {
+          'keydown': function (event) {
+            let preferences = pgBrowser.get_preferences_for_module('browser');
+            if(keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,event)) {
+              pgBrowser.keyboardNavigation.bindAddGridRow();
+            }
+          },
         },
       });
 
@@ -315,11 +394,17 @@ define([
 
       editorOptions['el'] = $(this.el);
       editorOptions['columns_length'] = this.column.collection.length;
-      editorOptions['el'].attr('tabindex', 1);
+      editorOptions['el'].attr('tabindex', 0);
 
       this.listenTo(this.model, 'backgrid:edit', function(model, column, cell, editor) {
         if (column.get('name') == this.column.get('name'))
           editor.extendWithOptions(editorOptions);
+      });
+      // Listen for Tab key, open subnode dialog on space key
+      this.$el.on('keydown', function(e) {
+        if (e.keyCode == 32) {
+          $(this).click();
+        }
       });
     },
     enterEditMode: function() {
@@ -342,6 +427,10 @@ define([
           this.$el.html(
             '<i class=\'fa fa-pencil-square subnode-edit-in-process\' title=\'' + _('Edit row') + '\'></i>'
           );
+          let body = $(this.$el).parents()[1],
+            container = $(body).find('.tab-content:first > .tab-pane.active:first');
+          commonUtils.findAndSetFocus(container);
+          pgBrowser.keyboardNavigation.getDialogTabNavigator($(body).find('.subnode-dialog'));
           this.model.trigger(
             'pg-sub-node:opened', this.model, this
           );
@@ -362,14 +451,16 @@ define([
       return this;
     },
     exitEditMode: function() {
-      var index = $(this.currentEditor.objectView.el)
-        .find('.nav-tabs > .active > a[data-toggle="tab"]').first()
-        .data('tabIndex');
-      Backgrid.Cell.prototype.exitEditMode.apply(this, arguments);
-      this.model.trigger(
-        'pg-sub-node:closed', this, index
-      );
-      this.grabFocus = true;
+      if(!_.isUndefined(this.currentEditor) || !_.isEmpty(this.currentEditor)) {
+        var index = $(this.currentEditor.objectView.el)
+          .find('.nav-tabs > .active > a[data-toggle="tab"]').first()
+          .data('tabIndex');
+        Backgrid.Cell.prototype.exitEditMode.apply(this, arguments);
+        this.model.trigger(
+          'pg-sub-node:closed', this, index
+        );
+        this.grabFocus = true;
+      }
     },
     events: {
       'click': function(e) {
@@ -381,6 +472,17 @@ define([
           this.enterEditMode.call(this, []);
         }
         e.preventDefault();
+      },
+      'keydown': function(e) {
+        var model = this.model;
+        var column = this.column;
+        var command = new Backgrid.Command(e);
+
+        if (command.moveLeft()) {
+          setTimeout(function() {
+            model.trigger('backgrid:edited', model, column, command);
+          }, 20);
+        }
       },
     },
   });
@@ -413,7 +515,16 @@ define([
           delete_title,
           delete_msg,
           function() {
+            let tbody = $(that.el).parents('tbody').eq(0);
             that.model.collection.remove(that.model);
+            let row = $(tbody).find('tr');
+            if(row.length > 0) {
+              // set focus to first tr
+              row.first().children()[0].focus();
+            } else {
+              // set focus to add button
+              $(tbody).parents('.subnode').eq(0).find('.add').focus();
+            }
           },
           function() {
             return true;
@@ -427,12 +538,54 @@ define([
         );
       }
     },
+    exitEditMode: function() {
+      this.$el.removeClass('editor');
+    },
     initialize: function() {
       Backgrid.Cell.prototype.initialize.apply(this, arguments);
     },
     render: function() {
+      var self = this;
       this.$el.empty();
+      $(this.$el).attr('tabindex', 0);
       this.$el.html('<i class=\'fa fa-trash\' title=\'' + _('Delete row') + '\'></i>');
+      // Listen for Tab/Shift-Tab key
+      this.$el.on('keydown', function(e) {
+        // with keyboard navigation on space key, mark row for deletion
+        if (e.keyCode == 32) {
+          self.$el.click();
+        }
+        var gotoCell;
+        if (e.keyCode == 9 || e.keyCode == 16) {
+          // go to Next Cell & if Shift is also pressed go to Previous Cell
+          gotoCell = e.shiftKey ? self.$el.prev() : self.$el.next();
+        }
+
+        if (gotoCell) {
+          let command = new Backgrid.Command({
+            key: 'Tab',
+            keyCode: 9,
+            which: 9,
+            shiftKey: e.shiftKey,
+          });
+          setTimeout(function() {
+            // When we have Editable Cell
+            if (gotoCell.hasClass('editable')) {
+              e.preventDefault();
+              e.stopPropagation();
+              self.model.trigger('backgrid:edited', self.model,
+                self.column, command);
+            }
+            else {
+              // When we have Non-Editable Cell
+              self.model.trigger('backgrid:edited', self.model,
+                self.column, command);
+            }
+          }, 20);
+        }
+      });
+
+
       this.delegateEvents();
       return this;
     },
@@ -488,12 +641,20 @@ define([
       'change input': 'onChange',
       'keyup': 'toggleSwitch',
       'blur input': 'exitEditMode',
+      'keydown': 'onKeyDown',
     },
 
     toggleSwitch: function(e) {
       if (e.keyCode == 32) {
         this.$el.find('input[type=checkbox]').bootstrapToggle('toggle');
         e.preventDefault();
+      }
+    },
+
+    onKeyDown: function(e) {
+      let preferences = pgBrowser.get_preferences_for_module('browser');
+      if(keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,e)) {
+        pgBrowser.keyboardNavigation.bindAddGridRow();
       }
     },
 
@@ -553,7 +714,11 @@ define([
           });
           setTimeout(function() {
             // When we have Editable Cell
-            if (gotoCell.hasClass('editable')) {
+            if (gotoCell.hasClass('editable') && gotoCell.hasClass('edit-cell')) {
+              e.preventDefault();
+              e.stopPropagation();
+              gotoCell.trigger('focus');
+            } else if (gotoCell.hasClass('editable')) {
               e.preventDefault();
               e.stopPropagation();
               self.model.trigger('backgrid:edited', self.model,
@@ -608,8 +773,7 @@ define([
     },
 
     saveOrCancel: function (e) {
-      var model = this.model;
-      var column = this.column;
+      var self = this;
 
       var command = new Backgrid.Command(e);
       var blurred = e.type === 'blur';
@@ -617,10 +781,32 @@ define([
       if (command.moveUp() || command.moveDown() || command.moveLeft() || command.moveRight() ||
           command.save() || blurred) {
 
-        this.exitEditMode();
-        e.preventDefault();
-        e.stopPropagation();
-        model.trigger('backgrid:edited', model, column, command);
+        let gotoCell;
+        // go to Next Cell & if Shift is also pressed go to Previous Cell
+        gotoCell = e.shiftKey ? self.$el.prev() : self.$el.next();
+
+        if (gotoCell) {
+          let command = new Backgrid.Command({
+            key: 'Tab',
+            keyCode: 9,
+            which: 9,
+            shiftKey: e.shiftKey,
+          });
+          setTimeout(function() {
+            // When we have Editable Cell
+            if (gotoCell.hasClass('editable')) {
+              e.preventDefault();
+              e.stopPropagation();
+              self.model.trigger('backgrid:edited', self.model,
+                self.column, command);
+            }
+            else {
+              // When we have Non-Editable Cell
+              self.model.trigger('backgrid:edited', self.model,
+                self.column, command);
+            }
+          }, 20);
+        }
       }
     },
     events: {

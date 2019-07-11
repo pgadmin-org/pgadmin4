@@ -64,6 +64,29 @@ Use the shortcuts below to navigate the tabsets on dialogs:
    | Control+Shift+]            | Dialog tab forward                                    |
    +----------------------------+-------------------------------------------------------+
 
+Property Grid Controls
+**********************
+
+Use the shortcuts below when working with property grid controls:
+
+.. table::
+   :class: longtable
+   :widths: 2 3
+
+   +----------------------------+-------------------------------------------------------+
+   | Shortcut for all platforms | Function                                              |
+   +============================+=======================================================+
+   | Control+Shift+A            | Add row in Grid                                       |
+   +----------------------------+-------------------------------------------------------+
+   | Tab                        | Move focus to the next control                        |
+   +----------------------------+-------------------------------------------------------+
+   | Shift+Tab                  | Move focus to the previous control                    |
+   +----------------------------+-------------------------------------------------------+
+   | Return                     | Pick the selected an item in a combo box              |
+   +----------------------------+-------------------------------------------------------+
+   | Control+Shift+A            | Add row in Grid                                       |
+   +----------------------------+-------------------------------------------------------+
+
 SQL Editors
 ***********
 

@@ -387,3 +387,18 @@ def register_browser_preferences(self):
         category_label=gettext('Keyboard shortcuts'),
         fields=fields
     )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'add_grid_row',
+        gettext('Add grid row'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': True,
+            'control': True,
+            'key': {'key_code': 65, 'char': 'a'}
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=fields
+    )

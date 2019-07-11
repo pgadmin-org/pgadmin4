@@ -10,8 +10,10 @@
 define([
   'sources/gettext', 'underscore', 'underscore.string', 'jquery',
   'backbone', 'backform', 'backgrid', 'codemirror', 'sources/sqleditor_utils',
+  'sources/keyboard_shortcuts',
   'spectrum', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle',
-], function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror, SqlEditorUtils) {
+], function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror,
+  SqlEditorUtils, keyboardShortcuts) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {}),
     pgBrowser = pgAdmin.Browser;
@@ -1269,6 +1271,13 @@ define([
 
       var $dialog = gridBody.append(subNodeGrid);
 
+      let preferences = pgBrowser.get_preferences_for_module('browser');
+      let addBtn = $dialog.find('.add');
+      // Add title to the buttons
+      $(addBtn)
+        .attr('title',
+          keyboardShortcuts.shortcut_title(gettext('Add new row'),preferences.add_grid_row));
+
       // Add button callback
       if (!(data.disabled || data.canAdd == false)) {
         $dialog.find('button.add').first().on('click',(e) => {
@@ -1553,6 +1562,14 @@ define([
       }
 
       var $dialog = gridBody.append(subNodeGrid);
+
+      let preferences = pgBrowser.get_preferences_for_module('browser');
+      let addBtn = $dialog.find('.add');
+      // Add title to the buttons
+      $(addBtn)
+        .attr('title',
+          keyboardShortcuts.shortcut_title(gettext('Add new row'),preferences.add_grid_row));
+
 
       // Add button callback
       $dialog.find('button.add').on('click',(e) => {

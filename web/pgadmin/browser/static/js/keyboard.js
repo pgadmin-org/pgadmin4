@@ -41,6 +41,7 @@ _.extend(pgBrowser.keyboardNavigation, {
         'direct_debugging': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'direct_debugging').value),
         'drop_multiple_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'grid_menu_drop_multiple').value),
         'drop_cascade_multiple_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'grid_menu_drop_cascade_multiple').value),
+        'add_grid_row': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'add_grid_row').value),
 
       };
       this.shortcutMethods = {
@@ -61,6 +62,7 @@ _.extend(pgBrowser.keyboardNavigation, {
         'bindDirectDebugging': {'shortcuts': this.keyboardShortcut.direct_debugging}, // Sub menu - Direct Debugging
         'bindDropMultipleObjects': {'shortcuts': this.keyboardShortcut.drop_multiple_objects}, // Grid Menu Drop Multiple
         'bindDropCascadeMultipleObjects': {'shortcuts': this.keyboardShortcut.drop_cascade_multiple_objects}, // Grid Menu Drop Cascade Multiple
+        'bindAddGridRow': {'shortcuts': this.keyboardShortcut.add_grid_row}, // Subnode Grid Add Row
       };
       this.bindShortcuts();
     }
@@ -328,6 +330,12 @@ _.extend(pgBrowser.keyboardNavigation, {
     let isPropertyPanelVisible = this.isPropertyPanelVisible();
     if (isPropertyPanelVisible === true && $('button.delete_multiple_cascade').length > 0) {
       $('button.delete_multiple_cascade').click();
+    }
+  },
+  bindAddGridRow: function() {
+    let subNode = $(document.activeElement).closest('.object.subnode');
+    if ($(subNode).length) {
+      $(subNode).find('.add').click();
     }
   },
   isPropertyPanelVisible: function() {
