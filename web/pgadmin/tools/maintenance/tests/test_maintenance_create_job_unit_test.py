@@ -141,6 +141,10 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
 
         binary_path = os.path.join(
             self.server['default_binary_paths'][self.server['type']], 'psql')
+
+        if os.name == 'nt':
+            binary_path = binary_path + '.exe'
+
         retVal = does_utility_exist(binary_path)
         if retVal is not None:
             self.skipTest(retVal)
