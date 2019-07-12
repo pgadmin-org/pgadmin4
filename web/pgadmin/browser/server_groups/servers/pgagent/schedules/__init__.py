@@ -140,7 +140,7 @@ class JobScheduleView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'put': 'update', 'delete': 'delete'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -474,17 +474,25 @@ class JobScheduleView(PGChildNodeView):
         )
 
     @check_precondition
-    def delete(self, gid, sid, jid, jscid):
+    def delete(self, gid, sid, jid, jscid=None):
         """Delete the Job Schedule."""
 
-        status, res = self.conn.execute_void(
-            render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                jid=jid, jscid=jscid, conn=self.conn
+        if jscid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
             )
-        )
-        if not status:
-            return internal_server_error(errormsg=res)
+        else:
+            data = {'ids': [jscid]}
+
+        for jscid in data['ids']:
+            status, res = self.conn.execute_void(
+                render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    jid=jid, jscid=jscid, conn=self.conn
+                )
+            )
+            if not status:
+                return internal_server_error(errormsg=res)
 
         return make_json_response(success=1)
 

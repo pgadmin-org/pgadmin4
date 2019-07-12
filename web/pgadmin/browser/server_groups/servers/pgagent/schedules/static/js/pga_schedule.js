@@ -24,6 +24,7 @@ define('pgadmin.node.pga_schedule', [
         type: 'coll-pga_schedule',
         columns: ['jscid', 'jscname', 'jscenabled'],
         hasStatistics: false,
+        canDropCascade: false,
       });
   }
 

@@ -24,6 +24,7 @@ define('pgadmin.node.pga_jobstep', [
           'jstonerror',
         ],
         hasStatistics: false,
+        canDropCascade: false,
       });
   }
 
