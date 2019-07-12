@@ -19,8 +19,8 @@
             "with_grant": true
           }]
         }],
-        "pkgbodysrc": "FUNCTION func1(v1 integer) RETURN integer IS BEGIN RETURN V1+10;END FUNC1;",
-        "pkgheadsrc": "FUNCTION func1(v1 integer) RETURN integer;",
+        "pkgheadsrc": "FUNCTION func1(v1 integer) RETURN integer;\nPROCEDURE proc1(v1 integer);\ngl_v character varying(50);",
+        "pkgbodysrc": "FUNCTION func1(v1 integer) RETURN integer IS BEGIN RETURN V1+10; END FUNC1;\nPROCEDURE proc1(v1 integer) IS BEGIN DBMS_OUTPUT.put_line(v1+50); END;",
         "schema": "public"
       },
       "expected_sql_file": "create_package_with_all_options.sql"
@@ -34,7 +34,8 @@
       {
         "description": "test comment updated",
         "owner": "enterprisedb",
-        "pkgheadsrc": "PROCEDURE get_name(p_empno numeric);",
+        "pkgheadsrc": "FUNCTION func2(v2 integer) RETURN integer;\nPROCEDURE proc2(v2 integer);\ngl_v character varying(50);",
+        "pkgbodysrc": "FUNCTION func2(v2 integer) RETURN integer IS BEGIN RETURN V2+10; END FUNC2;\nPROCEDURE proc2(v2 integer) IS BEGIN DBMS_OUTPUT.put_line(v2+50); END;",
         "schema": "public"
       },
       "expected_sql_file": "alter_package_headers_and_comment.sql"

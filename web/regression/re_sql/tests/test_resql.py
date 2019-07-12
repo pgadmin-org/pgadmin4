@@ -163,7 +163,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         """
         This function will run the test cases for specific module.
 
-        :param module_name: Name of the module
         :param scenarios: List of scenarios
         :return:
         """
