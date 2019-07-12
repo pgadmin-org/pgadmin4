@@ -26,7 +26,7 @@ else:
 class MaintenanceCreateJobTest(BaseTestGenerator):
     """Test the BackupCreateJob class"""
     scenarios = [
-        ('When maintenance object with default options',
+        ('When maintaining object with default options',
          dict(
              class_params=dict(
                  sid=1,
@@ -46,7 +46,7 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              url='/maintenance/job/{0}/{1}',
              expected_cmd_opts=['VACUUM VERBOSE;\n'],
          )),
-        ('When maintenance object with VACUUM FULL',
+        ('When maintaining object with VACUUM FULL',
          dict(
              class_params=dict(
                  sid=1,
@@ -66,7 +66,7 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              url='/maintenance/job/{0}/{1}',
              expected_cmd_opts=['VACUUM FULL VERBOSE;\n'],
          )),
-        ('When maintenance object with the ANALYZE',
+        ('When maintaining object with ANALYZE',
          dict(
              class_params=dict(
                  sid=1,
