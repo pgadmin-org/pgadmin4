@@ -741,6 +741,17 @@ table tr td {
   }
 }
 
+/* Specific to IE11 where we want to highlight the focus on grid buttons */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  table tr td {
+    td.edit-cell:focus,
+    td.delete-cell:focus,
+    td.string-cell:focus {
+      border: 2px solid $input-focus-border-color !important;;
+    }
+  }
+}
+
 .privilege_label{
   font-size: 10px!important;
 }

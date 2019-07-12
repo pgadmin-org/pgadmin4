@@ -206,6 +206,11 @@ define([
             if(cell && cell.$el.hasClass('edit-cell') &&
               !cell.$el.hasClass('privileges') || cell.$el.hasClass('delete-cell')) {
               model.trigger('backgrid:next', m, n, false);
+              if(cell.$el.hasClass('delete-cell')) {
+                setTimeout(function(){
+                  $(cell.$el).trigger('focus');
+                }, 50);
+              }
               break;
             } else if (renderable && editable) {
               cell.enterEditMode();

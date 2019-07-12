@@ -11,7 +11,7 @@ import $ from 'jquery';
 import 'bootstrap';
 
 describe('dialogTabNavigator', function () {
-  let dialog, tabNavigator, backward_shortcut, forward_shortcut;
+  let dialog, tabNavigator, backward_shortcut, forward_shortcut, fakeEvent;
 
   beforeEach(() => {
     dialog = $('<div tabindex="1" class="backform-tab" role="tabpanel">'+
@@ -68,6 +68,9 @@ describe('dialogTabNavigator', function () {
 
     tabNavigator = new dialogTabNavigator.dialogTabNavigator(
       dialog, backward_shortcut, forward_shortcut);
+
+    fakeEvent = { stopPropagation: () => true };
+
   });
 
   describe('navigate', function () {
@@ -79,7 +82,7 @@ describe('dialogTabNavigator', function () {
     });
 
     it('navigate backward', function () {
-      tabNavigator.onKeyboardEvent({}, 'shift+ctrl+[');
+      tabNavigator.onKeyboardEvent(fakeEvent, 'shift+ctrl+[');
 
       expect(tabNavigator.navigateBackward).toHaveBeenCalled();
 
@@ -88,7 +91,7 @@ describe('dialogTabNavigator', function () {
     });
 
     it('navigate forward', function () {
-      tabNavigator.onKeyboardEvent({}, 'shift+ctrl+]');
+      tabNavigator.onKeyboardEvent(fakeEvent, 'shift+ctrl+]');
 
       expect(tabNavigator.navigateForward).toHaveBeenCalled();
 
@@ -97,7 +100,7 @@ describe('dialogTabNavigator', function () {
     });
 
     it('should not navigate', function () {
-      tabNavigator.onKeyboardEvent({}, 'shift+ctrl+a');
+      tabNavigator.onKeyboardEvent(fakeEvent, 'shift+ctrl+a');
 
       expect(tabNavigator.navigateForward).not.toHaveBeenCalled();
 
@@ -115,7 +118,8 @@ describe('dialogTabNavigator', function () {
 
       navigateForwardResult = tabNavigator.navigateForward(
         dialog.find('ul.nav-tabs:first'),
-        dialog.find('div#1')
+        dialog.find('div#1'),
+        fakeEvent
       );
     });
 
@@ -141,7 +145,8 @@ describe('dialogTabNavigator', function () {
 
       navigateForwardResult = tabNavigator.navigateForward(
         dialog.find('ul.nav-tabs:first'),
-        dialog.find('div#1')
+        dialog.find('div#1'),
+        fakeEvent
       );
     });
 
@@ -165,7 +170,8 @@ describe('dialogTabNavigator', function () {
 
       navigateBackwardResult = tabNavigator.navigateBackward(
         dialog.find('ul.nav-tabs:first'),
-        dialog.find('div#1')
+        dialog.find('div#1'),
+        fakeEvent
       );
     });
 
@@ -184,7 +190,8 @@ describe('dialogTabNavigator', function () {
 
       navigateBackwardResult = tabNavigator.navigateBackward(
         dialog.find('ul.nav-tabs:first'),
-        dialog.find('div#1')
+        dialog.find('div#1'),
+        fakeEvent
       );
     });
 
