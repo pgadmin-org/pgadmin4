@@ -13,7 +13,7 @@ import simplejson as json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
-from pgadmin.utils import server_utils as server_utils, is_utility_exists
+from pgadmin.utils import server_utils as server_utils, does_utility_exist
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 
@@ -141,7 +141,7 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
 
         binary_path = os.path.join(
             self.server['default_binary_paths'][self.server['type']], 'psql')
-        retVal = is_utility_exists(binary_path)
+        retVal = does_utility_exist(binary_path)
         if retVal is not None:
             self.skipTest(retVal)
 

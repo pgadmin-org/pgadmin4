@@ -287,7 +287,7 @@ def get_complete_file_path(file):
     return file if os.path.isfile(file) else None
 
 
-def is_utility_exists(file):
+def does_utility_exist(file):
     """
     This function will check the utility file exists on given path.
     :return:

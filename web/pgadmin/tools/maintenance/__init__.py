@@ -15,7 +15,7 @@ from flask import url_for, Response, render_template, request, current_app
 from flask_babelex import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, html, is_utility_exists
+from pgadmin.utils import PgAdminModule, html, does_utility_exist
 from pgadmin.utils.ajax import bad_request, make_json_response
 from pgadmin.utils.driver import get_driver
 
@@ -214,7 +214,7 @@ def create_maintenance_job(sid, did):
         )
 
     utility = manager.utility('sql')
-    ret_val = is_utility_exists(utility)
+    ret_val = does_utility_exist(utility)
     if ret_val:
         return make_json_response(
             success=0,
@@ -298,7 +298,7 @@ def check_utility_exists(sid):
     manager = driver.connection_manager(server.id)
 
     utility = manager.utility('sql')
-    ret_val = is_utility_exists(utility)
+    ret_val = does_utility_exist(utility)
     if ret_val:
         return make_json_response(
             success=0,

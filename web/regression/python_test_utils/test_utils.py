@@ -1015,12 +1015,12 @@ def check_binary_path_or_skip_test(cls, utility_name):
             )
         )
 
-        from pgadmin.utils import is_utility_exists
+        from pgadmin.utils import does_utility_exist
         binary_path = os.path.join(
             cls.server['default_binary_paths'][cls.server['type']],
             utility_name
         )
-        retVal = is_utility_exists(binary_path)
+        retVal = does_utility_exist(binary_path)
         if retVal is not None:
             cls.skipTest(retVal)
 

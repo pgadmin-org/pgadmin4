@@ -18,7 +18,7 @@ from flask_babelex import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir, is_utility_exists
+    fs_short_path, document_dir, does_utility_exist
 from pgadmin.utils.ajax import make_json_response, bad_request
 
 from config import PG_DEFAULT_DRIVER
@@ -232,7 +232,7 @@ def create_restore_job(sid):
         )
 
     utility = manager.utility('restore')
-    ret_val = is_utility_exists(utility)
+    ret_val = does_utility_exist(utility)
     if ret_val:
         return make_json_response(
             success=0,
@@ -400,7 +400,7 @@ def check_utility_exists(sid):
     manager = driver.connection_manager(server.id)
 
     utility = manager.utility('restore')
-    ret_val = is_utility_exists(utility)
+    ret_val = does_utility_exist(utility)
     if ret_val:
         return make_json_response(
             success=0,

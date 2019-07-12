@@ -17,7 +17,7 @@ import simplejson as json
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from pgadmin.utils import server_utils as server_utils, is_utility_exists
+from pgadmin.utils import server_utils as server_utils, does_utility_exist
 import pgadmin.tools.backup.tests.test_backup_utils as backup_utils
 
 
@@ -75,7 +75,7 @@ class RestoreJobTest(BaseTestGenerator):
         binary_path = os.path.join(
             self.server['default_binary_paths'][self.server['type']],
             'pg_restore')
-        retVal = is_utility_exists(binary_path)
+        retVal = does_utility_exist(binary_path)
         if retVal is not None:
             self.skipTest(retVal)
 

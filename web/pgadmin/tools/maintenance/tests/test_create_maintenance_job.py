@@ -14,7 +14,7 @@ import os
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
-from pgadmin.utils import is_utility_exists
+from pgadmin.utils import does_utility_exist
 
 
 class MaintenanceJobTest(BaseTestGenerator):
@@ -52,7 +52,7 @@ class MaintenanceJobTest(BaseTestGenerator):
 
         binary_path = os.path.join(
             self.server['default_binary_paths'][self.server['type']], 'psql')
-        retVal = is_utility_exists(binary_path)
+        retVal = does_utility_exist(binary_path)
         if retVal is not None:
             self.skipTest(retVal)
 
