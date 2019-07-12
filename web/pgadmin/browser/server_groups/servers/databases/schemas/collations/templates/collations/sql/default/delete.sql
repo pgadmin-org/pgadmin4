@@ -1,1 +1,1 @@
-DROP COLLATION {{name}}{% if cascade%} CASCADE{% endif %};
+DROP COLLATION {{ conn|qtIdent(nspname, name) }}{% if cascade%} CASCADE{% endif %};

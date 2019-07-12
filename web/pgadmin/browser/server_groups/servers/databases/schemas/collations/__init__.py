@@ -511,24 +511,22 @@ class CollationView(PGChildNodeView):
                 SQL = render_template("/".join([self.template_path,
                                                 'get_name.sql']),
                                       scid=scid, coid=coid)
-                status, name = self.conn.execute_scalar(SQL)
+                status, res = self.conn.execute_dict(SQL)
                 if not status:
-                    return internal_server_error(errormsg=name)
+                    return internal_server_error(errormsg=res)
 
-                if name is None:
-                    return make_json_response(
-                        success=0,
-                        errormsg=gettext(
-                            'Error: Object not found.'
-                        ),
-                        info=gettext(
-                            'The specified collation could not be found.\n'
-                        )
-                    )
+                if len(res['rows']) == 0:
+                    return gone(gettext(
+                        "Could not find the collation object in the database."
+                    ))
+
+                data = res['rows'][0]
 
                 SQL = render_template("/".join([self.template_path,
                                                 'delete.sql']),
-                                      name=name, cascade=cascade,
+                                      name=data['name'],
+                                      nspname=data['schema'],
+                                      cascade=cascade,
                                       conn=self.conn)
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
@@ -700,7 +698,8 @@ class CollationView(PGChildNodeView):
 
         sql_header += render_template("/".join([self.template_path,
                                                 'delete.sql']),
-                                      name=data['name'])
+                                      name=data['name'],
+                                      nspname=data['schema'])
         SQL = sql_header + '\n\n' + SQL.strip('\n')
 
         return ajax_response(response=SQL)

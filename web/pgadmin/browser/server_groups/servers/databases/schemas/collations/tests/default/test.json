@@ -1,0 +1,37 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Collation",
+      "endpoint": "NODE-collation.obj",
+      "sql_endpoint": "NODE-collation.sql_id",
+      "data": {
+        "name": "Cl1_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "testschema",
+        "copy_collation": "pg_catalog.\"C\"",
+        "description": "Description"
+      },
+      "expected_sql_file": "create_collation.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Collation",
+      "endpoint": "NODE-collation.obj_id",
+      "sql_endpoint": "NODE-collation.sql_id",
+      "msql_endpoint": "NODE-collation.msql_id",
+      "data": {
+        "name": "Cl1_$%{}[]()&*^!@\"'`\\/#a",
+        "schema": "testschema",
+        "description": "Description for alter"
+      },
+      "expected_sql_file": "alter_collation.sql",
+      "expected_msql_file": "msql_collation.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Collation",
+      "endpoint": "NODE-collation.delete_id",
+      "data": {
+        "name": "Cl1_$%{}[]()&*^!@\"'`\\/#a"
+      }
+    }
+  ]
+}

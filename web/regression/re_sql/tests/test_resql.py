@@ -9,6 +9,7 @@
 from __future__ import print_function
 import json
 import os
+import urllib
 import traceback
 from flask import url_for
 import regression
@@ -222,6 +223,19 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     continue
             elif 'type' in scenario and scenario['type'] == 'alter':
                 # Get the url and create the specific node.
+
+                # If msql_endpoint exists then validate the modified sql
+                if 'msql_endpoint' in scenario\
+                        and scenario['msql_endpoint']:
+                    if not self.check_msql(scenario, object_id):
+                        print_msg = scenario['name']
+                        if 'expected_msql_file' in scenario:
+                            print_msg += "  Expected MSQL File:" + scenario[
+                                'expected_msql_file']
+                        print_msg = print_msg + "... FAIL"
+                        print(print_msg)
+                        continue
+
                 alter_url = self.get_url(scenario['endpoint'], object_id)
                 response = self.tester.put(alter_url,
                                            data=json.dumps(scenario['data']),
@@ -294,6 +308,66 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         return False, None
 
+    def check_msql(self, scenario, object_id):
+        """
+        This function is used to check the modified SQL.
+        :param scenario:
+        :param object_id:
+        :return:
+        """
+
+        msql_url = self.get_url(scenario['msql_endpoint'],
+                                object_id)
+
+        params = urllib.parse.urlencode(scenario['data'])
+        url = msql_url + "?%s" % params
+        response = self.tester.get(url,
+                                   follow_redirects=True)
+        try:
+            self.assertEquals(response.status_code, 200)
+        except Exception as e:
+            self.final_test_status = False
+            print(scenario['name'] + "... FAIL")
+            traceback.print_exc()
+
+        resp = json.loads(response.data)
+        resp_sql = resp['data']
+
+        # Remove first and last double quotes
+        if resp_sql.startswith('"') and resp_sql.endswith('"'):
+            resp_sql = resp_sql[1:-1]
+            resp_sql = resp_sql.rstrip()
+
+        # Check if expected sql is given in JSON file or path of the output
+        # file is given
+        if 'expected_msql_file' in scenario:
+            output_file = os.path.join(self.test_folder,
+                                       scenario['expected_msql_file'])
+
+            if os.path.exists(output_file):
+                fp = open(output_file, "r")
+                # Used rstrip to remove trailing \n
+                sql = fp.read().rstrip()
+                # Replace place holder <owner> with the current username
+                # used to connect to the database
+                if 'username' in self.server:
+                    sql = sql.replace(self.JSON_PLACEHOLDERS['owner'],
+                                      self.server['username'])
+                try:
+                    self.assertEquals(sql, resp_sql)
+                except Exception as e:
+                    self.final_test_status = False
+                    traceback.print_exc()
+                    return False
+            else:
+                try:
+                    self.assertFalse("Expected SQL File not found")
+                except Exception as e:
+                    self.final_test_status = False
+                    traceback.print_exc()
+                    return False
+        return True
+
     def check_re_sql(self, scenario, object_id):
         """
         This function is used to get the reverse engineering SQL.
@@ -301,11 +375,14 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         :param object_id:
         :return:
         """
+
         sql_url = self.get_url(scenario['sql_endpoint'], object_id)
         response = self.tester.get(sql_url)
+
         try:
             self.assertEquals(response.status_code, 200)
         except Exception as e:
+
             self.final_test_status = False
             traceback.print_exc()
             return False
