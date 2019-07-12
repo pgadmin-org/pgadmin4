@@ -905,10 +905,18 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
 
                     for c in final_columns:
                         if 'attacl' in c:
-                            c['attacl'] = parse_priv_to_db(
-                                c['attacl'], self.column_acl
-                            )
-
+                            if 'added' in c['attacl']:
+                                c['attacl']['added'] = parse_priv_to_db(
+                                    c['attacl']['added'], self.column_acl
+                                )
+                            elif 'changed' in c['attacl']:
+                                c['attacl']['changed'] = parse_priv_to_db(
+                                    c['attacl']['changed'], self.column_acl
+                                )
+                            elif 'deleted' in c['attacl']:
+                                c['attacl']['deleted'] = parse_priv_to_db(
+                                    c['attacl']['deleted'], self.column_acl
+                                )
                         if 'cltype' in c:
                             # check type for '[]' in it
                             c['cltype'], c['hasSqrBracket'] = \

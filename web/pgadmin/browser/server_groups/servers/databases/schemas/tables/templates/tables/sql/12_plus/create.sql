@@ -157,7 +157,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% if c.attacl and c.attacl|length > 0 %}
 
 {% for priv in c.attacl %}
-    {{ COLUMN_PRIVILEGE.APPLY(conn, data.schema, data.name, c.name, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ COLUMN_PRIVILEGE.APPLY(conn, data.schema, data.name, c.name, priv.grantee, priv.without_grant, priv.with_grant) }}
 {% endfor %}
 {% endif %}
 {###  Security Lables ###}

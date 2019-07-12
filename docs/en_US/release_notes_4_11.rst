@@ -29,6 +29,7 @@ Bug fixes
 
 | `Issue #3919 <https://redmine.postgresql.org/issues/3919>`_ -  Allow keyboard navigation of all controls on subnode grids.
 | `Issue #4224 <https://redmine.postgresql.org/issues/4224>`_ -  Prevent flickering of large tooltips on the Graphical EXPLAIN canvas.
+| `Issue #4389 <https://redmine.postgresql.org/issues/4389>`_ -  Fix an error that could be seen when editing column privileges.
 | `Issue #4393 <https://redmine.postgresql.org/issues/4393>`_ -  Ensure parameter values are quoted when needed when editing roles.
 | `Issue #4395 <https://redmine.postgresql.org/issues/4395>`_ -  EXPLAIN options should be Query Tool instance-specific.
 | `Issue #4429 <https://redmine.postgresql.org/issues/4429>`_ -  Ensure drag/drop from the treeview works as expected on Firefox.

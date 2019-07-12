@@ -131,29 +131,29 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {% if 'deleted' in data.attacl %}
 {% for priv in data.attacl.deleted %}
 {% if data.name %}
-    {{ PRIVILEGE.RESETALL(conn, data.schema, data.table, data.name, priv.grantee) }}
+{{ PRIVILEGE.RESETALL(conn, data.schema, data.table, data.name, priv.grantee) }}
 {% else %}
-    {{ PRIVILEGE.RESETALL(conn, data.schema, data.table, o_data.name, priv.grantee) }}
+{{ PRIVILEGE.RESETALL(conn, data.schema, data.table, o_data.name, priv.grantee) }}
 {% endif %}
 {% endfor %}
 {% endif %}
 {% if 'changed' in data.attacl %}
 {% for priv in data.attacl.changed %}
 {% if data.name %}
-    {{ PRIVILEGE.RESETALL(conn, data.schema, data.table, data.name, priv.grantee) }}
-    {{ PRIVILEGE.APPLY(conn, data.schema, data.table, data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ PRIVILEGE.RESETALL(conn, data.schema, data.table, data.name, priv.grantee) }}
+{{ PRIVILEGE.APPLY(conn, data.schema, data.table, data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
 {% else %}
-    {{ PRIVILEGE.RESETALL(conn, data.schema, data.table, o_data.name, priv.grantee) }}
-    {{ PRIVILEGE.APPLY(conn, data.schema, data.table, o_data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ PRIVILEGE.RESETALL(conn, data.schema, data.table, o_data.name, priv.grantee) }}
+{{ PRIVILEGE.APPLY(conn, data.schema, data.table, o_data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
 {% endif %}
 {% endfor %}
 {% endif %}
 {% if 'added' in data.attacl %}
 {% for priv in data.attacl.added %}
 {% if data.name %}
-    {{ PRIVILEGE.APPLY(conn, data.schema, data.table, data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ PRIVILEGE.APPLY(conn, data.schema, data.table, data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
 {% else %}
-    {{ PRIVILEGE.APPLY(conn, data.schema, data.table, o_data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ PRIVILEGE.APPLY(conn, data.schema, data.table, o_data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
 {% endif %}
 {% endfor %}
 {% endif %}

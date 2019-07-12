@@ -1750,9 +1750,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     for c in columns['changed']:
                         c['schema'] = data['schema']
                         c['table'] = data['name']
-                        if 'attacl' in c:
-                            c['attacl'] = parse_priv_to_db(c['attacl'],
-                                                           self.column_acl)
 
                         properties_sql = render_template(
                             "/".join([self.column_template_path,
@@ -1856,10 +1853,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     for c in columns['added']:
                         c['schema'] = data['schema']
                         c['table'] = data['name']
-                        # Sql for create column
-                        if 'attacl' in c:
-                            c['attacl'] = parse_priv_to_db(c['attacl'],
-                                                           self.column_acl)
 
                         c = BaseTableView.convert_length_precision_to_string(c)
 
