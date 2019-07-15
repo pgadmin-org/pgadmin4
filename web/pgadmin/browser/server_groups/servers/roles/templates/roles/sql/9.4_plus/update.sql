@@ -2,14 +2,14 @@
 {% import 'macros/variable.macros' as VARIABLE %}
 {% if 'rolname' in data %}
 {% set rolname=data.rolname %}
-ALTER{% if rolCanLogin %} USER {% else %} ROLE {% endif %}{{ conn|qtIdent(role) }}
+ALTER ROLE {{ conn|qtIdent(role) }}
 	RENAME TO {{ conn|qtIdent(rolname) }};
 
 {% else %}
 {% set rolname=role %}
 {% endif %}
 {% if data|hasAny(alterKeys) %}
-ALTER {% if rolCanLogin %}USER{% else %}ROLE{% endif %} {{ conn|qtIdent(rolname) }}{% if 'rolcanlogin' in data %}
+ALTER ROLE {{ conn|qtIdent(rolname) }}{% if 'rolcanlogin' in data %}
 
 {% if data.rolcanlogin %}
 	LOGIN{% else %}

@@ -2,11 +2,10 @@ SELECT
 	array_to_string(array_agg(sql), E'\n\n') AS sql
 FROM
 (SELECT
-	CASE WHEN rolcanlogin THEN '-- User: ' ELSE '-- Role: ' END	||
+	    '-- Role: ' ||
 		pg_catalog.quote_ident(rolname) ||
-		E'\n-- DROP ' || CASE WHEN rolcanlogin THEN 'USER ' ELSE 'ROLE ' END ||
-		pg_catalog.quote_ident(rolname) || E';\n\nCREATE ' ||
-		CASE WHEN rolcanlogin THEN 'USER ' ELSE 'ROLE ' END ||
+		E'\n-- DROP ROLE ' ||
+		pg_catalog.quote_ident(rolname) || E';\n\nCREATE ROLE ' ||
 		pg_catalog.quote_ident(rolname) || E' WITH\n  ' ||
 		CASE WHEN rolcanlogin THEN 'LOGIN' ELSE 'NOLOGIN' END || E'\n  ' ||
 		CASE WHEN rolcanlogin AND rolpassword LIKE 'md5%%' THEN 'ENCRYPTED PASSWORD ' || quote_literal(rolpassword) || E'\n  ' ELSE '' END ||
@@ -46,7 +45,7 @@ UNION ALL
 	array_to_string(array_agg(sql), E'\n') AS sql
 FROM
 (SELECT
-	'ALTER ' || CASE WHEN rolcanlogin THEN 'USER ' ELSE 'ROLE ' END || pg_catalog.quote_ident(rolname) || ' SET ' || param || ' TO ' || CASE WHEN param IN ('search_path', 'temp_tablespaces') THEN value ELSE quote_literal(value) END || ';' AS sql
+	'ALTER ROLE ' || pg_catalog.quote_ident(rolname) || ' SET ' || param || ' TO ' || CASE WHEN param IN ('search_path', 'temp_tablespaces') THEN value ELSE quote_literal(value) END || ';' AS sql
 FROM
 (SELECT
 	rolcanlogin, rolname, split_part(rolconfig, '=', 1) AS param, replace(rolconfig, split_part(rolconfig, '=', 1) || '=', '') AS value

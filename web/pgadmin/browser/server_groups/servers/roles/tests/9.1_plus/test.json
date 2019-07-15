@@ -62,7 +62,7 @@
     },
     {
       "type": "create",
-      "name": "Create User",
+      "name": "Create Login Role",
       "endpoint": "NODE-role.obj",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
@@ -81,42 +81,42 @@
           "seclabels": [],
           "variables": []
       },
-      "expected_sql_file": "create_user.sql"
+      "expected_sql_file": "create_login_role.sql"
     },
     {
       "type": "alter",
-      "name": "Alter User description",
+      "name": "Alter Login Role description",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
         "description": "This is detailed description"
       },
-      "expected_sql_file": "alter_user_description.sql"
+      "expected_sql_file": "alter_login_role_description.sql"
     },
     {
       "type": "alter",
-      "name": "Alter User name",
+      "name": "Alter Login Role name",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
         "rolname": "Role2_$%{}[]()&*^!@\"'`\\/#"
       },
-      "expected_sql_file": "alter_user_name.sql"
+      "expected_sql_file": "alter_login_role_name.sql"
     },
     {
       "type": "alter",
-      "name": "Alter User superuser, createdb etc options",
+      "name": "Alter Login Role superuser, createdb etc options",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
         "rolsuper": false,
         "rolcreatedb": false
       },
-      "expected_sql_file": "alter_user_options.sql"
+      "expected_sql_file": "alter_login_role_options.sql"
     },
     {
       "type": "delete",
-      "name": "Drop User",
+      "name": "Drop Login Role",
       "endpoint": "NODE-role.obj_id",
       "data": {}
     }

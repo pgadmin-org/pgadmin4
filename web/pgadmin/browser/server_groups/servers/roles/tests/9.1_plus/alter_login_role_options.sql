@@ -1,7 +1,7 @@
--- User: "Role2_$%{}[]()&*^!@""'`\/#"
--- DROP USER "Role2_$%{}[]()&*^!@""'`\/#";
+-- Role: "Role2_$%{}[]()&*^!@""'`\/#"
+-- DROP ROLE "Role2_$%{}[]()&*^!@""'`\/#";
 
-CREATE USER "Role2_$%{}[]()&*^!@""'`\/#" WITH
+CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
   LOGIN
   NOSUPERUSER
   INHERIT
