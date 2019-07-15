@@ -14,6 +14,6 @@ ALTER TYPE public."range_type_$%{}[]()&*^!@""'`\/#"
 COMMENT ON TYPE public."range_type_$%{}[]()&*^!@""'`\/#"
     IS 'this is test';
 
-GRANT USAGE ON TYPE public."range_type_$%{}[]()&*^!@""'`\/#" TO <OWNER>;
-
 GRANT USAGE ON TYPE public."range_type_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
+
+GRANT USAGE ON TYPE public."range_type_$%{}[]()&*^!@""'`\/#" TO <OWNER>;

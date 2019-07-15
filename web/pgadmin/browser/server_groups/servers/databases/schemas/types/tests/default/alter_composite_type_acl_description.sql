@@ -15,6 +15,6 @@ ALTER TYPE public."composite_type_$%{}[]()&*^!@""'`\/#"
 COMMENT ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#"
     IS 'this is test';
 
-GRANT USAGE ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#" TO <OWNER>;
-
 GRANT USAGE ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
+
+GRANT USAGE ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#" TO <OWNER>;
