@@ -38,10 +38,12 @@ Bug fixes
 | `Issue #4389 <https://redmine.postgresql.org/issues/4389>`_ -  Fix an error that could be seen when editing column privileges.
 | `Issue #4393 <https://redmine.postgresql.org/issues/4393>`_ -  Ensure parameter values are quoted when needed when editing roles.
 | `Issue #4395 <https://redmine.postgresql.org/issues/4395>`_ -  EXPLAIN options should be Query Tool instance-specific.
+| `Issue #4428 <https://redmine.postgresql.org/issues/4428>`_ -  Fix 'malformed array literal' error when updating a pgAgent job.
 | `Issue #4429 <https://redmine.postgresql.org/issues/4429>`_ -  Ensure drag/drop from the treeview works as expected on Firefox.
 | `Issue #4437 <https://redmine.postgresql.org/issues/4437>`_ -  Fix table icon issue when updating any existing field.
 | `Issue #4442 <https://redmine.postgresql.org/issues/4442>`_ -  Ensure browser should not be started by Selenium when feature tests are excluded from a test run.
 | `Issue #4446 <https://redmine.postgresql.org/issues/4446>`_ -  Use ROLE consistently when generating RE-SQL for roles, not USER.
+| `Issue #4448 <https://redmine.postgresql.org/issues/4448>`_ -  Fix an error seen when updating a connection string in a pgAgent job step.
 | `Issue #4450 <https://redmine.postgresql.org/issues/4450>`_ -  Fix reverse engineered sql for Foreign Data Wrapper created on EPAS server in redwood mode.
 | `Issue #4462 <https://redmine.postgresql.org/issues/4462>`_ -  Fix some minor UI issues on IE11.
 | `Issue #4469 <https://redmine.postgresql.org/issues/4469>`_ -  Fix sequence reverse engineered SQL generation with quoted names on PG/EPAS 10+.

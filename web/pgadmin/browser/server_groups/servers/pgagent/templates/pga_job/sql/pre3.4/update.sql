@@ -17,4 +17,14 @@ WHERE jobid = {{ jid }};
 
 {% if 'deleted' in data.jschedules %}{% for schedule in data.jschedules.deleted %}{{ SCHEDULE.DELETE(jid, schedule.jscid) }}{% endfor %}{% endif %}
 {% if 'changed' in data.jschedules %}{% for schedule in data.jschedules.changed %}{{ SCHEDULE.UPDATE(jid, schedule.jscid, schedule) }}{% endfor %}{% endif %}
-{% if 'added' in data.jschedules %}{% for schedule in data.jschedules.added %}{{ SCHEDULE.INSERT(jid, schedule) }}{% endfor %}{% endif %}{% endif %}
+{% if 'added' in data.jschedules %}
+
+DO $$
+DECLARE
+    scid integer;
+BEGIN
+{% for schedule in data.jschedules.added %}{{ SCHEDULE.INSERT(jid, schedule) }}{% endfor %}
+END
+$$;
+{% endif %}
+{% endif %}

@@ -64,7 +64,8 @@ class PgAgentAddTestCase(BaseTestGenerator):
                 'jscmonths': [False] * 12,
                 'jschours': [False] * 24,
                 'jscminutes': [False] * 60,
-                'jscexceptions': [],
+                'jscexceptions': [{'jexdate': '2050-01-01',
+                                   'jextime': '12:00'}],
             }],
         }
 

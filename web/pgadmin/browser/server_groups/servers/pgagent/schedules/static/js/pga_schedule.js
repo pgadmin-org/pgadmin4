@@ -389,9 +389,8 @@ define('pgadmin.node.pga_schedule', [
                 'select2/selectAllAdapter'
               ),
             },
-            selector: weekdays,
             formatter: new BooleanArrayFormatter(weekdays, true),
-            options: BooleanArrayOptions,
+            selector: weekdays, options: BooleanArrayOptions,
           },{
             id: 'jscmonthdays', label: gettext('Month Days'), cell: 'select2',
             group: gettext('Days'), control: 'select2', type: 'array',

@@ -19,6 +19,8 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, gone, \
     make_response as ajax_response, internal_server_error
 from pgadmin.utils.driver import get_driver
+from pgadmin.browser.server_groups.servers.pgagent.utils \
+    import format_schedule_data
 
 from config import PG_DEFAULT_DRIVER
 
@@ -294,20 +296,6 @@ class JobScheduleView(PGChildNodeView):
             status=200
         )
 
-    @staticmethod
-    def format_list_data(value):
-        """
-        Converts to proper array data for sql
-        Args:
-            value: data to be converted
-
-        Returns:
-            Converted data
-        """
-        if not isinstance(value, list):
-            return value.replace("[", "{").replace("]", "}")
-        return value
-
     @check_precondition
     def create(self, gid, sid, jid):
         """
@@ -330,27 +318,13 @@ class JobScheduleView(PGChildNodeView):
         else:
             data = json.loads(request.data.decode())
             # convert python list literal to postgres array literal.
-            data['jscminutes'] = JobScheduleView.format_list_data(
-                data['jscminutes']
-            )
-            data['jschours'] = JobScheduleView.format_list_data(
-                data['jschours']
-            )
-            data['jscweekdays'] = JobScheduleView.format_list_data(
-                data['jscweekdays']
-            )
-            data['jscmonthdays'] = JobScheduleView.format_list_data(
-                data['jscmonthdays']
-            )
-            data['jscmonths'] = JobScheduleView.format_list_data(
-                data['jscmonths']
-            )
+            format_schedule_data(data)
 
         sql = render_template(
             "/".join([self.template_path, 'create.sql']),
             jid=jid,
             data=data,
-            fetch_id=False
+            fetch_id=True
         )
 
         status, res = self.conn.execute_void('BEGIN')
@@ -358,7 +332,6 @@ class JobScheduleView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         status, res = self.conn.execute_scalar(sql)
-
         if not status:
             if self.conn.connected():
                 self.conn.execute_void('END')
@@ -414,26 +387,7 @@ class JobScheduleView(PGChildNodeView):
         else:
             data = json.loads(request.data.decode())
             # convert python list literal to postgres array literal.
-            if 'jscminutes' in data and data['jscminutes'] is not None:
-                data['jscminutes'] = JobScheduleView.format_list_data(
-                    data['jscminutes']
-                )
-            if 'jschours' in data and data['jschours'] is not None:
-                data['jschours'] = JobScheduleView.format_list_data(
-                    data['jschours']
-                )
-            if 'jscweekdays' in data and data['jscweekdays'] is not None:
-                data['jscweekdays'] = JobScheduleView.format_list_data(
-                    data['jscweekdays']
-                )
-            if 'jscmonthdays' in data and data['jscmonthdays'] is not None:
-                data['jscmonthdays'] = JobScheduleView.format_list_data(
-                    data['jscmonthdays']
-                )
-            if 'jscmonths' in data and data['jscmonths'] is not None:
-                data['jscmonths'] = JobScheduleView.format_list_data(
-                    data['jscmonths']
-                )
+            format_schedule_data(data)
 
         sql = render_template(
             "/".join([self.template_path, 'update.sql']),
