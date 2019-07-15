@@ -104,7 +104,15 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     complete_file_name = os.path.join(self.test_folder,
                                                       filename)
                     with open(complete_file_name) as jsonfp:
-                        data = json.load(jsonfp)
+                        try:
+                            data = json.load(jsonfp)
+                        except Exception as e:
+                            print(
+                                "Unable to read the json file: {0}".format(
+                                    complete_file_name))
+                            traceback.print_exc()
+                            continue
+
                         for key, scenarios in data.items():
                             self.execute_test_case(scenarios)
 
