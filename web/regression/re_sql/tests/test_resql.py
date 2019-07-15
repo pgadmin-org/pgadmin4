@@ -337,9 +337,15 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             self.final_test_status = False
             print(scenario['name'] + "... FAIL")
             traceback.print_exc()
-
-        resp = json.loads(response.data)
-        resp_sql = resp['data']
+        try:
+            if type(response.data) == bytes:
+                response_data = response.data.decode('utf8')
+                resp = json.loads(response_data)
+            else:
+                resp = json.loads(response.data)
+            resp_sql = resp['data']
+        except Exception:
+            print("Unable to decode the response data from url: ", url)
 
         # Remove first and last double quotes
         if resp_sql.startswith('"') and resp_sql.endswith('"'):

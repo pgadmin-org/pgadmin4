@@ -26,6 +26,8 @@ Housekeeping
 | `Issue #4463 <https://redmine.postgresql.org/issues/4463>`_ -  Add Reverse Engineered SQL tests for Domains.
 | `Issue #4464 <https://redmine.postgresql.org/issues/4464>`_ -  Add Reverse Engineered SQL tests for Collations.
 | `Issue #4468 <https://redmine.postgresql.org/issues/4468>`_ -  Add Reverse Engineered SQL tests for Types.
+| `Issue #4471 <https://redmine.postgresql.org/issues/4471>`_ -  Add Reverse Engineered SQL tests for FTS Parsers.
+
 
 Bug fixes
 *********
