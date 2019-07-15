@@ -24,7 +24,7 @@ from pgadmin.utils.versioned_template_loader import \
 
 def create_resql_module_list(all_modules, exclude_pkgs):
     """
-    This function is used to create the module list for reverse engineering
+    This function is used to create the module list for reverse engineered
     SQL by iterating all the modules.
 
     :param all_modules: List of all the modules
@@ -47,7 +47,7 @@ def create_resql_module_list(all_modules, exclude_pkgs):
 
 
 class ReverseEngineeredSQLTestCases(BaseTestGenerator):
-    """ This class will test the reverse engineering SQL"""
+    """ This class will test the reverse engineered SQL"""
 
     scenarios = [
         ('Reverse Engineered SQL Test Cases', dict())
@@ -77,7 +77,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         print("")
 
     def runTest(self):
-        """ Create the module list on which reverse engineering sql test
+        """ Create the module list on which reverse engineeredsql test
         cases will be executed."""
 
         # Schema ID placeholder in JSON file which needs to be replaced
@@ -384,7 +384,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
     def check_re_sql(self, scenario, object_id):
         """
-        This function is used to get the reverse engineering SQL.
+        This function is used to get the reverse engineered SQL.
         :param scenario:
         :param object_id:
         :return:
