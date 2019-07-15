@@ -44,3 +44,4 @@ Bug fixes
 | `Issue #4446 <https://redmine.postgresql.org/issues/4446>`_ -  Use ROLE consistently when generating RE-SQL for roles, not USER.
 | `Issue #4450 <https://redmine.postgresql.org/issues/4450>`_ -  Fix reverse engineered sql for Foreign Data Wrapper created on EPAS server in redwood mode.
 | `Issue #4462 <https://redmine.postgresql.org/issues/4462>`_ -  Fix some minor UI issues on IE11.
+| `Issue #4469 <https://redmine.postgresql.org/issues/4469>`_ -  Fix sequence reverse engineered SQL generation with quoted names on PG/EPAS 10+.
