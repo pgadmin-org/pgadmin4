@@ -222,12 +222,13 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
                 # Compare the reverse engineering SQL
                 if not self.check_re_sql(scenario, object_id):
-                    print_msg = scenario['name']
+                    print(scenario['name'] + "... FAIL")
+
                     if 'expected_sql_file' in scenario:
-                        print_msg = print_msg + "  Expected SQL File:" + \
-                                                scenario['expected_sql_file']
-                    print_msg = print_msg + "... FAIL"
-                    print(print_msg)
+                        print_msg = " - Expected SQL File: " + \
+                                    os.path.join(self.test_folder,
+                                                 scenario['expected_sql_file'])
+                        print(print_msg)
                     continue
             elif 'type' in scenario and scenario['type'] == 'alter':
                 # Get the url and create the specific node.
