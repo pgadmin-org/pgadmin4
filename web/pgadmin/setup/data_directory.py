@@ -22,7 +22,7 @@ def create_app_data_directory(config):
     """
     # Create the directory containing the configuration file (if not present).
     _create_directory_if_not_exists(os.path.dirname(config.SQLITE_PATH))
-    # Try to set the permissions on the direectory, but don't complain
+    # Try to set the permissions on the directory, but don't complain
     # if we can't. This may be the case on a mounted directory, e.g. in
     # OpenShift. We'll still secure the config database anyway.
     if os.name != 'nt':
