@@ -20,12 +20,6 @@ import sys
 import traceback
 import json
 import random
-import flask
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
 
 import unittest
 
@@ -201,8 +195,14 @@ def get_test_modules(arguments):
         exclude_pkgs += arguments['exclude'].split(',')
 
     if 'feature_tests' not in exclude_pkgs and \
-            (arguments['pkg'] == "all" or
+            (arguments['pkg'] is None or arguments['pkg'] == "all" or
              arguments['pkg'] == "feature_tests"):
+
+        from selenium import webdriver
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.common.desired_capabilities import \
+            DesiredCapabilities
+
         default_browser = 'chrome'
 
         # Check default browser provided through command line. If provided
