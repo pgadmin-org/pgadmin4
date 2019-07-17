@@ -352,6 +352,8 @@ def poll(trans_id):
     rset = None
     has_oids = False
     oids = None
+    additional_messages = None
+    notifies = None
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -390,6 +392,22 @@ def poll(trans_id):
 
             st, result = conn.async_fetchmany_2darray(ON_DEMAND_RECORD_COUNT)
 
+            # There may be additional messages even if result is present
+            # eg: Function can provide result as well as RAISE messages
+            messages = conn.messages()
+            if messages:
+                additional_messages = ''.join(messages)
+            notifies = conn.get_notifies()
+
+            # Procedure/Function output may comes in the form of Notices
+            # from the database server, so we need to append those outputs
+            # with the original result.
+            if result is None:
+                result = conn.status_message()
+                if (result != 'SELECT 1' or result != 'SELECT 0') and \
+                   result is not None and additional_messages:
+                    result = additional_messages + result
+
             if st:
                 if 'primary_keys' in session_obj:
                     primary_keys = session_obj['primary_keys']
@@ -406,10 +424,22 @@ def poll(trans_id):
                 )
                 session_obj['client_primary_key'] = client_primary_key
 
-                if columns_info is not None:
+                # If trans_obj is a QueryToolCommand then check for updatable
+                # resultsets and primary keys
+                if isinstance(trans_obj, QueryToolCommand):
+                    trans_obj.check_updatable_results_pkeys()
+                    pk_names, primary_keys = trans_obj.get_primary_keys()
+                    # If primary_keys exist, add them to the session_obj to
+                    # allow for saving any changes to the data
+                    if primary_keys is not None:
+                        session_obj['primary_keys'] = primary_keys
 
-                    command_obj = pickle.loads(session_obj['command_obj'])
-                    if hasattr(command_obj, 'obj_id'):
+                if columns_info is not None:
+                    # If it is a QueryToolCommand that has obj_id attribute
+                    # then it should also be editable
+                    if hasattr(trans_obj, 'obj_id') and \
+                        (not isinstance(trans_obj, QueryToolCommand) or
+                         trans_obj.can_edit()):
                         # Get the template path for the column
                         template_path = 'columns/sql/#{0}#'.format(
                             conn.manager.version
@@ -417,7 +447,7 @@ def poll(trans_id):
 
                         SQL = render_template(
                             "/".join([template_path, 'nodes.sql']),
-                            tid=command_obj.obj_id,
+                            tid=trans_obj.obj_id,
                             has_oids=True
                         )
                         # rows with attribute not_null
@@ -492,26 +522,8 @@ def poll(trans_id):
         status = 'NotConnected'
         result = error_msg
 
-    # There may be additional messages even if result is present
-    # eg: Function can provide result as well as RAISE messages
-    additional_messages = None
-    notifies = None
-    if status == 'Success':
-        messages = conn.messages()
-        if messages:
-            additional_messages = ''.join(messages)
-        notifies = conn.get_notifies()
-
-    # Procedure/Function output may comes in the form of Notices from the
-    # database server, so we need to append those outputs with the
-    # original result.
-    if status == 'Success' and result is None:
-        result = conn.status_message()
-        if (result != 'SELECT 1' or result != 'SELECT 0') and \
-           result is not None and additional_messages:
-            result = additional_messages + result
-
     transaction_status = conn.transaction_status()
+
     return make_json_response(
         data={
             'status': status, 'result': result,
@@ -700,7 +712,8 @@ def save(trans_id):
        trans_obj is not None and session_obj is not None:
 
         # If there is no primary key found then return from the function.
-        if (len(session_obj['primary_keys']) <= 0 or
+        if ('primary_keys' not in session_obj or
+           len(session_obj['primary_keys']) <= 0 or
            len(changed_data) <= 0) and \
            'has_oids' not in session_obj:
             return make_json_response(
@@ -713,32 +726,39 @@ def save(trans_id):
 
         manager = get_driver(
             PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
-        default_conn = manager.connection(did=trans_obj.did)
+        if hasattr(trans_obj, 'conn_id'):
+            conn = manager.connection(did=trans_obj.did,
+                                      conn_id=trans_obj.conn_id)
+        else:
+            conn = manager.connection(did=trans_obj.did)  # default connection
 
         # Connect to the Server if not connected.
-        if not default_conn.connected():
-            status, msg = default_conn.connect()
+        if not conn.connected():
+            status, msg = conn.connect()
             if not status:
                 return make_json_response(
                     data={'status': status, 'result': u"{}".format(msg)}
                 )
-
         status, res, query_res, _rowid = trans_obj.save(
             changed_data,
             session_obj['columns_info'],
             session_obj['client_primary_key'],
-            default_conn)
+            conn)
     else:
         status = False
         res = error_msg
         query_res = None
+        _rowid = None
+
+    transaction_status = conn.transaction_status()
 
     return make_json_response(
         data={
             'status': status,
             'result': res,
             'query_result': query_res,
-            '_rowid': _rowid
+            '_rowid': _rowid,
+            'transaction_status': transaction_status
         }
     )
 

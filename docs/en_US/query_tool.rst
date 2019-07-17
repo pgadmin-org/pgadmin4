@@ -12,10 +12,14 @@ allows you to:
 
 * Issue ad-hoc SQL queries.
 * Execute arbitrary SQL commands.
+* Edit the result set of a SELECT query if it is
+  :ref:`updatable <updatable-result-set>`.
 * Displays current connection and transaction status as configured by the user.
 * Save the data displayed in the output panel to a CSV file.
-* Review the execution plan of a SQL statement in either a text or a graphical format.
+* Review the execution plan of a SQL statement in either a text or a graphical
+  format.
 * View analytical information about a SQL statement.
+
 
 .. image:: images/query_tool.png
     :alt: Query tool window
@@ -120,6 +124,28 @@ You can:
   set query execution options.
 * Use the *Download as CSV* icon to download the content of the *Data Output*
   tab as a comma-delimited file.
+* Edit the data in the result set of a SELECT query if it is updatable.
+
+.. _updatable-result-set:
+
+A result set is updatable if:
+
+* All the columns belong to the same table.
+* All the primary keys of the table are selected.
+* No columns are duplicated.
+
+An updatable result set can be modified just like in
+:ref:`View/Edit Data <modifying-data-grid>` mode.
+
+If Auto-commit is off, the data changes are made as part of the ongoing
+transaction, if no transaction is ongoing a new one is initiated. The data
+changes are not committed to the database unless the transaction is committed.
+
+If any errors occur during saving (for example, trying to save NULL into a
+column with NOT NULL constraint) the data changes are rolled back to an
+automatically created SAVEPOINT to ensure any previously executed queries in
+the ongoing transaction are not rolled back.
+
 
 All rowsets from previous queries or commands that are displayed in the *Data
 Output* panel will be discarded when you invoke another query; open another

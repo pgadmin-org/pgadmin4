@@ -205,6 +205,7 @@ function keyboardShortcutsQueryTool(
   let toggleCaseKeys = sqlEditorController.preferences.toggle_case;
   let commitKeys = sqlEditorController.preferences.commit_transaction;
   let rollbackKeys = sqlEditorController.preferences.rollback_transaction;
+  let saveDataKeys = sqlEditorController.preferences.save_data;
 
   if (this.validateShortcutKeys(executeKeys, event)) {
     this._stopEventPropagation(event);
@@ -233,6 +234,9 @@ function keyboardShortcutsQueryTool(
       this._stopEventPropagation(event);
       queryToolActions.executeRollback(sqlEditorController);
     }
+  } else if (this.validateShortcutKeys(saveDataKeys, event)) {
+    this._stopEventPropagation(event);
+    queryToolActions.saveDataChanges(sqlEditorController);
   } else if ((
     (this.isMac() && event.metaKey) ||
      (!this.isMac() && event.ctrlKey)

@@ -23,6 +23,7 @@ describe('#callRenderAfterPoll', () => {
       update_msg_history: jasmine.createSpy('SQLEditor.update_msg_history'),
       disable_tool_buttons: jasmine.createSpy('SQLEditor.disable_tool_buttons'),
       disable_transaction_buttons: jasmine.createSpy('SQLEditor.disable_transaction_buttons'),
+      reset_data_store: jasmine.createSpy('SQLEditor.reset_data_store'),
       query_start_time: new Date(),
     };
     alertify = jasmine.createSpyObj('alertify', ['success']);
@@ -37,7 +38,7 @@ describe('#callRenderAfterPoll', () => {
       sqlEditorSpy.is_query_tool = false;
     });
 
-    describe('query was successful but had no result to display', () => {
+    describe('query was successful and have results', () => {
       beforeEach(() => {
         queryResult = {
           rows_affected: 10,
@@ -65,7 +66,7 @@ describe('#callRenderAfterPoll', () => {
       });
     });
 
-    describe('query was successful and have results', () => {
+    describe('query was successful but had no result to display', () => {
       beforeEach(() => {
         queryResult = {
           rows_affected: 10,
@@ -81,8 +82,14 @@ describe('#callRenderAfterPoll', () => {
         expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
           true,
           'Some result\n\nQuery returned successfully in 0 msec.',
-          false
+          true
         );
+      });
+
+      it('resets the changed data store', () => {
+        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+
+        expect(sqlEditorSpy.reset_data_store).toHaveBeenCalled();
       });
 
       it('inform sqleditor that the query stopped running', () => {
@@ -116,7 +123,7 @@ describe('#callRenderAfterPoll', () => {
       sqlEditorSpy.is_query_tool = true;
     });
 
-    describe('query was successful but had no result to display', () => {
+    describe('query was successful and have results', () => {
       beforeEach(() => {
         queryResult = {
           rows_affected: 10,
@@ -150,7 +157,7 @@ describe('#callRenderAfterPoll', () => {
       });
     });
 
-    describe('query was successful and have results', () => {
+    describe('query was successful but had no result to display', () => {
       beforeEach(() => {
         queryResult = {
           rows_affected: 10,
@@ -166,8 +173,14 @@ describe('#callRenderAfterPoll', () => {
         expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
           true,
           'Some result\n\nQuery returned successfully in 0 msec.',
-          false
+          true
         );
+      });
+
+      it('resets the changed data store', () => {
+        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+
+        expect(sqlEditorSpy.reset_data_store).toHaveBeenCalled();
       });
 
       it('inform sqleditor that the query stopped running', () => {

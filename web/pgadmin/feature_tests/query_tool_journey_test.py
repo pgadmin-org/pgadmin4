@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import sys
 import pyperclip
 import random
 
@@ -28,11 +29,24 @@ class QueryToolJourneyTest(BaseFeatureTest):
     ]
 
     test_table_name = ""
+    test_editable_table_name = ""
 
     def before(self):
         self.test_table_name = "test_table" + str(random.randint(1000, 3000))
         test_utils.create_table(
             self.server, self.test_db, self.test_table_name)
+
+        self.test_editable_table_name = "test_editable_table" + \
+                                        str(random.randint(1000, 3000))
+        create_sql = '''
+                             CREATE TABLE "%s" (
+                                 pk_column NUMERIC PRIMARY KEY,
+                                 normal_column NUMERIC
+                             );
+                             ''' % self.test_editable_table_name
+        test_utils.create_table_with_query(
+            self.server, self.test_db, create_sql)
+
         self.page.add_server(self.server)
 
     def runTest(self):
@@ -40,9 +54,21 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._execute_query(
             "SELECT * FROM %s ORDER BY value " % self.test_table_name)
 
+        print("Copy rows...", file=sys.stderr, end="")
         self._test_copies_rows()
+        print(" OK.", file=sys.stderr)
+
+        print("Copy columns...", file=sys.stderr, end="")
         self._test_copies_columns()
+        print(" OK.", file=sys.stderr)
+
+        print("History tab...", file=sys.stderr, end="")
         self._test_history_tab()
+        print(" OK.", file=sys.stderr)
+
+        print("Updatable resultsets...", file=sys.stderr, end="")
+        self._test_updatable_resultset()
+        print(" OK.", file=sys.stderr)
 
     def _test_copies_rows(self):
         pyperclip.copy("old clipboard contents")
@@ -162,6 +188,27 @@ class QueryToolJourneyTest(BaseFeatureTest):
                 .perform()
         self._assert_clickable(query_we_need_to_scroll_to)
 
+    def _test_updatable_resultset(self):
+        self.page.click_tab("Query Editor")
+
+        # Insert data into test table
+        self.__clear_query_tool()
+        self._execute_query(
+            "INSERT INTO %s VALUES (1, 1), (2, 2);"
+            % self.test_editable_table_name
+        )
+
+        # Select all data (contains the primary key -> should be editable)
+        self.__clear_query_tool()
+        query = "SELECT pk_column, normal_column FROM %s" \
+                % self.test_editable_table_name
+        self._check_query_results_editable(query, True)
+
+        # Select data without primary keys -> should not be editable
+        self.__clear_query_tool()
+        query = "SELECT normal_column FROM %s" % self.test_editable_table_name
+        self._check_query_results_editable(query, False)
+
     def __clear_query_tool(self):
         self.page.click_element(
             self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
@@ -179,6 +226,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item(self.test_db)
         self.page.open_query_tool()
+        self.page.wait_for_spinner_to_disappear()
 
     def _execute_query(self, query):
         self.page.fill_codemirror_area_with(query)
@@ -187,6 +235,33 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _assert_clickable(self, element):
         self.page.click_element(element)
+
+    def _check_query_results_editable(self, query, should_be_editable):
+        self._execute_query(query)
+        self.page.wait_for_spinner_to_disappear()
+
+        # Check if the first cell in the first row is editable
+        is_editable = self._check_cell_editable(1)
+        self.assertEqual(is_editable, should_be_editable)
+        # Check that new rows cannot be added
+        can_add_rows = self._check_can_add_row()
+        self.assertEqual(can_add_rows, should_be_editable)
+
+    def _check_cell_editable(self, cell_index):
+        xpath = '//div[contains(@class, "slick-cell") and ' \
+                'contains(@class, "r' + str(cell_index) + '")]'
+        cell_el = self.page.find_by_xpath(xpath)
+        cell_classes = cell_el.get_attribute('class')
+        cell_classes = cell_classes.split(" ")
+        self.assertFalse('editable' in cell_classes)
+        ActionChains(self.driver).double_click(cell_el).perform()
+        cell_classes = cell_el.get_attribute('class')
+        cell_classes = cell_classes.split(" ")
+        return 'editable' in cell_classes
+
+    def _check_can_add_row(self):
+        return self.page.check_if_element_exist_by_xpath(
+            '//div[contains(@class, "new-row")]')
 
     def after(self):
         self.page.close_query_tool()

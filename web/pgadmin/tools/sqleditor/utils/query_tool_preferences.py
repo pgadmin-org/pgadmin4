@@ -175,6 +175,17 @@ def RegisterQueryToolPreferences(self):
         )
     )
 
+    self.show_prompt_commit_transaction = self.preference.register(
+        'Options', 'prompt_commit_transaction',
+        gettext("Prompt to commit/rollback active transactions?"), 'boolean',
+        True,
+        category_label=gettext('Options'),
+        help_str=gettext(
+            'Specifies whether or not to prompt user to commit or rollback '
+            'an active transaction on Query Tool exit.'
+        )
+    )
+
     self.csv_quoting = self.preference.register(
         'CSV_output', 'csv_quoting',
         gettext("CSV quoting"), 'options', 'strings',
@@ -296,6 +307,24 @@ def RegisterQueryToolPreferences(self):
             'key': {
                 'key_code': 116,
                 'char': 'F5'
+            }
+        },
+        category_label=gettext('Keyboard shortcuts'),
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'save_data',
+        gettext('Save data changes'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': False,
+            'key': {
+                'key_code': 117,
+                'char': 'F6'
             }
         },
         category_label=gettext('Keyboard shortcuts'),

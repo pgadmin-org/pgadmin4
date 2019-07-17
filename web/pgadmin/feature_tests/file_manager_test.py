@@ -65,7 +65,8 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.open_query_tool()
 
     def _create_new_file(self):
-        self.page.find_by_css_selector(QueryToolLocatorsCss.btn_save).click()
+        self.page.find_by_css_selector(QueryToolLocatorsCss.btn_save_file)\
+            .click()
         # Set the XSS value in input
         self.page.find_by_css_selector('.change_file_types')
         self.page.fill_input_by_css_selector("input#file-input-path",

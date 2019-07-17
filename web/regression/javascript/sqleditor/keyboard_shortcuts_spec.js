@@ -14,6 +14,7 @@ import gettext from 'sources/gettext';
 describe('the keyboard shortcuts', () => {
   const F1_KEY = 112,
     F5_KEY = 116,
+    F6_KEY = 117,
     F7_KEY = 118,
     F8_KEY = 119,
     PERIOD_KEY = 190,
@@ -109,6 +110,14 @@ describe('the keyboard shortcuts', () => {
           key_code: 'r',
         },
       },
+      save_data: {
+        alt : false,
+        shift: false,
+        control: false,
+        key: {
+          key_code: F6_KEY,
+        },
+      },
     };
 
     queryToolActionsSpy = jasmine.createSpyObj(queryToolActions, [
@@ -121,6 +130,7 @@ describe('the keyboard shortcuts', () => {
       'executeQuery',
       'executeCommit',
       'executeRollback',
+      'saveDataChanges',
     ]);
   });
 
@@ -172,6 +182,42 @@ describe('the keyboard shortcuts', () => {
         );
 
         expect(queryToolActionsSpy.executeQuery).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('F6', () => {
+    describe('when there is not a query already running', () => {
+      beforeEach(() => {
+        event.which = F6_KEY;
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = false;
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolActionsSpy, event
+        );
+      });
+
+      it('should save the changed data', () => {
+        expect(queryToolActionsSpy.saveDataChanges).toHaveBeenCalledWith(sqlEditorControllerSpy);
+      });
+
+      expectEventPropagationToStop();
+    });
+
+    describe('when the query is already running', () => {
+      it('does nothing', () => {
+        event.keyCode = F6_KEY;
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = false;
+        sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
+
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolActionsSpy, event
+        );
+
+        expect(queryToolActionsSpy.saveDataChanges).not.toHaveBeenCalled();
       });
     });
   });

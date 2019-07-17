@@ -1,5 +1,5 @@
 class QueryToolLocatorsCss:
-    btn_save = "#btn-save"
+    btn_save_file = "#btn-save-file"
     btn_execute_query = "#btn-flash"
     btn_query_dropdown = "#btn-query-dropdown"
     btn_auto_rollback = "#btn-auto-rollback"

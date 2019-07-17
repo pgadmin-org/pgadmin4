@@ -209,6 +209,13 @@ li.CodeMirror-hint-active {
   color: $text-muted;
 }
 
+/* Highlighted (modified or new) cell */
+.grid-canvas .highlighted_grid_cells {
+  background: $color-gray-lighter;
+  font-weight: bold;
+}
+
+
 /* Override selected row color */
 #datagrid .slick-row .slick-cell.selected {
     background-color: $table-bg-selected;

@@ -156,6 +156,11 @@ let queryToolActions = {
     sqlEditorController.special_sql = 'ROLLBACK;';
     self.executeQuery(sqlEditorController);
   },
+
+  saveDataChanges: function (sqlEditorController) {
+    sqlEditorController.close_on_save = false;
+    sqlEditorController.save_data();
+  },
 };
 
 module.exports = queryToolActions;

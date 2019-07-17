@@ -37,7 +37,8 @@ export function callRenderAfterPoll(sqlEditor, alertify, res) {
     const msg = sprintf(
       gettext('Query returned successfully in %s.'), sqlEditor.total_time);
     res.result += '\n\n' + msg;
-    sqlEditor.update_msg_history(true, res.result, false);
+    sqlEditor.update_msg_history(true, res.result, true);
+    sqlEditor.reset_data_store();
     if (isNotificationEnabled(sqlEditor)) {
       alertify.success(msg, sqlEditor.info_notifier_timeout);
     }

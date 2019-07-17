@@ -29,7 +29,7 @@ function updateUIPreferences(sqlEditor) {
     .attr('title', shortcut_accesskey_title('Open File',preferences.btn_open_file))
     .attr('accesskey', shortcut_key(preferences.btn_open_file));
 
-  $el.find('#btn-save')
+  $el.find('#btn-save-file')
     .attr('title', shortcut_accesskey_title('Save File',preferences.btn_save_file))
     .attr('accesskey', shortcut_key(preferences.btn_save_file));
 
@@ -96,6 +96,10 @@ function updateUIPreferences(sqlEditor) {
   $el.find('#btn-download')
     .attr('title',
       shortcut_title('Download as CSV',preferences.download_csv));
+
+  $el.find('#btn-save-data')
+    .attr('title',
+      shortcut_title('Save Data Changes',preferences.save_data));
 
   $el.find('#btn-commit')
     .attr('title',

@@ -31,7 +31,7 @@ File Options
    +======================+===================================================================================================+================+
    | *Open File*          | Click the *Open File* icon to display a previously saved query in the SQL Editor.                 | Accesskey + O  |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Save*               | Click the *Save* icon to perform a quick-save of a previously saved query, or to access the       | Accesskey + S  |
+   | *Save File*          | Click the *Save* icon to perform a quick-save of a previously saved query, or to access the       | Accesskey + S  |
    |                      | *Save* menu:                                                                                      |                |
    |                      |                                                                                                   |                |
    |                      |  * Select *Save* to save the selected content of the SQL Editor panel in a  file.                 |                |
@@ -50,6 +50,8 @@ Editing Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
+   | *Save Data*          | Click the *Save Data* icon to save data changes in the Data Output Panel to the server.           | F6             |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Find*               | Use the *Find* menu to search, replace, or navigate the code displayed in the SQL Editor:         |                |
    |                      +---------------------------------------------------------------------------------------------------+----------------+
    |                      | Select *Find* to provide a search target, and search the SQL Editor contents.                     | Cmd+F          |
@@ -67,11 +69,10 @@ Editing Options
    |                      | Select *Jump* to navigate to the next occurrence of the search target.                            | Alt+G          |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Copy*               | Click the *Copy* icon to copy the content that is currently highlighted in the Data Output panel. | Accesskey + C  |
-   |                      | when in View/Edit data mode.                                                                      |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Paste*              | Click the *Paste* icon to paste a previously row into a new row when in View/Edit data mode.      | Accesskey + P  |
+   | *Paste*              | Click the *Paste* icon to paste a previously row into a new row.                                  | Accesskey + P  |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Delete*             | Click the *Delete* icon to delete the selected rows when in View/Edit data mode.                  | Accesskey + D  |
+   | *Delete*             | Click the *Delete* icon to delete the selected rows.                                              | Accesskey + D  |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Edit*               | Use options on the *Edit* menu to access text editing tools; the options operate on the text      |                |
    |                      | displayed in the SQL Editor panel when in Query Tool mode:                                        |                |

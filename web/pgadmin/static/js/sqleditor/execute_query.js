@@ -70,6 +70,8 @@ class ExecuteQuery {
         let httpMessageData = result.data;
         self.removeGridViewMarker();
 
+        self.updateSqlEditorLastTransactionStatus(httpMessageData.data.transaction_status);
+
         if (ExecuteQuery.isSqlCorrect(httpMessageData)) {
           self.loadingScreen.setMessage('Waiting for the query to complete...');
 
@@ -118,6 +120,8 @@ class ExecuteQuery {
       })
     ).then(
       (httpMessage) => {
+        self.updateSqlEditorLastTransactionStatus(httpMessage.data.data.transaction_status);
+
         // Enable/Disable commit and rollback button.
         if (httpMessage.data.data.transaction_status == 2 || httpMessage.data.data.transaction_status == 3) {
           self.enableTransactionButtons();
@@ -126,6 +130,10 @@ class ExecuteQuery {
         }
 
         if (ExecuteQuery.isQueryFinished(httpMessage)) {
+          if (this.sqlServerObject.close_on_idle_transaction &&
+              httpMessage.data.data.transaction_status == 0)
+            this.sqlServerObject.check_needed_confirmations_before_closing_panel();
+
           self.loadingScreen.setMessage('Loading data from the database server and rendering...');
 
           self.sqlServerObject.call_render_after_poll(httpMessage.data.data);
@@ -294,6 +302,10 @@ class ExecuteQuery {
     this.sqlServerObject.can_edit = messageData.can_edit;
     this.sqlServerObject.can_filter = messageData.can_filter;
     this.sqlServerObject.info_notifier_timeout = messageData.info_notifier_timeout;
+  }
+
+  updateSqlEditorLastTransactionStatus(transactionStatus) {
+    this.sqlServerObject.last_transaction_status = transactionStatus;
   }
 
   static isSqlCorrect(httpMessageData) {

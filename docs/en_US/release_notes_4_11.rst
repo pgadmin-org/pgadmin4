@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #1760 <https://redmine.postgresql.org/issues/1760>`_ -  Add support for editing of resultsets in the Query Tool, if the data can be identified as updatable.
 | `Issue #4335 <https://redmine.postgresql.org/issues/4335>`_ -  Add EXPLAIN options for SETTINGS and SUMMARY.
 | `Issue #4318 <https://redmine.postgresql.org/issues/4318>`_ -  Set the mouse cursor appropriately based on the layout lock state.
 

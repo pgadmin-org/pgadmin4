@@ -304,7 +304,7 @@ CREATE TABLE public.nonintpkey
             )
             time.sleep(0.2)
             self._update_cell(cell_xpath, data[str(idx)])
-        self.page.find_by_id("btn-save").click()  # Save data
+        self.page.find_by_id("btn-save-data").click()  # Save data
         # There should be some delay after save button is clicked, as it
         # takes some time to complete save ajax call otherwise discard unsaved
         # changes dialog will appear if we try to execute query before previous

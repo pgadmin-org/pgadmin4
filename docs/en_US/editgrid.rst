@@ -42,13 +42,15 @@ The top row of the data grid displays the name of each column, the data type,
 and if applicable, the number of characters allowed. A column that is part of
 the primary key will additionally be marked with [PK].
 
+.. _modifying-data-grid:
+
 To modify the displayed data:
 
 * To change a numeric value within the grid, double-click the value to select
   the field.  Modify the content in the square in which it is displayed.
 * To change a non-numeric value within the grid, double-click the content to
   access the edit bubble.  After modifying the contentof the edit bubble, click
-  the *Save* button to display your changes in the data grid, or *Cancel* to
+  the *Ok* button to display your changes in the data grid, or *Cancel* to
   exit the edit bubble without saving.
 
 To enter a newline character, click Ctrl-Enter or Shift-Enter.  Newline
@@ -70,9 +72,7 @@ quotes to the table, you need to escape these quotes, by typing \'\'
 To delete a row, press the *Delete* toolbar button.  A popup will open, asking
 you to confirm the deletion.
 
-To commit the changes to the server, select the *Save* toolbar button.
-Modifications to a row are written to the server automatically when you select
-a different row.
+To commit the changes to the server, select the *Save Data* toolbar button.
 
 **Geometry Data Viewer**
 

@@ -320,6 +320,10 @@ Use the fields on the *Options* panel to manage editor preferences.
   editor will prompt the user to saved unsaved query modifications when exiting
   the Query Tool.
 
+* When the *Prompt to commit/rollback active transactions?* switch is set to
+  *True*, the editor will prompt the user to commit or rollback changes when
+  exiting the Query Tool while the current transaction is not committed.
+
 * Use the *Tab size* field to specify the number of spaces per tab character in
   the editor.
 

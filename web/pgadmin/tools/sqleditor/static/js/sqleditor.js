@@ -87,8 +87,8 @@ define('tools.querytool', [
     // Bind all the events
     events: {
       'click .btn-load-file': 'on_file_load',
-      'click #btn-save': 'on_save',
-      'click #btn-file-menu-save': 'on_save',
+      'click #btn-save-file': 'on_save_file',
+      'click #btn-file-menu-save': 'on_save_file',
       'click #btn-file-menu-save-as': 'on_save_as',
       'click #btn-find': 'on_find',
       'click #btn-find-menu-find': 'on_find',
@@ -99,6 +99,7 @@ define('tools.querytool', [
       'click #btn-find-menu-find-persistent': 'on_find_persistent',
       'click #btn-find-menu-jump': 'on_jump',
       'click #btn-delete-row': 'on_delete',
+      'click #btn-save-data': 'on_save_data',
       'click #btn-filter': 'on_show_filter',
       'click #btn-filter-menu': 'on_show_filter',
       'click #btn-include-filter': 'on_include_filter',
@@ -400,26 +401,7 @@ define('tools.querytool', [
         _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
           if (p.isVisible()) {
             p.on(wcDocker.EVENT.CLOSING, function() {
-              // Only if we can edit data then perform this check
-              var notify = false,
-                msg;
-              if (self.handler.can_edit
-                  && self.preferences.prompt_save_data_changes) {
-                var data_store = self.handler.data_store;
-                if (data_store && (_.size(data_store.added) ||
-                    _.size(data_store.updated))) {
-                  msg = gettext('The data has changed. Do you want to save changes?');
-                  notify = true;
-                }
-              } else if (self.handler.is_query_tool && self.handler.is_query_changed
-                         && self.preferences.prompt_save_query_changes) {
-                msg = gettext('The text has changed. Do you want to save changes?');
-                notify = true;
-              }
-              if (notify) {
-                return self.user_confirmation(p, msg);
-              }
-              return true;
+              return self.handler.check_needed_confirmations_before_closing_panel(true);
             });
 
             // Set focus on query tool of active panel
@@ -663,62 +645,6 @@ define('tools.querytool', [
       }
     },
 
-    /* To prompt user for unsaved changes */
-    user_confirmation: function(panel, msg) {
-      // If there is anything to save then prompt user
-      var that = this;
-
-      alertify.confirmSave || alertify.dialog('confirmSave', function() {
-        return {
-          main: function(title, message) {
-            this.setHeader(title);
-            this.setContent(message);
-          },
-          setup: function() {
-            return {
-              buttons: [{
-                text: gettext('Cancel'),
-                key: 27, // ESC
-                invokeOnClose: true,
-                className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
-              }, {
-                text: gettext('Don\'t save'),
-                className: 'btn btn-secondary fa fa-lg fa-trash-o pg-alertify-button',
-              }, {
-                text: gettext('Save'),
-                className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
-              }],
-              focus: {
-                element: 0,
-                select: false,
-              },
-              options: {
-                maximizable: false,
-                resizable: false,
-              },
-            };
-          },
-          callback: function(closeEvent) {
-            switch (closeEvent.index) {
-            case 0: // Cancel
-              //Do nothing.
-              break;
-            case 1: // Don't Save
-              that.handler.close_on_save = false;
-              that.handler.close();
-              break;
-            case 2: //Save
-              that.handler.close_on_save = true;
-              that.handler._save(that, that.handler);
-              break;
-            }
-          },
-        };
-      });
-      alertify.confirmSave(gettext('Save changes?'), msg);
-      return false;
-    },
-
     /* Regarding SlickGrid usage in render_grid function.
 
      SlickGrid Plugins:
@@ -782,16 +708,16 @@ define('tools.querytool', [
     render_grid: function(collection, columns, is_editable, client_primary_key, rows_affected) {
       var self = this;
 
-      // This will work as data store and holds all the
-      // inserted/updated/deleted data from grid
-      self.handler.data_store = {
-        updated: {},
-        added: {},
-        staged_rows: {},
-        deleted: {},
-        updated_index: {},
-        added_index: {},
-      };
+      self.handler.numberOfModifiedCells = 0;
+
+      self.handler.reset_data_store();
+
+      // keep track of newly added rows
+      self.handler.rows_to_disable = new Array();
+      // Temporarily hold new rows added
+      self.handler.temp_new_rows = new Array();
+      self.handler.has_more_rows = false;
+      self.handler.fetching_rows = false;
 
       // To store primary keys before they gets changed
       self.handler.primary_keys_data = {};
@@ -898,7 +824,7 @@ define('tools.querytool', [
       }
 
       var grid_options = {
-        editable: true,
+        editable: is_editable,
         enableAddRow: is_editable,
         enableCellNavigation: true,
         enableColumnReorder: false,
@@ -1115,6 +1041,14 @@ define('tools.querytool', [
           _pk = args.item[self.client_primary_key] || null, // Unique key to identify row
           column_data = {};
 
+        // Highlight the changed cell
+        self.handler.numberOfModifiedCells++;
+        args.grid.addCellCssStyles(self.handler.numberOfModifiedCells, {
+          [args.row] : {
+            [changed_column]: 'highlighted_grid_cells',
+          },
+        });
+
         // Access to row/cell value after a cell is changed.
         // The purpose is to remove row_id from temp_new_row
         // if new row has primary key instead of [default_value]
@@ -1170,7 +1104,7 @@ define('tools.querytool', [
           }
         }
         // Enable save button
-        $('#btn-save').prop('disabled', false);
+        $('#btn-save-data').prop('disabled', false);
       }.bind(editor_data));
 
       // Listener function which will be called when user adds new rows
@@ -1198,6 +1132,7 @@ define('tools.querytool', [
           'data': item,
         };
         self.handler.data_store.added_index[data_length] = _key;
+
         // Fetch data type & add it for the column
         var temp = {};
         temp[column.name] = _.where(this.columns, {
@@ -1206,8 +1141,17 @@ define('tools.querytool', [
         grid.updateRowCount();
         grid.render();
 
+        // Highlight the first added cell of the new row
+        var row = dataView.getRowByItem(item);
+        self.handler.numberOfModifiedCells++;
+        args.grid.addCellCssStyles(self.handler.numberOfModifiedCells, {
+          [row] : {
+            [column.field]: 'highlighted_grid_cells',
+          },
+        });
+
         // Enable save button
-        $('#btn-save').prop('disabled', false);
+        $('#btn-save-data').prop('disabled', false);
       }.bind(editor_data));
 
       // Listen grid viewportChanged event to load next chunk of data.
@@ -1256,9 +1200,11 @@ define('tools.querytool', [
       }
       dataView.setItems(collection, self.client_primary_key);
     },
+
     fetch_next_all: function(cb) {
       this.fetch_next(true, cb);
     },
+
     fetch_next: function(fetch_all, cb) {
       var self = this,
         url = '';
@@ -1458,7 +1404,7 @@ define('tools.querytool', [
     },
 
     // Callback function for Save button click.
-    on_save: function(ev) {
+    on_save_file: function(ev) {
       var self = this;
 
       this._stopEventPropogation(ev);
@@ -1467,9 +1413,7 @@ define('tools.querytool', [
       self.handler.close_on_save = false;
       // Trigger the save signal to the SqlEditorController class
       self.handler.trigger(
-        'pgadmin-sqleditor:button:save',
-        self,
-        self.handler
+        'pgadmin-sqleditor:button:save_file'
       );
     },
 
@@ -1483,7 +1427,7 @@ define('tools.querytool', [
       self.handler.close_on_save = false;
       // Trigger the save signal to the SqlEditorController class
       self.handler.trigger(
-        'pgadmin-sqleditor:button:save',
+        'pgadmin-sqleditor:button:save_file',
         self,
         self.handler,
         true
@@ -1654,6 +1598,11 @@ define('tools.querytool', [
         self,
         self.handler
       );
+    },
+
+    // Callback function for Save Data Changes button click.
+    on_save_data: function() {
+      queryToolActions.saveDataChanges(this.handler);
     },
 
     // Callback function for the flash button click.
@@ -1944,11 +1893,13 @@ define('tools.querytool', [
 
     // Callback function for the commit button click.
     on_commit_transaction: function() {
+      this.handler.close_on_idle_transaction = false;
       queryToolActions.executeCommit(this.handler);
     },
 
     // Callback function for the rollback button click.
     on_rollback_transaction: function() {
+      this.handler.close_on_idle_transaction = false;
       queryToolActions.executeRollback(this.handler);
     },
   });
@@ -2177,6 +2128,8 @@ define('tools.querytool', [
         self.has_more_rows = false;
         self.fetching_rows = false;
         self.close_on_save = false;
+        self.close_on_idle_transaction = false;
+        self.last_transaction_status = -1;
         self.server_type = server_type;
         self.url_params = url_params;
         self.script_type_url = script_type_url;
@@ -2268,7 +2221,7 @@ define('tools.querytool', [
 
         // Listen on events come from SQLEditorView for the button clicked.
         self.on('pgadmin-sqleditor:button:load_file', self._load_file, self);
-        self.on('pgadmin-sqleditor:button:save', self._save, self);
+        self.on('pgadmin-sqleditor:button:save_file', self._save_file, self);
         self.on('pgadmin-sqleditor:button:deleterow', self._delete, self);
         self.on('pgadmin-sqleditor:button:show_filter', self._show_filter, self);
         self.on('pgadmin-sqleditor:button:include_filter', self._include_filter, self);
@@ -2331,12 +2284,6 @@ define('tools.querytool', [
         self.query_start_time = new Date();
         self.rows_affected = 0;
         self._init_polling_flags();
-        // keep track of newly added rows
-        self.rows_to_disable = new Array();
-        // Temporarily hold new rows added
-        self.temp_new_rows = new Array();
-        self.has_more_rows = false;
-        self.fetching_rows = false;
 
         self.trigger(
           'pgadmin-sqleditor:loading-icon:show',
@@ -2385,8 +2332,7 @@ define('tools.querytool', [
                 $('#btn-filter').addClass('btn-secondary');
                 $('#btn-filter-dropdown').addClass('btn-secondary');
               }
-              $('#btn-save').prop('disabled', true);
-              $('#btn-file-menu-dropdown').prop('disabled', true);
+
               $('#btn-copy-row').prop('disabled', true);
               $('#btn-paste-row').prop('disabled', true);
 
@@ -2462,13 +2408,12 @@ define('tools.querytool', [
           $('#btn-filter-dropdown').prop('disabled', false);
         }
 
+        // No data to save initially
+        $('#btn-save-data').prop('disabled', true);
+
         // Initial settings for delete row, copy row and paste row buttons.
         $('#btn-delete-row').prop('disabled', true);
-        // Do not disable save button in query tool
-        if (!self.is_query_tool && !self.can_edit) {
-          $('#btn-save').prop('disabled', true);
-          $('#btn-file-menu-dropdown').prop('disabled', true);
-        }
+
         if (!self.can_edit) {
           $('#btn-delete-row').prop('disabled', true);
           $('#btn-copy-row').prop('disabled', true);
@@ -2852,9 +2797,9 @@ define('tools.querytool', [
           if (_.size(self.data_store.added) || is_updated) {
             // Do not disable save button if there are
             // any other changes present in grid data
-            $('#btn-save').prop('disabled', false);
+            $('#btn-save-data').prop('disabled', false);
           } else {
-            $('#btn-save').prop('disabled', true);
+            $('#btn-save-data').prop('disabled', true);
           }
           alertify.success(gettext('Row(s) deleted.'));
         } else {
@@ -2883,41 +2828,42 @@ define('tools.querytool', [
           if (_.size(self.data_store.added) || is_updated || _.size(self.data_store.deleted)) {
             // Do not disable save button if there are
             // any other changes present in grid data
-            $('#btn-save').prop('disabled', false);
+            $('#btn-save-data').prop('disabled', false);
           } else {
-            $('#btn-save').prop('disabled', true);
+            $('#btn-save-data').prop('disabled', true);
           }
+        }
+      },
+
+      // This function will open save file dialog conditionally.
+
+      _save_file: function(save_as=false) {
+        var self = this;
+
+        var current_file = self.gridView.current_file;
+        if (!_.isUndefined(current_file) && !save_as) {
+          self._save_file_handler(current_file);
+        } else {
+          // provide custom option to save file dialog
+          var params = {
+            'supported_types': ['*', 'sql'],
+            'dialog_type': 'create_file',
+            'dialog_title': 'Save File',
+            'btn_primary': 'Save',
+          };
+          pgAdmin.FileManager.init();
+          pgAdmin.FileManager.show_dialog(params);
         }
       },
 
       /* This function will fetch the list of changed models and make
        * the ajax call to save the data into the database server.
-       * and will open save file dialog conditionally.
        */
-      _save: function(view, controller, save_as) {
-        var self = this,
-          save_data = true;
+      save_data: function() {
+        var self = this;
 
-        // Open save file dialog if query tool
-        if (self.is_query_tool) {
-          var current_file = self.gridView.current_file;
-          if (!_.isUndefined(current_file) && !save_as) {
-            self._save_file_handler(current_file);
-          } else {
-            // provide custom option to save file dialog
-            var params = {
-              'supported_types': ['*', 'sql'],
-              'dialog_type': 'create_file',
-              'dialog_title': 'Save File',
-              'btn_primary': 'Save',
-            };
-            pgAdmin.FileManager.init();
-            pgAdmin.FileManager.show_dialog(params);
-          }
+        if(!self.can_edit)
           return;
-        }
-        $('#btn-save').prop('disabled', true);
-        $('#btn-file-menu-dropdown').prop('disabled', true);
 
         var is_added = _.size(self.data_store.added),
           is_updated = _.size(self.data_store.updated),
@@ -2927,154 +2873,197 @@ define('tools.querytool', [
           return; // Nothing to save here
         }
 
-        if (save_data) {
+        self.trigger(
+          'pgadmin-sqleditor:loading-icon:show',
+          gettext('Saving the updated data...')
+        );
+        // Disable query tool buttons and cancel button only if query tool
+        if(self.is_query_tool)
+          self.disable_tool_buttons(true, true);
 
-          self.trigger(
-            'pgadmin-sqleditor:loading-icon:show',
-            gettext('Saving the updated data...')
-          );
+        // Add the columns to the data so the server can remap the data
+        var req_data = self.data_store, view = self.gridView;
+        req_data.columns = view ? view.handler.columns : self.columns;
 
-          // Add the columns to the data so the server can remap the data
-          var req_data = self.data_store;
-          req_data.columns = view ? view.handler.columns : self.columns;
+        var save_successful = false;
 
-          // Make ajax call to save the data
-          $.ajax({
-            url: url_for('sqleditor.save', {
-              'trans_id': self.transId,
-            }),
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(req_data),
-          })
-            .done(function(res) {
-              var grid = self.slickgrid,
-                dataView = grid.getData(),
-                data_length = dataView.getLength(),
-                data = [];
+        // Make ajax call to save the data
+        $.ajax({
+          url: url_for('sqleditor.save', {
+            'trans_id': self.transId,
+          }),
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(req_data),
+        })
+          .done(function(res) {
+            var grid = self.slickgrid,
+              dataView = grid.getData(),
+              data_length = dataView.getLength(),
+              data = [];
 
-              if (res.data.status) {
-                if(is_added) {
-                // Update the rows in a grid after addition
+            var transaction_status = res.data.transaction_status;
+
+            // Update last transaction status
+            self.last_transaction_status = transaction_status;
+
+            var is_commit_required = transaction_status > 0; // 0 is idle
+
+            // Enable/Disable commit and rollback button.
+            if (is_commit_required) {
+              self.disable_transaction_buttons(false);
+            } else {
+              self.disable_transaction_buttons(true);
+            }
+            // Enable query tool buttons and cancel button only if query tool
+            if(self.is_query_tool)
+              self.disable_tool_buttons(false);
+
+            if (res.data.status) {
+              // Disable Save Data Changes button
+              $('#btn-save-data').prop('disabled', true);
+
+              save_successful = true;
+
+              // Remove highlighted cells styling
+              for (let i = 1; i <= self.numberOfModifiedCells; i++)
+                grid.removeCellCssStyles(i);
+
+              self.numberOfModifiedCells = 0;
+
+              if(is_added) {
+              // Update the rows in a grid after addition
+                dataView.beginUpdate();
+                _.each(res.data.query_result, function(r) {
+                  if (!_.isNull(r.row_added)) {
+                  // Fetch temp_id returned by server after addition
+                    var row_id = Object.keys(r.row_added)[0];
+                    _.each(req_data.added_index, function(v, k) {
+                      if (v == row_id) {
+                      // Fetch item data through row index
+                        var item = grid.getDataItem(k);
+                        _.extend(item, r.row_added[row_id]);
+                      }
+                    });
+                  }
+                });
+                dataView.endUpdate();
+              }
+              // Remove flag is_row_copied from copied rows
+              _.each(data, function(row) {
+                if (row.is_row_copied) {
+                  delete row.is_row_copied;
+                }
+              });
+
+              // Remove 2d copied_rows array
+              if (grid.copied_rows) {
+                delete grid.copied_rows;
+              }
+
+              // Remove deleted rows from client as well
+              if (is_deleted) {
+                var rows = _.keys(self.data_store.deleted);
+                if (data_length == rows.length) {
+                // This means all the rows are selected, clear all data
+                  data = [];
+                  dataView.setItems(data, self.client_primary_key);
+                } else {
                   dataView.beginUpdate();
-                  _.each(res.data.query_result, function(r) {
-                    if (!_.isNull(r.row_added)) {
-                    // Fetch temp_id returned by server after addition
-                      var row_id = Object.keys(r.row_added)[0];
-                      _.each(req_data.added_index, function(v, k) {
-                        if (v == row_id) {
-                        // Fetch item data through row index
-                          var item = grid.getDataItem(k);
-                          _.extend(item, r.row_added[row_id]);
-                        }
-                      });
-                    }
-                  });
+                  for (var i = 0; i < rows.length; i++) {
+                    var item = grid.getDataItem(rows[i]);
+                    data.push(item);
+                    dataView.deleteItem(item[self.client_primary_key]);
+                  }
                   dataView.endUpdate();
                 }
-                // Remove flag is_row_copied from copied rows
-                _.each(data, function(row) {
-                  if (row.is_row_copied) {
-                    delete row.is_row_copied;
-                  }
-                });
-
-                // Remove 2d copied_rows array
-                if (grid.copied_rows) {
-                  delete grid.copied_rows;
-                }
-
-                // Remove deleted rows from client as well
-                if (is_deleted) {
-                  var rows = _.keys(self.data_store.deleted);
-                  if (data_length == rows.length) {
-                  // This means all the rows are selected, clear all data
-                    data = [];
-                    dataView.setItems(data, self.client_primary_key);
-                  } else {
-                    dataView.beginUpdate();
-                    for (var i = 0; i < rows.length; i++) {
-                      var item = grid.getDataItem(rows[i]);
-                      data.push(item);
-                      dataView.deleteItem(item[self.client_primary_key]);
-                    }
-                    dataView.endUpdate();
-                  }
-                  self.rows_to_delete.apply(self, [data]);
-                  grid.setSelectedRows([]);
-                }
-
+                self.rows_to_delete.apply(self, [data]);
                 grid.setSelectedRows([]);
-
-                // Reset data store
-                self.data_store = {
-                  'added': {},
-                  'updated': {},
-                  'deleted': {},
-                  'added_index': {},
-                  'updated_index': {},
-                };
-
-                // Reset old primary key data now
-                self.primary_keys_data = {};
-
-                // Clear msgs after successful save
-                self.set_sql_message('');
-
-                alertify.success(gettext('Data saved successfully.'));
-              } else {
-              // Something went wrong while saving data on the db server
-                $('#btn-flash').prop('disabled', false);
-                $('#btn-download').prop('disabled', false);
-                self.set_sql_message(res.data.result);
-                var err_msg = S(gettext('%s.')).sprintf(res.data.result).value();
-                alertify.error(err_msg, 20);
-                grid.setSelectedRows([]);
-                // To highlight the row at fault
-                if (_.has(res.data, '_rowid') &&
-                (!_.isUndefined(res.data._rowid) || !_.isNull(res.data._rowid))) {
-                  var _row_index = self._find_rowindex(res.data._rowid);
-                  if (_row_index in self.data_store.added_index) {
-                  // Remove new row index from temp_list if save operation
-                  // fails
-                    var index = self.handler.temp_new_rows.indexOf(res.data._rowid);
-                    if (index > -1) {
-                      self.handler.temp_new_rows.splice(index, 1);
-                    }
-                    self.data_store.added[self.data_store.added_index[_row_index]].err = true;
-                  } else if (_row_index in self.data_store.updated_index) {
-                    self.data_store.updated[self.data_store.updated_index[_row_index]].err = true;
-                  }
-                }
-                grid.gotoCell(_row_index, 1);
               }
 
-              // Update the sql results in history tab
-              _.each(res.data.query_result, function(r) {
-                self.gridView.history_collection.add({
-                  'status': r.status,
-                  'start_time': self.query_start_time,
-                  'query': r.sql,
-                  'row_affected': r.rows_affected,
-                  'total_time': self.total_time,
-                  'message': r.result,
-                });
-              });
-              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              grid.setSelectedRows([]);
 
-              grid.invalidate();
-              if (self.close_on_save) {
-                self.close();
+              // Reset data store
+              self.reset_data_store();
+
+              // Reset old primary key data now
+              self.primary_keys_data = {};
+
+              // Clear msgs after successful save
+              self.set_sql_message('');
+
+              alertify.success(gettext('Data saved successfully.'));
+
+              if(is_commit_required)
+                alertify.info(gettext('Auto-commit is off. You still need to commit changes to the database.'));
+
+
+            } else {
+            // Something went wrong while saving data on the db server
+              self.set_sql_message(res.data.result);
+              var err_msg = S(gettext('%s.')).sprintf(res.data.result).value();
+              alertify.error(err_msg, 20);
+              // If the transaction is not idle, notify the user that previous queries are not rolled back,
+              // only the failed save queries.
+              if (transaction_status != 0)
+                alertify.info(gettext('Saving data changes was rolled back but the current transaction is ' +
+                                      'still active; previous queries are unaffected.'));
+              grid.setSelectedRows([]);
+              // To highlight the row at fault
+              if (_.has(res.data, '_rowid') &&
+              (!_.isUndefined(res.data._rowid) || !_.isNull(res.data._rowid))) {
+                var _row_index = self._find_rowindex(res.data._rowid);
+                if (_row_index in self.data_store.added_index) {
+                // Remove new row index from temp_list if save operation
+                // fails
+                  var index = self.handler.temp_new_rows.indexOf(res.data._rowid);
+                  if (index > -1) {
+                    self.handler.temp_new_rows.splice(index, 1);
+                  }
+                  self.data_store.added[self.data_store.added_index[_row_index]].err = true;
+                } else if (_row_index in self.data_store.updated_index) {
+                  self.data_store.updated[self.data_store.updated_index[_row_index]].err = true;
+                }
               }
-            })
-            .fail(function(e) {
-              let stateParams = [view, controller, save_as];
-              let msg = httpErrorHandler.handleQueryToolAjaxError(
-                pgAdmin, self, e, '_save', stateParams, true
-              );
-              self.update_msg_history(false, msg);
-            });
-        }
+              grid.gotoCell(_row_index, 1);
+            }
+
+            self.trigger('pgadmin-sqleditor:loading-icon:hide');
+
+            grid.invalidate();
+            if (self.close_on_save) {
+              if(save_successful) {
+                // Check for any other needed confirmations before closing
+                self.check_needed_confirmations_before_closing_panel();
+              }
+              else {
+                self.close_on_save = false;
+              }
+            }
+          })
+          .fail(function(e) {
+            let stateParams = [view];
+            let msg = httpErrorHandler.handleQueryToolAjaxError(
+              pgAdmin, self, e, 'save_data', stateParams, true
+            );
+            // Enable query tool buttons and cancel button only if query tool
+            if(self.is_query_tool)
+              self.disable_tool_buttons(false);
+            self.update_msg_history(false, msg);
+          });
+      },
+
+      reset_data_store: function() {
+        var self = this;
+        // This holds all the inserted/updated/deleted data from grid
+        self.data_store = {
+          updated: {},
+          added: {},
+          staged_rows: {},
+          deleted: {},
+          updated_index: {},
+          added_index: {},
+        };
       },
 
       // Find index of row at fault from grid data
@@ -3118,7 +3107,7 @@ define('tools.querytool', [
 
       // Save as
       _save_as: function() {
-        return this._save(true);
+        return this._save_file(true);
       },
 
       // Set panel title.
@@ -3205,7 +3194,7 @@ define('tools.querytool', [
             $busy_icon_div.removeClass('show_progress');
 
             // disable save button on file save
-            $('#btn-save').prop('disabled', true);
+            $('#btn-save-file').prop('disabled', true);
             $('#btn-file-menu-save').css('display', 'none');
 
             // Update the flag as new content is just loaded.
@@ -3250,7 +3239,7 @@ define('tools.querytool', [
               self.gridView.current_file = e;
               self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''), true);
               // disable save button on file save
-              $('#btn-save').prop('disabled', true);
+              $('#btn-save-file').prop('disabled', true);
               $('#btn-file-menu-save').css('display', 'none');
 
               // Update the flag as query is already saved.
@@ -3259,7 +3248,8 @@ define('tools.querytool', [
             }
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             if (self.close_on_save) {
-              self.close();
+              // Check for any other needed confirmations before closing
+              self.check_needed_confirmations_before_closing_panel();
             }
           })
           .fail(function(e) {
@@ -3299,7 +3289,7 @@ define('tools.querytool', [
             self.setTitle(title);
           }
 
-          $('#btn-save').prop('disabled', false);
+          $('#btn-save-file').prop('disabled', false);
           $('#btn-file-menu-save').css('display', 'block');
           $('#btn-file-menu-dropdown').prop('disabled', false);
         }
@@ -3533,7 +3523,7 @@ define('tools.querytool', [
         if (copied_rows.length > 0) {
           // Enable save button so that user can
           // save newly pasted rows on server
-          $('#btn-save').prop('disabled', false);
+          $('#btn-save-data').prop('disabled', false);
 
           var arr_to_object = function(arr) {
             var obj = {};
@@ -3622,7 +3612,7 @@ define('tools.querytool', [
       },
 
       // This function is used to enable/disable buttons
-      disable_tool_buttons: function(disabled) {
+      disable_tool_buttons: function(disabled, disable_cancel=null) {
         let mode_disabled = disabled;
 
         /* Buttons be always disabled in view/edit mode */
@@ -3636,13 +3626,19 @@ define('tools.querytool', [
         $('#btn-explain-options-dropdown').prop('disabled', mode_disabled);
         $('#btn-edit-dropdown').prop('disabled', mode_disabled);
         $('#btn-load-file').prop('disabled', mode_disabled);
-        $('#btn-save').prop('disabled', mode_disabled);
+        $('#btn-save-file').prop('disabled', mode_disabled);
         $('#btn-file-menu-dropdown').prop('disabled', mode_disabled);
         $('#btn-find').prop('disabled', mode_disabled);
         $('#btn-find-menu-dropdown').prop('disabled', mode_disabled);
+
         if (this.is_query_tool) {
-          // Cancel query tool needs opposite behaviour
-          $('#btn-cancel-query').prop('disabled', !disabled);
+
+          if(disable_cancel !== null)
+            $('#btn-cancel-query').prop('disabled', disable_cancel);
+          // Cancel query tool needs opposite behaviour if not explicitly given
+          else
+            $('#btn-cancel-query').prop('disabled', !disabled);
+
           if(this.is_transaction_buttons_disabled) {
             $('#btn-query-dropdown').prop('disabled', disabled);
           } else {
@@ -3665,8 +3661,35 @@ define('tools.querytool', [
       // This function will fetch the sql query from the text box
       // and execute the query.
       execute: function(explain_prefix, shouldReconnect=false) {
-        var self = this,
-          sql = '';
+        var self = this;
+
+        // Check if the data grid has any changes before running query
+        if (self.can_edit && _.has(self, 'data_store') &&
+          (_.size(self.data_store.added) ||
+            _.size(self.data_store.updated) ||
+            _.size(self.data_store.deleted))
+        ) {
+          alertify.confirm(gettext('Unsaved changes'),
+            gettext('The data has been modified, but not saved. Are you sure you wish to discard the changes?'),
+            function() {
+              // Do nothing as user do not want to save, just continue
+              self._execute_sql_query(explain_prefix, shouldReconnect);
+            },
+            function() {
+              // Stop, User wants to save
+              return true;
+            }
+          ).set('labels', {
+            ok: gettext('Yes'),
+            cancel: gettext('No'),
+          });
+        } else {
+          self._execute_sql_query(explain_prefix, shouldReconnect);
+        }
+      },
+
+      _execute_sql_query: function(explain_prefix, shouldReconnect) {
+        var self = this, sql = '';
 
         self.has_more_rows = false;
         self.fetching_rows = false;
@@ -3998,6 +4021,188 @@ define('tools.querytool', [
 
       setIsQueryRunning: function(value) {
         is_query_running = value;
+      },
+
+      /* Checks if there is any unsaved data changes, unsaved changes in the query
+      or uncommitted transactions before closing a panel */
+      check_needed_confirmations_before_closing_panel: function(is_close_event_call = false) {
+        var self = this, msg;
+
+        /*
+         is_close_event_call = true only when the function is called when the
+         close panel event is triggered, otherwise (on recursive calls) it is false
+        */
+        if(!self.ignore_on_close || is_close_event_call)
+          self.ignore_on_close = {
+            unsaved_data: false,
+            unsaved_query: false,
+          };
+
+        var ignore_unsaved_data = self.ignore_on_close.unsaved_data,
+          ignore_unsaved_query = self.ignore_on_close.unsaved_query;
+
+        // If there is unsaved data changes in the grid
+        if (!ignore_unsaved_data && self.can_edit
+            && self.preferences.prompt_save_data_changes &&
+            self.data_store &&
+             (_.size(self.data_store.added) ||
+              _.size(self.data_store.updated) ||
+              _.size(self.data_store.deleted))) {
+          msg = gettext('The data has changed. Do you want to save changes?');
+          self.unsaved_changes_user_confirmation(msg, true);
+        } // If there is unsaved query changes in the query editor
+        else if (!ignore_unsaved_query && self.is_query_tool
+                   && self.is_query_changed
+                   && self.preferences.prompt_save_query_changes) {
+          msg = gettext('The text has changed. Do you want to save changes?');
+          self.unsaved_changes_user_confirmation(msg, false);
+        } // If a transaction is currently ongoing
+        else if (self.preferences.prompt_commit_transaction
+                 && self.last_transaction_status > 0) { // 0 -> idle (no transaction)
+          var is_commit_disabled = self.last_transaction_status == 3;  // 3 -> Failed transaction
+          self.uncommitted_transaction_user_confirmation(is_commit_disabled);
+        }
+        else {
+          // No other function should call close() except through this function
+          // in order to perform necessary checks
+          self.ignore_on_close = undefined;
+          self.close();
+        }
+        // Return false so that the panel does not close unless close()
+        // is called explicitly (when all needed prompts are issued).
+        return false;
+      },
+
+      /* To prompt the user for uncommitted transaction */
+      uncommitted_transaction_user_confirmation: function(is_commit_disabled = false) {
+        var self = this;
+
+        alertify.confirmCommit || alertify.dialog('confirmCommit', function() {
+          return {
+            main: function(title, message, is_commit_disabled) {
+              this.is_commit_disabled = is_commit_disabled;
+              this.setHeader(title);
+              this.setContent(message);
+            },
+            setup: function() {
+              return {
+                buttons: [{
+                  text: gettext('Cancel'),
+                  key: 27, // ESC
+                  invokeOnClose: true,
+                  className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
+                }, {
+                  text: gettext('Rollback'),
+                  className: 'btn btn-primary fa fa-lg pg-alertify-button',
+                }, {
+                  text: gettext('Commit'),
+                  className: 'btn btn-primary fa fa-lg pg-alertify-button',
+                }],
+                focus: {
+                  element: 0,
+                  select: false,
+                },
+                options: {
+                  maximizable: false,
+                  resizable: false,
+                },
+              };
+            },
+            prepare: function() {
+              // Disable commit button if needed
+              if(this.is_commit_disabled)
+                this.__internal.buttons[2].element.disabled = true;
+              else
+                this.__internal.buttons[2].element.disabled = false;
+            },
+            callback: function(closeEvent) {
+              switch (closeEvent.index) {
+              case 0: // Cancel
+                //Do nothing.
+                break;
+              case 1: // Rollback
+                self.close_on_idle_transaction = true;
+                queryToolActions.executeRollback(self);
+                break;
+              case 2: // Commit
+                self.close_on_idle_transaction = true;
+                queryToolActions.executeCommit(self);
+                break;
+              }
+            },
+          };
+        });
+
+        let msg = gettext('The current transaction is not commited to the database.'
+                           + 'Do you want to commit or rollback the transaction?');
+
+        alertify.confirmCommit(gettext('Commit transaction?'), msg, is_commit_disabled);
+      },
+
+      /* To prompt user for unsaved changes */
+      unsaved_changes_user_confirmation: function(msg, is_unsaved_data) {
+        // If there is anything to save then prompt user
+        var self = this;
+
+        alertify.confirmSave || alertify.dialog('confirmSave', function() {
+          return {
+            main: function(title, message, is_unsaved_data) {
+              this.is_unsaved_data = is_unsaved_data;
+              this.setHeader(title);
+              this.setContent(message);
+            },
+            setup: function() {
+              return {
+                buttons: [{
+                  text: gettext('Cancel'),
+                  key: 27, // ESC
+                  invokeOnClose: true,
+                  className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
+                }, {
+                  text: gettext('Don\'t save'),
+                  className: 'btn btn-secondary fa fa-lg fa-trash-o pg-alertify-button',
+                }, {
+                  text: gettext('Save'),
+                  className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                }],
+                focus: {
+                  element: 0,
+                  select: false,
+                },
+                options: {
+                  maximizable: false,
+                  resizable: false,
+                },
+              };
+            },
+            callback: function(closeEvent) {
+              switch (closeEvent.index) {
+              case 0: // Cancel
+                //Do nothing.
+                break;
+              case 1: // Don't Save
+                self.close_on_save = false;
+                if(this.is_unsaved_data)
+                  self.ignore_on_close.unsaved_data = true;
+                else
+                  self.ignore_on_close.unsaved_query = true;
+                // Go back to check for any other needed confirmations before closing
+                self.check_needed_confirmations_before_closing_panel();
+                break;
+              case 2: //Save
+                self.close_on_save = true;
+                if(this.is_unsaved_data) {
+                  self.save_data();
+                }
+                else {
+                  self._save_file();
+                }
+                break;
+              }
+            },
+          };
+        });
+        alertify.confirmSave(gettext('Save changes?'), msg, is_unsaved_data);
       },
 
       close: function() {
