@@ -90,6 +90,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             BaseTestGenerator.exclude_pkgs)
 
         for module in resql_module_list:
+            self.table_id = None
             module_path = resql_module_list[module]
             # Get the folder name based on server version number and
             # their existence.
@@ -159,6 +160,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     options['did'] = int(self.server_information['db_id'])
                 elif arg == 'scid':
                     options['scid'] = int(self.schema_id)
+                elif arg == 'tid' and self.table_id:
+                    options['tid'] = int(self.table_id)
                 else:
                     if object_id is not None:
                         options[arg] = int(object_id)
@@ -219,6 +222,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
                 resp_data = json.loads(response.data.decode('utf8'))
                 object_id = resp_data['node']['_id']
+
+                # Table child nodes require table id
+                if 'store_table_id' in scenario:
+                    self.table_id = object_id
 
                 # Compare the reverse engineering SQL
                 if not self.check_re_sql(scenario, object_id):
@@ -329,6 +336,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                                 object_id)
 
         params = urllib.parse.urlencode(scenario['data'])
+        params = params.replace('False', 'false').replace('True', 'true')
         url = msql_url + "?%s" % params
         response = self.tester.get(url,
                                    follow_redirects=True)
