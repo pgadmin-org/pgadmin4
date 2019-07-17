@@ -8,6 +8,7 @@
 ##########################################################################
 
 import json
+import random
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
@@ -22,35 +23,35 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         result-set is updatable. """
     scenarios = [
         ('When selecting all columns of the table', dict(
-            sql='SELECT * FROM test_for_updatable_resultset;',
+            sql='SELECT * FROM %s;',
             primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
             }
         )),
         ('When selecting all primary keys of the table', dict(
-            sql='SELECT pk_col1, pk_col2 FROM test_for_updatable_resultset;',
+            sql='SELECT pk_col1, pk_col2 FROM %s;',
             primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
             }
         )),
         ('When selecting some of the primary keys of the table', dict(
-            sql='SELECT pk_col2 FROM test_for_updatable_resultset;',
+            sql='SELECT pk_col2 FROM %s;',
             primary_keys=None
         )),
         ('When selecting none of the primary keys of the table', dict(
-            sql='SELECT normal_col1 FROM test_for_updatable_resultset;',
+            sql='SELECT normal_col1 FROM %s;',
             primary_keys=None
         )),
         ('When renaming a primary key', dict(
             sql='SELECT pk_col1 as some_col, '
-                'pk_col2 FROM test_for_updatable_resultset;',
+                'pk_col2 FROM "%s";',
             primary_keys=None
         )),
         ('When renaming a column to a primary key name', dict(
             sql='SELECT pk_col1, pk_col2, normal_col1 as pk_col1 '
-                'FROM test_for_updatable_resultset;',
+                'FROM %s;',
             primary_keys=None
         ))
     ]
@@ -59,12 +60,15 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         self._initialize_database_connection()
         self._initialize_query_tool()
         self._initialize_urls()
-        self._create_test_table()
 
     def runTest(self):
+        # Create test table (unique for each scenario)
+        self._create_test_table()
+        # Add test table name to the query
+        sql = self.sql % self.test_table_name
         is_success, response_data = \
             execute_query(tester=self.tester,
-                          query=self.sql,
+                          query=sql,
                           poll_url=self.poll_url,
                           start_query_tool_url=self.start_query_tool_url)
         self.assertEquals(is_success, True)
@@ -105,17 +109,19 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         self.poll_url = '/sqleditor/poll/{0}'.format(self.trans_id)
 
     def _create_test_table(self):
+        self.test_table_name = "test_for_updatable_resultset" + \
+                               str(random.randint(1000, 9999))
         create_sql = """
-                            DROP TABLE IF EXISTS test_for_updatable_resultset;
+                            DROP TABLE IF EXISTS "%s";
 
-                            CREATE TABLE test_for_updatable_resultset(
+                            CREATE TABLE "%s"(
                                 pk_col1	SERIAL,
                                 pk_col2 SERIAL,
                                 normal_col1 VARCHAR,
                                 normal_col2 VARCHAR,
                                 PRIMARY KEY(pk_col1, pk_col2)
                             );
-                      """
+                      """ % (self.test_table_name, self.test_table_name)
 
         is_success, _ = \
             execute_query(tester=self.tester,

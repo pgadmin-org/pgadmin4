@@ -8,6 +8,7 @@
 ##########################################################################
 
 import json
+import random
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
@@ -66,7 +67,7 @@ class TestSaveChangedData(BaseTestGenerator):
                 ]
             },
             save_status=True,
-            check_sql='SELECT * FROM test_for_save_data WHERE pk_col = 3',
+            check_sql='SELECT * FROM %s WHERE pk_col = 3',
             check_result=[[3, "three"]]
         )),
         ('When inserting new invalid row', dict(
@@ -162,7 +163,7 @@ class TestSaveChangedData(BaseTestGenerator):
                 ]
             },
             save_status=True,
-            check_sql='SELECT * FROM test_for_save_data WHERE pk_col = 1',
+            check_sql='SELECT * FROM %s WHERE pk_col = 1',
             check_result=[[1, "ONE"]]
         )),
         ('When updating a row in an invalid way', dict(
@@ -249,7 +250,7 @@ class TestSaveChangedData(BaseTestGenerator):
                 ]
             },
             save_status=True,
-            check_sql='SELECT * FROM test_for_save_data WHERE pk_col = 2',
+            check_sql='SELECT * FROM %s WHERE pk_col = 2',
             check_result='SELECT 0'
         )),
     ]
@@ -258,9 +259,10 @@ class TestSaveChangedData(BaseTestGenerator):
         self._initialize_database_connection()
         self._initialize_query_tool()
         self._initialize_urls_and_select_sql()
-        self._create_test_table()
 
     def runTest(self):
+        # Create test table (unique for each scenario)
+        self._create_test_table()
         # Execute select sql
         is_success, _ = \
             execute_query(tester=self.tester,
@@ -283,9 +285,11 @@ class TestSaveChangedData(BaseTestGenerator):
 
         if self.check_sql:
             # Execute check sql
+            # Add test table name to the query
+            check_sql = self.check_sql % self.test_table_name
             is_success, response_data = \
                 execute_query(tester=self.tester,
-                              query=self.check_sql,
+                              query=check_sql,
                               start_query_tool_url=self.start_query_tool_url,
                               poll_url=self.poll_url)
             self.assertEquals(is_success, True)
@@ -320,25 +324,29 @@ class TestSaveChangedData(BaseTestGenerator):
         self.trans_id = response_data['data']['gridTransId']
 
     def _initialize_urls_and_select_sql(self):
+
         self.start_query_tool_url = \
             '/sqleditor/query_tool/start/{0}'.format(self.trans_id)
         self.save_url = '/sqleditor/save/{0}'.format(self.trans_id)
         self.poll_url = '/sqleditor/poll/{0}'.format(self.trans_id)
 
-        self.select_sql = 'SELECT * FROM test_for_save_data;'
-
     def _create_test_table(self):
+        self.test_table_name = "test_for_save_data" + \
+                               str(random.randint(1000, 9999))
         create_sql = """
-                            DROP TABLE IF EXISTS test_for_save_data;
+                            DROP TABLE IF EXISTS "%s";
 
-                            CREATE TABLE test_for_save_data(
+                            CREATE TABLE "%s"(
                             pk_col	INT PRIMARY KEY,
                             normal_col VARCHAR);
 
-                            INSERT INTO test_for_save_data VALUES
+                            INSERT INTO "%s" VALUES
                             (1, 'one'),
                             (2, 'two');
-                      """
+                      """ % (self.test_table_name,
+                             self.test_table_name,
+                             self.test_table_name)
+        self.select_sql = 'SELECT * FROM %s;' % self.test_table_name
         is_success, _ = \
             execute_query(tester=self.tester,
                           query=create_sql,
