@@ -10,8 +10,8 @@ New features
 ************
 
 | `Issue #1760 <https://redmine.postgresql.org/issues/1760>`_ -  Add support for editing of resultsets in the Query Tool, if the data can be identified as updatable.
-| `Issue #4335 <https://redmine.postgresql.org/issues/4335>`_ -  Add EXPLAIN options for SETTINGS and SUMMARY.
 | `Issue #4318 <https://redmine.postgresql.org/issues/4318>`_ -  Set the mouse cursor appropriately based on the layout lock state.
+| `Issue #4335 <https://redmine.postgresql.org/issues/4335>`_ -  Add EXPLAIN options for SETTINGS and SUMMARY.
 
 
 Housekeeping
@@ -27,8 +27,8 @@ Housekeeping
 | `Issue #4463 <https://redmine.postgresql.org/issues/4463>`_ -  Add Reverse Engineered SQL tests for Domains.
 | `Issue #4464 <https://redmine.postgresql.org/issues/4464>`_ -  Add Reverse Engineered SQL tests for Collations.
 | `Issue #4468 <https://redmine.postgresql.org/issues/4468>`_ -  Add Reverse Engineered SQL tests for Types.
-| `Issue #4471 <https://redmine.postgresql.org/issues/4471>`_ -  Add Reverse Engineered SQL tests for FTS Parsers.
 | `Issue #4469 <https://redmine.postgresql.org/issues/4469>`_ -  Add Reverse Engineered SQL tests for Sequences.
+| `Issue #4471 <https://redmine.postgresql.org/issues/4471>`_ -  Add Reverse Engineered SQL tests for FTS Parsers.
 | `Issue #4475 <https://redmine.postgresql.org/issues/4475>`_ -  Add Reverse Engineered SQL tests for Constraints.
 
 Bug fixes
@@ -48,4 +48,4 @@ Bug fixes
 | `Issue #4448 <https://redmine.postgresql.org/issues/4448>`_ -  Fix an error seen when updating a connection string in a pgAgent job step.
 | `Issue #4450 <https://redmine.postgresql.org/issues/4450>`_ -  Fix reverse engineered sql for Foreign Data Wrapper created on EPAS server in redwood mode.
 | `Issue #4462 <https://redmine.postgresql.org/issues/4462>`_ -  Fix some minor UI issues on IE11.
-| `Issue #4469 <https://redmine.postgresql.org/issues/4469>`_ -  Fix sequence reverse engineered SQL generation with quoted names on PG/EPAS 10+.
+| `Issue #4470 <https://redmine.postgresql.org/issues/4470>`_ -  Fix sequence reverse engineered SQL generation with quoted names on PG/EPAS 10+.
