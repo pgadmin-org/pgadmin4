@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-06-28 09:36-0400\n"
+"POT-Creation-Date: 2019-07-19 17:44+0530\n"
 "PO-Revision-Date: 2019-06-25 10:15+0800\n"
 "Last-Translator: maikebing <mysticboy@live.com>\n"
 "Language: zh\n"
@@ -52,8 +52,8 @@ msgstr "桌面"
 #: pgadmin/tools/datagrid/static/js/show_data.js:206
 #: pgadmin/tools/import_export/static/js/import_export.js:499
 #: pgadmin/tools/maintenance/static/js/maintenance.js:301
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1939
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1969
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1940
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1970
 msgid "OK"
 msgstr "确定"
 
@@ -204,9 +204,9 @@ msgstr "是否显示系统对象？"
 #: pgadmin/tools/debugger/__init__.py:75
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:21
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:36
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:86
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:258
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:268
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:98
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:281
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:291
 msgid "Display"
 msgstr "显示"
 
@@ -315,6 +315,7 @@ msgstr "树浏览器"
 #: pgadmin/browser/register_browser_preferences.py:357
 #: pgadmin/browser/register_browser_preferences.py:372
 #: pgadmin/browser/register_browser_preferences.py:387
+#: pgadmin/browser/register_browser_preferences.py:402
 #: pgadmin/tools/debugger/__init__.py:89 pgadmin/tools/debugger/__init__.py:102
 #: pgadmin/tools/debugger/__init__.py:115
 #: pgadmin/tools/debugger/__init__.py:128
@@ -324,29 +325,30 @@ msgstr "树浏览器"
 #: pgadmin/tools/debugger/__init__.py:190
 #: pgadmin/tools/debugger/__init__.py:208
 #: pgadmin/tools/debugger/__init__.py:226
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:289
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:307
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:325
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:343
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:361
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:379
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:397
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:411
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:424
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:437
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:450
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:463
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:476
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:489
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:502
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:515
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:528
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:541
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:554
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:567
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:585
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:611
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:629
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:312
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:330
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:348
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:366
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:384
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:402
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:420
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:438
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:452
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:465
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:478
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:491
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:504
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:517
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:530
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:543
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:556
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:569
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:582
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:595
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:608
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:626
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:652
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:670
 msgid "Keyboard shortcuts"
 msgstr "快捷键"
 
@@ -421,6 +423,10 @@ msgstr "对话框选项卡向后"
 #: pgadmin/browser/register_browser_preferences.py:379
 msgid "Refresh browser tree"
 msgstr "刷新树浏览器"
+
+#: pgadmin/browser/register_browser_preferences.py:394
+msgid "Add grid row"
+msgstr ""
 
 #: pgadmin/browser/utils.py:281
 msgid "Unimplemented method ({0}) for this url ({1})"
@@ -583,7 +589,7 @@ msgstr "未更改任何参数。"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:365
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:569
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:436
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:983
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:991
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:562
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:496
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:590
@@ -591,8 +597,8 @@ msgstr "未更改任何参数。"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:636
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:926
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:471
-#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:284
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:364
+#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:286
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:365
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:297
 #, python-format
 msgid "Could not find the required parameter (%s)."
@@ -652,7 +658,7 @@ msgstr "服务器配置已重新加载。"
 #: pgadmin/browser/server_groups/servers/__init__.py:1198
 #: pgadmin/dashboard/static/js/dashboard.js:586
 #: pgadmin/dashboard/static/js/dashboard.js:717
-#: pgadmin/static/js/sqleditor/execute_query.js:289
+#: pgadmin/static/js/sqleditor/execute_query.js:297
 #: pgadmin/static/js/sqleditor/query_tool_http_error_handler.js:51
 #: pgadmin/static/js/sqleditor_utils.js:164
 msgid ""
@@ -787,7 +793,6 @@ msgstr "数据库连接已断开。"
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:520
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/__init__.py:528
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:684
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:521
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:603
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:484
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:732
@@ -798,7 +803,7 @@ msgstr "数据库连接已断开。"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:827
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:444
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:462
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1154
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1162
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:643
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:609
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:729
@@ -810,7 +815,7 @@ msgstr "数据库连接已断开。"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:716
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1106
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:591
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:512
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:513
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:411
 msgid "Error: Object not found."
 msgstr "错误︰ 找不到对象."
@@ -930,9 +935,9 @@ msgstr "转换..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:324
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:147
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:112
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:281
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:282
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:97
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:137
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:141
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:90
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:388
 #: pgadmin/browser/server_groups/servers/static/js/server.js:758
@@ -1255,7 +1260,7 @@ msgstr "是否系统转换？"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:331
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:465
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:140
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:204
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:208
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:362
 msgid "Comment"
 msgstr "注释"
@@ -1348,9 +1353,9 @@ msgstr "所有者"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:155
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:242
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:196
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:285
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:286
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:103
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:140
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:144
 msgid "Enabled?"
 msgstr "启用?"
 
@@ -1545,7 +1550,7 @@ msgstr "可重定位?"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:452
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:473
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:163
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:229
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:233
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:110
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:536
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:390
@@ -1655,15 +1660,16 @@ msgstr "外部服务器已经被删除"
 #: pgadmin/tools/maintenance/static/js/maintenance.js:57
 #: pgadmin/tools/maintenance/static/js/maintenance.js:81
 #: pgadmin/tools/maintenance/static/js/maintenance.js:117
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:68
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:76
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:101
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:110
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:120
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:129
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:139
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:149
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:159
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:80
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:88
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:113
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:122
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:132
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:141
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:151
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:161
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:171
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:182
 msgid "Options"
 msgstr "选项"
 
@@ -1921,7 +1927,7 @@ msgid "Schema dropped"
 msgstr "架构已被删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:781
-#: pgadmin/static/js/backform.pgadmin.js:1721
+#: pgadmin/static/js/backform.pgadmin.js:1738
 msgid "Definition incomplete."
 msgstr "定义不完整。"
 
@@ -2022,8 +2028,9 @@ msgid "Could not find the specified collation."
 msgstr "找不到指定的排序规则。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:331
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:641
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:690
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:519
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:639
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:688
 msgid "Could not find the collation object in the database."
 msgstr "在数据库中找不到对象的排序规则。"
 
@@ -2034,11 +2041,7 @@ msgid ""
 "LC_TYPE/LC_COLLATE."
 msgstr "定义不完整。请提供区域设置或复制排序规则或LC_TYPE/LC_COLLATE."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:524
-msgid "The specified collation could not be found.\n"
-msgstr "找不到指定的排序规则\n"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:539
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:537
 msgid "Collation dropped"
 msgstr "排序规则已经被删除"
 
@@ -2239,8 +2242,8 @@ msgstr "外部表已经被删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1280
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1325
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1469
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1519
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1477
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1527
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1274
 msgid "-- Please create column(s) first..."
 msgstr "--请先创建列..."
@@ -2704,7 +2707,7 @@ msgstr "返回类型"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:147
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:151
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:481
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:207
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:211
 msgid "Code"
 msgstr "代码"
 
@@ -3035,7 +3038,7 @@ msgstr "增量"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:142
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:516
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:289
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:290
 msgid "Start"
 msgstr "起始值"
 
@@ -3255,11 +3258,12 @@ msgstr "要公开同义词吗？"
 #: pgadmin/browser/static/js/browser.js:628
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:71
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:78
-#: pgadmin/static/js/backform.pgadmin.js:484
-#: pgadmin/static/js/backgrid.pgadmin.js:461
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1708
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1753
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2263
+#: pgadmin/static/js/backform.pgadmin.js:486
+#: pgadmin/static/js/backgrid.pgadmin.js:619
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1682
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1727
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2269
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3683
 msgid "Yes"
 msgstr "是"
 
@@ -3273,11 +3277,12 @@ msgstr "是"
 #: pgadmin/browser/static/js/browser.js:629
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:70
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:77
-#: pgadmin/static/js/backform.pgadmin.js:485
-#: pgadmin/static/js/backgrid.pgadmin.js:462
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1709
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1754
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2264
+#: pgadmin/static/js/backform.pgadmin.js:487
+#: pgadmin/static/js/backgrid.pgadmin.js:620
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1683
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1728
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2270
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3684
 msgid "No"
 msgstr "否"
 
@@ -3294,27 +3299,27 @@ msgid "Could not find the table."
 msgstr "找不到表."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:630
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1373
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1381
 msgid "The specified table could not be found."
 msgstr "找不到指定的表。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1157
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1165
 msgid "The specified table could not be found.\n"
 msgstr "找不到指定的表。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1170
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1178
 msgid "Table dropped"
 msgstr "表被删除"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1248
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1256
 msgid "Trigger(s) have been enabled"
 msgstr "触发器已启用"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1249
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1257
 msgid "Trigger(s) have been disabled"
 msgstr "触发器已禁用"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1603
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1611
 msgid "Table rows counted"
 msgstr "表行数已统计"
 
@@ -3351,16 +3356,16 @@ msgstr "-- exclusion_constraint 的定义不完整"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:904
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:899
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:940
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1952
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1945
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:850
 msgid "-- definition incomplete"
 msgstr "-- 定义不完整"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1962
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1955
 msgid "-- definition incomplete for {0}"
 msgstr "--{0} 的定义不完整"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2350
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2343
 msgid "Table truncated"
 msgstr "表被截断"
 
@@ -3488,7 +3493,7 @@ msgstr "找不到 check 约束。"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:449
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:713
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:802
-#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:463
+#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:471
 msgid "Could not find the object on the server."
 msgstr "在服务器上找不到该对象。"
 
@@ -3576,8 +3581,10 @@ msgstr "请指定列的运算符: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:453
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:381
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:340
-#: pgadmin/static/js/backform.pgadmin.js:1176
-#: pgadmin/static/js/backform.pgadmin.js:1449
+#: pgadmin/static/js/backform.pgadmin.js:1178
+#: pgadmin/static/js/backform.pgadmin.js:1279
+#: pgadmin/static/js/backform.pgadmin.js:1458
+#: pgadmin/static/js/backform.pgadmin.js:1571
 msgid "Add new row"
 msgstr "添加新行"
 
@@ -3711,8 +3718,8 @@ msgstr "外键已更新。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:53
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:149
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:155
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:168
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:159
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:172
 msgid "Local"
 msgstr "本地"
 
@@ -5411,8 +5418,8 @@ msgstr "临时文件的大小"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:306
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:2
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:2
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:172
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:178
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:176
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:182
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:173
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:30
@@ -5559,592 +5566,592 @@ msgstr "块读取时间"
 msgid "Block write time"
 msgstr "块写入时间"
 
-#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:30
+#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:32
 msgid "pgAgent Jobs"
 msgstr "pgAgent任务"
 
-#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:192
-#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:236
+#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:194
+#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:238
 msgid "Could not find the pgAgent job on the server."
 msgstr "在服务器上找不到pgAgent任务。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:529
+#: pgadmin/browser/server_groups/servers/pgagent/__init__.py:537
 msgid "Updated the next runtime to now."
 msgstr "现在已将下一个运行时更新。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:42
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:44
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:23
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:152
 msgid "Schedules"
 msgstr "计划任务"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:237
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:289
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:239
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:291
 #: pgadmin/browser/server_groups/servers/pgagent/steps/__init__.py:423
-#: pgadmin/browser/server_groups/servers/pgagent/steps/__init__.py:539
+#: pgadmin/browser/server_groups/servers/pgagent/steps/__init__.py:547
 msgid "Could not find the specified job step."
 msgstr "找不到指定的作业步骤。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:380
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:353
 msgid "Job schedule creation failed."
 msgstr "创建作业计划失败。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:463
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:417
 msgid "Job schedule update failed."
 msgstr "作业计划更新失败。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:542
-#: pgadmin/browser/server_groups/servers/pgagent/steps/__init__.py:604
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:504
+#: pgadmin/browser/server_groups/servers/pgagent/steps/__init__.py:612
 msgid "-- No SQL could be generated for the selected object."
 msgstr "--无法为所选对象生成 SQL。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:33
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:34
 msgid "Sunday"
 msgstr "星期日"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:33
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:34
 msgid "Monday"
 msgstr "星期一"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:33
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:34
 msgid "Tuesday"
 msgstr "星期二"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:34
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:35
 msgid "Wednesday"
 msgstr "星期三"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:34
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:35
 msgid "Thursday"
 msgstr "星期四"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:34
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:35
 msgid "Friday"
 msgstr "星期五"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:35
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:36
 msgid "Saturday"
 msgstr "星期六"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:38
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:39
 msgid "1st"
 msgstr "1st"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:38
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:39
 msgid "2nd"
 msgstr "2nd"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:38
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:39
 msgid "3rd"
 msgstr "3rd"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:39
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:40
 msgid "4th"
 msgstr "4th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:39
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:40
 msgid "5th"
 msgstr "5th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:39
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:40
 msgid "6th"
 msgstr "6th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:40
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:41
 msgid "7th"
 msgstr "7th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:40
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:41
 msgid "8th"
 msgstr "8th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:40
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:41
 msgid "9th"
 msgstr "9th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:41
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:42
 msgid "10th"
 msgstr "10th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:41
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:42
 msgid "11th"
 msgstr "11th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:41
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:42
 msgid "12th"
 msgstr "12th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:42
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:43
 msgid "13th"
 msgstr "13th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:42
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:43
 msgid "14th"
 msgstr "14th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:42
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:43
 msgid "15th"
 msgstr "15th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:43
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:44
 msgid "16th"
 msgstr "16th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:43
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:44
 msgid "17th"
 msgstr "17th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:43
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:44
 msgid "18th"
 msgstr "18th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:44
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:45
 msgid "19th"
 msgstr "19th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:44
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:45
 msgid "20th"
 msgstr "20th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:44
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:45
 msgid "21st"
 msgstr "21st"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:45
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:46
 msgid "22nd"
 msgstr "22nd"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:45
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:46
 msgid "23rd"
 msgstr "23rd"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:45
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:46
 msgid "24th"
 msgstr "24th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:46
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:47
 msgid "25th"
 msgstr "25th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:46
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:47
 msgid "26th"
 msgstr "26th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:46
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:47
 msgid "27th"
 msgstr "27th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:47
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:48
 msgid "28th"
 msgstr "28th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:47
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:48
 msgid "29th"
 msgstr "29th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:47
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:48
 msgid "30th"
 msgstr "30th"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:48
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:49
 msgid "31st"
 msgstr "31st"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:48
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:49
 msgid "Last day"
 msgstr "最后一天"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:51
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:52
 msgid "January"
 msgstr "一月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:51
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:52
 msgid "February"
 msgstr "二月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:51
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:52
 msgid "March"
 msgstr "三月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:52
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:53
 msgid "April"
 msgstr "四月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:52
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:53
 msgid "May"
 msgstr "五月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:52
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:53
 msgid "June"
 msgstr "六月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:53
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:54
 msgid "July"
 msgstr "七月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:53
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:54
 msgid "August"
 msgstr "八月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:53
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:54
 msgid "September"
 msgstr "九月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:54
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:55
 msgid "October"
 msgstr "十月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:54
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:55
 msgid "November"
 msgstr "十一月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:54
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:55
 msgid "December"
 msgstr "十二月"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:57
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:65
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:58
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:66
 msgid "00"
 msgstr "00"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:57
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:65
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:58
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:66
 msgid "01"
 msgstr "01"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:57
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:65
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:58
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:66
 msgid "02"
 msgstr "02"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:57
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:65
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:58
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:66
 msgid "03"
 msgstr "03"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:58
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:66
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:59
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:67
 msgid "04"
 msgstr "04"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:58
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:66
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:59
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:67
 msgid "05"
 msgstr "05"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:58
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:66
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:59
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:67
 msgid "06"
 msgstr "06"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:58
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:66
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:59
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:67
 msgid "07"
 msgstr "07"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:59
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:67
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:60
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:68
 msgid "08"
 msgstr "08"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:59
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:67
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:60
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:68
 msgid "09"
 msgstr "09"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:59
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:67
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:60
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:68
 msgid "10"
 msgstr "10"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:59
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:67
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:60
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:68
 msgid "11"
 msgstr "11"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:60
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:68
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:61
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:69
 msgid "12"
 msgstr "12"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:60
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:68
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:61
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:69
 msgid "13"
 msgstr "13"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:60
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:68
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:61
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:69
 msgid "14"
 msgstr "14"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:60
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:68
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:61
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:69
 msgid "15"
 msgstr "15"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:61
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:69
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:62
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:70
 msgid "16"
 msgstr "16"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:61
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:69
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:62
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:70
 msgid "17"
 msgstr "17"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:61
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:69
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:62
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:70
 msgid "18"
 msgstr "18"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:61
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:69
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:62
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:70
 msgid "19"
 msgstr "19"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:62
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:70
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:63
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:71
 msgid "20"
 msgstr "20"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:62
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:70
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:63
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:71
 msgid "21"
 msgstr "21"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:62
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:70
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:63
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:71
 msgid "22"
 msgstr "22"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:62
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:70
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:63
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:71
 msgid "23"
 msgstr "23"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:71
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:72
 msgid "24"
 msgstr "24"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:71
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:72
 msgid "25"
 msgstr "25"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:71
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:72
 msgid "26"
 msgstr "26"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:71
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:72
 msgid "27"
 msgstr "27"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:72
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:73
 msgid "28"
 msgstr "28"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:72
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:73
 msgid "29"
 msgstr "29"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:72
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:73
 msgid "30"
 msgstr "30"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:72
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:73
 msgid "31"
 msgstr "31"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:73
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:74
 msgid "32"
 msgstr "32"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:73
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:74
 msgid "33"
 msgstr "33"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:73
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:74
 msgid "34"
 msgstr "34"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:73
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:74
 msgid "35"
 msgstr "35"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:74
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:75
 msgid "36"
 msgstr "36"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:74
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:75
 msgid "37"
 msgstr "37"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:74
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:75
 msgid "38"
 msgstr "38"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:74
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:75
 msgid "39"
 msgstr "39"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:75
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:76
 msgid "40"
 msgstr "40"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:75
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:76
 msgid "41"
 msgstr "41"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:75
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:76
 msgid "42"
 msgstr "42"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:75
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:76
 msgid "43"
 msgstr "43"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:76
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:77
 msgid "44"
 msgstr "44"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:76
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:77
 msgid "45"
 msgstr "45"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:76
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:77
 msgid "46"
 msgstr "46"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:76
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:77
 msgid "47"
 msgstr "47"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:77
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:78
 msgid "48"
 msgstr "48"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:77
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:78
 msgid "49"
 msgstr "49"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:77
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:78
 msgid "50"
 msgstr "50"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:77
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:78
 msgid "51"
 msgstr "51"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:78
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:79
 msgid "52"
 msgstr "52"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:78
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:79
 msgid "53"
 msgstr "53"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:78
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:79
 msgid "54"
 msgstr "54"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:78
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:79
 msgid "55"
 msgstr "55"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:79
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:80
 msgid "56"
 msgstr "56"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:79
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:80
 msgid "57"
 msgstr "57"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:79
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:80
 msgid "58"
 msgstr "58"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:79
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:80
 msgid "59"
 msgstr "59"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:86
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:153
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:158
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:87
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:154
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:159
 msgid "<any>"
 msgstr "<任何>"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:152
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:153
 msgid "Date"
 msgstr "日期"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:159
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:160
 msgid "Time"
 msgstr "时间"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:175
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:176
 msgid "Please specify date/time."
 msgstr "请指定日期/时间。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:188
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:189
 msgid "Please specify unique set of exceptions."
 msgstr "请指定一系列独特的例外。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:216
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:217
 msgid "Schedule"
 msgstr "计划任务"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:228
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:233
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:238
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:229
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:234
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:239
 msgid "Schedule..."
 msgstr "计划任务..."
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:278
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:279
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:100
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:134
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:138
 #: pgadmin/browser/server_groups/servers/static/js/server.js:756
 #: pgadmin/browser/server_groups/static/js/server_group.js:45
 msgid "ID"
 msgstr "ID"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:298
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:299
 msgid "End"
 msgstr "结束"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:307
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:308
 msgid "Week days"
 msgstr "工作日"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:312
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:313
 msgid "Month days"
 msgstr "月天数"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:317
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:318
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:410
 msgid "Months"
 msgstr "月份"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:322
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:323
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:429
 msgid "Hours"
 msgstr "小时"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:327
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:328
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:444
 msgid "Minutes"
 msgstr "分钟"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:332
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:333
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:462
 msgid "Exceptions"
 msgstr "异常"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:357
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:361
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:358
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:362
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:427
 msgid "Repeat"
 msgstr "重复"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:358
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:359
 msgid ""
 "Schedules are specified using a <b>cron-style</b> format.<br/><ul><li>For"
 " each selected time or date element, the schedule will execute.<br/>e.g. "
@@ -6163,18 +6170,18 @@ msgstr ""
 " </li><li> 为了获得更多的灵活性, \"月天数\" 检查列表包括一个额外的 \"最后一天\" 选项。这与每月的最后一天相匹配, "
 "无论恰好是28日、29日、30日或 31日, </li> </ul>"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:361
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:380
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:362
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:381
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:396
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:411
 msgid "Days"
 msgstr "天数"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:379
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:380
 msgid "Week Days"
 msgstr "工作日"
 
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:385
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:386
 msgid "Select the weekdays..."
 msgstr "选择工作日..."
 
@@ -6298,58 +6305,58 @@ msgstr "作业步骤创建失败。"
 msgid "Job step update failed."
 msgstr "作业步骤更新失败。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:76
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:77
 msgid "Step"
 msgstr "步骤"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:90
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:95
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:100
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:91
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:96
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:101
 msgid "Job Step..."
 msgstr "任务步骤..."
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:144
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:148
 msgid "Kind"
 msgstr "种类"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:146
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:150
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:139
 #: pgadmin/browser/static/js/browser.js:221
 #: pgadmin/dashboard/static/js/dashboard.js:184
-#: pgadmin/static/js/backform.pgadmin.js:1915
+#: pgadmin/static/js/backform.pgadmin.js:1932
 msgid "SQL"
 msgstr "SQL"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:146
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:150
 msgid "Batch"
 msgstr "批次"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:151
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:159
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:155
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:163
 msgid "Connection type"
 msgstr "连接类型"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:155
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:168
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:159
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:172
 msgid "Remote"
 msgstr "远程"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:170
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:174
 msgid ""
 "Select <b>Local</b> if the job step will execute on the local database "
 "server, or <b>Remote</b> to specify a remote database server."
 msgstr "如果作业步骤将在本地数据库服务器上执行，请选择<b>本地</ b>，或者<b>远程</ b>指定远程数据库服务器。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:176
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:186
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:180
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:190
 msgid "Connection string"
 msgstr "连接字符串"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:184
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:188
 msgid "Please select the database on which the job step will run."
 msgstr "请选择该任务将要运行的数据库。"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:190
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:194
 #, python-format
 msgid ""
 "Please specify the connection string for the remote database server. Each"
@@ -6364,56 +6371,56 @@ msgstr ""
 "(例如, 关键字 = \"值\") 将其包围。值中的单引号和反斜杠必须使用反斜杠转义, 即, ‘ 和 \\. <br> 有关详细信息, 请参阅 "
 "%s 上的文档"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:195
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:199
 msgid "On error"
 msgstr "出现错误"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:197
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:201
 msgid "Fail"
 msgstr "失败"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:198
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:202
 #: pgadmin/dashboard/__init__.py:464 pgadmin/dashboard/__init__.py:491
 #: pgadmin/dashboard/static/js/dashboard.js:99
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:36
 msgid "Success"
 msgstr "成功"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:199
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:203
 msgid "Ignore"
 msgstr "忽略"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:211
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:215
 msgid "SQL query"
 msgstr "SQL查询"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:213
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:217
 msgid "Script"
 msgstr "脚本"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:242
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:246
 msgid "Please select a database."
 msgstr "请选择一个数据库."
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:256
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:260
 msgid "Please enter a connection string."
 msgstr "请输入用于连接的字符串."
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:258
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:278
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:262
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:282
 msgid "Please enter a valid connection string."
 msgstr "请输入一个有效的连接字符串."
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:283
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:287
 #, python-format
 msgid "Invalid parameter in the connection string - %s."
 msgstr "连接字符串中的无效参数- %s."
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:306
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:310
 msgid "Please specify code to execute."
 msgstr "请指定要执行的代码."
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:318
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:322
 msgid "Please select valid on error option ."
 msgstr "请选择 \"错误时有效\" 选项。"
 
@@ -6456,21 +6463,21 @@ msgstr "输出"
 msgid "Resource Groups"
 msgstr "资源组"
 
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:273
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:336
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:274
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:337
 msgid "Could not find the resource group."
 msgstr "找不到资源组."
 
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:515
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:516
 msgid "The specified resource group could not be found.\n"
 msgstr "找不到指定的资源组。\n"
 
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:532
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:533
 msgid "Resource Group dropped"
 msgstr "资源组已删除"
 
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:590
-#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:657
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:591
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:658
 msgid "The specified resource group could not be found."
 msgstr "找不到指定的资源组。"
 
@@ -7054,9 +7061,10 @@ msgstr "更改密码 "
 #: pgadmin/tools/import_export/static/js/import_export.js:494
 #: pgadmin/tools/maintenance/static/js/maintenance.js:296
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:55
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:655
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1944
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2083
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1945
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2084
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4090
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4157
 msgid "Cancel"
 msgstr "取消"
 
@@ -7277,7 +7285,7 @@ msgid "Connection timeout (seconds)"
 msgstr "连接超时 (秒)"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1133
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2111
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2112
 msgid "Connect to Server"
 msgstr "连接到服务器"
 
@@ -7724,7 +7732,7 @@ msgstr "删除%s: \"%s\"时，出错"
 #: pgadmin/browser/static/js/node.js:1193
 #: pgadmin/browser/static/js/node.js:1195
 #: pgadmin/browser/templates/browser/index.html:120
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:134
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:142
 msgid "Edit"
 msgstr "编辑"
 
@@ -7759,7 +7767,7 @@ msgstr "重置此对话框上的字段。"
 #: pgadmin/preferences/static/js/preferences.js:431
 #: pgadmin/preferences/static/js/preferences.js:456
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:37
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:663
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4165
 msgid "Save"
 msgstr "保存"
 
@@ -7817,7 +7825,7 @@ msgid "Finish"
 msgstr "完成"
 
 #: pgadmin/browser/templates/browser/index.html:98
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:354
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:374
 msgid "Loading {0} v{1}..."
 msgstr "正在加载 {0} v{1}..."
 
@@ -8710,58 +8718,58 @@ msgstr "未知错误"
 msgid "INTERNAL SERVER ERROR"
 msgstr "INTERNAL SERVER ERROR"
 
-#: pgadmin/static/js/backform.pgadmin.js:1725
+#: pgadmin/static/js/backform.pgadmin.js:1742
 msgid "No updates."
 msgstr "无更新。"
 
-#: pgadmin/static/js/backform.pgadmin.js:1839
+#: pgadmin/static/js/backform.pgadmin.js:1856
 msgid "General"
 msgstr "常规"
 
-#: pgadmin/static/js/backform.pgadmin.js:2456
+#: pgadmin/static/js/backform.pgadmin.js:2473
 #: pgadmin/tools/backup/static/js/backup.js:95
 #: pgadmin/tools/backup/static/js/backup.js:227
 msgid "Note"
 msgstr "注意"
 
-#: pgadmin/static/js/backform.pgadmin.js:2811
+#: pgadmin/static/js/backform.pgadmin.js:2828
 msgid "More"
 msgstr "更多"
 
-#: pgadmin/static/js/backform.pgadmin.js:2812
+#: pgadmin/static/js/backform.pgadmin.js:2829
 msgid "Less"
 msgstr "更少"
 
-#: pgadmin/static/js/backform.pgadmin.js:2896
+#: pgadmin/static/js/backform.pgadmin.js:2913
 msgid "Space"
 msgstr "空间"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:343
-#: pgadmin/static/js/backgrid.pgadmin.js:358
+#: pgadmin/static/js/backgrid.pgadmin.js:433
+#: pgadmin/static/js/backgrid.pgadmin.js:452
 msgid "Edit row"
 msgstr "编辑行"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:350
+#: pgadmin/static/js/backgrid.pgadmin.js:444
 msgid "This object is not user editable."
 msgstr "此对象用户不可编辑。"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:390
+#: pgadmin/static/js/backgrid.pgadmin.js:497
 msgid "Are you sure you wish to delete this row?"
 msgstr "确实要删除此行吗？"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:391
+#: pgadmin/static/js/backgrid.pgadmin.js:498
 msgid "Delete Row"
 msgstr "删除行"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:423
+#: pgadmin/static/js/backgrid.pgadmin.js:539
 msgid "This object cannot be deleted."
 msgstr "无法删除此对象。"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:435
+#: pgadmin/static/js/backgrid.pgadmin.js:556
 msgid "Delete row"
 msgstr "删除行"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:894
+#: pgadmin/static/js/backgrid.pgadmin.js:1085
 msgid "Array Values"
 msgstr "数组值"
 
@@ -8784,9 +8792,9 @@ msgid "An unexpected error occurred - ensure you are logged into the application
 msgstr "出现意外错误-确保您已登录到应用程序。"
 
 #: pgadmin/static/js/sqleditor_utils.js:162
-#: pgadmin/tools/sqleditor/__init__.py:1410
-#: pgadmin/tools/sqleditor/__init__.py:1465
-#: pgadmin/tools/sqleditor/__init__.py:1469
+#: pgadmin/tools/sqleditor/__init__.py:1397
+#: pgadmin/tools/sqleditor/__init__.py:1452
+#: pgadmin/tools/sqleditor/__init__.py:1456
 msgid "Transaction status check failed."
 msgstr "事务状态检查失败。"
 
@@ -9073,7 +9081,7 @@ msgid "Reset Password"
 msgstr "重置密码"
 
 #: pgadmin/tools/__init__.py:59 pgadmin/tools/datagrid/__init__.py:98
-#: pgadmin/tools/sqleditor/__init__.py:134
+#: pgadmin/tools/sqleditor/__init__.py:133
 msgid "This URL cannot be requested directly."
 msgstr "不能直接请求此 URL。"
 
@@ -9445,177 +9453,185 @@ msgstr "查询工具错误"
 msgid "Save As"
 msgstr "另存为"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:48
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:56
 msgid "Find (Ctrl/Cmd+F)"
 msgstr "查找 (Ctrl/Cmd+F)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:60
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:68
 msgid "Find"
 msgstr "查找"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:61
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:69
 msgid " (Cmd+F)"
 msgstr " (Cmd+F)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:63
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:71
 msgid " (Ctrl+F)"
 msgstr " (Ctrl+F)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:68
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:76
 msgid "Find Next"
 msgstr "查找下一个"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:69
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:77
 msgid " (Cmd+G)"
 msgstr " (Cmd+G)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:71
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:79
 msgid " (Ctrl+G)"
 msgstr " (Ctrl+G)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:76
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:84
 msgid "Find Previous"
 msgstr "查找上一个"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:77
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:85
 msgid " (Cmd+Shift+G)"
 msgstr " (Cmd+Shift+G)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:79
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:87
 msgid " (Ctrl+Shift+G)"
 msgstr " (Ctrl+Shift+G)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:84
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:92
 msgid "Persistent Find"
 msgstr "Persistent Find"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:90
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:98
 msgid "Replace"
 msgstr "替换"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:91
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:99
 msgid " (Cmd+Shift+F)"
 msgstr " (Cmd+Shift+F)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:93
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:101
 msgid " (Ctrl+Shift+F)"
 msgstr " (Ctrl+Shift+F)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:98
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:106
 msgid "Replace All"
 msgstr "全部替换"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:104
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:112
 msgid "Jump (Alt+G)"
 msgstr "跳转至 (Alt + G)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:140
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:148
 msgid "Indent Selection (Tab)"
 msgstr "缩进所选(Tab)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:145
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:153
 msgid "Unindent Selection (Shift+Tab)"
 msgstr "取消缩进所选 (Tab)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:150
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:158
 msgid "Inline Comment Selection"
 msgstr "内联注释选择"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:151
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:159
 msgid " (Cmd+/)"
 msgstr " (Cmd+/)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:153
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:161
 msgid " (Ctrl+/)"
 msgstr " (Ctrl+/)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:158
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:166
 msgid "Inline Uncomment Selection"
 msgstr "内联取消注释所选"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:159
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:167
 msgid " (Cmd+.)"
 msgstr " (Cmd+.)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:161
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:169
 msgid " (Ctrl+.)"
 msgstr " (Ctrl+.)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:166
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:174
 msgid "Block Comment/Uncomment Selection"
 msgstr "块注释/取消注释所选"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:167
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:175
 msgid " (Shift+Cmd+/)"
 msgstr " (Shift+Cmd+/)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:169
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:177
 msgid " (Shift+Ctrl+/)"
 msgstr " (Shift+Ctrl+/)"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:189
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:197
 msgid "Sort/Filter"
 msgstr "筛选器"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:192
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:200
 msgid "Filter by Selection"
 msgstr "按选择筛选"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:195
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:203
 msgid "Exclude by Selection"
 msgstr "按选择排除"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:198
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:206
 msgid "Remove Sort/Filter"
 msgstr "删除 \"排序\" 筛选器"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:207
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:215
 msgid "No limit"
 msgstr "无限制"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:208
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:216
 msgid "1000 rows"
 msgstr "1000行"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:209
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:217
 msgid "500 rows"
 msgstr "500行"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:210
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:218
 msgid "100 rows"
 msgstr "100行"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:236
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:67
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:244
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:79
 msgid "Auto commit?"
 msgstr "自动提交？"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:242
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:75
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:250
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:87
 msgid "Auto rollback?"
 msgstr "自动回滚？"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:267
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:275
 msgid "Verbose"
 msgstr "详细信息"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:273
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:281
 msgid "Costs"
 msgstr "成本"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:279
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:287
 msgid "Buffers"
 msgstr "缓冲区"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:285
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:293
 msgid "Timing"
 msgstr "计时"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:314
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:299
+msgid "Summary"
+msgstr ""
+
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:305
+msgid "Settings"
+msgstr ""
+
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:334
 msgid "Clear Query Window"
 msgstr "清除查询窗口"
 
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:319
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:339
 msgid "Clear History"
 msgstr "清除历史记录"
 
@@ -9663,17 +9679,17 @@ msgid "Edit grid values"
 msgstr "编辑网格值"
 
 #: pgadmin/tools/debugger/__init__.py:179
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:350
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:391
 msgid "Previous tab"
 msgstr "上一个选项卡"
 
 #: pgadmin/tools/debugger/__init__.py:197
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:368
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:409
 msgid "Next tab"
 msgstr "下一个选项卡"
 
 #: pgadmin/tools/debugger/__init__.py:215
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:386
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:427
 msgid "Switch Panel"
 msgstr "切换面板"
 
@@ -9755,11 +9771,12 @@ msgstr "请将 pldbgapi 扩展升级到1.1 或更高版本, 然后重试。"
 #: pgadmin/tools/debugger/__init__.py:2002
 #: pgadmin/tools/debugger/__init__.py:2024
 #: pgadmin/tools/debugger/static/js/direct.js:1634
-#: pgadmin/tools/sqleditor/__init__.py:1038
-#: pgadmin/tools/sqleditor/command.py:192
-#: pgadmin/tools/sqleditor/command.py:404
-#: pgadmin/tools/sqleditor/command.py:545
-#: pgadmin/tools/sqleditor/command.py:642
+#: pgadmin/tools/sqleditor/__init__.py:1025
+#: pgadmin/tools/sqleditor/command.py:195
+#: pgadmin/tools/sqleditor/command.py:407
+#: pgadmin/tools/sqleditor/command.py:548
+#: pgadmin/tools/sqleditor/command.py:645
+#: pgadmin/tools/sqleditor/command.py:969
 msgid "Not connected to server or connection with the server has been closed."
 msgstr "未连接到服务器或与服务器的连接已关闭。"
 
@@ -9996,7 +10013,7 @@ msgid "Local variables"
 msgstr "本地变量"
 
 #: pgadmin/tools/debugger/static/js/direct.js:1731
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:235
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:255
 msgid "Messages"
 msgstr "消息"
 
@@ -10455,165 +10472,157 @@ msgstr "还原作业失败。"
 msgid "Query tool"
 msgstr "查询工具"
 
-#: pgadmin/tools/sqleditor/__init__.py:152
-#: pgadmin/tools/sqleditor/__init__.py:160
-#: pgadmin/tools/sqleditor/__init__.py:212
-#: pgadmin/tools/sqleditor/__init__.py:393
-#: pgadmin/tools/sqleditor/__init__.py:604
-#: pgadmin/tools/sqleditor/__init__.py:727
-#: pgadmin/tools/sqleditor/__init__.py:800
-#: pgadmin/tools/sqleditor/__init__.py:855
-#: pgadmin/tools/sqleditor/__init__.py:907
-#: pgadmin/tools/sqleditor/__init__.py:951
-#: pgadmin/tools/sqleditor/__init__.py:991
-#: pgadmin/tools/sqleditor/__init__.py:1000
-#: pgadmin/tools/sqleditor/__init__.py:1071
-#: pgadmin/tools/sqleditor/__init__.py:1107
-#: pgadmin/tools/sqleditor/__init__.py:1152
-#: pgadmin/tools/sqleditor/__init__.py:1204
+#: pgadmin/tools/sqleditor/__init__.py:151
+#: pgadmin/tools/sqleditor/__init__.py:159
+#: pgadmin/tools/sqleditor/__init__.py:211
+#: pgadmin/tools/sqleditor/__init__.py:362
+#: pgadmin/tools/sqleditor/__init__.py:583
+#: pgadmin/tools/sqleditor/__init__.py:706
+#: pgadmin/tools/sqleditor/__init__.py:787
+#: pgadmin/tools/sqleditor/__init__.py:842
+#: pgadmin/tools/sqleditor/__init__.py:894
+#: pgadmin/tools/sqleditor/__init__.py:938
+#: pgadmin/tools/sqleditor/__init__.py:978
+#: pgadmin/tools/sqleditor/__init__.py:987
+#: pgadmin/tools/sqleditor/__init__.py:1058
+#: pgadmin/tools/sqleditor/__init__.py:1094
+#: pgadmin/tools/sqleditor/__init__.py:1139
+#: pgadmin/tools/sqleditor/__init__.py:1191
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:26
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:79
-#: pgadmin/tools/sqleditor/utils/start_running_query.py:175
-#: pgadmin/tools/sqleditor/utils/start_running_query.py:183
+#: pgadmin/tools/sqleditor/utils/start_running_query.py:178
+#: pgadmin/tools/sqleditor/utils/start_running_query.py:186
 msgid "Transaction ID not found in the session."
 msgstr "事务 ID 在该会话中找不到."
 
-#: pgadmin/tools/sqleditor/__init__.py:407
+#: pgadmin/tools/sqleditor/__init__.py:376
 msgid "******* Error *******"
 msgstr "******* 错误 *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:742
+#: pgadmin/tools/sqleditor/__init__.py:722
 msgid "No primary key found for this object, so unable to save records."
 msgstr "该对象没有找到主键，所以无法保存记录."
 
-#: pgadmin/tools/sqleditor/__init__.py:1044
-#: pgadmin/tools/sqleditor/utils/start_running_query.py:99
+#: pgadmin/tools/sqleditor/__init__.py:1031
+#: pgadmin/tools/sqleditor/utils/start_running_query.py:102
 msgid "Either transaction object or session object not found."
 msgstr "找不到事务对象或会话对象。"
 
-#: pgadmin/tools/sqleditor/__init__.py:1278
+#: pgadmin/tools/sqleditor/__init__.py:1265
 msgid "File type not supported"
 msgstr "不支持的文件类型"
 
-#: pgadmin/tools/sqleditor/command.py:70
+#: pgadmin/tools/sqleditor/command.py:73
 msgid "This feature has not been implemented for object type '{0}'."
 msgstr "尚未针对此对象类型 \"{0}\" 实现此功能。"
 
-#: pgadmin/tools/sqleditor/command.py:415
+#: pgadmin/tools/sqleditor/command.py:418
 msgid "Data cannot be saved for the current object."
 msgstr "当前对象的数据不能保存."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:205
+#: pgadmin/tools/sqleditor/command.py:924
+msgid "Resultset is not updatable."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:225
 msgid "Query Editor"
 msgstr "查询编辑器"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:214
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:234
 msgid "Data Output"
 msgstr "数据输出"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:225
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:245
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:44
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:50
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:56
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:62
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:68
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:74
 msgid "Explain"
 msgstr "解释"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:245
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:265
 msgid "Query History"
 msgstr "查询历史"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:255
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:275
 msgid "Scratch Pad"
 msgstr "便签本"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:265
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:285
 msgid "Notifications"
 msgstr "通知"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:275
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:295
 msgid "Geometry Viewer"
 msgstr "几何查看器"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:386
-msgid "The data has changed. Do you want to save changes?"
-msgstr "数据已更改。是否要保存更改？"
-
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:391
-msgid "The text has changed. Do you want to save changes?"
-msgstr "文本已更改。是否要保存更改？"
-
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:660
-msgid "Don't save"
-msgstr "不要保存"
-
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:693
-msgid "Save changes?"
-msgstr "保存更改吗？"
-
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1251
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1222
 msgid "Fetching all records..."
 msgstr "获取所有记录..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1697
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2252
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3094
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1671
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2258
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3136
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3672
 msgid "Unsaved changes"
 msgstr "未保存的更改"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1698
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3095
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1672
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3137
 msgid "Are you sure you wish to discard the current changes?"
 msgstr "是否确实要放弃当前更改？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1726
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1700
 msgid "Clear history"
 msgstr "清除历史记录"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1727
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1701
 msgid "Are you sure you wish to clear the history?"
 msgstr "是否确实要清除历史记录？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1728
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1702
 msgid ""
 "This will remove all of your query history from this and other sessions "
 "for this database."
 msgstr "这将从此数据库的此会话和其他会话中删除所有查询历史记录。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2044
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2045
 msgid "Connection Warning"
 msgstr "连接警告"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2051
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2052
 msgid "The application has lost the database connection:"
 msgstr "应用程序已丢失数据库连接:"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2055
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2056
 msgid "⁃ If the connection was idle it may have been forcibly disconnected."
 msgstr "- 如果连接处于空闲状态 , 则可能已强制断开连接。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2057
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2058
 msgid "⁃ The application server or database server may have been restarted."
 msgstr "- 应用程序服务器或数据库服务器可能已重新启动。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2059
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2060
 msgid "⁃ The user session may have timed out."
 msgstr "- 用户会话可能已超时。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2063
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2064
 msgid "Do you want to continue and establish a new session?"
 msgstr "是否要继续并建立新的会话？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2082
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2083
 msgid "Continue"
 msgstr "继续"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2186
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2190
 #, python-format
 msgid "Error fetching SQL for script: %s."
 msgstr "为脚本获取 SQL 时出错: %s。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2253
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2259
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3673
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
@@ -10627,123 +10636,159 @@ msgstr "正在运行查询..."
 msgid "Waiting for the query to complete..."
 msgstr "正在等待查询完成..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2433
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2431
 msgid "Loading data from the database server and rendering..."
 msgstr "从数据库服务器加载数据并渲染.."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2442
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2440
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "已成功运行。查询运行时间总数: %s。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2443
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2441
 #, python-format
 msgid "%s rows affected."
 msgstr "%s 行受影响。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2806
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2804
 msgid "Row(s) deleted."
 msgstr "行已删除。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2881
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2878
 msgid "Saving the updated data..."
 msgstr "正在保存更新的数据..。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2971
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2995
 msgid "Data saved successfully."
 msgstr "数据保存成功."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2977
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2998
+msgid "Auto-commit is off. You still need to commit changes to the database."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3004
 #, python-format
 msgid "%s."
 msgstr "%s."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3133
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3009
+msgid ""
+"Saving data changes was rolled back but the current transaction is still "
+"active; previous queries are unaffected."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3175
 msgid "Loading the file..."
 msgstr "加载文件..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3184
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3226
 msgid "Saving the queries in the file..."
 msgstr "将查询保存在文件..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3196
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3238
 msgid "File saved successfully."
 msgstr "文件保存成功。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3317
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3376
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3360
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3419
 msgid "Applying the new filter..."
 msgstr "应用新的筛选器..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3337
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3347
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3380
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3390
 msgid "Filter By Selection Error"
 msgstr "按选择筛选错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3396
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3406
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3439
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3449
 msgid "Filter Exclude Selection Error"
 msgstr "筛选排除选择错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3416
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3459
 msgid "Removing the filter..."
 msgstr "移除筛选器..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3434
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3444
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3477
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3487
 msgid "Remove Filter Error"
 msgstr "删除筛选器错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3539
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3582
 msgid "Setting the limit on the result..."
 msgstr "设置限制的结果..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3558
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3567
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3601
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3610
 msgid "Change limit Error"
 msgstr "更改限制错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3714
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3733
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3790
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3809
 msgid "Cancel Query Error"
 msgstr "取消查询错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3752
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3828
 msgid "Downloading CSV..."
 msgstr "正在下载 CSV..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3806
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3882
 msgid "CSV Download cancelled."
 msgstr "CSV 下载已取消。"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3809
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:332
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3885
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:373
 msgid "Download CSV"
 msgstr "下载CSV"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3812
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3888
 msgid "Download CSV error"
 msgstr "下载 CSV 错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3847
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3854
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3923
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3930
 msgid "Auto Rollback Error"
 msgstr "自动回滚错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3880
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3886
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3956
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3962
 msgid "Auto Commit Error"
 msgstr "自动提交错误"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3903
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3915
-msgid "Explain options error"
-msgstr "解释选项错误"
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4051
+msgid "The data has changed. Do you want to save changes?"
+msgstr "数据已更改。是否要保存更改？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3904
-#, python-format
-msgid "Error occurred while setting %(subItem)s option in explain."
-msgstr "在解释中设置 %(subItem)s 选项时出错。"
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4057
+msgid "The text has changed. Do you want to save changes?"
+msgstr "文本已更改。是否要保存更改？"
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4095
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:659
+msgid "Rollback"
+msgstr "回滚"
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4098
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:641
+msgid "Commit"
+msgstr "提交"
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4136
+msgid ""
+"The current transaction is not commited to the database.Do you want to "
+"commit or rollback the transaction?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4139
+msgid "Commit transaction?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4162
+msgid "Don't save"
+msgstr "不要保存"
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4205
+msgid "Save changes?"
+msgstr "保存更改吗？"
 
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:96
 msgid "Data sorting object updated successfully"
@@ -10787,19 +10832,27 @@ msgstr "显示的缓冲区信息？"
 msgid "Show timing?"
 msgstr "显示计时？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:69
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:67
+msgid "Show summary?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:73
+msgid "Show settings?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:81
 msgid "Set auto commit on or off by default in new Query Tool tabs."
 msgstr "默认情况下, 在新的 \"查询工具\" 选项卡中设置自动提交打开或关闭。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:77
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:89
 msgid "Set auto rollback on or off by default in new Query Tool tabs."
 msgstr "默认情况下, 在新的 \"查询工具\" 选项卡中设置自动回滚打开或关闭。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:83
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:95
 msgid "Font size"
 msgstr "字体大小"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:87
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:99
 msgid ""
 "The font size to use for the SQL text boxes and editors. The value "
 "specified is in \"em\" units, in which 1 is the default relative font "
@@ -10811,226 +10864,232 @@ msgstr ""
 "其中1是默认的相对字体大小。例如:若要将字体大小增加百分之二十请使用1.2 的值或将减少百分之二十, 请使用0.8 的值。最小 0.1, "
 "最大10。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:98
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:110
 msgid "Tab size"
 msgstr "Tab大小"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:102
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:114
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
 msgstr "Tab 代表空格的数量，最小2，最大为8。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:109
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:121
 msgid "Use spaces?"
 msgstr "使用空间吗？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:111
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:123
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
 "key or auto-indent are used."
 msgstr "指定在使用Tab键或自动缩进时是否插入空格而不是Tab。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:119
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:131
 msgid "Line wrapping?"
 msgstr "自动换行？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:121
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:133
 msgid "Specifies whether or not to wrap SQL code in the editor."
 msgstr "指定编辑器中SQL代码是否换行。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:128
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:140
 msgid "Insert bracket pairs?"
 msgstr "插入配对的括号？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:130
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:142
 msgid "Specifies whether or not to insert paired brackets in the editor."
 msgstr "指定是否在编辑器中插入配对括号。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:138
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:150
 msgid "Brace matching?"
 msgstr "大括号匹配？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:140
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:152
 msgid "Specifies whether or not to highlight matched braces in the editor."
 msgstr "指定是否在编辑器中突出显示匹配的大括号。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:148
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:160
 msgid "Prompt to save unsaved query changes?"
 msgstr "提示保存未保存的查询更改？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:150
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:162
 msgid ""
 "Specifies whether or not to prompt user to save unsaved query on query "
 "tool exit."
 msgstr "指定是否提示用户在查询工具退出时保存未保存的查询。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:158
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:170
 msgid "Prompt to save unsaved data changes?"
 msgstr "提示保存未保存的数据更改？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:160
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:172
 msgid ""
 "Specifies whether or not to prompt user to save unsaved data on data grid"
 " exit."
 msgstr "指定是否提示用户在数据表格退出时保存未保存的数据。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:168
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:180
+msgid "Prompt to commit/rollback active transactions?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:183
+msgid ""
+"Specifies whether or not to prompt user to commit or rollback an active "
+"transaction on Query Tool exit."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:191
 msgid "CSV quoting"
 msgstr "CSV引用"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:169
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:182
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:192
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:205
 msgid "CSV Output"
 msgstr "CSV输出"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:181
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:204
 msgid "CSV quote character"
 msgstr "CSV引用符号"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:193
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:216
 msgid "CSV field separator"
 msgstr "CSV字段分隔符"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:194
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:208
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:217
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:231
 msgid "CSV output"
 msgstr "CSV输出"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:207
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:230
 msgid "Replace null values with"
 msgstr "将空值替换为"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:209
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:232
 msgid ""
 "Specifies the string that represents a null value while downloading query"
 " results as CSV. You can specify any arbitrary string to represent a null"
 " value, with quotes if desired."
 msgstr "指定在以 CSV 形式下载查询结果时表示空值的字符串。您可以指定任何任意字符串来表示空值, 并在需要时使用引号。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:218
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:241
 msgid "Result copy quoting"
 msgstr "复制结果时包含引用"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:219
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:232
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:244
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:242
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:255
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:267
 msgid "Results grid"
 msgstr "结果网格"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:231
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:254
 msgid "Result copy quote character"
 msgstr "复制结果时包含引号字符"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:243
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:266
 msgid "Result copy field separator"
 msgstr "复制结果时包含字段分隔符"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:257
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:280
 msgid "Connection status"
 msgstr "连接状态"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:259
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:282
 msgid ""
 "If set to True, the Query Tool will monitor and display the connection "
 "and transaction status."
 msgstr "如果设置为 True, 查询工具将监视并显示连接和事务状态。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:266
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:289
 msgid "Connection status refresh rate"
 msgstr "连接状态刷新率"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:269
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:292
 msgid "The number of seconds between connection/transaction status polls."
 msgstr "连接/事务状态轮询之间的秒数。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:278
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:301
 msgid "Execute query"
 msgstr "执行查询"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:296
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:319
+msgid "Save data changes"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:337
 msgid "EXPLAIN query"
 msgstr "解释查询"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:314
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:355
 msgid "EXPLAIN ANALYZE query"
 msgstr "解释优化查询"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:404
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:445
 msgid "Accesskey (Open file)"
 msgstr "Accesskey (打开文件)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:417
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:458
 msgid "Accesskey (Save file)"
 msgstr "Accesskey (保存文件)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:430
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:471
 msgid "Accesskey (Copy rows)"
 msgstr "Accesskey (复制行)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:443
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:484
 msgid "Accesskey (Paste rows)"
 msgstr "Accesskey (粘贴行)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:456
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:497
 msgid "Accesskey (Delete rows)"
 msgstr "Accesskey (删除行)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:469
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:510
 msgid "Accesskey (Filter dialog)"
 msgstr "Accesskey (过滤器对话框)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:482
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:523
 msgid "Accesskey (Filter options)"
 msgstr "Accesskey (筛选器选项)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:495
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:536
 msgid "Accesskey (Rows limit)"
 msgstr "Accesskey (行数胭脂)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:508
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:549
 msgid "Accesskey (Execute options)"
 msgstr "Accesskey (执行选项)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:521
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:562
 msgid "Accesskey (Cancel query)"
 msgstr "Accesskey (取消查询)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:534
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:575
 msgid "Accesskey (Clear editor options)"
 msgstr "Accesskey (清除编辑器选项)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:547
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:588
 msgid "Accesskey (Connection status)"
 msgstr "Accesskey  (连接状态)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:560
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:601
 msgid "Accesskey (Find options)"
 msgstr "Accesskey (查找选项)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:574
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:615
 msgid "Toggle case of selected text"
 msgstr "切换所选文本的大小写"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:591
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:632
 msgid "Keywords in uppercase"
 msgstr "关键词使用大写"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:592
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:633
 msgid "Auto completion"
 msgstr "自动完成"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:593
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:634
 msgid ""
 "If set to True, Keywords will be displayed in upper case for auto "
 "completion."
 msgstr "如果设置为 True, 关键字针对自动完成将以大写形式显示。"
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:600
-msgid "Commit"
-msgstr "提交"
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:618
-msgid "Rollback"
-msgstr "回滚"
 
 #: pgadmin/tools/user_management/__init__.py:107
 msgid "Invalid email address."
@@ -11343,4 +11402,13 @@ msgstr "找不到指定的数据库。"
 
 #~ msgid "Import/export job failed."
 #~ msgstr "导入/导出作业失败。"
+
+#~ msgid "The specified collation could not be found.\n"
+#~ msgstr "找不到指定的排序规则\n"
+
+#~ msgid "Explain options error"
+#~ msgstr "解释选项错误"
+
+#~ msgid "Error occurred while setting %(subItem)s option in explain."
+#~ msgstr "在解释中设置 %(subItem)s 选项时出错。"
 
