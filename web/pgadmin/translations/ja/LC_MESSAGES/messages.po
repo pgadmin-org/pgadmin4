@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-19 17:44+0530\n"
-"PO-Revision-Date: 2019-06-23 00:28+0900\n"
+"PO-Revision-Date: 2019-07-20 02:23+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -226,7 +226,7 @@ msgstr "ブラウザツリー状態の保存間隔"
 msgid ""
 "Browser tree state saving interval in seconds.Use -1 to disable the tree "
 "saving mechanism."
-msgstr "ブラウザツリーの状態を何秒おきに保存するかを指定します。-1にすると、この機構を無効化します"
+msgstr "ブラウザツリーの状態を何秒おきに保存するかを指定します。-1 にすると、この機構を無効化します"
 
 #: pgadmin/browser/register_browser_preferences.py:49
 msgid "Confirm on close or refresh ?"
@@ -426,7 +426,7 @@ msgstr "ブラウザツリーを再読み込みする"
 
 #: pgadmin/browser/register_browser_preferences.py:394
 msgid "Add grid row"
-msgstr ""
+msgstr "グリッド行を追加"
 
 #: pgadmin/browser/utils.py:281
 msgid "Unimplemented method ({0}) for this url ({1})"
@@ -4479,7 +4479,7 @@ msgstr "テーブル..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:111
 msgid "Count Rows"
-msgstr "行数を算出する"
+msgstr "行数を算出"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:405
 msgid "Select to inherit from..."
@@ -8531,7 +8531,7 @@ msgstr "サーバから依存情報を取得しています..."
 
 #: pgadmin/misc/file_manager/__init__.py:170
 msgid "Maximum file upload size (MB)"
-msgstr "最大ファイルアップロードサイズ (MB)"
+msgstr "ファイルのアップロードできる容量上限 (MB)"
 
 #: pgadmin/misc/file_manager/__init__.py:175
 msgid "Last directory visited"
@@ -9437,7 +9437,7 @@ msgstr "クエリツールの初期化エラー"
 
 #: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:42
 msgid "File - "
-msgstr ""
+msgstr "ファイル - "
 
 #: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:47
 msgid "View/Edit Data - "
@@ -9632,11 +9632,11 @@ msgstr "実行時間"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:299
 msgid "Summary"
-msgstr ""
+msgstr "概要"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:305
 msgid "Settings"
-msgstr ""
+msgstr "設定"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:334
 msgid "Clear Query Window"
@@ -9655,11 +9655,11 @@ msgstr "デバッガ"
 #: pgadmin/tools/debugger/__init__.py:74
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:35
 msgid "Open in new browser tab"
-msgstr "新しいブラウザタブで開く"
+msgstr "新しいブラウザタブに開く"
 
 #: pgadmin/tools/debugger/__init__.py:76
 msgid "If set to True, the Debugger will be opened in a new browser tab."
-msgstr "True の場合、デバッガは新しいブラウザタブで開きます"
+msgstr "True の場合、デバッガを新しいブラウザタブに開きます"
 
 #: pgadmin/tools/debugger/__init__.py:82
 msgid "Accesskey (Continue/Start)"
@@ -10535,7 +10535,7 @@ msgstr "現在のオブジェクトではデータが保存できません"
 
 #: pgadmin/tools/sqleditor/command.py:924
 msgid "Resultset is not updatable."
-msgstr ""
+msgstr "更新できない結果セットです"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:225
 msgid "Query Editor"
@@ -10677,7 +10677,7 @@ msgstr "データの保存に成功しました"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2998
 msgid "Auto-commit is off. You still need to commit changes to the database."
-msgstr ""
+msgstr "自動コミットが無効です。データベースへの変更は、手動でコミットを行わない限り反映されません"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3004
 #, python-format
@@ -10688,7 +10688,7 @@ msgstr "%s"
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
-msgstr ""
+msgstr "保存しようとした変更データはロールバックされましたが、現在のトランザクションはまだ続行中です。今までに実行したクエリへの影響はありません"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3175
 msgid "Loading the file..."
@@ -10789,11 +10789,11 @@ msgstr "コミット"
 msgid ""
 "The current transaction is not commited to the database.Do you want to "
 "commit or rollback the transaction?"
-msgstr ""
+msgstr "現在のトランザクションが、まだデータベースにコミットされていません。トランザクションのコミット、もしくはロールバックを行いますか？"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4139
 msgid "Commit transaction?"
-msgstr ""
+msgstr "トランザクションをコミットしますか？"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4162
 msgid "Don't save"
@@ -10821,11 +10821,13 @@ msgid ""
 " completed. A value of -1 disables the notifier and a value of 0 displays"
 " it until clicked. Values greater than 0 display the notifier for the "
 "number of seconds specified."
-msgstr "クエリの実行が完了した後に出現する、情報通知を表示する時間を指定します。-1にすると通知は無効化され、0にするとクリックされるまで表示します。0よりも大きい値は、通知を表示する秒数となります"
+msgstr ""
+"クエリの実行が完了した際に出現する、情報通知を表示する時間を指定します。-1 にすると通知は無効化され、0 "
+"にするとクリックされるまで表示します。0 よりも大きい値は、通知を表示する秒数となります"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:37
 msgid "If set to True, the Query Tool will be opened in a new browser tab."
-msgstr "True の場合、クエリツールは新しいブラウザタブで開きます"
+msgstr "True の場合、クエリツールを新しいブラウザタブに開きます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:43
 msgid "Verbose output?"
@@ -10845,23 +10847,23 @@ msgstr "実行時間を表示"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:67
 msgid "Show summary?"
-msgstr ""
+msgstr "概要を表示"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:73
 msgid "Show settings?"
-msgstr ""
+msgstr "設定を表示"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:81
 msgid "Set auto commit on or off by default in new Query Tool tabs."
-msgstr "新しいクエリツールのタブで、自動コミットを既定で有効にするか、しないかを設定します"
+msgstr "新しいクエリツールのタブで、自動コミットを既定で有効にするか、しないかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:89
 msgid "Set auto rollback on or off by default in new Query Tool tabs."
-msgstr "新しいクエリツールのタブで、自動ロールバックを既定で有効にするか、しないかを設定します"
+msgstr "新しいクエリツールのタブで、自動ロールバックを既定で有効にするか、しないかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:95
 msgid "Font size"
-msgstr "フォントサイズ"
+msgstr "フォントの大きさ"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:99
 msgid ""
@@ -10871,17 +10873,17 @@ msgid ""
 " 1.2, or to reduce by 20 percent, use a value of 0.8. Minimum 0.1, "
 "maximum 10."
 msgstr ""
-"SQL テキストボックスやエディタで使うフォントサイズ。「em」単位で指定し、1 "
-"がデフォルトの相対的なフォントサイズです。例えば、20パーセント大きくしたい場合には 1.2 を指定、20パーセント小さくしたい場合には 0.8 "
-"を指定します。最小は 0.1、最大は 10 です"
+"SQL テキストボックスやエディタに表示するフォントの大きさを「em」単位で指定します。1 "
+"がデフォルトの相対的な大きさで、100パーセントを意味します。つまり、1.2 で20パーセント大きくなり、0.8 "
+"で20パーセント小さくなります。0.1 から 10 の範囲の値を指定できます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:110
 msgid "Tab size"
-msgstr "タブサイズ"
+msgstr "タブの幅"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:114
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
-msgstr "タブをいくつのスペースとするか（最小2、最大8）"
+msgstr "タブをいくつのスペースとするかを指定します（最小 2、最大 8）"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:121
 msgid "Use spaces?"
@@ -10891,7 +10893,7 @@ msgstr "スぺースを使用"
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
 "key or auto-indent are used."
-msgstr "Tab キー、もしくは自動インデントによってタブを挿入する時、代わりにスペースで埋めるかどうかを指定します"
+msgstr "Tab キー、もしくは自動インデントによるタブの挿入時、代わりにスペースで埋めるかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:131
 msgid "Line wrapping?"
@@ -10903,19 +10905,19 @@ msgstr "エディタ内の SQL を折り返すかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:140
 msgid "Insert bracket pairs?"
-msgstr "カッコを挿入"
+msgstr "括弧を挿入"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:142
 msgid "Specifies whether or not to insert paired brackets in the editor."
-msgstr "エディタでカッコを挿入するかどうかを指定します"
+msgstr "エディタで括弧を挿入するかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:150
 msgid "Brace matching?"
-msgstr "カッコの対応"
+msgstr "括弧の対応"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:152
 msgid "Specifies whether or not to highlight matched braces in the editor."
-msgstr "エディタでカッコの対応をハイライトするかどうかを指定します"
+msgstr "エディタで対になっている括弧をハイライトするかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:160
 msgid "Prompt to save unsaved query changes?"
@@ -10925,7 +10927,7 @@ msgstr "未保存のクエリを閉じる際に確認する"
 msgid ""
 "Specifies whether or not to prompt user to save unsaved query on query "
 "tool exit."
-msgstr "クエリツールを閉じる時、未保存のクエリを保存するかどうか確認する"
+msgstr "クエリツールを閉じる時、未保存のクエリを保存するかどうか確認します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:170
 msgid "Prompt to save unsaved data changes?"
@@ -10935,17 +10937,17 @@ msgstr "未保存のデータを閉じる際に確認する"
 msgid ""
 "Specifies whether or not to prompt user to save unsaved data on data grid"
 " exit."
-msgstr "データグリッドを閉じる時、未保存のデータを保存するかどうか確認する"
+msgstr "データグリッドを閉じる時、未保存のデータを保存するかどうか確認します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:180
 msgid "Prompt to commit/rollback active transactions?"
-msgstr ""
+msgstr "実行中のトランザクションをコミットするか確認する"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:183
 msgid ""
 "Specifies whether or not to prompt user to commit or rollback an active "
 "transaction on Query Tool exit."
-msgstr ""
+msgstr "クエリツールを閉じる時、実行中のトランザクションをコミット、もしくはロールバックするかどうか確認します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:191
 msgid "CSV quoting"
@@ -11022,7 +11024,7 @@ msgstr "クエリ実行"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:319
 msgid "Save data changes"
-msgstr ""
+msgstr "変更データを保存"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:337
 msgid "EXPLAIN query"
