@@ -407,6 +407,8 @@ def poll(trans_id):
                 if (result != 'SELECT 1' or result != 'SELECT 0') and \
                    result is not None and additional_messages:
                     result = additional_messages + result
+                else:
+                    result = None
 
             if st:
                 if 'primary_keys' in session_obj:

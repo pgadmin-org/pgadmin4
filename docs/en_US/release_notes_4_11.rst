@@ -40,6 +40,7 @@ Bug fixes
 | `Issue #4389 <https://redmine.postgresql.org/issues/4389>`_ -  Fix an error that could be seen when editing column privileges.
 | `Issue #4393 <https://redmine.postgresql.org/issues/4393>`_ -  Ensure parameter values are quoted when needed when editing roles.
 | `Issue #4395 <https://redmine.postgresql.org/issues/4395>`_ -  EXPLAIN options should be Query Tool instance-specific.
+| `Issue #4427 <https://redmine.postgresql.org/issues/4427>`_ -  Fix an error while retrieving json data from the table.
 | `Issue #4428 <https://redmine.postgresql.org/issues/4428>`_ -  Fix 'malformed array literal' error when updating a pgAgent job.
 | `Issue #4429 <https://redmine.postgresql.org/issues/4429>`_ -  Ensure drag/drop from the treeview works as expected on Firefox.
 | `Issue #4437 <https://redmine.postgresql.org/issues/4437>`_ -  Fix table icon issue when updating any existing field.
@@ -49,3 +50,5 @@ Bug fixes
 | `Issue #4450 <https://redmine.postgresql.org/issues/4450>`_ -  Fix reverse engineered sql for Foreign Data Wrapper created on EPAS server in redwood mode.
 | `Issue #4462 <https://redmine.postgresql.org/issues/4462>`_ -  Fix some minor UI issues on IE11.
 | `Issue #4470 <https://redmine.postgresql.org/issues/4470>`_ -  Fix sequence reverse engineered SQL generation with quoted names on PG/EPAS 10+.
+| `Issue #4484 <https://redmine.postgresql.org/issues/4484>`_ -  Fix an issue where Explain and Explain Analyze are not working, it's regression of #1760.
+| `Issue #4485 <https://redmine.postgresql.org/issues/4485>`_ -  Fix an issue where Filter toolbar button is not working in view/edit data, it's regression of keyboard navigation.

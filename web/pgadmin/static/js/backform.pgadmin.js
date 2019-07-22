@@ -1271,12 +1271,19 @@ define([
 
       var $dialog = gridBody.append(subNodeGrid);
 
-      let preferences = pgBrowser.get_preferences_for_module('browser');
-      let addBtn = $dialog.find('.add');
-      // Add title to the buttons
-      $(addBtn)
-        .attr('title',
-          keyboardShortcuts.shortcut_title(gettext('Add new row'),preferences.add_grid_row));
+      let tmp_browser = pgBrowser;
+      if (pgBrowser.preferences_cache.length == 0)
+        tmp_browser = window.opener ? window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+
+      let preferences = tmp_browser.get_preferences_for_module('browser');
+
+      if (preferences) {
+        let addBtn = $dialog.find('.add');
+        // Add title to the buttons
+        $(addBtn)
+          .attr('title',
+            keyboardShortcuts.shortcut_title(gettext('Add new row'),preferences.add_grid_row));
+      }
 
       // Add button callback
       if (!(data.disabled || data.canAdd == false)) {
@@ -1563,12 +1570,19 @@ define([
 
       var $dialog = gridBody.append(subNodeGrid);
 
-      let preferences = pgBrowser.get_preferences_for_module('browser');
-      let addBtn = $dialog.find('.add');
-      // Add title to the buttons
-      $(addBtn)
-        .attr('title',
-          keyboardShortcuts.shortcut_title(gettext('Add new row'),preferences.add_grid_row));
+      let tmp_browser = pgBrowser;
+      if (pgBrowser.preferences_cache.length == 0)
+        tmp_browser = window.opener ? window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+
+      let preferences = tmp_browser.get_preferences_for_module('browser');
+
+      if (preferences) {
+        let addBtn = $dialog.find('.add');
+        // Add title to the buttons
+        $(addBtn)
+          .attr('title',
+            keyboardShortcuts.shortcut_title(gettext('Add new row'),preferences.add_grid_row));
+      }
 
 
       // Add button callback

@@ -705,7 +705,7 @@ define('tools.querytool', [
      */
 
     // This function is responsible to create and render the SlickGrid.
-    render_grid: function(collection, columns, is_editable, client_primary_key, rows_affected) {
+    render_grid: function(collection, columns, is_editable, client_primary_key, rows_affected, is_explain_plan) {
       var self = this;
 
       self.handler.numberOfModifiedCells = 0;
@@ -824,7 +824,7 @@ define('tools.querytool', [
       }
 
       var grid_options = {
-        editable: is_editable,
+        editable: is_editable || is_explain_plan,
         enableAddRow: is_editable,
         enableCellNavigation: true,
         enableColumnReorder: false,
@@ -2379,7 +2379,7 @@ define('tools.querytool', [
        */
       _render: function(data) {
         var self = this;
-        self.colinfo = data.col_info;
+        self.colinfo = data.colinfo;
         self.primary_keys = (_.isEmpty(data.primary_keys) && data.has_oids) ? data.oids : data.primary_keys;
         self.client_primary_key = data.client_primary_key;
         self.cell_selected = false;
@@ -2388,6 +2388,7 @@ define('tools.querytool', [
         self.has_oids = data.has_oids;
         self.oids = data.oids;
         $('.sql-editor-explain').empty();
+        self.explain_plan = false;
 
         /* If object don't have primary keys then set the
          * can_edit flag to false.
@@ -2463,9 +2464,12 @@ define('tools.querytool', [
             var explain_data_array = [],
               explain_data_json = null;
 
-            if(data.types[0] && data.types[0].typname === 'json') {
+
+            if(self.colinfo[0].name == 'QUERY PLAN' && data.result
+             && data.types[0] && data.types[0].typname === 'json') {
               /* json is sent as text, parse it */
               explain_data_json = JSON.parse(data.result[0][0]);
+              self.is_explain_plan = true;
             }
 
             if (explain_data_json && explain_data_json[0] &&
@@ -2481,7 +2485,7 @@ define('tools.querytool', [
                 function() {
                   self.gridView.render_grid(
                     explain_data_array, self.columns, self.can_edit,
-                    self.client_primary_key
+                    self.client_primary_key, 0, self.is_explain_plan
                   );
                   // Make sure - the 'Explain' panel is visible, before - we
                   // start rendering the grid.

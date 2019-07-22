@@ -251,7 +251,7 @@ class TestSaveChangedData(BaseTestGenerator):
             },
             save_status=True,
             check_sql='SELECT * FROM %s WHERE pk_col = 2',
-            check_result='SELECT 0'
+            check_result=None
         )),
     ]
 
