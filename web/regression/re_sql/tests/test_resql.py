@@ -181,6 +181,12 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         object_id = None
 
         for scenario in scenarios:
+            if 'precondition_sql' in scenario and \
+                    not self.check_precondition(scenario['precondition_sql']):
+                print(scenario['name'] +
+                      "... skipped (pre-condition SQL not satisfied)")
+                continue
+
             if 'type' in scenario and scenario['type'] == 'create':
                 # Get the url and create the specific node.
 
@@ -460,3 +466,22 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 return False
 
         return True
+
+    def check_precondition(self, precondition_sql):
+        """
+        This method executes precondition_sql and returns appropriate result
+        :param precondition_sql: SQL query in format select count(*) from ...
+        :return: True/False depending on precondition_sql result
+        """
+        precondition_flag = False
+        self.get_db_connection()
+        pg_cursor = self.connection.cursor()
+        try:
+            pg_cursor.execute(precondition_sql)
+            precondition_result = pg_cursor.fetchone()
+            if len(precondition_result) >= 1 and precondition_result[0] == '1':
+                precondition_flag = True
+        except Exception as e:
+            traceback.print_exc()
+        pg_cursor.close()
+        return precondition_flag

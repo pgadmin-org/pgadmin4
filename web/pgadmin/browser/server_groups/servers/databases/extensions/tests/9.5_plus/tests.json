@@ -10,7 +10,8 @@
         "schema": "test_extension_schema",
         "version": "1.0"
       },
-      "expected_sql_file": "create_extension_with_all_options.sql"
+      "expected_sql_file": "create_extension_with_all_options.sql",
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='sslinfo' and e2.version='1.0';"
     },
     {
       "type": "alter",
@@ -20,13 +21,15 @@
       "data": {
         "schema": "public"
       },
-      "expected_sql_file": "alter_extension_schema.sql"
+      "expected_sql_file": "alter_extension_schema.sql",
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='sslinfo' and e2.version='1.0';"
     },
     {
       "type": "delete",
       "name": "Drop Extension with all options",
       "endpoint": "NODE-extension.obj_id",
-      "data": {}
+      "data": {},
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='sslinfo' and e2.version='1.0';"
     }
   ]
 }
