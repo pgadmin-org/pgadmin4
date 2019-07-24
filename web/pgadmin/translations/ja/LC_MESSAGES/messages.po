@@ -11413,9 +11413,6 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgid "{0} Binary Path"
 #~ msgstr "{0} バイナリパス"
 
-#~ msgid ""
-#~ msgstr ""
-
 #~ msgid "Couldnot find the database on the server."
 #~ msgstr "サーバにデータベースが見つかりませんでした"
 
