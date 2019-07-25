@@ -18,3 +18,4 @@ Bug fixes
 *********
 
 | `Issue #4490 <https://redmine.postgresql.org/issues/4490>`_ -  Fix accessibility issue for checkbox in IE11.
+| `Issue #4508 <https://redmine.postgresql.org/issues/4508>`_ -  Fix accessibility issue for Datetime cell in backgrid.

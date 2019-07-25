@@ -1755,6 +1755,7 @@ define([
             },
           },
         });
+      this.tabKeyPress = false;
       this.$el.datetimepicker(options);
       this.$el.datetimepicker('show');
       this.picker = this.$el.data('DateTimePicker');
@@ -1762,27 +1763,41 @@ define([
     events: {
       'hide.datetimepicker': 'closeIt',
       'focusout':'closeIt',
+      'keydown': 'keydownHandler',
     },
-    closeIt: function(ev) {
+    keydownHandler: function(event) {
+      // If Tab key pressed from Cell and not from Datetime picker element
+      // then we should trigger edited event so that we can goto next cell
+      let self = this;
+      let tabKeyPressed = true;
+      if (event.keyCode === 9 && self.el === event.target) {
+        self.closeIt(event, tabKeyPressed);
+      }
+    },
+    closeIt: function(ev, isTabKeyPressed) {
+      if (this.is_closing || this.tabKeyPress)
+        return;
+
+      this.is_closing = true;
+      this.tabKeyPress = isTabKeyPressed;
+
       var formatter = this.formatter,
         model = this.model,
         column = this.column,
         val = this.$el.val(),
         newValue = formatter.toRaw(val, model);
 
-      if (this.is_closing)
-        return;
-      this.is_closing = true;
       this.$el.datetimepicker('destroy');
       this.is_closing = false;
-
-      var command = new Backgrid.Command(ev);
 
       if (_.isUndefined(newValue)) {
         model.trigger('backgrid:error', model, column, val);
       } else {
         model.set(column.get('name'), newValue);
-        model.trigger('backgrid:edited', model, column, command);
+        let command = new Backgrid.Command(ev);
+        setTimeout(() => {
+          model.trigger('backgrid:edited', model, column, command);
+        }, 20);
       }
     },
   });
