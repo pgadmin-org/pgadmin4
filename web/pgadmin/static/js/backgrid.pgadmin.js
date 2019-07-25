@@ -690,7 +690,7 @@ define([
 
       this.$el.append(
         $('<input>', {
-          tabIndex: -1,
+          tabIndex: 0,
           type: 'checkbox',
         }).prop('checked', rawValue).prop('disabled', !editable).attr('data-toggle', 'toggle')
           .attr('data-size', options.size).attr('data-on', options.onText).attr('data-off', options.offText)
@@ -726,13 +726,17 @@ define([
             } else if (gotoCell.hasClass('editable')) {
               e.preventDefault();
               e.stopPropagation();
-              self.model.trigger('backgrid:edited', self.model,
-                self.column, command);
+              setTimeout(function() {
+                self.model.trigger('backgrid:edited', self.model,
+                  self.column, command);
+              }, 10);
               gotoCell.trigger('focus');
             } else {
               // When we have Non-Editable Cell
-              self.model.trigger('backgrid:edited', self.model,
-                self.column, command);
+              setTimeout(function() {
+                self.model.trigger('backgrid:edited', self.model,
+                  self.column, command);
+              }, 10);
             }
           }, 20);
         }

@@ -650,7 +650,7 @@ a:focus {
     &.navbar-brand, &.dropdown-item {
         outline: none !important;
     }
-    outline: $input-focus-border-color auto 5px !important;
+    outline: 2px solid $input-focus-border-color !important;
 }
 
 div.rolmembership {
