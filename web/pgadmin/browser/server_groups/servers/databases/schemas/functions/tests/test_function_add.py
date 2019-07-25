@@ -67,6 +67,18 @@ class FunctionAddTestCase(BaseTestGenerator):
             data['pronamespace'] = self.schema_id
         else:
             self.schema_id = data['pronamespace']
+
+        if self.server_version >= 120000:
+            support_function_name = 'supportfunc_%s' % str(uuid.uuid4())[1:8]
+            support_func = funcs_utils.create_support_internal_function(
+                self.server,
+                self.db_name,
+                self.schema_name,
+                support_function_name
+            )
+
+            data['prosupportfuc'] = support_function_name
+
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' + str(self.db_id) +

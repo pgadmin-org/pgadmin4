@@ -873,7 +873,7 @@ class TriggerView(PGChildNodeView):
 
             status, result = self.conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                return internal_server_error(errormsg=result)
 
             # Update the trigger function which we have fetched with schema
             # name

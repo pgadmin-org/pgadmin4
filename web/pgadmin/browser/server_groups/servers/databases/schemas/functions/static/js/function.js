@@ -178,6 +178,7 @@ define('pgadmin.node.function', [
           procost: undefined, /* Estimated execution Cost */
           prorows: undefined, /* Estimated number of rows */
           proleakproof: undefined,
+          prosupportfunc: undefined, /* Support function */
           arguments: [],
           prosrc: undefined,
           prosrc_c: undefined,
@@ -313,6 +314,12 @@ define('pgadmin.node.function', [
           group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
           disabled: 'isDisabled', deps: ['lanname'],
         },{
+          id: 'prosupportfunc', label: gettext('Support function'),
+          type: 'text', disabled: 'isDisabled',
+          group: gettext('Options'), visible: 'isVisible',
+          control: 'node-ajax-options', url: 'get_support_functions',
+          cache_node: 'function', min_version: 120000,
+        },{
           id: 'proacl', label: gettext('Privileges'), type: 'text',
           mode: ['properties'], group: gettext('Security'),
         },{
@@ -439,6 +446,11 @@ define('pgadmin.node.function', [
             if(m.get('proretset') == true) {
               return false;
             }
+            return true;
+          case 'prosupportfunc':
+            var item = pgAdmin.Browser.tree.selected();
+            if(pgAdmin.Browser.Nodes['function'].getTreeNodeHierarchy(item).server.user.is_superuser)
+              return false;
             return true;
           default:
             return false;

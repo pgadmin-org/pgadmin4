@@ -87,6 +87,8 @@ function:
   The default assumption is 1000 rows.
 * Move the *Leak proof?* switch to indicate whether the function has side
   effects. The default is *No*. This option can only be set by the superuser.
+* Use the *Support function* field to specify a planner support function to
+  use for the function.
 
 Click the *Arguments* tab to continue.
 

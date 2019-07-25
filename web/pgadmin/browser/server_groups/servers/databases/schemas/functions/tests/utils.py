@@ -171,6 +171,34 @@ def create_function(server, db_name, schema_name, func_name):
         traceback.print_exc(file=sys.stderr)
 
 
+def create_support_internal_function(server, db_name, schema_name, func_name):
+    """Add the function to schema which will be used as support function for
+    another function."""
+    try:
+        connection = utils.get_db_connection(db_name,
+                                             server['username'],
+                                             server['db_password'],
+                                             server['host'],
+                                             server['port'],
+                                             server['sslmode'])
+        pg_cursor = connection.cursor()
+        query = "CREATE FUNCTION " + schema_name + "." + func_name + \
+                "(internal)" \
+                " RETURNS internal LANGUAGE 'internal'" \
+                " AS $BODY$cidr_abbrev$BODY$;"
+        pg_cursor.execute(query)
+        connection.commit()
+        # Get 'oid' from newly created function
+        pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
+                          " pg_proc pro WHERE pro.proname='%s'" %
+                          func_name)
+        functions = pg_cursor.fetchone()
+        connection.close()
+        return functions
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
 def verify_procedure(server, db_name, proc_name):
     """This function verifies the procedure in db"""
     connection = utils.get_db_connection(db_name,

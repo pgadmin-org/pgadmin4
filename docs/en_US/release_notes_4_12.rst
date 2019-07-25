@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4333 <https://redmine.postgresql.org/issues/4333>`_ -  Add support for planner support functions in PostgreSQL 12+ functions.
 
 Housekeeping
 ************

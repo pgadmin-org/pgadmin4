@@ -208,7 +208,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         'get_languages': [{'get': 'get_languages'}, {'get': 'get_languages'}],
         'vopts': [{}, {'get': 'variable_options'}],
         'select_sql': [{'get': 'select_sql'}],
-        'exec_sql': [{'get': 'exec_sql'}]
+        'exec_sql': [{'get': 'exec_sql'}],
+        'get_support_functions': [{'get': 'get_support_functions'},
+                                  {'get': 'get_support_functions'}]
     })
 
     @property
@@ -1158,7 +1160,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             fun_change_args = ['lanname', 'prosrc', 'probin', 'prosrc_c',
                                'provolatile', 'proisstrict', 'prosecdef',
                                'proparallel', 'procost', 'proleakproof',
-                               'arguments', 'prorows']
+                               'arguments', 'prorows', 'prosupportfunc']
 
             data['change_func'] = False
             for arg in fun_change_args:
@@ -1389,6 +1391,36 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 break
 
         return revoke_all
+
+    @check_precondition
+    def get_support_functions(self, gid, sid, did, scid):
+        """
+        This function will return list of available support functions.
+        """
+        res = [{'label': '', 'value': ''}]
+
+        try:
+            SQL = render_template(
+                "/".join([self.sql_template_path,
+                          'get_support_functions.sql']),
+                show_system_objects=self.blueprint.show_system_objects
+            )
+            status, rset = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            for row in rset['rows']:
+                res.append(
+                    {'label': row['sfunctions'],
+                     'value': row['sfunctions']}
+                )
+            return make_json_response(
+                data=res,
+                status=200
+            )
+
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, fnid):
