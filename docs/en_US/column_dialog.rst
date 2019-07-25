@@ -39,9 +39,69 @@ are disabled if inapplicable.)
   a text value.
 * Use the drop-down listbox next to *Collation* to apply a collation setting to
   the column.
+
+Click the *Constraints* tab to continue.
+
+.. image:: images/column_constraints.png
+    :alt: Column dialog constraints tab
+    :align: center
+
+Use the fields in the *Constraints* tab to specify constraints for the column.
+(Fields are disabled if inapplicable.)
+
 * Use the *Default Value* field to specify a default data value.
 * Move the *Not Null* switch to the *Yes* position to specify the column may not
   contain null values. The default is *No*.
+* Use the *Type* field to specify the column type (NONE/IDENTITY/GENERATED).
+  The default is *NONE*.
+
+Click the *IDENTITY* type to create Identity column.
+
+.. image:: images/column_constraint_identity.png
+    :alt: Column dialog constraints tab
+    :align: center
+
+Use the following fields to create *IDENTITY* column. Identity columns are
+applicable for PG/EPAS version 10 and above.
+
+* Use the *Identity* field to specify ALWAYS or BY DEFAULT. This clause is
+  used to determine how the sequence value is given precedence over a
+  user-specified value in an INSERT statement.
+* Use the *Increment* field to specify which value is added to the current
+  sequence value to create a new value.
+* Provide a value in the *Start* field to specify the beginning value of the
+  sequence. The default starting value is MINVALUE for ascending sequences and
+  MAXVALUE for descending ones.
+* Provide a value in the *Minimum* field to specify the minimum value a sequence
+  can generate. If this clause is not supplied or NO MINVALUE is specified,
+  then defaults will be used. The defaults are 1 and -263-1 for ascending and
+  descending sequences, respectively.
+* Provide a value in the *Maximum* field to specify the maximum value for the
+  sequence. If this clause is not supplied or NO MAXVALUE is specified, then
+  default values will be used. The defaults are 263-1 and -1 for ascending and
+  descending sequences, respectively.
+* Provide a value in the *Cache* field to specify how many sequence numbers are
+  to be preallocated and stored in memory for faster access. The minimum value
+  is 1 (only one value can be generated at a time, i.e., no cache), and this is
+  also the default.
+* Move the *Cycled* switch to the *Yes* position to allow the sequence to wrap
+  around when the MAXVALUE or the MINVALUE has been reached by an ascending or
+  descending sequence respectively. If the limit is reached, the next number
+  generated will be the MINVALUE or MAXVALUE, respectively. The default is *No*.
+
+Click the *GENERATED* type to create Generated column.
+
+.. image:: images/column_constraint_generated.png
+    :alt: Column dialog constraints tab
+    :align: center
+
+Use the following fields to create *GENERATED* column. Generated columns are
+applicable for PG/EPAS version 12 and above.
+
+* Use the *Expression* field to specify the generation expression. It can
+  refer to other columns in the table, but not other generated columns.
+  Any functions and operators used must be immutable. References to other
+  tables are not allowed.
 
 Click the *Variables* tab to continue.
 

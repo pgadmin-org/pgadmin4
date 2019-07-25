@@ -25,31 +25,83 @@ from pgadmin.utils import server_utils as server_utils
 class ColumnAddTestCase(BaseTestGenerator):
     """This class will add new column under table node."""
     scenarios = [
-        ('Add column', dict(url='/browser/column/obj/')),
-        ('Add column with Identity', dict(url='/browser/column/obj/',
-                                          server_min_version=100000,
-                                          identity_opt={
-                                              'cltype': 'bigint',
-                                              'attidentity': 'a',
-                                              'seqincrement': 1,
-                                              'seqstart': 1,
-                                              'seqmin': 1,
-                                              'seqmax': 10,
-                                              'seqcache': 1,
-                                              'seqcycle': True
-                                          })),
-        ('Add column with Identity', dict(url='/browser/column/obj/',
-                                          server_min_version=100000,
-                                          identity_opt={
-                                              'cltype': 'bigint',
-                                              'attidentity': 'd',
-                                              'seqincrement': 2,
-                                              'seqstart': 2,
-                                              'seqmin': 2,
-                                              'seqmax': 2000,
-                                              'seqcache': 1,
-                                              'seqcycle': True
-                                          }))
+        ('Add column', dict(
+            url='/browser/column/obj/',
+            data={
+                'cltype': "\"char\"",
+                'attacl': [],
+                'is_primary_key': False,
+                'attnotnull': False,
+                'attlen': None,
+                'attprecision': None,
+                'attoptions':[],
+                'seclabels':[],
+            })),
+        ('Add Identity column with Always', dict(
+            url='/browser/column/obj/',
+            server_min_version=100000,
+            skip_msg='Identity column are not supported by EPAS/PG 10.0 '
+                     'and below.',
+            data={
+                'cltype': 'bigint',
+                'attacl': [],
+                'is_primary_key': False,
+                'attnotnull': True,
+                'attlen': None,
+                'attprecision': None,
+                'attoptions': [],
+                'seclabels': [],
+                'colconstype': 'i',
+                'attidentity': 'a',
+                'seqincrement': 1,
+                'seqstart': 1,
+                'seqmin': 1,
+                'seqmax': 10,
+                'seqcache': 1,
+                'seqcycle': True
+            })),
+        ('Add Identity column with As Default', dict(
+            url='/browser/column/obj/',
+            col_data_type='bigint',
+            server_min_version=100000,
+            skip_msg='Identity column are not supported by EPAS/PG 10.0 '
+                     'and below.',
+            data={
+                'cltype': 'bigint',
+                'attacl': [],
+                'is_primary_key': False,
+                'attnotnull': True,
+                'attlen': None,
+                'attprecision': None,
+                'attoptions': [],
+                'seclabels': [],
+                'colconstype': 'i',
+                'attidentity': 'd',
+                'seqincrement': 2,
+                'seqstart': 2,
+                'seqmin': 2,
+                'seqmax': 2000,
+                'seqcache': 1,
+                'seqcycle': True
+            })),
+        ('Add Generated column', dict(
+            url='/browser/column/obj/',
+            col_data_type='bigint',
+            server_min_version=120000,
+            skip_msg='Generated column are not supported by EPAS/PG 12.0 '
+                     'and below.',
+            data={
+                'cltype': 'bigint',
+                'attacl': [],
+                'is_primary_key': False,
+                'attnotnull': True,
+                'attlen': None,
+                'attprecision': None,
+                'attoptions': [],
+                'seclabels': [],
+                'colconstype': 'g',
+                'genexpr': '100 * 100'
+            })),
     ]
 
     def setUp(self):
@@ -64,9 +116,7 @@ class ColumnAddTestCase(BaseTestGenerator):
                 raise Exception("Could not connect to server to add "
                                 "a table.")
             if server_con["data"]["version"] < self.server_min_version:
-                message = "Identity columns are not supported by " \
-                          "PPAS/PG 10.0 and below."
-                self.skipTest(message)
+                self.skipTest(self.skip_msg)
 
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
@@ -87,26 +137,16 @@ class ColumnAddTestCase(BaseTestGenerator):
     def runTest(self):
         """This function will add column under table node."""
         self.column_name = "test_column_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {
-            "name": self.column_name,
-            "cltype": "\"char\"",
-            "attacl": [],
-            "is_primary_key": False,
-            "attnotnull": False,
-            "attlen": None,
-            "attprecision": None,
-            "attoptions": [],
-            "seclabels": []
-        }
+        self.data.update({
+            'name': self.column_name
+        })
 
-        if hasattr(self, 'identity_opt'):
-            data.update(self.identity_opt)
         # Add table
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' + str(self.db_id) +
             '/' + str(self.schema_id) + '/' + str(self.table_id) + '/',
-            data=json.dumps(data),
+            data=json.dumps(self.data),
             content_type='html/json')
         self.assertEquals(response.status_code, 200)
 

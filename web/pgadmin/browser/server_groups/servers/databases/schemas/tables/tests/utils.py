@@ -242,3 +242,81 @@ def set_partition_data(server, db_name, schema_name, table_name,
                         }]
              }
         )
+
+
+def get_table_common_data():
+    """
+    This function will return the common data used to create a table
+    :return:
+    """
+    return {
+        "check_constraint": [],
+        "coll_inherits": "[]",
+        "columns": [{
+            "name": "empno",
+            "cltype": "numeric",
+            "attacl": [],
+            "is_primary_key": False,
+            "attoptions": [],
+            "seclabels": []
+        }, {
+            "name": "empname",
+            "cltype": "character[]",
+            "attacl": [],
+            "is_primary_key": False,
+            "attoptions": [],
+            "seclabels": []
+        }, {
+            "name": "DOJ",
+            "cltype": "date",
+            "attacl": [],
+            "is_primary_key": False,
+            "attoptions": [],
+            "seclabels": []
+        }],
+        "exclude_constraint": [],
+        "fillfactor": "",
+        "hastoasttable": True,
+        "like_constraints": True,
+        "like_default_value": True,
+        "like_relation": "pg_catalog.pg_namespace",
+        "primary_key": [],
+        "relhasoids": True,
+        "seclabels": [],
+        "spcname": "pg_default",
+        "unique_constraint": [],
+        "vacuum_table": [{
+            "name": "autovacuum_analyze_scale_factor"
+        }, {
+            "name": "autovacuum_analyze_threshold"
+        }, {
+            "name": "autovacuum_freeze_max_age"
+        }, {
+            "name": "autovacuum_vacuum_cost_delay"
+        }, {
+            "name": "autovacuum_vacuum_cost_limit"
+        }, {
+            "name": "autovacuum_vacuum_scale_factor"
+        }, {
+            "name": "autovacuum_vacuum_threshold"
+        }, {
+            "name": "autovacuum_freeze_min_age"
+        }, {
+            "name": "autovacuum_freeze_table_age"
+        }],
+        "vacuum_toast": [{
+            "name": "autovacuum_freeze_max_age"
+        }, {
+            "name": "autovacuum_vacuum_cost_delay"
+        }, {
+            "name": "autovacuum_vacuum_cost_limit"
+        }, {
+            "name": "autovacuum_vacuum_scale_factor"
+        }, {
+            "name": "autovacuum_vacuum_threshold"
+        }, {
+            "name": "autovacuum_freeze_min_age"
+        }, {
+            "name": "autovacuum_freeze_table_age"
+        }]
+    }

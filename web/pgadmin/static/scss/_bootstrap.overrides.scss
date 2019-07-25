@@ -315,3 +315,11 @@ td.switch-cell > div.toggle {
   background-color: $color-primary-light;
   color: $color-primary;
 }
+
+.btn-group.pgadmin-controls-radio-none.disabled {
+  pointer-events: none;
+}
+
+.btn-group.pgadmin-controls-radio-none > label.btn.btn-primary.disabled {
+  pointer-events: none;
+}

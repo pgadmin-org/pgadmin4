@@ -26,32 +26,54 @@ from pgadmin.utils import server_utils as server_utils
 class ColumnPutTestCase(BaseTestGenerator):
     """This class will update the column under table node."""
     scenarios = [
-        ('Edit column Node URL', dict(url='/browser/column/obj/',
-                                      col_data_type='char')),
-        ('Edit column with Identity', dict(url='/browser/column/obj/',
-                                           col_data_type='bigint',
-                                           server_min_version=100000,
-                                           identity_opt={
-                                               'attidentity': 'a',
-                                               'seqincrement': 1,
-                                               'seqstart': 1,
-                                               'seqmin': 1,
-                                               'seqmax': 10,
-                                               'seqcache': 1,
-                                               'seqcycle': True
-                                           })),
-        ('Edit column with Identity', dict(url='/browser/column/obj/',
-                                           server_min_version=100000,
-                                           col_data_type='bigint',
-                                           identity_opt={
-                                               'attidentity': 'd',
-                                               'seqincrement': 2,
-                                               'seqstart': 2,
-                                               'seqmin': 2,
-                                               'seqmax': 2000,
-                                               'seqcache': 1,
-                                               'seqcycle': True
-                                           }))
+        ('Edit column comments and null constraints', dict(
+            url='/browser/column/obj/',
+            col_data_type='char',
+            data={
+                'attnotnull': True,
+                'description': "This is test comment for column"
+            })),
+        ('Edit column to Identity column as Always', dict(
+            url='/browser/column/obj/',
+            col_data_type='bigint',
+            server_min_version=100000,
+            skip_msg='Identity column are not supported by EPAS/PG 10.0 '
+                     'and below.',
+            data={
+                'attnotnull': True,
+                'attidentity': 'a',
+                'seqincrement': 1,
+                'seqstart': 1,
+                'seqmin': 1,
+                'seqmax': 10,
+                'seqcache': 1,
+                'seqcycle': True
+            })),
+        ('Edit column to Identity column as Default', dict(
+            url='/browser/column/obj/',
+            col_data_type='bigint',
+            server_min_version=100000,
+            skip_msg='Identity column are not supported by EPAS/PG 10.0 '
+                     'and below.',
+            data={
+                'attnotnull': True,
+                'attidentity': 'd',
+                'seqincrement': 2,
+                'seqstart': 2,
+                'seqmin': 2,
+                'seqmax': 2000,
+                'seqcache': 1,
+                'seqcycle': True
+            })),
+        ('Edit column Drop Identity by changing constraint type to NONE',
+         dict(url='/browser/column/obj/',
+              col_data_type='bigint',
+              server_min_version=100000,
+              create_identity_column=True,
+              skip_msg='Identity column are not supported by EPAS/PG 10.0 '
+                       'and below.',
+              data={'colconstype': 'n'})
+         )
     ]
 
     def setUp(self):
@@ -66,9 +88,7 @@ class ColumnPutTestCase(BaseTestGenerator):
                 raise Exception("Could not connect to server to add "
                                 "a table.")
             if server_con["data"]["version"] < self.server_min_version:
-                message = "Identity columns are not supported by " \
-                          "PPAS/PG 10.0 and below."
-                self.skipTest(message)
+                self.skipTest(self.skip_msg)
 
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
@@ -86,12 +106,16 @@ class ColumnPutTestCase(BaseTestGenerator):
                                                   self.schema_name,
                                                   self.table_name)
         self.column_name = "test_column_put_%s" % (str(uuid.uuid4())[1:8])
-        self.column_id = columns_utils.create_column(self.server,
-                                                     self.db_name,
-                                                     self.schema_name,
-                                                     self.table_name,
-                                                     self.column_name,
-                                                     self.col_data_type)
+
+        if hasattr(self, 'create_identity_column') and \
+                self.create_identity_column:
+            self.column_id = columns_utils.create_identity_column(
+                self.server, self.db_name, self.schema_name,
+                self.table_name, self.column_name, self.col_data_type)
+        else:
+            self.column_id = columns_utils.create_column(
+                self.server, self.db_name, self.schema_name,
+                self.table_name, self.column_name, self.col_data_type)
 
     def runTest(self):
         """This function will update the column under table node."""
@@ -99,14 +123,11 @@ class ColumnPutTestCase(BaseTestGenerator):
                                                    self.column_name)
         if not col_response:
             raise Exception("Could not find the column to update.")
-        data = {
-            "attnum": self.column_id,
-            "name": self.column_name,
-            "attnotnull": True,
-            "description": "This is test comment for column"
-        }
-        if hasattr(self, 'identity_opt'):
-            data.update(self.identity_opt)
+        self.data.update({
+            'attnum': self.column_id,
+            'name': self.column_name,
+        })
+
         response = self.tester.put(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' +
@@ -114,7 +135,7 @@ class ColumnPutTestCase(BaseTestGenerator):
             str(self.schema_id) + '/' +
             str(self.table_id) + '/' +
             str(self.column_id),
-            data=json.dumps(data),
+            data=json.dumps(self.data),
             follow_redirects=True)
         self.assertEquals(response.status_code, 200)
 

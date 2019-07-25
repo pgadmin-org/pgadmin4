@@ -42,7 +42,7 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data
 {% if data.columns and data.columns|length > 0 %}
 {% for c in data.columns %}
 {% if c.name and c.cltype %}
-    {% if c.inheritedfromtable %}-- Inherited from table {{c.inheritedfromtable}}: {% elif c.inheritedfromtype %}-- Inherited from type {{c.inheritedfromtype}}: {% endif %}{{conn|qtIdent(c.name)}} {% if is_sql %}{{c.displaytypname}}{% else %}{{ GET_TYPE.CREATE_TYPE_SQL(conn, c.cltype, c.attlen, c.attprecision, c.hasSqrBracket) }}{% endif %}{% if c.collspcname %} COLLATE {{c.collspcname}}{% endif %}{% if c.attnotnull %} NOT NULL{% endif %}{% if c.defval is defined and c.defval is not none %} DEFAULT {{c.defval}}{% endif %}
+    {% if c.inheritedfromtable %}-- Inherited from table {{c.inheritedfromtable}}: {% elif c.inheritedfromtype %}-- Inherited from type {{c.inheritedfromtype}}: {% endif %}{{conn|qtIdent(c.name)}} {% if is_sql %}{{c.displaytypname}}{% else %}{{ GET_TYPE.CREATE_TYPE_SQL(conn, c.cltype, c.attlen, c.attprecision, c.hasSqrBracket) }}{% endif %}{% if c.collspcname %} COLLATE {{c.collspcname}}{% endif %}{% if c.attnotnull %} NOT NULL{% endif %}{% if c.defval is defined and c.defval is not none and c.defval != '' %} DEFAULT {{c.defval}}{% endif %}
 {% if not loop.last %},
 {% endif %}
 {% endif %}

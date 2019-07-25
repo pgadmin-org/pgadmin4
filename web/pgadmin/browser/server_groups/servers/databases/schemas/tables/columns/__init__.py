@@ -547,7 +547,13 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
         for k, v in data.items():
-            data[k] = json.loads(v, encoding='utf-8', cls=ColParamsJSONDecoder)
+            # comments should be taken as is because if user enters a
+            # json comment it is parsed by loads which should not happen
+            if k in ('description',):
+                data[k] = v
+            else:
+                data[k] = json.loads(v, encoding='utf-8',
+                                     cls=ColParamsJSONDecoder)
 
         required_args = {
             'name': 'Name',

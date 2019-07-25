@@ -24,7 +24,7 @@ define('pgadmin.node.column', [
         type: 'coll-column',
         columns: ['name', 'atttypid', 'description'],
         canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
-        canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+        canDropCascade: false,
       });
   }
 
@@ -185,13 +185,15 @@ define('pgadmin.node.column', [
           attnotnull: false,
           attlen: null,
           attprecision: null,
-          attidentity: undefined,
+          attidentity: 'a',
           seqincrement: undefined,
           seqstart: undefined,
           seqmin: undefined,
           seqmax: undefined,
           seqcache: undefined,
           seqcycle: undefined,
+          colconstype: 'n',
+          genexpr: undefined,
         },
         initialize: function(attrs) {
           if (_.size(attrs) !== 0) {
@@ -480,67 +482,6 @@ define('pgadmin.node.column', [
             return flag;
           },
         },{
-          id: 'defval', label: gettext('Default'), cell: 'string',
-          type: 'text', group: gettext('Definition'), deps: ['cltype'],
-          disabled: function(m) {
-            if(!m.inSchemaWithModelCheck.apply(this, [m])) {
-              var type = m.get('cltype');
-              return type == 'serial' || type == 'bigserial'
-                                        || type == 'smallserial';
-            }
-          },
-        },{
-          id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
-          type: 'switch', disabled: 'inSchemaWithColumnCheck', cellHeaderClasses:'width_percent_20',
-          group: gettext('Definition'), editable: 'editable_check_for_table',
-          options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success', offColor: 'primary' },
-        },{
-          type: 'nested', control: 'fieldset', label: gettext('Identity'),
-          group: gettext('Definition'),
-          schema:[{
-            id: 'attidentity', label: gettext('Identity'), control: 'select2',
-            cell: 'select2', select2: { placeholder: 'Select identity',
-              allowClear: true,
-              width: '100%',
-            },
-            min_version: 100000, group: gettext('Identity'),
-            'options': [
-              {label: gettext('ALWAYS'), value: 'a'},
-              {label: gettext('BY DEFAULT'), value: 'd'},
-            ],
-          },{
-            id: 'seqincrement', label: gettext('Increment'), type: 'int',
-            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
-            min: 1, deps: ['attidentity'], disabled: 'isIdentityColumn',
-          },{
-            id: 'seqstart', label: gettext('Start'), type: 'int',
-            mode: ['properties', 'create'], group: gettext('Identity'),
-            disabled: function(m) {
-              if (!m.isNew())
-                return true;
-              let isIdentity = m.get('attidentity');
-              if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
-                return false;
-              return true;
-            }, deps: ['attidentity'],
-          },{
-            id: 'seqmin', label: gettext('Minimum'), type: 'int',
-            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
-            deps: ['attidentity'], disabled: 'isIdentityColumn',
-          },{
-            id: 'seqmax', label: gettext('Maximum'), type: 'int',
-            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
-            deps: ['attidentity'], disabled: 'isIdentityColumn',
-          },{
-            id: 'seqcache', label: gettext('Cache'), type: 'int',
-            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
-            min: 1, deps: ['attidentity'], disabled: 'isIdentityColumn',
-          },{
-            id: 'seqcycle', label: gettext('Cycled'), type: 'switch',
-            mode: ['properties', 'create', 'edit'], group: gettext('Identity'),
-            deps: ['attidentity'], disabled: 'isIdentityColumn',
-          }],
-        },{
           id: 'attstattarget', label: gettext('Statistics'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck', mode: ['properties', 'edit'],
           group: gettext('Definition'),
@@ -558,6 +499,149 @@ define('pgadmin.node.column', [
             {label: 'EXTERNAL', value: 'e'},
             {label: 'EXTENDED', value: 'x'},
           ],
+        },{
+          id: 'defval', label: gettext('Default'), cell: 'string',
+          type: 'text', group: gettext('Constraints'), deps: ['cltype', 'colconstype'],
+          disabled: function(m) {
+            var is_disabled = false;
+            if(!m.inSchemaWithModelCheck.apply(this, [m])) {
+              var type = m.get('cltype');
+              is_disabled = (type == 'serial' || type == 'bigserial' || type == 'smallserial');
+            }
+
+            is_disabled = is_disabled || m.get('colconstype') != 'n';
+            if (is_disabled && m.isNew()) {
+              setTimeout(function () {
+                m.set('defval', undefined);
+              }, 10);
+            }
+
+            return is_disabled;
+          },
+        },{
+          id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
+          type: 'switch', cellHeaderClasses:'width_percent_20',
+          group: gettext('Constraints'), editable: 'editable_check_for_table',
+          options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success', offColor: 'primary' },
+          deps: ['colconstype'],
+          disabled: function(m) {
+            if (m.get('colconstype') == 'i') {
+              setTimeout(function () {
+                m.set('attnotnull', true);
+              }, 10);
+            }
+            return m.inSchemaWithColumnCheck(m);
+          },
+        }, {
+          id: 'colconstype',
+          label: gettext('Type'),
+          cell: 'string',
+          type: 'radioModern',
+          controlsClassName: 'pgadmin-controls col-12 col-sm-9',
+          controlLabelClassName: 'control-label col-sm-3 col-12',
+          group: gettext('Constraints'),
+          options: function(m) {
+            var opt_array = [
+              {'label': gettext('NONE'), 'value': 'n'},
+              {'label': gettext('IDENTITY'), 'value': 'i'},
+            ];
+
+            if (m.top.node_info && m.top.node_info.server &&
+                m.top.node_info.server.version >= 120000) {
+              // You can't change the existing column to Generated column.
+              if (m.isNew()) {
+                opt_array.push({
+                  'label': gettext('GENERATED'),
+                  'value': 'g',
+                });
+              } else {
+                opt_array.push({
+                  'label': gettext('GENERATED'),
+                  'value': 'g',
+                  'disabled': true,
+                });
+              }
+            }
+
+            return opt_array;
+          },
+          disabled: function(m) {
+            if (!m.isNew() && m.get('colconstype') == 'g') {
+              return true;
+            }
+            return false;
+          },
+          visible: function(m) {
+            if (m.top.node_info && m.top.node_info.server &&
+                m.top.node_info.server.version >= 100000) {
+              return true;
+            }
+            return false;
+          },
+        }, {
+          id: 'attidentity', label: gettext('Identity'), control: 'select2',
+          cell: 'select2',
+          select2: {placeholder: 'Select identity', allowClear: false, width: '100%'},
+          min_version: 100000, group: gettext('Constraints'),
+          'options': [
+            {label: gettext('ALWAYS'), value: 'a'},
+            {label: gettext('BY DEFAULT'), value: 'd'},
+          ],
+          deps: ['colconstype'], visible: 'isTypeIdentity',
+          disabled: function(m) {
+            if (!m.isNew()) {
+              if (m.get('attidentity') == '' && m.get('colconstype') == 'i') {
+                setTimeout(function () {
+                  m.set('attidentity', m.get('old_attidentity'));
+                }, 10);
+              }
+            }
+            return false;
+          },
+        }, {
+          id: 'seqincrement', label: gettext('Increment'), type: 'int',
+          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
+          min: 1, deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
+          visible: 'isTypeIdentity',
+        },{
+          id: 'seqstart', label: gettext('Start'), type: 'int',
+          mode: ['properties', 'create'], group: gettext('Constraints'),
+          disabled: function(m) {
+            if (!m.isNew())
+              return true;
+            let isIdentity = m.get('attidentity');
+            if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
+              return false;
+            return true;
+          }, deps: ['attidentity', 'colconstype'],
+          visible: 'isTypeIdentity',
+        },{
+          id: 'seqmin', label: gettext('Minimum'), type: 'int',
+          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
+          deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
+          visible: 'isTypeIdentity',
+        },{
+          id: 'seqmax', label: gettext('Maximum'), type: 'int',
+          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
+          deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
+          visible: 'isTypeIdentity',
+        },{
+          id: 'seqcache', label: gettext('Cache'), type: 'int',
+          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
+          min: 1, deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
+          visible: 'isTypeIdentity',
+        },{
+          id: 'seqcycle', label: gettext('Cycled'), type: 'switch',
+          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
+          deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
+          visible: 'isTypeIdentity',
+        },{
+          id: 'genexpr', label: gettext('Expression'), type: 'text',
+          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
+          min_version: 120000, deps: ['colconstype'], visible: 'isTypeGenerated',
+          disabled: function(m) {
+            return !m.isNew();
+          },
         },{
           id: 'is_pk', label: gettext('Primary key?'),
           type: 'switch', disabled: true, mode: ['properties'],
@@ -665,12 +749,23 @@ define('pgadmin.node.column', [
             }
           }
 
+          let genexpr = this.get('genexpr');
+          if (this.get('colconstype') == 'g' &&
+            (_.isUndefined(genexpr) || _.isNull(genexpr) || genexpr == '')) {
+            msg = gettext('Expression value cannot be empty.');
+            this.errorModel.set('genexpr', msg);
+            return msg;
+          } else {
+            this.errorModel.unset('genexpr');
+          }
+
           var  minimum = this.get('seqmin'),
             maximum = this.get('seqmax'),
             start = this.get('seqstart');
 
-          if (!this.isNew() && (this.get('old_attidentity') == 'a' || this.get('old_attidentity') == 'd') &&
-          (this.get('attidentity') == 'a' || this.get('attidentity') == 'd')) {
+          if (!this.isNew() && this.get('colconstype') == 'i' &&
+            (this.get('old_attidentity') == 'a' || this.get('old_attidentity') == 'd') &&
+            (this.get('attidentity') == 'a' || this.get('attidentity') == 'd')) {
             if (_.isUndefined(this.get('seqincrement'))
               || String(this.get('seqincrement')).replace(/^\s+|\s+$/g, '') == '') {
               msg = gettext('Increment value cannot be empty.');
@@ -744,6 +839,22 @@ define('pgadmin.node.column', [
           if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
             return false;
           return true;
+        },
+        // Check whether the column is a identity column
+        isTypeIdentity: function(m) {
+          let colconstype = m.get('colconstype');
+          if (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'i') {
+            return true;
+          }
+          return false;
+        },
+        // Check whether the column is a generated column
+        isTypeGenerated: function(m) {
+          let colconstype = m.get('colconstype');
+          if (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'g') {
+            return true;
+          }
+          return false;
         },
         // We will check if we are under schema node & in 'create' mode
         notInSchema: function() {

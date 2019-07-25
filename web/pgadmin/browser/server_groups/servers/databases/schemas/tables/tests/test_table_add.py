@@ -18,6 +18,7 @@ from pgadmin.utils import server_utils as server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as tables_utils
 
 
 class TableAddTestCase(BaseTestGenerator):
@@ -28,7 +29,9 @@ class TableAddTestCase(BaseTestGenerator):
         ('Create Range partitioned table with 2 partitions',
          dict(url='/browser/table/obj/',
               server_min_version=100000,
-              partition_type='range'
+              partition_type='range',
+              skip_msg='Partitioned table are not supported by '
+                       'PPAS/PG 10.0 and below.'
               )
          ),
         ('Create Range partitioned table with 1 default and 2'
@@ -36,21 +39,104 @@ class TableAddTestCase(BaseTestGenerator):
          dict(url='/browser/table/obj/',
               server_min_version=110000,
               partition_type='range',
-              is_default=True
+              is_default=True,
+              skip_msg='Partitioned table are not supported by '
+                       'PPAS/PG 10.0 and below.'
               )
          ),
         ('Create List partitioned table with 2 partitions',
          dict(url='/browser/table/obj/',
               server_min_version=100000,
-              partition_type='list'
+              partition_type='list',
+              skip_msg='Partitioned table are not supported by '
+                       'PPAS/PG 10.0 and below.'
               )
          ),
         ('Create Hash partitioned table with 2 partitions',
          dict(url='/browser/table/obj/',
               server_min_version=110000,
-              partition_type='hash'
+              partition_type='hash',
+              skip_msg='Hash Partition are not supported by '
+                       'PPAS/PG 11.0 and below.'
               )
+         ),
+        ('Create Table with Identity columns',
+         dict(url='/browser/table/obj/',
+              server_min_version=100000,
+              skip_msg='Identity columns are not supported by '
+                       'PPAS/PG 10.0 and below.',
+              columns=[{
+                  'name': 'iden_always',
+                  'cltype': 'bigint',
+                  'attacl': [],
+                  'is_primary_key': False,
+                  'attnotnull': True,
+                  'attlen': None,
+                  'attprecision': None,
+                  'attoptions': [],
+                  'seclabels': [],
+                  'colconstype': 'i',
+                  'attidentity': 'a',
+                  'seqincrement': 1,
+                  'seqstart': 1,
+                  'seqmin': 1,
+                  'seqmax': 10,
+                  'seqcache': 1,
+                  'seqcycle': True
+              }, {
+                  'name': 'iden_default',
+                  'cltype': 'bigint',
+                  'attacl': [],
+                  'is_primary_key': False,
+                  'attnotnull': True,
+                  'attlen': None,
+                  'attprecision': None,
+                  'attoptions': [],
+                  'seclabels': [],
+                  'colconstype': 'i',
+                  'attidentity': 'd',
+                  'seqincrement': 2,
+                  'seqstart': 2,
+                  'seqmin': 2,
+                  'seqmax': 2000,
+                  'seqcache': 1,
+                  'seqcycle': True
+              }])
+         ),
+        ('Create Table with Generated columns',
+         dict(url='/browser/table/obj/',
+              server_min_version=120000,
+              skip_msg='Generated columns are not supported by '
+                       'PPAS/PG 12.0 and below.',
+              columns=[{
+                  'name': 'm1',
+                  'cltype': 'bigint',
+                  'attacl': [],
+                  'is_primary_key': False,
+                  'attoptions': [],
+                  'seclabels': []
+              }, {
+                  'name': 'm2',
+                  'cltype': 'bigint',
+                  'attacl': [],
+                  'is_primary_key': False,
+                  'attoptions': [],
+                  'seclabels': []
+              }, {
+                  'name': 'genrated',
+                  'cltype': 'bigint',
+                  'attacl': [],
+                  'is_primary_key': False,
+                  'attnotnull': True,
+                  'attlen': None,
+                  'attprecision': None,
+                  'attoptions': [],
+                  'seclabels': [],
+                  'colconstype': 'g',
+                  'genexpr': 'm1*m2'
+              }])
          )
+
     ]
 
     def setUp(self):
@@ -70,145 +156,48 @@ class TableAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
 
-        self.is_partition = False
         if hasattr(self, 'server_min_version'):
             server_con = server_utils.connect_server(self, self.server_id)
             if not server_con["info"] == "Server connected.":
                 raise Exception("Could not connect to server to add "
                                 "partitioned table.")
             if server_con["data"]["version"] < self.server_min_version:
-                message = "Partitioned table are not supported by " \
-                          "PPAS/PG 10.0 and below."
-                self.skipTest(message)
-            else:
-                self.is_partition = True
+                self.skipTest(self.skip_msg)
 
     def runTest(self):
         """ This function will add table under schema node. """
         db_user = self.server["username"]
         self.table_name = "test_table_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {
-            "check_constraint": [],
-            "coll_inherits": "[]",
-            "columns": [
-                {
-                    "name": "empno",
-                    "cltype": "numeric",
-                    "attacl": [],
-                    "is_primary_key": False,
-                    "attoptions": [],
-                    "seclabels": []
-                },
-                {
-                    "name": "empname",
-                    "cltype": "character[]",
-                    "attacl": [],
-                    "is_primary_key": False,
-                    "attoptions": [],
-                    "seclabels": []
-                },
-                {
-                    "name": "DOJ",
-                    "cltype": "date",
-                    "attacl": [],
-                    "is_primary_key": False,
-                    "attoptions": [],
-                    "seclabels": []
-                }
-            ],
-            "exclude_constraint": [],
-            "fillfactor": "",
-            "hastoasttable": True,
-            "like_constraints": True,
-            "like_default_value": True,
-            "like_relation": "pg_catalog.pg_namespace",
+        # Get the common data
+        data = tables_utils.get_table_common_data()
+        data.update({
             "name": self.table_name,
-            "primary_key": [],
-            "relacl": [
-                {
-                    "grantee": db_user,
-                    "grantor": db_user,
-                    "privileges":
-                        [
-                            {
-                                "privilege_type": "a",
-                                "privilege": True,
-                                "with_grant": True
-                            },
-                            {
-                                "privilege_type": "r",
-                                "privilege": True,
-                                "with_grant": False
-                            },
-                            {
-                                "privilege_type": "w",
-                                "privilege": True,
-                                "with_grant": False
-                            }
-                        ]
-                }
-            ],
-            "relhasoids": True,
             "relowner": db_user,
             "schema": self.schema_name,
-            "seclabels": [],
-            "spcname": "pg_default",
-            "unique_constraint": [],
-            "vacuum_table": [
-                {
-                    "name": "autovacuum_analyze_scale_factor"
-                },
-                {
-                    "name": "autovacuum_analyze_threshold"
-                },
-                {
-                    "name": "autovacuum_freeze_max_age"
-                },
-                {
-                    "name": "autovacuum_vacuum_cost_delay"
-                },
-                {
-                    "name": "autovacuum_vacuum_cost_limit"
-                },
-                {
-                    "name": "autovacuum_vacuum_scale_factor"
-                },
-                {
-                    "name": "autovacuum_vacuum_threshold"
-                },
-                {
-                    "name": "autovacuum_freeze_min_age"
-                },
-                {
-                    "name": "autovacuum_freeze_table_age"
-                }
-            ],
-            "vacuum_toast": [
-                {
-                    "name": "autovacuum_freeze_max_age"
-                },
-                {
-                    "name": "autovacuum_vacuum_cost_delay"
-                },
-                {
-                    "name": "autovacuum_vacuum_cost_limit"
-                },
-                {
-                    "name": "autovacuum_vacuum_scale_factor"
-                },
-                {
-                    "name": "autovacuum_vacuum_threshold"
-                },
-                {
-                    "name": "autovacuum_freeze_min_age"
-                },
-                {
-                    "name": "autovacuum_freeze_table_age"
-                }
-            ]
-        }
+            "relacl": [{
+                "grantee": db_user,
+                "grantor": db_user,
+                "privileges": [{
+                    "privilege_type": "a",
+                    "privilege": True,
+                    "with_grant": True
+                }, {
+                    "privilege_type": "r",
+                    "privilege": True,
+                    "with_grant": False
+                }, {
+                    "privilege_type": "w",
+                    "privilege": True,
+                    "with_grant": False
+                }]
+            }]
+        })
 
-        if self.is_partition:
+        # If column is provided in the scenario then use those columns
+        if hasattr(self, 'columns'):
+            data['columns'] = self.columns
+
+        if hasattr(self, 'partition_type'):
             data['partition_type'] = self.partition_type
             data['is_partitioned'] = True
             if self.partition_type == 'range':
