@@ -59,7 +59,7 @@ FROM (
 		substring(array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
 		array_to_string(rel.reloptions, ',') AS table_vacuum_settings_str,
 		array_to_string(tst.reloptions, ',') AS toast_table_vacuum_settings_str,
-		rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, NULL AS reloftype, NULL AS typname,
+		rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, NULL AS reloftype, typ.typname AS typname,
 		typ.typrelid AS typoid,
 		(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
 			-- Added for pgAdmin4
@@ -79,6 +79,7 @@ FROM (
 		LEFT OUTER JOIN pg_constraint con ON con.conrelid=rel.oid AND con.contype='p'
 		LEFT OUTER JOIN pg_class tst ON tst.oid = rel.reltoastrelid
 		LEFT OUTER JOIN gp_distribution_policy gdp ON gdp.localoid = rel.oid
+		LEFT OUTER JOIN pg_type typ ON typ.oid = rel.reltype
 
 	 WHERE rel.relkind IN ('r','s','t') AND rel.relnamespace = {{ scid }}
 	{% if tid %}  AND rel.oid = {{ tid }}::oid {% endif %}
