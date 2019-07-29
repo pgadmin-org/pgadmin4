@@ -1,3 +1,14 @@
+###############################################################################
+#
+# IMPORTANT:
+#
+# If runtime or build time dependencies are changed in this file, the committer
+# *must* ensure the DEB and RPM package maintainers are informed as soon as
+# possible.
+#
+###############################################################################
+
+
 ##############################################################################
 # NOTE: Any requirements with environment specifiers must be explicitly added
 #       to pkg/pip/setup_pip.py (in extras_require), otherwise they will be

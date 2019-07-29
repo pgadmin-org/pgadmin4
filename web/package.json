@@ -1,4 +1,9 @@
 {
+  "//": [
+    "IMPORTANT:",
+    "If runtime or build time dependencies are changed in this file, the ",
+    "committer *must* ensure the DEB and RPM package maintainers are informed ",
+    "as soon as possible."],
   "license": "PostgreSQL",
   "devDependencies": {
     "@babel/core": "~7.3.4",
