@@ -131,7 +131,7 @@ You can:
 A result set is updatable if:
 
 * All the columns belong to the same table.
-* All the primary keys of the table are selected.
+* All the primary keys or OIDs of the table are explicitly selected.
 * No columns are duplicated.
 
 An updatable result set can be modified just like in

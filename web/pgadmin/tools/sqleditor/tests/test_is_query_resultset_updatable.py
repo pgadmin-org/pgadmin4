@@ -27,33 +27,65 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
-            }
+            },
+            expected_has_oids=False,
+            table_has_oids=False
         )),
         ('When selecting all primary keys of the table', dict(
             sql='SELECT pk_col1, pk_col2 FROM %s;',
             primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
-            }
+            },
+            expected_has_oids=False,
+            table_has_oids=False
         )),
         ('When selecting some of the primary keys of the table', dict(
             sql='SELECT pk_col2 FROM %s;',
-            primary_keys=None
+            primary_keys=None,
+            expected_has_oids=False,
+            table_has_oids=False
         )),
         ('When selecting none of the primary keys of the table', dict(
             sql='SELECT normal_col1 FROM %s;',
-            primary_keys=None
+            primary_keys=None,
+            expected_has_oids=False,
+            table_has_oids=False
         )),
         ('When renaming a primary key', dict(
-            sql='SELECT pk_col1 as some_col, '
-                'pk_col2 FROM "%s";',
-            primary_keys=None
+            sql='SELECT pk_col1 as some_col, pk_col2 FROM "%s";',
+            primary_keys=None,
+            expected_has_oids=False,
+            table_has_oids=False
         )),
         ('When renaming a column to a primary key name', dict(
-            sql='SELECT pk_col1, pk_col2, normal_col1 as pk_col1 '
-                'FROM %s;',
-            primary_keys=None
-        ))
+            sql='SELECT pk_col1, pk_col2, normal_col1 as pk_col1 FROM %s;',
+            primary_keys=None,
+            expected_has_oids=False,
+            table_has_oids=False
+        )),
+        ('When selecting primary keys and oids (table with oids)', dict(
+            sql='SELECT *, oid FROM %s;',
+            primary_keys={
+                'pk_col1': 'int4',
+                'pk_col2': 'int4'
+            },
+            expected_has_oids=True,
+            table_has_oids=True
+        )),
+        ('When selecting oids without primary keys (table with oids)', dict(
+            sql='SELECT oid, normal_col1, normal_col2 FROM %s;',
+            primary_keys=None,
+            expected_has_oids=True,
+            table_has_oids=True
+        )),
+        ('When selecting none of the primary keys or oids (table with oids)',
+         dict(
+             sql='SELECT normal_col1, normal_col2 FROM %s;',
+             primary_keys=None,
+             expected_has_oids=False,
+             table_has_oids=True
+         ))
     ]
 
     def setUp(self):
@@ -63,9 +95,10 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
 
     def runTest(self):
         # Create test table (unique for each scenario)
-        self._create_test_table()
+        test_table_name = self._create_test_table(
+            table_has_oids=self.table_has_oids)
         # Add test table name to the query
-        sql = self.sql % self.test_table_name
+        sql = self.sql % test_table_name
         is_success, response_data = \
             execute_query(tester=self.tester,
                           query=sql,
@@ -77,6 +110,10 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         primary_keys = response_data['data']['primary_keys']
         self.assertEquals(primary_keys, self.primary_keys)
 
+        # Check oids
+        has_oids = response_data['data']['has_oids']
+        self.assertEquals(has_oids, self.expected_has_oids)
+
     def tearDown(self):
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
@@ -85,11 +122,18 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         database_info = parent_node_dict["database"][-1]
         self.server_id = database_info["server_id"]
 
+        self.server_version = parent_node_dict["schema"][-1]["server_version"]
+
+        if self.server_version >= 120000 and self.table_has_oids:
+            self.skipTest('Tables with OIDs are not supported starting '
+                          'PostgreSQL 12')
+
         self.db_id = database_info["db_id"]
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
                                                  self.db_id)
+
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to the database.")
 
@@ -108,9 +152,9 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
 
         self.poll_url = '/sqleditor/poll/{0}'.format(self.trans_id)
 
-    def _create_test_table(self):
-        self.test_table_name = "test_for_updatable_resultset" + \
-                               str(random.randint(1000, 9999))
+    def _create_test_table(self, table_has_oids=False):
+        test_table_name = "test_for_updatable_resultset" + \
+                          str(random.randint(1000, 9999))
         create_sql = """
                             DROP TABLE IF EXISTS "%s";
 
@@ -120,8 +164,13 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
                                 normal_col1 VARCHAR,
                                 normal_col2 VARCHAR,
                                 PRIMARY KEY(pk_col1, pk_col2)
-                            );
-                      """ % (self.test_table_name, self.test_table_name)
+                            )
+                      """ % (test_table_name, test_table_name)
+
+        if table_has_oids:
+            create_sql += ' WITH OIDS;'
+        else:
+            create_sql += ';'
 
         is_success, _ = \
             execute_query(tester=self.tester,
@@ -129,3 +178,4 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
                           start_query_tool_url=self.start_query_tool_url,
                           poll_url=self.poll_url)
         self.assertEquals(is_success, True)
+        return test_table_name

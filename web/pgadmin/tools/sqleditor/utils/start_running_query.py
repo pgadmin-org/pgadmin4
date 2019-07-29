@@ -45,8 +45,9 @@ class StartRunningQuery:
         if type(session_obj) is Response:
             return session_obj
 
-        # Remove any existing primary keys in session_obj
+        # Remove any existing primary keys or has_oids in session_obj
         session_obj.pop('primary_keys', None)
+        session_obj.pop('oids', None)
 
         transaction_object = pickle.loads(session_obj['command_obj'])
         can_edit = False

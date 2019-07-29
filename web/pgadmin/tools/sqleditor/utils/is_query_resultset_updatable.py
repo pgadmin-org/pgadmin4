@@ -15,6 +15,7 @@
         - No duplicate columns
 """
 from flask import render_template
+from flask_babelex import gettext
 try:
     from collections import OrderedDict
 except ImportError:
@@ -43,18 +44,25 @@ def is_query_resultset_updatable(conn, sql_path):
         return return_not_updatable()
 
     if conn.connected():
-        primary_keys, primary_keys_columns, pk_names = \
-            _get_primary_keys(conn=conn,
-                              table_oid=table_oid,
-                              sql_path=sql_path)
+        primary_keys, pk_names = _check_primary_keys(conn=conn,
+                                                     columns_info=columns_info,
+                                                     table_oid=table_oid,
+                                                     sql_path=sql_path)
 
-        if not _check_primary_keys_uniquely_exist(primary_keys_columns,
-                                                  columns_info):
+        has_oids = _check_oids(conn=conn,
+                               columns_info=columns_info,
+                               table_oid=table_oid,
+                               sql_path=sql_path)
+
+        if has_oids or primary_keys is not None:
+            return True, has_oids, primary_keys, pk_names, table_oid
+        else:
             return return_not_updatable()
-
-        return True, primary_keys, pk_names, table_oid
     else:
-        return return_not_updatable()
+        raise Exception(
+            gettext('Not connected to server or connection with the '
+                    'server has been closed.')
+        )
 
 
 def _check_single_table(columns_info):
@@ -72,6 +80,42 @@ def _check_duplicate_columns(columns_info):
     if is_duplicate_columns:
         return False
     return True
+
+
+def _check_oids(conn, sql_path, table_oid, columns_info):
+    # Remove the special behavior of OID columns from
+    # PostgreSQL 12 onwards, so returning False.
+    if conn.manager.sversion >= 120000:
+        return False
+
+    # Check that the table has oids
+    query = render_template(
+        "/".join([sql_path, 'has_oids.sql']), obj_id=table_oid)
+
+    status, has_oids = conn.execute_scalar(query)
+    if not status:
+        raise Exception(has_oids)
+
+    # Check that the oid column is selected in results columns
+    oid_column_selected = False
+    for col in columns_info:
+        if col['table_column'] is None and col['display_name'] == 'oid':
+            oid_column_selected = True
+            break
+    return has_oids and oid_column_selected
+
+
+def _check_primary_keys(conn, columns_info, sql_path, table_oid):
+    primary_keys, primary_keys_columns, pk_names = \
+        _get_primary_keys(conn=conn,
+                          table_oid=table_oid,
+                          sql_path=sql_path)
+
+    if not _check_primary_keys_uniquely_exist(primary_keys_columns,
+                                              columns_info):
+        primary_keys = None
+        pk_names = None
+    return primary_keys, pk_names
 
 
 def _check_primary_keys_uniquely_exist(primary_keys_columns, columns_info):
@@ -99,7 +143,7 @@ def _get_primary_keys(sql_path, table_oid, conn):
     )
     status, result = conn.execute_dict(query)
     if not status:
-        return return_not_updatable()
+        raise Exception(result)
 
     primary_keys_columns = []
     primary_keys = OrderedDict()
@@ -117,4 +161,4 @@ def _get_primary_keys(sql_path, table_oid, conn):
 
 
 def return_not_updatable():
-    return False, None, None, None
+    return False, False, None, None, None
