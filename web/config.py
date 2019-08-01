@@ -187,6 +187,13 @@ else:
     else:
         DATA_DIR = os.path.realpath(os.path.expanduser(u'~/.pgadmin/'))
 
+# An optional login banner to show security warnings/disclaimers etc. at
+# login and password recovery etc. HTML may be included for basic formatting,
+# For example:
+# LOGIN_BANNER = "<h4>Authorised Users Only!</h4>" \
+#                "Unauthorised use is strictly forbidden."
+LOGIN_BANNER = ""
+
 ##########################################################################
 # Log settings
 ##########################################################################

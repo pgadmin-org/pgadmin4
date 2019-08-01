@@ -919,6 +919,16 @@ table.table-empty-rows{
   }
 }
 
+.login_banner {
+    position: fixed;
+    width: 80%;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 100;
+}
+
 .change_pass {
   background-color: $color-gray-light;
   height: 100%;

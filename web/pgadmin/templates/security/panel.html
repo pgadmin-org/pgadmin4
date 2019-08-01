@@ -2,6 +2,11 @@
 {% from "security/fields.html" import render_field_with_errors %}
 {% block body %}
 <div class="container-fluid h-100 login_page">
+    {% if config.LOGIN_BANNER is defined and config.LOGIN_BANNER != "" %}
+    <div class="login_banner alert alert-danger" role="alert">
+        {{ config.LOGIN_BANNER|safe }}
+    </div>
+    {% endif %}
     {% include "security/messages.html" %}
     <div class="row h-100 align-items-center justify-content-center">
         <div class="col-md-6">{% block panel_image %}{% endblock %}</div>
