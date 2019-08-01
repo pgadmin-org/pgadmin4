@@ -255,6 +255,44 @@ def create_constraint(server,
         traceback.print_exc(file=sys.stderr)
 
 
+def create_type(server, db_name, type_name, type_fields=[]):
+    """
+    This function create the type in given database name
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param type_name: type name
+    :type type_name: str
+    :param type_fields: type fields
+    :type type_fields: list
+    :return: None
+    """
+    try:
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+
+        type_fields_sql = ", ".join(type_fields)
+
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(
+            '''CREATE TYPE %s AS (%s)''' % (type_name, type_fields_sql))
+
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
 def create_debug_function(server, db_name, function_name="test_func"):
     try:
         connection = get_db_connection(

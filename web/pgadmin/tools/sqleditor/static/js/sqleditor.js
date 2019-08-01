@@ -752,12 +752,15 @@ define('tools.querytool', [
       column_size[table_name] = column_size[table_name] || {};
 
       _.each(columns, function(c) {
+        c.display_name = _.escape(c.display_name);
+        c.column_type = _.escape(c.column_type);
+
         var options = {
           id: c.name,
           pos: c.pos,
           field: c.name,
           name: c.label,
-          display_name: _.escape(c.display_name),
+          display_name: c.display_name,
           column_type: c.column_type,
           column_type_internal: c.column_type_internal,
           not_null: c.not_null,

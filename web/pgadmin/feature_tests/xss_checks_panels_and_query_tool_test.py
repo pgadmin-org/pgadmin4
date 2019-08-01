@@ -33,11 +33,18 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         ("Test XSS check for panels and query tool", dict())
     ]
     test_table_name = "<h1>X"
+    test_type_name = '"<script>alert(1)</script>"'
 
     def before(self):
+        test_utils.create_type(
+            self.server, self.test_db, self.test_type_name,
+            ['"<script>alert(1)</script>" "char"',
+             '"1<script>alert(1)</script>" "char"']
+        )
         test_utils.create_table(
             self.server, self.test_db, self.test_table_name,
-            ['"<script>alert(1)</script>" char']
+            ['"<script>alert(1)</script>" char',
+             'typcol '+self.test_type_name]
         )
         # This is needed to test dependents tab (eg: BackGrid)
         test_utils.create_constraint(
