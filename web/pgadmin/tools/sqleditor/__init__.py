@@ -399,17 +399,6 @@ def poll(trans_id):
                 additional_messages = ''.join(messages)
             notifies = conn.get_notifies()
 
-            # Procedure/Function output may comes in the form of Notices
-            # from the database server, so we need to append those outputs
-            # with the original result.
-            if result is None:
-                result = conn.status_message()
-                if (result != 'SELECT 1' or result != 'SELECT 0') and \
-                   result is not None and additional_messages:
-                    result = additional_messages + result
-                else:
-                    result = None
-
             if st:
                 if 'primary_keys' in session_obj:
                     primary_keys = session_obj['primary_keys']
@@ -496,6 +485,7 @@ def poll(trans_id):
                         col_info['pgadmin_alias'] = \
                             re.sub("[%()]+", "|", col_name)
                     session_obj['columns_info'] = columns
+
                 # status of async_fetchmany_2darray is True and result is none
                 # means nothing to fetch
                 if result and rows_affected > -1:
@@ -515,6 +505,17 @@ def poll(trans_id):
                 # As we changed the transaction object we need to
                 # restore it and update the session variable.
                 update_session_grid_transaction(trans_id, session_obj)
+
+            # Procedure/Function output may comes in the form of Notices
+            # from the database server, so we need to append those outputs
+            # with the original result.
+            if result is None:
+                result = conn.status_message()
+                if result is not None and additional_messages is not None:
+                    result = additional_messages + result
+                else:
+                    result = result if result is not None \
+                        else additional_messages
 
         elif status == ASYNC_EXECUTION_ABORTED:
             status = 'Cancel'

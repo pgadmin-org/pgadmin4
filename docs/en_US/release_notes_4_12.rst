@@ -27,3 +27,4 @@ Bug fixes
 | `Issue #4497 <https://redmine.postgresql.org/issues/4497>`_ -  Ensure purely numeric comments can be saved on new columns.
 | `Issue #4508 <https://redmine.postgresql.org/issues/4508>`_ -  Fix accessibility issue for Datetime cell in backgrid.
 | `Issue #4520 <https://redmine.postgresql.org/issues/4520>`_ -  Ensure the query tool will work with older versions of psycopg2 than we officially support, albeit without updatable resultsets.
+| `Issue #4525 <https://redmine.postgresql.org/issues/4525>`_ -  Ensure command tags are shown in the messages tab of the Query Tool.

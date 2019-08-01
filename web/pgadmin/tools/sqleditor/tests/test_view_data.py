@@ -33,7 +33,7 @@ class TestViewData(BaseTestGenerator):
                 json_val json Not Null,
                 Constraint table_pk Primary Key(id)
                 );""",
-                result_data=None,
+                result_data='SELECT 0',
                 rows_fetched_to=0
             )
         )
