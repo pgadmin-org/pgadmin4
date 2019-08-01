@@ -23,6 +23,7 @@ Bug fixes
 | `Issue #4179 <https://redmine.postgresql.org/issues/4179>`_ -  Fix generation of reverse engineered SQL for tables with Greenplum 5.x.
 | `Issue #4401 <https://redmine.postgresql.org/issues/4401>`_ -  Ensure type names are properly encoded in the results grid.
 | `Issue #4490 <https://redmine.postgresql.org/issues/4490>`_ -  Fix accessibility issue for checkbox in IE11.
+| `Issue #4492 <https://redmine.postgresql.org/issues/4492>`_ -  Ensure the Query Tool doesn't throw an error when viewing the contents of a table with no columns.
 | `Issue #4496 <https://redmine.postgresql.org/issues/4496>`_ -  Ensure columns can be created when they are IDENTITY fields with the CYCLE option enabled.
 | `Issue #4497 <https://redmine.postgresql.org/issues/4497>`_ -  Ensure purely numeric comments can be saved on new columns.
 | `Issue #4508 <https://redmine.postgresql.org/issues/4508>`_ -  Fix accessibility issue for Datetime cell in backgrid.

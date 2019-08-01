@@ -2467,8 +2467,8 @@ define('tools.querytool', [
             var explain_data_array = [],
               explain_data_json = null;
 
-
-            if(self.colinfo[0].name == 'QUERY PLAN' && data.result
+            if(data.result && !_.isEmpty(self.colinfo)
+             && self.colinfo[0].name == 'QUERY PLAN' && !_.isEmpty(data.types)
              && data.types[0] && data.types[0].typname === 'json') {
               /* json is sent as text, parse it */
               explain_data_json = JSON.parse(data.result[0][0]);
