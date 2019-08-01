@@ -44,7 +44,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         test_utils.create_table(
             self.server, self.test_db, self.test_table_name,
             ['"<script>alert(1)</script>" char',
-             'typcol '+self.test_type_name]
+             'typcol ' + self.test_type_name]
         )
         # This is needed to test dependents tab (eg: BackGrid)
         test_utils.create_constraint(
