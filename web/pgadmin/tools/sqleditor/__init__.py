@@ -424,16 +424,16 @@ def poll(trans_id):
                 # If trans_obj is a QueryToolCommand then check for updatable
                 # resultsets and primary keys
                 if isinstance(trans_obj, QueryToolCommand):
-                    trans_obj.check_updatable_results_pkeys_oids()
-                    pk_names, primary_keys = trans_obj.get_primary_keys()
-                    session_obj['has_oids'] = trans_obj.has_oids()
-                    # Update command_obj in session obj
-                    session_obj['command_obj'] = pickle.dumps(
-                        trans_obj, -1)
-                    # If primary_keys exist, add them to the session_obj to
-                    # allow for saving any changes to the data
-                    if primary_keys is not None:
-                        session_obj['primary_keys'] = primary_keys
+                    if trans_obj.check_updatable_results_pkeys_oids():
+                        pk_names, primary_keys = trans_obj.get_primary_keys()
+                        session_obj['has_oids'] = trans_obj.has_oids()
+                        # Update command_obj in session obj
+                        session_obj['command_obj'] = pickle.dumps(
+                            trans_obj, -1)
+                        # If primary_keys exist, add them to the session_obj to
+                        # allow for saving any changes to the data
+                        if primary_keys is not None:
+                            session_obj['primary_keys'] = primary_keys
 
                 if 'has_oids' in session_obj:
                     has_oids = session_obj['has_oids']

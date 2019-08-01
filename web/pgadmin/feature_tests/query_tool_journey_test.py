@@ -50,6 +50,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self.page.add_server(self.server)
 
+        driver_version = test_utils.get_driver_version()
+        self.driver_version = float('.'.join(driver_version.split('.')[:2]))
+
     def runTest(self):
         self._navigate_to_query_tool()
         self._execute_query(
@@ -190,6 +193,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._assert_clickable(query_we_need_to_scroll_to)
 
     def _test_updatable_resultset(self):
+        if self.driver_version < 2.8:
+            return
+
         self.page.click_tab("Query Editor")
 
         # Insert data into test table

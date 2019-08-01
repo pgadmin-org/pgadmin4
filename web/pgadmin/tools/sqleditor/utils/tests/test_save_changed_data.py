@@ -15,11 +15,11 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from .execute_query_utils import execute_query
+from pgadmin.tools.sqleditor.tests.execute_query_utils import execute_query
 
 
 class TestSaveChangedData(BaseTestGenerator):
-    """ This class tests saving data changes in the grid to the database """
+    """ This class tests saving data changes to updatable query resultsets """
     scenarios = [
         ('When inserting new valid row', dict(
             save_payload={
@@ -304,6 +304,7 @@ class TestSaveChangedData(BaseTestGenerator):
 
     def _initialize_database_connection(self):
         database_info = parent_node_dict["database"][-1]
+        self.db_name = database_info["db_name"]
         self.server_id = database_info["server_id"]
 
         self.db_id = database_info["db_id"]
@@ -311,6 +312,13 @@ class TestSaveChangedData(BaseTestGenerator):
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
                                                  self.db_id)
+
+        driver_version = utils.get_driver_version()
+        driver_version = float('.'.join(driver_version.split('.')[:2]))
+
+        if driver_version < 2.8:
+            self.skipTest('Updatable resultsets require pyscopg 2.8 or later')
+
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to the database.")
 
@@ -347,9 +355,5 @@ class TestSaveChangedData(BaseTestGenerator):
                              self.test_table_name,
                              self.test_table_name)
         self.select_sql = 'SELECT * FROM %s;' % self.test_table_name
-        is_success, _ = \
-            execute_query(tester=self.tester,
-                          query=create_sql,
-                          start_query_tool_url=self.start_query_tool_url,
-                          poll_url=self.poll_url)
-        self.assertEquals(is_success, True)
+
+        utils.create_table_with_query(self.server, self.db_name, create_sql)

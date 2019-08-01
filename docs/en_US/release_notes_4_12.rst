@@ -26,3 +26,4 @@ Bug fixes
 | `Issue #4496 <https://redmine.postgresql.org/issues/4496>`_ -  Ensure columns can be created when they are IDENTITY fields with the CYCLE option enabled.
 | `Issue #4497 <https://redmine.postgresql.org/issues/4497>`_ -  Ensure purely numeric comments can be saved on new columns.
 | `Issue #4508 <https://redmine.postgresql.org/issues/4508>`_ -  Fix accessibility issue for Datetime cell in backgrid.
+| `Issue #4520 <https://redmine.postgresql.org/issues/4520>`_ -  Ensure the query tool will work with older versions of psycopg2 than we officially support, albeit without updatable resultsets.

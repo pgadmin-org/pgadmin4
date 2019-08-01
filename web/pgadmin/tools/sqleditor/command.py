@@ -896,6 +896,13 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         manager = driver.connection_manager(self.sid)
         conn = manager.connection(did=self.did, conn_id=self.conn_id)
 
+        # Get the driver version as a float
+        driver_version = float('.'.join(driver.Version().split('.')[:2]))
+
+        # Checking for updatable resultsets uses features in psycopg 2.8
+        if driver_version < 2.8:
+            return False
+
         # Get the path to the sql templates
         sql_path = 'sqleditor/sql/#{0}#'.format(manager.version)
 
@@ -918,6 +925,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
             self.__set_updatable_results_attrs(sql_path=sql_path,
                                                table_oid=table_oid,
                                                conn=conn)
+        return self.is_updatable_resultset
 
     def save(self,
              changed_data,

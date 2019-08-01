@@ -134,6 +134,9 @@ A result set is updatable if:
 * All the primary keys or OIDs of the table are explicitly selected.
 * No columns are duplicated.
 
+The  psycopg2 driver version should be equal to or above 2.8 for updatable
+query result sets to work.
+
 An updatable result set can be modified just like in
 :ref:`View/Edit Data <modifying-data-grid>` mode.
 

@@ -1080,3 +1080,8 @@ def get_watcher_dialogue_status(self):
         else:
             break
     return status
+
+
+def get_driver_version():
+    version = getattr(psycopg2, '__version__', None)
+    return version
