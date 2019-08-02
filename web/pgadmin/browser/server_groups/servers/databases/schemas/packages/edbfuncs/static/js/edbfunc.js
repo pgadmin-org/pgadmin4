@@ -97,9 +97,9 @@ define('pgadmin.node.edbfunc', [
         },{
           id: 'prosrc', label: gettext('Code'), cell: 'string',
           type: 'text', mode: ['properties'],
-          group: gettext('Definition'),
-          control: Backform.SqlFieldControl,
-          extraClasses:['custom_height_css_class'],
+          group: gettext('Code'),
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
           visible: function(m) {
             if (m.get('lanname') == 'c') {
               return false;

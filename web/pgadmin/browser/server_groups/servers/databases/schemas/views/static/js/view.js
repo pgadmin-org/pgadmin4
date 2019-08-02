@@ -151,9 +151,10 @@ define('pgadmin.node.view', [
             label: gettext('Cascaded'), value: 'cascaded',
           }],
         },{
-          id: 'definition', label: gettext('Definition'), cell: 'string',
-          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
-          control: Backform.SqlFieldControl,
+          id: 'definition', label: gettext('Code'), cell: 'string',
+          type: 'text', mode: ['create', 'edit'], group: gettext('Code'),
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
           disabled: 'notInSchema',
         }, pgBrowser.SecurityGroupSchema, {
           // Add Privilege Control
@@ -188,7 +189,7 @@ define('pgadmin.node.view', [
           }
           if (_.isUndefined(field_def) || _.isNull(field_def) ||
             String(field_def).replace(/^\s+|\s+$/g, '') == '') {
-            err['definition'] = gettext('Please enter view definition.');
+            err['definition'] = gettext('Please enter view code.');
             errmsg = errmsg || err['definition'];
             this.errorModel.set('definition', errmsg);
             return errmsg;

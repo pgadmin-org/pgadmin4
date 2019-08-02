@@ -91,9 +91,7 @@ the *Trigger* dialog:
     :alt: Trigger dialog sql tab
     :align: center
 
-The example demonstrates creating a trigger named *log_update* that calls a
-procedure named *log_account_update* that logs any updates to the *distributors*
-table.
+The example demonstrates creating a trigger named *log_update*.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.

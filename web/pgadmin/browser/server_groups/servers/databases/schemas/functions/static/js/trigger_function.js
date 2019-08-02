@@ -179,9 +179,9 @@ define('pgadmin.node.trigger_function', [
         },{
           id: 'prosrc', label: gettext('Code'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          group: gettext('Definition'), deps: ['lanname'],
-          control: Backform.SqlFieldControl,
-          extraClasses:['custom_height_css_class'],
+          group: gettext('Code'), deps: ['lanname'],
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
           visible: function(m) {
             if (m.get('lanname') == 'c') {
               return false;

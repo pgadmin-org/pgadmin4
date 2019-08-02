@@ -144,12 +144,14 @@ define('pgadmin.node.package', [
           mode: ['properties', 'create', 'edit'],
         },{
           id: 'pkgheadsrc', label: gettext('Header'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Code'),
-          control: Backform.SqlFieldControl,
+          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Header'),
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
         },{
           id: 'pkgbodysrc', label: gettext('Body'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Code'),
-          control: Backform.SqlFieldControl,
+          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Body'),
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
           group: gettext('Security'), mode: ['properties'],

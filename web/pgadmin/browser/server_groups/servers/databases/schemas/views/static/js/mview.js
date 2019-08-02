@@ -168,9 +168,10 @@ define('pgadmin.node.mview', [
           id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
         },{
-          id: 'definition', label:'Definition', cell: 'string',
+          id: 'definition', label: gettext('Definition'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
-          control: Backform.SqlFieldControl, extraClasses:['sql_field_width_full'],
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
         },{
           id: 'with_data', label: gettext('With data?'),
           group: gettext('Storage'), mode: ['edit', 'create'],

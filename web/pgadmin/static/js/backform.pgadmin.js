@@ -653,7 +653,7 @@ define([
         '<%=label%></a></li>',
       ].join(' ')),
       'panel': _.template(
-        '<div role="tabpanel" tabindex="-1" class="tab-pane <%=label%> pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
+        '<div role="tabpanel" tabindex="-1" class="tab-pane <%=label%> <%=tabPanelCodeClass%> pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
       ),
     },
     render: function() {
@@ -1889,6 +1889,7 @@ define([
             label: s.label || s.id,
             version_compatible: ver_in_limit,
             visible: visible,
+            tabPanelCodeClass: '',
           };
           return;
         }
@@ -1988,11 +1989,16 @@ define([
       // Create an array from the dictionary with proper required
       // structure.
       _.each(groups, function(val, key) {
+        let tabPanelCodeClass = _.pluck(val, 'tabPanelCodeClass');
+        if (tabPanelCodeClass) {
+          tabPanelCodeClass = tabPanelCodeClass.join(' ').trim();
+        }
         fields.push(
           _.extend(
             _.defaults(
               groupInfo[key] || {
                 label: key,
+                tabPanelCodeClass: tabPanelCodeClass,
               }, {
                 version_compatible: true,
                 visible: true,
@@ -2509,6 +2515,25 @@ define([
 
       Backform.TextareaControl.prototype.remove.apply(this, arguments);
     },
+  });
+
+  /*
+   * Control For Code Mirror with FULL text area.
+   */
+  Backform.SqlCodeControl = Backform.SqlFieldControl.extend({
+    // Customize template to add new styles
+    template: _.template([
+      '<div class="pgadmin-controls pg-el-12 <%=extraClasses.join(\' \')%>">',
+      '  <textarea ',
+      '    class="<%=Backform.controlClassName%> " name="<%=name%>"',
+      '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
+      '    rows=<%=rows%>',
+      '    <%=required ? "required" : ""%>><%-value%></textarea>',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
+      '</div>',
+    ].join('\n')),
   });
 
   // We will use this control just as a annotate in Backform

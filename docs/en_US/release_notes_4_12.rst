@@ -11,6 +11,7 @@ New features
 
 | `Issue #4333 <https://redmine.postgresql.org/issues/4333>`_ -  Add support for planner support functions in PostgreSQL 12+ functions.
 | `Issue #4334 <https://redmine.postgresql.org/issues/4334>`_ -  Add support for generated columns in Postgres 12+.
+| `Issue #4540 <https://redmine.postgresql.org/issues/4540>`_ -  Use the full tab space for CodeMirror instances on dialogues where appropriate.
 | `Issue #4549 <https://redmine.postgresql.org/issues/4549>`_ -  Allow a banner to be displayed on the login and other related pages showing custom text.
 
 Housekeeping

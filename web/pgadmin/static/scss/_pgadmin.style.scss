@@ -518,6 +518,15 @@ fieldset.inline-fieldset > div {
   }
 }
 
+.tab-pane.sql-code-control {
+  @extend .tab-pane.SQL;
+  & .pgadmin-control-group{
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+  }
+}
+
 .pgadmin-controls input[type="checkbox"]{
   margin-left: 0 !important;
   margin-top: 10px !important;

@@ -480,7 +480,9 @@ define('pgadmin.node.trigger', [
         },{
           id: 'prosrc', label: gettext('Code'), group: gettext('Code'),
           type: 'text', mode: ['create', 'edit'], deps: ['tfunction'],
-          control: 'sql-field', visible: true,
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
+          visible: true,
           disabled: function(m) {
             // We will enable it only when EDB PPAS and trigger function is
             // set to Inline EDB-SPL

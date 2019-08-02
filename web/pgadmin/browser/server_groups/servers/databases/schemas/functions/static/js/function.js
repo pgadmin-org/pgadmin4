@@ -222,7 +222,7 @@ define('pgadmin.node.function', [
           type: 'text', group: gettext('Definition'), mode: ['properties'],
         },{
           id: 'proargs', label: gettext('Arguments'), cell: 'string',
-          type: 'text', group: gettext('Definition'), mode: ['properties', 'edit'],
+          type: 'text', group: gettext('Definition'), mode: ['properties'],
           disabled: 'isDisabled',
         },{
           id: 'proargtypenames', label: gettext('Signature arguments'), cell:
@@ -244,8 +244,9 @@ define('pgadmin.node.function', [
         },{
           id: 'prosrc', label: gettext('Code'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          group: gettext('Definition'), deps: ['lanname'],
-          control: Backform.SqlFieldControl,
+          group: gettext('Code'), deps: ['lanname'],
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
           extraClasses:['custom_height_css_class'],
           visible: function(m) {
             if (m.get('lanname') == 'c') {
@@ -324,7 +325,7 @@ define('pgadmin.node.function', [
           mode: ['properties'], group: gettext('Security'),
         },{
           id: 'arguments', label: gettext('Arguments'), cell: 'string',
-          group: gettext('Arguments'), type: 'collection', canAdd: function(m){
+          group: gettext('Definition'), type: 'collection', canAdd: function(m){
             return m.isNew();
           },
           canDelete: true, model: ArgumentModel, mode: ['create', 'edit'],
