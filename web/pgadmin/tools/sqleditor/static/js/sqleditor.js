@@ -367,19 +367,27 @@ define('tools.querytool', [
       if(self.handler.is_query_tool) {
         self.query_tool_obj.setOption('dragDrop', true);
         self.query_tool_obj.on('drop', (editor, e) => {
-          /* Stop firefox from redirecting */
-          if(e.preventDefault) {
-            e.preventDefault();
+          var dropDetails = null;
+          try {
+            JSON.parse(e.dataTransfer.getData('text'));
+
+            /* Stop firefox from redirecting */
+
+            if(e.preventDefault) {
+              e.preventDefault();
+            }
+            if (e.stopPropagation) {
+              e.stopPropagation();
+            }
+          } catch(error) {
+            /* if parsing fails, it must be the drag internal of codemirror text */
+            return;
           }
-          if (e.stopPropagation) {
-            e.stopPropagation();
-          }
+
           var cursor = editor.coordsChar({
             left: e.x,
             top: e.y,
           });
-          var dropDetails = JSON.parse(e.dataTransfer.getData('text'));
-          e.codemirrorIgnore = true;
           editor.replaceRange(dropDetails.text, cursor);
           editor.focus();
           editor.setSelection({
