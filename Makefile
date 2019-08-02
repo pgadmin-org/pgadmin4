@@ -20,7 +20,12 @@ appbundle: docs
 	./pkg/mac/build.sh
 
 install-node:
-	cd web && yarn install
+	cd web && npm install
+	cd web && npm audit fix
+	rm -f web/yarn.lock
+	cd web && yarn import
+	cd web && yarn audit
+	rm -f package-lock.json
 
 bundle:
 	cd web && yarn run bundle
@@ -33,6 +38,18 @@ linter:
 
 check: install-node bundle linter check-pep8
 	cd web && yarn run karma start --single-run && python regression/runtests.py
+
+check-audit:
+	cd web && yarn run audit
+
+check-auditjs:
+	cd web && yarn run auditjs
+
+check-auditjs-html:
+	cd web && yarn run auditjs-html
+
+check-auditpy:
+	cd web && yarn run auditpy
 
 check-pep8:
 	pycodestyle --config=.pycodestyle docs/

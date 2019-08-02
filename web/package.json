@@ -3,7 +3,8 @@
     "IMPORTANT:",
     "If runtime or build time dependencies are changed in this file, the ",
     "committer *must* ensure the DEB and RPM package maintainers are informed ",
-    "as soon as possible."],
+    "as soon as possible."
+  ],
   "license": "PostgreSQL",
   "devDependencies": {
     "@babel/core": "~7.3.4",
@@ -39,13 +40,14 @@
     "uglifyjs-webpack-plugin": "^2.1.2",
     "url-loader": "^1.1.2",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3"
+    "webpack-cli": "^3.2.3",
+    "yarn-audit-html": "^1.1.0"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
     "acitree": "git+https://github.com/imsurinder90/jquery-aciTree.git#rc.7",
     "alertifyjs": "1.7.1",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
     "babel-preset-es2015-without-strict": "~0.0.4",
     "babelify": "~10.0.0",
@@ -108,6 +110,10 @@
     "test:karma": "yarn run linter && yarn run karma start",
     "test:feature": "yarn run bundle && python regression/runtests.py --pkg feature_tests",
     "test": "yarn run test:karma-once && yarn run bundle && python regression/runtests.py",
-    "pep8": "pycodestyle --config=../.pycodestyle ../docs && pycodestyle --config=../.pycodestyle ../pkg && pycodestyle --config=../.pycodestyle ../tools && pycodestyle --config=../.pycodestyle ../web"
+    "pep8": "pycodestyle --config=../.pycodestyle ../docs && pycodestyle --config=../.pycodestyle ../pkg && pycodestyle --config=../.pycodestyle ../tools && pycodestyle --config=../.pycodestyle ../web",
+    "auditjs-html": "yarn audit --json | yarn run yarn-audit-html --output ../auditjs.html",
+    "auditjs": "yarn audit",
+    "auditpy": "safety check --full-report",
+    "audit": "yarn run auditjs && yarn run auditpy"
   }
 }

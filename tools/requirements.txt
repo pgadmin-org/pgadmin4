@@ -1,2 +1,3 @@
 requests>=2.21.0
 requests[security]>=2.21.0
+safety==1.8.5
