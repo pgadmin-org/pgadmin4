@@ -34,3 +34,4 @@ Bug fixes
 | `Issue #4525 <https://redmine.postgresql.org/issues/4525>`_ -  Ensure command tags are shown in the messages tab of the Query Tool.
 | `Issue #4536 <https://redmine.postgresql.org/issues/4536>`_ -  Fix load on demand in View/Edit data mode.
 | `Issue #4552 <https://redmine.postgresql.org/issues/4552>`_ -  Fix some errors thrown on the JS console when dragging text in the Query Tool.
+| `Issue #4559 <https://redmine.postgresql.org/issues/4559>`_ -  Ensure triggers should be updated properly for EPAS server.

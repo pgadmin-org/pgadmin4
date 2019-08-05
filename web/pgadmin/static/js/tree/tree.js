@@ -250,11 +250,14 @@ export class Tree {
   register($treeJQuery) {
     $treeJQuery.on('acitree', function (event, api, item, eventName) {
       if (api.isItem(item)) {
-        if (eventName === 'added') {
+        /* If the id of node is changed, the path should also be changed */
+        if (eventName === 'added' || eventName === 'idset') {
           const id = api.getId(item);
           const data = api.itemData(item);
 
-          this.prepareDraggable(data, item);
+          if(eventName === 'added') {
+            this.prepareDraggable(data, item);
+          }
 
           const parentId = this.translateTreeNodeIdFromACITree(api.parent(item));
           this.addNewNode(id, data, item, parentId);
