@@ -17,6 +17,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4555 <https://redmine.postgresql.org/issues/4555>`_ -  Add Reverse Engineered SQL tests for Exclusion Constraint.
 
 Bug fixes
 *********

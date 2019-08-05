@@ -14,6 +14,10 @@ ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
 ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
     SET (FILLFACTOR={{ data.fillfactor }});
 {% endif %}
+{% if data.fillfactor == "" and data.fillfactor != o_data.fillfactor %}
+ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
+    RESET (FILLFACTOR);
+{% endif %}
 {# ==== To update exclusion constraint comments ==== #}
 {% if data.comment is defined and data.comment != o_data.comment %}
 COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}
