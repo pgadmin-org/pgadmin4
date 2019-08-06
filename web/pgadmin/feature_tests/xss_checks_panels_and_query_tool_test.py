@@ -192,7 +192,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_query_tool_history(self):
         print(
-            "\n\tChecking the query tool history for XSS vulnerabilities",
+            "\n\tChecking the Query Tool history for XSS vulnerabilities... ",
             file=sys.stderr, end=""
         )
         self.page.fill_codemirror_area_with(
