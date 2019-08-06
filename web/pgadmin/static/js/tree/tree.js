@@ -300,6 +300,15 @@ function findInTree(rootNode, path) {
   }
 
   return (function findInNode(currentNode) {
+
+    /* No point in checking the children if
+     * the path for currentNode itself is not matching
+     */
+    if (currentNode.path !== undefined && path !== undefined
+      && !path.startsWith(currentNode.path)) {
+      return null;
+    }
+
     for (let i = 0, length = currentNode.children.length; i < length; i++) {
       const calculatedNode = findInNode(currentNode.children[i]);
       if (calculatedNode !== null) {

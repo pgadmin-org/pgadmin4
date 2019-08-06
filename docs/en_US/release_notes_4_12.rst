@@ -14,6 +14,7 @@ New features
 | `Issue #4540 <https://redmine.postgresql.org/issues/4540>`_ -  Use the full tab space for CodeMirror instances on dialogues where appropriate.
 | `Issue #4549 <https://redmine.postgresql.org/issues/4549>`_ -  Allow a banner to be displayed on the login and other related pages showing custom text.
 | `Issue #4566 <https://redmine.postgresql.org/issues/4566>`_ -  Allow enhanced cookie protection to be disabled for compatibility with dynamically addressed hosting environments.
+| `Issue #4570 <https://redmine.postgresql.org/issues/4570>`_ -  Add an optimisation to the internal code responsible for searching for treeview nodes.
 
 Housekeeping
 ************
