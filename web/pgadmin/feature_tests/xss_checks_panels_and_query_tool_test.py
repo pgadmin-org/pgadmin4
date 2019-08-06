@@ -97,7 +97,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_browser_tree(self):
         print(
-            "\n\tChecking the Browser tree for the XSS",
+            "\n\tChecking the Browser tree for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         # Fetch the inner html & check for escaped characters
@@ -113,7 +113,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_properties_tab(self):
         print(
-            "\n\tChecking the Properties tab for the XSS",
+            "\n\tChecking the Properties tab for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         self.page.click_tab("Properties")
@@ -128,7 +128,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_sql_tab(self):
         print(
-            "\n\tChecking the SQL tab for the XSS",
+            "\n\tChecking the SQL tab for for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         self.page.click_tab("SQL")
@@ -148,7 +148,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     def _check_xss_in_dependents_tab(self):
 
         print(
-            "\n\tChecking the Dependents tab for the XSS",
+            "\n\tChecking the Dependents tab for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         self.page.click_tab("Dependents")
@@ -166,7 +166,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_query_tool(self):
         print(
-            "\n\tChecking the SlickGrid cell for the XSS",
+            "\n\tChecking the SlickGrid cell for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         self.page.fill_codemirror_area_with(
@@ -192,7 +192,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_query_tool_history(self):
         print(
-            "\n\tChecking the query tool history for the XSS",
+            "\n\tChecking the query tool history for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         self.page.fill_codemirror_area_with(
@@ -245,7 +245,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_view_data(self):
         print(
-            "\n\tChecking the SlickGrid cell for the XSS",
+            "\n\tChecking the SlickGrid cell for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
 
@@ -265,7 +265,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_explain_module(self):
         print(
-            "\n\tChecking the Graphical Explain plan for the XSS ...",
+            "\n\tChecking the Graphical Explain plan for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         self.page.fill_codemirror_area_with(
