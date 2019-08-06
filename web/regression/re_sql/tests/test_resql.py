@@ -22,7 +22,7 @@ from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
 
 
-def create_resql_module_list(all_modules, exclude_pkgs):
+def create_resql_module_list(all_modules, exclude_pkgs, for_modules):
     """
     This function is used to create the module list for reverse engineered
     SQL by iterating all the modules.
@@ -41,7 +41,13 @@ def create_resql_module_list(all_modules, exclude_pkgs):
             module_name_list = complete_module_name[0].split(".")
             module_name = module_name_list[len(module_name_list) - 1]
 
-            resql_module_list[module_name] = os.path.join(*module_name_list)
+            if len(for_modules) > 0:
+                if module_name in for_modules:
+                    resql_module_list[module_name] = \
+                        os.path.join(*module_name_list)
+            else:
+                resql_module_list[module_name] = \
+                    os.path.join(*module_name_list)
 
     return resql_module_list
 
@@ -87,7 +93,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
-            BaseTestGenerator.exclude_pkgs)
+            BaseTestGenerator.exclude_pkgs,
+            getattr(BaseTestGenerator, 'for_modules', []))
 
         for module in resql_module_list:
             self.table_id = None

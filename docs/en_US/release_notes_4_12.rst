@@ -19,6 +19,7 @@ Housekeeping
 ************
 
 | `Issue #4555 <https://redmine.postgresql.org/issues/4555>`_ -  Add Reverse Engineered SQL tests for Exclusion Constraint.
+| `Issue #4560 <https://redmine.postgresql.org/issues/4560>`_ -  Add a --modules option to the RE-SQL test suite to allow testing of specific object types.
 
 Bug fixes
 *********

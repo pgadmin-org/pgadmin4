@@ -65,7 +65,8 @@ class TestsGeneratorRegistry(ABCMeta):
         all_modules.append('regression.re_sql.tests.test_resql')
 
         # If specific modules are to be tested, exclude others
-        if len(for_modules) > 0:
+        # for modules are handled differently for resql
+        if not is_resql_only and len(for_modules) > 0:
             all_modules = [module_name
                            for module_name in all_modules
                            for fmod in for_modules
@@ -79,6 +80,7 @@ class TestsGeneratorRegistry(ABCMeta):
         # Check if only reverse engineered sql test cases to run
         # if yes then import only that module
         if is_resql_only:
+            BaseTestGenerator.setForModules(for_modules)
             try:
                 import_module('regression.re_sql.tests.test_resql')
             except ImportError:
@@ -147,3 +149,7 @@ class BaseTestGenerator(unittest.TestCase):
     @classmethod
     def setExcludePkgs(cls, exclude_pkgs):
         cls.exclude_pkgs = exclude_pkgs
+
+    @classmethod
+    def setForModules(cls, for_modules):
+        cls.for_modules = for_modules

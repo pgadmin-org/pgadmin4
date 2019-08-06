@@ -253,9 +253,13 @@ def get_test_modules(arguments):
     if arguments['pkg'] is None or arguments['pkg'] == "all":
         TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs)
     elif arguments['pkg'] is not None and arguments['pkg'] == "resql":
+        for_modules = []
+        if arguments['modules'] is not None:
+            for_modules = arguments['modules'].split(',')
+
         # Load the reverse engineering sql test module
         TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs,
-                                               is_resql_only=True)
+                                               for_modules, is_resql_only=True)
     else:
         for_modules = []
         if arguments['modules'] is not None:
