@@ -16,7 +16,7 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}()
 {% if 'lanname' in data %}
     LANGUAGE {{ data.lanname|qtLiteral }} {% else %}
     LANGUAGE {{ o_data.lanname|qtLiteral }}
-    {% endif %}{% if 'provolatile' in data and data.provolatile %}{{ data.provolatile }} {% elif 'provolatile' not in data and o_data.provolatile %}{{ o_data.provolatile }}{% endif %}
+    {% endif %}{% if 'provolatile' in data and data.provolatile %}{{ data.provolatile }}{% elif 'provolatile' not in data and o_data.provolatile %}{{ o_data.provolatile }}{% endif %}
 {% if ('proisstrict' in data and data.proisstrict) or ('proisstrict' not in data and o_data.proisstrict) %} STRICT{% endif %}
 {% if ('prosecdef' in data and data.prosecdef) or ('prosecdef' not in data and o_data.prosecdef) %} SECURITY DEFINER{% endif %}
 {% if ('proiswindow' in data and data.proiswindow) or ('proiswindow' not in data and o_data.proiswindow) %} WINDOW{% endif %}

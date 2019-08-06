@@ -19,6 +19,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4554 <https://redmine.postgresql.org/issues/4554>`_ -  Add Reverse Engineered SQL tests for Trigger Functions.
 | `Issue #4555 <https://redmine.postgresql.org/issues/4555>`_ -  Add Reverse Engineered SQL tests for Exclusion Constraint.
 | `Issue #4560 <https://redmine.postgresql.org/issues/4560>`_ -  Add a --modules option to the RE-SQL test suite to allow testing of specific object types.
 
@@ -39,3 +40,4 @@ Bug fixes
 | `Issue #4536 <https://redmine.postgresql.org/issues/4536>`_ -  Fix load on demand in View/Edit data mode.
 | `Issue #4552 <https://redmine.postgresql.org/issues/4552>`_ -  Fix some errors thrown on the JS console when dragging text in the Query Tool.
 | `Issue #4559 <https://redmine.postgresql.org/issues/4559>`_ -  Ensure triggers should be updated properly for EPAS server.
+| `Issue #4565 <https://redmine.postgresql.org/issues/4565>`_ -  Fix the reverse engineered SQL for trigger functions with the WINDOW option selected.

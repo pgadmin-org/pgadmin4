@@ -1,5 +1,7 @@
 SELECT
-    pr.oid, pr.xmin, pr.*, pr.prosrc AS prosrc_c,
+    pr.oid, pr.xmin,
+    CASE WHEN pr.prokind = 'w' THEN true ELSE false END AS proiswindow,
+    pr.*, pr.prosrc AS prosrc_c,
     pr.proname AS name, pg_get_function_result(pr.oid) AS prorettypename,
     typns.nspname AS typnsp, lanname, proargnames, oidvectortypes(proargtypes) AS proargtypenames,
     pg_get_expr(proargdefaults, 'pg_catalog.pg_class'::regclass) AS proargdefaultvals,
