@@ -13,6 +13,7 @@ New features
 | `Issue #4334 <https://redmine.postgresql.org/issues/4334>`_ -  Add support for generated columns in Postgres 12+.
 | `Issue #4540 <https://redmine.postgresql.org/issues/4540>`_ -  Use the full tab space for CodeMirror instances on dialogues where appropriate.
 | `Issue #4549 <https://redmine.postgresql.org/issues/4549>`_ -  Allow a banner to be displayed on the login and other related pages showing custom text.
+| `Issue #4566 <https://redmine.postgresql.org/issues/4566>`_ -  Allow enhanced cookie protection to be disabled for compatibility with dynamically addressed hosting environments.
 
 Housekeeping
 ************

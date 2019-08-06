@@ -390,7 +390,7 @@ def create_app(app_name=None):
     )
 
     # Make the Session more secure against XSS & CSRF when running in web mode
-    if config.SERVER_MODE:
+    if config.SERVER_MODE and config.ENHANCED_COOKIE_PROTECTION:
         paranoid = Paranoid(app)
         paranoid.redirect_view = 'browser.index'
 

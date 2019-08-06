@@ -433,6 +433,16 @@ ALLOW_SAVE_TUNNEL_PASSWORD = False
 MASTER_PASSWORD_REQUIRED = True
 
 ##########################################################################
+# Allows pgAdmin4 to create session cookies based on IP address, so even
+# if a cookie is stolen, the attacker will not be able to connect to the
+# server using that stolen cookie.
+# Note: This can cause problems when the server is deployed in dynamic IP
+# address hosting environments, such as Kubernetes or behind load
+# balancers. In such cases, this option should be set to False.
+##########################################################################
+ENHANCED_COOKIE_PROTECTION = True
+
+##########################################################################
 # Local config settings
 ##########################################################################
 
