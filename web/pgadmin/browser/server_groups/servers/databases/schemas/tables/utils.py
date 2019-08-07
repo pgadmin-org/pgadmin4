@@ -1134,8 +1134,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 partition_sql = ''
                 for row in rset['rows']:
                     part_data = dict()
-                    part_data['partitioned_table_name'] = data['name']
-                    part_data['parent_schema'] = data['schema']
+                    part_data['partitioned_table_name'] = table
+                    part_data['parent_schema'] = schema
                     part_data['schema'] = row['schema_name']
                     part_data['relispartition'] = True
                     part_data['name'] = row['name']

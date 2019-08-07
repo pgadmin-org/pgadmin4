@@ -30,6 +30,7 @@ Bug fixes
 | `Issue #4179 <https://redmine.postgresql.org/issues/4179>`_ -  Fix generation of reverse engineered SQL for tables with Greenplum 5.x.
 | `Issue #4229 <https://redmine.postgresql.org/issues/4229>`_ -  Update wcDocker to allow the browser's context menu to be used except in tab strips and panel headers.
 | `Issue #4401 <https://redmine.postgresql.org/issues/4401>`_ -  Ensure type names are properly encoded in the results grid.
+| `Issue #4414 <https://redmine.postgresql.org/issues/4414>`_ -  Fix generation of reverse engineered SQL for partition table, partitions were shown as a child of indexes.
 | `Issue #4489 <https://redmine.postgresql.org/issues/4489>`_ -  Update wcDocker to prevent window state loading creating blank dialogues.
 | `Issue #4490 <https://redmine.postgresql.org/issues/4490>`_ -  Fix accessibility issue for checkbox in IE11.
 | `Issue #4492 <https://redmine.postgresql.org/issues/4492>`_ -  Ensure the Query Tool doesn't throw an error when viewing the contents of a table with no columns.
