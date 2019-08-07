@@ -1608,7 +1608,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
 
         return make_json_response(
             status=200,
-            info=gettext("Table rows counted"),
+            info=gettext("Table rows counted: %s" % count),
             data={'total_rows': count}
         )
 
