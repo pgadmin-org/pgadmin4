@@ -148,12 +148,6 @@ Python Tests:
      run 'python runtests.py --pkg all' or just:
          'python runtests.py'
 
-- Execute only reverse engineered sql test framework for all nodes
-     run 'python runtests.py --pkg resql'
-
-- Execute only reverse engineered sql test framework for some modules
-     run 'python runtests.py --pkg resql --modules sequences,functions'
-
 - Execute test framework for entire package
 
      Example 1) Run test framework for 'browser' package
@@ -188,6 +182,13 @@ Python Tests:
 
     Example: exclude multiple packages:
     run 'python runtests.py --exclude browser.server_groups.servers.databases,browser.server_groups.servers.tablespaces'
+
+- Execute reverse engineered SQL test framework
+     Example 1) Execute only reverse engineered sql test framework for all nodes
+         run 'python runtests.py --pkg resql'
+
+     Example 2)  Execute only reverse engineered SQL test framework for some modules
+         run 'python runtests.py --pkg resql --modules sequences,functions'
 
 Javascript Tests:
 
