@@ -26,7 +26,7 @@ install-node:
 	cd web && yarn import
 	cd web && yarn audit
 	rm -f package-lock.json
-    rm -f web/package-lock.json
+	rm -f web/package-lock.json
 
 bundle:
 	cd web && yarn run bundle
