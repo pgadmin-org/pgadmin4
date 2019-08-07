@@ -31,7 +31,7 @@
       "expected_sql_file": "alter_ptrig_comment.sql"
     }, {
       "type": "alter",
-      "name": "Alter trigger function Set 1",
+      "name": "Alter trigger function Set 1 - Strict, Leakproof, Security of definer, Volatility",
       "endpoint": "NODE-trigger_function.obj_id",
       "sql_endpoint": "NODE-trigger_function.sql_id",
       "data": {
@@ -43,7 +43,7 @@
       "expected_sql_file": "alter_ptrig_set_1.sql"
     }, {
       "type": "alter",
-      "name": "Alter trigger function Set 2",
+      "name": "Alter trigger function Set 2 - Cost, Volatility, Add Param",
       "endpoint": "NODE-trigger_function.obj_id",
       "sql_endpoint": "NODE-trigger_function.sql_id",
       "data": {
@@ -59,7 +59,7 @@
       "expected_sql_file": "alter_ptrig_set_2.sql"
     }, {
       "type": "alter",
-      "name": "Alter trigger function Set 3",
+      "name": "Alter trigger function Set 3 - Add Param, Change Param",
       "endpoint": "NODE-trigger_function.obj_id",
       "sql_endpoint": "NODE-trigger_function.sql_id",
       "data": {
