@@ -280,8 +280,15 @@ REM Main build sequence Ends
 
     ECHO Staging PostgreSQL components...
     COPY "%PGDIR%\bin\libpq.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%PGDIR%\bin\ssleay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%PGDIR%\bin\libeay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%PGDIR%\bin\libcrypto-1_1.dll" (
+        REM OpenSSL 1.1.1
+        COPY "%PGDIR%\bin\libcrypto-1_1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+        COPY "%PGDIR%\bin\libssl-1_1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    ) ELSE (
+        REM OpenSSL 1.0.2
+        COPY "%PGDIR%\bin\ssleay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+        COPY "%PGDIR%\bin\libeay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    )
     IF EXIST "%PGDIR%\bin\libintl-*.dll" COPY "%PGDIR%\bin\libintl-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     IF EXIST "%PGDIR%\bin\libiconv-*.dll" COPY "%PGDIR%\bin\libiconv-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     IF EXIST "%PGDIR%\bin\zlib.dll" COPY "%PGDIR%\bin\zlib.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
