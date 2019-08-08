@@ -235,6 +235,10 @@ span.form-control:disabled {
       padding: 0.5rem;
     }
 
+    & .tab-content {
+      padding: 0px;
+    }
+
     fieldset.inline-fieldset {
       background: $color-bg-theme;
     }

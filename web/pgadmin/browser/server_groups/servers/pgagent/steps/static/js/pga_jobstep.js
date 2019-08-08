@@ -45,10 +45,10 @@ define('pgadmin.node.pga_jobstep', [
       is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
       if (is_editable) {
         this.$el.addClass('editable');
-        input.bootstrapSwitch('disabled', false);
+        input.bootstrapToggle('disabled', false);
       } else {
         this.$el.removeClass('editable');
-        input.bootstrapSwitch('disabled', true);
+        input.bootstrapToggle('disabled', true);
         // Set self value into model
         setTimeout(function () {
           model.set(self_name, true);
@@ -209,18 +209,8 @@ define('pgadmin.node.pga_jobstep', [
         },{
           id: 'jstcode', label: '', cell: 'string', deps: ['jstkind'],
           type: 'text', group: gettext('Code'),
-          control: Backform.SqlFieldControl.extend({
-            render: function() {
-              if (this.model.get('jstkind')) {
-                this.field.set('label', gettext('SQL query'));
-              } else {
-                this.field.set('label', gettext('Script'));
-              }
-              return Backform.SqlFieldControl.prototype.render.apply(
-                this, arguments
-              );
-            },
-          }),
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
         }],
         validate: function() {
           var val = this.get('jstname'),
