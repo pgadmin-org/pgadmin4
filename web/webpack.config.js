@@ -26,7 +26,6 @@ const extractStyle = new MiniCssExtractPlugin({
 });
 const envType = PRODUCTION ? 'production': 'development';
 const devToolVal = PRODUCTION ? false : 'eval';
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 // Expose libraries in app context so they need not to
 // require('libname') when used in a module
@@ -49,19 +48,6 @@ const optimizeAssetsPlugin = new OptimizeCssAssetsPlugin({
   cssProcessor: require('cssnano'),
   cssProcessorOptions: { discardComments: {removeAll: true } },
   canPrint: true,
-});
-
-// Manages the cache and stores it into 'sources/generated/.cache/<env><hash>/' path
-// where env = dev || prod
-const hardSourceWebpackPlugin = new HardSourceWebpackPlugin({
-  cacheDirectory: './.cache/hard-source/' + envType +'/[confighash]',
-  recordsPath: './.cache/hard-source/' + envType +'/[confighash]/records.json',
-  configHash: require('node-object-hash')({sort: false}).hash,
-  environmentHash: {
-    root: process.cwd(),
-    directories: ['node_modules'],
-    files: ['package.json'],
-  },
 });
 
 // Helps in debugging each single file, it extracts the module files
@@ -410,7 +396,6 @@ module.exports = {
   ]: [
     extractStyle,
     providePlugin,
-    hardSourceWebpackPlugin,
     sourceMapDevToolPlugin,
   ],
 };

@@ -70,7 +70,6 @@
     "exports-loader": "~0.7.0",
     "flotr2": "git+https://github.com/EnterpriseDB/Flotr2.git",
     "font-awesome": "^4.7.0",
-    "hard-source-webpack-plugin": "0.13.1",
     "immutability-helper": "^3.0.0",
     "imports-loader": "^0.8.0",
     "ip-address": "^5.8.9",
