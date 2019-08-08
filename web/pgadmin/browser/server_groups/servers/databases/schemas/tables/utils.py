@@ -1328,7 +1328,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                         # If changes are from table node
                         if 'name' not in c:
-                                c['name'] = old_data['name']
+                            c['name'] = old_data['name']
                         # Sql to update object
                         sql.append(
                             render_template("/".join([
