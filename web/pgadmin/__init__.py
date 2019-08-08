@@ -228,7 +228,7 @@ def create_app(app_name=None):
     # stream handler thus ensuring all the logging goes through the pgAdmin
     # logger.
     logger = logging.getLogger('werkzeug')
-    logger.setLevel(logging.INFO)
+    logger.setLevel(config.CONSOLE_LOG_LEVEL)
 
     # Set SQLITE_PATH to TEST_SQLITE_PATH while running test cases
     if (
