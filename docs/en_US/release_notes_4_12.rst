@@ -43,3 +43,4 @@ Bug fixes
 | `Issue #4552 <https://redmine.postgresql.org/issues/4552>`_ -  Fix some errors thrown on the JS console when dragging text in the Query Tool.
 | `Issue #4559 <https://redmine.postgresql.org/issues/4559>`_ -  Ensure triggers should be updated properly for EPAS server.
 | `Issue #4565 <https://redmine.postgresql.org/issues/4565>`_ -  Fix the reverse engineered SQL for trigger functions with the WINDOW option selected.
+| `Issue #4581 <https://redmine.postgresql.org/issues/4581>`_ -  Ensure the comment on a Primary Key constraint can be edited under the Table node.

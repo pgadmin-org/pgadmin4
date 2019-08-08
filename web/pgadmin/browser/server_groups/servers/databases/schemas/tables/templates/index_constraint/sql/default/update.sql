@@ -1,7 +1,7 @@
 {### SQL to update constraint object ###}
 {% if data %}
 {# ==== To update constraint name ==== #}
-{% if data.name != o_data.name %}
+{% if data.name and data.name != o_data.name %}
 ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
     RENAME CONSTRAINT {{ conn|qtIdent(o_data.name) }} TO {{ conn|qtIdent(data.name) }};
 {% endif %}
