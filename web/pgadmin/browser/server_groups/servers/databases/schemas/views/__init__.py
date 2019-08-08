@@ -892,7 +892,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         SQL_data = ''
         SQL = render_template("/".join(
             [self.trigger_temp_path,
-             'sql/#{0}#/properties.sql'.format(self.manager.version)]),
+             'sql/{0}/#{1}#/properties.sql'.format(
+                 self.manager.server_type, self.manager.version)]),
             tid=vid)
 
         status, data = self.conn.execute_dict(SQL)
@@ -902,7 +903,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         for trigger in data['rows']:
             SQL = render_template("/".join(
                 [self.trigger_temp_path,
-                 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
+                 'sql/{0}/#{1}#/properties.sql'.format(
+                     self.manager.server_type, self.manager.version)]),
                 tid=vid,
                 trid=trigger['oid']
             )
@@ -932,8 +934,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             # Get trigger function with its schema name
             SQL = render_template("/".join([
                 self.trigger_temp_path,
-                'sql/#{0}#/get_triggerfunctions.sql'.format(
-                    self.manager.version)]),
+                'sql/{0}/#{1}#/get_triggerfunctions.sql'.format(
+                    self.manager.server_type, self.manager.version)]),
                 tgfoid=res_rows['tgfoid'],
                 show_system_objects=self.blueprint.show_system_objects)
 
@@ -956,7 +958,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
             SQL = render_template("/".join(
                 [self.trigger_temp_path,
-                 'sql/#{0}#/create.sql'.format(self.manager.version)]),
+                 'sql/{0}/#{1}#/create.sql'.format(
+                     self.manager.server_type, self.manager.version)]),
                 data=res_rows, display_comments=True)
             SQL_data += '\n'
             SQL_data += SQL

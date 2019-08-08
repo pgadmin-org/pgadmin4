@@ -69,4 +69,4 @@ class TestUtils(BaseTestGenerator):
                 'indexes/sql/#gpdb#10#')
             self.assertEqual(
                 subject.trigger_template_path,
-                'triggers/sql/#gpdb#10#')
+                'triggers/sql/gpdb/#10#')

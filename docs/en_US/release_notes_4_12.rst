@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4144 <https://redmine.postgresql.org/issues/4144>`_ -  Add support of Compound Triggers for EPAS 12+.
 | `Issue #4333 <https://redmine.postgresql.org/issues/4333>`_ -  Add support for planner support functions in PostgreSQL 12+ functions.
 | `Issue #4334 <https://redmine.postgresql.org/issues/4334>`_ -  Add support for generated columns in Postgres 12+.
 | `Issue #4540 <https://redmine.postgresql.org/issues/4540>`_ -  Use the full tab space for CodeMirror instances on dialogues where appropriate.
@@ -43,4 +44,5 @@ Bug fixes
 | `Issue #4552 <https://redmine.postgresql.org/issues/4552>`_ -  Fix some errors thrown on the JS console when dragging text in the Query Tool.
 | `Issue #4559 <https://redmine.postgresql.org/issues/4559>`_ -  Ensure triggers should be updated properly for EPAS server.
 | `Issue #4565 <https://redmine.postgresql.org/issues/4565>`_ -  Fix the reverse engineered SQL for trigger functions with the WINDOW option selected.
+| `Issue #4578 <https://redmine.postgresql.org/issues/4578>`_ -  Ensure enable trigger menu should be visible when trigger is disabled.
 | `Issue #4581 <https://redmine.postgresql.org/issues/4581>`_ -  Ensure the comment on a Primary Key constraint can be edited under the Table node.

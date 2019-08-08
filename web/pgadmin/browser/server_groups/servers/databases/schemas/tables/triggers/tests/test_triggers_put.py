@@ -57,7 +57,7 @@ class TriggersUpdateTestCase(BaseTestGenerator):
         self.function_info = \
             trigger_funcs_utils.create_trigger_function_with_trigger(
                 self.server, self.db_name, self.schema_name, self.func_name)
-        self.trigger_name = "test_trigger_delete_%s" % (str(uuid.uuid4())[1:8])
+        self.trigger_name = "test_trigger_update_%s" % (str(uuid.uuid4())[1:8])
         self.trigger_id = triggers_utils.create_trigger(self.server,
                                                         self.db_name,
                                                         self.schema_name,
@@ -71,7 +71,7 @@ class TriggersUpdateTestCase(BaseTestGenerator):
                                                          self.db_name,
                                                          self.trigger_name)
         if not trigger_response:
-            raise Exception("Could not find the trigger to delete.")
+            raise Exception("Could not find the trigger to update.")
         data = {"id": self.trigger_id,
                 "description": "This is test comment."
                 }

@@ -78,7 +78,8 @@ class TriggerModule(CollectionNodeModule):
             if 'vid' not in kwargs:
                 return True
 
-            template_path = 'triggers/sql/#{0}#'.format(manager.version)
+            template_path = 'triggers/sql/{0}/#{1}#'.format(
+                manager.server_type, manager.version)
             SQL = render_template("/".join(
                 [template_path, 'backend_support.sql']), vid=kwargs['vid']
             )
@@ -272,8 +273,8 @@ class TriggerView(PGChildNodeView):
                 kwargs['did'] in self.manager.db_info else 0
 
             # we will set template path for sql scripts
-            self.template_path = 'triggers/sql/#{0}#'.format(
-                self.manager.version)
+            self.template_path = 'triggers/sql/{0}/#{1}#'.format(
+                self.manager.server_type, self.manager.version)
             # Store server type
             self.server_type = self.manager.server_type
             # We need parent's name eg table name and schema name

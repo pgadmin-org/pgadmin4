@@ -78,12 +78,7 @@ define([
           data: this.data,
         }).addClass('dropdown-item');
 
-        if(this.context !== undefined) {
-          this.is_disabled = this.context.disabled;
-        } else {
-          this.is_disabled = this.disabled(node, item);
-        }
-
+        this.is_disabled = this.disabled(node, item);
         if (this.icon) {
           url.append($('<i></i>', {
             'class': this.icon,

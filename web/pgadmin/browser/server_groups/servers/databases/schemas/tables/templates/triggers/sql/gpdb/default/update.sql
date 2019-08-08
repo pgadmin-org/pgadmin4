@@ -6,16 +6,16 @@ ALTER TRIGGER {{ conn|qtIdent(o_data.name) }} ON {{ conn|qtIdent(o_data.nspname,
 {% if ((data.prosrc is defined or data.is_row_trigger is defined or data.evnt_insert is defined or data.evnt_delete is defined or data.evnt_update is defined or data.fires is defined) and o_data.lanname == 'edbspl' and (o_data.prosrc != data.prosrc or data.is_row_trigger != o_data.is_row_trigger or data.evnt_insert != o_data.evnt_insert or data.evnt_delete != o_data.evnt_delete or data.evnt_update != o_data.evnt_update or o_data.fires != data.fires))  %}
 {% set or_flag = False %}
 CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
-    {% if data.fires is defined %} {{data.fires}} {% else %}{{o_data.fires}}{% endif %} {% if data.evnt_insert is not defined %} {% if o_data.evnt_insert %}INSERT{% set or_flag = True %}
+    {% if data.fires is defined %}{{data.fires}} {% else %}{{o_data.fires}} {% endif %}{% if data.evnt_insert is not defined %}{% if o_data.evnt_insert %}INSERT{% set or_flag = True %}
 {% endif %}{% else %}{% if data.evnt_insert %}INSERT{% set or_flag = True %}{% endif %}{% endif %}{% if data.evnt_delete is not defined %}{% if o_data.evnt_delete %}
 {% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %}
-{% endif %}{% else %} {% if data.evnt_delete %}
-{% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %} {%endif %}{% endif %}{% if data.evnt_truncate is not defined %}{% if o_data.evnt_truncate %}
+{% endif %}{% else %}{% if data.evnt_delete %}
+{% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %}{%endif %}{% endif %}{% if data.evnt_truncate is not defined %}{% if o_data.evnt_truncate %}
 {% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %}
-{% endif %}{% else %} {% if data.evnt_truncate %}
-{% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %} {%endif %} {% endif %}{% if data.evnt_update is not defined %}{% if o_data.evnt_update %}
+{% endif %}{% else %}{% if data.evnt_truncate %}
+{% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %}{%endif %}{% endif %}{% if data.evnt_update is not defined %}{% if o_data.evnt_update %}
 {% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}
-{% endif %}{% else %} {% if data.evnt_update %}
+{% endif %}{% else %}{% if data.evnt_update %}
 {% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}{% endif %}
 {% endif %}
 

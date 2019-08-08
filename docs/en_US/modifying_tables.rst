@@ -17,6 +17,7 @@ node, and select *Create Cast...*
 
    check_dialog
    column_dialog
+   compound_trigger_dialog
    exclusion_constraint_dialog
    foreign_key_dialog
    index_dialog

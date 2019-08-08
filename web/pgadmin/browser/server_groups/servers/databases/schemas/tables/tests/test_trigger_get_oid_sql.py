@@ -37,6 +37,10 @@ class TestTriggerGetOidSql(SQLTemplateTestBase):
     def generate_sql(self, version):
         file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
                                  "triggers", "sql")
+        if 'type' in self.server:
+            file_path = os.path.join(os.path.dirname(__file__), "..",
+                                     "templates",
+                                     "triggers", "sql", self.server['type'])
         template_file = self.get_template_file(version, file_path,
                                                "get_oid.sql")
         jinja2.filters.FILTERS['qtLiteral'] = lambda value: "NULL"
