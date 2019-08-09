@@ -47,3 +47,4 @@ Bug fixes
 | `Issue #4578 <https://redmine.postgresql.org/issues/4578>`_ -  Ensure enable trigger menu should be visible when trigger is disabled.
 | `Issue #4581 <https://redmine.postgresql.org/issues/4581>`_ -  Ensure the comment on a Primary Key constraint can be edited under the Table node.
 | `Issue #4582 <https://redmine.postgresql.org/issues/4582>`_ -  Fix console error when changing kind(SQL/BATCH) for pgAgent job step.
+| `Issue #4585 <https://redmine.postgresql.org/issues/4585>`_ -  Fix double click issue to expand the contents of a cell if the resultset was not editable.

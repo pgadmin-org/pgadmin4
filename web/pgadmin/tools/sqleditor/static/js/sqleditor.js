@@ -713,7 +713,7 @@ define('tools.querytool', [
      */
 
     // This function is responsible to create and render the SlickGrid.
-    render_grid: function(collection, columns, is_editable, client_primary_key, rows_affected, is_explain_plan) {
+    render_grid: function(collection, columns, is_editable, client_primary_key, rows_affected) {
       var self = this;
 
       self.handler.numberOfModifiedCells = 0;
@@ -833,7 +833,7 @@ define('tools.querytool', [
       }
 
       var grid_options = {
-        editable: is_editable || is_explain_plan,
+        editable: true,
         enableAddRow: is_editable,
         enableCellNavigation: true,
         enableColumnReorder: false,
@@ -2481,7 +2481,6 @@ define('tools.querytool', [
              && data.types[0] && data.types[0].typname === 'json') {
               /* json is sent as text, parse it */
               explain_data_json = JSON.parse(data.result[0][0]);
-              self.is_explain_plan = true;
             }
 
             if (explain_data_json && explain_data_json[0] &&
@@ -2497,7 +2496,7 @@ define('tools.querytool', [
                 function() {
                   self.gridView.render_grid(
                     explain_data_array, self.columns, self.can_edit,
-                    self.client_primary_key, 0, self.is_explain_plan
+                    self.client_primary_key, 0
                   );
                   // Make sure - the 'Explain' panel is visible, before - we
                   // start rendering the grid.
