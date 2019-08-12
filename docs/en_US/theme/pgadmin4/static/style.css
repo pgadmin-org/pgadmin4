@@ -468,6 +468,10 @@ i, cite, em, var, address, dfn {
     font-style: italic;
 }
 
+div.note em {
+    background-color: transparent;
+}
+
 em {
     background-color: #fff;
 }

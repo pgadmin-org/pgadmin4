@@ -69,6 +69,9 @@ Use fields on the step definition dialog to define the step:
   * If you select *Batch*, use the *Code* tab to provide the batch script that
     will be executed during the step.
 
+.. note:: The fields *Connection type*, *Database* and *Connection string* are only
+    applicable when *SQL* is selected because *Batch* cannot be run on remote servers.
+
 * Use the *Connection type* switch to indicate if the step is performed on a
   local server (*Local*) or on a remote host (*Remote*).  If you specify a
   remote connection should be used for the step, the *Connection string* field
