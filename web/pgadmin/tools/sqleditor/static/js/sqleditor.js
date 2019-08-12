@@ -369,7 +369,7 @@ define('tools.querytool', [
         self.query_tool_obj.on('drop', (editor, e) => {
           var dropDetails = null;
           try {
-            JSON.parse(e.dataTransfer.getData('text'));
+            dropDetails = JSON.parse(e.dataTransfer.getData('text'));
 
             /* Stop firefox from redirecting */
 
