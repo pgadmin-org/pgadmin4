@@ -423,7 +423,7 @@ def parse_rule_definition(res):
         instead = True if instead_data is not None else False
 
         # Parse data for condition
-        condition_match = re.search(r"(?:WHERE)\s+(.*)\s+(?:DO)", data_def)
+        condition_match = re.search(r"(?:WHERE)\s+([\s\S]*)\s+(?:DO)", data_def)
         condition_data = condition_match.group(1) \
             if condition_match is not None else None
         condition = condition_data if condition_data is not None else ''

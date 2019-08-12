@@ -180,13 +180,15 @@ define('pgadmin.node.rule', [
         },
         {
           id: 'condition', label: gettext('Condition'),
-          type: 'text', group: gettext('Definition'),
-          control: Backform.SqlFieldControl,
+          type: 'text', group: gettext('Condition'),
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
         },
         {
           id: 'statements', label: gettext('Commands'),
-          type: 'text', group: gettext('Definition'),
-          control: Backform.SqlFieldControl,
+          type: 'text', group: gettext('Commands'),
+          tabPanelCodeClass: 'sql-code-control',
+          control: Backform.SqlCodeControl,
         },
         {
           id: 'system_rule', label: gettext('System rule?'),

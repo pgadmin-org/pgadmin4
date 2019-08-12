@@ -48,3 +48,4 @@ Bug fixes
 | `Issue #4581 <https://redmine.postgresql.org/issues/4581>`_ -  Ensure the comment on a Primary Key constraint can be edited under the Table node.
 | `Issue #4582 <https://redmine.postgresql.org/issues/4582>`_ -  Fix console error when changing kind(SQL/BATCH) for pgAgent job step.
 | `Issue #4585 <https://redmine.postgresql.org/issues/4585>`_ -  Fix double click issue to expand the contents of a cell if the resultset was not editable.
+| `Issue #4586 <https://redmine.postgresql.org/issues/4586>`_ -  Fix generation of reverse engineered SQL for Rules.
