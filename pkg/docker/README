@@ -48,6 +48,13 @@ When TLS is enabled, a certificate and key must be provided. Typically these
 should be stored on the host file system and mounted from the container. The
 expected paths are /certs/server.crt and /certs/server.key
 
+*PGADMIN_LISTEN_ADDRESS*
+
+Default: [::]
+
+This is the address to which to bind. If you don't use IPv6, specify your IPv4
+address (0.0.0.0, for example).
+
 *PGADMIN_LISTEN_PORT*
 
 Default: 80 or 443 (if TLS is enabled)
