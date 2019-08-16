@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-19 17:44+0530\n"
+"POT-Creation-Date: 2019-08-16 17:49+0530\n"
 "PO-Revision-Date: 2019-07-20 02:23+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
@@ -52,8 +52,8 @@ msgstr "デスクトップ"
 #: pgadmin/tools/datagrid/static/js/show_data.js:206
 #: pgadmin/tools/import_export/static/js/import_export.js:499
 #: pgadmin/tools/maintenance/static/js/maintenance.js:301
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1940
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1970
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1961
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1991
 msgid "OK"
 msgstr "OK"
 
@@ -583,18 +583,19 @@ msgstr "パラメータは変更されませんでした"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:415
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:353
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:329
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:267
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:269
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:363
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:540
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:365
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:569
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:436
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:991
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:562
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:568
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:567
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:496
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:590
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:315
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:636
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:637
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:926
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:471
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:286
@@ -800,11 +801,12 @@ msgstr "データベースへの接続を切断しました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:548
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:488
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:453
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:827
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:829
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:444
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:462
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1162
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:643
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:649
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:648
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:609
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:729
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:770
@@ -812,7 +814,7 @@ msgstr "データベースへの接続を切断しました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:749
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:627
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:398
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:716
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:717
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1106
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:591
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:513
@@ -826,7 +828,7 @@ msgstr "指定されたデータべースが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:871
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:728
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1479
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1482
 msgid " -- definition incomplete"
 msgstr "-- 定義が不完全です"
 
@@ -896,7 +898,7 @@ msgstr "キャスト..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:136
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/static/js/fts_parser.js:94
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:89
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:194
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:195
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:121
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/functions/gpdb/sql/default/coll_stats.sql:2
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/functions/pg/sql/11_plus/coll_stats.sql:2
@@ -919,7 +921,8 @@ msgstr "キャスト..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:390
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:93
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:39
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:208
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:181
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:106
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:669
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:710
@@ -975,7 +978,7 @@ msgstr "名称"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:139
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/static/js/fts_parser.js:97
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:92
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:198
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:199
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:125
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:70
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/static/js/edbvar.js:62
@@ -983,6 +986,7 @@ msgstr "名称"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:114
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:65
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:393
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:184
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:672
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:714
@@ -1070,22 +1074,21 @@ msgstr "変換元のタイプ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/static/js/fts_parser.js:135
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:104
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:109
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:221
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:224
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:228
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:232
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:237
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:241
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:246
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:257
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:264
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:222
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:225
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:229
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:233
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:238
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:242
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:259
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:266
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:328
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:148
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:151
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:155
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:159
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:168
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:172
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:182
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:193
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:77
@@ -1093,7 +1096,6 @@ msgstr "変換元のタイプ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:84
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:88
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:96
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:100
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:136
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:139
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:143
@@ -1104,19 +1106,16 @@ msgstr "変換元のタイプ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:126
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:150
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:292
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:350
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:406
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:461
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:484
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:495
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:499
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:546
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:548
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:564
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:568
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:572
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:576
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:294
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:352
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:408
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:463
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:487
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:489
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:648
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:652
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:656
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:660
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:128
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:136
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:157
@@ -1160,8 +1159,6 @@ msgstr "変換元のタイプ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:436
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:165
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:178
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:183
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:188
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:191
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:194
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:237
@@ -1176,11 +1173,10 @@ msgstr "変換元のタイプ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:554
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:741
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:750
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:171
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:172
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:136
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:140
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:154
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:155
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:335
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:340
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:364
@@ -1236,13 +1232,14 @@ msgstr "システムキャスト"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:150
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/static/js/fts_parser.js:105
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:100
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:217
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:218
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:144
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:143
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:132
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:74
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:403
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:588
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:672
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:275
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:112
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:675
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:717
@@ -1251,9 +1248,9 @@ msgstr "システムキャスト"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:473
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:411
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:200
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:202
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:397
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:501
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:503
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:762
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:168
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:132
@@ -1327,7 +1324,7 @@ msgstr "イベントトリガ..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:563
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:497
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:142
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:201
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:202
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:128
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:73
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:123
@@ -1352,7 +1349,7 @@ msgstr "所有者"
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:111
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:155
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:242
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:196
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:198
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:286
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:103
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:144
@@ -1366,6 +1363,9 @@ msgid "Trigger function"
 msgstr "トリガ関数"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:124
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:191
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:236
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:241
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:334
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:375
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:379
@@ -1378,6 +1378,7 @@ msgid "Events"
 msgstr "イベント"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:132
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:233
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:444
 msgid "When"
 msgstr "条件"
@@ -1386,17 +1387,17 @@ msgstr "条件"
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:232
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:274
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:641
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:343
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:351
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:257
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:171
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:431
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:605
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:689
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:962
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1133
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:784
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:205
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:168
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:169
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:406
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:514
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:378
@@ -1412,10 +1413,10 @@ msgstr "セキュリティラベル"
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:234
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.js:72
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:630
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:317
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:325
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:242
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:155
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:161
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:157
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:163
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:162
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:72
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:79
@@ -1509,7 +1510,7 @@ msgstr "拡張..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:146
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/static/js/fts_parser.js:100
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:95
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:205
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:206
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:132
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:129
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:121
@@ -1537,20 +1538,21 @@ msgstr "再配置可能"
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:124
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:286
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:655
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:360
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:368
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:172
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:276
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:175
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:177
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:190
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:479
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:195
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:290
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:491
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:516
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:518
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:811
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:452
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:473
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:163
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:233
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:223
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:110
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:536
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:390
@@ -1633,15 +1635,16 @@ msgstr "外部サーバを削除しました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:624
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:625
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:159
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:271
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:280
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:284
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:288
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:292
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:296
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:305
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:310
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:313
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:273
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:282
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:286
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:290
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:294
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:298
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:307
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:312
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:315
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:320
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:207
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:215
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:219
@@ -1702,6 +1705,7 @@ msgid "Foreign Server..."
 msgstr "外部サーバ..."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:144
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:537
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:102
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:268
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:348
@@ -1723,18 +1727,18 @@ msgstr "タイプ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:629
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:633
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:316
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:335
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:324
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:343
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:241
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:250
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:154
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:157
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:156
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:159
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:161
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:164
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:406
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:424
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:598
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:682
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:952
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:955
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1123
@@ -1742,9 +1746,9 @@ msgstr "タイプ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:736
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:766
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:165
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:197
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:198
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:129
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:160
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:161
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:316
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:393
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:420
@@ -1856,7 +1860,7 @@ msgid "Language dropped"
 msgstr "言語を削除しました"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:35
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:240
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:241
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:171
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:95
 msgid "Language"
@@ -1926,7 +1930,7 @@ msgid "Schema dropped"
 msgstr "スキーマを削除しました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:781
-#: pgadmin/static/js/backform.pgadmin.js:1738
+#: pgadmin/static/js/backform.pgadmin.js:1782
 msgid "Definition incomplete."
 msgstr "定義が不完全です"
 
@@ -1945,6 +1949,7 @@ msgstr "指定されたカタログオブジェクトが見つかりませんで
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:594
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:23
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:238
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:786
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:787
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:908
@@ -1989,7 +1994,7 @@ msgid "Column"
 msgstr "列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.js:62
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:284
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:286
 msgid "Position"
 msgstr "位置"
 
@@ -1997,7 +2002,7 @@ msgstr "位置"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:85
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:48
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/static/js/edbvar.js:65
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:287
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:289
 msgid "Data type"
 msgstr "データ型"
 
@@ -2005,7 +2010,7 @@ msgstr "データ型"
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:36
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:260
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:234
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:459
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:461
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:85
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:171
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:449
@@ -2168,13 +2173,13 @@ msgstr "基本型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:199
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:94
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:349
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:351
 msgid "Length"
 msgstr "長さ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:226
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:151
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:405
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:407
 msgid "Precision"
 msgstr "精度"
 
@@ -2183,7 +2188,7 @@ msgstr "精度"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:215
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:309
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:483
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:503
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:273
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:317
 msgid "Default"
@@ -2191,7 +2196,7 @@ msgstr "デフォルト"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:257
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:219
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:493
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:522
 msgid "Not NULL?"
 msgstr "NOT NULL"
 
@@ -2199,6 +2204,17 @@ msgstr "NOT NULL"
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:268
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:607
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:608
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:504
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:524
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:542
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:585
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:603
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:608
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:620
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:625
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:630
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:635
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:640
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/__init__.py:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:22
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:33
@@ -2242,12 +2258,12 @@ msgstr "外部データラッパが削除されました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1325
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1477
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1527
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1274
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1277
 msgid "-- Please create column(s) first..."
 msgstr "-- まず列を作成してください..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:223
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:544
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:485
 #: pgadmin/browser/static/js/browser.js:210
 #: pgadmin/misc/statistics/static/js/statistics.js:129
 msgid "Statistics"
@@ -2293,7 +2309,7 @@ msgid "Inherits"
 msgstr "継承"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:661
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:370
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:378
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:177
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:286
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:208
@@ -2611,38 +2627,38 @@ msgstr "Lexize 関数は必須です"
 msgid "Functions"
 msgstr "関数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:389
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:391
 #, python-format
 msgid "Could not find the specified %s."
 msgstr "指定された %s が見つかりませんでした"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:441
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:443
 msgid "Could not find the function node in the database."
 msgstr "データベースに関数ノードが見つかりませんでした"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:830
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:832
 msgid "The specified function could not be found.\n"
 msgstr "指定された関数ノードが見つかりませんでした\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:847
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:849
 msgid "Function dropped."
 msgstr "関数を削除しました"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1138
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1317
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1140
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1319
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:334
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:511
 msgid "Could not find the function in the database."
 msgstr "関数がデータベースに見つかりませんでした"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1595
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1627
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:24
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:621
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbproc.js:24
 msgid "Procedures"
 msgstr "プロシージャ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1695
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1727
 msgid "Trigger Functions"
 msgstr "トリガ関数"
 
@@ -2662,110 +2678,117 @@ msgstr "引数名"
 msgid "Function..."
 msgstr "関数..."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:209
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:210
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:136
 msgid "System function?"
 msgstr "システム関数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:213
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:214
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:140
 msgid "System procedure?"
 msgstr "システムプロシージャ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:220
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:221
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:147
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:76
 msgid "Argument count"
 msgstr "引数の数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:223
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:319
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:320
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:224
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:327
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:150
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:79
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:309
 msgid "Arguments"
 msgstr "引数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:228
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:154
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:83
 msgid "Signature arguments"
 msgstr "署名引数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:231
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:236
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:232
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:237
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:158
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:167
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:87
 msgid "Return type"
 msgstr "返り値の型"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:244
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:245
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:247
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:180
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:182
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:98
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:151
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:100
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:258
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:481
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:154
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:155
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:211
 msgid "Code"
 msgstr "コード"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:256
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:258
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:192
 msgid "Object file"
 msgstr "オブジェクトファイル"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:263
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:265
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:199
 msgid "Link symbol"
 msgstr "リンクシンボル"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:270
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:272
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:206
 msgid "Volatility"
 msgstr "動作属性"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:279
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:281
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:214
 msgid "Returns a set?"
 msgstr "複数行を返却"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:283
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:285
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:218
 msgid "Strict?"
 msgstr "STRICT"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:287
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:289
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:221
 msgid "Security of definer?"
 msgstr "SECURITY DEFINER"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:291
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:293
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:225
 msgid "Window?"
 msgstr "ウィンドウ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:295
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:297
 msgid "Parallel"
 msgstr "並列"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:305
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:307
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:229
 msgid "Estimated cost"
 msgstr "見積もりコスト"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:308
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:310
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:232
 msgid "Estimated rows"
 msgstr "見積もり行数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:312
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:314
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:237
 msgid "Leak proof?"
 msgstr "リークプルーフ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:330
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:318
+msgid "Support function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:338
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:245
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1119
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:402
@@ -2775,39 +2798,40 @@ msgstr "リークプルーフ"
 msgid "Parameters"
 msgstr "パラメータ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:365
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:373
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:281
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:199
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:485
 msgid "Owner cannot be empty."
 msgstr "所有者は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:375
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:383
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:291
 msgid "Return type cannot be empty."
 msgstr "返り値は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:380
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:388
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:182
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:296
 msgid "Language cannot be empty."
 msgstr "言語は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:387
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:395
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:189
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:303
 msgid "Object File cannot be empty."
 msgstr "オブジェクトファイルは必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:392
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:400
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:194
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:308
 msgid "Link Symbol cannot be empty."
 msgstr "リンクシンボルは必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:398
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:406
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:314
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:307
 msgid "Code cannot be empty."
 msgstr "コードは必須です"
 
@@ -2953,8 +2977,8 @@ msgstr "閲覧可能"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/static/js/edbvar.js:21
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:592
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:593
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:676
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:677
 msgid "Variables"
 msgstr "変数"
 
@@ -2979,15 +3003,17 @@ msgid "System package?"
 msgstr "システムパッケージ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:146
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:147
 #: pgadmin/tools/import_export/static/js/import_export.js:271
 msgid "Header"
 msgstr "ヘッダ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:150
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:151
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:152
 msgid "Body"
 msgstr "ボディ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:182
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:184
 msgid "Header cannot be empty."
 msgstr "ヘッダは必須です"
 
@@ -3032,33 +3058,33 @@ msgid "Current value"
 msgstr "現在の値"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:138
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:512
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:602
 msgid "Increment"
 msgstr "インクリメント"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:142
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:516
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:607
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:290
 msgid "Start"
 msgstr "初期値"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:148
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:527
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:619
 msgid "Minimum"
 msgstr "最小値"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:151
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:531
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:624
 msgid "Maximum"
 msgstr "最大値"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:154
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:535
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:629
 msgid "Cache"
 msgstr "キャッシュ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:158
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:539
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:634
 msgid "Cycled"
 msgstr "周回"
 
@@ -3067,37 +3093,37 @@ msgid "Current value cannot be empty."
 msgstr "現在の値は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:227
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:676
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:771
 msgid "Increment value cannot be empty."
 msgstr "増分値は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:236
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:685
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:780
 msgid "Minimum value cannot be empty."
 msgstr "最小値は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:245
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:694
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:789
 msgid "Maximum value cannot be empty."
 msgstr "最大値は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:254
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:703
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:798
 msgid "Cache value cannot be empty."
 msgstr "キャッシュ値は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:261
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:710
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:805
 msgid "Minimum value must be less than maximum value."
 msgstr "最小値は最大値より小さくなければなりません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:262
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:711
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:806
 msgid "Start value cannot be less than minimum value."
 msgstr "開始値を最小値より小さくすることはできません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:263
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:712
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:807
 msgid "Start value cannot be greater than maximum value."
 msgstr "開始値を最大値より大きくすることはできません"
 
@@ -3250,26 +3276,26 @@ msgid "Public synonym?"
 msgstr "パブリックシノニム"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:185
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:217
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:496
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:219
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:525
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:789
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:806
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:275
 #: pgadmin/browser/static/js/browser.js:628
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:71
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:78
-#: pgadmin/static/js/backform.pgadmin.js:486
+#: pgadmin/static/js/backform.pgadmin.js:516
 #: pgadmin/static/js/backgrid.pgadmin.js:619
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1682
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1727
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2269
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3683
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1697
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1742
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2290
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3738
 msgid "Yes"
 msgstr "Yes"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:185
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:217
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:496
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:219
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:525
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:790
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:807
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:275
@@ -3277,12 +3303,12 @@ msgstr "Yes"
 #: pgadmin/browser/static/js/browser.js:629
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:70
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:77
-#: pgadmin/static/js/backform.pgadmin.js:487
+#: pgadmin/static/js/backform.pgadmin.js:517
 #: pgadmin/static/js/backgrid.pgadmin.js:620
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1683
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1728
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2270
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3684
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1698
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1743
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2291
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3739
 msgid "No"
 msgstr "No"
 
@@ -3320,31 +3346,33 @@ msgid "Trigger(s) have been disabled"
 msgstr "トリガが無効化されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1611
-msgid "Table rows counted"
-msgstr "テーブル行数が算出されました"
+#, python-format
+msgid "Table rows counted: %s"
+msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1178
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1261
 msgid "Table statistics have been reset"
 msgstr "テーブル統計がリセットされました"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1359
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1446
 msgid "-- definition incomplete for {0} constraint"
 msgstr "-- {0} 制約の定義が不完全です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1421
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1459
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1508
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1546
 msgid "-- definition incomplete for foreign_key constraint"
 msgstr "-- 外部キー制約の定義が不完全です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1559
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1646
 msgid "-- definition incomplete for check_constraint"
 msgstr "-- 検査制約の定義が不完全です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1636
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1723
 msgid "-- definition incomplete for exclusion_constraint"
 msgstr "-- 排他制約の定義が不完全です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:821
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:827
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:836
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:820
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:822
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:842
@@ -3355,17 +3383,17 @@ msgstr "-- 排他制約の定義が不完全です"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:901
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:904
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:899
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:940
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1945
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:941
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2032
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:850
 msgid "-- definition incomplete"
 msgstr "-- 定義が不完全です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1955
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2042
 msgid "-- definition incomplete for {0}"
 msgstr "-- {0} の定義が不完全です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2343
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2430
 msgid "Table truncated"
 msgstr "テーブルの内容をすべて消去しました"
 
@@ -3377,17 +3405,17 @@ msgstr "列が見つかりませんでした"
 msgid "Could not find the column in the table."
 msgstr "テーブルに列が見つかりませんでした"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:646
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:652
 msgid "The specified column could not be found.\n"
 msgstr "指定された列が見つかりませんでした\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:665
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:671
 msgid "Column is dropped"
 msgstr "列は削除されています"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:777
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:860
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:1003
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:783
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:866
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:1009
 msgid "Could not find the column on the server."
 msgstr "列がサーバ内に見つかりませんでした"
 
@@ -3402,85 +3430,216 @@ msgstr "変数に入力してください"
 msgid "Column..."
 msgstr "列..."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:213
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:562
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:215
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:646
 msgid "Primary key?"
 msgstr "主キー"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:342
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:344
 msgid "Inherited from table"
 msgstr "継承元"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:498
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:501
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:506
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:513
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:517
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:528
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:532
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:536
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:540
-msgid "Identity"
-msgstr "アイデンティティ"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:508
-msgid "ALWAYS"
-msgstr "ALWAYS"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:509
-msgid "BY DEFAULT"
-msgstr "BY DEFAULT"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:548
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:176
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:180
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:188
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:489
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:177
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:181
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:189
 #: pgadmin/misc/file_manager/__init__.py:127
 msgid "Storage"
 msgstr "ストレージ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:566
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:545
+msgid "NONE"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:546
+msgid "IDENTITY"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:554
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:559
+msgid "GENERATED"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:582
+msgid "Identity"
+msgstr "アイデンティティ"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:587
+msgid "ALWAYS"
+msgstr "ALWAYS"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:588
+msgid "BY DEFAULT"
+msgstr "BY DEFAULT"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:639
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:80
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:189
+msgid "Expression"
+msgstr "式"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:650
 msgid "Foreign key?"
 msgstr "外部キー"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:570
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:654
 msgid "Inherited?"
 msgstr "継承"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:574
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:658
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:418
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:400
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:487
 msgid "Inherited from table(s)"
 msgstr "継承元テーブル"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:585
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:669
 msgid "System column?"
 msgstr "システム列"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:624
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:708
 msgid "Column name cannot be empty."
 msgstr "列名は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:631
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:715
 msgid "Column type cannot be empty."
 msgstr "列のデータ型は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:642
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:726
 msgid "Length should not be less than: "
 msgstr "長さが短すぎます："
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:644
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:728
 msgid "Length should not be greater than: "
 msgstr "長さが長さすぎます："
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:658
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:742
 msgid "Precision should not be less than: "
 msgstr "精度が小さすぎます："
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:660
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:744
 msgid "Precision should not be greater than: "
 msgstr "精度が大きすぎます："
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:755
+msgid "Expression value cannot be empty."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:54
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:25
+msgid "Compound Triggers"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:367
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:515
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:728
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:805
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:867
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:933
+msgid "Could not find the compound trigger in the table."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:651
+msgid "The specified compound trigger could not be found.\n"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:671
+msgid "Compound Trigger is dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:38
+msgid "Compound Trigger"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:55
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:61
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:67
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:73
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:89
+msgid "Compound Trigger..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:79
+msgid "Enable compound trigger"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:84
+msgid "Disable compound trigger"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:168
+msgid "Disable compound trigger failed"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:187
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:189
+msgid "Trigger enabled?"
+msgstr "トリガ有効"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:191
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:195
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:208
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:221
+msgid "FOR Events"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:193
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:377
+msgid "INSERT"
+msgstr "INSERT"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:390
+msgid "UPDATE"
+msgstr "UPDATE"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:219
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:403
+msgid "DELETE"
+msgstr "DELETE"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:272
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:500
+msgid "System trigger?"
+msgstr "システムトリガ"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:297
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:531
+msgid "Specify at least one event."
+msgstr "少なくとも1つのイベントを指定してください"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:316
+msgid ""
+"-- Enter any global declarations below:\n"
+"\n"
+"-- BEFORE STATEMENT block. Delete if not required.\n"
+"BEFORE STATEMENT IS\n"
+"    -- Enter any local declarations here\n"
+"BEGIN\n"
+"    -- Enter any required code here\n"
+"END;\n"
+"\n"
+"-- AFTER STATEMENT block. Delete if not required.\n"
+"AFTER STATEMENT IS\n"
+"    -- Enter any local declarations here\n"
+"BEGIN\n"
+"    -- Enter any required code here\n"
+"END;\n"
+"\n"
+"-- BEFORE EACH ROW block. Delete if not required.\n"
+"BEFORE EACH ROW IS\n"
+"    -- Enter any local declarations here\n"
+"BEGIN\n"
+"    -- Enter any required code here\n"
+"END;\n"
+"\n"
+"-- AFTER EACH ROW block. Delete if not required.\n"
+"AFTER EACH ROW IS\n"
+"    -- Enter any local declarations here\n"
+"BEGIN\n"
+"    -- Enter any required code here\n"
+"END;"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:50
 msgid "Check Constraints"
@@ -3581,10 +3740,10 @@ msgstr "列の演算子を指定してください："
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:453
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:381
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:340
-#: pgadmin/static/js/backform.pgadmin.js:1178
-#: pgadmin/static/js/backform.pgadmin.js:1279
-#: pgadmin/static/js/backform.pgadmin.js:1458
-#: pgadmin/static/js/backform.pgadmin.js:1571
+#: pgadmin/static/js/backform.pgadmin.js:1208
+#: pgadmin/static/js/backform.pgadmin.js:1315
+#: pgadmin/static/js/backform.pgadmin.js:1495
+#: pgadmin/static/js/backform.pgadmin.js:1614
 msgid "Add new row"
 msgstr "新しい行を追加"
 
@@ -3616,7 +3775,7 @@ msgstr "排他制約..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:295
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:378
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:344
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:179
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:180
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:363
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:40
 #: pgadmin/tools/backup/static/js/backup.js:363
@@ -3639,7 +3798,7 @@ msgstr "アクセスメソッドを変更すると列の一覧が消去されま
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:382
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:716
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:790
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:187
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:188
 msgid "Fill factor"
 msgstr "フィルファクタ"
 
@@ -4301,8 +4460,8 @@ msgstr ""
 "ユーザはN個のパーティションを作成、取り付け、取り外しできます。取り付けモードでは、取り付けできる適切なテーブルの一覧が表示されます</li></ul>"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:948
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:192
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:193
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:194
 msgid "Parameter"
 msgstr "パラメータ"
 
@@ -4374,31 +4533,28 @@ msgid "Do instead?"
 msgstr "代わりに実行"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:182
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:183
 msgid "Condition"
 msgstr "条件"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:187
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:188
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:189
 msgid "Commands"
 msgstr "コマンド"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:194
 msgid "System rule?"
 msgstr "システムルール"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:212
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:224
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:182
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:214
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:225
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:183
 msgid "Please specify name."
 msgstr "名前を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:74
 msgid "Key type"
 msgstr "キーの種類"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:80
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:189
-msgid "Expression"
-msgstr "式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:216
 msgid "Partition key type cannot be empty."
@@ -4933,20 +5089,20 @@ msgstr "テーブル名"
 msgid "Triggers"
 msgstr "トリガ"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:405
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:577
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:796
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:900
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:971
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:1042
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:406
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:578
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:797
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:901
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:972
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:1043
 msgid "Could not find the trigger in the table."
 msgstr "テーブルにトリガが見つかりませんでした"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:719
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:720
 msgid "The specified trigger could not be found.\n"
 msgstr "指定されたトリガが見つかりませんでした\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:738
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:739
 msgid "Trigger is dropped"
 msgstr "トリガが削除されました"
 
@@ -4976,10 +5132,6 @@ msgstr "トリガを無効化"
 msgid "Disable trigger failed"
 msgstr "トリガの無効化に失敗しました"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:189
-msgid "Trigger enabled?"
-msgstr "トリガ有効"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:193
 msgid "Row trigger?"
 msgstr "行トリガ"
@@ -4991,18 +5143,6 @@ msgstr "制約トリガ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:333
 msgid "Fires"
 msgstr "発動"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:377
-msgid "INSERT"
-msgstr "INSERT"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:390
-msgid "UPDATE"
-msgstr "UPDATE"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:403
-msgid "DELETE"
-msgstr "DELETE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:416
 msgid "TRUNCATE"
@@ -5021,19 +5161,11 @@ msgstr "遷移"
 msgid "New table"
 msgstr "新しいテーブル"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:498
-msgid "System trigger?"
-msgstr "システムトリガ"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:522
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:524
 msgid "Trigger function cannot be empty."
 msgstr "トリガの関数は必須です"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:529
-msgid "Specify at least one event."
-msgstr "少なくとも1つのイベントを指定してください"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:542
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:544
 msgid "Trigger code cannot be empty."
 msgstr "トリガコードは必須です"
 
@@ -5322,22 +5454,22 @@ msgid "View dropped"
 msgstr "ビューを削除しました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:683
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1029
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1178
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1239
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1032
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1181
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1242
 msgid "Could not find the view on the server."
 msgstr "ビューがサーバ内に見つかりませんでした"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1356
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1570
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1359
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1573
 msgid "Could not find the materialized view on the server."
 msgstr "マテリアライズドビューがサーバ内に見つかりませんでした"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1714
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1717
 msgid "Could not find the materialized view."
 msgstr "マテリアライズドビューが見つかりませんでした"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1781
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1784
 msgid "View refreshed"
 msgstr "ビューがリフレッシュされました"
 
@@ -5376,21 +5508,20 @@ msgstr "データなし（同時実行）"
 msgid "System view?"
 msgstr "システムビュー"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:175
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:176
 msgid "With data?"
 msgstr "データあり"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:233
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:191
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:234
 msgid "Please enter view definition."
 msgstr "ビュー定義を入力してください"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:272
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:273
 msgid "View refreshed successfully"
 msgstr "ビューを正常に更新しました"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:276
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:282
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:277
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:283
 msgid "Error refreshing view"
 msgstr "ビューの更新中にエラーが発生しました"
 
@@ -5411,6 +5542,10 @@ msgstr "検査オプション"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:151
 msgid "Cascaded"
 msgstr "カスケード"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:192
+msgid "Please enter view code."
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:27
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:41
@@ -6327,7 +6462,7 @@ msgstr "種別"
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:139
 #: pgadmin/browser/static/js/browser.js:221
 #: pgadmin/dashboard/static/js/dashboard.js:184
-#: pgadmin/static/js/backform.pgadmin.js:1932
+#: pgadmin/static/js/backform.pgadmin.js:1977
 msgid "SQL"
 msgstr "SQL"
 
@@ -6395,37 +6530,29 @@ msgstr "成功"
 msgid "Ignore"
 msgstr "無視"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:215
-msgid "SQL query"
-msgstr "SQL クエリ"
-
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:217
-msgid "Script"
-msgstr "スクリプト"
-
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:246
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:236
 msgid "Please select a database."
 msgstr "データベースを選択してください"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:260
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:250
 msgid "Please enter a connection string."
 msgstr "接続文字列を入力してください"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:262
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:282
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:252
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:272
 msgid "Please enter a valid connection string."
 msgstr "有効な接続文字列を入力してください"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:287
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:277
 #, python-format
 msgid "Invalid parameter in the connection string - %s."
 msgstr "接続文字列「%s」に不正なパラメータがあります"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:310
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:300
 msgid "Please specify code to execute."
 msgstr "実行するコードを指定してください"
 
-#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:322
+#: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:312
 msgid "Please select valid on error option ."
 msgstr "有効なエラーオプションを選択してください"
 
@@ -7070,10 +7197,10 @@ msgstr "パスワードを変更"
 #: pgadmin/tools/import_export/static/js/import_export.js:494
 #: pgadmin/tools/maintenance/static/js/maintenance.js:296
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:55
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1945
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2084
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4090
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4157
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1966
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2105
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4146
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4213
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -7294,7 +7421,7 @@ msgid "Connection timeout (seconds)"
 msgstr "接続タイムアウト（秒）"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1133
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2112
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2133
 msgid "Connect to Server"
 msgstr "サーバに接続"
 
@@ -7776,7 +7903,7 @@ msgstr "このダイアログの入力欄をリセット"
 #: pgadmin/preferences/static/js/preferences.js:431
 #: pgadmin/preferences/static/js/preferences.js:456
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:37
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4165
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4221
 msgid "Save"
 msgstr "保存"
 
@@ -8729,29 +8856,29 @@ msgstr "不明なエラー"
 msgid "INTERNAL SERVER ERROR"
 msgstr "内部サーバエラー"
 
-#: pgadmin/static/js/backform.pgadmin.js:1742
+#: pgadmin/static/js/backform.pgadmin.js:1786
 msgid "No updates."
 msgstr "更新なし"
 
-#: pgadmin/static/js/backform.pgadmin.js:1856
+#: pgadmin/static/js/backform.pgadmin.js:1901
 msgid "General"
 msgstr "一般"
 
-#: pgadmin/static/js/backform.pgadmin.js:2473
+#: pgadmin/static/js/backform.pgadmin.js:2542
 #: pgadmin/tools/backup/static/js/backup.js:95
 #: pgadmin/tools/backup/static/js/backup.js:227
 msgid "Note"
 msgstr "ノート"
 
-#: pgadmin/static/js/backform.pgadmin.js:2828
+#: pgadmin/static/js/backform.pgadmin.js:2897
 msgid "More"
 msgstr "詳細"
 
-#: pgadmin/static/js/backform.pgadmin.js:2829
+#: pgadmin/static/js/backform.pgadmin.js:2898
 msgid "Less"
 msgstr "簡易"
 
-#: pgadmin/static/js/backform.pgadmin.js:2913
+#: pgadmin/static/js/backform.pgadmin.js:2982
 msgid "Space"
 msgstr "スペース"
 
@@ -8780,7 +8907,7 @@ msgstr "このオブジェクトは削除できません"
 msgid "Delete row"
 msgstr "行を削除"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:1085
+#: pgadmin/static/js/backgrid.pgadmin.js:1089
 msgid "Array Values"
 msgstr "配列値"
 
@@ -8803,9 +8930,9 @@ msgid "An unexpected error occurred - ensure you are logged into the application
 msgstr "予期しないエラーが発生しました - アプリケーションにログインしていることを確認してください"
 
 #: pgadmin/static/js/sqleditor_utils.js:162
-#: pgadmin/tools/sqleditor/__init__.py:1397
-#: pgadmin/tools/sqleditor/__init__.py:1452
-#: pgadmin/tools/sqleditor/__init__.py:1456
+#: pgadmin/tools/sqleditor/__init__.py:1404
+#: pgadmin/tools/sqleditor/__init__.py:1459
+#: pgadmin/tools/sqleditor/__init__.py:1463
 msgid "Transaction status check failed."
 msgstr "トランザクション状態を確認できませんでした"
 
@@ -8906,18 +9033,6 @@ msgstr "コマンド"
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:77
 msgid "Execute on"
 msgstr "実行時"
-
-#: pgadmin/static/js/generated/vendor.js:155
-msgid "Network Error"
-msgstr "ネットワークエラー"
-
-#: pgadmin/static/js/generated/vendor.js:155
-msgid "timeout of ms exceeded"
-msgstr "ミリ秒のタイムアウトを超過しました"
-
-#: pgadmin/static/js/generated/vendor.js:155
-msgid "length"
-msgstr "長さ"
 
 #: pgadmin/static/js/selection/clipboard.js:80
 #: pgadmin/tools/user_management/static/js/user_management.js:548
@@ -9028,7 +9143,7 @@ msgstr "」とペイロード「"
 msgid "\" received from server process with PID "
 msgstr "」を受信しました。送信元サーバのプロセス ID："
 
-#: pgadmin/static/js/sqleditor/history/query_history_details.js:154
+#: pgadmin/static/js/sqleditor/history/query_history_details.js:173
 msgid "Copy to Query Editor"
 msgstr "クエリエディタへコピー"
 
@@ -9045,7 +9160,7 @@ msgid "Error fetching the tree state."
 msgstr "ツリー状態の取得中にエラーが発生しました"
 
 #: pgadmin/templates/security/change_password.html:9
-#: pgadmin/templates/security/panel.html:9
+#: pgadmin/templates/security/panel.html:14
 #, python-format
 msgid "%(appname)s"
 msgstr "%(appname)s"
@@ -9782,12 +9897,13 @@ msgstr "pldbgapi 拡張をバージョン1.1以上にアップグレードし、
 #: pgadmin/tools/debugger/__init__.py:2002
 #: pgadmin/tools/debugger/__init__.py:2024
 #: pgadmin/tools/debugger/static/js/direct.js:1634
-#: pgadmin/tools/sqleditor/__init__.py:1025
+#: pgadmin/tools/sqleditor/__init__.py:1032
 #: pgadmin/tools/sqleditor/command.py:195
 #: pgadmin/tools/sqleditor/command.py:407
 #: pgadmin/tools/sqleditor/command.py:548
 #: pgadmin/tools/sqleditor/command.py:645
-#: pgadmin/tools/sqleditor/command.py:969
+#: pgadmin/tools/sqleditor/command.py:981
+#: pgadmin/tools/sqleditor/utils/is_query_resultset_updatable.py:63
 msgid "Not connected to server or connection with the server has been closed."
 msgstr "サーバへの接続に失敗、あるいは切断されました"
 
@@ -10024,7 +10140,7 @@ msgid "Local variables"
 msgstr "ローカル変数"
 
 #: pgadmin/tools/debugger/static/js/direct.js:1731
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:255
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:257
 msgid "Messages"
 msgstr "メッセージ"
 
@@ -10489,22 +10605,22 @@ msgstr "クエリツール"
 #: pgadmin/tools/sqleditor/__init__.py:159
 #: pgadmin/tools/sqleditor/__init__.py:211
 #: pgadmin/tools/sqleditor/__init__.py:362
-#: pgadmin/tools/sqleditor/__init__.py:583
-#: pgadmin/tools/sqleditor/__init__.py:706
-#: pgadmin/tools/sqleditor/__init__.py:787
-#: pgadmin/tools/sqleditor/__init__.py:842
-#: pgadmin/tools/sqleditor/__init__.py:894
-#: pgadmin/tools/sqleditor/__init__.py:938
-#: pgadmin/tools/sqleditor/__init__.py:978
-#: pgadmin/tools/sqleditor/__init__.py:987
-#: pgadmin/tools/sqleditor/__init__.py:1058
-#: pgadmin/tools/sqleditor/__init__.py:1094
-#: pgadmin/tools/sqleditor/__init__.py:1139
-#: pgadmin/tools/sqleditor/__init__.py:1191
+#: pgadmin/tools/sqleditor/__init__.py:590
+#: pgadmin/tools/sqleditor/__init__.py:713
+#: pgadmin/tools/sqleditor/__init__.py:794
+#: pgadmin/tools/sqleditor/__init__.py:849
+#: pgadmin/tools/sqleditor/__init__.py:901
+#: pgadmin/tools/sqleditor/__init__.py:945
+#: pgadmin/tools/sqleditor/__init__.py:985
+#: pgadmin/tools/sqleditor/__init__.py:994
+#: pgadmin/tools/sqleditor/__init__.py:1065
+#: pgadmin/tools/sqleditor/__init__.py:1101
+#: pgadmin/tools/sqleditor/__init__.py:1146
+#: pgadmin/tools/sqleditor/__init__.py:1198
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:26
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:79
-#: pgadmin/tools/sqleditor/utils/start_running_query.py:178
-#: pgadmin/tools/sqleditor/utils/start_running_query.py:186
+#: pgadmin/tools/sqleditor/utils/start_running_query.py:179
+#: pgadmin/tools/sqleditor/utils/start_running_query.py:187
 msgid "Transaction ID not found in the session."
 msgstr "トランザクション ID がセッション内に見つかりませんでした"
 
@@ -10512,16 +10628,16 @@ msgstr "トランザクション ID がセッション内に見つかりませ�
 msgid "******* Error *******"
 msgstr "******* エラー *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:722
+#: pgadmin/tools/sqleditor/__init__.py:729
 msgid "No primary key found for this object, so unable to save records."
 msgstr "このオブジェクトには主キーがないため、行を保存できません"
 
-#: pgadmin/tools/sqleditor/__init__.py:1031
-#: pgadmin/tools/sqleditor/utils/start_running_query.py:102
+#: pgadmin/tools/sqleditor/__init__.py:1038
+#: pgadmin/tools/sqleditor/utils/start_running_query.py:103
 msgid "Either transaction object or session object not found."
 msgstr "トランザクションオブジェクト、セッションオブジクトのいずれも見つかりませんでした"
 
-#: pgadmin/tools/sqleditor/__init__.py:1265
+#: pgadmin/tools/sqleditor/__init__.py:1272
 msgid "File type not supported"
 msgstr "ファイル形式が対応していません"
 
@@ -10533,19 +10649,19 @@ msgstr "この機能はオブジェクト型「{0}」に対しては実装され
 msgid "Data cannot be saved for the current object."
 msgstr "現在のオブジェクトではデータが保存できません"
 
-#: pgadmin/tools/sqleditor/command.py:924
+#: pgadmin/tools/sqleditor/command.py:936
 msgid "Resultset is not updatable."
 msgstr "更新できない結果セットです"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:225
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:227
 msgid "Query Editor"
 msgstr "クエリエディタ"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:234
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:236
 msgid "Data Output"
 msgstr "データ出力"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:245
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:247
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:44
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:50
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:56
@@ -10555,251 +10671,261 @@ msgstr "データ出力"
 msgid "Explain"
 msgstr "EXPLAIN"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:265
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:267
 msgid "Query History"
 msgstr "クエリの履歴"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:275
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:277
 msgid "Scratch Pad"
 msgstr "スクラッチパッド"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:285
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:287
 msgid "Notifications"
 msgstr "通知"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:295
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:297
 msgid "Geometry Viewer"
 msgstr "幾何データビューア"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1222
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1233
 msgid "Fetching all records..."
 msgstr "すべての行を取得中です..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1671
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2258
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3136
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3672
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1686
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2279
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3192
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3727
 msgid "Unsaved changes"
 msgstr "保存されていない変更"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1672
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3137
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1687
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3193
 msgid "Are you sure you wish to discard the current changes?"
 msgstr "この変更を破棄しますか？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1700
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1715
 msgid "Clear history"
 msgstr "履歴を削除"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1701
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1716
 msgid "Are you sure you wish to clear the history?"
 msgstr "履歴を削除しますか？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1702
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1717
 msgid ""
 "This will remove all of your query history from this and other sessions "
 "for this database."
 msgstr "このデータベースを使用する、すべてのセッションのクエリ履歴が削除されます"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2045
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2066
 msgid "Connection Warning"
 msgstr "接続に関する警告"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2052
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2073
 msgid "The application has lost the database connection:"
 msgstr "アプリケーションのデータベース接続が失われました："
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2056
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2077
 msgid "⁃ If the connection was idle it may have been forcibly disconnected."
 msgstr "・ 接続がアイドル状態だったために、強制的に切断させられた"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2058
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2079
 msgid "⁃ The application server or database server may have been restarted."
 msgstr "・ アプリケーションサーバか、データベースサーバが再起動された"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2060
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2081
 msgid "⁃ The user session may have timed out."
 msgstr "・ ユーザのセッションがタイムアウトになった"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2064
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2085
 msgid "Do you want to continue and establish a new session?"
 msgstr "新しいセッションを確立します。続行しますか？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2083
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2104
 msgid "Continue"
 msgstr "続行"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2190
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2211
 #, python-format
 msgid "Error fetching SQL for script: %s."
 msgstr "SQL スクリプトの取得中にエラーが発生しました： %s."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2259
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3673
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2280
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3728
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr "変更されたデータがありますが、保存されていません。変更を破棄してもよろしいですか？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2290
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2314
 msgid "Running query..."
 msgstr "クエリを実行中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2298
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2322
 msgid "Waiting for the query to complete..."
 msgstr "クエリの完了を待機しています..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2431
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2456
 msgid "Loading data from the database server and rendering..."
 msgstr "データベースサーバからのデータを読み込み中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2440
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2465
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "実行に成功しました。合計クエリ実行時間： %s"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2441
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2466
 #, python-format
 msgid "%s rows affected."
 msgstr "%s 行を取得しました"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2804
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2741
+msgid ""
+"This query was generated by pgAdmin as part of a \"View/Edit Data\" "
+"operation"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2843
 msgid "Row(s) deleted."
 msgstr "行が削除されました"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2878
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2917
 msgid "Saving the updated data..."
 msgstr "更新データを保存中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2995
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3034
 msgid "Data saved successfully."
 msgstr "データの保存に成功しました"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2998
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3037
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr "自動コミットが無効です。データベースへの変更は、手動でコミットを行わない限り反映されません"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3004
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3043
 #, python-format
 msgid "%s."
 msgstr "%s"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3009
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3048
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr "保存しようとした変更データはロールバックされましたが、現在のトランザクションはまだ続行中です。今までに実行したクエリへの影響はありません"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3175
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3070
+msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3231
 msgid "Loading the file..."
 msgstr "ファイルの読み込み中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3226
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3282
 msgid "Saving the queries in the file..."
 msgstr "ファイル内のクエリを保存中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3238
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3294
 msgid "File saved successfully."
 msgstr "ファイル保存に成功しました"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3360
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3419
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3416
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3475
 msgid "Applying the new filter..."
 msgstr "新しいフィルタを適用中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3380
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3390
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3436
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3446
 msgid "Filter By Selection Error"
 msgstr "フィルタエラー"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3439
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3449
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3495
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3505
 msgid "Filter Exclude Selection Error"
 msgstr "フィルタ除外エラー"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3459
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3515
 msgid "Removing the filter..."
 msgstr "フィルタを解除中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3477
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3487
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3533
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3543
 msgid "Remove Filter Error"
 msgstr "フィルタ解除エラー"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3582
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3638
 msgid "Setting the limit on the result..."
 msgstr "結果の上限を設定中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3601
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3610
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3657
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3666
 msgid "Change limit Error"
 msgstr "上限変更エラー"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3790
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3809
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3846
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3865
 msgid "Cancel Query Error"
 msgstr "クエリキャンセルエラー"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3828
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3884
 msgid "Downloading CSV..."
 msgstr "CSV をダウンロード中..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3882
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3938
 msgid "CSV Download cancelled."
 msgstr "CSV のダウンロードをキャンセルしました"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3885
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3941
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:373
 msgid "Download CSV"
 msgstr "CSV をダウンロード"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3888
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3944
 msgid "Download CSV error"
 msgstr "CSV ダウンロードエラー"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3923
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3930
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3979
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3986
 msgid "Auto Rollback Error"
 msgstr "自動ロールバックエラー"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3956
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3962
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4012
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4018
 msgid "Auto Commit Error"
 msgstr "自動コミットエラー"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4051
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4107
 msgid "The data has changed. Do you want to save changes?"
 msgstr "データが変更されています。保存しますか？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4057
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4113
 msgid "The text has changed. Do you want to save changes?"
 msgstr "テキストが変更されています。保存しますか？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4095
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4151
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:659
 msgid "Rollback"
 msgstr "ロールバック"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4098
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4154
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:641
 msgid "Commit"
 msgstr "コミット"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4136
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4192
 msgid ""
 "The current transaction is not commited to the database.Do you want to "
 "commit or rollback the transaction?"
 msgstr "現在のトランザクションが、まだデータベースにコミットされていません。トランザクションのコミット、もしくはロールバックを行いますか？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4139
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4195
 msgid "Commit transaction?"
 msgstr "トランザクションをコミットしますか？"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4162
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4218
 msgid "Don't save"
 msgstr "保存しない"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4205
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4261
 msgid "Save changes?"
 msgstr "変更を保存"
 
@@ -12525,4 +12651,22 @@ msgstr "指定されたデータベースが見つかりませんでした"
 
 #~ msgid "Error occurred while setting %(subItem)s option in explain."
 #~ msgstr "EXPLAIN の %(subItem)s オプション設定中にエラーが発生しました"
+
+#~ msgid "Table rows counted"
+#~ msgstr "テーブル行数が算出されました"
+
+#~ msgid "SQL query"
+#~ msgstr "SQL クエリ"
+
+#~ msgid "Script"
+#~ msgstr "スクリプト"
+
+#~ msgid "Network Error"
+#~ msgstr "ネットワークエラー"
+
+#~ msgid "timeout of ms exceeded"
+#~ msgstr "ミリ秒のタイムアウトを超過しました"
+
+#~ msgid "length"
+#~ msgstr "長さ"
 
