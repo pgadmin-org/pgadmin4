@@ -27,6 +27,7 @@ define('tools.querytool', [
   'sources/sqleditor/geometry_viewer',
   'sources/sqleditor/history/history_collection.js',
   'sources/sqleditor/history/query_history',
+  'sources/sqleditor/history/query_sources',
   'sources/keyboard_shortcuts',
   'sources/sqleditor/query_tool_actions',
   'sources/sqleditor/query_tool_notifications',
@@ -49,7 +50,7 @@ define('tools.querytool', [
   babelPollyfill, gettext, url_for, $, jqueryui, jqueryui_position, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
-  GeometryViewer, historyColl, queryHist,
+  GeometryViewer, historyColl, queryHist, querySources,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
   modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, csrfToken, panelTitleFunc) {
   /* Return back, this has been called more than once */
@@ -63,7 +64,8 @@ define('tools.querytool', [
     CodeMirror = codemirror.default,
     Slick = window.Slick,
     HistoryCollection = historyColl.default,
-    QueryHistory = queryHist.default;
+    QueryHistory = queryHist.default,
+    QuerySources = querySources.QuerySources;
 
   csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
 
@@ -1361,26 +1363,26 @@ define('tools.querytool', [
         });
       }
 
-      // Make ajax call to get history data except view/edit data
-      if(self.handler.is_query_tool) {
-        $.ajax({
-          url: url_for('sqleditor.get_query_history', {
-            'trans_id': self.handler.transId,
-          }),
-          method: 'GET',
-          contentType: 'application/json',
-        })
-          .done(function(res) {
-            res.data.result.map((entry) => {
-              let newEntry = JSON.parse(entry);
-              newEntry.start_time = new Date(newEntry.start_time);
-              self.history_collection.add(newEntry);
-            });
-          })
-          .fail(function() {
-          /* history fetch fail should not affect query tool */
+      // Make ajax call to get history data
+      $.ajax({
+        url: url_for('sqleditor.get_query_history', {
+          'trans_id': self.handler.transId,
+        }),
+        method: 'GET',
+        contentType: 'application/json',
+      })
+        .done(function(res) {
+          res.data.result.map((entry) => {
+            let newEntry = JSON.parse(entry);
+            newEntry.start_time = new Date(newEntry.start_time);
+            self.history_collection.add(newEntry);
           });
-      } else {
+        })
+        .fail(function() {
+        /* history fetch fail should not affect query tool */
+        });
+
+      if(!self.handler.is_query_tool) {
         self.historyComponent.setEditorPref({'copy_to_editor':false});
       }
     },
@@ -1611,11 +1613,15 @@ define('tools.querytool', [
 
     // Callback function for Save Data Changes button click.
     on_save_data: function() {
+      this.handler.history_query_source = QuerySources.SAVE_DATA;
+
       queryToolActions.saveDataChanges(this.handler);
     },
 
     // Callback function for the flash button click.
     on_flash: function() {
+      this.handler.history_query_source = QuerySources.EXECUTE;
+
       queryToolActions.executeQuery(this.handler);
     },
 
@@ -1771,6 +1777,7 @@ define('tools.querytool', [
       this._stopEventPropogation(event);
       this._closeDropDown(event);
 
+      this.handler.history_query_source = QuerySources.EXPLAIN;
       queryToolActions.explain(this.handler);
     },
 
@@ -1779,6 +1786,7 @@ define('tools.querytool', [
       this._stopEventPropogation(event);
       this._closeDropDown(event);
 
+      this.handler.history_query_source = QuerySources.EXPLAIN_ANALYZE;
       queryToolActions.explainAnalyze(this.handler);
     },
 
@@ -1903,12 +1911,16 @@ define('tools.querytool', [
     // Callback function for the commit button click.
     on_commit_transaction: function() {
       this.handler.close_on_idle_transaction = false;
+      this.handler.history_query_source = QuerySources.COMMIT;
+
       queryToolActions.executeCommit(this.handler);
     },
 
     // Callback function for the rollback button click.
     on_rollback_transaction: function() {
       this.handler.close_on_idle_transaction = false;
+      this.handler.history_query_source = QuerySources.ROLLBACK;
+
       queryToolActions.executeRollback(this.handler);
     },
   });
@@ -2710,34 +2722,46 @@ define('tools.querytool', [
               new Date());
           }
 
-          let hist_entry = {
+          if(_.isUndefined(self.history_query_source)) {
+            self.history_query_source = QuerySources.VIEW_DATA;
+          }
+
+          let history_entry = {
             'status': status,
             'start_time': self.query_start_time,
             'query': self.query,
             'row_affected': self.rows_affected,
             'total_time': self.total_time,
             'message': msg,
+            'query_source': self.history_query_source,
+            'is_pgadmin_query': !self.is_query_tool,
           };
 
-          /* Make ajax call to save the history data
-           * Do not bother query tool if failed to save
-           * Not applicable for view/edit data
-           */
-          if(self.is_query_tool) {
-            $.ajax({
-              url: url_for('sqleditor.add_query_history', {
-                'trans_id': self.transId,
-              }),
-              method: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify(hist_entry),
-            })
-              .done(function() {})
-              .fail(function() {});
+          if(!self.is_query_tool) {
+            var info_msg = gettext('This query was generated by pgAdmin as part of a "View/Edit Data" operation');
+            history_entry.info = info_msg;
           }
 
-          self.gridView.history_collection.add(hist_entry);
+          self.add_to_history(history_entry);
         }
+      },
+
+      /* Make ajax call to save the history data */
+      add_to_history: function(history_entry) {
+        var self = this;
+
+        $.ajax({
+          url: url_for('sqleditor.add_query_history', {
+            'trans_id': self.transId,
+          }),
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(history_entry),
+        })
+          .done(function() {})
+          .fail(function() {});
+
+        self.gridView.history_collection.add(history_entry);
       },
 
       /* This function is used to check whether cell
@@ -2900,7 +2924,7 @@ define('tools.querytool', [
         var req_data = self.data_store, view = self.gridView;
         req_data.columns = view ? view.handler.columns : self.columns;
 
-        var save_successful = false;
+        var save_successful = false, save_start_time = new Date();
 
         // Make ajax call to save the data
         $.ajax({
@@ -2949,7 +2973,7 @@ define('tools.querytool', [
               if(is_added) {
               // Update the rows in a grid after addition
                 dataView.beginUpdate();
-                _.each(res.data.query_result, function(r) {
+                _.each(res.data.query_results, function(r) {
                   if (!_.isNull(r.row_added)) {
                   // Fetch temp_id returned by server after addition
                     var row_id = Object.keys(r.row_added)[0];
@@ -3042,6 +3066,23 @@ define('tools.querytool', [
               }
               grid.gotoCell(_row_index, 1);
             }
+
+            var query_history_info_msg = gettext('This query was generated by pgAdmin as part of a "Save Data" operation');
+
+            _.each(res.data.query_results, function(r) {
+              var history_entry = {
+                'status': r.status,
+                'start_time': save_start_time,
+                'query': r.sql,
+                'row_affected': r.rows_affected,
+                'total_time': null,
+                'message': r.result,
+                'query_source': QuerySources.SAVE_DATA,
+                'is_pgadmin_query': true,
+                'info': query_history_info_msg,
+              };
+              self.add_to_history(history_entry);
+            });
 
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
@@ -3635,7 +3676,6 @@ define('tools.querytool', [
           mode_disabled = true;
         }
 
-        $('#btn-clear-dropdown').prop('disabled', mode_disabled);
         $('#btn-explain').prop('disabled', mode_disabled);
         $('#btn-explain-analyze').prop('disabled', mode_disabled);
         $('#btn-explain-options-dropdown').prop('disabled', mode_disabled);

@@ -96,10 +96,13 @@ export default class QueryHistoryDetails {
 
   updateQueryMetaData() {
     let itemTemplate = (data, description) => {
-      return `<div class='item'>
-                <span class='value'>${data}</span>
-                <span class='description'>${description}</span>
-            </div>`;
+      if(data)
+        return `<div class='item'>
+                  <span class='value'>${data}</span>
+                  <span class='description'>${description}</span>
+              </div>`;
+      else
+        return '';
     };
 
     this.$metaData.empty().append(
@@ -134,8 +137,23 @@ export default class QueryHistoryDetails {
     }
   }
 
+  updateInfoMessage() {
+    if (this.entry.info) {
+      this.$infoMsgBlock.removeClass('d-none');
+      this.$infoMsgBlock.empty().append(
+        `<div class='history-info-text'>
+            ${this.entry.info}
+        </div>`
+      );
+    } else {
+      this.$infoMsgBlock.addClass('d-none');
+      this.$infoMsgBlock.empty();
+    }
+  }
+
   selectiveRender() {
     this.updateErrorMessage();
+    this.updateInfoMessage();
     this.updateCopyButton(false);
     this.updateQueryMetaData();
     this.query_codemirror.setValue(this.entry.query);
@@ -147,6 +165,7 @@ export default class QueryHistoryDetails {
       this.parentNode.empty().append(
         `<div id='query_detail' class='query-detail'>
             <div class='error-message-block'></div>
+            <div class='info-message-block'></div>
             <div class='metadata-block'></div>
             <div class='query-statement-block'>
               <div id='history-detail-query'>
@@ -168,6 +187,7 @@ export default class QueryHistoryDetails {
       );
 
       this.$errMsgBlock = this.parentNode.find('.error-message-block');
+      this.$infoMsgBlock = this.parentNode.find('.info-message-block');
       this.$copyBtn = this.parentNode.find('#history-detail-query .btn-copy');
       this.$copyBtn.off('click').on('click', this.copyAllHandler.bind(this));
       this.$copyToEditor = this.parentNode.find('#history-detail-query .btn-copy-editor');

@@ -1,6 +1,6 @@
 .query-history {
-  height: 100%;
   overflow: auto;
+
   .list-item {
     border-bottom: $panel-border;
     background-color: $color-bg-theme;
@@ -30,6 +30,11 @@
       overflow: hidden;
       white-space: nowrap;
       user-select: initial;
+
+      .query-history-icon {
+        width: 18px;
+        text-align: center;
+      }
     }
   }
 
@@ -108,6 +113,17 @@
         font-weight: 500;
         margin-right: 8px;
       }
+    }
+  }
+
+  .info-message-block {
+    background: $sql-history-detail-bg;
+    flex: 0.3;
+    padding-left: 20px;
+
+    .history-info-text {
+      @extend .text-12;
+      padding: 7px 0;
     }
   }
 
@@ -217,6 +233,17 @@
 
     &:hover {
       cursor: ew-resize;
+    }
+  }
+
+  .toggle-and-history-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .query-history-toggle {
+      padding-top: 4px;
+      padding-bottom: 4px;
     }
   }
 }

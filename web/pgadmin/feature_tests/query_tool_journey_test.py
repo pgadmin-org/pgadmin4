@@ -70,6 +70,14 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._test_history_tab()
         print(" OK.", file=sys.stderr)
 
+        # Insert data into test editable table
+        self._insert_data_into_test_editable_table()
+
+        print("History query sources and generated queries toggle...",
+              file=sys.stderr, end="")
+        self._test_query_sources_and_generated_queries()
+        print(" OK.", file=sys.stderr)
+
         print("Updatable resultsets...", file=sys.stderr, end="")
         self._test_updatable_resultset()
         print(" OK.", file=sys.stderr)
@@ -173,37 +181,55 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self._assert_clickable(query_we_need_to_scroll_to)
 
-        self.page.click_tab("Query Editor")
-        self.__clear_query_tool()
-        self.page.click_element(editor_input)
-        self.page.fill_codemirror_area_with("SELECT * FROM hats")
-        for _ in range(15):
-            self.page.find_by_css_selector(
-                QueryToolLocatorsCss.btn_execute_query).click()
-            self.page.wait_for_query_tool_loading_indicator_to_disappear()
+    def _test_query_sources_and_generated_queries(self):
+        self.__clear_query_history()
+        self._test_history_query_sources()
+        self._test_toggle_generated_queries()
 
-        self.page.click_tab("History")
-        query_we_need_to_scroll_to = self.page.find_by_xpath(
-            "//*[@id='query_list']/div/ul/li[17]"
+    def _test_history_query_sources(self):
+        self.page.click_tab("Query Editor")
+        self._execute_sources_test_queries()
+
+        self.page.click_tab("Query History")
+
+        history_entries_icons = [
+            QueryToolLocatorsCss.commit_icon,
+            QueryToolLocatorsCss.save_data_icon,
+            QueryToolLocatorsCss.save_data_icon,
+            QueryToolLocatorsCss.execute_icon,
+            QueryToolLocatorsCss.explain_analyze_icon,
+            QueryToolLocatorsCss.explain_icon
+        ]
+
+        history_entries_queries = [
+            "COMMIT;",
+            "UPDATE public.%s SET normal_column = '10'::numeric "
+            "WHERE pk_column = '1';" % self.test_editable_table_name,
+            "BEGIN;",
+            "SELECT * FROM %s" % self.test_editable_table_name,
+            "SELECT * FROM %s" % self.test_editable_table_name,
+            "SELECT * FROM %s" % self.test_editable_table_name
+        ]
+
+        self._check_history_queries_and_icons(history_entries_queries,
+                                              history_entries_icons)
+
+    def _test_toggle_generated_queries(self):
+        xpath = '//li[contains(@class, "pgadmin-query-history-entry")]'
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(xpath))
+        toggle_el = self.page.find_by_xpath(
+            '//input[@id ="generated-queries-toggle"]/..'
         )
-        for _ in range(17):
-            ActionChains(self.page.driver) \
-                .send_keys(Keys.ARROW_DOWN) \
-                .perform()
-        self._assert_clickable(query_we_need_to_scroll_to)
+        toggle_el.click()
+        self.assertFalse(self.page.check_if_element_exist_by_xpath(xpath))
+        toggle_el.click()
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(xpath))
 
     def _test_updatable_resultset(self):
         if self.driver_version < 2.8:
             return
 
         self.page.click_tab("Query Editor")
-
-        # Insert data into test table
-        self.__clear_query_tool()
-        self._execute_query(
-            "INSERT INTO %s VALUES (1, 1), (2, 2);"
-            % self.test_editable_table_name
-        )
 
         # Select all data (contains the primary key -> should be editable)
         self.__clear_query_tool()
@@ -216,6 +242,85 @@ class QueryToolJourneyTest(BaseFeatureTest):
         query = "SELECT normal_column FROM %s" % self.test_editable_table_name
         self._check_query_results_editable(query, False)
 
+    def _execute_sources_test_queries(self):
+        self.__clear_query_tool()
+
+        self._explain_query(
+            "SELECT * FROM %s;"
+            % self.test_editable_table_name
+        )
+        self._explain_analyze_query(
+            "SELECT * FROM %s;"
+            % self.test_editable_table_name
+        )
+        self._execute_query(
+            "SELECT * FROM %s;"
+            % self.test_editable_table_name
+        )
+
+        # Turn off autocommit
+        query_options = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_query_dropdown)
+        query_options.click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_auto_commit).click()
+        query_options.click()  # Click again to close dropdown
+
+        self._update_numeric_cell(2, 10)
+
+        self._commit_transaction()
+
+        # Turn on autocommit
+        query_options = self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_query_dropdown)
+        query_options.click()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_auto_commit).click()
+        query_options.click()  # Click again to close dropdown
+
+    def _check_history_queries_and_icons(self, history_queries, history_icons):
+        # Select first query history entry
+        self.page.find_by_xpath("//*[@id='query_list']/div/ul/li[1]").click()
+        for icon, query in zip(history_icons, history_queries):
+            # Check query
+            query_history_selected_item = self.page.find_by_css_selector(
+                QueryToolLocatorsCss.query_history_selected
+            )
+            self.assertIn(query, query_history_selected_item.text)
+            # Check source icon
+            query_history_selected_icon = self.page.find_by_css_selector(
+                QueryToolLocatorsCss.query_history_selected_icon)
+            icon_classes = query_history_selected_icon.get_attribute('class')
+            icon_classes = icon_classes.split(" ")
+            self.assertTrue(icon in icon_classes)
+            # Move to next entry
+            ActionChains(self.page.driver) \
+                .send_keys(Keys.ARROW_DOWN) \
+                .perform()
+
+    def _update_numeric_cell(self, cell_index, value):
+        """
+            Updates a numeric cell in the first row of the resultset
+        """
+        xpath = '//div[contains(@class, "slick-row") and ' \
+                'contains(@style, "top:0px")]'
+        xpath += '/div[contains(@class, "slick-cell") and ' \
+                 'contains(@class, "r' + str(cell_index) + '")]'
+        cell_el = self.page.find_by_xpath(xpath)
+        ActionChains(self.driver).double_click(cell_el).perform()
+        ActionChains(self.driver).send_keys(value). \
+            send_keys(Keys.ENTER).perform()
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_save_data).click()
+
+    def _insert_data_into_test_editable_table(self):
+        self.page.click_tab("Query Editor")
+        self.__clear_query_tool()
+        self._execute_query(
+            "INSERT INTO %s VALUES (1, 1), (2, 2);"
+            % self.test_editable_table_name
+        )
+
     def __clear_query_tool(self):
         self.page.click_element(
             self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
@@ -225,6 +330,19 @@ class QueryToolJourneyTest(BaseFeatureTest):
             .perform()
         self.page.click_element(
             self.page.find_by_xpath("//*[@id='btn-clear']")
+        )
+        self.page.click_modal('Yes')
+
+    def __clear_query_history(self):
+        self.page.click_element(
+            self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
+        )
+        ActionChains(self.driver)\
+            .move_to_element(
+                self.page.find_by_xpath(
+                    "//*[@id='btn-clear-history']")).perform()
+        self.page.click_element(
+            self.page.find_by_xpath("//*[@id='btn-clear-history']")
         )
         self.page.click_modal('Yes')
 
@@ -240,35 +358,48 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.find_by_css_selector(
             QueryToolLocatorsCss.btn_execute_query).click()
 
+    def _explain_query(self, query):
+        self.page.fill_codemirror_area_with(query)
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain).click()
+
+    def _explain_analyze_query(self, query):
+        self.page.fill_codemirror_area_with(query)
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_explain_analyze).click()
+
+    def _commit_transaction(self):
+        self.page.find_by_css_selector(
+            QueryToolLocatorsCss.btn_commit).click()
+
     def _assert_clickable(self, element):
         self.page.click_element(element)
 
     def _check_query_results_editable(self, query, should_be_editable):
         self._execute_query(query)
         self.page.wait_for_spinner_to_disappear()
-
         # Check if the first cell in the first row is editable
         is_editable = self._check_cell_editable(1)
         self.assertEqual(is_editable, should_be_editable)
-        # Check that new rows cannot be added
-        can_add_rows = self._check_can_add_row()
-        self.assertEqual(can_add_rows, should_be_editable)
 
     def _check_cell_editable(self, cell_index):
-        xpath = '//div[contains(@class, "slick-cell") and ' \
-                'contains(@class, "r' + str(cell_index) + '")]'
+        """
+            Checks if a cell in the first row of the resultset is editable
+        """
+        xpath = '//div[contains(@class, "slick-row") and ' \
+                'contains(@style, "top:0px")]'
+        xpath += '/div[contains(@class, "slick-cell") and ' \
+                 'contains(@class, "r' + str(cell_index) + '")]'
         cell_el = self.page.find_by_xpath(xpath)
-        cell_classes = cell_el.get_attribute('class')
-        cell_classes = cell_classes.split(" ")
-        self.assertFalse('editable' in cell_classes)
+        # Get existing value
+        cell_value = int(cell_el.text)
+        new_value = cell_value + 1
+        # Try to update value
         ActionChains(self.driver).double_click(cell_el).perform()
-        cell_classes = cell_el.get_attribute('class')
-        cell_classes = cell_classes.split(" ")
-        return 'editable' in cell_classes
-
-    def _check_can_add_row(self):
-        return self.page.check_if_element_exist_by_xpath(
-            '//div[contains(@class, "new-row")]')
+        ActionChains(self.driver).send_keys(new_value). \
+            send_keys(Keys.ENTER).perform()
+        # Check if the value was updated
+        return int(cell_el.text) == new_value
 
     def after(self):
         self.page.close_query_tool()

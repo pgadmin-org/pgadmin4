@@ -116,8 +116,9 @@ class TestSaveChangedData(BaseTestGenerator):
                 ]
             },
             save_status=False,
-            check_sql=None,
-            check_result=None
+            check_sql="SELECT * FROM %s "
+                      "WHERE pk_col = 1 AND normal_col = 'four'",
+            check_result='SELECT 0'
         )),
         ('When updating a row in a valid way', dict(
             save_payload={
@@ -171,9 +172,9 @@ class TestSaveChangedData(BaseTestGenerator):
                 "updated": {
                     "1":
                         {"err": False,
-                         "data": {"pk_col": "2"},
+                         "data": {"pk_col": "1"},
                          "primary_keys":
-                             {"pk_col": 1}
+                             {"pk_col": 2}
                          }
                 },
                 "added": {},
@@ -210,8 +211,9 @@ class TestSaveChangedData(BaseTestGenerator):
                 ]
             },
             save_status=False,
-            check_sql=None,
-            check_result=None
+            check_sql="SELECT * FROM %s "
+                      "WHERE pk_col = 1 AND normal_col = 'two'",
+            check_result='SELECT 0'
         )),
         ('When deleting a row', dict(
             save_payload={
@@ -283,20 +285,19 @@ class TestSaveChangedData(BaseTestGenerator):
         save_status = response_data['data']['status']
         self.assertEquals(save_status, self.save_status)
 
-        if self.check_sql:
-            # Execute check sql
-            # Add test table name to the query
-            check_sql = self.check_sql % self.test_table_name
-            is_success, response_data = \
-                execute_query(tester=self.tester,
-                              query=check_sql,
-                              start_query_tool_url=self.start_query_tool_url,
-                              poll_url=self.poll_url)
-            self.assertEquals(is_success, True)
+        # Execute check sql
+        # Add test table name to the query
+        check_sql = self.check_sql % self.test_table_name
+        is_success, response_data = \
+            execute_query(tester=self.tester,
+                          query=check_sql,
+                          start_query_tool_url=self.start_query_tool_url,
+                          poll_url=self.poll_url)
+        self.assertEquals(is_success, True)
 
-            # Check table for updates
-            result = response_data['data']['result']
-            self.assertEquals(result, self.check_result)
+        # Check table for updates
+        result = response_data['data']['result']
+        self.assertEquals(result, self.check_result)
 
     def tearDown(self):
         # Disconnect the database

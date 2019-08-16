@@ -1,5 +1,6 @@
 class QueryToolLocatorsCss:
     btn_save_file = "#btn-save-file"
+    btn_save_data = "#btn-save-data"
     btn_execute_query = "#btn-flash"
     btn_query_dropdown = "#btn-query-dropdown"
     btn_auto_rollback = "#btn-auto-rollback"
@@ -16,8 +17,16 @@ class QueryToolLocatorsCss:
     btn_explain_timing = "#btn-explain-timing"
     btn_clear_dropdown = "#btn-clear-dropdown"
     btn_clear = "#btn-clear"
+    btn_commit = "#btn-commit"
     query_editor_panel = "#output-panel"
     query_history_selected = "#query_list .selected"
+    query_history_selected_icon = '#query_list .selected #query_source_icon'
     query_history_detail = "#query_detail"
+    query_history_generated_queries_toggle = '#generated-queries-toggle'
     editor_panel = "#output-panel"
     query_messages_panel = ".sql-editor-message"
+    execute_icon = "fa-bolt"
+    explain_icon = "fa-hand-pointer-o"
+    explain_analyze_icon = "fa-list-alt"
+    save_data_icon = "icon-save-data-changes"
+    commit_icon = "icon-commit"

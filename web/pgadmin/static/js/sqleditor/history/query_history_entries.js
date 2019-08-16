@@ -1,6 +1,7 @@
 import moment from 'moment';
 import $ from 'jquery';
 import _ from 'underscore';
+import 'bootstrap.toggle';
 
 const ARROWUP = 38;
 const ARROWDOWN = 40;
@@ -65,11 +66,14 @@ export class QueryHistoryItem {
     return this.formatDate(this.entry.start_time);
   }
 
-  render() {
+  render(is_pgadmin_queries_shown) {
     this.$el = $(
       `<li class='list-item' tabindex='0' data-key='${this.dataKey()}'>
           <div class='entry ${this.entry.status ? '' : 'error'}'>
-              <div class='query'>${_.escape(this.entry.query)}</div>
+              <div class='query'>
+                  <i id="query_source_icon" class="query-history-icon sql-icon-lg"></i>
+                  ${_.escape(this.entry.query)}
+              </div>
               <div class='other-info'>
               <div class='timestamp'>${this.formatDate(this.entry.start_time)}</div>
               </div>
@@ -80,6 +84,16 @@ export class QueryHistoryItem {
       .on('click', e => {
         this.onClickHandler($(e.currentTarget));
       });
+
+    let query_source = this.entry.query_source;
+    if(query_source)
+      this.$el.find('#query_source_icon').addClass(query_source.ICON_CSS_CLASS);
+
+    if(this.entry.is_pgadmin_query) {
+      this.$el.addClass('pgadmin-query-history-entry');
+      if(!is_pgadmin_queries_shown)
+        this.$el.addClass('d-none');
+    }
   }
 }
 
@@ -90,6 +104,7 @@ export class QueryHistoryEntries {
     this.groupKeyFormat = 'YYYY MM DD';
 
     this.$el = null;
+    this.is_pgadmin_queries_shown = null;
   }
 
   onSelectedChange(onSelectedChangeHandler) {
@@ -98,10 +113,10 @@ export class QueryHistoryEntries {
 
   focus() {
     if (!this.$selectedItem) {
-      this.setSelectedListItem(this.$el.find('.list-item').first());
+      this.setSelectedListItem(this.$entriesEl.find('.list-item').first());
     }
     this.$selectedItem.trigger('click');
-    this.$el[0].focus();
+    this.$entriesEl.focus();
   }
 
   isArrowDown(event) {
@@ -175,7 +190,7 @@ export class QueryHistoryEntries {
 
   addEntry(entry) {
     /* Add the entry in respective date group in descending sorted order. */
-    let groups = this.$el.find('.query-group');
+    let groups = this.$entriesEl.find('.query-group');
     let groupsKeys = $.map(groups, group => {
       return $(group).attr('data-key');
     });
@@ -189,7 +204,7 @@ export class QueryHistoryEntries {
         entry.start_time,
         entryGroupKey
       ).render();
-      this.$el.prepend($groupEl);
+      this.$entriesEl.prepend($groupEl);
     } else if (groupIdx < 0 && groups.length != 0) {
       /* if groups are present, but this is a new group */
       $groupEl = new QueryHistoryEntryDateGroup(
@@ -206,7 +221,7 @@ export class QueryHistoryEntries {
         i++;
       }
       if(i == groupsKeys.length) {
-        this.$el.append($groupEl);
+        this.$entriesEl.append($groupEl);
       }
     } else if (groupIdx >= 0) {
       /* if the group is present */
@@ -215,18 +230,46 @@ export class QueryHistoryEntries {
 
     let newItem = new QueryHistoryItem(entry);
     newItem.onClick(this.setSelectedListItem.bind(this));
-    newItem.render();
+    newItem.render(this.is_pgadmin_queries_shown);
 
     $groupEl.find('.query-entries').prepend(newItem.$el);
     this.setSelectedListItem(newItem.$el);
   }
 
+  toggleGeneratedQueries() {
+    this.$el.find('.pgadmin-query-history-entry').each(function() {
+      $(this).toggleClass('d-none');
+    });
+    this.is_pgadmin_queries_shown = !this.is_pgadmin_queries_shown;
+  }
+
   render() {
     let self = this;
     self.$el = $(`
-            <div id='query_list' class='query-history' tabindex='0'>
+        <div class="toggle-and-history-container">
+            <div class="query-history-toggle">
+                <label class="control-label">
+                    Show queries generated internally by pgAdmin?
+                </label>
+                <input id="generated-queries-toggle" type="checkbox"
+                  class="pgadmin-controls" data-style="quick"
+                  data-size="mini" data-on="Yes" data-off="No"
+                  data-onstyle="success" data-offstyle="primary" checked>
             </div>
-        `).on('keydown', this.navigateUpAndDown.bind(this));
+            <div id='query_list' class='query-history' tabindex='0'></div>
+        </div>
+    `);
+
+    self.$entriesEl = self.$el.find('#query_list');
+    self.$entriesEl.on('keydown', this.navigateUpAndDown.bind(this));
+
+    self.is_pgadmin_queries_shown = true;
+
+    self.$el.find('#generated-queries-toggle').bootstrapToggle().change(
+      function() {
+        self.toggleGeneratedQueries();
+      }
+    );
 
     self.parentNode.empty().append(self.$el);
   }

@@ -211,6 +211,10 @@ The Query History tab displays information about recent commands:
 * The amount of time it took the server to process the query and return a
   result set.
 * Messages returned by the server (not noted on the *Messages* tab).
+* The source of the query (indicated by icons corresponding to the toolbar).
+
+You can show or hide the queries generated internally by pgAdmin (during
+'View/Edit Data' or 'Save Data' operations).
 
 To erase the content of the *Query History* tab, select *Clear history* from
 the *Clear* drop-down menu.

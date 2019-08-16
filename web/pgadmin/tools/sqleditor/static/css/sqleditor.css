@@ -291,7 +291,7 @@ input.editor-checkbox:focus {
   background-image: url('../img/disconnect.svg');
 }
 
-.icon-commit, .icon-rollback, .icon-save-data-changes {
+.icon-commit, .icon-rollback, .icon-save-data-changes, .icon-view-data {
   display: inline-block;
   align-content: center;
   vertical-align: middle;
@@ -313,6 +313,10 @@ input.editor-checkbox:focus {
 
 .icon-save-data-changes {
   background-image: url('../img/save_data_changes.svg') !important;
+}
+
+.icon-view-data {
+  background-image: url('../img/view_data.svg') !important;
 }
 
 .ajs-body .warn-header {

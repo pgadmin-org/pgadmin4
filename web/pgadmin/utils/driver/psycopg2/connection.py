@@ -1917,3 +1917,17 @@ Failed to reset the connection to the server due to following error:
             )
 
         return enc_password
+
+    def mogrify(self, query, parameters):
+        """
+        This function will return the sql query after parameters binding
+        :param query: sql query before parameters (variables) binding
+        :param parameters: query parameters / variables
+        :return:
+        """
+        status, cursor = self.__cursor()
+        if not status:
+            return None
+        else:
+            mogrified_sql = cursor.mogrify(query, parameters)
+            return mogrified_sql

@@ -696,7 +696,7 @@ def generate_client_primary_key_name(columns_info):
 @login_required
 def save(trans_id):
     """
-    This method is used to save the changes to the server
+    This method is used to save the data changes to the server
 
     Args:
         trans_id: unique transaction id
@@ -746,7 +746,7 @@ def save(trans_id):
                 return make_json_response(
                     data={'status': status, 'result': u"{}".format(msg)}
                 )
-        status, res, query_res, _rowid = trans_obj.save(
+        status, res, query_results, _rowid = trans_obj.save(
             changed_data,
             session_obj['columns_info'],
             session_obj['client_primary_key'],
@@ -754,7 +754,7 @@ def save(trans_id):
     else:
         status = False
         res = error_msg
-        query_res = None
+        query_results = None
         _rowid = None
 
     transaction_status = conn.transaction_status()
@@ -763,7 +763,7 @@ def save(trans_id):
         data={
             'status': status,
             'result': res,
-            'query_result': query_res,
+            'query_results': query_results,
             '_rowid': _rowid,
             'transaction_status': transaction_status
         }
