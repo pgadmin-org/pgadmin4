@@ -22,6 +22,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4546 <https://redmine.postgresql.org/issues/4546>`_ -  Add Reverse Engineered SQL tests for Columns.
 | `Issue #4554 <https://redmine.postgresql.org/issues/4554>`_ -  Add Reverse Engineered SQL tests for Trigger Functions.
 | `Issue #4555 <https://redmine.postgresql.org/issues/4555>`_ -  Add Reverse Engineered SQL tests for Exclusion Constraint.
 | `Issue #4560 <https://redmine.postgresql.org/issues/4560>`_ -  Add a --modules option to the RE-SQL test suite to allow testing of specific object types.
