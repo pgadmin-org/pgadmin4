@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-16 17:49+0530\n"
-"PO-Revision-Date: 2019-07-20 02:23+0900\n"
+"PO-Revision-Date: 2019-08-17 19:28+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -846,7 +846,7 @@ msgstr "指定されたキャストオブジェクトが見つかりませんで
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:508
 msgid "Cast dropped"
-msgstr "キャストを削除しました"
+msgstr "キャストが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:563
 msgid "Could not find the specified cast on the server."
@@ -1295,7 +1295,7 @@ msgstr "指定されたイベントトリガが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:540
 msgid "Event trigger dropped"
-msgstr "イベントトリガを削除しました"
+msgstr "イベントトリガが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:679
 msgid "Could not find the specified event trigger on the server."
@@ -1485,7 +1485,7 @@ msgstr "指定された拡張が見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:375
 msgid "Extension dropped"
-msgstr "拡張を削除しました"
+msgstr "拡張が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:478
 msgid "Could not find the extension on the server."
@@ -1594,7 +1594,7 @@ msgstr "指定された外部データラッパが見つかりませんでした
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:540
 msgid "Foreign Data Wrapper dropped"
-msgstr "外部データラッパを削除しました"
+msgstr "外部データラッパが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:708
 msgid "Could not find the foreign data wrapper on the server."
@@ -1622,7 +1622,7 @@ msgstr "指定された外部サーバが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:540
 msgid "Foreign Server dropped"
-msgstr "外部サーバを削除しました"
+msgstr "外部サーバが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:26
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:155
@@ -1787,7 +1787,7 @@ msgstr "指定されたユーザマッピングが見つかりませんでした
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/__init__.py:566
 msgid "User Mapping dropped"
-msgstr "ユーザマッピングを削除しました"
+msgstr "ユーザマッピングが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/static/js/user_mapping.js:71
 msgid "User Mapping"
@@ -1857,7 +1857,7 @@ msgstr "言語の情報が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:540
 msgid "Language dropped"
-msgstr "言語を削除しました"
+msgstr "言語が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:35
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:241
@@ -1927,7 +1927,7 @@ msgstr "指定されたスキーマが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:708
 msgid "Schema dropped"
-msgstr "スキーマを削除しました"
+msgstr "スキーマが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:781
 #: pgadmin/static/js/backform.pgadmin.js:1782
@@ -2097,7 +2097,7 @@ msgstr "指定されたドメインが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:623
 msgid "Domain dropped"
-msgstr "ドメインを削除しました"
+msgstr "ドメインが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:50
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:22
@@ -2118,7 +2118,7 @@ msgstr "指定されたドメイン制約が見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:504
 msgid "Domain Constraint dropped"
-msgstr "ドメイン制約を削除しました"
+msgstr "ドメイン制約が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:52
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:58
@@ -2505,7 +2505,7 @@ msgstr "指定された全文検索パーサノードが見つかりませんで
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:511
 msgid "FTS Parser dropped"
-msgstr "全文検索パーサを削除しました"
+msgstr "全文検索パーサが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:807
 msgid ""
@@ -2642,7 +2642,7 @@ msgstr "指定された関数ノードが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:849
 msgid "Function dropped."
-msgstr "関数を削除しました"
+msgstr "関数が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1140
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1319
@@ -2786,7 +2786,7 @@ msgstr "リークプルーフ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:318
 msgid "Support function"
-msgstr ""
+msgstr "サポート関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:338
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:245
@@ -2959,7 +2959,7 @@ msgstr "指定されたパッケージが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:465
 msgid "Package dropped"
-msgstr "パッケージを削除しました"
+msgstr "パッケージが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:671
@@ -3040,7 +3040,7 @@ msgstr "指定されたシーケンスが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:480
 msgid "Sequence dropped"
-msgstr "シーケンスを削除しました"
+msgstr "シーケンスが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:41
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:117
@@ -3238,7 +3238,7 @@ msgstr "指定されたシノニムが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:518
 msgid "Synonym dropped"
-msgstr "シノニムを削除しました"
+msgstr "シノニムが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:606
 msgid "Could not find the synonym on the server."
@@ -3335,7 +3335,7 @@ msgstr "指定されたテーブルが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1178
 msgid "Table dropped"
-msgstr "テーブルを削除しました"
+msgstr "テーブルが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1256
 msgid "Trigger(s) have been enabled"
@@ -3348,7 +3348,7 @@ msgstr "トリガが無効化されました"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1611
 #, python-format
 msgid "Table rows counted: %s"
-msgstr ""
+msgstr "テーブルから %s 行を算出しました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1261
 msgid "Table statistics have been reset"
@@ -3449,16 +3449,16 @@ msgstr "ストレージ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:545
 msgid "NONE"
-msgstr ""
+msgstr "NONE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:546
 msgid "IDENTITY"
-msgstr ""
+msgstr "IDENTITY"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:554
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:559
 msgid "GENERATED"
-msgstr ""
+msgstr "GENERATED"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:582
 msgid "Identity"
@@ -3523,12 +3523,12 @@ msgstr "精度が大きすぎます："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:755
 msgid "Expression value cannot be empty."
-msgstr ""
+msgstr "評価式は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:25
 msgid "Compound Triggers"
-msgstr ""
+msgstr "複合トリガ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:367
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:515
@@ -3537,19 +3537,19 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:867
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:933
 msgid "Could not find the compound trigger in the table."
-msgstr ""
+msgstr "テーブルに複合トリガが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:651
 msgid "The specified compound trigger could not be found.\n"
-msgstr ""
+msgstr "指定された複合トリガが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:671
 msgid "Compound Trigger is dropped"
-msgstr ""
+msgstr "複合トリガが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:38
 msgid "Compound Trigger"
-msgstr ""
+msgstr "複合トリガ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:55
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:61
@@ -3557,31 +3557,31 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:73
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:89
 msgid "Compound Trigger..."
-msgstr ""
+msgstr "複合トリガ..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:79
 msgid "Enable compound trigger"
-msgstr ""
+msgstr "複合トリガを有効化"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:84
 msgid "Disable compound trigger"
-msgstr ""
+msgstr "複合トリガを無効化"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:168
 msgid "Disable compound trigger failed"
-msgstr ""
+msgstr "複合トリガの無効化に失敗しました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:187
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:189
 msgid "Trigger enabled?"
-msgstr "トリガ有効"
+msgstr "トリガを有効化"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:191
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:195
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:208
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:221
 msgid "FOR Events"
-msgstr ""
+msgstr "FOR イベント"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:193
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:377
@@ -3640,6 +3640,35 @@ msgid ""
 "    -- Enter any required code here\n"
 "END;"
 msgstr ""
+"-- グローバルな範囲に適用する宣言は、ここへ入力します：\n"
+"\n"
+"-- BEFORE STATEMENT のブロックです。不要な場合は削除してください\n"
+"BEFORE STATEMENT IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;\n"
+"\n"
+"-- AFTER STATEMENT のブロックです。不要な場合は削除してください\n"
+"AFTER STATEMENT IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;\n"
+"\n"
+"-- BEFORE EACH ROW のブロックです。不要な場合は削除してください\n"
+"BEFORE EACH ROW IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;\n"
+"\n"
+"-- AFTER EACH ROW のブロックです。不要な場合は削除してください\n"
+"AFTER EACH ROW IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:50
 msgid "Check Constraints"
@@ -3662,7 +3691,7 @@ msgstr "指定された検査制約が見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:629
 msgid "Check constraint dropped."
-msgstr "検査制約を削除しました"
+msgstr "検査制約が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:904
 msgid "Check constraint updated."
@@ -3869,7 +3898,7 @@ msgstr "指定された外部キー制約が見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:791
 msgid "Foreign key dropped."
-msgstr "外部キーを削除しました"
+msgstr "外部キーが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:1078
 msgid "Foreign key updated."
@@ -4044,7 +4073,7 @@ msgstr "指定されたインデックスが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:769
 msgid "Index is dropped"
-msgstr "インデックスを削除しました"
+msgstr "インデックスが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:29
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:234
@@ -4508,7 +4537,7 @@ msgstr "指定されたルールが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:421
 msgid "Rule dropped"
-msgstr "ルールを削除しました"
+msgstr "ルールが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:54
 msgid "rule"
@@ -5451,7 +5480,7 @@ msgstr "指定されたビューが見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:613
 msgid "View dropped"
-msgstr "ビューを削除しました"
+msgstr "ビューが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:683
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1032
@@ -5545,7 +5574,7 @@ msgstr "カスケード"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:192
 msgid "Please enter view code."
-msgstr ""
+msgstr "ビューのコードは必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:27
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:41
@@ -6606,7 +6635,7 @@ msgstr "指定されたリソースグループが見つかりませんでした
 
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:533
 msgid "Resource Group dropped"
-msgstr "リソースグループを削除しました"
+msgstr "リソースグループが削除されました"
 
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:591
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:658
@@ -7448,7 +7477,7 @@ msgstr "指定されたテーブル空間が見つかりませんでした\n"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:431
 msgid "Tablespace dropped"
-msgstr "テーブル空間を削除しました"
+msgstr "テーブル空間が削除されました"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:488
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:553
@@ -10783,7 +10812,7 @@ msgstr "%s 行を取得しました"
 msgid ""
 "This query was generated by pgAdmin as part of a \"View/Edit Data\" "
 "operation"
-msgstr ""
+msgstr "このクエリは pgAdmin が「データの閲覧/編集」操作の一環として生成したものです"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2843
 msgid "Row(s) deleted."
@@ -10814,7 +10843,7 @@ msgstr "保存しようとした変更データはロールバックされまし
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3070
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
-msgstr ""
+msgstr "このクエリは pgAdmin が「データを保存」操作の一環として生成したものです"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3231
 msgid "Loading the file..."
