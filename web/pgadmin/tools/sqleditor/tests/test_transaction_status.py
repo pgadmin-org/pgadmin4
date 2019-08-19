@@ -18,11 +18,18 @@ from regression.python_test_utils import test_utils as utils
 from pgadmin.tools.sqleditor.tests.execute_query_test_utils \
     import execute_query
 
+from pgadmin.tools.sqleditor.utils.constant_definition \
+    import TX_STATUS_IDLE, TX_STATUS_INTRANS
 
-class TestSaveChangedData(BaseTestGenerator):
-    """ This class tests saving data changes to updatable query resultsets """
+
+class TestTransactionControl(BaseTestGenerator):
+    """
+    This class will test the transaction status after various operations.
+    """
     scenarios = [
-        ('When inserting new valid row', dict(
+        ('When auto-commit is enabled, and save is successful', dict(
+            is_auto_commit_enabled=True,
+            transaction_status=TX_STATUS_IDLE,
             save_payload={
                 "updated": {},
                 "added": {
@@ -66,12 +73,59 @@ class TestSaveChangedData(BaseTestGenerator):
                      "has_default_val": False,
                      "is_array": False}
                 ]
-            },
-            save_status=True,
-            check_sql='SELECT * FROM %s WHERE pk_col = 3',
-            check_result=[[3, "three"]]
+            }
         )),
-        ('When inserting new invalid row', dict(
+        ('When auto-commit is disabled and save is successful', dict(
+            is_auto_commit_enabled=False,
+            transaction_status=TX_STATUS_INTRANS,
+            save_payload={
+                "updated": {},
+                "added": {
+                    "2": {
+                        "err": False,
+                        "data": {
+                            "pk_col": "3",
+                            "__temp_PK": "2",
+                            "normal_col": "three"
+                        }
+                    }
+                },
+                "staged_rows": {},
+                "deleted": {},
+                "updated_index": {},
+                "added_index": {"2": "2"},
+                "columns": [
+                    {
+                        "name": "pk_col",
+                        "display_name": "pk_col",
+                        "column_type": "[PK] integer",
+                        "column_type_internal": "integer",
+                        "pos": 0,
+                        "label": "pk_col<br>[PK] integer",
+                        "cell": "number",
+                        "can_edit": True,
+                        "type": "integer",
+                        "not_null": True,
+                        "has_default_val": False,
+                        "is_array": False},
+                    {"name": "normal_col",
+                     "display_name": "normal_col",
+                     "column_type": "character varying",
+                     "column_type_internal": "character varying",
+                     "pos": 1,
+                     "label": "normal_col<br>character varying",
+                     "cell": "string",
+                     "can_edit": True,
+                     "type": "character varying",
+                     "not_null": False,
+                     "has_default_val": False,
+                     "is_array": False}
+                ]
+            }
+        )),
+        ('When auto-commit is enabled and save fails', dict(
+            is_auto_commit_enabled=True,
+            transaction_status=TX_STATUS_IDLE,
             save_payload={
                 "updated": {},
                 "added": {
@@ -115,115 +169,27 @@ class TestSaveChangedData(BaseTestGenerator):
                      "has_default_val": False,
                      "is_array": False}
                 ]
-            },
-            save_status=False,
-            check_sql="SELECT * FROM %s "
-                      "WHERE pk_col = 1 AND normal_col = 'four'",
-            check_result='SELECT 0'
+            }
         )),
-        ('When updating a row in a valid way', dict(
-            save_payload={
-                "updated": {
-                    "1":
-                        {"err": False,
-                         "data": {"normal_col": "ONE"},
-                         "primary_keys":
-                             {"pk_col": 1}
-                         }
-                },
-                "added": {},
-                "staged_rows": {},
-                "deleted": {},
-                "updated_index": {"1": "1"},
-                "added_index": {},
-                "columns": [
-                    {
-                        "name": "pk_col",
-                        "display_name": "pk_col",
-                        "column_type": "[PK] integer",
-                        "column_type_internal": "integer",
-                        "pos": 0,
-                        "label": "pk_col<br>[PK] integer",
-                        "cell": "number",
-                        "can_edit": True,
-                        "type": "integer",
-                        "not_null": True,
-                        "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
-                ]
-            },
-            save_status=True,
-            check_sql='SELECT * FROM %s WHERE pk_col = 1',
-            check_result=[[1, "ONE"]]
-        )),
-        ('When updating a row in an invalid way', dict(
-            save_payload={
-                "updated": {
-                    "1":
-                        {"err": False,
-                         "data": {"pk_col": "1"},
-                         "primary_keys":
-                             {"pk_col": 2}
-                         }
-                },
-                "added": {},
-                "staged_rows": {},
-                "deleted": {},
-                "updated_index": {"1": "1"},
-                "added_index": {},
-                "columns": [
-                    {
-                        "name": "pk_col",
-                        "display_name": "pk_col",
-                        "column_type": "[PK] integer",
-                        "column_type_internal": "integer",
-                        "pos": 0,
-                        "label": "pk_col<br>[PK] integer",
-                        "cell": "number",
-                        "can_edit": True,
-                        "type": "integer",
-                        "not_null": True,
-                        "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
-                ]
-            },
-            save_status=False,
-            check_sql="SELECT * FROM %s "
-                      "WHERE pk_col = 1 AND normal_col = 'two'",
-            check_result='SELECT 0'
-        )),
-        ('When deleting a row', dict(
+        ('When auto-commit is disabled and save fails', dict(
+            is_auto_commit_enabled=False,
+            transaction_status=TX_STATUS_INTRANS,
             save_payload={
                 "updated": {},
-                "added": {},
-                "staged_rows": {"1": {"pk_col": 2}},
-                "deleted": {"1": {"pk_col": 2}},
+                "added": {
+                    "2": {
+                        "err": False,
+                        "data": {
+                            "pk_col": "1",
+                            "__temp_PK": "2",
+                            "normal_col": "four"
+                        }
+                    }
+                },
+                "staged_rows": {},
+                "deleted": {},
                 "updated_index": {},
-                "added_index": {},
+                "added_index": {"2": "2"},
                 "columns": [
                     {
                         "name": "pk_col",
@@ -251,61 +217,74 @@ class TestSaveChangedData(BaseTestGenerator):
                      "has_default_val": False,
                      "is_array": False}
                 ]
-            },
-            save_status=True,
-            check_sql='SELECT * FROM %s WHERE pk_col = 2',
-            check_result='SELECT 0'
+            }
         )),
     ]
 
     def setUp(self):
         self._initialize_database_connection()
         self._initialize_query_tool()
-        self._initialize_urls_and_select_sql()
+        self._initialize_urls()
 
     def runTest(self):
         self._create_test_table()
-        self._execute_sql_query(self.select_sql)
+        self._set_auto_commit(self.is_auto_commit_enabled)
+        self._execute_select_sql()
+        self._check_transaction_status(self.transaction_status)
         self._save_changed_data()
-        self._check_saved_data()
+        self._check_transaction_status(self.transaction_status)
+
+        if self.transaction_status == TX_STATUS_INTRANS:
+            self._commit_transaction()
+            self._check_transaction_status(TX_STATUS_IDLE)
 
     def tearDown(self):
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
 
-    def _execute_sql_query(self, query):
-        is_success, response_data = \
+    def _set_auto_commit(self, auto_commit):
+        response = self.tester.post(self.auto_commit_url,
+                                    data=json.dumps(auto_commit),
+                                    content_type='html/json')
+        self.assertEquals(response.status_code, 200)
+
+    def _execute_select_sql(self):
+        is_success, _ = \
             execute_query(tester=self.tester,
-                          query=query,
+                          query=self.select_sql,
                           start_query_tool_url=self.start_query_tool_url,
                           poll_url=self.poll_url)
         self.assertEquals(is_success, True)
-        return response_data
+
+    def _check_transaction_status(self, expected_transaction_status):
+        # Check transaction status
+        response = self.tester.get(self.status_url)
+        self.assertEquals(response.status_code, 200)
+        response_data = json.loads(response.data.decode('utf-8'))
+        transaction_status = response_data['data']['status']
+        self.assertEquals(transaction_status, expected_transaction_status)
 
     def _save_changed_data(self):
-        # Send a request to save changed data
         response = self.tester.post(self.save_url,
                                     data=json.dumps(self.save_payload),
                                     content_type='html/json')
 
         self.assertEquals(response.status_code, 200)
 
-        # Check that the save is successful
-        response_data = json.loads(response.data.decode('utf-8'))
-        save_status = response_data['data']['status']
-        self.assertEquals(save_status, self.save_status)
-
-    def _check_saved_data(self):
-        check_sql = self.check_sql % self.test_table_name
-        response_data = self._execute_sql_query(check_sql)
-        # Check table for updates
-        result = response_data['data']['result']
-        self.assertEquals(result, self.check_result)
+    def _commit_transaction(self):
+        is_success, _ = \
+            execute_query(tester=self.tester,
+                          query='COMMIT;',
+                          start_query_tool_url=self.start_query_tool_url,
+                          poll_url=self.poll_url)
+        self.assertEquals(is_success, True)
 
     def _initialize_database_connection(self):
         database_info = parent_node_dict["database"][-1]
         self.db_name = database_info["db_name"]
         self.server_id = database_info["server_id"]
+
+        self.server_version = parent_node_dict["schema"][-1]["server_version"]
 
         self.db_id = database_info["db_id"]
         db_con = database_utils.connect_database(self,
@@ -316,8 +295,7 @@ class TestSaveChangedData(BaseTestGenerator):
         driver_version = utils.get_driver_version()
         driver_version = float('.'.join(driver_version.split('.')[:2]))
 
-        if driver_version < 2.8:
-            self.skipTest('Updatable resultsets require pyscopg 2.8 or later')
+        self.is_updatable_resultset_supported = driver_version >= 2.8
 
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to the database.")
@@ -331,15 +309,18 @@ class TestSaveChangedData(BaseTestGenerator):
         response_data = json.loads(response.data.decode('utf-8'))
         self.trans_id = response_data['data']['gridTransId']
 
-    def _initialize_urls_and_select_sql(self):
+    def _initialize_urls(self):
         self.start_query_tool_url = \
             '/sqleditor/query_tool/start/{0}'.format(self.trans_id)
         self.save_url = '/sqleditor/save/{0}'.format(self.trans_id)
         self.poll_url = '/sqleditor/poll/{0}'.format(self.trans_id)
+        self.auto_commit_url = \
+            '/sqleditor/auto_commit/{0}'.format(self.trans_id)
+        self.status_url = '/sqleditor/status/{0}'.format(self.trans_id)
 
     def _create_test_table(self):
-        self.test_table_name = "test_for_save_data" + \
-                               str(random.randint(1000, 9999))
+        test_table_name = "test_for_updatable_resultset" + \
+                          str(random.randint(1000, 9999))
         create_sql = """
                             DROP TABLE IF EXISTS "%s";
 
@@ -350,9 +331,9 @@ class TestSaveChangedData(BaseTestGenerator):
                             INSERT INTO "%s" VALUES
                             (1, 'one'),
                             (2, 'two');
-                      """ % (self.test_table_name,
-                             self.test_table_name,
-                             self.test_table_name)
-        self.select_sql = 'SELECT * FROM %s;' % self.test_table_name
+                      """ % (test_table_name,
+                             test_table_name,
+                             test_table_name)
 
+        self.select_sql = "SELECT * FROM %s" % test_table_name
         utils.create_table_with_query(self.server, self.db_name, create_sql)
