@@ -30,6 +30,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #3605 <https://redmine.postgresql.org/issues/3605>`_ -  Fix issue where Deleting N number of rows makes first N number of rows disable.
 | `Issue #4179 <https://redmine.postgresql.org/issues/4179>`_ -  Fix generation of reverse engineered SQL for tables with Greenplum 5.x.
 | `Issue #4229 <https://redmine.postgresql.org/issues/4229>`_ -  Update wcDocker to allow the browser's context menu to be used except in tab strips and panel headers.
 | `Issue #4401 <https://redmine.postgresql.org/issues/4401>`_ -  Ensure type names are properly encoded in the results grid.

@@ -2776,15 +2776,14 @@ define('tools.querytool', [
       },
 
       rows_to_delete: function(data) {
-        var self = this,
-          tmp_keys = self.primary_keys;
+        let self = this;
+        let tmp_keys = self.primary_keys;
 
         // re-calculate rows with no primary keys
         self.temp_new_rows = [];
         data.forEach(function(d, idx) {
-          var p_keys_list = _.pick(d, tmp_keys),
-            is_primary_key = Object.keys(p_keys_list).length ?
-              p_keys_list[0] : undefined;
+          let p_keys_list = _.pick(d, _.keys(tmp_keys));
+          let is_primary_key = Object.keys(p_keys_list).length > 0;
 
           if (!is_primary_key) {
             self.temp_new_rows.push(idx);
@@ -3017,7 +3016,6 @@ define('tools.querytool', [
                   dataView.endUpdate();
                 }
                 self.rows_to_delete.apply(self, [data]);
-                grid.setSelectedRows([]);
               }
 
               grid.setSelectedRows([]);
