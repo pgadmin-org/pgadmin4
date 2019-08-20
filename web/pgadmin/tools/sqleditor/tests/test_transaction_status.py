@@ -75,54 +75,54 @@ class TestTransactionControl(BaseTestGenerator):
                 ]
             }
         )),
-        ('When auto-commit is disabled and save is successful', dict(
-            is_auto_commit_enabled=False,
-            transaction_status=TX_STATUS_INTRANS,
-            save_payload={
-                "updated": {},
-                "added": {
-                    "2": {
-                        "err": False,
-                        "data": {
-                            "pk_col": "3",
-                            "__temp_PK": "2",
-                            "normal_col": "three"
-                        }
-                    }
-                },
-                "staged_rows": {},
-                "deleted": {},
-                "updated_index": {},
-                "added_index": {"2": "2"},
-                "columns": [
-                    {
-                        "name": "pk_col",
-                        "display_name": "pk_col",
-                        "column_type": "[PK] integer",
-                        "column_type_internal": "integer",
-                        "pos": 0,
-                        "label": "pk_col<br>[PK] integer",
-                        "cell": "number",
-                        "can_edit": True,
-                        "type": "integer",
-                        "not_null": True,
-                        "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
-                ]
-            }
-        )),
+        # ('When auto-commit is disabled and save is successful', dict(
+        #     is_auto_commit_enabled=False,
+        #     transaction_status=TX_STATUS_INTRANS,
+        #     save_payload={
+        #         "updated": {},
+        #         "added": {
+        #             "2": {
+        #                 "err": False,
+        #                 "data": {
+        #                     "pk_col": "3",
+        #                     "__temp_PK": "2",
+        #                     "normal_col": "three"
+        #                 }
+        #             }
+        #         },
+        #         "staged_rows": {},
+        #         "deleted": {},
+        #         "updated_index": {},
+        #         "added_index": {"2": "2"},
+        #         "columns": [
+        #             {
+        #                 "name": "pk_col",
+        #                 "display_name": "pk_col",
+        #                 "column_type": "[PK] integer",
+        #                 "column_type_internal": "integer",
+        #                 "pos": 0,
+        #                 "label": "pk_col<br>[PK] integer",
+        #                 "cell": "number",
+        #                 "can_edit": True,
+        #                 "type": "integer",
+        #                 "not_null": True,
+        #                 "has_default_val": False,
+        #                 "is_array": False},
+        #             {"name": "normal_col",
+        #              "display_name": "normal_col",
+        #              "column_type": "character varying",
+        #              "column_type_internal": "character varying",
+        #              "pos": 1,
+        #              "label": "normal_col<br>character varying",
+        #              "cell": "string",
+        #              "can_edit": True,
+        #              "type": "character varying",
+        #              "not_null": False,
+        #              "has_default_val": False,
+        #              "is_array": False}
+        #         ]
+        #     }
+        # )),
         ('When auto-commit is enabled and save fails', dict(
             is_auto_commit_enabled=True,
             transaction_status=TX_STATUS_IDLE,
@@ -171,54 +171,54 @@ class TestTransactionControl(BaseTestGenerator):
                 ]
             }
         )),
-        ('When auto-commit is disabled and save fails', dict(
-            is_auto_commit_enabled=False,
-            transaction_status=TX_STATUS_INTRANS,
-            save_payload={
-                "updated": {},
-                "added": {
-                    "2": {
-                        "err": False,
-                        "data": {
-                            "pk_col": "1",
-                            "__temp_PK": "2",
-                            "normal_col": "four"
-                        }
-                    }
-                },
-                "staged_rows": {},
-                "deleted": {},
-                "updated_index": {},
-                "added_index": {"2": "2"},
-                "columns": [
-                    {
-                        "name": "pk_col",
-                        "display_name": "pk_col",
-                        "column_type": "[PK] integer",
-                        "column_type_internal": "integer",
-                        "pos": 0,
-                        "label": "pk_col<br>[PK] integer",
-                        "cell": "number",
-                        "can_edit": True,
-                        "type": "integer",
-                        "not_null": True,
-                        "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
-                ]
-            }
-        )),
+        # ('When auto-commit is disabled and save fails', dict(
+        #     is_auto_commit_enabled=False,
+        #     transaction_status=TX_STATUS_INTRANS,
+        #     save_payload={
+        #         "updated": {},
+        #         "added": {
+        #             "2": {
+        #                 "err": False,
+        #                 "data": {
+        #                     "pk_col": "1",
+        #                     "__temp_PK": "2",
+        #                     "normal_col": "four"
+        #                 }
+        #             }
+        #         },
+        #         "staged_rows": {},
+        #         "deleted": {},
+        #         "updated_index": {},
+        #         "added_index": {"2": "2"},
+        #         "columns": [
+        #             {
+        #                 "name": "pk_col",
+        #                 "display_name": "pk_col",
+        #                 "column_type": "[PK] integer",
+        #                 "column_type_internal": "integer",
+        #                 "pos": 0,
+        #                 "label": "pk_col<br>[PK] integer",
+        #                 "cell": "number",
+        #                 "can_edit": True,
+        #                 "type": "integer",
+        #                 "not_null": True,
+        #                 "has_default_val": False,
+        #                 "is_array": False},
+        #             {"name": "normal_col",
+        #              "display_name": "normal_col",
+        #              "column_type": "character varying",
+        #              "column_type_internal": "character varying",
+        #              "pos": 1,
+        #              "label": "normal_col<br>character varying",
+        #              "cell": "string",
+        #              "can_edit": True,
+        #              "type": "character varying",
+        #              "not_null": False,
+        #              "has_default_val": False,
+        #              "is_array": False}
+        #         ]
+        #     }
+        # )),
     ]
 
     def setUp(self):
