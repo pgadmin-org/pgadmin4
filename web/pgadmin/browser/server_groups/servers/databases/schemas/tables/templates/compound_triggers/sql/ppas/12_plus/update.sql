@@ -3,7 +3,7 @@ ALTER TRIGGER {{ conn|qtIdent(o_data.name) }} ON {{ conn|qtIdent(o_data.nspname,
     RENAME TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}
-{% if ((data.prosrc is defined or data.evnt_insert is defined or data.evnt_delete is defined or data.evnt_update is defined) and (o_data.prosrc != data.prosrc or data.evnt_insert != o_data.evnt_insert or data.evnt_delete != o_data.evnt_delete or data.evnt_update != o_data.evnt_update))  %}
+{% if ((data.prosrc is defined or data.evnt_insert is defined or data.evnt_delete is defined or data.evnt_truncate is defined or data.evnt_update is defined) and (o_data.prosrc != data.prosrc or data.evnt_insert != o_data.evnt_insert or data.evnt_delete != o_data.evnt_delete or data.evnt_truncate != o_data.evnt_truncate or data.evnt_update != o_data.evnt_update))  %}
 {% set or_flag = False %}
 CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
     FOR {% if data.evnt_insert is not defined %}{% if o_data.evnt_insert %}INSERT{% set or_flag = True %}{% endif %}{% else %}{% if data.evnt_insert %}INSERT{% set or_flag = True %}{% endif %}{% endif %}{% if data.evnt_delete is not defined %}{% if o_data.evnt_delete %}

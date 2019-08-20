@@ -19,3 +19,4 @@ Bug fixes
 
 | `Issue #2706 <https://redmine.postgresql.org/issues/2706>`_ -  Added ProjectSet icon for explain module.
 | `Issue #2828 <https://redmine.postgresql.org/issues/2828>`_ -  Added Gather Merge, Named Tuple Store Scan and Table Function Scan icon for explain module.
+| `Issue #4643 <https://redmine.postgresql.org/issues/4643>`_ -  Fix Truncate option deselect issue for compound triggers.
