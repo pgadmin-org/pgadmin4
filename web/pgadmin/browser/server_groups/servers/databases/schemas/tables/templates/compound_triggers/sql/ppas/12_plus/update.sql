@@ -9,7 +9,10 @@ CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
     FOR {% if data.evnt_insert is not defined %}{% if o_data.evnt_insert %}INSERT{% set or_flag = True %}{% endif %}{% else %}{% if data.evnt_insert %}INSERT{% set or_flag = True %}{% endif %}{% endif %}{% if data.evnt_delete is not defined %}{% if o_data.evnt_delete %}
 {% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %}
 {% endif %}{% else %}{% if data.evnt_delete %}
-{% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %}{%endif %}{% endif %}{% if data.evnt_update is not defined %}{% if o_data.evnt_update %}
+{% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %}{%endif %}{% endif %}{% if data.evnt_truncate is not defined %}{% if o_data.evnt_truncate %}
+{% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %}
+{% endif %}{% else %}{% if data.evnt_truncate %}
+{% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %}{%endif %}{% endif %}{% if data.evnt_update is not defined %}{% if o_data.evnt_update %}
 {% if or_flag %} OR {% endif %}UPDATE{% if o_data.columns|length > 0 %} OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}
 {% endif %}{% else %}{% if data.evnt_update %}
 {% if or_flag %} OR {% endif %}UPDATE{% if o_data.columns|length > 0 %} OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}{% endif %}

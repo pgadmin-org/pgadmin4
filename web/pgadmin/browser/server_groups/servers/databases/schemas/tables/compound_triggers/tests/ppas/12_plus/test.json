@@ -94,6 +94,27 @@
       "data": {
         "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#"
       }
+    }, {
+      "type": "create",
+      "name": "Create compound trigger for all event",
+      "endpoint": "NODE-compound_trigger.obj",
+      "sql_endpoint": "NODE-compound_trigger.sql_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#",
+        "prosrc": "var varchar2(20) := 'Global_var';\n\nBEFORE STATEMENT IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('Before Statement: ' || var);\n\tvar := 'BEFORE STATEMENT';\nEND;",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": true,
+        "evnt_truncate": true
+      },
+      "expected_sql_file": "create_for_all_event.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Compound Trigger",
+      "endpoint": "NODE-compound_trigger.delete_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#"
+      }
     }
   ]
 }

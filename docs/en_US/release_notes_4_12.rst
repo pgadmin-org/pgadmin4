@@ -53,3 +53,5 @@ Bug fixes
 | `Issue #4585 <https://redmine.postgresql.org/issues/4585>`_ -  Fix double click issue to expand the contents of a cell if the resultset was not editable.
 | `Issue #4586 <https://redmine.postgresql.org/issues/4586>`_ -  Fix generation of reverse engineered SQL for Rules.
 | `Issue #4635 <https://redmine.postgresql.org/issues/4635>`_ -  Ensure compound triggers for event should be updated properly.
+| `Issue #4638 <https://redmine.postgresql.org/issues/4638>`_ -  Ensure compound triggers should be displayed under Views.
+| `Issue #4641 <https://redmine.postgresql.org/issues/4641>`_ -  Ensure Truncate option should be available for Compound Triggers.

@@ -34,7 +34,8 @@ Use the fields in the *Events* tab to specify how and when the compound trigger 
 
 * Select the type of event(s) that will invoke the compound trigger; to select
   an event type, move the switch next to the event to the *YES* position.
-  The supported event types are *INSERT*, *UPDATE*, *DELETE*.
+  The supported event types are *INSERT*, *UPDATE*, *DELETE* and *TRUNCATE*.
+  Views cannot have TRUNCATE triggers.
 * Use the *When* field to provide a boolean condition that will invoke the
   compound trigger.
 * If defining a column-specific compound trigger, use the *Columns* field to
@@ -46,10 +47,10 @@ Click the *Code* tab to continue.
     :alt: Compound Trigger dialog code tab
     :align: center
 
-Use the *Code* field to specify the code for the four timing events
-*BEFORE STATEMENT*, *AFTER STATEMENT*, *BEFORE EACH ROW*, *AFTER EACH ROW*
-that will be invoked when the compound trigger fires. Basic template is provided
-with place holders.
+Use the *Code* field to specify the code for the five timing events
+*BEFORE STATEMENT*, *AFTER STATEMENT*, *BEFORE EACH ROW*, *AFTER EACH ROW*,
+*INSTEAD OF EACH ROW* that will be invoked when the compound trigger fires.
+Basic template is provided with place holders.
 
 Click the *SQL* tab to continue.
 

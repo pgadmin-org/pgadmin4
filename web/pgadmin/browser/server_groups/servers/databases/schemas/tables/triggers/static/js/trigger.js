@@ -187,8 +187,13 @@ define('pgadmin.node.trigger', [
           type: 'int', disabled: true, mode: ['properties'],
         },{
           id: 'is_enable_trigger', label: gettext('Trigger enabled?'),
-          type: 'switch', disabled: 'inSchema', mode: ['edit', 'properties'],
-          group: gettext('Definition'),
+          type: 'switch', mode: ['edit', 'properties'], group: gettext('Definition'),
+          disabled: function() {
+            if(this.node_info && ('catalog' in this.node_info || 'view' in this.node_info)) {
+              return true;
+            }
+            return false;
+          },
         },{
           id: 'is_row_trigger', label: gettext('Row trigger?'),
           type: 'switch', group: gettext('Definition'),
@@ -629,11 +634,21 @@ define('pgadmin.node.trigger', [
       canCreate: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       // Check to whether trigger is disable ?
       canCreate_with_trigger_enable: function(itemData, item, data) {
+        var treeData = this.getTreeNodeHierarchy(item);
+        if ('view' in treeData) {
+          return false;
+        }
+
         return itemData.icon === 'icon-trigger-bad' &&
           this.canCreate.apply(this, [itemData, item, data]);
       },
       // Check to whether trigger is enable ?
       canCreate_with_trigger_disable: function(itemData, item, data) {
+        var treeData = this.getTreeNodeHierarchy(item);
+        if ('view' in treeData) {
+          return false;
+        }
+
         return itemData.icon === 'icon-trigger' &&
           this.canCreate.apply(this, [itemData, item, data]);
       },

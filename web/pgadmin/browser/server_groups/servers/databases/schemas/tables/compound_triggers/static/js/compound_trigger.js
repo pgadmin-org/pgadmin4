@@ -185,7 +185,13 @@ define('pgadmin.node.compound_trigger', [
           type: 'int', disabled: true, mode: ['properties'],
         },{
           id: 'is_enable_trigger', label: gettext('Trigger enabled?'),
-          type: 'switch', disabled: 'inSchema', mode: ['edit', 'properties'],
+          type: 'switch', mode: ['edit', 'properties'],
+          disabled: function() {
+            if(this.node_info && ('catalog' in this.node_info || 'view' in this.node_info)) {
+              return true;
+            }
+            return false;
+          },
         },{
           type: 'nested', control: 'fieldset', mode: ['create','edit', 'properties'],
           label: gettext('FOR Events'), group: gettext('Events'), contentClass: 'row',
@@ -225,6 +231,23 @@ define('pgadmin.node.compound_trigger', [
             disabled: function(m) {
               var evn_delete = m.get('evnt_delete');
               if (!_.isUndefined(evn_delete) && m.node_info['server']['server_type'] == 'ppas')
+                return false;
+              return m.inSchemaWithModelCheck.apply(this, [m]);
+            },
+          },{
+            id: 'evnt_truncate', label: gettext('TRUNCATE'),
+            type: 'switch', mode: ['create','edit', 'properties'],
+            group: gettext('FOR Events'),
+            extraToggleClasses: 'pg-el-sm-6',
+            controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
+            disabled: function(m) {
+              var evn_truncate = m.get('evnt_truncate');
+              // Views cannot have TRUNCATE triggers.
+              if ('view' in m.node_info)
+                return true;
+
+              if (!_.isUndefined(evn_truncate) && m.node_info['server']['server_type'] == 'ppas')
                 return false;
               return m.inSchemaWithModelCheck.apply(this, [m]);
             },
@@ -337,6 +360,12 @@ define('pgadmin.node.compound_trigger', [
                   '    -- Enter any local declarations here\n' +
                   'BEGIN\n' +
                   '    -- Enter any required code here\n' +
+                  'END;\n\n' +
+                  '-- INSTEAD OF EACH ROW block. Delete if not required.\n' +
+                  'INSTEAD OF EACH ROW IS\n' +
+                  '    -- Enter any local declarations here\n' +
+                  'BEGIN\n' +
+                  '    -- Enter any required code here\n' +
                   'END;');
         },
         // We will check if we are under schema node & in 'create' mode
@@ -397,11 +426,21 @@ define('pgadmin.node.compound_trigger', [
       },
       // Check to whether trigger is disable ?
       canCreate_with_compound_trigger_enable: function(itemData, item, data) {
+        var treeData = this.getTreeNodeHierarchy(item);
+        if ('view' in treeData) {
+          return false;
+        }
+
         return itemData.icon === 'icon-compound_trigger-bad' &&
           this.canCreate.apply(this, [itemData, item, data]);
       },
       // Check to whether trigger is enable ?
       canCreate_with_compound_trigger_disable: function(itemData, item, data) {
+        var treeData = this.getTreeNodeHierarchy(item);
+        if ('view' in treeData) {
+          return false;
+        }
+
         return itemData.icon === 'icon-compound_trigger' &&
           this.canCreate.apply(this, [itemData, item, data]);
       },
