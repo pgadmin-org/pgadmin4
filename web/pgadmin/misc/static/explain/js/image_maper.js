@@ -58,6 +58,10 @@ let imageMapper = {
     'image': 'ex_gather_motion.svg',
     'image_text': 'Gather',
   },
+  'Gather Merge': {
+    'image': 'ex_gather_merge.svg',
+    'image_text': 'Gather Merge',
+  },
   'Group': {
     'image': 'ex_group.svg',
     'image_text': 'Group',
@@ -167,6 +171,10 @@ let imageMapper = {
       };
     }
   },
+  'Named Tuplestore Scan': {
+    'image': 'ex_named_tuplestore_scan.svg',
+    'image_text': 'Named Tuplestore Scan',
+  },
   'Nested Loop': function(data) {
     switch (data['Join Type']) {
     case 'Anti':
@@ -185,6 +193,10 @@ let imageMapper = {
         'image_text': 'Nested Loop ' + data['Join Type'] + ' Join',
       };
     }
+  },
+  'ProjectSet': {
+    'image': 'ex_projectset.svg',
+    'image_text': 'ProjectSet',
   },
   'Recursive Union': {
     'image': 'ex_recursive_union.svg',
@@ -259,6 +271,10 @@ let imageMapper = {
   'Tid Scan': {
     'image': 'ex_tid_scan.svg',
     'image_text': 'Tid Scan',
+  },
+  'Table Function Scan': {
+    'image': 'ex_table_func_scan.svg',
+    'image_text': 'Table Function Scan',
   },
   'Unique': {
     'image': 'ex_unique.svg',
