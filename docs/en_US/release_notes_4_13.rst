@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4600 <https://redmine.postgresql.org/issues/4600>`_ -  Add Reverse Engineered SQL tests for Rules.
 
 Bug fixes
 *********

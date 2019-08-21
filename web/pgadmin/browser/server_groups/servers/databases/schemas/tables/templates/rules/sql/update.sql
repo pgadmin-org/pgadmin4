@@ -5,7 +5,8 @@
 {% set rule_name = o_data.name %}
 {% endif %}
 {% if data.name and data.name != o_data.name %}
-ALTER RULE {{ conn|qtIdent(o_data.name) }} ON {{ conn|qtIdent(o_data.schema, o_data.view) }} RENAME TO {{ conn|qtIdent(data.name) }};{{ '\r\r' }}
+ALTER RULE {{ conn|qtIdent(o_data.name) }} ON {{ conn|qtIdent(o_data.schema, o_data.view) }} RENAME TO {{ conn|qtIdent(data.name) }};
+
 {% endif %}
 {% if data.event or data.do_instead is defined or data.condition or data.statements %}
 CREATE OR REPLACE RULE {{ conn|qtIdent(rule_name) }} AS

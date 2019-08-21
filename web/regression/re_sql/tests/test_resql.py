@@ -194,6 +194,18 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                       "... skipped (pre-condition SQL not satisfied)")
                 continue
 
+            # If msql_endpoint exists then validate the modified sql
+            if 'msql_endpoint' in scenario\
+                    and scenario['msql_endpoint']:
+                if not self.check_msql(scenario, object_id):
+                    print_msg = scenario['name']
+                    if 'expected_msql_file' in scenario:
+                        print_msg += "  Expected MSQL File:" + scenario[
+                            'expected_msql_file']
+                    print_msg = print_msg + "... FAIL"
+                    print(print_msg)
+                    continue
+
             if 'type' in scenario and scenario['type'] == 'create':
                 # Get the url and create the specific node.
 
@@ -252,18 +264,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     continue
             elif 'type' in scenario and scenario['type'] == 'alter':
                 # Get the url and create the specific node.
-
-                # If msql_endpoint exists then validate the modified sql
-                if 'msql_endpoint' in scenario\
-                        and scenario['msql_endpoint']:
-                    if not self.check_msql(scenario, object_id):
-                        print_msg = scenario['name']
-                        if 'expected_msql_file' in scenario:
-                            print_msg += "  Expected MSQL File:" + scenario[
-                                'expected_msql_file']
-                        print_msg = print_msg + "... FAIL"
-                        print(print_msg)
-                        continue
 
                 alter_url = self.get_url(scenario['endpoint'], object_id)
                 response = self.tester.put(alter_url,
@@ -397,7 +397,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     return False
             else:
                 try:
-                    self.assertFalse("Expected SQL File not found")
+                    self.assertFalse("Expected Modified SQL File not found")
                 except Exception as e:
                     self.final_test_status = False
                     traceback.print_exc()
