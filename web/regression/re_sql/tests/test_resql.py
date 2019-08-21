@@ -29,6 +29,7 @@ def create_resql_module_list(all_modules, exclude_pkgs, for_modules):
 
     :param all_modules: List of all the modules
     :param exclude_pkgs: List of exclude packages
+    :param for_modules: Module list
     :return:
     """
     resql_module_list = dict()
@@ -194,6 +195,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                       "... skipped (pre-condition SQL not satisfied)")
                 continue
 
+            # Check precondition for schema
+            self.check_schema_precondition(scenario)
+
             # If msql_endpoint exists then validate the modified sql
             if 'msql_endpoint' in scenario\
                     and scenario['msql_endpoint']:
@@ -208,30 +212,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
             if 'type' in scenario and scenario['type'] == 'create':
                 # Get the url and create the specific node.
-
-                if 'data' in scenario and 'schema' in scenario['data']:
-                    # If schema is already exist then fetch the oid
-                    self.get_db_connection()
-                    schema = regression.schema_utils.verify_schemas(
-                        self.server, self.db_name,
-                        scenario['data']['schema']
-                    )
-
-                    if schema:
-                        self.schema_id = schema[0]
-                    else:
-                        # If schema doesn't exist then create it
-                        schema = regression.schema_utils.create_schema(
-                            self.connection,
-                            scenario['data']['schema'])
-                        self.schema_id = schema[0]
-                else:
-                    self.schema_id = self.server_information['schema_id']
-
-                if 'data' in scenario and 'schema_id' in scenario['data'] and \
-                        scenario['data']['schema_id'] == \
-                        self.JSON_PLACEHOLDERS['schema_id']:
-                    scenario['data']['schema'] = self.schema_id
 
                 create_url = self.get_url(scenario['endpoint'])
                 response = self.tester.post(create_url,
@@ -359,6 +339,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             self.final_test_status = False
             print(scenario['name'] + "... FAIL")
             traceback.print_exc()
+            return False
         try:
             if type(response.data) == bytes:
                 response_data = response.data.decode('utf8')
@@ -368,6 +349,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             resp_sql = resp['data']
         except Exception:
             print("Unable to decode the response data from url: ", url)
+            return False
 
         # Remove first and last double quotes
         if resp_sql.startswith('"') and resp_sql.endswith('"'):
@@ -492,3 +474,38 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             traceback.print_exc()
         pg_cursor.close()
         return precondition_flag
+
+    def check_schema_precondition(self, scenario):
+        """
+        This function will check the given schema is exist or not. If exist
+        then fetch the oid and if not then create it.
+
+        :param scenario:
+        :return:
+        """
+        if 'type' in scenario and scenario['type'] == 'create':
+            # Get the url and create the specific node.
+
+            if 'data' in scenario and 'schema' in scenario['data']:
+                # If schema is already exist then fetch the oid
+                self.get_db_connection()
+                schema = regression.schema_utils.verify_schemas(
+                    self.server, self.db_name,
+                    scenario['data']['schema']
+                )
+
+                if schema:
+                    self.schema_id = schema[0]
+                else:
+                    # If schema doesn't exist then create it
+                    schema = regression.schema_utils.create_schema(
+                        self.connection,
+                        scenario['data']['schema'])
+                    self.schema_id = schema[0]
+            else:
+                self.schema_id = self.server_information['schema_id']
+
+            if 'data' in scenario and 'schema_id' in scenario['data'] and \
+                scenario['data']['schema_id'] == \
+                    self.JSON_PLACEHOLDERS['schema_id']:
+                scenario['data']['schema'] = self.schema_id
