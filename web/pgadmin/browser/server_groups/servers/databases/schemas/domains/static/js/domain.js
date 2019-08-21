@@ -217,8 +217,16 @@ define('pgadmin.node.domain', [
                     m.set('min_val', o.min_val, {silent: true});
                     m.set('max_val', o.max_val, {silent: true});
                   }
+                  else
+                    m.set('is_tlength', false, {silent: true});
                 }
               });
+
+              !m.get('is_tlength') && setTimeout(function() {
+                if(m.get('typlen')) {
+                  m.set('typlen', null);
+                }
+              },10);
             }
             return !m.get('is_tlength');
           },
@@ -244,8 +252,16 @@ define('pgadmin.node.domain', [
                     m.set('min_val', o.min_val, {silent: true});
                     m.set('max_val', o.max_val, {silent: true});
                   }
+                  else
+                    m.set('is_precision', false, {silent: true});
                 }
               });
+
+              !m.get('is_precision') && setTimeout(function() {
+                if(m.get('precision')) {
+                  m.set('precision', null);
+                }
+              },10);
             }
             return !m.get('is_precision');
           },
