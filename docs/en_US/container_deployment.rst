@@ -43,7 +43,7 @@ login to pgAdmin. This variable is required and must be set at launch time.
 
 **PGADMIN_ENABLE_TLS**
 
-Default: <null>
+*Default: <null>*
 
 If left un-set, the container will listen on port 80 for connections in plain
 text. If set to any value, the container will listen on port 443 for TLS
@@ -55,7 +55,7 @@ expected paths are /certs/server.crt and /certs/server.key
 
 **PGADMIN_LISTEN_ADDRESS**
 
-Default: [::]
+*Default: [::]*
 
 Specify the local address that the servers listens on. The default should work
 for most users - in IPv4-only environments, this may need to be set to
@@ -63,21 +63,21 @@ for most users - in IPv4-only environments, this may need to be set to
 
 **PGADMIN_LISTEN_PORT**
 
-Default: 80 or 443 (if TLS is enabled)
+*Default: 80 or 443 (if TLS is enabled)*
 
 Allows the port that the server listens on to be set to a specific value rather
 than using the default.
 
 **PGADMIN_SERVER_JSON_FILE**
 
-Default: /pgadmin4/servers.json
+*Default: /pgadmin4/servers.json*
 
 Override the default file path for the server definition list. See the
 /pgadmin4/servers.json mapped file below for more information.
 
 **GUNICORN_THREADS**
 
-Default: 25
+*Default: 25*
 
 Adjust the number of threads the Gunicorn server uses to handle incoming
 requests. This should typically be left as-is, except in highly loaded systems
