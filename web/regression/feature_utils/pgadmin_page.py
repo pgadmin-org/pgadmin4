@@ -8,6 +8,7 @@
 ##########################################################################
 
 import time
+import sys
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, \
@@ -18,6 +19,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from regression.feature_utils.locators import QueryToolLocators, \
+    NavMenuLocators
+from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
 
 class PgadminPage:
@@ -84,8 +88,10 @@ class PgadminPage:
         self.find_by_css_selector("button[type='save'].btn.btn-primary").\
             click()
 
-        self.find_by_xpath(
-            "//*[@id='tree']//*[.='" + server_config['name'] + "']")
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(
+                (By.XPATH,
+                 "//*[@id='tree']//*[.='" + server_config['name'] + "']")))
 
     def open_query_tool(self):
         self.driver.find_element_by_link_text("Tools").click()
@@ -151,6 +157,24 @@ class PgadminPage:
                 'contains(.,"Don\'t save")]'))
         self.driver.switch_to.default_content()
 
+    def clear_query_tool(self):
+        self.click_element(
+            self.find_by_css_selector(QueryToolLocators.btn_clear_dropdown)
+        )
+        ActionChains(self.driver).move_to_element(
+            self.find_by_css_selector(QueryToolLocators.btn_clear)).perform()
+        self.click_element(
+            self.find_by_css_selector(QueryToolLocators.btn_clear)
+        )
+        self.click_modal('Yes')
+
+    def execute_query(self, query):
+        self.fill_codemirror_area_with(query)
+        execute_button = self.find_by_css_selector(
+            QueryToolLocators.btn_execute_query_css)
+        execute_button.click()
+        self.wait_for_query_tool_loading_indicator_to_disappear()
+
     def close_data_grid(self):
         self.driver.switch_to_default_content()
         xpath = "//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]"
@@ -188,14 +212,40 @@ class PgadminPage:
                 if attempts == 0:
                     raise Exception(e)
 
+    def get_expansion_status_of_node(self, xpath_node):
+        """get the expansion status for a node through xpath"""
+        node_is_expanded = False
+        element = self.find_by_xpath(xpath_node)
+        if element.get_attribute("aria-expanded") == 'true':
+            node_is_expanded = True
+        return node_is_expanded
+
     def toggle_open_servers_group(self):
         """This will open Servers group to display underlying nodes"""
+        is_expanded = False
         self.wait_for_spinner_to_disappear()
-        server_group = self.find_by_xpath(
-            "//div[@id='tree']//span[@class='aciTreeItem']"
-            "/span[(@class='aciTreeText') and starts-with(text(),'Servers ') "
-            "or starts-with(text(), 'Servers')]")
-        ActionChains(self.driver).double_click(server_group).perform()
+        if self.check_if_element_exist_by_xpath(
+                TreeAreaLocators.server_group_node):
+            if self.get_expansion_status_of_node(
+                    TreeAreaLocators.server_group_node_exp_status):
+                is_expanded = True
+            else:
+                webdriver.ActionChains(self.driver).double_click(
+                    self.find_by_xpath(
+                        TreeAreaLocators.
+                        server_group_node)).perform()
+                if self.check_if_element_exist_by_xpath(
+                        TreeAreaLocators.server_group_sub_nodes):
+                    is_expanded = True
+                else:
+                    print(
+                        "(toggle_open_servers_group)The Server Group "
+                        "node is clicked to expand but it is not expanded",
+                        file=sys.stderr)
+        else:
+            print("The Server Group node is not visible",
+                  file=sys.stderr)
+        return is_expanded
 
     def toggle_open_tree_item(self, tree_item_text):
         # 'sleep' here helps in cases where underlying nodes are auto opened.
@@ -203,8 +253,7 @@ class PgadminPage:
         # even if the underlying node to be clicked was Opened.
         time.sleep(.6)
         item_with_text = self.find_by_xpath(
-            "//div[@id='tree']//span[@class='aciTreeItem']/span["
-            "(@class='aciTreeText') and text()='" + tree_item_text + "']")
+            TreeAreaLocators.specified_tree_node.format(tree_item_text))
 
         self.driver.execute_script("arguments[0].scrollIntoView()",
                                    item_with_text)
@@ -215,6 +264,17 @@ class PgadminPage:
             item = item_with_text.find_element_by_xpath(
                 ".//parent::*[@class='aciTreeItem']")
             ActionChains(self.driver).double_click(item).perform()
+        retry = 3
+        while retry > 0:
+            try:
+                WebDriverWait(self.driver, 5).until((lambda item_with_text: (
+                    item_with_text.find_element_by_xpath(
+                        ".//ancestor::*[@class='aciTreeLine']").
+                    get_attribute("aria-expanded") == 'true')))
+                break
+            except TimeoutException:
+                retry -= 1
+                pass
 
     def toggle_open_tables_node(self):
         """The function will be used for opening Tables node only"""
@@ -454,15 +514,14 @@ class PgadminPage:
 
     def click_tab(self, tab_name):
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
-            (By.XPATH, "//*[contains(@class,'wcTabTop')]//"
-                       "*[contains(@class,'wcPanelTab') "
-                       "and contains(.,'" + tab_name + "')]")))
-
-        tab = self.find_by_xpath("//*[contains(@class,'wcTabTop')]//"
-                                 "*[contains(@class,'wcPanelTab') "
-                                 "and contains(.,'" + tab_name + "')]")
-
-        self.click_element(tab)
+            (By.XPATH, NavMenuLocators.select_tab_xpath.format(tab_name))))
+        click_tab = True
+        while click_tab:
+            tab = self.find_by_xpath(
+                NavMenuLocators.select_tab_xpath.format(tab_name))
+            self.click_element(tab)
+            if 'wcPanelTabActive' in tab.get_attribute('class'):
+                break
 
     def wait_for_input_by_element(self, element, content):
         def input_field_has_content(driver):
@@ -539,7 +598,7 @@ class PgadminPage:
             except NoSuchElementException:
                 return True
 
-        self._wait_for("spinner to disappear", spinner_has_disappeared)
+        self._wait_for("spinner to disappear", spinner_has_disappeared, 20)
 
     def wait_for_query_tool_loading_indicator_to_disappear(self):
         def spinner_has_disappeared(driver):
@@ -553,7 +612,12 @@ class PgadminPage:
                 time.sleep(0.5)
                 return True
 
-        self._wait_for("spinner to disappear", spinner_has_disappeared)
+        self._wait_for("spinner to disappear", spinner_has_disappeared, 20)
+
+    def wait_for_query_tool_loading_indicator_to_appear(self):
+        self.check_if_element_exist_by_xpath(
+            "//div[@id='editor-panel']//"
+            "div[@class='pg-sp-container sql-editor-busy-fetching']")
 
     def wait_for_app(self):
         def page_shows_app(driver):
@@ -574,10 +638,98 @@ class PgadminPage:
         return element_selector(self.driver)
 
     def _wait_for(self, waiting_for_message, condition_met_function,
-                  timeout=3):
+                  timeout=5):
         if timeout is None:
             timeout = self.timeout
         return WebDriverWait(self.driver, timeout, 0.01).until(
             condition_met_function,
             "Timed out waiting for " + waiting_for_message
         )
+
+    def wait_for_elements(self, find_method_with_args):
+        """Using xpath, it will wait for elements"""
+        def element_if_it_exists(driver):
+            try:
+                element = find_method_with_args(driver)
+                if len(element) > 0 and element[0].is_displayed() and element[
+                        0].is_enabled():
+                    return element
+            except NoSuchElementException:
+                return False
+
+        return self._wait_for("element to exist", element_if_it_exists)
+
+    def find_by_xpath_list(self, xpath):
+        """This will find out list of elements through a single xpath"""
+        return self.wait_for_elements(
+            lambda driver: driver.find_elements_by_xpath(xpath))
+
+    def get_index_of_element(self, element_list, target_string):
+        """it will return index of an element from provided element list"""
+        index_of_required_server = -1
+        if len(element_list) > 0:
+            for index, element in enumerate(element_list):
+                if element.text.startswith(target_string) and (
+                        target_string in element.text):
+                    index_of_required_server = index
+                    break
+        else:
+            print("There seems no record in the provided element list")
+        return index_of_required_server
+
+    def set_switch_box_status(self, switch_box, required_status):
+        """it will change switch box status to required one. Two elements
+        of the switch boxes are to be provided i) button which is needed to
+         toggle ii) Yes for True or No for False"""
+        status_changed_successfully = False
+        switch_box_element = self.find_by_xpath(switch_box)
+
+        if required_status == 'Yes':
+            if 'off' in switch_box_element.get_attribute("class"):
+                switch_box_element.click()
+                time.sleep(1)
+                if 'success' in switch_box_element.get_attribute("class"):
+                    status_changed_successfully = True
+                else:
+                    print(
+                        "(set_switch_box_status)Clicked the "
+                        "element to change its status but "
+                        "it did not changed",
+                        file=sys.stderr)
+            elif 'success' in switch_box_element.get_attribute("class"):
+                status_changed_successfully = True
+        else:
+            if 'success' in switch_box_element.get_attribute("class"):
+                switch_box_element.click()
+                if 'off' in switch_box_element.get_attribute("class"):
+                    status_changed_successfully = True
+                else:
+                    print(
+                        "(set_switch_box_status)Clicked the element to "
+                        "change its status but it did not changed",
+                        file=sys.stderr)
+            elif 'off' in switch_box_element.get_attribute("class"):
+                status_changed_successfully = True
+        return status_changed_successfully
+
+    def retry_click_operation(self, element_to_click,
+                              element_to_verify_after_click):
+        """This will attempt to click add button multiple time,
+        some different exception encountered while clicking, so handled
+        through this"""
+
+        click_status = False
+        attempt = 0
+
+        while click_status is not True and attempt < 5:
+            try:
+                if element_to_verify_after_click.is_displayed():
+                    click_status = True
+                element_to_click.click()
+                if element_to_verify_after_click.is_displayed():
+                    click_status = True
+            except Exception:
+                print("The click operation is not performed for "
+                      "attempt %s, will try 5 attempts" % attempt)
+            attempt = +1
+        return click_status

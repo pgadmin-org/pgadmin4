@@ -15,13 +15,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
-from regression.feature_utils.base_feature_test import BaseFeatureTest
 from selenium.webdriver.common.keys import Keys
+from regression.feature_utils.base_feature_test import BaseFeatureTest
+from regression.feature_utils.locators import NavMenuLocators
 
 
 class KeyboardShortcutFeatureTest(BaseFeatureTest):
     """
-        This feature test will test the keyboard short is working
+        This feature test will test the keyboard shortcut is working
         properly.
     """
 
@@ -85,23 +86,36 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
             print("OK", file=sys.stderr)
 
     def _update_preferences(self):
-        self.page.find_by_id("mnu_file").click()
-        self.page.find_by_id("mnu_preferences").click()
+        file_menu = self.page.find_by_css_selector(
+            NavMenuLocators.file_menu_css)
+        file_menu.click()
 
+        pref_menu_item = self.page.find_by_css_selector(
+            NavMenuLocators.preference_menu_item_css)
+        pref_menu_item.click()
+
+        # Wait till the preference dialogue box is displayed by checking the
+        # visibility of Show System Object label
         self.wait.until(EC.presence_of_element_located(
-            (By.XPATH, "//*[contains(string(), 'Show system objects?')]"))
+            (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
         )
 
-        self.page.find_by_css_selector(
-            ".ajs-dialog.pg-el-container .ajs-maximize"
-        ).click()
+        maximize_button = self.page.find_by_css_selector(
+            NavMenuLocators.maximize_pref_dialogue_css)
+        maximize_button.click()
 
-        browser = self.page.find_by_xpath(
-            "//*[contains(@class,'aciTreeLi') and contains(.,'Browser')]")
+        browser_node = self.page.find_by_xpath(
+            NavMenuLocators.specified_preference_tree_node.format('Browser'))
+        if self.page.find_by_xpath(
+            NavMenuLocators.specified_pref_node_exp_status.
+                format('Browser')).get_attribute('aria-expanded') == 'false':
 
-        browser.find_element_by_xpath(
-            "//*[contains(@class,'aciTreeText') and "
-            "contains(.,'Keyboard shortcuts')]").click()
+            ActionChains(self.driver).double_click(browser_node).perform()
+
+        keyboard_node = self.page.find_by_xpath(
+            NavMenuLocators.specified_sub_node_of_pref_tree_node.format(
+                'Browser', 'Keyboard shortcuts'))
+        keyboard_node.click()
 
         for s in self.new_shortcuts:
             key = self.new_shortcuts[s]['shortcut'][2]

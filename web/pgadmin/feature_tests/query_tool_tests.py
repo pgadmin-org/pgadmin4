@@ -10,15 +10,16 @@
 from __future__ import print_function
 import sys
 
-from selenium.common.exceptions import StaleElementReferenceException
-from selenium.webdriver import ActionChains
+from selenium.common.exceptions import StaleElementReferenceException, \
+    ElementClickInterceptedException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 import config
-from .locators import QueryToolLocatorsCss
+from regression.feature_utils.locators import \
+    QueryToolLocators
 
 
 class QueryToolFeatureTest(BaseFeatureTest):
@@ -33,17 +34,20 @@ class QueryToolFeatureTest(BaseFeatureTest):
     def before(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
-        self._locate_database_tree_node()
+        self.page.toggle_open_tree_item(self.server['name'])
+        self.page.toggle_open_tree_item('Databases')
+        self.page.toggle_open_tree_item(self.test_db)
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
         self._reset_options()
+        self.wait = WebDriverWait(self.page.driver, 10)
 
     def runTest(self):
         # on demand result set on scrolling.
         print("\nOn demand query result... ",
               file=sys.stderr, end="")
         self._on_demand_result()
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         # explain query with verbose and cost
         print("Explain query with verbose and cost... ",
@@ -51,7 +55,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
         if self._supported_server_version():
             self._query_tool_explain_with_verbose_and_cost()
             print("OK.", file=sys.stderr)
-            self._clear_query_tool()
+            self.page.clear_query_tool()
         else:
             print("Skipped.", file=sys.stderr)
 
@@ -61,7 +65,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
         if self._supported_server_version():
             self._query_tool_explain_analyze_with_buffers_and_timing()
             print("OK.", file=sys.stderr)
-            self._clear_query_tool()
+            self.page.clear_query_tool()
         else:
             print("Skipped.", file=sys.stderr)
 
@@ -69,30 +73,30 @@ class QueryToolFeatureTest(BaseFeatureTest):
         print("Auto commit disabled... ", file=sys.stderr, end="")
         self._query_tool_auto_commit_disabled()
         print("OK.", file=sys.stderr)
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         # auto commit enabled.
         print("Auto commit enabled... ", file=sys.stderr, end="")
         self._query_tool_auto_commit_enabled()
         print("OK.", file=sys.stderr)
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         # auto rollback enabled.
         print("Auto rollback enabled...", file=sys.stderr, end="")
         self._query_tool_auto_rollback_enabled()
         print(" OK.", file=sys.stderr)
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         # cancel query.
         print("Cancel query... ", file=sys.stderr, end="")
         self._query_tool_cancel_query()
         print("OK.", file=sys.stderr)
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         # Notify Statements.
         print("Capture Notify Statements... ", file=sys.stderr, end="")
         self._query_tool_notify_statements()
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         # explain query with JIT stats
         print("Explain query with JIT stats... ",
@@ -100,7 +104,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
         if self._supported_jit_on_server():
             self._query_tool_explain_check_jit_stats()
             print("OK.", file=sys.stderr)
-            self._clear_query_tool()
+            self.page.clear_query_tool()
         else:
             print("Skipped.", file=sys.stderr)
 
@@ -112,56 +116,39 @@ class QueryToolFeatureTest(BaseFeatureTest):
         self.page.fill_codemirror_area_with('')
 
         explain_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain_options_dropdown)
+            QueryToolLocators.btn_explain_options_dropdown)
         explain_op.click()
 
         # disable Explain options and auto rollback only if they are enabled.
-        for op in (QueryToolLocatorsCss.btn_explain_verbose,
-                   QueryToolLocatorsCss.btn_explain_costs,
-                   QueryToolLocatorsCss.btn_explain_buffers,
-                   QueryToolLocatorsCss.btn_explain_timing):
+        for op in (QueryToolLocators.btn_explain_verbose,
+                   QueryToolLocators.btn_explain_costs,
+                   QueryToolLocators.btn_explain_buffers,
+                   QueryToolLocators.btn_explain_timing):
             btn = self.page.find_by_css_selector(op)
             check = btn.find_element_by_tag_name('i')
             if 'visibility-hidden' not in check.get_attribute('class'):
                 btn.click()
 
         query_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_query_dropdown)
+            QueryToolLocators.btn_query_dropdown)
         query_op.click()
 
         # disable auto rollback only if they are enabled
         btn = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_auto_rollback)
+            QueryToolLocators.btn_auto_rollback)
         check = btn.find_element_by_tag_name('i')
         if 'visibility-hidden' not in check.get_attribute('class'):
             btn.click()
 
         # enable autocommit only if it's disabled
         btn = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_auto_commit)
+            QueryToolLocators.btn_auto_commit)
         check = btn.find_element_by_tag_name('i')
         if 'visibility-hidden' in check.get_attribute('class'):
             btn.click()
 
         # close menu
         query_op.click()
-
-    def _locate_database_tree_node(self):
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
-
-    def _clear_query_tool(self):
-        self.page.click_element(self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_clear_dropdown)
-        )
-        ActionChains(self.driver) \
-            .move_to_element(self.page.find_by_css_selector(
-                QueryToolLocatorsCss.btn_clear)).perform()
-        self.page.click_element(
-            self.page.find_by_css_selector(QueryToolLocatorsCss.btn_clear)
-        )
-        self.page.click_modal('Yes')
 
     def _on_demand_result(self):
         ON_DEMAND_CHUNKS = 2
@@ -175,126 +162,133 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         print("\nOn demand result set on scrolling... ",
               file=sys.stderr, end="")
-        wait = WebDriverWait(self.page.driver, 10)
-        self.page.fill_codemirror_area_with(query)
-
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+        self.page.execute_query(query)
 
         # wait for header of the table to be visible
-        wait.until(EC.visibility_of_element_located(
-            (By.XPATH, '//div[@class="slick-header-columns"]')))
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
-        wait.until(EC.presence_of_element_located(
-            (By.XPATH,
-             '//span[@data-row="0" and text()="1"]'))
-        )
+        self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR,
+             QueryToolLocators.query_output_cells)))
 
-        # scroll to bottom to fetch next chunk of result set.
-        self.driver.execute_script(
-            "pgAdmin.SqlEditor.jquery('.slick-viewport')"
-            ".scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
-        )
+        canvas = self.page.find_by_css_selector(
+            QueryToolLocators.query_output_canvas_css)
 
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
-
-        self._check_ondemand_result(row_id_to_find, canvas)
+        self._check_ondemand_result(row_id_to_find)
         print("OK.", file=sys.stderr)
 
         print("On demand result set on grid select all... ",
               file=sys.stderr, end="")
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         # wait for header of the table to be visible
-        wait.until(EC.visibility_of_element_located(
-            (By.XPATH, '//div[@class="slick-header-columns"]')))
+        canvas = self.page.find_by_css_selector(
+            QueryToolLocators.query_output_canvas_css)
 
-        # wait for first row to contain value
-        wait.until(EC.presence_of_element_located(
-            (By.XPATH,
-             '//span[@data-row="0" and text()="1"]'))
+        # wait for the rows in the table to be displayed
+        self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR,
+             QueryToolLocators.query_output_cells))
         )
 
-        wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, ".slick-header-column"))).click()
+        # Select all rows in a table
+        multiple_check = True
+        count = 0
+        while multiple_check:
+            try:
+                select_all = self.wait.until(EC.element_to_be_clickable(
+                    (By.XPATH, QueryToolLocators.select_all_column)))
+                select_all.click()
+                multiple_check = False
+            except (StaleElementReferenceException,
+                    ElementClickInterceptedException):
+                count += 1
+                pass
+        print(count)
 
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
-
-        self._check_ondemand_result(row_id_to_find, canvas)
+        self._check_ondemand_result(row_id_to_find)
         print("OK.", file=sys.stderr)
 
         print("On demand result set on column select all... ",
               file=sys.stderr, end="")
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         # wait for header of the table to be visible
-        wait.until(EC.visibility_of_element_located(
-            (By.XPATH, '//div[@class="slick-header-columns"]')))
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
-        wait.until(EC.presence_of_element_located(
-            (By.XPATH,
-             '//span[@data-row="0" and text()="1"]'))
+        # wait for the rows in the table to be displayed
+        self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR,
+             QueryToolLocators.query_output_cells))
         )
 
         # click on first data column to select all column.
-        wait.until(EC.presence_of_element_located(
-            (
-                By.XPATH,
-                "//span[contains(@class, 'column-name') "
-                "and contains(., 'id1')]"))
-        ).click()
+        column_1 = \
+            self.page.find_by_css_selector(
+                QueryToolLocators.output_column_header_css.format('id1'))
+        column_1.click()
 
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
+        canvas = self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
-        self._check_ondemand_result(row_id_to_find, canvas)
+        self._check_ondemand_result(row_id_to_find)
         print("OK.", file=sys.stderr)
 
-    def _check_ondemand_result(self, row_id_to_find, canvas):
+    def _check_ondemand_result(self, row_id_to_find):
         # scroll to bottom to bring last row of next chunk in viewport.
-        self.driver.execute_script(
-            "pgAdmin.SqlEditor.jquery('.slick-viewport')"
-            ".scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
-        )
+        # canvas_ele = self.page.find_by_css_selector()
+        scroll = 10
+        while scroll:
+            canvas_ele = self.page.find_by_css_selector('.grid-canvas')
+            scrolling_height = canvas_ele.size['height']
+            self.driver.execute_script(
+                "pgAdmin.SqlEditor.jquery('.slick-viewport')"
+                ".scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas')"
+                ".height());"
+            )
+            import time
+            time.sleep(0.5)
+            if canvas_ele.size['height'] == scrolling_height:
+                break
+            else:
+                scroll -= 1
 
-        canvas.find_element_by_xpath(
-            '//span[text()="{}"]'.format(row_id_to_find)
-        )
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.output_column_data_xpath.format(row_id_to_find)
+        ))
 
     def _query_tool_explain_with_verbose_and_cost(self):
         query = """-- Explain query with verbose and cost
 SELECT generate_series(1, 1000) as id order by id desc"""
 
-        wait = WebDriverWait(self.page.driver, 10)
-
         self.page.fill_codemirror_area_with(query)
 
         explain_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain_options_dropdown)
+            QueryToolLocators.btn_explain_options_dropdown)
         explain_op.click()
 
         # disable Explain options and auto rollback only if they are enabled.
-        for op in (QueryToolLocatorsCss.btn_explain_verbose,
-                   QueryToolLocatorsCss.btn_explain_costs):
+        for op in (QueryToolLocators.btn_explain_verbose,
+                   QueryToolLocators.btn_explain_costs):
             self.page.find_by_css_selector(op).click()
 
         explain_op.click()
 
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain).click()
+            QueryToolLocators.btn_explain).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         self.page.click_tab('Data Output')
 
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas"))
+        canvas = self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css))
         )
 
         # Search for 'Output' word in result (verbose option)
@@ -307,40 +301,38 @@ SELECT generate_series(1, 1000) as id order by id desc"""
         query = """-- Explain analyze query with buffers and timing
 SELECT generate_series(1, 1000) as id order by id desc"""
 
-        wait = WebDriverWait(self.page.driver, 10)
-
         self.page.fill_codemirror_area_with(query)
 
         explain_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain_options_dropdown)
+            QueryToolLocators.btn_explain_options_dropdown)
         explain_op.click()
 
         # disable Explain options and auto rollback only if they are enabled.
-        for op in (QueryToolLocatorsCss.btn_explain_buffers,
-                   QueryToolLocatorsCss.btn_explain_timing):
+        for op in (QueryToolLocators.btn_explain_buffers,
+                   QueryToolLocators.btn_explain_timing):
             self.page.find_by_css_selector(op).click()
 
         explain_op.click()
 
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain_analyze).click()
+            QueryToolLocators.btn_explain_analyze).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         self.page.click_tab('Data Output')
 
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas"))
-        )
-        # Search for 'Shared Read Blocks' word in result (buffers option)
-        canvas.find_element_by_xpath(
-            "//*[contains(string(), 'Shared Read Blocks')]"
+        self.wait.until(EC.presence_of_element_located(
+            (By.XPATH, QueryToolLocators.output_cell_xpath.format(1, 1)))
         )
 
+        result = self.page.find_by_xpath(
+            QueryToolLocators.output_cell_xpath.format(1, 1))
+
+        # Search for 'Shared Read Blocks' word in result (buffers option)
+        self.assertIn('Shared Read Blocks', result.text)
+
         # Search for 'Actual Total Time' word in result (timing option)
-        canvas.find_element_by_xpath(
-            "//*[contains(string(), 'Actual Total Time')]"
-        )
+        self.assertIn('Actual Total Time', result.text)
 
     def _query_tool_auto_commit_disabled(self):
         table_name = 'query_tool_auto_commit_disabled_table'
@@ -349,32 +341,31 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 -- 3. ROLLBACK transaction.
 -- 4. Check if table is *NOT* created.
 CREATE TABLE public.{}();""".format(table_name)
-        wait = WebDriverWait(self.page.driver, 10)
 
         self.page.fill_codemirror_area_with(query)
 
         # open auto commit option and disable it
         query_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_query_dropdown)
+            QueryToolLocators.btn_query_dropdown)
         query_op.click()
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_auto_commit).click()
+            QueryToolLocators.btn_auto_commit).click()
         # close option
         query_op.click()
 
         # execute query
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and '
-            'contains(string(), "CREATE TABLE")]'
-        )
+
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
+            "CREATE TABLE message does not displayed")
 
         # do the ROLLBACK and check if the table is present or not
-        self._clear_query_tool()
+        self.page.clear_query_tool()
         query = """-- 1. (Done) Disable auto commit.
 -- 2. (Done) Create table in public schema.
 -- 3. ROLLBACK transaction.
@@ -382,16 +373,15 @@ CREATE TABLE public.{}();""".format(table_name)
 ROLLBACK;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and '
-            'contains(string(), "ROLLBACK")]'
-        )
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.sql_editor_message.format('ROLLBACK')),
+            "ROLLBACK message does not displayed")
 
-        self._clear_query_tool()
+        self.page.clear_query_tool()
         query = """-- 1. (Done) Disable auto commit.
 -- 2. (Done) Create table in public schema.
 -- 3. (Done) ROLLBACK transaction.
@@ -400,16 +390,15 @@ SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Data Output')
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
+        canvas = self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
         el = canvas.find_elements_by_xpath(
-            "//div[contains(@class, 'slick-cell') and "
-            "contains(text(), '{}')]".format(table_name))
+            QueryToolLocators.output_column_data_xpath.format(table_name))
 
         assert len(el) == 0, "Table '{}' created with auto commit disabled " \
                              "and without any explicit commit.".format(
@@ -423,7 +412,7 @@ SELECT relname FROM pg_class
         ROLLBACK;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
@@ -437,23 +426,21 @@ END;"""
 
         self.page.fill_codemirror_area_with(query)
 
-        wait = WebDriverWait(self.page.driver, 10)
-
         query_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_query_dropdown)
+            QueryToolLocators.btn_query_dropdown)
         query_op.click()
 
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_auto_commit).click()
+            QueryToolLocators.btn_auto_commit).click()
 
         query_op.click()
 
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         table_name = 'query_tool_auto_commit_enabled_table'
         query = """-- 1. (Done) END any open transaction.
@@ -463,37 +450,29 @@ END;"""
 -- 5. Check if table is created event after ROLLBACK.
 CREATE TABLE public.{}();""".format(table_name)
 
-        self.page.fill_codemirror_area_with(query)
-
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-
+        self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and '
-            'contains(string(), "CREATE TABLE")]'
-        )
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
+            "CREATE TABLE message does not displayed")
 
-        self._clear_query_tool()
+        self.page.clear_query_tool()
         query = """-- 1. (Done) END any open transaction if any.
 -- 2. (Done) Enable auto commit.
 -- 3. (Done) Create table in public schema.
 -- 4. ROLLBACK transaction
 -- 5. Check if table is created event after ROLLBACK.
 ROLLBACK;"""
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
 
+        self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and '
-            'contains(string(), "ROLLBACK")]'
-        )
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.sql_editor_message.format('ROLLBACK')),
+            "ROLLBACK message does not displayed")
 
-        self._clear_query_tool()
+        self.page.clear_query_tool()
         query = """-- 1. (Done) END any open transaction if any.
 -- 2. (Done) Enable auto commit.
 -- 3. (Done) Create table in public schema.
@@ -503,17 +482,16 @@ SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.click_tab('Data Output')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
+        canvas = self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
         el = canvas.find_elements_by_xpath(
-            "//div[contains(@class, 'slick-cell') and "
-            "contains(text(), '{}')]".format(table_name))
+            QueryToolLocators.output_column_data_xpath.format(table_name))
 
         assert len(el) != 0, "Table '{}' is not created with auto " \
                              "commit enabled.".format(table_name)
@@ -527,12 +505,11 @@ SELECT relname FROM pg_class
 -- 5. END transaction.
 -- 6. Check if table is *NOT* created after ending transaction.
 END;"""
-        wait = WebDriverWait(self.page.driver, 10)
 
         self.page.fill_codemirror_area_with(query)
 
         query_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_query_dropdown)
+            QueryToolLocators.btn_query_dropdown)
         query_op.click()
 
         # uncheckt auto commit and check auto-rollback
@@ -542,10 +519,10 @@ END;"""
         query_op.click()
 
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         query = """-- 1. (Done) END any open transaction.
 -- 2. Enable auto rollback and disable auto commit.
@@ -554,21 +531,14 @@ END;"""
 -- 5. END transaction.
 -- 6. Check if table is *NOT* created after ending transaction.
 CREATE TABLE public.{}();""".format(table_name)
-        wait = WebDriverWait(self.page.driver, 10)
-
-        self.page.fill_codemirror_area_with(query)
-
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-
+        self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and '
-            'contains(string(), "CREATE TABLE")]'
-        )
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
+            "CREATE TABLE message does not displayed")
+        self.page.clear_query_tool()
 
-        self._clear_query_tool()
         query = """-- 1. (Done) END any open transaction.
 -- 2. (Done) Enable auto rollback and disable auto commit.
 -- 3. (Done) Create table in public schema.
@@ -576,18 +546,14 @@ CREATE TABLE public.{}();""".format(table_name)
 -- 5. END transaction.
 -- 6. Check if table is *NOT* created after ending transaction.
 SELECT 1/0;"""
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-
+        self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and '
-            'contains(string(), "division by zero")]'
-        )
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.sql_editor_message.format('division by zero')),
+            "division by zero message does not displayed")
+        self.page.clear_query_tool()
 
-        self._clear_query_tool()
         query = """-- 1. (Done) END any open transaction.
 -- 2. (Done) Enable auto rollback and disable auto commit.
 -- 3. (Done) Create table in public schema.
@@ -595,19 +561,15 @@ SELECT 1/0;"""
 -- 5. END transaction.
 -- 6. Check if table is *NOT* created after ending transaction.
 END;"""
-
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-
+        self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.page.find_by_xpath(
-            '//div[contains(@class, "sql-editor-message") and '
-            'contains(string(), "Query returned successfully")]'
-        )
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.sql_editor_message.
+            format('Query returned successfully')),
+            "Query returned successfully message does not displayed")
+        self.page.clear_query_tool()
 
-        self._clear_query_tool()
         query = """-- 1. (Done) END any open transaction.
 -- 2. (Done) Enable auto rollback and disable auto commit.
 -- 3. (Done) Create table in public schema.
@@ -616,18 +578,14 @@ END;"""
 -- 6. Check if table is *NOT* created after ending transaction.
 SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-
+        self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Data Output')
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas")))
+        canvas = self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
         el = canvas.find_elements_by_xpath(
-            "//div[contains(@class, 'slick-cell') and "
-            "contains(text(), '{}')]".format(table_name))
+            QueryToolLocators.output_column_data_xpath.format(table_name))
 
         assert len(el) == 0, "Table '{}' created even after ROLLBACK due to " \
                              "sql error.".format(table_name)
@@ -648,7 +606,7 @@ SELECT 1, pg_sleep(300)"""
             commit_button.click()
 
         query_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_query_dropdown)
+            QueryToolLocators.btn_query_dropdown)
         query_op.click()
 
         # enable auto-commit and disable auto-rollback
@@ -658,18 +616,18 @@ SELECT 1, pg_sleep(300)"""
         query_op.click()
 
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.find_by_xpath("//*[@id='fetching_data']")
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_cancel_query).click()
+            QueryToolLocators.btn_cancel_query).click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.page.find_by_xpath(
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
             '//div[contains(@class, "sql-editor-message") and '
             '(contains(string(), "canceling statement due to user request") '
             'or contains(string(), "Execution Cancelled!"))]'
-        )
+        ))
 
     def _supported_server_version(self):
         connection = test_utils.get_db_connection(
@@ -683,48 +641,33 @@ SELECT 1, pg_sleep(300)"""
         return connection.server_version > 90100
 
     def _query_tool_notify_statements(self):
-        wait = WebDriverWait(self.page.driver, 60)
-
         print("\n\tListen on an event... ", file=sys.stderr, end="")
-        self.page.fill_codemirror_area_with("LISTEN foo;")
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.execute_query("LISTEN foo;")
         self.page.click_tab('Messages')
 
-        wait.until(EC.text_to_be_present_in_element(
-            (By.CSS_SELECTOR, ".sql-editor-message"), "LISTEN")
-        )
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.sql_editor_message.format('LISTEN')),
+            "LISTEN message does not displayed")
         print("OK.", file=sys.stderr)
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         print("\tNotify event without data... ", file=sys.stderr, end="")
-        self.page.fill_codemirror_area_with("NOTIFY foo;")
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.execute_query("NOTIFY foo;")
         self.page.click_tab('Notifications')
-        wait.until(EC.text_to_be_present_in_element(
+        self.wait.until(EC.text_to_be_present_in_element(
             (By.CSS_SELECTOR, "td.channel"), "foo")
         )
         print("OK.", file=sys.stderr)
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
         print("\tNotify event with data... ", file=sys.stderr, end="")
         if self._supported_server_version():
-            self.page.fill_codemirror_area_with("SELECT pg_notify('foo', "
-                                                "'Hello')")
-            self.page.find_by_css_selector(
-                QueryToolLocatorsCss.btn_execute_query).click()
-
-            self.page.wait_for_query_tool_loading_indicator_to_disappear()
+            self.page.execute_query("SELECT pg_notify('foo', 'Hello')")
             self.page.click_tab('Notifications')
-            wait.until(WaitForAnyElementWithText(
+            self.wait.until(WaitForAnyElementWithText(
                 (By.CSS_SELECTOR, 'td.payload'), "Hello"))
             print("OK.", file=sys.stderr)
-            self._clear_query_tool()
+            self.page.clear_query_tool()
         else:
             print("Skipped.", file=sys.stderr)
 
@@ -756,69 +699,63 @@ SELECT 1, pg_sleep(300)"""
             is_edb = 'EnterpriseDB' in version_string[0]
 
         connection.close()
-
         return connection.server_version >= 110000 and jit_enabled
 
     def _query_tool_explain_check_jit_stats(self):
-        wait = WebDriverWait(self.page.driver, 10)
 
-        self.page.fill_codemirror_area_with("SET jit_above_cost=10;")
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self._clear_query_tool()
+        self.page.execute_query("SET jit_above_cost=10;")
+        self.page.clear_query_tool()
 
         self.page.fill_codemirror_area_with("SELECT count(*) FROM pg_class;")
-
         explain_op = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain_options_dropdown)
+            QueryToolLocators.btn_explain_options_dropdown)
         explain_op.click()
 
         # disable Explain options and only enable COST option
-        for op in (QueryToolLocatorsCss.btn_explain_verbose,
-                   QueryToolLocatorsCss.btn_explain_costs,
-                   QueryToolLocatorsCss.btn_explain_buffers,
-                   QueryToolLocatorsCss.btn_explain_timing):
+        for op in (QueryToolLocators.btn_explain_verbose,
+                   QueryToolLocators.btn_explain_costs,
+                   QueryToolLocators.btn_explain_buffers,
+                   QueryToolLocators.btn_explain_timing):
             btn = self.page.find_by_css_selector(op)
             check = btn.find_element_by_tag_name('i')
             if 'visibility-hidden' not in check.get_attribute('class'):
                 btn.click()
         # click cost button
         cost_btn = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain_costs)
+            QueryToolLocators.btn_explain_costs)
         cost_btn.click()
 
         # close explain options
         explain_op.click()
 
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain_analyze).click()
+            QueryToolLocators.btn_explain_analyze).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Data Output')
 
-        canvas = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas"))
+        canvas = self.wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css))
         )
         # Search for 'Output' word in result (verbose option)
         canvas.find_element_by_xpath("//*[contains(string(), 'JIT')]")
 
-        self._clear_query_tool()
+        self.page.clear_query_tool()
 
     def check_execute_option(self, option):
         """"This function will check auto commit or auto roll back based on
         user input. If button is already checked, no action will be taken"""
         if option == 'auto_commit':
             check_status = self.driver.find_element_by_css_selector(
-                QueryToolLocatorsCss.btn_auto_commit_check_status)
+                QueryToolLocators.btn_auto_commit_check_status)
             if 'visibility-hidden' in check_status.get_attribute('class'):
-                self.page.find_by_css_selector(QueryToolLocatorsCss.
+                self.page.find_by_css_selector(QueryToolLocators.
                                                btn_auto_commit).click()
         if option == 'auto_rollback':
             check_status = self.driver.find_element_by_css_selector(
-                QueryToolLocatorsCss.btn_auto_rollback_check_status)
+                QueryToolLocators.btn_auto_rollback_check_status)
             if 'visibility-hidden' in check_status.get_attribute('class'):
-                self.page.find_by_css_selector(QueryToolLocatorsCss.
+                self.page.find_by_css_selector(QueryToolLocators.
                                                btn_auto_rollback).click()
 
     def uncheck_execute_option(self, option):
@@ -826,15 +763,15 @@ SELECT 1, pg_sleep(300)"""
         user input. If button is already unchecked, no action will be taken"""
         if option == 'auto_commit':
             check_status = self.driver.find_element_by_css_selector(
-                QueryToolLocatorsCss.btn_auto_commit_check_status)
+                QueryToolLocators.btn_auto_commit_check_status)
             if 'visibility-hidden' not in check_status.get_attribute('class'):
-                self.page.find_by_css_selector(QueryToolLocatorsCss.
+                self.page.find_by_css_selector(QueryToolLocators.
                                                btn_auto_commit).click()
         if option == 'auto_rollback':
             check_status = self.driver.find_element_by_css_selector(
-                QueryToolLocatorsCss.btn_auto_rollback_check_status)
+                QueryToolLocators.btn_auto_rollback_check_status)
             if 'visibility-hidden' not in check_status.get_attribute('class'):
-                self.page.find_by_css_selector(QueryToolLocatorsCss.
+                self.page.find_by_css_selector(QueryToolLocators.
                                                btn_auto_rollback).click()
 
 

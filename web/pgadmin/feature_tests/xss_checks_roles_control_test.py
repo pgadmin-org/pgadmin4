@@ -10,6 +10,10 @@ import random
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+from regression.feature_utils.locators import NavMenuLocators
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
@@ -36,6 +40,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
                                self.role)
         test_utils.create_role(self.server, "postgres",
                                "<h1>test</h1>")
+        self.wait = WebDriverWait(self.page.driver, 20)
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
@@ -56,9 +61,11 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         self.page.select_tree_item(role)
 
     def _check_role_membership_control(self):
-        self.page.driver.find_element_by_link_text("Object").click()
-        self.page.driver.find_element_by_link_text("Properties...").click()
-        # self.page.find_by_partial_link_text("Membership").click()
+        self.page.driver.find_element_by_link_text(
+            NavMenuLocators.object_menu_link_text).click()
+        property_object = self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, NavMenuLocators.properties_obj_css)))
+        property_object.click()
         self.click_membership_tab()
         # Fetch the source code for our custom control
         source_code = self.page.find_by_xpath(

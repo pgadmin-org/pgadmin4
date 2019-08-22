@@ -18,7 +18,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from .locators import QueryToolLocatorsCss
+from regression.feature_utils.locators import QueryToolLocators, \
+    NavMenuLocators
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -26,8 +27,6 @@ config_data = config_data_json = {}
 # try:
 with open(CURRENT_PATH + '/test_data.json') as data_file:
     config_data_json = json.load(data_file)
-# except Exception as e:
-#     print(str(e))
 
 
 class CheckForViewDataTest(BaseFeatureTest):
@@ -121,7 +120,13 @@ CREATE TABLE public.nonintpkey
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
-        self._tables_node_expandable()
+
+        self.page.toggle_open_tree_item(self.server['name'])
+        self.page.toggle_open_tree_item('Databases')
+        self.page.toggle_open_tree_item(self.test_db)
+        self.page.toggle_open_tree_item('Schemas')
+        self.page.toggle_open_tree_item('public')
+        self.page.toggle_open_tree_item('Tables')
 
         self._load_config_data('table_insert_update_cases')
         # iterate on both tables
@@ -134,6 +139,10 @@ CREATE TABLE public.nonintpkey
 
     def after(self):
         self.page.remove_server(self.server)
+        for cnt in (1, 2):
+            test_utils.delete_table(
+                self.server, self.test_db, 'defaults_{0}'.format(str(cnt)))
+        test_utils.delete_table(self.server, self.test_db, 'nonintpkey')
 
     @staticmethod
     def _get_cell_xpath(cell, row):
@@ -227,14 +236,14 @@ CREATE TABLE public.nonintpkey
                     send_keys(Keys.ENTER).perform()
         elif cell_type in ['text', 'json', 'text[]', 'boolean[]']:
             text_area_ele = self.page.find_by_css_selector(
-                ".pg-text-editor > textarea")
+                QueryToolLocators.row_editor_text_area_css)
             text_area_ele.clear()
             text_area_ele.click()
             text_area_ele.send_keys(value)
 
             # Click on editor's Save button
             self.page.find_by_css_selector(
-                '.btn.btn-primary.long_text_editor').click()
+                QueryToolLocators.text_editor_ok_btn_css).click()
         else:
             # Boolean editor test for to True click
             if data[1] == 'true':
@@ -250,24 +259,19 @@ CREATE TABLE public.nonintpkey
                 # Sets false
                 ActionChains(self.driver).click(checkbox_el).perform()
 
-    def _tables_node_expandable(self):
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
-        self.page.toggle_open_tree_item('Schemas')
-        self.page.toggle_open_tree_item('public')
-        self.page.toggle_open_tree_item('Tables')
-
     def _view_data_grid(self, table_name):
         self.page.driver.find_element_by_link_text("Object").click()
         ActionChains(
             self.page.driver
         ).move_to_element(
-            self.page.driver.find_element_by_link_text("View/Edit Data")
+            self.page.driver.find_element_by_link_text(
+                NavMenuLocators.view_data_link_text)
         ).perform()
         self.page.find_by_partial_link_text("All Rows").click()
-        time.sleep(1)
+
         # wait until datagrid frame is loaded.
+        self.page.wait_for_query_tool_loading_indicator_to_appear()
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         self.page.click_tab(table_name)
 
@@ -284,8 +288,10 @@ CREATE TABLE public.nonintpkey
         row0_cell0_xpath = CheckForViewDataTest._get_cell_xpath("r0", 1)
 
         self.page.find_by_xpath(row0_cell0_xpath).click()
-        self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
-        self.page.find_by_xpath("//*[@id='btn-paste-row']").click()
+        self.page.find_by_css_selector(
+            QueryToolLocators.copy_button_css).click()
+        self.page.find_by_css_selector(
+            QueryToolLocators.paste_button_css).click()
 
         # Update primary key of copied cell
         self._add_update_save_row(config_data['copy'], row=2)
@@ -305,7 +311,7 @@ CREATE TABLE public.nonintpkey
             time.sleep(0.2)
             self._update_cell(cell_xpath, data[str(idx)])
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_save_data).click()
+            QueryToolLocators.btn_save_data).click()
         # There should be some delay after save button is clicked, as it
         # takes some time to complete save ajax call otherwise discard unsaved
         # changes dialog will appear if we try to execute query before previous
@@ -320,11 +326,12 @@ CREATE TABLE public.nonintpkey
 
     def _verify_messsages(self, text):
         messages_ele = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.query_messages_panel)
+            QueryToolLocators.query_messages_panel)
         self.assertEquals(text, messages_ele.text)
 
     def _verify_row_data(self, is_new_row, config_check_data):
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocators.btn_execute_query_css).click()
 
         # First row if row height = 0, second row if its 25
         row_height = 0 if is_new_row else 25

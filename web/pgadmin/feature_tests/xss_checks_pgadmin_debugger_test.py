@@ -88,7 +88,18 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
         # If debugger plugin is not found
         if is_error and is_error.text == "Debugger Error":
-            self.page.click_modal('OK')
+            click = True
+            while click:
+                try:
+                    self.page.click_modal('OK')
+                    wait.until(EC.invisibility_of_element(
+                        (By.XPATH, "//div[contains(@class, 'alertify') and "
+                                   "not(contains(@class, 'ajs-hidden'))]//div["
+                                   "contains(@class,'ajs-header')]")
+                    ))
+                    click = False
+                except TimeoutException:
+                    pass
             self.skipTest(
                 "Please make sure that debugger plugin is properly configured"
             )

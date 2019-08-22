@@ -8,10 +8,13 @@
 ##########################################################################
 
 from __future__ import print_function
+import sys
+import random
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from selenium.webdriver import ActionChains
-import sys
+from selenium.common.exceptions import StaleElementReferenceException
+from regression.feature_utils.locators import QueryToolLocators
 
 
 class CheckForXssFeatureTest(BaseFeatureTest):
@@ -32,7 +35,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     scenarios = [
         ("Test XSS check for panels and query tool", dict())
     ]
-    test_table_name = "<h1>X"
+    test_table_name = "<h1>X" + str(random.randint(1000, 3000))
+    # test_table_name = "<h1>X"
     test_type_name = '"<script>alert(1)</script>"'
 
     def before(self):
@@ -85,6 +89,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def after(self):
         self.page.remove_server(self.server)
+        test_utils.delete_table(
+            self.server, self.test_db, self.test_table_name)
 
     def _tables_node_expandable(self):
         self.page.toggle_open_server(self.server['name'])
@@ -198,7 +204,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.fill_codemirror_area_with(
             "select '<script>alert(1)</script>"
         )
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocators.btn_execute_query_css).click()
 
         self.page.click_tab('Query History')
 
@@ -227,13 +234,17 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             '&lt;script&gt;alert(1)&lt;/script&gt;',
             "Query tool (History Details-Message)"
         )
-
-        # Check for history details error message
-        history_ele = self.page.find_by_css_selector(
-            ".query-detail .history-error-text"
-        )
-
-        source_code = history_ele.get_attribute('innerHTML')
+        retry = 2
+        while retry > 0:
+            try:
+                # Check for history details error message
+                history_ele = self.page.find_by_css_selector(
+                    ".query-detail .history-error-text"
+                )
+                source_code = history_ele.get_attribute('innerHTML')
+                break
+            except StaleElementReferenceException:
+                retry -= 1
 
         self._check_escaped_characters(
             source_code,
@@ -272,7 +283,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             'select * from "{0}"'.format(self.test_table_name)
         )
 
-        self.page.find_by_id("btn-explain").click()
+        self.page.find_by_css_selector(
+            QueryToolLocators.btn_explain).click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Explain')
 

@@ -194,6 +194,35 @@ def create_table(server, db_name, table_name, extra_columns=[]):
         traceback.print_exc(file=sys.stderr)
 
 
+def delete_table(server, db_name, table_name):
+    """
+    This function delete the table in given database
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param table_name: table name
+    :type table_name: str
+    :return: None
+    """
+    try:
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(
+            '''DROP TABLE IF EXISTS "%s"''' % table_name)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
 def create_table_with_query(server, db_name, query):
     """
     This function create the table in given database name
@@ -774,22 +803,28 @@ def configure_preferences(default_binary_path=None):
 
 
 def reset_layout_db(user_id=None):
-    conn = sqlite3.connect(config.TEST_SQLITE_PATH)
-    cur = conn.cursor()
+    retry = 3
+    while retry > 0:
+        try:
+            conn = sqlite3.connect(config.TEST_SQLITE_PATH)
+            cur = conn.cursor()
 
-    if user_id is None:
-        cur.execute(
-            'DELETE FROM SETTING WHERE SETTING in '
-            '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
-        )
-    else:
-        cur.execute(
-            'DELETE FROM SETTING WHERE SETTING in '
-            '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
-            ' AND USER_ID=?', user_id
-        )
-    conn.commit()
-    conn.close()
+            if user_id is None:
+                cur.execute(
+                    'DELETE FROM SETTING WHERE SETTING in '
+                    '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
+                )
+            else:
+                cur.execute(
+                    'DELETE FROM SETTING WHERE SETTING in '
+                    '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
+                    ' AND USER_ID=?', user_id
+                )
+            conn.commit()
+            conn.close()
+            break
+        except Exception:
+            retry -= 1
 
 
 def remove_db_file():

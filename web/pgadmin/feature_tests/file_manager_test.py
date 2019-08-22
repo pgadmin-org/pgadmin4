@@ -9,15 +9,16 @@
 
 from __future__ import print_function
 import os
-import time
 import sys
-
+import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import StaleElementReferenceException, \
+    TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from regression.feature_utils.base_feature_test import BaseFeatureTest
-from .locators import QueryToolLocatorsCss
+from regression.feature_utils.locators import QueryToolLocators
 
 
 class CheckFileManagerFeatureTest(BaseFeatureTest):
@@ -65,32 +66,40 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.open_query_tool()
 
     def _create_new_file(self):
-        self.page.find_by_css_selector(QueryToolLocatorsCss.btn_save_file)\
+        self.page.find_by_css_selector(QueryToolLocators.btn_save_file)\
             .click()
         # Set the XSS value in input
         self.page.find_by_css_selector('.change_file_types')
-        self.page.fill_input_by_css_selector("input#file-input-path",
-                                             self.XSS_FILE)
+        self.page.fill_input_by_css_selector(
+            QueryToolLocators.input_file_path_css, self.XSS_FILE)
         # Save the file
         self.page.click_modal('Create')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
     def _open_file_manager_and_check_xss_file(self):
-        self.page.find_by_id("btn-load-file").click()
+        load_file = self.page.find_by_css_selector(
+            QueryToolLocators.btn_load_file_css)
+        load_file.click()
         self.page.find_by_css_selector('.change_file_types')
-        self.page.fill_input_by_css_selector("#file-input-path", "/tmp/",
-                                             key_after_input=Keys.RETURN)
+        self.page.fill_input_by_css_selector(
+            QueryToolLocators.input_file_path_css,
+            "/tmp/", key_after_input=Keys.RETURN)
 
         if self.page.driver.capabilities['browserName'] == 'firefox':
             table = self.page.wait_for_element_to_reload(
-                lambda driver:
-                driver.find_element_by_css_selector("table#contents")
+                lambda driver: driver.find_element_by_css_selector(
+                    QueryToolLocators.select_file_content_css)
             )
         else:
-            table = self.page.driver \
-                .find_element_by_css_selector("table#contents")
-
-        contents = table.get_attribute('innerHTML')
+            table = self.page.driver.find_element_by_css_selector(
+                QueryToolLocators.select_file_content_css)
+        retry_count = 0
+        while retry_count < 5:
+            try:
+                contents = table.get_attribute('innerHTML')
+                break
+            except (StaleElementReferenceException, TimeoutException):
+                retry_count += 1
 
         self.page.click_modal('Cancel')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -107,7 +116,9 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         ) != -1, "{0} might be vulnerable to XSS ".format(source)
 
     def _check_file_sorting(self):
-        self.page.find_by_id("btn-load-file").click()
+        load_file = self.page.find_by_css_selector(
+            QueryToolLocators.btn_load_file_css)
+        load_file.click()
         self.page.find_by_css_selector("#contents th[data-column='0']")
 
         # Added time.sleep so that the element to be clicked.
@@ -134,7 +145,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         if not success:
             raise Exception("Unable to sort in ascending order while clicked "
                             "on 'Name' column")
-
+        # Added time.sleep so that the element to be clicked.
         time.sleep(0.05)
 
         # Click and Check for sort Descending
@@ -143,9 +154,10 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         iteration = 0
         success = False
         while not success and iteration < 4:
-            self.page.find_by_xpath("//th[@data-column='0']"
-                                    "/div/span[text()='Name']").click()
+
             try:
+                self.page.find_by_xpath("//th[@data-column='0']"
+                                        "/div/span[text()='Name']").click()
                 self.wait.until(
                     EC.presence_of_element_located((
                         By.CSS_SELECTOR,

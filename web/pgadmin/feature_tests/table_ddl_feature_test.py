@@ -40,9 +40,13 @@ class TableDdlFeatureTest(BaseFeatureTest):
         self.page.select_tree_item(self.test_table_name)
         self.page.click_tab("SQL")
 
-        self.page.find_by_xpath(
+        # Wait till data is displayed in SQL Tab
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
             "//*[contains(@class,'CodeMirror-lines') and "
-            "contains(.,'CREATE TABLE public.%s')]" % self.test_table_name)
+            "contains(.,'CREATE TABLE public.%s')]" % self.test_table_name,
+            10), "No data displayed in SQL tab")
 
     def after(self):
         self.page.remove_server(self.server)
+        test_utils.delete_table(
+            self.server, self.test_db, self.test_table_name)

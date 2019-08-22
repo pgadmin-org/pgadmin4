@@ -14,10 +14,10 @@ import random
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
-
+from selenium.webdriver.support.ui import WebDriverWait
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
-from .locators import QueryToolLocatorsCss
+from regression.feature_utils.locators import QueryToolLocators
 
 
 class QueryToolJourneyTest(BaseFeatureTest):
@@ -31,9 +31,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     test_table_name = ""
     test_editable_table_name = ""
+    invalid_table_name = ""
 
     def before(self):
         self.test_table_name = "test_table" + str(random.randint(1000, 3000))
+        self.invalid_table_name = \
+            "table_that_doesnt_exist_" + str(random.randint(1000, 3000))
         test_utils.create_table(
             self.server, self.test_db, self.test_table_name)
 
@@ -52,10 +55,11 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         driver_version = test_utils.get_driver_version()
         self.driver_version = float('.'.join(driver_version.split('.')[:2]))
+        self.wait = WebDriverWait(self.page.driver, 10)
 
     def runTest(self):
         self._navigate_to_query_tool()
-        self._execute_query(
+        self.page.execute_query(
             "SELECT * FROM %s ORDER BY value " % self.test_table_name)
 
         print("Copy rows...", file=sys.stderr, end="")
@@ -78,7 +82,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._test_query_sources_and_generated_queries()
         print(" OK.", file=sys.stderr)
 
-        print("Updatable resultsets...", file=sys.stderr, end="")
+        print("Updatable result sets...", file=sys.stderr, end="")
         self._test_updatable_resultset()
         print(" OK.", file=sys.stderr)
 
@@ -87,9 +91,14 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to_frame(
             self.page.driver.find_element_by_tag_name("iframe"))
-        self.page.find_by_xpath(
-            "//*[contains(@class, 'slick-row')]/*[1]").click()
-        self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
+
+        select_row = self.page.find_by_xpath(
+            QueryToolLocators.output_row_xpath.format('1'))
+        select_row.click()
+
+        copy_row = self.page.find_by_css_selector(
+            QueryToolLocators.copy_button_css)
+        copy_row.click()
 
         self.assertEqual('"Some-Name"\t"6"\t"some info"',
                          pyperclip.paste())
@@ -100,86 +109,85 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to_frame(
             self.page.driver.find_element_by_tag_name("iframe"))
-        self.page.find_by_xpath(
-            "//*[@data-test='output-column-header' and "
-            "contains(., 'some_column')]"
-        ).click()
-        self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
+
+        column_header = self.page.find_by_css_selector(
+            QueryToolLocators.output_column_header_css.format('some_column'))
+        column_header.click()
+
+        copy_btn = self.page.find_by_css_selector(
+            QueryToolLocators.copy_button_css)
+        copy_btn.click()
 
         self.assertTrue('"Some-Name"' in pyperclip.paste())
         self.assertTrue('"Some-Other-Name"' in pyperclip.paste())
         self.assertTrue('"Yet-Another-Name"' in pyperclip.paste())
 
     def _test_history_tab(self):
-        self.__clear_query_tool()
+        self.page.clear_query_tool()
         editor_input = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.query_editor_panel)
+            QueryToolLocators.query_editor_panel)
         self.page.click_element(editor_input)
-        self._execute_query("SELECT * FROM table_that_doesnt_exist")
+        self.page.execute_query("SELECT * FROM %s" % self.invalid_table_name)
 
         self.page.click_tab("Query History")
         selected_history_entry = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.query_history_selected)
-        self.assertIn("SELECT * FROM table_that_doesnt_exist",
+            QueryToolLocators.query_history_selected)
+        self.assertIn("SELECT * FROM %s" % self.invalid_table_name,
                       selected_history_entry.text)
 
         failed_history_detail_pane = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.query_history_detail)
+            QueryToolLocators.query_history_detail)
 
         self.assertIn(
-            "Error Message relation \"table_that_doesnt_exist\" "
-            "does not exist", failed_history_detail_pane.text
+            "Error Message relation \"%s\" does not exist"
+            % self.invalid_table_name,
+            failed_history_detail_pane.text
         )
-        self.page.wait_for_element(lambda driver: driver
-                                   .find_element_by_css_selector(
-                                       "#query_list> .query-group>ul>li"))
+        self.page.wait_for_elements(
+            lambda driver: driver.find_elements_by_css_selector(
+                QueryToolLocators.query_history_entries))
 
         # get the query history rows and click the previous query row which
         # was executed and verify it
         history_rows = self.driver.find_elements_by_css_selector(
-            "#query_list> .query-group>ul>li")
+            QueryToolLocators.query_history_entries)
         history_rows[1].click()
 
         selected_history_entry = self.page.find_by_css_selector(
-            "#query_list .selected")
+            QueryToolLocators.query_history_selected)
         self.assertIn(("SELECT * FROM %s ORDER BY value" %
                        self.test_table_name),
                       selected_history_entry.text)
 
         # check second(invalid) query also exist in the history tab with error
-        newly_selected_history_entry = self.page.find_by_xpath(
-            "//*[@id='query_list']/div/ul/li[1]")
+        newly_selected_history_entry = history_rows[0]
         self.page.click_element(newly_selected_history_entry)
 
-        selected_invalid_history_entry = self.page.find_by_css_selector(
-            "#query_list .selected .entry.error .query")
+        invalid_history_entry = self.page.find_by_css_selector(
+            QueryToolLocators.invalid_query_history_entry_css)
 
-        self.assertIn("SELECT * FROM table_that_doesnt_exist",
-                      selected_invalid_history_entry.text)
+        self.assertIn("SELECT * FROM %s" % self.invalid_table_name,
+                      invalid_history_entry.text)
 
         self.page.click_tab("Query Editor")
-        self.__clear_query_tool()
+        self.page.clear_query_tool()
         self.page.click_element(editor_input)
 
+        # Check if 15 more query executed then the history should contain 17
+        # entries.
         self.page.fill_codemirror_area_with("SELECT * FROM hats")
         for _ in range(15):
             self.page.find_by_css_selector(
-                QueryToolLocatorsCss.btn_execute_query).click()
+                QueryToolLocators.btn_execute_query_css).click()
             self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         self.page.click_tab("Query History")
 
-        query_we_need_to_scroll_to = self.page.find_by_xpath(
-            "//*[@id='query_list']/div/ul/li[17]")
+        query_list = self.page.wait_for_elements(
+            lambda driver: driver.find_elements_by_css_selector(
+                QueryToolLocators.query_history_entries))
 
-        self.page.click_element(query_we_need_to_scroll_to)
-
-        for _ in range(17):
-            ActionChains(self.page.driver) \
-                .send_keys(Keys.ARROW_DOWN) \
-                .perform()
-
-        self._assert_clickable(query_we_need_to_scroll_to)
+        self.assertTrue(17, len(query_list))
 
     def _test_query_sources_and_generated_queries(self):
         self.__clear_query_history()
@@ -193,12 +201,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_tab("Query History")
 
         history_entries_icons = [
-            QueryToolLocatorsCss.commit_icon,
-            QueryToolLocatorsCss.save_data_icon,
-            QueryToolLocatorsCss.save_data_icon,
-            QueryToolLocatorsCss.execute_icon,
-            QueryToolLocatorsCss.explain_analyze_icon,
-            QueryToolLocatorsCss.explain_icon
+            QueryToolLocators.commit_icon,
+            QueryToolLocators.save_data_icon,
+            QueryToolLocators.save_data_icon,
+            QueryToolLocators.execute_icon,
+            QueryToolLocators.explain_analyze_icon,
+            QueryToolLocators.explain_icon
         ]
 
         history_entries_queries = [
@@ -217,33 +225,31 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _test_toggle_generated_queries(self):
         xpath = '//li[contains(@class, "pgadmin-query-history-entry")]'
         self.assertTrue(self.page.check_if_element_exist_by_xpath(xpath))
-        toggle_el = self.page.find_by_xpath(
-            '//input[@id ="generated-queries-toggle"]/..'
-        )
-        toggle_el.click()
+        self.page.set_switch_box_status(
+            QueryToolLocators.show_query_internally_btn, 'No')
         self.assertFalse(self.page.check_if_element_exist_by_xpath(xpath))
-        toggle_el.click()
+        self.page.set_switch_box_status(
+            QueryToolLocators.show_query_internally_btn, 'Yes')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(xpath))
 
     def _test_updatable_resultset(self):
         if self.driver_version < 2.8:
             return
-
         self.page.click_tab("Query Editor")
 
         # Select all data (contains the primary key -> should be editable)
-        self.__clear_query_tool()
+        self.page.clear_query_tool()
         query = "SELECT pk_column, normal_column FROM %s" \
                 % self.test_editable_table_name
         self._check_query_results_editable(query, True)
 
         # Select data without primary keys -> should not be editable
-        self.__clear_query_tool()
+        self.page.clear_query_tool()
         query = "SELECT normal_column FROM %s" % self.test_editable_table_name
         self._check_query_results_editable(query, False)
 
     def _execute_sources_test_queries(self):
-        self.__clear_query_tool()
+        self.page.clear_query_tool()
 
         self._explain_query(
             "SELECT * FROM %s;"
@@ -253,17 +259,17 @@ class QueryToolJourneyTest(BaseFeatureTest):
             "SELECT * FROM %s;"
             % self.test_editable_table_name
         )
-        self._execute_query(
+        self.page.execute_query(
             "SELECT * FROM %s;"
             % self.test_editable_table_name
         )
 
         # Turn off autocommit
         query_options = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_query_dropdown)
+            QueryToolLocators.btn_query_dropdown)
         query_options.click()
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_auto_commit).click()
+            QueryToolLocators.btn_auto_commit).click()
         query_options.click()  # Click again to close dropdown
 
         self._update_numeric_cell(2, 10)
@@ -272,24 +278,25 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         # Turn on autocommit
         query_options = self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_query_dropdown)
+            QueryToolLocators.btn_query_dropdown)
         query_options.click()
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_auto_commit).click()
+            QueryToolLocators.btn_auto_commit).click()
         query_options.click()  # Click again to close dropdown
 
     def _check_history_queries_and_icons(self, history_queries, history_icons):
         # Select first query history entry
-        self.page.find_by_xpath("//*[@id='query_list']/div/ul/li[1]").click()
+        self.page.find_by_css_selector(
+            QueryToolLocators.query_history_specific_entry.format(1)).click()
         for icon, query in zip(history_icons, history_queries):
             # Check query
             query_history_selected_item = self.page.find_by_css_selector(
-                QueryToolLocatorsCss.query_history_selected
+                QueryToolLocators.query_history_selected
             )
             self.assertIn(query, query_history_selected_item.text)
             # Check source icon
             query_history_selected_icon = self.page.find_by_css_selector(
-                QueryToolLocatorsCss.query_history_selected_icon)
+                QueryToolLocators.query_history_selected_icon)
             icon_classes = query_history_selected_icon.get_attribute('class')
             icon_classes = icon_classes.split(" ")
             self.assertTrue(icon in icon_classes)
@@ -302,47 +309,37 @@ class QueryToolJourneyTest(BaseFeatureTest):
         """
             Updates a numeric cell in the first row of the resultset
         """
-        xpath = '//div[contains(@class, "slick-row") and ' \
-                'contains(@style, "top:0px")]'
-        xpath += '/div[contains(@class, "slick-cell") and ' \
-                 'contains(@class, "r' + str(cell_index) + '")]'
-        cell_el = self.page.find_by_xpath(xpath)
+        self.page.check_if_element_exist_by_xpath(
+            "//div[contains(@style, 'top:0px')]//div[contains(@class, "
+            "'l{0} r{1}')]".format(cell_index, cell_index))
+        cell_el = self.page.find_by_xpath(
+            "//div[contains(@style, 'top:0px')]//div[contains(@class, "
+            "'l{0} r{1}')]".format(cell_index, cell_index))
         ActionChains(self.driver).double_click(cell_el).perform()
         ActionChains(self.driver).send_keys(value). \
             send_keys(Keys.ENTER).perform()
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_save_data).click()
+            QueryToolLocators.btn_save_data).click()
 
     def _insert_data_into_test_editable_table(self):
         self.page.click_tab("Query Editor")
-        self.__clear_query_tool()
-        self._execute_query(
+        self.page.clear_query_tool()
+        self.page.execute_query(
             "INSERT INTO %s VALUES (1, 1), (2, 2);"
             % self.test_editable_table_name
         )
 
-    def __clear_query_tool(self):
-        self.page.click_element(
-            self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
-        )
-        ActionChains(self.driver)\
-            .move_to_element(self.page.find_by_xpath("//*[@id='btn-clear']"))\
-            .perform()
-        self.page.click_element(
-            self.page.find_by_xpath("//*[@id='btn-clear']")
-        )
-        self.page.click_modal('Yes')
-
     def __clear_query_history(self):
         self.page.click_element(
-            self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
+            self.page.find_by_css_selector(
+                QueryToolLocators.btn_clear_dropdown)
         )
         ActionChains(self.driver)\
             .move_to_element(
-                self.page.find_by_xpath(
-                    "//*[@id='btn-clear-history']")).perform()
+                self.page.find_by_css_selector(
+                    QueryToolLocators.btn_clear_history)).perform()
         self.page.click_element(
-            self.page.find_by_xpath("//*[@id='btn-clear-history']")
+            self.page.find_by_css_selector(QueryToolLocators.btn_clear_history)
         )
         self.page.click_modal('Yes')
 
@@ -353,44 +350,39 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
 
-    def _execute_query(self, query):
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_execute_query).click()
-
     def _explain_query(self, query):
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain).click()
+            QueryToolLocators.btn_explain).click()
 
     def _explain_analyze_query(self, query):
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_explain_analyze).click()
+            QueryToolLocators.btn_explain_analyze).click()
 
     def _commit_transaction(self):
         self.page.find_by_css_selector(
-            QueryToolLocatorsCss.btn_commit).click()
+            QueryToolLocators.btn_commit).click()
 
     def _assert_clickable(self, element):
         self.page.click_element(element)
 
     def _check_query_results_editable(self, query, should_be_editable):
-        self._execute_query(query)
-        self.page.wait_for_spinner_to_disappear()
+        self.page.execute_query(query)
         # Check if the first cell in the first row is editable
         is_editable = self._check_cell_editable(1)
         self.assertEqual(is_editable, should_be_editable)
 
     def _check_cell_editable(self, cell_index):
-        """
-            Checks if a cell in the first row of the resultset is editable
-        """
-        xpath = '//div[contains(@class, "slick-row") and ' \
-                'contains(@style, "top:0px")]'
-        xpath += '/div[contains(@class, "slick-cell") and ' \
-                 'contains(@class, "r' + str(cell_index) + '")]'
-        cell_el = self.page.find_by_xpath(xpath)
+        """Checks if a cell in the first row of the resultset is editable"""
+
+        self.page.check_if_element_exist_by_xpath(
+            "//div[contains(@style, 'top:0px')]//div[contains(@class, "
+            "'l{0} r{1}')]".format(cell_index, cell_index))
+        cell_el = self.page.find_by_xpath(
+            "//div[contains(@style, 'top:0px')]//div[contains(@class, "
+            "'l{0} r{1}')]".format(cell_index, cell_index))
+
         # Get existing value
         cell_value = int(cell_el.text)
         new_value = cell_value + 1
@@ -401,6 +393,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
         # Check if the value was updated
         return int(cell_el.text) == new_value
 
+    def _check_can_add_row(self):
+        return self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.new_row_xpath)
+
     def after(self):
         self.page.close_query_tool()
         self.page.remove_server(self.server)
+        test_utils.delete_table(
+            self.server, self.test_db, self.test_table_name)

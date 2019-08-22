@@ -11,9 +11,11 @@ import os
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import ElementClickInterceptedException
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
 from regression.python_test_utils import test_gui_helper
+from regression.feature_utils.locators import NavMenuLocators
 
 
 class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
@@ -61,22 +63,47 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item(self.database_name)
 
         # Backup
-        self.driver.find_element_by_link_text("Tools").click()
+        retry = 3
+        while retry > 0:
+            try:
+                self.driver.find_element_by_link_text(
+                    NavMenuLocators.tools_menu_link_text).click()
+                break
+            except ElementClickInterceptedException:
+                retry -= 1
 
-        self.page.find_by_partial_link_text("Backup...").click()
+        backup_object = self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, NavMenuLocators.backup_obj_css)))
+        backup_object.click()
 
-        self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".file [name='file']")))
-
-        self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".file [name='file']"))).click()
+        # Enter the file name of the backup to be taken
+        self.wait.until(EC.visibility_of_element_located(
+            (By.NAME, NavMenuLocators.backup_filename_txt_box_name)))
+        element = self.wait.until(EC.element_to_be_clickable(
+            (By.NAME, NavMenuLocators.backup_filename_txt_box_name)))
+        element.click()
         self.page.fill_input_by_field_name(
-            "file", "test_backup", loose_focus=True)
+            NavMenuLocators.backup_filename_txt_box_name,
+            "test_backup", loose_focus=True)
 
-        self.page.find_by_xpath("//button[contains(@class,'fa-save') "
-                                "and contains(.,'Backup')]").click()
+        # Click on the take Backup button
+        take_bckup = self.page.find_by_xpath(
+            NavMenuLocators.backup_btn_xpath)
+        click = True
+        while click:
+            try:
+                take_bckup.click()
+                if self.page.wait_for_element_to_disappear(
+                    lambda driver: driver.find_element_by_name(
+                        NavMenuLocators.backup_filename_txt_box_name)):
+                    click = False
+            except Exception as e:
+                pass
 
-        self.page.find_by_css_selector('.ajs-bg-bgprocess')
+        # Wait for the backup status alertfier
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR,
+             NavMenuLocators.bcg_process_status_alertifier_css)))
 
         status = test_utils.get_watcher_dialogue_status(self)
 
@@ -86,7 +113,10 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.assertEquals(status, "Successfully completed.")
 
         self.page.find_by_css_selector(
-            ".pg-bg-more-details").click()
+            NavMenuLocators.status_alertifier_more_btn_css).click()
+
+        self.wait.until(EC.visibility_of_element_located(
+            (By.XPATH, NavMenuLocators.process_watcher_alertfier)))
 
         backup_file = None
         # Check for XSS in Backup details
@@ -94,7 +124,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self._check_detailed_window_for_xss('Backup')
         else:
             command = self.page.find_by_css_selector(
-                ".bg-process-details .bg-detailed-desc").text
+                NavMenuLocators.process_watcher_detailed_command_canvas_css).\
+                text
 
             self.assertIn(self.server['name'], str(command))
             self.assertIn("from database 'pg_utility_test_db'", str(command))
@@ -109,26 +140,41 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 backup_file = command[int(command.find('--file')) +
                                       8:int(command.find('--host')) - 2]
 
-        self.page.find_by_xpath("//div[contains(@class,'wcFloatingFocus')"
-                                "]//div[contains(@class,'fa-close')]").click()
+        close_btn = self.page.find_by_xpath(
+            NavMenuLocators.process_watcher_close_button_xpath)
+        close_btn.click()
 
         # Restore
-        self.driver.find_element_by_link_text("Tools").click()
-        self.page.find_by_partial_link_text("Restore...").click()
+        tools_menu = self.driver.find_element_by_link_text(
+            NavMenuLocators.tools_menu_link_text)
+        tools_menu.click()
+
+        restore_obj = self.page.find_by_css_selector(
+            NavMenuLocators.restore_obj_css)
+        restore_obj.click()
+
+        self.wait.until(EC.visibility_of_element_located(
+            (By.NAME, NavMenuLocators.restore_file_name_txt_box_name)))
 
         self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".file [name='file']")))
-
-        self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".file [name='file']"))).click()
+            (By.NAME, NavMenuLocators.restore_file_name_txt_box_name))).click()
 
         self.page.fill_input_by_field_name(
-            "file", "test_backup", loose_focus=True)
+            NavMenuLocators.restore_file_name_txt_box_name,
+            "test_backup", loose_focus=True)
 
-        self.page.find_by_xpath("//button[contains(@class,'fa-upload')"
-                                " and contains(.,'Restore')]").click()
+        restore_btn = self.page.find_by_xpath(
+            NavMenuLocators.restore_button_xpath)
+        restore_btn.click()
 
-        self.page.find_by_css_selector('.ajs-bg-bgprocess')
+        self.page.wait_for_element_to_disappear(
+            lambda driver: driver.find_element_by_css_selector(
+                NavMenuLocators.restore_file_name_txt_box_name))
+
+        # Wait for the backup status alertfier
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR,
+             NavMenuLocators.bcg_process_status_alertifier_css)))
 
         status = test_utils.get_watcher_dialogue_status(self)
 
@@ -138,14 +184,18 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.assertEquals(status, "Successfully completed.")
 
         self.page.find_by_css_selector(
-            ".pg-bg-more-details").click()
+            NavMenuLocators.status_alertifier_more_btn_css).click()
+
+        self.wait.until(EC.visibility_of_element_located(
+            (By.XPATH, NavMenuLocators.process_watcher_alertfier)))
 
         # Check for XSS in Restore details
         if self.is_xss_check:
             self._check_detailed_window_for_xss('Restore')
         else:
             command = self.page.find_by_css_selector(
-                ".bg-process-details .bg-detailed-desc").text
+                NavMenuLocators.process_watcher_detailed_command_canvas_css).\
+                text
 
             self.assertIn(self.server['name'], str(command))
             if os.name is not 'nt':
@@ -153,8 +203,9 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
             self.assertIn("pg_restore", str(command))
 
-        self.page.find_by_xpath("//div[contains(@class,'wcFloatingFocus')]"
-                                "//div[contains(@class,'fa-close')]").click()
+        close_watcher = self.page.find_by_xpath(
+            NavMenuLocators.process_watcher_close_button_xpath)
+        close_watcher.click()
 
         if backup_file is not None:
             if os.path.isfile(backup_file):
@@ -175,7 +226,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
     def _check_detailed_window_for_xss(self, tool_name):
         source_code = self.page.find_by_css_selector(
-            ".bg-process-details .bg-detailed-desc"
+            NavMenuLocators.process_watcher_detailed_command_canvas_css
         ).get_attribute('innerHTML')
         self._check_escaped_characters(
             source_code,
