@@ -12,7 +12,8 @@ will provide detailed information about creating a custom deployment.
 
 .. toctree::
    :maxdepth: 2
-   
+
+   config_py
    desktop_deployment
    server_deployment
    container_deployment

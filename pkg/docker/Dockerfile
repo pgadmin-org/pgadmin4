@@ -86,7 +86,6 @@ RUN apk add --no-cache --virtual build-deps build-base postgresql-dev libffi-dev
 # Copy the code
 COPY ./pgadmin4/web /pgadmin4
 COPY ./run_pgadmin.py /pgadmin4
-COPY ./config_distro.py /pgadmin4
 COPY ./entrypoint.sh /entrypoint.sh
 
 # Precompile and optimize python code to save time and space on startup

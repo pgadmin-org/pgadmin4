@@ -83,6 +83,21 @@ Adjust the number of threads the Gunicorn server uses to handle incoming
 requests. This should typically be left as-is, except in highly loaded systems
 where it may be increased.
 
+*PGADMIN_CONFIG_*
+
+This is a variable prefix that can be used to override any of the configuration
+options in pgAdmin's *config.py* file. Add the *PGADMIN_CONFIG_* prefix to any
+variable name from *config.py* and give the value in the format 'string value'
+for strings, True/False for booleans or 123 for numbers. See below for an
+example.
+
+Settings are written to */pgadmin4/config_distro.py* within the container, which
+is read after */pgadmin4/config.py* and before */pgadmin4/config_local.py*.
+Any settings given will therefore override anything in config.py, but can be
+overridden by settings in config_local.py.
+
+See :ref:`config_py` for more information on the available configuration settings.
+
 Mapped Files and Directories
 ****************************
 
@@ -101,7 +116,8 @@ invocations of the container.
 
 This file can be used to override configuration settings in pgAdmin. Settings
 found in config.py can be overridden with deployment specific values if
-required.
+required. Settings in config_local.py will also override anything specified in
+the container environment through *PGADMIN_CONFIG_* prefixed variables.
 
 */pgadmin4/servers.json*
 
@@ -129,8 +145,21 @@ Run a simple container over port 80:
 
     docker pull dpage/pgadmin4
     docker run -p 80:80 \
-        -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
-        -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
+        -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
+        -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
+        -d dpage/pgadmin4
+
+Run a simple container over port 80, setting some configuration options:
+
+.. code-block:: bash
+
+    docker pull dpage/pgadmin4
+    docker run -p 80:80 \
+        -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
+        -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
+        -e 'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True' \
+        -e 'PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"' \
+        -e 'PGADMIN_CONFIG_CONSOLE_LOG_LEVEL=10' \
         -d dpage/pgadmin4
 
 Run a TLS secured container using a shared config/storage directory in
@@ -141,13 +170,13 @@ Run a TLS secured container using a shared config/storage directory in
 
     docker pull dpage/pgadmin4
     docker run -p 443:443 \
-        -v "/private/var/lib/pgadmin:/var/lib/pgadmin" \
-        -v "/path/to/certificate.cert:/certs/server.cert" \
-        -v "/path/to/certificate.key:/certs/server.key" \
-        -v "/tmp/servers.json:/servers.json" \
-        -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
-        -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
-        -e "PGADMIN_ENABLE_TLS=True" \
+        -v '/private/var/lib/pgadmin:/var/lib/pgadmin' \
+        -v '/path/to/certificate.cert:/certs/server.cert' \
+        -v '/path/to/certificate.key:/certs/server.key' \
+        -v '/tmp/servers.json:/servers.json' \
+        -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
+        -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
+        -e 'PGADMIN_ENABLE_TLS=True' \
         -d dpage/pgadmin4
 
 Reverse Proxying

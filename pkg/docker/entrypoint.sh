@@ -1,5 +1,23 @@
 #!/bin/sh
 
+# Create config_distro.py. This has some default config, as well as anything
+# provided by the user through the PGADMIN_CONFIG_* environment variables.
+# Only write the file on first launch.
+if [ ! -f /pgadmin4/config_distro.py ]; then
+    cat << EOF > /pgadmin4/config_distro.py
+HELP_PATH = '../../docs'
+DEFAULT_BINARY_PATHS = {
+        'pg': '/usr/local/pgsql-11'
+}
+EOF
+
+    # This is a bit kludgy, but necessary as the container uses BusyBox/ash as
+    # it's shell and not bash which would allow a much cleaner implementation
+    for var in $(env | grep PGADMIN_CONFIG_ | cut -d "=" -f 1); do
+        echo ${var#PGADMIN_CONFIG_} = $(eval "echo \$$var") >> /pgadmin4/config_distro.py
+    done
+fi
+
 if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
     if [ -z "${PGADMIN_DEFAULT_EMAIL}" -o -z "${PGADMIN_DEFAULT_PASSWORD}" ]; then
         echo 'You need to specify PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD environment variables'
