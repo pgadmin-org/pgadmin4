@@ -47,15 +47,15 @@ a:hover {
 }
 
 div.body dd, div.body blockquote {
-    line-height: 1.8em;
+    line-height: 1.4em;
 }
 
 div.body p{
-    line-height: 1.8em;
+    line-height: 1.4em;
 }
 
 div.body ul li{
-    line-height: 1.8em;
+    line-height: 1.4em;
 }
 
 div.body p strong{
@@ -64,10 +64,6 @@ div.body p strong{
 
 div.body li em, div.body p em{
     font-weight: 400;
-}
-
-div.toctree-wrapper ul li.toctree-l1{
-    list-style: none;
 }
 
 div.toctree-wrapper ul li.toctree-l1 a cite{
@@ -262,7 +258,7 @@ div.sphinxsidebar form div:first-child{
 }
 
 div.sphinxsidebar {
-    line-height: 1.4rem;
+    line-height: 1.2rem;
     font-size: 0.85rem;
     color: #858da0;
     background-color: #ebeef3;
