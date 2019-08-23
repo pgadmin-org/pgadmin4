@@ -33,7 +33,7 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
     # Importing pgadmin4 (from this script) is enough
     python run_pgadmin.py
 
-    export PGADMIN_SERVER_JSON_FILE=${PGADMIN_SERVER_JSON:-/pgadmin4/servers.json}
+    export PGADMIN_SERVER_JSON_FILE=${PGADMIN_SERVER_JSON_FILE:-/pgadmin4/servers.json}
     # Pre-load any required servers
     if [ -f "${PGADMIN_SERVER_JSON_FILE}" ]; then
         /usr/local/bin/python /pgadmin4/setup.py --load-servers "${PGADMIN_SERVER_JSON_FILE}" --user ${PGADMIN_DEFAULT_EMAIL}
