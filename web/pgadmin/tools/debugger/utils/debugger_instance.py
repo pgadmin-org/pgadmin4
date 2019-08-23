@@ -14,12 +14,12 @@ import random
 debugger_sessions_lock = Lock()
 
 
-class DebuggerInstance:
+class DebuggerInstance(object):
     def __init__(self, trans_id=None):
         if trans_id is None:
             self._trans_id = str(random.randint(1, 9999999))
         else:
-            self._trans_id = trans_id
+            self._trans_id = str(trans_id)
 
         self._function_data = None
         self._debugger_data = None

@@ -1541,8 +1541,6 @@ define([
         });
       this.panels = [];
 
-      pgBrowser.bind_beforeunload();
-
       // Below code will be executed for indirect debugging
       // indirect debugging - 0  and for direct debugging - 1
       if (trans_id != undefined && !debug_type) {
@@ -1853,6 +1851,7 @@ define([
                * instead, a poller is set up who will check
                */
               if(self.preferences.debugger_new_browser_tab) {
+                pgBrowser.bind_beforeunload();
                 let pollIntervalId = setInterval(()=>{
                   if(window.opener && window.opener.pgAdmin) {
                     self.reflectPreferences();
