@@ -2272,7 +2272,7 @@ define('tools.querytool', [
           }
           self.disable_tool_buttons(true);
           pgBrowser.Events.on('pgadmin:query_tool:connected:'+ transId,()=>{
-            self.execute_data_query();
+            self.check_data_changes_to_execute_query();
           });
         }
       },
@@ -2314,9 +2314,8 @@ define('tools.querytool', [
         self.on('pgadmin-sqleditor:unindent_selected_code', self._unindent_selected_code, self);
       },
 
-      // Checks if there is any dirty data in the grid before
-      // it executes the sql query in View Data mode
-      execute_data_query: function() {
+      // Checks if there is any dirty data in the grid before executing a query
+      check_data_changes_to_execute_query: function(explain_prefix=null, shouldReconnect=false) {
         var self = this;
 
         // Check if the data grid has any changes before running query
@@ -2328,8 +2327,13 @@ define('tools.querytool', [
           alertify.confirm(gettext('Unsaved changes'),
             gettext('The data has been modified, but not saved. Are you sure you wish to discard the changes?'),
             function() {
-              // Do nothing as user do not want to save, just continue
-              self._run_query();
+              // The user does not want to save, just continue
+              if(self.is_query_tool) {
+                self._execute_sql_query(explain_prefix, shouldReconnect);
+              }
+              else {
+                self._execute_view_data_query();
+              }
             },
             function() {
               // Stop, User wants to save
@@ -2340,12 +2344,17 @@ define('tools.querytool', [
             cancel: gettext('No'),
           });
         } else {
-          self._run_query();
+          if(self.is_query_tool) {
+            self._execute_sql_query(explain_prefix, shouldReconnect);
+          }
+          else {
+            self._execute_view_data_query();
+          }
         }
       },
 
-      // This function makes the ajax call to execute the sql query in View Data mode
-      _run_query: function() {
+      // Makes the ajax call to execute the sql query in View Data mode
+      _execute_view_data_query: function() {
         var self = this,
           url = url_for('sqleditor.view_data_start', {
             'trans_id': self.transId,
@@ -2422,10 +2431,34 @@ define('tools.querytool', [
           .fail(function(e) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             let msg = httpErrorHandler.handleQueryToolAjaxError(
-              pgAdmin, self, e, '_run_query', [], true
+              pgAdmin, self, e, '_execute_view_data_query', [], true
             );
             self.update_msg_history(false, msg);
           });
+      },
+
+      // Executes sql query in the editor in Query Tool mode
+      _execute_sql_query: function(explain_prefix, shouldReconnect) {
+        var self = this, sql = '';
+
+        self.has_more_rows = false;
+        self.fetching_rows = false;
+
+        if (!_.isUndefined(self.special_sql)) {
+          sql = self.special_sql;
+        } else {
+          /* If code is selected in the code mirror then execute
+           * the selected part else execute the complete code.
+           */
+          var selected_code = self.gridView.query_tool_obj.getSelection();
+          if (selected_code.length > 0)
+            sql = selected_code;
+          else
+            sql = self.gridView.query_tool_obj.getValue();
+        }
+
+        const executeQuery = new ExecuteQuery.ExecuteQuery(this, pgAdmin.Browser.UserManagement);
+        executeQuery.execute(sql, explain_prefix, shouldReconnect);
       },
 
       // This is a wrapper to call_render function
@@ -3758,60 +3791,6 @@ define('tools.querytool', [
           $('#btn-commit').prop('disabled', disabled);
           $('#btn-rollback').prop('disabled', disabled);
         }
-      },
-
-      // Checks if there is any dirty data in the grid before
-      // it executes the sql query in Query Tool mode
-      execute: function(explain_prefix, shouldReconnect=false) {
-        var self = this;
-
-        // Check if the data grid has any changes before running query
-        if (self.can_edit && _.has(self, 'data_store') &&
-          (_.size(self.data_store.added) ||
-            _.size(self.data_store.updated) ||
-            _.size(self.data_store.deleted))
-        ) {
-          alertify.confirm(gettext('Unsaved changes'),
-            gettext('The data has been modified, but not saved. Are you sure you wish to discard the changes?'),
-            function() {
-              // Do nothing as user do not want to save, just continue
-              self._execute_sql_query(explain_prefix, shouldReconnect);
-            },
-            function() {
-              // Stop, User wants to save
-              return true;
-            }
-          ).set('labels', {
-            ok: gettext('Yes'),
-            cancel: gettext('No'),
-          });
-        } else {
-          self._execute_sql_query(explain_prefix, shouldReconnect);
-        }
-      },
-
-      // Executes sql query in the editor in Query Tool mode
-      _execute_sql_query: function(explain_prefix, shouldReconnect) {
-        var self = this, sql = '';
-
-        self.has_more_rows = false;
-        self.fetching_rows = false;
-
-        if (!_.isUndefined(self.special_sql)) {
-          sql = self.special_sql;
-        } else {
-          /* If code is selected in the code mirror then execute
-           * the selected part else execute the complete code.
-           */
-          var selected_code = self.gridView.query_tool_obj.getSelection();
-          if (selected_code.length > 0)
-            sql = selected_code;
-          else
-            sql = self.gridView.query_tool_obj.getValue();
-        }
-
-        const executeQuery = new ExecuteQuery.ExecuteQuery(this, pgAdmin.Browser.UserManagement);
-        executeQuery.execute(sql, explain_prefix, shouldReconnect);
       },
 
       /* This function is used to highlight the error line and

@@ -39,13 +39,8 @@ let queryToolActions = {
   },
 
   executeQuery: function (sqlEditorController) {
-    if(sqlEditorController.is_query_tool) {
-      this._clearMessageTab();
-      sqlEditorController.execute();
-    } else {
-      this._clearMessageTab();
-      sqlEditorController.execute_data_query();
-    }
+    this._clearMessageTab();
+    sqlEditorController.check_data_changes_to_execute_query();
   },
 
   explainAnalyze: function (sqlEditorController) {
@@ -60,7 +55,7 @@ let queryToolActions = {
       settings: this._settings(),
     };
     this._clearMessageTab();
-    sqlEditorController.execute(explainObject);
+    sqlEditorController.check_data_changes_to_execute_query(explainObject);
   },
 
   explain: function (sqlEditorController) {
@@ -76,7 +71,7 @@ let queryToolActions = {
       settings: this._settings(),
     };
     this._clearMessageTab();
-    sqlEditorController.execute(explainObject);
+    sqlEditorController.check_data_changes_to_execute_query(explainObject);
   },
 
   download: function (sqlEditorController) {

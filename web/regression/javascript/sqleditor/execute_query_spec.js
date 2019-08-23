@@ -1449,7 +1449,7 @@ describe('ExecuteQuery', () => {
           it('should save the state', () => {
             setTimeout(() => {
               expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
-                'execute',
+                'check_data_changes_to_execute_query',
                 ['']
               );
             }, 0);
@@ -1574,7 +1574,7 @@ describe('ExecuteQuery', () => {
           it('should save the state', () => {
             setTimeout(() => {
               expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
-                'execute',
+                'check_data_changes_to_execute_query',
                 ['']
               );
             }, 0);
@@ -1604,7 +1604,7 @@ describe('ExecuteQuery', () => {
           it('saves state', () => {
             setTimeout(() => {
               expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
-                'execute',
+                'check_data_changes_to_execute_query',
                 ['']
               );
             }, 0);

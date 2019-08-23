@@ -224,22 +224,22 @@ class ExecuteQuery {
     }
 
     if (this.userManagement.isPgaLoginRequired(httpMessage.response)) {
-      this.sqlServerObject.saveState('execute', [this.explainPlan]);
+      this.sqlServerObject.saveState('check_data_changes_to_execute_query', [this.explainPlan]);
       this.userManagement.pgaLogin();
     }
 
     if (httpErrorHandler.httpResponseRequiresNewTransaction(httpMessage.response)) {
-      this.sqlServerObject.saveState('execute', [this.explainPlan]);
+      this.sqlServerObject.saveState('check_data_changes_to_execute_query', [this.explainPlan]);
       this.sqlServerObject.initTransaction();
     }
 
     if (this.wasDatabaseConnectionLost(httpMessage)) {
-      this.sqlServerObject.saveState('execute', [this.explainPlan]);
+      this.sqlServerObject.saveState('check_data_changes_to_execute_query', [this.explainPlan]);
       this.sqlServerObject.handle_connection_lost(false, httpMessage);
     }
 
     if(this.isCryptKeyMissing(httpMessage)) {
-      this.sqlServerObject.saveState('execute', [this.explainPlan]);
+      this.sqlServerObject.saveState('check_data_changes_to_execute_query', [this.explainPlan]);
       this.sqlServerObject.handle_cryptkey_missing();
       return;
     }

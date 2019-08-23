@@ -30,7 +30,7 @@ describe('queryToolActions', () => {
       it('calls the execute function on the sqlEditorController', () => {
         queryToolActions.executeQuery(sqlEditorController);
 
-        expect(sqlEditorController.execute).toHaveBeenCalled();
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalled();
       });
     });
     describe('when the command is being run from the view data view', () => {
@@ -39,10 +39,10 @@ describe('queryToolActions', () => {
         sqlEditorController.is_query_tool = false;
       });
 
-      it('it calls the execute_data_query function on the sqlEditorController', () => {
+      it('it calls the check_data_changes_to_execute_query function on the sqlEditorController', () => {
         queryToolActions.executeQuery(sqlEditorController);
 
-        expect(sqlEditorController.execute_data_query).toHaveBeenCalled();
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalled();
       });
     });
   });
@@ -74,7 +74,7 @@ describe('queryToolActions', () => {
           settings: false,
         };
 
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalledWith(explainObject);
       });
     });
 
@@ -100,7 +100,7 @@ describe('queryToolActions', () => {
           summary: true,
           settings: true,
         };
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalledWith(explainObject);
       });
     });
 
@@ -128,7 +128,7 @@ describe('queryToolActions', () => {
           settings: false,
         };
 
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalledWith(explainObject);
       });
     });
 
@@ -156,7 +156,7 @@ describe('queryToolActions', () => {
           settings: false,
         };
 
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalledWith(explainObject);
       });
     });
 
@@ -184,7 +184,7 @@ describe('queryToolActions', () => {
           settings: true,
         };
 
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalledWith(explainObject);
       });
     });
   });
@@ -213,7 +213,7 @@ describe('queryToolActions', () => {
           summary: false,
           settings: false,
         };
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalledWith(explainObject);
       });
     });
 
@@ -239,7 +239,7 @@ describe('queryToolActions', () => {
           settings: false,
         };
 
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalledWith(explainObject);
       });
     });
 
@@ -264,7 +264,7 @@ describe('queryToolActions', () => {
           summary: false,
           settings: false,
         };
-        expect(sqlEditorController.execute).toHaveBeenCalledWith(explainObject);
+        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalledWith(explainObject);
       });
     });
   });
@@ -621,8 +621,7 @@ describe('queryToolActions', () => {
       trigger: jasmine.createSpy('trigger'),
       table_name: 'iAmATable',
       is_query_tool: true,
-      execute: jasmine.createSpy('execute'),
-      execute_data_query: jasmine.createSpy('execute_data_query'),
+      check_data_changes_to_execute_query: jasmine.createSpy('check_data_changes_to_execute_query'),
     };
   }
 });
