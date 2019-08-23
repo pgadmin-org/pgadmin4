@@ -879,6 +879,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         Get all compound trigger nodes associated with view node,
         generate their sql and render into sql tab
         """
+        SQL_data = ''
         if self.manager.server_type == 'ppas' \
                 and self.manager.version >= 120000:
 
@@ -888,7 +889,6 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             # Define template path
             self.ct_trigger_temp_path = 'compound_triggers'
 
-            SQL_data = ''
             SQL = render_template("/".join(
                 [self.ct_trigger_temp_path,
                  'sql/{0}/#{1}#/nodes.sql'.format(
@@ -949,7 +949,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 SQL_data += '\n'
                 SQL_data += SQL
 
-            return SQL_data
+        return SQL_data
 
     def get_trigger_sql(self, vid):
         """
