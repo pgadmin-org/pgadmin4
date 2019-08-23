@@ -291,6 +291,10 @@ input.editor-checkbox:focus {
   background-image: url('../img/disconnect.svg');
 }
 
+.connection_status .obtaining-conn {
+  background-image: url('../img/loading.gif') !important;
+}
+
 .icon-commit, .icon-rollback, .icon-save-data-changes, .icon-view-data {
   display: inline-block;
   align-content: center;

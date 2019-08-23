@@ -8,6 +8,7 @@
 ##########################################################################
 
 import json
+import random
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
@@ -32,13 +33,11 @@ class TestExplainPlan(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
-        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}'.format(
-            utils.SERVER_GROUP, self.server_id, self.db_id)
+        self.trans_id = str(random.randint(1, 9999999))
+        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
+            self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
         self.assertEquals(response.status_code, 200)
-
-        response_data = json.loads(response.data.decode('utf-8'))
-        self.trans_id = response_data['data']['gridTransId']
 
         # Start query tool transaction
         url = '/sqleditor/query_tool/start/{0}'.format(self.trans_id)

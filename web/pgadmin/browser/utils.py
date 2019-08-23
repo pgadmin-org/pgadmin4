@@ -47,6 +47,30 @@ def underscore_escape(text):
     return text
 
 
+def underscore_unescape(text):
+    """
+    This function mimics the behaviour of underscore js unescape function
+    The html unescape by jinja is not compatible for underscore escape
+    function
+    :param text: input html text
+    :return: unescaped text
+    """
+    html_map = {
+        "&amp;": '&',
+        "&lt;": '<',
+        "&gt;": '>',
+        "&quot;": '"',
+        "&#96;": '`',
+        "&#x27;": "'"
+    }
+
+    # always replace & first
+    for c, r in html_map.items():
+        text = text.replace(c, r)
+
+    return text
+
+
 def is_version_in_range(sversion, min_ver, max_ver):
     assert (max_ver is None or isinstance(max_ver, int))
     assert (min_ver is None or isinstance(min_ver, int))

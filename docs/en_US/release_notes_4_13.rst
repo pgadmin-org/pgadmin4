@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4453 <https://redmine.postgresql.org/issues/4453>`_ -  Don't wait for the database connection before rendering the Query Tool UI, for improved UX.
 | `Issue #4651 <https://redmine.postgresql.org/issues/4651>`_ -  Allow configuration options to be set from the environment in the container distribution.
 
 Housekeeping
@@ -22,6 +23,7 @@ Bug fixes
 | `Issue #2706 <https://redmine.postgresql.org/issues/2706>`_ -  Added ProjectSet icon for explain module.
 | `Issue #2828 <https://redmine.postgresql.org/issues/2828>`_ -  Added Gather Merge, Named Tuple Store Scan and Table Function Scan icon for explain module.
 | `Issue #4419 <https://redmine.postgresql.org/issues/4419>`_ -  Fix a debugger error when using Python 2.7.
+| `Issue #4584 <https://redmine.postgresql.org/issues/4584>`_ -  Unescape HTML entities in database names in the Query Tool title bar.
 | `Issue #4643 <https://redmine.postgresql.org/issues/4643>`_ -  Fix Truncate option deselect issue for compound triggers.
 | `Issue #4644 <https://redmine.postgresql.org/issues/4644>`_ -  Fix length and precision enable/disable issue when changing the data type for Domain node.
 | `Issue #4650 <https://redmine.postgresql.org/issues/4650>`_ -  Fix SQL tab issue for Views. It's a regression of compound triggers.

@@ -18,5 +18,6 @@ define(function () {
     'datagrid.initialize_query_tool': '/initialize/query_tool/<int:sgid>/<int:sid>',
     'datagrid.initialize_query_tool_with_did': '/initialize/query_tool/<int:sgid>/<int:sid>/<int:did>',
     'restore.create_job': '/restore/job/<int:sid>',
+    'datagrid.panel': '/panel/<int:trans_id>',
   };
 });

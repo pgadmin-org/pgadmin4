@@ -52,6 +52,6 @@ export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_fi
     panel_icon = 'fa fa-bolt';
   }
 
-  panel.title('<span title="'+_.escape(panel_tooltip)+'">'+_.escape(panel_title)+'</span>');
+  panel.title('<span title="'+ panel_tooltip +'">'+ panel_title +'</span>');
   panel.icon(panel_icon);
 }

@@ -17,10 +17,11 @@ describe('#showQueryTool', () => {
   let queryTool;
   let pgBrowser;
   let alertify;
+  let transId = 98765432;
   beforeEach(() => {
     alertify = jasmine.createSpyObj('alertify', ['alert']);
     queryTool = {
-      create_transaction: jasmine.createSpy('create_transaction'),
+      launch_grid: jasmine.createSpy('launch_grid'),
     };
     pgBrowser = {
       treeMenu: new TreeFake(),
@@ -66,10 +67,10 @@ describe('#showQueryTool', () => {
 
   context('cannot find the tree node', () => {
     beforeEach(() => {
-      showQueryTool(queryTool, pgBrowser, alertify, '', [{id: '10'}]);
+      showQueryTool(queryTool, pgBrowser, alertify, '', [{id: '10'}], transId);
     });
     it('does not create a transaction', () => {
-      expect(queryTool.create_transaction).not.toHaveBeenCalled();
+      expect(queryTool.launch_grid).not.toHaveBeenCalled();
     });
 
     it('display alert', () => {
@@ -82,8 +83,8 @@ describe('#showQueryTool', () => {
 
   context('current node is not underneath a server', () => {
     it('does not create a transaction', () => {
-      showQueryTool(queryTool, pgBrowser, alertify, '', [{id: 'parent'}], 'title');
-      expect(queryTool.create_transaction).not.toHaveBeenCalled();
+      showQueryTool(queryTool, pgBrowser, alertify, '', [{id: 'parent'}], transId);
+      expect(queryTool.launch_grid).not.toHaveBeenCalled();
     });
 
     it('no alert is displayed', () => {
@@ -94,32 +95,26 @@ describe('#showQueryTool', () => {
   context('current node is underneath a server', () => {
     context('current node is not underneath a database', () => {
       it('creates a transaction', () => {
-        showQueryTool(queryTool, pgBrowser, alertify, 'http://someurl', [{id: 'server1'}]);
-        expect(queryTool.create_transaction).toHaveBeenCalledWith(
-          '/initialize/query_tool/1/2',
-          null,
-          'true',
-          'pg',
-          'http://someurl',
+        showQueryTool(queryTool, pgBrowser, alertify, 'http://someurl', [{id: 'server1'}], transId);
+        expect(queryTool.launch_grid).toHaveBeenCalledWith(
+          98765432,
+          '/panel/98765432?is_query_tool=true&sgid=1&sid=2&server_type=pg',
+          true,
           'otherdblabel/someuser@server1',
-          '',
-          false
+          'http://someurl'
         );
       });
     });
 
     context('current node is underneath a database', () => {
       it('creates a transaction', () => {
-        showQueryTool(queryTool, pgBrowser, alertify, 'http://someurl', [{id: 'database1'}], 'title');
-        expect(queryTool.create_transaction).toHaveBeenCalledWith(
-          '/initialize/query_tool/1/2/3',
-          null,
-          'true',
-          'pg',
-          'http://someurl',
+        showQueryTool(queryTool, pgBrowser, alertify, 'http://someurl', [{id: 'database1'}], transId);
+        expect(queryTool.launch_grid).toHaveBeenCalledWith(
+          98765432,
+          '/panel/98765432?is_query_tool=true&sgid=1&sid=2&server_type=pg&did=3',
+          true,
           'database1/someuser@server1',
-          '',
-          false
+          'http://someurl'
         );
       });
     });

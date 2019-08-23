@@ -16,19 +16,21 @@ function hasDatabaseInformation(parentData) {
   return parentData.database;
 }
 
-function generateUrl(parentData) {
-  let url_endpoint = 'datagrid.initialize_query_tool';
-  let url_params = {
-    'sgid': parentData.server_group._id,
-    'sid': parentData.server._id,
-  };
+function generateUrl(trans_id, title, parentData) {
+  let url_endpoint = url_for('datagrid.panel', {
+    'trans_id': trans_id,
+  });
+
+  url_endpoint += `?is_query_tool=${true}`
+    +`&sgid=${parentData.server_group._id}`
+    +`&sid=${parentData.server._id}`
+    +`&server_type=${parentData.server.server_type}`;
 
   if (hasDatabaseInformation(parentData)) {
-    url_params['did'] = parentData.database._id;
-    url_endpoint = 'datagrid.initialize_query_tool_with_did';
+    url_endpoint += `&did=${parentData.database._id}`;
   }
 
-  return url_for(url_endpoint, url_params);
+  return url_endpoint;
 }
 
 function hasServerInformations(parentData) {
@@ -40,7 +42,7 @@ function generateTitle(pgBrowser, aciTreeIdentifier) {
   return baseTitle;
 }
 
-export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentifier) {
+export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentifier, transId) {
   const sURL = url || '';
   const queryToolTitle = generateTitle(pgBrowser, aciTreeIdentifier);
 
@@ -60,9 +62,7 @@ export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentif
     return;
   }
 
-  const baseUrl = generateUrl(parentData);
+  const gridUrl = generateUrl(transId, queryToolTitle, parentData);
 
-  datagrid.create_transaction(
-    baseUrl, null, 'true',
-    parentData.server.server_type, sURL, queryToolTitle, '', false);
+  datagrid.launch_grid(transId, gridUrl, true, queryToolTitle, sURL);
 }

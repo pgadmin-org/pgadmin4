@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getEpoch, getGCD, getMod, quote_ident, parseFuncParams } from 'sources/utils';
+import { getEpoch, getGCD, getMod, quote_ident, parseFuncParams, getRandomInt } from 'sources/utils';
 
 describe('getEpoch', function () {
   it('should return non zero', function () {
@@ -133,5 +133,12 @@ describe('parseFuncParams', function () {
       ],
     };
     expect(parseFuncParams(funcLabel)).toEqual(expectedObj);
+  });
+});
+
+describe('getRandomInt', function () {
+  it('is between', function () {
+    let id = getRandomInt(1, 9999999);
+    expect(1 <= id && id <= 9999999).toBeTruthy();
   });
 });

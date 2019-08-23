@@ -27,7 +27,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with valid query',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}',
+                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns='"A","B","C"',
                 output_values='1,2,3',
@@ -39,7 +39,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with wrong TX id',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}',
+                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns=None,
                 output_values=None,
@@ -51,7 +51,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with wrong query',
             dict(
                 sql='SELECT * FROM this_table_does_not_exist',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}',
+                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns=None,
                 output_values=None,
@@ -81,13 +81,12 @@ class TestDownloadCSV(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
+        self.trans_id = str(random.randint(1, 9999999))
         url = self.init_url.format(
-            test_utils.SERVER_GROUP, self._sid, self._did)
+            self.trans_id, test_utils.SERVER_GROUP, self._sid, self._did)
         response = self.tester.post(url)
         self.assertEquals(response.status_code, 200)
 
-        response_data = json.loads(response.data.decode('utf-8'))
-        self.trans_id = response_data['data']['gridTransId']
         # If invalid tx test then make the Tx id invalid so that tests fails
         if not self.is_valid_tx:
             self.trans_id = self.trans_id + '007'

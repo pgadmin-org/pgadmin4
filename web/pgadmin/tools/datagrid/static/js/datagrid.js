@@ -13,10 +13,10 @@ define('pgadmin.datagrid', [
   'sources/sqleditor_utils', 'backbone',
   'tools/datagrid/static/js/show_data',
   'tools/datagrid/static/js/show_query_tool', 'pgadmin.browser.toolbar',
-  'tools/datagrid/static/js/datagrid_panel_title', 'wcdocker',
+  'tools/datagrid/static/js/datagrid_panel_title', 'sources/utils', 'wcdocker',
 ], function(
   gettext, url_for, $, _, alertify, pgAdmin, codemirror, sqlEditorUtils,
-  Backbone, showData, showQueryTool, toolBar, panelTitleFunc
+  Backbone, showData, showQueryTool, toolBar, panelTitleFunc, commonUtils
 ) {
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
@@ -51,7 +51,6 @@ define('pgadmin.datagrid', [
         pgBrowser.onPreferencesChange('sqleditor', function() {
           self.preferences = pgBrowser.get_preferences_for_module('sqleditor');
         });
-
 
         // Define list of nodes on which view data option appears
         var supported_nodes = [
@@ -195,97 +194,48 @@ define('pgadmin.datagrid', [
 
       // This is a callback function to show data when user click on menu item.
       show_data_grid: function(data, i) {
-        showData.showDataGrid(this, pgBrowser, alertify, data, i);
+        const transId = commonUtils.getRandomInt(1, 9999999);
+        showData.showDataGrid(this, pgBrowser, alertify, data, i, transId);
       },
 
       // This is a callback function to show filtered data when user click on menu item.
       show_filtered_row: function(data, i) {
-        showData.showDataGrid(this, pgBrowser, alertify, data, i, true, this.preferences);
+        const transId = commonUtils.getRandomInt(1, 9999999);
+        showData.showDataGrid(this, pgBrowser, alertify, data, i, transId, true, this.preferences);
       },
 
       // This is a callback function to show query tool when user click on menu item.
       show_query_tool: function(url, aciTreeIdentifier) {
-        showQueryTool.showQueryTool(this, pgBrowser, alertify, url, aciTreeIdentifier);
+        const transId = commonUtils.getRandomInt(1, 9999999);
+        showQueryTool.showQueryTool(this, pgBrowser, alertify, url, aciTreeIdentifier, transId);
       },
 
-      create_transaction: function(baseUrl, target, is_query_tool, server_type, sURL, panel_title, sql_filter, recreate) {
+      launch_grid: function(trans_id, panel_url, is_query_tool, panel_title, sURL=null, sql_filter=null) {
         var self = this;
-        target =  target || self;
-        if (recreate) {
-          baseUrl += '?recreate=1';
+
+        let queryToolForm = `
+          <form id="queryToolForm" action="${panel_url}" method="post">
+            <input id="title" name="title" hidden />`;
+
+        if(sURL){
+          queryToolForm +=`<input name="query_url" value="${sURL}" hidden />`;
+        }
+        if(sql_filter) {
+          queryToolForm +=`<textarea name="sql_filter" hidden>${sql_filter}</textarea>`;
         }
 
-        /* Send the data only if required. Sending non required data may
-         * cause connection reset error if data is not read by flask server
-         */
-        let reqData = null;
-        if(sql_filter != '') {
-          reqData = JSON.stringify(sql_filter);
-        }
-
-        $.ajax({
-          url: baseUrl,
-          method: 'POST',
-          dataType: 'json',
-          data: reqData,
-          contentType: 'application/json',
-        })
-          .done(function(res) {
-            res.data.is_query_tool = is_query_tool;
-            res.data.server_type = server_type;
-            res.data.sURL = sURL;
-            res.data.panel_title = panel_title;
-            target.trigger('pgadmin-datagrid:transaction:created', res.data);
-          })
-          .fail(function(xhr) {
-            if (target !== self) {
-              if(xhr.status == 503 && xhr.responseJSON.info != undefined &&
-                xhr.responseJSON.info == 'CONNECTION_LOST') {
-                setTimeout(function() {
-                  target.handle_connection_lost(true, xhr);
-                });
-                return;
-              }
-            }
-
-            try {
-              var err = JSON.parse(xhr.responseText);
-              alertify.alert(gettext('Query Tool initialization error'),
-                err.errormsg
-              );
-            } catch (e) {
-              alertify.alert(gettext('Query Tool initialization error'),
-                e.statusText
-              );
-            }
-          });
-      },
-      launch_grid: function(trans_obj) {
-        var self = this,
-          panel_title = trans_obj.panel_title,
-          grid_title = trans_obj.panel_title;
-
-        // Open the panel if frame is initialized
-        let titileForURLObj = sqlEditorUtils.removeSlashInTheString(grid_title);
-        var url_params = {
-            'trans_id': trans_obj.gridTransId,
-            'is_query_tool': trans_obj.is_query_tool,
-            'editor_title': titileForURLObj.title,
-          },
-          baseUrl = url_for('datagrid.panel', url_params) +
-            '?' + 'query_url=' + encodeURI(trans_obj.sURL) +
-            '&server_type=' + encodeURIComponent(trans_obj.server_type) +
-            '&server_ver=' + trans_obj.serverVersion+
-            '&fslashes=' + titileForURLObj.slashLocations;
+        queryToolForm +=`
+          </form>
+            <script>
+              document.getElementById("title").value = "${panel_title}";
+              document.getElementById("queryToolForm").submit();
+            </script>
+          `;
 
         if (self.preferences.new_browser_tab) {
-          var newWin = window.open(baseUrl, '_blank');
-
-          // add a load listener to the window so that the title gets changed on page load
-          newWin.addEventListener('load', function() {
-            newWin.document.title = panel_title;
-          });
-
+          var newWin = window.open('', '_blank');
+          newWin.document.write(queryToolForm);
+          newWin.document.title = panel_title;
         } else {
           /* On successfully initialization find the dashboard panel,
            * create new panel and add it to the dashboard panel.
@@ -294,13 +244,13 @@ define('pgadmin.datagrid', [
           var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
           // Set panel title and icon
-          panelTitleFunc.setQueryToolDockerTitle(queryToolPanel, trans_obj.is_query_tool, panel_title);
+          panelTitleFunc.setQueryToolDockerTitle(queryToolPanel, is_query_tool, panel_title);
           queryToolPanel.focus();
 
           // Listen on the panel closed event.
           queryToolPanel.on(wcDocker.EVENT.CLOSED, function() {
             $.ajax({
-              url: url_for('datagrid.close', {'trans_id': trans_obj.gridTransId}),
+              url: url_for('datagrid.close', {'trans_id': trans_id}),
               method: 'DELETE',
             });
           });
@@ -325,7 +275,7 @@ define('pgadmin.datagrid', [
                   frame.onLoaded(()=>{
                     $spinner_el.remove();
                   });
-                  frame.openURL(baseUrl);
+                  frame.openHTML(queryToolForm);
                 }
               }
             }, 100);

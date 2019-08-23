@@ -17,10 +17,11 @@ describe('#show_data', () => {
   let datagrid;
   let pgBrowser;
   let alertify;
+  let transId = 98765432;
   beforeEach(() => {
     alertify = jasmine.createSpyObj('alertify', ['alert']);
     datagrid = {
-      create_transaction: jasmine.createSpy('create_transaction'),
+      launch_grid: jasmine.createSpy('launch_grid'),
     };
     pgBrowser = {
       treeMenu: new TreeFake(),
@@ -98,12 +99,12 @@ describe('#show_data', () => {
 
   context('cannot find the tree node', () => {
     it('does not create a transaction', () => {
-      showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: '10'}]);
-      expect(datagrid.create_transaction).not.toHaveBeenCalled();
+      showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: '10'}], transId);
+      expect(datagrid.launch_grid).not.toHaveBeenCalled();
     });
 
     it('display alert', () => {
-      showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: '10'}]);
+      showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: '10'}], transId);
       expect(alertify.alert).toHaveBeenCalledWith(
         'Data Grid Error',
         'No object selected.'
@@ -113,59 +114,52 @@ describe('#show_data', () => {
 
   context('current node is not underneath a server', () => {
     it('does not create a transaction', () => {
-      showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: 'parent'}]);
-      expect(datagrid.create_transaction).not.toHaveBeenCalled();
+      showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: 'parent'}], transId);
+      expect(datagrid.launch_grid).not.toHaveBeenCalled();
     });
   });
 
   context('current node is not underneath a schema or view or catalog', () => {
     it('does not create a transaction', () => {
-      showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: 'database1'}]);
-      expect(datagrid.create_transaction).not.toHaveBeenCalled();
+      showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: 'database1'}], transId);
+      expect(datagrid.launch_grid).not.toHaveBeenCalled();
     });
   });
 
   context('current node is underneath a schema', () => {
     it('does not create a transaction', () => {
-      showDataGrid(datagrid, pgBrowser, alertify, {mnuid: 11}, [{id: 'schema1'}]);
-      expect(datagrid.create_transaction).toHaveBeenCalledWith(
-        '/initialize/datagrid/11/schema/1/2/3/4',
-        null,
-        'false',
-        'pg',
-        '',
-        'schema1.schema1/database1/someuser@server1',
-        ''
+      showDataGrid(datagrid, pgBrowser, alertify, {mnuid: 11}, [{id: 'schema1'}], transId);
+
+      expect(datagrid.launch_grid).toHaveBeenCalledWith(
+        98765432,
+        '/panel/98765432?is_query_tool=false&cmd_type=11&obj_type=schema&obj_id=4&sgid=1&sid=2&did=3&server_type=pg',
+        false,
+        'schema1.schema1/database1/someuser@server1'
       );
     });
   });
 
   context('current node is underneath a view', () => {
     it('does not create a transaction', () => {
-      showDataGrid(datagrid, pgBrowser, alertify, {mnuid: 11}, [{id: 'view1'}]);
-      expect(datagrid.create_transaction).toHaveBeenCalledWith(
-        '/initialize/datagrid/11/view/1/2/3/5',
-        null,
-        'false',
-        'pg',
-        '',
-        'view1.view1/database1/someuser@server1',
-        ''
+      showDataGrid(datagrid, pgBrowser, alertify, {mnuid: 11}, [{id: 'view1'}], transId);
+
+      expect(datagrid.launch_grid).toHaveBeenCalledWith(
+        98765432,
+        '/panel/98765432?is_query_tool=false&cmd_type=11&obj_type=view&obj_id=5&sgid=1&sid=2&did=3&server_type=pg',
+        false,
+        'view1.view1/database1/someuser@server1'
       );
     });
   });
 
   context('current node is underneath a catalog', () => {
     it('does not create a transaction', () => {
-      showDataGrid(datagrid, pgBrowser, alertify, {mnuid: 11}, [{id: 'catalog1'}]);
-      expect(datagrid.create_transaction).toHaveBeenCalledWith(
-        '/initialize/datagrid/11/catalog/1/2/3/6',
-        null,
-        'false',
-        'pg',
-        '',
-        'catalog1.catalog1/database1/someuser@server1',
-        ''
+      showDataGrid(datagrid, pgBrowser, alertify, {mnuid: 11}, [{id: 'catalog1'}], transId);
+      expect(datagrid.launch_grid).toHaveBeenCalledWith(
+        98765432,
+        '/panel/98765432?is_query_tool=false&cmd_type=11&obj_type=catalog&obj_id=6&sgid=1&sid=2&did=3&server_type=pg',
+        false,
+        'catalog1.catalog1/database1/someuser@server1'
       );
     });
   });

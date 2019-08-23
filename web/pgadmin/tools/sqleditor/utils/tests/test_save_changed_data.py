@@ -323,13 +323,11 @@ class TestSaveChangedData(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
     def _initialize_query_tool(self):
-        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}'.format(
-            utils.SERVER_GROUP, self.server_id, self.db_id)
+        self.trans_id = str(random.randint(1, 9999999))
+        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
+            self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
         self.assertEquals(response.status_code, 200)
-
-        response_data = json.loads(response.data.decode('utf-8'))
-        self.trans_id = response_data['data']['gridTransId']
 
     def _initialize_urls_and_select_sql(self):
         self.start_query_tool_url = \

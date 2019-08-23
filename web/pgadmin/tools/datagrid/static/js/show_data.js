@@ -20,6 +20,7 @@ export function showDataGrid(
   alertify,
   connectionData,
   aciTreeIdentifier,
+  transId,
   filter=false,
   preferences=null
 ) {
@@ -42,43 +43,25 @@ export function showDataGrid(
     return;
   }
 
-  const baseUrl = generateUrl(connectionData, node.getData(), parentData);
-  const grid_title = generateDatagridTitle(pgBrowser, aciTreeIdentifier);
-
+  const gridUrl = generateUrl(transId, connectionData, node.getData(), parentData);
+  const queryToolTitle = generateDatagridTitle(pgBrowser, aciTreeIdentifier);
   if(filter) {
     initFilterDialog(alertify, pgBrowser, preferences);
 
     const validateUrl = generateFilterValidateUrl(node.getData(), parentData);
 
     let okCallback = function(sql) {
-      datagrid.create_transaction(
-        baseUrl,
-        null,
-        'false',
-        parentData.server.server_type,
-        '',
-        grid_title,
-        sql,
-        false
-      );
+      datagrid.launch_grid(transId, gridUrl, false, queryToolTitle, null, sql);
     };
 
     $.get(url_for('datagrid.filter'),
       function(data) {
-        alertify.filterDialog(`Data Filter - ${grid_title}`, data, validateUrl, preferences, okCallback)
+        alertify.filterDialog(`Data Filter - ${queryToolTitle}`, data, validateUrl, preferences, okCallback)
           .resizeTo(pgBrowser.stdW.sm,pgBrowser.stdH.sm);
       }
     );
   } else {
-    datagrid.create_transaction(
-      baseUrl,
-      null,
-      'false',
-      parentData.server.server_type,
-      '',
-      grid_title,
-      ''
-    );
+    datagrid.launch_grid(transId, gridUrl, false, queryToolTitle);
   }
 }
 
@@ -96,17 +79,21 @@ export function retrieveNameSpaceName(parentData) {
   return '';
 }
 
-function generateUrl(connectionData, nodeData, parentData) {
-  const url_params = {
-    'cmd_type': connectionData.mnuid,
-    'obj_type': nodeData._type,
-    'sgid': parentData.server_group._id,
-    'sid': parentData.server._id,
-    'did': parentData.database._id,
-    'obj_id': nodeData._id,
-  };
+function generateUrl(trans_id, connectionData, nodeData, parentData) {
+  let url_endpoint = url_for('datagrid.panel', {
+    'trans_id': trans_id,
+  });
 
-  return url_for('datagrid.initialize_datagrid', url_params);
+  url_endpoint += `?is_query_tool=${false}`
+    +`&cmd_type=${connectionData.mnuid}`
+    +`&obj_type=${nodeData._type}`
+    +`&obj_id=${nodeData._id}`
+    +`&sgid=${parentData.server_group._id}`
+    +`&sid=${parentData.server._id}`
+    +`&did=${parentData.database._id}`
+    +`&server_type=${parentData.server.server_type}`;
+
+  return url_endpoint;
 }
 
 function generateFilterValidateUrl(nodeData, parentData) {

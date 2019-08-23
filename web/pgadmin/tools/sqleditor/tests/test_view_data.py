@@ -70,14 +70,13 @@ class TestViewData(BaseTestGenerator):
         table_id = result[0][0]
 
         # Initialize query tool
-        url = '/datagrid/initialize/datagrid/3/table/{0}/{1}/{2}/{3}'.format(
-            test_utils.SERVER_GROUP, self.server_id, self.db_id, table_id)
+        self.trans_id = str(random.randint(1, 9999999))
+        url = '/datagrid/initialize/datagrid/{0}/3/table/{1}/{2}/{3}/{4}'\
+            .format(self.trans_id, test_utils.SERVER_GROUP, self.server_id,
+                    self.db_id, table_id)
         response = self.tester.post(url)
 
         self.assertEquals(response.status_code, 200)
-
-        response_data = json.loads(response.data.decode('utf-8'))
-        self.trans_id = response_data['data']['gridTransId']
 
         url = "/sqleditor/view_data/start/{0}".format(self.trans_id)
         response = self.tester.get(url)

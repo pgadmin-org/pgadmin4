@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ config.APP_NAME }} - Datagrid{% endblock %}
+{% block title %}{{title}}{% endblock %}
 {% block body %}
 <style>
     body {padding: 0px;}
@@ -228,7 +228,7 @@
                 </button>
                 <button id="btn-flash" data-test-selector="execute-refresh-button" type="button" class="btn btn-sm btn-secondary" style="width: 32px;"
                         title=""
-                        tabindex="0">
+                        tabindex="0" disabled>
                     <i class="fa fa-bolt sql-icon-lg" aria-hidden="true"></i>
                 </button>
                 <button id="btn-query-dropdown" type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
@@ -256,12 +256,12 @@
                 <button id="btn-explain" type="button" class="btn btn-sm btn-secondary"
                         title=""
                         accesskey=""
-                        tabindex="0">
+                        tabindex="0" disabled>
                     <i class="fa fa-hand-pointer-o sql-icon-lg" aria-hidden="true"></i>
                 </button>
                 <button id="btn-explain-analyze" type="button" class="btn btn-sm btn-secondary"
                         title=""
-                        accesskey="">
+                        accesskey="" disabled>
                     <i class="fa fa-list-alt sql-icon-lg" aria-hidden="true"></i>
                 </button>
                 <button id="btn-explain-options-dropdown" type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
@@ -358,20 +358,20 @@
                  data-panel-visible="visible"
                  accesskey=""
                  tabindex="0">
-                <i class="fa-custom fa-query-tool-disconnected" aria-hidden="true"
+                <i class="fa-custom fa-query-tool-disconnected obtaining-conn" aria-hidden="true"
                     title="">
                 </i>
             </div>
             <div class="editor-title"
-                 style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};"></div>
+                 style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};">&nbsp;</div>
         </div>
         <div id="editor-panel" tabindex="0">
-            <div id="fetching_data" class="pg-sp-container sql-editor-busy-fetching d-none">
+            <div id="fetching_data" class="pg-sp-container sql-editor-busy-fetching">
                 <div class="pg-sp-content">
                     <div class="row">
                         <div class="col-12 pg-sp-icon sql-editor-busy-icon"></div>
                     </div>
-                    <div class="row"><div class="col-12 pg-sp-text sql-editor-busy-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
+                    <div class="row"><div class="col-12 pg-sp-text sql-editor-busy-text">{{ _('Loading...') }}</div></div>
                 </div>
             </div>
         </div>
@@ -412,13 +412,13 @@
 
     // Listen on events to show/hide loading-icon and change messages.
     sqlEditorController.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
-      msgDiv.text(msg);
+        msgDiv.text(msg);
       }).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
         loadingDiv.removeClass('d-none');
         msgDiv.text(msg);
-        }).on('pgadmin-sqleditor:loading-icon:hide', function() {
-            loadingDiv.addClass('d-none');
-          });
+      }).on('pgadmin-sqleditor:loading-icon:hide', function() {
+        loadingDiv.addClass('d-none');
+      });
     {% if script_type_url %}
         var script_type_url = '{{ script_type_url }}';
     {% else %}
@@ -427,13 +427,8 @@
     // Start the query tool.
     sqlEditorController.start(
         {{ uniqueId }},
-        {{ is_query_tool }},
-        "{{ editor_title }}",
-        script_type_url,
-        "{{ server_type }}",
         {{ url_params|safe}},
         '{{ layout|safe }}',
-        {{ server_ver }}
     );
 });
 {% endblock %}

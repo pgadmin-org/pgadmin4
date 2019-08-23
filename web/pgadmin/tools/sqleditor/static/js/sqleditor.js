@@ -83,7 +83,6 @@ define('tools.querytool', [
       this.handler.preferences = this.preferences;
       this.connIntervalId = null;
       this.layout = opts.layout;
-      this.set_server_version(opts.server_ver);
     },
 
     // Bind all the events
@@ -188,11 +187,13 @@ define('tools.querytool', [
       });
     },
 
+    set_editor_title: function(title) {
+      this.$el.find('.editor-title').text(title);
+    },
+
     // This function is used to render the template.
     render: function() {
       var self = this;
-
-      $('.editor-title').text(_.unescape(self.editor_title));
 
       // Updates connection status flag
       self.gain_focus = function() {
@@ -206,7 +207,6 @@ define('tools.querytool', [
           SqlEditorUtils.updateConnectionStatusFlag('hidden');
         }, 100);
       };
-
 
       // Create main wcDocker instance
       self.docker = new wcDocker(
@@ -338,6 +338,10 @@ define('tools.querytool', [
       });
 
       self.render_history_grid();
+      pgBrowser.Events.on('pgadmin:query_tool:connected:'+self.handler.transId, ()=>{
+        self.fetch_query_history();
+      });
+
       queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
 
       var text_container = $('<textarea id="sql_query_tool" tabindex="-1"></textarea>');
@@ -1327,6 +1331,24 @@ define('tools.querytool', [
       }
     },
 
+    fetch_query_history: function() {
+      let self = this;
+      $.ajax({
+        url: url_for('sqleditor.get_query_history', {
+          'trans_id': self.handler.transId,
+        }),
+        method: 'GET',
+        contentType: 'application/json',
+      }).done(function(res) {
+        res.data.result.map((entry) => {
+          let newEntry = JSON.parse(entry);
+          newEntry.start_time = new Date(newEntry.start_time);
+          self.history_collection.add(newEntry);
+        });
+      }).fail(function() {
+      /* history fetch fail should not affect query tool */
+      });
+    },
     /* This function is responsible to create and render the
      * new backgrid for the history tab.
      */
@@ -1362,25 +1384,6 @@ define('tools.querytool', [
           }
         });
       }
-
-      // Make ajax call to get history data
-      $.ajax({
-        url: url_for('sqleditor.get_query_history', {
-          'trans_id': self.handler.transId,
-        }),
-        method: 'GET',
-        contentType: 'application/json',
-      })
-        .done(function(res) {
-          res.data.result.map((entry) => {
-            let newEntry = JSON.parse(entry);
-            newEntry.start_time = new Date(newEntry.start_time);
-            self.history_collection.add(newEntry);
-          });
-        })
-        .fail(function() {
-        /* history fetch fail should not affect query tool */
-        });
 
       if(!self.handler.is_query_tool) {
         self.historyComponent.setEditorPref({'copy_to_editor':false});
@@ -2016,13 +2019,13 @@ define('tools.querytool', [
       },
 
       initTransaction: function() {
-        var url_endpoint;
-        if (this.is_query_tool) {
+        var self = this, url_endpoint;
+        if (self.is_query_tool) {
           url_endpoint = 'datagrid.initialize_query_tool';
 
           // If database not present then use Maintenance database
           // We will handle this at server side
-          if (this.url_params.did) {
+          if (self.url_params.did) {
             url_endpoint = 'datagrid.initialize_query_tool_with_did';
           }
 
@@ -2030,10 +2033,25 @@ define('tools.querytool', [
           url_endpoint = 'datagrid.initialize_datagrid';
         }
 
-        var baseUrl = url_for(url_endpoint, this.url_params);
+        var baseUrl = url_for(url_endpoint, {
+          ...self.url_params,
+          'trans_id': self.transId,
+        });
 
-        Datagrid.create_transaction(baseUrl, this, this.is_query_tool,
-          this.server_type, '', '', '', true);
+        $.ajax({
+          url: baseUrl,
+          type: 'POST',
+          data: self.is_query_tool?null:JSON.stringify(self.url_params.sql_filter),
+          contentType: 'application/json',
+        }).done((res)=>{
+          pgBrowser.Events.trigger(
+            'pgadmin:query_tool:connected:' + self.transId, res.data
+          );
+        }).fail((xhr, status, error)=>{
+          pgBrowser.Events.trigger(
+            'pgadmin:query_tool:connected_fail:' + self.transId, xhr, error
+          );
+        });
       },
 
       handle_connection_lost: function(create_transaction, xhr) {
@@ -2138,12 +2156,10 @@ define('tools.querytool', [
        * call the render method of the grid view to render the backgrid
        * header and loading icon and start execution of the sql query.
        */
-      start: function(transId, is_query_tool, editor_title, script_type_url,
-        server_type, url_params, layout, server_ver
-      ) {
+      start: function(transId, url_params, layout) {
         var self = this;
 
-        self.is_query_tool = is_query_tool;
+        self.is_query_tool = url_params.is_query_tool==='true'?true:false;
         self.rows_affected = 0;
         self.marked_line_no = 0;
         self.has_more_rows = false;
@@ -2151,9 +2167,8 @@ define('tools.querytool', [
         self.close_on_save = false;
         self.close_on_idle_transaction = false;
         self.last_transaction_status = -1;
-        self.server_type = server_type;
+        self.server_type = url_params.server_type;
         self.url_params = url_params;
-        self.script_type_url = script_type_url;
         self.is_transaction_buttons_disabled = true;
 
         // We do not allow to call the start multiple times.
@@ -2164,15 +2179,47 @@ define('tools.querytool', [
           el: self.container,
           handler: self,
           layout: layout,
-          server_ver: server_ver,
         });
         self.transId = self.gridView.transId = transId;
 
-        self.gridView.editor_title = _.unescape(editor_title);
         self.gridView.current_file = undefined;
 
         // Render the header
         self.gridView.render();
+
+        self.trigger('pgadmin-sqleditor:loading-icon:hide');
+
+        self.gridView.set_editor_title(`(${gettext('Obtaining connection...')} ${_.unescape(url_params.title)}`);
+
+        let afterConn = function() {
+          let enableBtns = [];
+
+          if(self.is_query_tool){
+            enableBtns = ['#btn-flash', '#btn-explain', '#btn-explain-analyze'];
+          } else {
+            enableBtns = ['#btn-flash'];
+          }
+
+          enableBtns.forEach((selector)=>{
+            $(selector).prop('disabled', false);
+          });
+
+          $('#btn-conn-status i').removeClass('obtaining-conn');
+          self.gridView.set_editor_title(_.unescape(url_params.title));
+        };
+
+        pgBrowser.Events.on('pgadmin:query_tool:connected:' + transId, afterConn);
+        pgBrowser.Events.on('pgadmin:query_tool:connected_fail:' + transId, afterConn);
+
+        pgBrowser.Events.on('pgadmin:query_tool:connected:' + transId, (res_data)=>{
+          self.gridView.set_server_version(res_data.serverVersion);
+        });
+
+        pgBrowser.Events.on('pgadmin:query_tool:connected_fail:' + transId, (xhr, error)=>{
+          alertify.pgRespErrorNotify(xhr, error);
+        });
+
+        self.initTransaction();
 
         /* wcDocker focuses on window always, and all our shortcuts are
          * bind to editor-panel. So when we use wcDocker focus, editor-panel
@@ -2187,9 +2234,9 @@ define('tools.querytool', [
         if (self.is_query_tool) {
           // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
           // Call AJAX only if script type url is present
-          if (script_type_url) {
+          if (url_params.query_url) {
             $.ajax({
-              url: script_type_url,
+              url: url_params.query_url,
               type:'GET',
             })
               .done(function(res) {
@@ -2224,7 +2271,9 @@ define('tools.querytool', [
             cm.className += ' bg-gray-lighter opacity-5 hide-cursor-workaround';
           }
           self.disable_tool_buttons(true);
-          self.execute_data_query();
+          pgBrowser.Events.on('pgadmin:query_tool:connected:'+ transId,()=>{
+            self.execute_data_query();
+          });
         }
       },
 
@@ -3334,7 +3383,7 @@ define('tools.querytool', [
               // Find the title of the visible panel
               _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
                 if (p.isVisible()) {
-                  self.gridView.panel_title = $(p._title).text();
+                  self.gridView.panel_title = $(p._title).html();
                 }
               });
 

@@ -11,7 +11,6 @@
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
-from regression import parent_node_dict
 from regression.python_test_utils import test_utils
 import json
 from pgadmin.utils import server_utils, IS_PY2
@@ -256,13 +255,12 @@ class TestEncodingCharset(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
-        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}'.format(
-            test_utils.SERVER_GROUP, self.encode_sid, self.encode_did)
+        self.trans_id = str(random.randint(1, 9999999))
+        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'\
+            .format(self.trans_id, test_utils.SERVER_GROUP, self.encode_sid,
+                    self.encode_did)
         response = self.tester.post(url)
         self.assertEquals(response.status_code, 200)
-
-        response_data = json.loads(response.data.decode('utf-8'))
-        self.trans_id = response_data['data']['gridTransId']
 
         # Check character
         url = "/sqleditor/query_tool/start/{0}".format(self.trans_id)
