@@ -45,12 +45,17 @@
     },
     {
       "type": "alter",
-      "name": "Alter Role superuser, createdb etc options",
+      "name": "Alter Role options",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
         "rolsuper": true,
-        "rolcreatedb": true
+        "rolcreatedb": true,
+        "rolreplication": false,
+        "rolpassword": "abc123",
+        "rolconnlimit": 100,
+        "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
+        "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] }
       },
       "expected_sql_file": "alter_role_options.sql"
     },
@@ -105,12 +110,17 @@
     },
     {
       "type": "alter",
-      "name": "Alter Login Role superuser, createdb etc options",
+      "name": "Alter Login Role options",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
       "data": {
         "rolsuper": false,
-        "rolcreatedb": false
+        "rolcreatedb": false,
+        "rolreplication": false,
+        "rolpassword": "abc123",
+        "rolconnlimit": 100,
+        "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
+        "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] }
       },
       "expected_sql_file": "alter_login_role_options.sql"
     },
