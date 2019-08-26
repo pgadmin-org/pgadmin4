@@ -970,9 +970,15 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             clid: Column ID
 
         """
+
+        # Specific condition for column which we need to append
+        where = "WHERE dep.objid={0}::OID AND dep.objsubid={1}".format(
+            tid, clid
+        )
+
         # Specific condition for column which we need to append
         dependencies_result = self.get_dependencies(
-            self.conn, clid
+            self.conn, clid, where
         )
 
         return ajax_response(
