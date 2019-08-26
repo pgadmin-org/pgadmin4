@@ -25,67 +25,109 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
     scenarios = [
         ('When selecting all columns of the table', dict(
             sql='SELECT * FROM %s;',
-            primary_keys={
+            expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
             },
             expected_has_oids=False,
-            table_has_oids=False
+            table_has_oids=False,
+            expected_cols_is_editable=[True, True, True, True]
         )),
         ('When selecting all primary keys of the table', dict(
             sql='SELECT pk_col1, pk_col2 FROM %s;',
-            primary_keys={
+            expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
             },
             expected_has_oids=False,
-            table_has_oids=False
+            table_has_oids=False,
+            expected_cols_is_editable=[True, True]
         )),
         ('When selecting some of the primary keys of the table', dict(
             sql='SELECT pk_col2 FROM %s;',
-            primary_keys=None,
+            expected_primary_keys=None,
             expected_has_oids=False,
-            table_has_oids=False
+            table_has_oids=False,
+            expected_cols_is_editable=[False]
         )),
         ('When selecting none of the primary keys of the table', dict(
             sql='SELECT normal_col1 FROM %s;',
-            primary_keys=None,
+            expected_primary_keys=None,
             expected_has_oids=False,
-            table_has_oids=False
+            table_has_oids=False,
+            expected_cols_is_editable=[False]
         )),
         ('When renaming a primary key', dict(
             sql='SELECT pk_col1 as some_col, pk_col2 FROM "%s";',
-            primary_keys=None,
+            expected_primary_keys=None,
             expected_has_oids=False,
-            table_has_oids=False
+            table_has_oids=False,
+            expected_cols_is_editable=[False, False]
         )),
-        ('When renaming a column to a primary key name', dict(
-            sql='SELECT pk_col1, pk_col2, normal_col1 as pk_col1 FROM %s;',
-            primary_keys=None,
+        ('When renaming a normal column', dict(
+            sql='SELECT pk_col1, pk_col2, normal_col1 as some_col FROM "%s";',
+            expected_primary_keys={
+                'pk_col1': 'int4',
+                'pk_col2': 'int4'
+            },
             expected_has_oids=False,
-            table_has_oids=False
+            table_has_oids=False,
+            expected_cols_is_editable=[True, True, False]
+        )),
+        ('When renaming a normal column to a primary key name', dict(
+            sql='SELECT normal_col1 as pk_col1, pk_col1, pk_col2 FROM %s;',
+            expected_primary_keys={
+                'pk_col1': 'int4',
+                'pk_col2': 'int4'
+            },
+            expected_has_oids=False,
+            table_has_oids=False,
+            expected_cols_is_editable=[False, True, True]
+        )),
+        ('When selecting a normal column twice', dict(
+            sql='SELECT pk_col1, pk_col2, normal_col1, normal_col1 FROM %s;',
+            expected_primary_keys={
+                'pk_col1': 'int4',
+                'pk_col2': 'int4'
+            },
+            expected_has_oids=False,
+            table_has_oids=False,
+            expected_cols_is_editable=[True, True, True, False]
+        )),
+        ('When selecting a non-table column', dict(
+            sql='SELECT pk_col1, pk_col2, normal_col1 || normal_col2 FROM %s;',
+            expected_primary_keys={
+                'pk_col1': 'int4',
+                'pk_col2': 'int4'
+            },
+            expected_has_oids=False,
+            table_has_oids=False,
+            expected_cols_is_editable=[True, True, False]
         )),
         ('When selecting primary keys and oids (table with oids)', dict(
             sql='SELECT *, oid FROM %s;',
-            primary_keys={
+            expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
             },
             expected_has_oids=True,
-            table_has_oids=True
+            table_has_oids=True,
+            expected_cols_is_editable=[True, True, True, True, False]
         )),
         ('When selecting oids without primary keys (table with oids)', dict(
             sql='SELECT oid, normal_col1, normal_col2 FROM %s;',
-            primary_keys=None,
+            expected_primary_keys=None,
             expected_has_oids=True,
-            table_has_oids=True
+            table_has_oids=True,
+            expected_cols_is_editable=[False, True, True]
         )),
         ('When selecting none of the primary keys or oids (table with oids)',
          dict(
              sql='SELECT normal_col1, normal_col2 FROM %s;',
-             primary_keys=None,
+             expected_primary_keys=None,
              expected_has_oids=False,
-             table_has_oids=True
+             table_has_oids=True,
+             expected_cols_is_editable=[False, False]
          ))
     ]
 
@@ -99,6 +141,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         response_data = self._execute_select_sql()
         self._check_primary_keys(response_data)
         self._check_oids(response_data)
+        self._check_editable_columns(response_data)
 
     def tearDown(self):
         # Disconnect the database
@@ -116,11 +159,17 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
 
     def _check_primary_keys(self, response_data):
         primary_keys = response_data['data']['primary_keys']
-        self.assertEquals(primary_keys, self.primary_keys)
+        self.assertEquals(primary_keys, self.expected_primary_keys)
 
     def _check_oids(self, response_data):
         has_oids = response_data['data']['has_oids']
         self.assertEquals(has_oids, self.expected_has_oids)
+
+    def _check_editable_columns(self, response_data):
+        columns_info = response_data['data']['colinfo']
+        for col, expected_is_editable in \
+                zip(columns_info, self.expected_cols_is_editable):
+            self.assertEquals(col['is_editable'], expected_is_editable)
 
     def _initialize_database_connection(self):
         database_info = parent_node_dict["database"][-1]

@@ -35,14 +35,14 @@ disabled in either mode. Please see
 :ref:`The Query Tool Toolbar <query_tool_toolbar>` for a description of the
 available controls.
 
+.. _data-grid:
+
 The Data Grid
 *************
 
 The top row of the data grid displays the name of each column, the data type,
 and if applicable, the number of characters allowed. A column that is part of
 the primary key will additionally be marked with [PK].
-
-.. _modifying-data-grid:
 
 To modify the displayed data:
 

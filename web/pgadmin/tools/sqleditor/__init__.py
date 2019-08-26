@@ -430,40 +430,17 @@ def poll(trans_id):
                         oids = {'oid': 'oid'}
 
                 if columns_info is not None:
-                    # If it is a QueryToolCommand that has obj_id attribute
-                    # then it should also be editable
-                    if hasattr(trans_obj, 'obj_id') and \
-                        (not isinstance(trans_obj, QueryToolCommand) or
-                         trans_obj.can_edit()):
-                        # Get the template path for the column
-                        template_path = 'columns/sql/#{0}#'.format(
-                            conn.manager.version
-                        )
+                    # Only QueryToolCommand or TableCommand can be editable
+                    if hasattr(trans_obj, 'obj_id') and trans_obj.can_edit():
+                        columns = trans_obj.get_columns_types(conn)
 
-                        SQL = render_template(
-                            "/".join([template_path, 'nodes.sql']),
-                            tid=trans_obj.obj_id,
-                            has_oids=True
-                        )
-                        # rows with attribute not_null
-                        colst, rset = conn.execute_2darray(SQL)
-                        if not colst:
-                            return internal_server_error(errormsg=rset)
-
-                    for key, col in enumerate(columns_info):
-                        col_type = dict()
-                        col_type['type_code'] = col['type_code']
-                        col_type['type_name'] = None
-                        col_type['internal_size'] = col['internal_size']
-                        columns[col['name']] = col_type
-
-                        if rset:
-                            col_type['not_null'] = col['not_null'] = \
-                                rset['rows'][key]['not_null']
-
-                            col_type['has_default_val'] = \
-                                col['has_default_val'] = \
-                                rset['rows'][key]['has_default_val']
+                    else:
+                        for col in columns_info:
+                            col_type = dict()
+                            col_type['type_code'] = col['type_code']
+                            col_type['type_name'] = None
+                            col_type['internal_size'] = col['internal_size']
+                            columns[col['name']] = col_type
 
                 if columns:
                     st, types = fetch_pg_types(columns, trans_obj)

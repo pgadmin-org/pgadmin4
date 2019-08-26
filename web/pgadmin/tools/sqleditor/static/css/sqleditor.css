@@ -385,13 +385,13 @@ input.editor-checkbox:focus {
 
 
 /* For geometry column button */
-.div-view-geometry-column {
+.div-view-geometry-column, .editable-column-header-icon {
   float: right;
   height: 100%;
   display: flex;
   display: -webkit-flex;
   align-items: center;
-  padding-right: 4px;
+  padding-right: 6px;
 }
 
 /* For leaflet popup */

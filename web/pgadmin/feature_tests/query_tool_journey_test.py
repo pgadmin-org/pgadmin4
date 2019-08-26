@@ -74,16 +74,19 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._test_history_tab()
         print(" OK.", file=sys.stderr)
 
-        # Insert data into test editable table
         self._insert_data_into_test_editable_table()
 
-        print("History query sources and generated queries toggle...",
+        print("History query source icons and generated queries toggle...",
               file=sys.stderr, end="")
         self._test_query_sources_and_generated_queries()
         print(" OK.", file=sys.stderr)
 
         print("Updatable result sets...", file=sys.stderr, end="")
         self._test_updatable_resultset()
+        print(" OK.", file=sys.stderr)
+
+        print("Is editable column header icons...", file=sys.stderr, end="")
+        self._test_is_editable_columns_icons()
         print(" OK.", file=sys.stderr)
 
     def _test_copies_rows(self):
@@ -237,16 +240,53 @@ class QueryToolJourneyTest(BaseFeatureTest):
             return
         self.page.click_tab("Query Editor")
 
-        # Select all data (contains the primary key -> should be editable)
+        # Select all data
+        # (contains the primary key -> all columns should be editable)
         self.page.clear_query_tool()
         query = "SELECT pk_column, normal_column FROM %s" \
                 % self.test_editable_table_name
-        self._check_query_results_editable(query, True)
+        self._check_query_results_editable(query, [True, True])
 
         # Select data without primary keys -> should not be editable
         self.page.clear_query_tool()
         query = "SELECT normal_column FROM %s" % self.test_editable_table_name
-        self._check_query_results_editable(query, False)
+        self._check_query_results_editable(query, [False],
+                                           discard_changes_modal=True)
+
+        # Select all data in addition to duplicate, renamed, and out-of-table
+        # columns
+        self.page.clear_query_tool()
+        query = """
+                SELECT pk_column, normal_column, normal_column,
+                normal_column as pk_column,
+                (normal_column::text || normal_column::text)::int
+                FROM %s
+                """ % self.test_editable_table_name
+        self._check_query_results_editable(query,
+                                           [True, True, False, False, False])
+
+    def _test_is_editable_columns_icons(self):
+        if self.driver_version < 2.8:
+            return
+        self.page.click_tab("Query Editor")
+
+        self.page.clear_query_tool()
+        query = "SELECT pk_column FROM %s" % self.test_editable_table_name
+        self.page.execute_query(query)
+        # Discard changes made by previous test to data grid
+        self.page.click_modal('Yes')
+        icon_exists = self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.editable_column_icon_xpath
+        )
+        self.assertTrue(icon_exists)
+
+        self.page.clear_query_tool()
+        query = "SELECT normal_column FROM %s" % self.test_editable_table_name
+        self.page.execute_query(query)
+        icon_exists = self.page.check_if_element_exist_by_xpath(
+            QueryToolLocators.read_only_column_icon_xpath
+        )
+        self.assertTrue(icon_exists)
 
     def _execute_sources_test_queries(self):
         self.page.clear_query_tool()
@@ -367,18 +407,24 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _assert_clickable(self, element):
         self.page.click_element(element)
 
-    def _check_query_results_editable(self, query, should_be_editable):
+    def _check_query_results_editable(self, query, cols_should_be_editable,
+                                      discard_changes_modal=False):
         self.page.execute_query(query)
-        # Check if the first cell in the first row is editable
-        is_editable = self._check_cell_editable(1)
-        self.assertEqual(is_editable, should_be_editable)
+        if discard_changes_modal:
+            self.page.click_modal('Yes')
+        enumerated_should_be_editable = enumerate(cols_should_be_editable, 1)
+
+        import time
+        time.sleep(0.5)
+        for column_index, should_be_editable in enumerated_should_be_editable:
+            is_editable = self._check_cell_editable(column_index)
+            self.assertEqual(is_editable, should_be_editable)
 
     def _check_cell_editable(self, cell_index):
         """Checks if a cell in the first row of the resultset is editable"""
-
-        self.page.check_if_element_exist_by_xpath(
-            "//div[contains(@style, 'top:0px')]//div[contains(@class, "
-            "'l{0} r{1}')]".format(cell_index, cell_index))
+        # self.page.check_if_element_exist_by_xpath(
+        #     "//div[contains(@style, 'top:0px')]//div[contains(@class, "
+        #     "'l{0} r{1}')]".format(cell_index, cell_index))
         cell_el = self.page.find_by_xpath(
             "//div[contains(@style, 'top:0px')]//div[contains(@class, "
             "'l{0} r{1}')]".format(cell_index, cell_index))

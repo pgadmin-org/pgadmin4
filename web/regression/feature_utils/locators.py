@@ -219,3 +219,11 @@ class QueryToolLocators:
         "//div[label[normalize-space(" \
         "text())='Show queries generated internally by pgAdmin?']]" \
         "//div[contains(@class,'toggle btn')]"
+
+    editable_column_icon_xpath = "//div[contains(@class," \
+                                 " 'editable-column-header-icon')]" \
+                                 "/i[contains(@class, 'fa-pencil')]"
+
+    read_only_column_icon_xpath = "//div[contains(@class," \
+                                  " 'editable-column-header-icon')]" \
+                                  "/i[contains(@class, 'fa-lock')]"

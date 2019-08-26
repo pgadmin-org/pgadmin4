@@ -778,6 +778,7 @@ define('tools.querytool', [
           not_null: c.not_null,
           has_default_val: c.has_default_val,
           is_array: c.is_array,
+          can_edit: c.can_edit,
         };
 
         // Get the columns width based on longer string among data type or
@@ -795,17 +796,17 @@ define('tools.querytool', [
         if (c.cell == 'oid' && c.name == 'oid') {
           options['editor'] = null;
         } else if (c.cell == 'Json') {
-          options['editor'] = is_editable ? Slick.Editors.JsonText :
+          options['editor'] = c.can_edit ? Slick.Editors.JsonText :
             Slick.Editors.ReadOnlyJsonText;
           options['formatter'] = Slick.Formatters.JsonString;
         } else if (c.cell == 'number' || c.cell == 'oid' ||
           $.inArray(c.type, ['xid', 'real']) !== -1
         ) {
-          options['editor'] = is_editable ? Slick.Editors.CustomNumber :
+          options['editor'] = c.can_edit ? Slick.Editors.CustomNumber :
             Slick.Editors.ReadOnlyText;
           options['formatter'] = Slick.Formatters.Numbers;
         } else if (c.cell == 'boolean') {
-          options['editor'] = is_editable ? Slick.Editors.Checkbox :
+          options['editor'] = c.can_edit ? Slick.Editors.Checkbox :
             Slick.Editors.ReadOnlyCheckbox;
           options['formatter'] = Slick.Formatters.Checkmark;
         } else if (c.cell == 'binary') {
@@ -814,10 +815,24 @@ define('tools.querytool', [
         } else if (c.cell == 'geometry' || c.cell == 'geography') {
           // increase width to add 'view' button
           options['width'] += 28;
+          options['can_edit'] = false;
         } else {
-          options['editor'] = is_editable ? Slick.Editors.pgText :
+          options['editor'] = c.can_edit ? Slick.Editors.pgText :
             Slick.Editors.ReadOnlypgText;
           options['formatter'] = Slick.Formatters.Text;
+        }
+
+        if(!_.isUndefined(c.can_edit)) {
+          // Increase width for editable/read-only icon
+          options['width'] += 12;
+
+          let tooltip = '';
+          if(c.can_edit)
+            tooltip = gettext('Editable column');
+          else
+            tooltip = gettext('Read-only column');
+
+          options['toolTip'] = tooltip;
         }
 
         grid_columns.push(options);
@@ -826,10 +841,14 @@ define('tools.querytool', [
       var gridSelector = new GridSelector();
       grid_columns = self.grid_columns = gridSelector.getColumnDefinitions(grid_columns);
 
-      // add 'view' button in geometry and geography type column header
       _.each(grid_columns, function (c) {
+        // Add 'view' button in geometry and geography type column headers
         if (c.column_type_internal == 'geometry' || c.column_type_internal == 'geography') {
           GeometryViewer.add_header_button(c);
+        }
+        // Add editable/read-only icon to columns
+        if (!_.isUndefined(c.can_edit)) {
+          SqlEditorUtils.addEditableIcon(c, c.can_edit);
         }
       });
 
@@ -2634,10 +2653,11 @@ define('tools.querytool', [
 
         // Create columns required by slick grid to render
         _.each(colinfo, function(c) {
-          var is_primary_key = false;
+          var is_primary_key = false,
+            is_editable = self.can_edit && (!self.is_query_tool || c.is_editable);
 
-          // Check whether table have primary key
-          if (_.size(primary_keys) > 0) {
+          // Check whether this column is a primary key
+          if (is_editable && _.size(primary_keys) > 0) {
             _.each(primary_keys, function(value, key) {
               if (key === c.name)
                 is_primary_key = true;
@@ -2738,7 +2758,7 @@ define('tools.querytool', [
               'pos': c.pos,
               'label': column_label,
               'cell': col_cell,
-              'can_edit': (c.name == 'oid') ? false : self.can_edit,
+              'can_edit': (c.name == 'oid') ? false : is_editable,
               'type': type,
               'not_null': c.not_null,
               'has_default_val': c.has_default_val,

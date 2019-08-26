@@ -22,6 +22,7 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.tools.sqleditor.utils.is_query_resultset_updatable \
     import is_query_resultset_updatable
 from pgadmin.tools.sqleditor.utils.save_changed_data import save_changed_data
+from pgadmin.tools.sqleditor.utils.get_column_types import get_columns_types
 
 from config import PG_DEFAULT_DRIVER
 
@@ -677,6 +678,16 @@ class TableCommand(GridCommand):
                                  client_primary_key=client_primary_key,
                                  conn=conn)
 
+    def get_columns_types(self, conn):
+        columns_info = conn.get_column_info()
+        has_oids = self.has_oids()
+        table_oid = self.obj_id
+        return get_columns_types(conn=conn,
+                                 columns_info=columns_info,
+                                 has_oids=has_oids,
+                                 table_oid=table_oid,
+                                 is_query_tool=False)
+
 
 class ViewCommand(GridCommand):
     """
@@ -864,6 +875,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         self.primary_keys = None
         self.pk_names = None
         self.table_has_oids = False
+        self.columns_types = None
 
     def get_sql(self, default_conn=None):
         return None
@@ -873,6 +885,9 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
 
     def get_primary_keys(self):
         return self.pk_names, self.primary_keys
+
+    def get_columns_types(self, conn=None):
+        return self.columns_types
 
     def has_oids(self):
         return self.table_has_oids
@@ -906,8 +921,9 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         # Get the path to the sql templates
         sql_path = 'sqleditor/sql/#{0}#'.format(manager.version)
 
-        self.is_updatable_resultset, self.table_has_oids, self.primary_keys, \
-            pk_names, table_oid = is_query_resultset_updatable(conn, sql_path)
+        self.is_updatable_resultset, self.table_has_oids,\
+            self.primary_keys, pk_names, table_oid,\
+            self.columns_types = is_query_resultset_updatable(conn, sql_path)
 
         # Create pk_names attribute in the required format
         if pk_names is not None:

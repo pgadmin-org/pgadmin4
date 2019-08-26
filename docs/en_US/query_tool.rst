@@ -130,15 +130,27 @@ You can:
 
 A result set is updatable if:
 
-* All the columns belong to the same table.
-* All the primary keys or OIDs of the table are explicitly selected.
-* No columns are duplicated.
+* All columns are either selected directly from a single table, or
+  are not table columns at all (e.g. concatenation of 2 columns).
+  Only columns that are selected directly from the table are
+  editable, other columns are read-only.
+* All the primary key columns or OIDs of the table are selected in the
+  result set.
+
+Any columns that are renamed or selected more than once are also read-only.
+
+Editable and read-only columns are identified using pencil and lock icons
+(respectively) in the column headers.
+
+.. image:: images/query_tool_editable_columns.png
+    :alt: Query tool editable and read-only columns
+    :align: center
 
 The  psycopg2 driver version should be equal to or above 2.8 for updatable
 query result sets to work.
 
-An updatable result set can be modified just like in
-:ref:`View/Edit Data <modifying-data-grid>` mode.
+An updatable result set is identical to the :ref:`Data Grid <data-grid>` in
+View/Edit Data mode, and can be modified in the same way.
 
 If Auto-commit is off, the data changes are made as part of the ongoing
 transaction, if no transaction is ongoing a new one is initiated. The data

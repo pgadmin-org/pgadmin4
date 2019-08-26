@@ -9,8 +9,9 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
-| `Issue #4453 <https://redmine.postgresql.org/issues/4453>`_ -  Don't wait for the database connection before rendering the Query Tool UI, for improved UX.
+| `Issue #4553 <https://redmine.postgresql.org/issues/4553>`_ -  Don't wait for the database connection before rendering the Query Tool UI, for improved UX.
 | `Issue #4651 <https://redmine.postgresql.org/issues/4651>`_ -  Allow configuration options to be set from the environment in the container distribution.
+| `Issue #4667 <https://redmine.postgresql.org/issues/4667>`_ -  Ensure editable and read-only columns in Query Tool should be identified by icons and tooltips in the column header.
 
 Housekeeping
 ************
