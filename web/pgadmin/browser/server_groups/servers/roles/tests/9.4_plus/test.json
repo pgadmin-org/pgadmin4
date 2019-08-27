@@ -57,7 +57,8 @@
         "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
         "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] }
       },
-      "expected_sql_file": "alter_role_options.sql"
+      "expected_sql_file": "alter_role_options.sql",
+      "convert_timestamp_columns": ["rolvaliduntil"]
     },
     {
       "type": "delete",
@@ -122,7 +123,8 @@
         "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
         "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] }
       },
-      "expected_sql_file": "alter_login_role_options.sql"
+      "expected_sql_file": "alter_login_role_options.sql",
+      "convert_timestamp_columns": ["rolvaliduntil"]
     },
     {
       "type": "delete",

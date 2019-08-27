@@ -9,7 +9,7 @@ CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
   NOCREATEROLE
   NOREPLICATION
   CONNECTION LIMIT 100
-  VALID UNTIL '2050-01-01 00:00:00+05:30';
+  VALID UNTIL '<TIMESTAMPTZ>';
 
 ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#" IN DATABASE postgres SET application_name TO 'pg4';
 

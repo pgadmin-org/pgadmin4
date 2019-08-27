@@ -90,7 +90,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Schema ID placeholder in JSON file which needs to be replaced
         # while running the test cases
         self.JSON_PLACEHOLDERS = {'schema_id': '<SCHEMA_ID>',
-                                  'owner': '<OWNER>'}
+                                  'owner': '<OWNER>',
+                                  'timestamptz': '<TIMESTAMPTZ>'}
 
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
@@ -371,6 +372,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 if 'username' in self.server:
                     sql = sql.replace(self.JSON_PLACEHOLDERS['owner'],
                                       self.server['username'])
+                # Convert timestamp with timezone from json file to the
+                # database server's correct timestamp
+                sql = self.convert_timestamptz(scenario, sql)
                 try:
                     self.assertEquals(sql, resp_sql)
                 except Exception as e:
@@ -427,6 +431,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 if 'username' in self.server:
                     sql = sql.replace(self.JSON_PLACEHOLDERS['owner'],
                                       self.server['username'])
+                # Convert timestamp with timezone from json file to the
+                # database server's correct timestamp
+                sql = self.convert_timestamptz(scenario, sql)
                 try:
                     self.assertEquals(sql, resp_sql)
                 except Exception as e:
@@ -447,6 +454,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             if 'username' in self.server:
                 exp_sql = exp_sql.replace(self.JSON_PLACEHOLDERS['owner'],
                                           self.server['username'])
+            # Convert timestamp with timezone from json file to the
+            # database server's correct timestamp
+            sql = self.convert_timestamptz(scenario, exp_sql)
             try:
                 self.assertEquals(exp_sql, resp_sql)
             except Exception as e:
@@ -509,3 +519,31 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 scenario['data']['schema_id'] == \
                     self.JSON_PLACEHOLDERS['schema_id']:
                 scenario['data']['schema'] = self.schema_id
+
+    def convert_timestamptz(self, scenario, sql):
+        """
+        This function will convert the given timestamptz with database
+        servers timestamptz and replace that in given sql.
+        :param scenario:
+        :param sql:
+        :return:
+        """
+        if 'convert_timestamp_columns' in scenario:
+            for col in scenario['convert_timestamp_columns']:
+                if 'data' in scenario and col in scenario['data']:
+                    self.get_db_connection()
+                    pg_cursor = self.connection.cursor()
+                    try:
+                        query = "SELECT timestamp with time zone '" \
+                                + scenario['data'][col] + "'"
+                        pg_cursor.execute(query)
+                        converted_tz = pg_cursor.fetchone()
+                        if len(converted_tz) >= 1:
+                            sql = sql.replace(
+                                self.JSON_PLACEHOLDERS['timestamptz'],
+                                converted_tz[0])
+                    except Exception as e:
+                        traceback.print_exc()
+                    pg_cursor.close()
+
+        return sql
