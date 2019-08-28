@@ -3436,7 +3436,7 @@ define('tools.querytool', [
               // Find the title of the visible panel
               _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
                 if (p.isVisible()) {
-                  self.gridView.panel_title = $(p._title).html();
+                  self.gridView.panel_title = $(p._title).text();
                 }
               });
 
