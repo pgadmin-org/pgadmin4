@@ -886,25 +886,33 @@ import gettext from 'sources/gettext';
   // Custom checkbox editor, We need it for runtime as it does not render
   // indeterminate checkbox state
   function pgCheckboxEditor(args) {
-    var $select, el;
+    var $select;
     var defaultValue, previousState;
 
     this.init = function() {
-      $select = $('<div class=\'multi-checkbox\'><span class=\'check\' hideFocus></span></div>');
+      $select = $('<div class=\'multi-checkbox\' tabindex="0"><span class=\'check\' hideFocus></span></div>');
       $select.appendTo(args.container);
       $select.trigger('focus');
 
-      // The following code is taken from https://css-tricks.com/indeterminate-checkboxes/
-      $select.on('click', function() {
-        el = $(this);
-        var states = ['unchecked', 'partial', 'checked'];
-        var curState = el.find('.check').data('state');
-        curState++;
-        el.find('.check')
-          .removeClass('unchecked partial checked')
-          .addClass(states[curState % states.length])
-          .data('state', curState % states.length);
+      $select.on('click', this.changeValue);
+
+      $select.on('keydown', (e) => {
+        if (e.which == $.ui.keyCode.SPACE) {
+          e.preventDefault();
+          this.changeValue(e);
+        }
       });
+    };
+
+    this.changeValue = function() {
+      // The following code is taken from https://css-tricks.com/indeterminate-checkboxes/
+      var states = ['unchecked', 'partial', 'checked'];
+      var curState = $select.find('.check').data('state') || 0;
+      curState++;
+      $select.find('.check')
+        .removeClass('unchecked partial checked')
+        .addClass(states[curState % states.length])
+        .data('state', curState % states.length);
     };
 
     this.destroy = function() {

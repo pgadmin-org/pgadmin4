@@ -23,7 +23,9 @@ Bug fixes
 
 | `Issue #2706 <https://redmine.postgresql.org/issues/2706>`_ -  Added ProjectSet icon for explain module.
 | `Issue #2828 <https://redmine.postgresql.org/issues/2828>`_ -  Added Gather Merge, Named Tuple Store Scan and Table Function Scan icon for explain module.
+| `Issue #3778 <https://redmine.postgresql.org/issues/3778>`_ -  Ensure Boolean columns should be editable using keyboard keys.
 | `Issue #4419 <https://redmine.postgresql.org/issues/4419>`_ -  Fix a debugger error when using Python 2.7.
+| `Issue #4487 <https://redmine.postgresql.org/issues/4487>`_ -  Ensure Boolean columns should be editable in View/Edit data and Query Tool.
 | `Issue #4577 <https://redmine.postgresql.org/issues/4577>`_ -  Fix an error that could be seen when click on any system column of a table.
 | `Issue #4584 <https://redmine.postgresql.org/issues/4584>`_ -  Unescape HTML entities in database names in the Query Tool title bar.
 | `Issue #4643 <https://redmine.postgresql.org/issues/4643>`_ -  Fix Truncate option deselect issue for compound triggers.
