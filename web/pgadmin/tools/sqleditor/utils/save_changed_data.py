@@ -98,7 +98,6 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
             # of not null which is set by default.
             column_data = {}
             pk_names, primary_keys = command_obj.get_primary_keys()
-            has_oids = 'oid' in column_type
 
             for each_row in added_index:
                 # Get the row index to match with the added rows
@@ -108,6 +107,10 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 # Remove our unique tracking key
                 data.pop(client_primary_key, None)
                 data.pop('is_row_copied', None)
+
+                # Remove oid col
+                if command_obj.has_oids():
+                    data.pop('oid', None)
 
                 # Update columns value with columns having
                 # not_null=False and has no default value
@@ -122,7 +125,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     nsp_name=command_obj.nsp_name,
                     data_type=column_type,
                     pk_names=pk_names,
-                    has_oids=has_oids
+                    has_oids=command_obj.has_oids()
                 )
 
                 select_sql = render_template(
@@ -130,7 +133,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     object_name=command_obj.object_name,
                     nsp_name=command_obj.nsp_name,
                     primary_keys=primary_keys,
-                    has_oids=has_oids
+                    has_oids=command_obj.has_oids()
                 )
 
                 list_of_sql[of_type].append({

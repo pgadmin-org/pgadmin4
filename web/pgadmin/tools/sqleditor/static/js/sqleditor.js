@@ -3712,6 +3712,10 @@ define('tools.querytool', [
             new_row.is_row_copied = true;
             self.temp_new_rows.push(count);
             new_row[self.client_primary_key] = _key;
+            if(self.has_oids && new_row.oid) {
+              new_row.oid = null;
+            }
+
             dataView.addItem(new_row);
             self.data_store.added[_key] = {
               'err': false,
