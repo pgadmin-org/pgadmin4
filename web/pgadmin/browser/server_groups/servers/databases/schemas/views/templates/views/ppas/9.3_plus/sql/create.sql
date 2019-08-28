@@ -6,9 +6,9 @@
 
 {% endif %}
 {% if data.name and data.schema and data.definition %}
-CREATE OR REPLACE VIEW {{ conn|qtIdent(data.schema, data.name) }}{% if (data.security_barrier) %}{{'\r'}}
+CREATE OR REPLACE VIEW {{ conn|qtIdent(data.schema, data.name) }}{% if (data.security_barrier) %}
 WITH (
-{% if data.security_barrier %}    security_barrier={{ data.security_barrier|lower }}{% endif %}{{'\r'}}
+{% if data.security_barrier %}    security_barrier={{ data.security_barrier|lower }}{% endif %}
 ){% endif %} AS
 {{ data.definition.rstrip(';') }};
 {% if data.owner %}
