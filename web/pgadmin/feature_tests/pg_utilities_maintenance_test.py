@@ -6,15 +6,18 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+
+from __future__ import print_function
+import random
+import os
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import ElementClickInterceptedException
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
 from regression.python_test_utils import test_gui_helper
 from regression.feature_utils.locators import NavMenuLocators
-import random
 
 
 class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
@@ -47,6 +50,11 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
                 "default_binary_paths is not set for the server {0}".format(
                     self.server['name']
                 )
+            )
+        if '<' in self.table_name and os.name == 'nt':
+            self.skipTest(
+                "HTML tags '<' and '>' in object name does not "
+                "work for windows so skipping the test case"
             )
 
         connection = test_utils.get_db_connection(
@@ -90,15 +98,12 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             self.page.toggle_open_tree_item('public')
             self.page.toggle_open_tables_node()
             self.page.select_tree_item(self.table_name)
-        retry = 3
-        while retry > 0:
-            try:
-                tools_menu = self.driver.find_element_by_link_text(
-                    NavMenuLocators.tools_menu_link_text)
-                tools_menu.click()
-                break
-            except ElementClickInterceptedException:
-                retry -= 1
+
+        self.page.retry_click(
+            (By.LINK_TEXT,
+             NavMenuLocators.tools_menu_link_text),
+            (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css))
+
         maintenance_obj = self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css)))
         maintenance_obj.click()

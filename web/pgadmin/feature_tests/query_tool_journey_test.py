@@ -308,9 +308,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         query_options = self.page.find_by_css_selector(
             QueryToolLocators.btn_query_dropdown)
         query_options.click()
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_auto_commit).click()
-        query_options.click()  # Click again to close dropdown
+        self.page.uncheck_execute_option("auto_commit")
 
         self._update_numeric_cell(2, 10)
 
@@ -320,9 +318,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         query_options = self.page.find_by_css_selector(
             QueryToolLocators.btn_query_dropdown)
         query_options.click()
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_auto_commit).click()
-        query_options.click()  # Click again to close dropdown
+        self.page.check_execute_option("auto_commit")
 
     def _check_history_queries_and_icons(self, history_queries, history_icons):
         # Select first query history entry
@@ -422,9 +418,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _check_cell_editable(self, cell_index):
         """Checks if a cell in the first row of the resultset is editable"""
-        # self.page.check_if_element_exist_by_xpath(
-        #     "//div[contains(@style, 'top:0px')]//div[contains(@class, "
-        #     "'l{0} r{1}')]".format(cell_index, cell_index))
         cell_el = self.page.find_by_xpath(
             "//div[contains(@style, 'top:0px')]//div[contains(@class, "
             "'l{0} r{1}')]".format(cell_index, cell_index))

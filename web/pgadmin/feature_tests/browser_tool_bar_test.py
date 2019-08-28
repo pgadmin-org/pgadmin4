@@ -10,11 +10,11 @@
 from __future__ import print_function
 import sys
 import random
+
 from regression.python_test_utils import test_utils
 from regression.feature_utils.locators import BrowserToolBarLocators
 from regression.feature_utils.base_feature_test import BaseFeatureTest
-from selenium.common.exceptions import TimeoutException, \
-    StaleElementReferenceException
+from selenium.webdriver.common.by import By
 
 
 class BrowserToolBarFeatureTest(BaseFeatureTest):
@@ -63,18 +63,10 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item(self.test_db)
-        retry_count = 0
-        while retry_count < 5:
-            try:
-                self.page.find_by_css_selector(
-                    BrowserToolBarLocators.open_query_tool_button_css)\
-                    .click()
-                break
-            except (StaleElementReferenceException, TimeoutException):
-                retry_count += 1
-
-        self.page.find_by_css_selector(
-            BrowserToolBarLocators.query_tool_panel_css)
+        self.page.retry_click(
+            (By.CSS_SELECTOR,
+             BrowserToolBarLocators.open_query_tool_button_css),
+            (By.CSS_SELECTOR, BrowserToolBarLocators.query_tool_panel_css))
 
     def test_view_data_tool_button(self):
         self.page.select_tree_item(self.test_db)
@@ -83,27 +75,14 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tables_node()
         self.page.select_tree_item(self.test_table_name)
 
-        retry_count = 0
-        while retry_count < 5:
-            try:
-                self.page.find_by_css_selector(
-                    BrowserToolBarLocators.view_table_data_button_css).click()
-                break
-            except (StaleElementReferenceException, TimeoutException):
-                retry_count += 1
-        self.page.find_by_css_selector(
-            BrowserToolBarLocators.view_data_panel_css)
+        self.page.retry_click(
+            (By.CSS_SELECTOR,
+             BrowserToolBarLocators.view_table_data_button_css),
+            (By.CSS_SELECTOR, BrowserToolBarLocators.view_data_panel_css))
 
     def test_filtered_rows_tool_button(self):
-        retry_count = 0
-        while retry_count < 5:
-            try:
-                self.page.find_by_css_selector(
-                    BrowserToolBarLocators.filter_data_button_css)\
-                    .click()
-                break
-            except (StaleElementReferenceException, TimeoutException):
-                retry_count += 1
-        self.page.find_by_css_selector(
-            BrowserToolBarLocators.filter_alertify_box_css)
+        self.page.retry_click(
+            (By.CSS_SELECTOR,
+             BrowserToolBarLocators.filter_data_button_css),
+            (By.CSS_SELECTOR, BrowserToolBarLocators.filter_alertify_box_css))
         self.page.click_modal('Cancel')

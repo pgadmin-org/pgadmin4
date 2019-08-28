@@ -9,6 +9,7 @@
 
 from __future__ import print_function
 import sys
+import time
 
 from selenium.common.exceptions import StaleElementReferenceException, \
     ElementClickInterceptedException
@@ -242,7 +243,6 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
     def _check_ondemand_result(self, row_id_to_find):
         # scroll to bottom to bring last row of next chunk in viewport.
-        # canvas_ele = self.page.find_by_css_selector()
         scroll = 10
         while scroll:
             canvas_ele = self.page.find_by_css_selector('.grid-canvas')
@@ -252,8 +252,9 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
                 ".scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas')"
                 ".height());"
             )
-            import time
-            time.sleep(0.5)
+            # Table height takes some time to update, for which their is no
+            # particular way
+            time.sleep(1)
             if canvas_ele.size['height'] == scrolling_height:
                 break
             else:

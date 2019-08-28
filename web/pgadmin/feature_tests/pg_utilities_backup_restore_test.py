@@ -6,12 +6,13 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+
+from __future__ import print_function
 import os
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import ElementClickInterceptedException
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
 from regression.python_test_utils import test_gui_helper
@@ -39,6 +40,11 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                     self.server['name']
                 )
             )
+        if '<' in self.database_name and os.name == 'nt':
+            self.skipTest(
+                "HTML tags '<' and '>' in object name does not "
+                "work for windows so skipping the test case"
+            )
 
         connection = test_utils.get_db_connection(
             self.server['db'],
@@ -63,14 +69,11 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item(self.database_name)
 
         # Backup
-        retry = 3
-        while retry > 0:
-            try:
-                self.driver.find_element_by_link_text(
-                    NavMenuLocators.tools_menu_link_text).click()
-                break
-            except ElementClickInterceptedException:
-                retry -= 1
+        self.page.retry_click(
+            (By.LINK_TEXT,
+             NavMenuLocators.tools_menu_link_text),
+            (By.CSS_SELECTOR,
+             NavMenuLocators.backup_obj_css))
 
         backup_object = self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.backup_obj_css)))

@@ -7,8 +7,10 @@
 #
 ##########################################################################
 
+from __future__ import print_function
 import pyperclip
 import random
+
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from regression.python_test_utils import test_utils

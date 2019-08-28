@@ -6,6 +6,8 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+
+from __future__ import print_function
 import random
 
 from regression.python_test_utils import test_utils
@@ -89,16 +91,8 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
 
     def click_membership_tab(self):
         """This will click and open membership tab of role"""
-        success = False
-        attempts = 3
-        while not success and attempts > 0:
-            membership_tab_link = self.page.find_by_xpath(
-                "//a[normalize-space(text())='Membership']")
-            membership_tab_link.click()
-            try:
-                self.page.find_by_xpath("//input[@placeholder="
-                                        "'Select members']")
-                break
-            except Exception as e:
-                attempts -= 1
-                pass
+
+        self.page.retry_click(
+            (By.XPATH,
+             "//a[normalize-space(text())='Membership']"),
+            (By.XPATH, "//input[@placeholder='Select members']"))

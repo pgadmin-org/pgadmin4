@@ -11,12 +11,12 @@ from __future__ import print_function
 import os
 import sys
 import time
+
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import StaleElementReferenceException, \
     TimeoutException
-from selenium.webdriver.support import expected_conditions as EC
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.feature_utils.locators import QueryToolLocators
 
@@ -126,21 +126,11 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
 
         # Intermittently facing issue on first click it is not successful
         # so tried couple of times.
-        iteration = 0
-        success = False
-        while not success and iteration < 4:
-            # Check for sort Ascending
-            try:
-                self.page.find_by_xpath("//th[@data-column='0']"
-                                        "/div/span[text()='Name']").click()
-                self.wait.until(
-                    EC.presence_of_element_located((
-                        By.CSS_SELECTOR,
-                        "#contents th[data-column='0'].tablesorter-headerAsc")
-                    ))
-                success = True
-            except Exception as e:
-                iteration += 1
+        success = self.page.retry_click(
+            (By.XPATH,
+             "//th[@data-column='0']/div/span[text()='Name']"),
+            (By.CSS_SELECTOR,
+             "#contents th[data-column='0'].tablesorter-headerAsc"))
 
         if not success:
             raise Exception("Unable to sort in ascending order while clicked "
@@ -151,21 +141,11 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         # Click and Check for sort Descending
         # Intermittently facing issue on first click it is not successful
         # so tried couple of times.
-        iteration = 0
-        success = False
-        while not success and iteration < 4:
-
-            try:
-                self.page.find_by_xpath("//th[@data-column='0']"
-                                        "/div/span[text()='Name']").click()
-                self.wait.until(
-                    EC.presence_of_element_located((
-                        By.CSS_SELECTOR,
-                        "#contents th[data-column='0'].tablesorter-headerDesc")
-                    ))
-                success = True
-            except Exception as e:
-                iteration += 1
+        success = self.page.retry_click(
+            (By.XPATH,
+             "//th[@data-column='0']/div/span[text()='Name']"),
+            (By.CSS_SELECTOR,
+             "#contents th[data-column='0'].tablesorter-headerDesc"))
 
         if not success:
             raise Exception("Unable to sort in descending order while clicked "

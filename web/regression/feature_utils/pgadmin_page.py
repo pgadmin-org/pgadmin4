@@ -175,6 +175,38 @@ class PgadminPage:
         execute_button.click()
         self.wait_for_query_tool_loading_indicator_to_disappear()
 
+    def check_execute_option(self, option):
+        """"This function will check auto commit or auto roll back based on
+        user input. If button is already checked, no action will be taken"""
+        if option == 'auto_commit':
+            check_status = self.driver.find_element_by_css_selector(
+                QueryToolLocators.btn_auto_commit_check_status)
+            if 'visibility-hidden' in check_status.get_attribute('class'):
+                self.find_by_css_selector(
+                    QueryToolLocators.btn_auto_commit).click()
+        if option == 'auto_rollback':
+            check_status = self.driver.find_element_by_css_selector(
+                QueryToolLocators.btn_auto_rollback_check_status)
+            if 'visibility-hidden' in check_status.get_attribute('class'):
+                self.find_by_css_selector(
+                    QueryToolLocators.btn_auto_rollback).click()
+
+    def uncheck_execute_option(self, option):
+        """"This function will uncheck auto commit or auto roll back based on
+        user input. If button is already unchecked, no action will be taken"""
+        if option == 'auto_commit':
+            check_status = self.driver.find_element_by_css_selector(
+                QueryToolLocators.btn_auto_commit_check_status)
+            if 'visibility-hidden' not in check_status.get_attribute('class'):
+                self.find_by_css_selector(
+                    QueryToolLocators.btn_auto_commit).click()
+        if option == 'auto_rollback':
+            check_status = self.driver.find_element_by_css_selector(
+                QueryToolLocators.btn_auto_rollback_check_status)
+            if 'visibility-hidden' not in check_status.get_attribute('class'):
+                self.find_by_css_selector(
+                    QueryToolLocators.btn_auto_rollback).click()
+
     def close_data_grid(self):
         self.driver.switch_to_default_content()
         xpath = "//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]"
@@ -712,24 +744,17 @@ class PgadminPage:
                 status_changed_successfully = True
         return status_changed_successfully
 
-    def retry_click_operation(self, element_to_click,
-                              element_to_verify_after_click):
-        """This will attempt to click add button multiple time,
-        some different exception encountered while clicking, so handled
-        through this"""
-
+    def retry_click(self, click_locator, verify_locator):
         click_status = False
         attempt = 0
 
         while click_status is not True and attempt < 5:
             try:
-                if element_to_verify_after_click.is_displayed():
-                    click_status = True
-                element_to_click.click()
-                if element_to_verify_after_click.is_displayed():
-                    click_status = True
+                element = self.driver.find_element(*click_locator)
+                element.click()
+                WebDriverWait(self.driver, 5).until(
+                    EC.visibility_of_element_located(verify_locator))
+                click_status = True
             except Exception:
-                print("The click operation is not performed for "
-                      "attempt %s, will try 5 attempts" % attempt)
-            attempt = +1
+                attempt = +1
         return click_status
