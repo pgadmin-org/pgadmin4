@@ -35,7 +35,7 @@ SELECT setval({{ seqname|qtLiteral }}, {{ data.current_value }}, true);
 {% set defquery = defquery+'\n    NO CYCLE' %}
 {% endif %}
 {% if defquery and defquery != '' %}
-ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }} {{ defquery }};
+ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }}{{ defquery }};
 
 {% endif %}
 {% if data.schema and data.schema != o_data.schema %}

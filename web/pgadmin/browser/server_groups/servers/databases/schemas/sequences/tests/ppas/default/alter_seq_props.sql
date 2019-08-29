@@ -11,7 +11,7 @@ CREATE SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     CACHE 2;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO enterprisedb;
 
 COMMENT ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     IS 'Some comment';

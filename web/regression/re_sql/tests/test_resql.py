@@ -210,6 +210,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     print_msg = print_msg + "... FAIL"
                     print(print_msg)
                     continue
+                else:
+                    print(scenario['name'] + " (MSQL) ... ok")
 
             if 'type' in scenario and scenario['type'] == 'create':
                 # Get the url and create the specific node.
@@ -329,7 +331,15 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         msql_url = self.get_url(scenario['msql_endpoint'],
                                 object_id)
 
-        params = urllib.parse.urlencode(scenario['data'])
+        # As msql data is passed as URL params, dict, list types data has to
+        # be converted to string using json.dumps before passing it to
+        # urlencode
+        msql_data = {
+            key: json.dumps(val)
+            if isinstance(val, dict) or isinstance(val, list) else val
+            for key, val in scenario['data'].items()}
+
+        params = urllib.parse.urlencode(msql_data)
         params = params.replace('False', 'false').replace('True', 'true')
         url = msql_url + "?%s" % params
         response = self.tester.get(url,
