@@ -168,7 +168,12 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 elif arg == 'did':
                     options['did'] = int(self.server_information['db_id'])
                 elif arg == 'scid':
-                    options['scid'] = int(self.schema_id)
+                    # For schema node object_id is the actual schema id.
+                    if endpoint.__contains__('NODE-schema') and \
+                            object_id is not None:
+                        options['scid'] = int(object_id)
+                    else:
+                        options['scid'] = int(self.schema_id)
                 elif arg == 'tid' and self.table_id:
                     options['tid'] = int(self.table_id)
                 else:

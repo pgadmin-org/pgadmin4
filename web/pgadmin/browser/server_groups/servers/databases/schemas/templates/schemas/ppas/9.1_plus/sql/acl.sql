@@ -20,4 +20,5 @@ FROM
     ) b
     LEFT JOIN pg_catalog.pg_roles g ON (b.grantor = g.oid)
     LEFT JOIN pg_catalog.pg_roles gt ON (b.grantee = gt.oid)
-GROUP BY g.rolname, gt.rolname;
+GROUP BY g.rolname, gt.rolname
+ORDER BY grantee;
