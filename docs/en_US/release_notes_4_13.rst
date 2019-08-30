@@ -37,4 +37,5 @@ Bug fixes
 | `Issue #4644 <https://redmine.postgresql.org/issues/4644>`_ -  Fix length and precision enable/disable issue when changing the data type for Domain node.
 | `Issue #4650 <https://redmine.postgresql.org/issues/4650>`_ -  Fix SQL tab issue for Views. It's a regression of compound triggers.
 | `Issue #4657 <https://redmine.postgresql.org/issues/4657>`_ -  Fix PGADMIN_SERVER_JSON_FILE environment variable support in the container.
+| `Issue #4663 <https://redmine.postgresql.org/issues/4663>`_ -  Fix exception in query history for python 2.7.
 | `Issue #4674 <https://redmine.postgresql.org/issues/4674>`_ -  Fix query tool launch error if user name contain html characters.

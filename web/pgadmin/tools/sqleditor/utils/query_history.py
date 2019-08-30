@@ -14,11 +14,12 @@ class QueryHistory:
                     QueryHistoryModel.dbname == dbname) \
             .all()
 
+        # In Python 2.7, rec.query_info has buffer data type. Cast it.
         return make_json_response(
             data={
                 'status': True,
                 'msg': '',
-                'result': [rec.query_info for rec in result]
+                'result': [bytes(rec.query_info) for rec in list(result)]
             }
         )
 
