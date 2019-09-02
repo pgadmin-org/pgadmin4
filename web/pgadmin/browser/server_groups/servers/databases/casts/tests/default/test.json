@@ -5,6 +5,7 @@
       "name": "Create IMPLICIT Cast",
       "endpoint": "NODE-cast.obj",
       "sql_endpoint": "NODE-cast.sql_id",
+      "msql_endpoint": "NODE-cast.msql",
       "data": {
         "castcontext": "IMPLICIT",
         "encoding": "UTF8",
@@ -12,17 +13,20 @@
         "srctyp": "money",
         "trgtyp": "bigint"
       },
-      "expected_sql_file": "create_implicit_cast.sql"
+      "expected_sql_file": "create_implicit_cast.sql",
+      "expected_msql_file": "create_implicit_cast_msql.sql"
     },
     {
       "type": "alter",
       "name": "Alter IMPLICIT Cast",
       "endpoint": "NODE-cast.obj_id",
       "sql_endpoint": "NODE-cast.sql_id",
+      "msql_endpoint": "NODE-cast.msql_id",
       "data": {
         "description": "Cast from money to bigint"
       },
-      "expected_sql_file": "alter_implicit_cast.sql"
+      "expected_sql_file": "alter_implicit_cast.sql",
+      "expected_msql_file": "alter_implicit_cast_msql.sql"
     },
     {
       "type": "delete",
@@ -37,6 +41,7 @@
       "name":"Create EXPLICIT Cast",
       "endpoint": "NODE-cast.obj",
       "sql_endpoint": "NODE-cast.sql_id",
+      "msql_endpoint": "NODE-cast.msql",
       "data": {
         "castcontext": "EXPLICIT",
         "encoding": "UTF8",
@@ -44,17 +49,20 @@
         "srctyp": "money",
         "trgtyp": "bigint"
       },
-      "expected_sql": "-- Cast: money -> bigint\n\n-- DROP CAST (money AS bigint);\n\nCREATE CAST (money AS bigint)\n\tWITHOUT FUNCTION;"
+      "expected_sql": "-- Cast: money -> bigint\n\n-- DROP CAST (money AS bigint);\n\nCREATE CAST (money AS bigint)\n\tWITHOUT FUNCTION;",
+      "expected_msql_file": "create_explicit_cast_msql.sql"
     },
     {
       "type": "alter",
       "name": "Alter EXPLICIT Cast",
       "endpoint": "NODE-cast.obj_id",
       "sql_endpoint": "NODE-cast.sql_id",
+      "msql_endpoint": "NODE-cast.msql_id",
       "data": {
         "description": "Cast from money to bigint"
       },
-      "expected_sql": "-- Cast: money -> bigint\n\n-- DROP CAST (money AS bigint);\n\nCREATE CAST (money AS bigint)\n\tWITHOUT FUNCTION;\n\nCOMMENT ON CAST (money AS bigint) IS 'Cast from money to bigint';"
+      "expected_sql": "-- Cast: money -> bigint\n\n-- DROP CAST (money AS bigint);\n\nCREATE CAST (money AS bigint)\n\tWITHOUT FUNCTION;\n\nCOMMENT ON CAST (money AS bigint) IS 'Cast from money to bigint';",
+      "expected_msql_file": "alter_explicit_cast_msql.sql"
     },
     {
       "type": "delete",
