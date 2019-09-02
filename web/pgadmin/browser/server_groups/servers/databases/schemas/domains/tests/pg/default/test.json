@@ -1,0 +1,114 @@
+{
+  "scenarios": [{
+      "type": "create",
+      "name": "Create Domain with all options",
+      "endpoint": "NODE-domain.obj",
+      "sql_endpoint": "NODE-domain.sql_id",
+      "msql_endpoint": "NODE-domain.msql",
+      "data": {
+        "name": "Dom1_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "public",
+        "schema_id": "<SCHEMA_ID>",
+	    "owner": "postgres",
+        "basensp": "public",
+        "description": "test_comment",
+        "basetype": "text",
+	    "collname": "pg_catalog.\"C\"",
+        "typdefault": "5",
+        "typnotnull": "true",
+        "constraints": [{
+          "conname": "constraint_1",
+          "consrc": "3 < 5",
+          "convalidated": true
+	    }, {
+          "conname": "constraint_2",
+          "consrc": "4 < 2",
+          "convalidated": false
+	    }],
+	    "seclabels": []
+      },
+      "expected_sql_file": "create_domain.sql",
+      "expected_msql_file": "msql_create_domain.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter domain comment",
+      "endpoint": "NODE-domain.obj_id",
+      "sql_endpoint": "NODE-domain.sql_id",
+      "msql_endpoint": "NODE-domain.msql_id",
+      "data": {
+        "description": "test updated domain comment"
+      },
+      "expected_sql_file": "alter_domain_comment.sql",
+      "expected_msql_file": "msql_alter_domain_comment.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter domain null type",
+      "endpoint": "NODE-domain.obj_id",
+      "sql_endpoint": "NODE-domain.sql_id",
+      "msql_endpoint": "NODE-domain.msql_id",
+      "data": {
+        "typnotnull": "false"
+      },
+      "expected_sql_file": "alter_domain_null_type.sql",
+      "expected_msql_file": "msql_alter_domain_null_type.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter domain default expression",
+      "endpoint": "NODE-domain.obj_id",
+      "sql_endpoint": "NODE-domain.sql_id",
+      "msql_endpoint": "NODE-domain.msql_id",
+      "data": {
+        "typdefault": "3"
+      },
+      "expected_sql_file": "alter_domain_default_expression.sql",
+      "expected_msql_file": "msql_alter_domain_default_expression.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter domain name",
+      "endpoint": "NODE-domain.obj_id",
+      "sql_endpoint": "NODE-domain.sql_id",
+      "msql_endpoint": "NODE-domain.msql_id",
+      "data": {
+        "name": "Dom2_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_domain_name.sql",
+      "expected_msql_file": "msql_alter_domain_name.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop domain of text data type",
+      "endpoint": "NODE-domain.delete_id",
+      "data": {
+        "name": "Dom2_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Domain with numeric data type",
+      "endpoint": "NODE-domain.obj",
+      "sql_endpoint": "NODE-domain.sql_id",
+      "msql_endpoint": "NODE-domain.msql",
+      "data": {
+        "name": "Dom1_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "public",
+        "schema_id": "<SCHEMA_ID>",
+	    "owner": "postgres",
+        "basensp": "public",
+        "description": "test_comment",
+        "basetype": "numeric",
+        "typlen": 5,
+        "precision": 2,
+        "typdefault": "3",
+        "typnotnull": "true",
+        "seclabels": []
+      },
+      "expected_sql_file": "create_domain_numeric.sql",
+      "expected_msql_file": "msql_create_domain_numeric.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop domain of numeric data type",
+      "endpoint": "NODE-domain.delete_id",
+      "data": {
+        "name": "Dom2_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]
+}
