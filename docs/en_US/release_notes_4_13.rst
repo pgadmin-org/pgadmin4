@@ -12,6 +12,7 @@ New features
 | `Issue #4553 <https://redmine.postgresql.org/issues/4553>`_ -  Don't wait for the database connection before rendering the Query Tool UI, for improved UX.
 | `Issue #4651 <https://redmine.postgresql.org/issues/4651>`_ -  Allow configuration options to be set from the environment in the container distribution.
 | `Issue #4667 <https://redmine.postgresql.org/issues/4667>`_ -  Ensure editable and read-only columns in Query Tool should be identified by icons and tooltips in the column header.
+| `Issue #4691 <https://redmine.postgresql.org/issues/4691>`_ -  Add an Italian translation.
 
 Housekeeping
 ************
