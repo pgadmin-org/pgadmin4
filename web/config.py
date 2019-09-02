@@ -163,6 +163,9 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 #       has no effect on <= Python 2.7.
 MINIFY_PAGE = True
 
+# Set the cache control max age for static files in flask to 1 year
+SEND_FILE_MAX_AGE_DEFAULT = 31556952
+
 # This will be added to static urls as url parameter with value as
 # APP_VERSION_INT for cache busting on version upgrade. If the value is set as
 # None or empty string then it will not be added.

@@ -39,3 +39,4 @@ Bug fixes
 | `Issue #4657 <https://redmine.postgresql.org/issues/4657>`_ -  Fix PGADMIN_SERVER_JSON_FILE environment variable support in the container.
 | `Issue #4663 <https://redmine.postgresql.org/issues/4663>`_ -  Fix exception in query history for python 2.7.
 | `Issue #4674 <https://redmine.postgresql.org/issues/4674>`_ -  Fix query tool launch error if user name contain html characters.
+| `Issue #4681 <https://redmine.postgresql.org/issues/4681>`_ -  Increase cache control max age for static files to improve performance over longer run.
