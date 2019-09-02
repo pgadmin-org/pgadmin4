@@ -33,7 +33,7 @@
       "name": "Drop FTS Parser",
       "endpoint": "NODE-fts_parser.delete_id",
       "data": {
-        "name": "test_fts_configuration_def2"
+        "name": "test_fts_parser_updated_$%{}[]()&*^!@\"'`\\/#"
       }
     }
   ]

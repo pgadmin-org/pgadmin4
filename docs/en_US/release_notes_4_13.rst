@@ -19,6 +19,7 @@ Housekeeping
 | `Issue #4575 <https://redmine.postgresql.org/issues/4575>`_ -  Add Reverse Engineered SQL tests for Schemas.
 | `Issue #4576 <https://redmine.postgresql.org/issues/4576>`_ -  Add Reverse Engineered SQL tests for Views.
 | `Issue #4600 <https://redmine.postgresql.org/issues/4600>`_ -  Add Reverse Engineered SQL tests for Rules.
+| `Issue #4619 <https://redmine.postgresql.org/issues/4619>`_ -  Add Reverse Engineered and Modified SQL tests for FTS Templates.
 
 Bug fixes
 *********
