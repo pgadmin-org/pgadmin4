@@ -227,7 +227,7 @@ define('pgadmin.datagrid', [
         queryToolForm +=`
           </form>
             <script>
-              document.getElementById("title").value = "${_.escape(panel_title)}";
+              document.getElementById("title").value = "${panel_title}";
               document.getElementById("queryToolForm").submit();
             </script>
           `;
@@ -244,7 +244,7 @@ define('pgadmin.datagrid', [
           var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
           // Set panel title and icon
-          panelTitleFunc.setQueryToolDockerTitle(queryToolPanel, is_query_tool, panel_title);
+          panelTitleFunc.setQueryToolDockerTitle(queryToolPanel, is_query_tool, _.unescape(panel_title));
           queryToolPanel.focus();
 
           // Listen on the panel closed event.
