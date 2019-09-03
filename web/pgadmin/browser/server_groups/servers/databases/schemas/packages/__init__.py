@@ -365,11 +365,8 @@ class PackageView(PGChildNodeView):
                     )
                 )
         data['schema'] = self.schema
-        # The SQL below will execute CREATE DDL only
-        SQL = render_template(
-            "/".join([self.template_path, 'create.sql']),
-            data=data, conn=self.conn
-        )
+
+        SQL, name = self.getSQL(gid, sid, did, data, scid, None)
 
         status, msg = self.conn.execute_scalar(SQL)
         if not status:
@@ -555,7 +552,7 @@ class PackageView(PGChildNodeView):
             status=200
         )
 
-    def getSQL(self, gid, sid, did, data, scid, pkgid=None):
+    def getSQL(self, gid, sid, did, data, scid, pkgid=None, sqltab=False):
         """
         This function will generate sql from model data.
 
@@ -571,7 +568,7 @@ class PackageView(PGChildNodeView):
             u'name'
         ]
 
-        if pkgid is not None:
+        if pkgid is not None and not sqltab:
             data['schema'] = self.schema
             SQL = render_template(
                 "/".join([self.template_path, 'properties.sql']), scid=scid,
@@ -679,7 +676,7 @@ class PackageView(PGChildNodeView):
                 res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
             result = res['rows'][0]
-            sql, name = self.getSQL(gid, sid, did, result, scid, pkgid)
+            sql, name = self.getSQL(gid, sid, did, result, scid, pkgid, True)
             # Most probably this is due to error
             if not isinstance(sql, (str, unicode)):
                 return sql
