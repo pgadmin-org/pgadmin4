@@ -5,6 +5,7 @@
       "name": "Create FTS parser",
       "endpoint": "NODE-fts_parser.obj",
       "sql_endpoint": "NODE-fts_parser.sql_id",
+      "msql_endpoint": "NODE-fts_parser.msql",
       "data": {
         "name": "test_fts_parser_$%{}[]()&*^!@\"'`\\/#",
         "description": "Creating test fts parser",
@@ -16,17 +17,21 @@
         "prslextype": "dispell_init",
         "prsheadline": "prsd_headline"
       },
-      "expected_sql_file": "create_fts_parser.sql"
+      "expected_sql_file": "create_fts_parser.sql",
+      "expected_msql_file": "create_fts_parser_msql.sql"
     },
     {
       "type": "alter",
       "name": "Alter FTS parser",
       "endpoint": "NODE-fts_parser.obj_id",
       "sql_endpoint": "NODE-fts_parser.sql_id",
+      "msql_endpoint": "NODE-fts_parser.msql_id",
       "data":{
         "name": "test_fts_parser_updated_$%{}[]()&*^!@\"'`\\/#",
-        "description":"Updating test fts parser"},
-      "expected_sql_file": "alter_fts_parser.sql"
+        "description":"Updating test fts parser"
+      },
+      "expected_sql_file": "alter_fts_parser.sql",
+      "expected_msql_file": "alter_fts_parser_msql.sql"
     },
     {
       "type": "delete",
