@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #3936 <https://redmine.postgresql.org/issues/3936>`_ -  Further code refactoring to stabilise the Feature Tests.
 | `Issue #4381 <https://redmine.postgresql.org/issues/4381>`_ -  Fix an issue where oid column should not be pasted when copy/paste row is used on query output containing the oid column.
 | `Issue #4419 <https://redmine.postgresql.org/issues/4419>`_ -  Fix a debugger error when using Python 2.7.
+| `Issue #4461 <https://redmine.postgresql.org/issues/4461>`_ -  Fix error while importing data to a table using Import/Export dialog and providing "Not null columns" option.
 | `Issue #4486 <https://redmine.postgresql.org/issues/4486>`_ -  Ensure View should be created with special characters.
 | `Issue #4487 <https://redmine.postgresql.org/issues/4487>`_ -  Ensure Boolean columns should be editable in View/Edit data and Query Tool.
 | `Issue #4577 <https://redmine.postgresql.org/issues/4577>`_ -  Fix an error that could be seen when click on any system column of a table.

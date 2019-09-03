@@ -272,13 +272,9 @@ def create_import_export_job(sid):
         # format the ignore column list required as per copy command
         # requirement
         if ignore_cols and len(ignore_cols) > 0:
-            for col in ignore_cols:
-                if icols:
-                    icols += ', '
-                else:
-                    icols = '('
-                icols += driver.qtIdent(conn, col)
-            icols += ')'
+            icols = ", ".join([
+                driver.qtIdent(conn, col)
+                for col in ignore_cols])
 
     # format the column import/export list required as per copy command
     # requirement
