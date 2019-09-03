@@ -621,10 +621,10 @@ class ResourceGroupView(NodeView):
 
             cpu_rate_limit_flag = False
             dirty_rate_limit_flag = False
-            if 'cpu_rate_limit' in data and data['cpu_rate_limit'] > 0:
+            if 'cpu_rate_limit' in data and data['cpu_rate_limit'] >= 0:
                 cpu_rate_limit_flag = True
 
-            if 'dirty_rate_limit' in data and data['dirty_rate_limit'] > 0:
+            if 'dirty_rate_limit' in data and data['dirty_rate_limit'] >= 0:
                 dirty_rate_limit_flag = True
 
             if cpu_rate_limit_flag or dirty_rate_limit_flag:
