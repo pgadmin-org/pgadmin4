@@ -19,7 +19,7 @@
         "schema": "testschema",
         "spcname": "pg_default"
       },
-      "store_table_id": true
+      "store_object_id": true
     }, {
       "type": "create",
       "name": "Create compound trigger for insert or delete",

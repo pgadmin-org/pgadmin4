@@ -1,0 +1,99 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create FDW for user mapping",
+      "endpoint": "NODE-foreign_data_wrapper.obj",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "name": "test_fdw_for_user_mapping",
+        "fdwacl": [],
+        "fdwoptions": []
+      },
+      "store_object_id": "True"
+    }, {
+      "type": "create",
+      "name": "Create foreign server for user mapping",
+      "endpoint": "NODE-foreign_server.obj",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "data": {
+        "name":"test_fs_for_user_mapping"
+      },
+      "store_object_id": "True"
+    }, {
+      "type": "create",
+      "name": "Create User Mapping",
+      "endpoint": "NODE-user_mapping.obj",
+      "sql_endpoint": "NODE-user_mapping.sql_id",
+      "msql_endpoint": "NODE-user_mapping.msql",
+      "data": {
+        "name": "enterprisedb",
+        "umoptions":[{
+          "umoption":"user",
+          "umvalue":"test_user"
+        },{
+          "umoption":"password",
+          "umvalue":"secret"
+        }]
+      },
+      "expected_sql_file": "create_user_mapping.sql",
+      "expected_msql_file": "create_user_mapping_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter user mapping options",
+      "endpoint": "NODE-user_mapping.obj_id",
+      "sql_endpoint": "NODE-user_mapping.sql_id",
+      "msql_endpoint": "NODE-user_mapping.msql_id",
+      "data": {
+        "umoptions":{
+          "changed": [{
+            "umoption":"user",
+            "umvalue":"test_user12"
+          },{
+            "umoption":"password",
+            "umvalue":"secret123"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_options.sql",
+      "expected_msql_file": "alter_options_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter user mapping drop options",
+      "endpoint": "NODE-user_mapping.obj_id",
+      "sql_endpoint": "NODE-user_mapping.sql_id",
+      "msql_endpoint": "NODE-user_mapping.msql_id",
+      "data": {
+        "umoptions":{
+          "deleted": [{
+            "umoption":"user",
+            "umvalue":"test_user12"
+          },{
+            "umoption":"password",
+            "umvalue":"secret123"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_options_deleted.sql",
+      "expected_msql_file": "alter_options_deleted_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop user mapping",
+      "endpoint": "NODE-user_mapping.delete_id"
+    }, {
+      "type": "delete",
+      "name": "Drop foreign server",
+      "endpoint": "NODE-foreign_server.delete_id",
+      "data": {
+        "name": "test_fs_for_user_mapping"
+      }
+    }, {
+      "type": "delete",
+      "name": "Drop FDW",
+      "endpoint": "NODE-foreign_data_wrapper.delete_id",
+      "data": {
+        "name": "test_fdw_for_user_mapping"
+      }
+    }
+  ]
+}

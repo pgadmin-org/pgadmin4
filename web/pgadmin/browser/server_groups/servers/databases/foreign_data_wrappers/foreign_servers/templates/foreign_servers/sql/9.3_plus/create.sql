@@ -15,7 +15,6 @@ CREATE SERVER {{ conn|qtIdent(data.name) }}{% if data.fsrvtype %}
 
 {# ============= Set the owner for foreign server ============= #}
 {% if data.fsrvowner %}
-
 ALTER SERVER {{ conn|qtIdent(data.name) }}
     OWNER TO {{ conn|qtIdent(data.fsrvowner) }};
 {% endif %}

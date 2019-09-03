@@ -1,0 +1,159 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create FDW for foreign server",
+      "endpoint": "NODE-foreign_data_wrapper.obj",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "name": "test_fdw_for_fs",
+        "fdwacl": [],
+        "fdwoptions": []
+      },
+      "store_object_id": "True"
+    }, {
+      "type": "create",
+      "name": "Create foreign server with all options",
+      "endpoint": "NODE-foreign_server.obj",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "msql_endpoint": "NODE-foreign_server.msql",
+      "data": {
+        "name":"FS_$%{}[]()&*^!@\"'`\\/#",
+        "fsrvtype":"oracle",
+        "fsrvversion":"1.1",
+        "fsrvoptions":[
+          {
+            "fsrvoption":"host",
+            "fsrvvalue":"192.168.1.1"
+          },{
+            "fsrvoption":"dbname",
+            "fsrvvalue":"edb"
+          },{
+            "fsrvoption":"port",
+            "fsrvvalue":"5450"
+          }],
+        "fsrvowner":"postgres",
+        "description":"Test comment",
+        "fsrvacl":[{
+          "grantee":"PUBLIC",
+          "grantor":"postgres",
+          "privileges":[{
+            "privilege_type":"U",
+            "privilege":true,
+            "with_grant":false
+          }]
+        }]
+      },
+      "expected_sql_file": "create_fs_all_options.sql",
+      "expected_msql_file": "create_fs_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop foreign server",
+      "endpoint": "NODE-foreign_server.delete_id",
+      "data": {
+        "name": "FS_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create foreign server",
+      "endpoint": "NODE-foreign_server.obj",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "data": {
+        "name":"FS_$%{}[]()&*^!@\"'`\\/#",
+        "fsrvowner":"postgres"
+      }
+    }, {
+      "type": "alter",
+      "name": "Alter foreign server comment and version",
+      "endpoint": "NODE-foreign_server.obj_id",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "msql_endpoint": "NODE-foreign_server.msql_id",
+      "data": {
+        "fsrvversion":"1.1",
+        "description":"Test comment"
+      },
+      "expected_sql_file": "alter_comment_version.sql",
+      "expected_msql_file": "alter_comment_version_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter foreign server add options and privileges",
+      "endpoint": "NODE-foreign_server.obj_id",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "msql_endpoint": "NODE-foreign_server.msql_id",
+      "data": {
+        "fsrvoptions":{
+          "added": [{
+            "fsrvoption":"host",
+            "fsrvvalue":"192.168.1.1"
+          },{
+            "fsrvoption":"dbname",
+            "fsrvvalue":"edb"
+          },{
+            "fsrvoption":"port",
+            "fsrvvalue":"5450"
+          }]
+        },
+        "fsrvacl":{
+          "added": [{
+            "grantee":"PUBLIC",
+            "grantor":"postgres",
+            "privileges":[{
+              "privilege_type":"U",
+              "privilege":true,
+              "with_grant":false
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_options_privileges.sql",
+      "expected_msql_file": "alter_options_privileges_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter foreign server add options and privileges",
+      "endpoint": "NODE-foreign_server.obj_id",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "msql_endpoint": "NODE-foreign_server.msql_id",
+      "data": {
+        "fsrvoptions":{
+          "deleted": [{
+            "fsrvoption":"host",
+            "fsrvvalue":"192.168.1.1"
+          },{
+            "fsrvoption":"dbname",
+            "fsrvvalue":"edb"
+          },{
+            "fsrvoption":"port",
+            "fsrvvalue":"5450"
+          }]
+        },
+        "fsrvacl":{
+          "deleted": [{
+            "grantee":"PUBLIC",
+            "grantor":"postgres",
+            "privileges":[{
+              "privilege_type":"U",
+              "privilege":true,
+              "with_grant":false
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_remove_options_priv.sql",
+      "expected_msql_file": "alter_remove_options_priv_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop foreign server",
+      "endpoint": "NODE-foreign_server.delete_id",
+      "data": {
+        "name": "FS_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "delete",
+      "name": "Drop FDW",
+      "endpoint": "NODE-foreign_data_wrapper.delete_id",
+      "data": {
+        "name": "test_fdw_for_fs"
+      }
+    }
+  ]
+}

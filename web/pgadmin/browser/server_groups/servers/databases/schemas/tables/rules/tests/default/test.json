@@ -22,7 +22,7 @@
         "schema": "public",
         "spcname": "pg_default"
       },
-      "store_table_id": true
+      "store_object_id": true
     }, {
       "type": "create",
       "name": "Create Rule for insert event",

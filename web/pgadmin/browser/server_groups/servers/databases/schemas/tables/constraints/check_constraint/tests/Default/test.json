@@ -16,7 +16,7 @@
         "schema": "testschema",
         "spcname": "pg_default"
       },
-      "store_table_id": true
+      "store_object_id": true
     },
     {
       "type": "create",

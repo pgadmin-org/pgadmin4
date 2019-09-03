@@ -79,6 +79,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         self.apppath = os.getcwd()
         # Status of the test case
         self.final_test_status = True
+        self.parent_ids = dict()
 
         # Added line break after scenario name
         print("")
@@ -99,7 +100,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             getattr(BaseTestGenerator, 'for_modules', []))
 
         for module in resql_module_list:
-            self.table_id = None
             module_path = resql_module_list[module]
             # Get the folder name based on server version number and
             # their existence.
@@ -125,6 +125,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
                         for key, scenarios in data.items():
                             self.execute_test_case(scenarios)
+
+                        # Clear the parent ids stored for one json file.
+                        self.parent_ids.clear()
 
         # Check the final status of the test case
         self.assertEqual(self.final_test_status, True)
@@ -174,8 +177,15 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                         options['scid'] = int(object_id)
                     else:
                         options['scid'] = int(self.schema_id)
-                elif arg == 'tid' and self.table_id:
-                    options['tid'] = int(self.table_id)
+                # tid represents table oid
+                elif arg == 'tid' and 'tid' in self.parent_ids:
+                    options['tid'] = int(self.parent_ids['tid'])
+                # fid represents FDW oid
+                elif arg == 'fid' and 'fid' in self.parent_ids:
+                    options['fid'] = int(self.parent_ids['fid'])
+                # fsid represents Foreign Server oid
+                elif arg == 'fsid' and 'fsid' in self.parent_ids:
+                    options['fsid'] = int(self.parent_ids['fsid'])
                 else:
                     if object_id is not None:
                         options[arg] = int(object_id)
@@ -236,9 +246,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 resp_data = json.loads(response.data.decode('utf8'))
                 object_id = resp_data['node']['_id']
 
-                # Table child nodes require table id
-                if 'store_table_id' in scenario:
-                    self.table_id = object_id
+                # Store the object id based on endpoints
+                if 'store_object_id' in scenario:
+                    self.store_object_ids(object_id, scenario['endpoint'])
 
                 # Compare the reverse engineering SQL
                 if not self.check_re_sql(scenario, object_id):
@@ -370,7 +380,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Remove first and last double quotes
         if resp_sql.startswith('"') and resp_sql.endswith('"'):
             resp_sql = resp_sql[1:-1]
-            resp_sql = resp_sql.rstrip()
+
+        # Remove triling \n
+        resp_sql = resp_sql.rstrip()
 
         # Check if expected sql is given in JSON file or path of the output
         # file is given
@@ -429,7 +441,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Remove first and last double quotes
         if resp_sql.startswith('"') and resp_sql.endswith('"'):
             resp_sql = resp_sql[1:-1]
-            resp_sql = resp_sql.rstrip()
+
+        # Remove triling \n
+        resp_sql = resp_sql.rstrip()
 
         # Check if expected sql is given in JSON file or path of the output
         # file is given
@@ -562,3 +576,17 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     pg_cursor.close()
 
         return sql
+
+    def store_object_ids(self, object_id, endpoint):
+        """
+        This functions will store the object id based on endpoints
+        :param object_id: Object id of the created node
+        :param endpoint:
+        :return:
+        """
+        if endpoint.__contains__("NODE-table"):
+            self.parent_ids['tid'] = object_id
+        elif endpoint.__contains__("NODE-foreign_data_wrapper"):
+            self.parent_ids['fid'] = object_id
+        elif endpoint.__contains__("NODE-foreign_server"):
+            self.parent_ids['fsid'] = object_id

@@ -11,7 +11,7 @@
         "columns": [],
         "schema": "testschema"
       },
-      "store_table_id": true
+      "store_object_id": true
     },
     {
       "type": "create",
