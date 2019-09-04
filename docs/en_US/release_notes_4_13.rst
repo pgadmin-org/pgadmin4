@@ -40,6 +40,7 @@ Bug fixes
 | `Issue #4487 <https://redmine.postgresql.org/issues/4487>`_ -  Ensure Boolean columns should be editable in View/Edit data and Query Tool.
 | `Issue #4577 <https://redmine.postgresql.org/issues/4577>`_ -  Fix an error that could be seen when click on any system column of a table.
 | `Issue #4584 <https://redmine.postgresql.org/issues/4584>`_ -  Unescape HTML entities in database names in the Query Tool title bar.
+| `Issue #4631 <https://redmine.postgresql.org/issues/4631>`_ -  Add editor options for plain text mode and to disable block folding to workaround rendering speed issues in CodeMirror with very large scripts.
 | `Issue #4643 <https://redmine.postgresql.org/issues/4643>`_ -  Fix Truncate option deselect issue for compound triggers.
 | `Issue #4644 <https://redmine.postgresql.org/issues/4644>`_ -  Fix length and precision enable/disable issue when changing the data type for Domain node.
 | `Issue #4650 <https://redmine.postgresql.org/issues/4650>`_ -  Fix SQL tab issue for Views. It's a regression of compound triggers.

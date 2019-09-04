@@ -268,6 +268,37 @@ Tool display.
   a positive value above zero is specified, the notifier will be displayed for
   the specified number of seconds. The default is *5*.
 
+.. image:: images/preferences_sql_editor.png
+    :alt: Preferences dialog sqleditor editor settings
+    :align: center
+
+Use the fields on the *Editor* panel to change settings of the query editor.
+
+* When the *Brace matching?* switch is set to *True*, the editor will highlight
+  pairs of matched braces.
+
+* When the *Code folding?* switch is set to *False*, the editor will disable
+  code folding. Disabling will improve editor performance with large files.
+
+* Use the *Font size* field to specify the font size that will be used in text
+  boxes and editors.
+
+* When the *Insert bracket pairs?* switch is set to *True*, the editor will
+  automatically insert paired brackets.
+
+* When the *Line wrapping* switch is set to *True*, the editor will implement
+  line-wrapping behavior.
+
+* When the *Plain text mode?* switch is set to *True*, the editor mode will be
+  changed to text/plain. Keyword highlighting and code folding will be disabled.
+  This will improve editor performance with large files.
+
+* Use the *Tab size* field to specify the number of spaces per tab character in
+  the editor.
+
+* When the *Use spaces* switch is set to *True*, the editor will insert spaces
+  (instead of tab characters) when the tab key or auto-indent are used.
+
 .. image:: images/preferences_sql_explain.png
     :alt: Preferences dialog sqleditor explain options
     :align: center
@@ -300,18 +331,6 @@ Use the fields on the *Options* panel to manage editor preferences.
 * When the *Auto-Rollback?* switch is set to *True*, failed queries are rolled
   back.
 
-* When the *Brace matching?* switch is set to *True*, the editor will highlight
-  pairs of matched braces.
-
-* Use the *Font size* field to specify the font size that will be used in text
-  boxes and editors.
-
-* When the *Insert bracket pairs?* switch is set to *True*, the editor will
-  automatically insert paired brackets.
-
-* When the *Line wrapping* switch is set to *True*, the editor will implement
-  line-wrapping behavior.
-
 * When the *Prompt to save unsaved data changes?* switch is set to *True*, the
   editor will prompt the user to saved unsaved data when exiting the data
   editor.
@@ -323,12 +342,6 @@ Use the fields on the *Options* panel to manage editor preferences.
 * When the *Prompt to commit/rollback active transactions?* switch is set to
   *True*, the editor will prompt the user to commit or rollback changes when
   exiting the Query Tool while the current transaction is not committed.
-
-* Use the *Tab size* field to specify the number of spaces per tab character in
-  the editor.
-
-* When the *Use spaces* switch is set to *True*, the editor will insert spaces
-  (instead of tab characters) when the tab key or auto-indent are used.
 
 .. image:: images/preferences_sql_results_grid.png
     :alt: Preferences dialog sql results grid section

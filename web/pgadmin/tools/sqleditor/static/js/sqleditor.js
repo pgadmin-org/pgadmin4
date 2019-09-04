@@ -356,14 +356,7 @@ define('tools.querytool', [
         foldOptions: {
           widget: '\u2026',
         },
-        foldGutter: {
-          rangeFinder: CodeMirror.fold.combine(
-            CodeMirror.pgadminBeginRangeFinder,
-            CodeMirror.pgadminIfRangeFinder,
-            CodeMirror.pgadminLoopRangeFinder,
-            CodeMirror.pgadminCaseRangeFinder
-          ),
-        },
+        foldGutter: true,
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
         extraKeys: pgBrowser.editor_shortcut_keys,
         scrollbarStyle: 'simple',

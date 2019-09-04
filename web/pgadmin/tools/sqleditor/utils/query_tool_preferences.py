@@ -90,71 +90,6 @@ def RegisterQueryToolPreferences(self):
                          'Tool tabs.')
     )
 
-    self.sql_font_size = self.preference.register(
-        'Options', 'sql_font_size',
-        gettext("Font size"), 'numeric', '1',
-        min_val=0.1,
-        max_val=10,
-        category_label=gettext('Display'),
-        help_str=gettext(
-            'The font size to use for the SQL text boxes and editors. '
-            'The value specified is in "em" units, in which 1 is the '
-            'default relative font size. For example, to increase the '
-            'font size by 20 percent use a value of 1.2, or to reduce '
-            'by 20 percent, use a value of 0.8. Minimum 0.1, maximum 10.'
-        )
-    )
-
-    self.tab_size = self.preference.register(
-        'Options', 'tab_size',
-        gettext("Tab size"), 'integer', 4,
-        min_val=2,
-        max_val=8,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'The number of spaces per tab. Minimum 2, maximum 8.'
-        )
-    )
-
-    self.use_spaces = self.preference.register(
-        'Options', 'use_spaces',
-        gettext("Use spaces?"), 'boolean', False,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'Specifies whether or not to insert spaces instead of tabs '
-            'when the tab key or auto-indent are used.'
-        )
-    )
-
-    self.wrap_code = self.preference.register(
-        'Options', 'wrap_code',
-        gettext("Line wrapping?"), 'boolean', False,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'Specifies whether or not to wrap SQL code in the editor.'
-        )
-    )
-
-    self.insert_pair_brackets = self.preference.register(
-        'Options', 'insert_pair_brackets',
-        gettext("Insert bracket pairs?"), 'boolean', True,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'Specifies whether or not to insert paired brackets in the '
-            'editor.'
-        )
-    )
-
-    self.brace_matching = self.preference.register(
-        'Options', 'brace_matching',
-        gettext("Brace matching?"), 'boolean', True,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'Specifies whether or not to highlight matched braces '
-            'in the editor.'
-        )
-    )
-
     self.show_prompt_save_query_changes = self.preference.register(
         'Options', 'prompt_save_query_changes',
         gettext("Prompt to save unsaved query changes?"), 'boolean', True,
@@ -183,6 +118,93 @@ def RegisterQueryToolPreferences(self):
         help_str=gettext(
             'Specifies whether or not to prompt user to commit or rollback '
             'an active transaction on Query Tool exit.'
+        )
+    )
+
+    self.sql_font_size = self.preference.register(
+        'Editor', 'plain_editor_mode',
+        gettext("Plain text mode?"), 'boolean', False,
+        category_label=gettext('Editor'),
+        help_str=gettext(
+            'When set to True, keywords won''t be highlighted and code '
+            'folding will be disabled. Plain text mode will improve editor '
+            'performance with large files.'
+        )
+    )
+
+    self.sql_font_size = self.preference.register(
+        'Editor', 'code_folding',
+        gettext("Code folding?"), 'boolean', True,
+        category_label=gettext('Editor'),
+        help_str=gettext(
+            'Enable or disable code folding. In plain text mode, this will '
+            'have no effect as code folding is always disabled in that mode. '
+            'Disabling will improve editor performance with large files.'
+        )
+    )
+
+    self.sql_font_size = self.preference.register(
+        'Editor', 'sql_font_size',
+        gettext("Font size"), 'numeric', '1',
+        min_val=0.1,
+        max_val=10,
+        category_label=gettext('Display'),
+        help_str=gettext(
+            'The font size to use for the SQL text boxes and editors. '
+            'The value specified is in "em" units, in which 1 is the '
+            'default relative font size. For example, to increase the '
+            'font size by 20 percent use a value of 1.2, or to reduce '
+            'by 20 percent, use a value of 0.8. Minimum 0.1, maximum 10.'
+        )
+    )
+
+    self.tab_size = self.preference.register(
+        'Editor', 'tab_size',
+        gettext("Tab size"), 'integer', 4,
+        min_val=2,
+        max_val=8,
+        category_label=gettext('Options'),
+        help_str=gettext(
+            'The number of spaces per tab. Minimum 2, maximum 8.'
+        )
+    )
+
+    self.use_spaces = self.preference.register(
+        'Editor', 'use_spaces',
+        gettext("Use spaces?"), 'boolean', False,
+        category_label=gettext('Options'),
+        help_str=gettext(
+            'Specifies whether or not to insert spaces instead of tabs '
+            'when the tab key or auto-indent are used.'
+        )
+    )
+
+    self.wrap_code = self.preference.register(
+        'Editor', 'wrap_code',
+        gettext("Line wrapping?"), 'boolean', False,
+        category_label=gettext('Options'),
+        help_str=gettext(
+            'Specifies whether or not to wrap SQL code in the editor.'
+        )
+    )
+
+    self.insert_pair_brackets = self.preference.register(
+        'Editor', 'insert_pair_brackets',
+        gettext("Insert bracket pairs?"), 'boolean', True,
+        category_label=gettext('Options'),
+        help_str=gettext(
+            'Specifies whether or not to insert paired brackets in the '
+            'editor.'
+        )
+    )
+
+    self.brace_matching = self.preference.register(
+        'Editor', 'brace_matching',
+        gettext("Brace matching?"), 'boolean', True,
+        category_label=gettext('Options'),
+        help_str=gettext(
+            'Specifies whether or not to highlight matched braces '
+            'in the editor.'
         )
     )
 
