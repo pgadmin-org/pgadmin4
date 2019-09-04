@@ -827,6 +827,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
         data['columns'] = col_data
 
+        # Parse Privileges
+        if 'acl' in data:
+            data['acl'] = parse_priv_to_db(data['acl'],
+                                           ["a", "r", "w", "x"])
+
         SQL = render_template("/".join([self.template_path,
                                         'create.sql']), data=data, is_sql=True)
 

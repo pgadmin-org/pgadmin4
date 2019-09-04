@@ -1,5 +1,6 @@
 SELECT
-    oid as conoid, conname, contype, pg_get_constraintdef(oid, true) as consrc,
+    oid as conoid, conname, contype,
+    BTRIM(substring(pg_get_constraintdef(oid, true) from '\(.+\)'), '()') as consrc,
     connoinherit, convalidated, conislocal
 FROM
     pg_constraint
