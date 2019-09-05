@@ -7,6 +7,8 @@
       "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
       "data": {
         "name": "test_fdw_for_foreign_table",
+        "fdwhan": "pg_catalog.libpq_fdw_handler",
+        "fdwvalue": "pg_catalog.postgresql_fdw_validator",
         "fdwacl": [],
         "fdwoptions": []
       },
@@ -17,9 +19,24 @@
       "endpoint": "NODE-foreign_server.obj",
       "sql_endpoint": "NODE-foreign_server.sql_id",
       "data": {
-        "name":"test_fs_for_foreign_table"
+        "name":"test_fs_for_foreign_table",
+        "fsrvoptions":[{
+          "fsrvoption": "dbname",
+          "fsrvvalue": "$$||current_database()||$$"
+        },{
+          "fsrvoption": "port",
+          "fsrvvalue": "$$||current_setting('port')||$$"
+        }]
       },
       "store_object_id": "True"
+    }, {
+      "type": "create",
+      "name": "Create User Mapping",
+      "endpoint": "NODE-user_mapping.obj",
+      "sql_endpoint": "NODE-user_mapping.sql_id",
+      "data": {
+        "name": "enterprisedb"
+      }
     }, {
       "type": "create",
       "name": "Create Foreign Table with all options",
@@ -41,13 +58,6 @@
           "attname":"col2",
           "datatype":"text",
           "coloptions":[]
-        }],
-        "ftoptions":[{
-          "option":"schema_name",
-          "value":"public"
-        },{
-          "option":"table_name",
-          "value":"test_table"
         }],
         "acl":[{
           "grantee":"PUBLIC",
@@ -89,7 +99,15 @@
         "schema": "public",
         "basensp": "public",
         "ftsrvname": "test_fs_for_foreign_table",
-        "columns": []
+        "columns":[{
+          "attname":"col1",
+          "datatype":"bigint",
+          "coloptions":[]
+        },{
+          "attname":"col2",
+          "datatype":"text",
+          "coloptions":[]
+        }]
       }
     }, {
       "type": "alter",
@@ -101,11 +119,11 @@
         "description":"Test Comment",
         "columns": {
           "added": [{
-            "attname":"col1",
+            "attname":"col3",
             "datatype":"bigint",
             "coloptions":[]
           },{
-            "attname":"col2",
+            "attname":"col4",
             "datatype":"text",
             "coloptions":[]
           }]
@@ -113,25 +131,6 @@
       },
       "expected_sql_file": "alter_comment_add_columns.sql",
       "expected_msql_file": "alter_comment_add_columns_msql.sql"
-    },{
-      "type": "alter",
-      "name": "Alter Foreign Table add options",
-      "endpoint": "NODE-foreign_table.obj_id",
-      "sql_endpoint": "NODE-foreign_table.sql_id",
-      "msql_endpoint": "NODE-foreign_table.msql_id",
-      "data": {
-        "ftoptions": {
-          "added": [{
-            "option":"schema_name",
-            "value":"public"
-          },{
-            "option":"table_name",
-            "value":"test_table"
-          }]
-        }
-      },
-      "expected_sql_file": "alter_add_opts.sql",
-      "expected_msql_file": "alter_add_opts_msql.sql"
     }, {
       "type": "alter",
       "name": "Alter Foreign Table add privileges",
@@ -159,17 +158,11 @@
       "expected_msql_file": "alter_add_priv_msql.sql"
     }, {
       "type": "alter",
-      "name": "Alter Foreign Table change option and column",
+      "name": "Alter Foreign Table change column",
       "endpoint": "NODE-foreign_table.obj_id",
       "sql_endpoint": "NODE-foreign_table.sql_id",
       "msql_endpoint": "NODE-foreign_table.msql_id",
       "data": {
-        "ftoptions": {
-          "changed": [{
-            "option":"schema_name",
-            "value":"test_public"
-          }]
-        },
         "columns": {
           "changed": [{
             "attname": "col1",
@@ -186,8 +179,8 @@
           }]
         }
       },
-      "expected_sql_file": "alter_col_opts.sql",
-      "expected_msql_file": "alter_col_opts_msql.sql"
+      "expected_sql_file": "alter_column.sql",
+      "expected_msql_file": "alter_column_msql.sql"
     }, {
       "type": "alter",
       "name": "Alter Foreign Table remove option, privileges",
@@ -209,16 +202,10 @@
               "with_grant":false
             }]
           }]
-        },
-        "ftoptions": {
-          "deleted": [{
-            "option":"schema_name",
-            "value":"public"
-          }]
         }
       },
-      "expected_sql_file": "alter_remove_opts_priv.sql",
-      "expected_msql_file": "alter_remove_opts_priv_msql.sql"
+      "expected_sql_file": "alter_remove_priv.sql",
+      "expected_msql_file": "alter_remove_priv_msql.sql"
     }, {
       "type": "delete",
       "name": "Drop foreign table",

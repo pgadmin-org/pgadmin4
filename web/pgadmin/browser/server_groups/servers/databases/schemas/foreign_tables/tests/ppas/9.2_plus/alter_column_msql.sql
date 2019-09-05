@@ -9,6 +9,3 @@ ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
 
 ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
     ALTER COLUMN col1 SET STATISTICS -1;
-
-ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
-    OPTIONS (SET schema_name 'test_public');

@@ -1,8 +1,8 @@
 ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
-    ADD COLUMN col1 bigint NULL;
+    ADD COLUMN col3 bigint NULL;
 
 ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
-    ADD COLUMN col2 text NULL;
+    ADD COLUMN col4 text NULL;
 
 COMMENT ON FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
     IS 'Test Comment';
