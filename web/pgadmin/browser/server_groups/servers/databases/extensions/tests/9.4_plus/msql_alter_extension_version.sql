@@ -1,0 +1,2 @@
+ALTER EXTENSION citext
+    UPDATE TO "1.1";
