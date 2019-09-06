@@ -1,0 +1,87 @@
+{
+	"scenarios": [{
+			"type": "create",
+			"name": "Create Table for MViews",
+			"endpoint": "NODE-table.obj",
+			"sql_endpoint": "NODE-table.sql_id",
+			"data": {
+				"name": "test_mview_table",
+				"check_constraint": [],
+				"coll_inherits": "[]",
+				"columns": [{
+					"name": "col1",
+					"cltype": "integer"
+				}],
+				"schema": "public"
+			}
+		},
+		{
+			"type": "create",
+			"name": "Create MView",
+			"endpoint": "NODE-mview.obj",
+			"sql_endpoint": "NODE-mview.sql_id",
+			"data": {
+				"definition": "select col1 from test_mview_table;",
+				"name": "testmview_$%{}[]()&*^!@\"'`\\/#",
+				"owner": "postgres",
+				"schema": "public",
+				"comment": "Testcomment",
+				"autovacuum_enabled": false,
+				"datacl": [],
+				"seclabels": [],
+				"toast_autovacuum_enabled": false,
+				"vacuum_table": [{
+					"name": "autovacuum_analyze_scale_factor"
+				}],
+				"vacuum_toast": [{
+					"name": "autovacuum_freeze_max_age"
+				}]
+			},
+			"expected_sql_file": "create_mview.sql"
+		},
+		{
+			"type": "alter",
+			"name": "Alter MView",
+			"endpoint": "NODE-mview.obj_id",
+			"sql_endpoint": "NODE-mview.sql_id",
+			"data": {
+				"definition": "select col1 from test_mview_table;",
+				"name": "testmview_$%{}[]()&*^!@\"'`\\/#",
+				"owner": "postgres",
+				"schema": "public",
+				"comment": "Testcomment",
+				"autovacuum_enabled": false,
+				"datacl": [],
+				"seclabels": [],
+				"toast_autovacuum_enabled": false,
+				"vacuum_table": [{
+					"name": "autovacuum_analyze_scale_factor"
+				}],
+				"vacuum_toast": [{
+					"name": "autovacuum_freeze_max_age"
+				}]
+			},
+			"expected_sql_file": "alter_mview.sql"
+		},
+		{
+			"type": "delete",
+			"name": "Drop MView",
+			"endpoint": "NODE-mview.obj_id",
+			"data": {
+				"name": "testmview_$%{}[]()&*^!@\"'`\\/#",
+				"owner": "postgres",
+				"schema": "public"
+			}
+		},
+		{
+			"type": "delete",
+			"name": "Drop Table for mview",
+			"endpoint": "NODE-table.obj_id",
+			"data": {
+				"name": "test_mview_table",
+				"owner": "postgres",
+				"schema": "public"
+			}
+		}
+	]
+}

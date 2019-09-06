@@ -5,6 +5,7 @@
       "name": "Create FTS Dictionary",
       "endpoint": "NODE-fts_dictionary.obj",
       "sql_endpoint": "NODE-fts_dictionary.sql_id",
+      "msql_endpoint": "NODE-fts_dictionary.msql",
       "data": {
         "name": "Dictionary1_$%{}[]()&*^!@\"'`\\/#",
         "template": "simple",
@@ -13,13 +14,15 @@
         "schema_id": "<SCHEMA_ID>",
         "owner": "postgres"
       },
-      "expected_sql_file": "create_fts_dictionary.sql"
+      "expected_sql_file": "create_fts_dictionary.sql",
+      "expected_msql_file": "msql_create_fts_dictionary.sql"
     },
     {
       "type": "alter",
       "name": "Alter FTS Dictionary",
       "endpoint": "NODE-fts_dictionary.obj_id",
       "sql_endpoint": "NODE-fts_dictionary.sql_id",
+      "msql_endpoint": "NODE-fts_dictionary.msql_id",
       "data": {
         "name": "Test Dictionary Edit#1",
         "description": "Test Description",
@@ -32,13 +35,15 @@
           ]
         }
       },
-      "expected_sql_file": "alter_fts_dictionary_options.sql"
+      "expected_sql_file": "alter_fts_dictionary_options.sql",
+      "expected_msql_file": "msql_alter_fts_dictionary_options.sql"
     },
     {
       "type": "alter",
       "name": "Alter FTS Dictionary | Delete Options",
       "endpoint": "NODE-fts_dictionary.obj_id",
       "sql_endpoint": "NODE-fts_dictionary.sql_id",
+      "msql_endpoint": "NODE-fts_dictionary.msql_id",
       "data": {
         "options": {
           "deleted": [
@@ -49,7 +54,8 @@
           ]
         }
       },
-      "expected_sql_file": "alter_fts_dictionary_delete_options.sql"
+      "expected_sql_file": "alter_fts_dictionary_delete_options.sql",
+      "expected_msql_file": "msql_alter_fts_dictionary_delete_options.sql"
     },
     {
       "type": "delete",
