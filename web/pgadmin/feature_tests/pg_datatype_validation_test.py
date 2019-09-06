@@ -112,7 +112,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
         option_node = self.page.find_by_xpath(
             NavMenuLocators.specified_sub_node_of_pref_tree_node.format(
-                'Query Tool', 'Options'))
+                'Query Tool', 'Editor'))
         option_node.click()
 
         self.page.set_switch_box_status(
