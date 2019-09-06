@@ -505,8 +505,17 @@ class IndexesView(PGChildNodeView):
                 'collspcname': row['collnspname'],
                 'op_class': row['opcname'],
             }
-            if row['options'][0] == 'DESC':
-                cols_data['sort_order'] = True
+
+            # ASC/DESC and NULLS works only with btree indexes
+            if 'amname' in data and data['amname'] == 'btree':
+                cols_data['sort_order'] = False
+                if row['options'][0] == 'DESC':
+                    cols_data['sort_order'] = True
+
+                cols_data['nulls'] = False
+                if row['options'][1].split(" ")[1] == 'FIRST':
+                    cols_data['nulls'] = True
+
             columns.append(cols_data)
 
             # We need same data as string to display in properties window
@@ -516,8 +525,14 @@ class IndexesView(PGChildNodeView):
                 cols_str += ' COLLATE ' + row['collnspname']
             if row['opcname']:
                 cols_str += ' ' + row['opcname']
-            if row['options'][0] == 'DESC':
-                cols_str += ' DESC'
+
+            # ASC/DESC and NULLS works only with btree indexes
+            if 'amname' in data and data['amname'] == 'btree':
+                # Append sort order
+                cols_str += ' ' + row['options'][0]
+                # Append nulls value
+                cols_str += ' ' + row['options'][1]
+
             cols.append(cols_str)
 
         # Push as collection

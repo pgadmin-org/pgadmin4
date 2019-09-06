@@ -23,6 +23,7 @@ Housekeeping
 | `Issue #4617 <https://redmine.postgresql.org/issues/4617>`_ -  Add Reverse Engineered and Modified SQL tests for Foreign Servers.
 | `Issue #4618 <https://redmine.postgresql.org/issues/4618>`_ -  Add Reverse Engineered and Modified SQL tests for Foreign Tables.
 | `Issue #4619 <https://redmine.postgresql.org/issues/4619>`_ -  Add Reverse Engineered and Modified SQL tests for FTS Templates.
+| `Issue #4621 <https://redmine.postgresql.org/issues/4621>`_ -  Add Reverse Engineered and Modified SQL tests for Indexes.
 | `Issue #4627 <https://redmine.postgresql.org/issues/4627>`_ -  Add Reverse Engineered and Modified SQL tests for User Mappings.
 | `Issue #4690 <https://redmine.postgresql.org/issues/4690>`_ -  Add Modified SQL tests for Resource Group.
 
@@ -48,3 +49,5 @@ Bug fixes
 | `Issue #4663 <https://redmine.postgresql.org/issues/4663>`_ -  Fix exception in query history for python 2.7.
 | `Issue #4674 <https://redmine.postgresql.org/issues/4674>`_ -  Fix query tool launch error if user name contain html characters.
 | `Issue #4681 <https://redmine.postgresql.org/issues/4681>`_ -  Increase cache control max age for static files to improve performance over longer run.
+| `Issue #4702 <https://redmine.postgresql.org/issues/4702>`_ -  Fix modified SQL for Index when reset the value of Fill factor and Clustered?.
+| `Issue #4703 <https://redmine.postgresql.org/issues/4703>`_ -  Fix reversed engineered SQL for btree Index when provided sort order and NULLs.

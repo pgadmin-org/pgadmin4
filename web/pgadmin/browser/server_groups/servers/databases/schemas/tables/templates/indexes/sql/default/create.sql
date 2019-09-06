@@ -15,5 +15,5 @@ FIRST{% else %}LAST{% endif %}{% endif %}{% endfor %})
     WITH (FILLFACTOR={{data.fillfactor}})
 {% endif %}{% if data.spcname %}
     TABLESPACE {{conn|qtIdent(data.spcname)}}{% endif %}{% if data.indconstraint %}
-    WHERE {{data.indconstraint}}
-{% endif %};
+
+    WHERE {{data.indconstraint}}{% endif %};
