@@ -50,7 +50,6 @@ git archive HEAD -- docs web requirements.txt | tar xvf - -C docker-build/pgadmi
 # Copy the Docker specific assets into place
 cp pkg/docker/Dockerfile \
     pkg/docker/entrypoint.sh \
-    pkg/docker/config_distro.py \
     pkg/docker/run_pgadmin.py \
     pkg/docker/.dockerignore \
     docker-build/
