@@ -20,6 +20,7 @@ Housekeeping
 | `Issue #4575 <https://redmine.postgresql.org/issues/4575>`_ -  Add Reverse Engineered SQL tests for Schemas.
 | `Issue #4576 <https://redmine.postgresql.org/issues/4576>`_ -  Add Reverse Engineered SQL tests for Views.
 | `Issue #4600 <https://redmine.postgresql.org/issues/4600>`_ -  Add Reverse Engineered SQL tests for Rules.
+| `Issue #4616 <https://redmine.postgresql.org/issues/4616>`_ -  Add Reverse Engineered and Modified SQL tests for Foreign Keys.
 | `Issue #4617 <https://redmine.postgresql.org/issues/4617>`_ -  Add Reverse Engineered and Modified SQL tests for Foreign Servers.
 | `Issue #4618 <https://redmine.postgresql.org/issues/4618>`_ -  Add Reverse Engineered and Modified SQL tests for Foreign Tables.
 | `Issue #4619 <https://redmine.postgresql.org/issues/4619>`_ -  Add Reverse Engineered and Modified SQL tests for FTS Templates.
@@ -35,6 +36,7 @@ Bug fixes
 | `Issue #3778 <https://redmine.postgresql.org/issues/3778>`_ -  Ensure Boolean columns should be editable using keyboard keys.
 | `Issue #3936 <https://redmine.postgresql.org/issues/3936>`_ -  Further code refactoring to stabilise the Feature Tests.
 | `Issue #4381 <https://redmine.postgresql.org/issues/4381>`_ -  Fix an issue where oid column should not be pasted when copy/paste row is used on query output containing the oid column.
+| `Issue #4412 <https://redmine.postgresql.org/issues/4412>`_ -  Fix issue where Validated switch option is inverted for the Foreign Key.
 | `Issue #4419 <https://redmine.postgresql.org/issues/4419>`_ -  Fix a debugger error when using Python 2.7.
 | `Issue #4461 <https://redmine.postgresql.org/issues/4461>`_ -  Fix error while importing data to a table using Import/Export dialog and providing "Not null columns" option.
 | `Issue #4486 <https://redmine.postgresql.org/issues/4486>`_ -  Ensure View should be created with special characters.

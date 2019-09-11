@@ -80,6 +80,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Status of the test case
         self.final_test_status = True
         self.parent_ids = dict()
+        self.all_object_ids = dict()
 
         # Added line break after scenario name
         print("")
@@ -128,6 +129,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
                         # Clear the parent ids stored for one json file.
                         self.parent_ids.clear()
+                        self.all_object_ids.clear()
 
         # Check the final status of the test case
         self.assertEqual(self.final_test_status, True)
@@ -214,6 +216,11 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             # Check precondition for schema
             self.check_schema_precondition(scenario)
 
+            # Preprocessed data to replace any place holder if available
+            if 'preprocess_data' in scenario and \
+                    scenario['preprocess_data'] and 'data' in scenario:
+                scenario['data'] = self.preprocess_data(scenario['data'])
+
             # If msql_endpoint exists then validate the modified sql
             if 'msql_endpoint' in scenario\
                     and scenario['msql_endpoint']:
@@ -248,7 +255,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
                 # Store the object id based on endpoints
                 if 'store_object_id' in scenario:
-                    self.store_object_ids(object_id, scenario['endpoint'])
+                    self.store_object_ids(object_id,
+                                          scenario['data']['name'],
+                                          scenario['endpoint'])
 
                 # Compare the reverse engineering SQL
                 if not self.check_re_sql(scenario, object_id):
@@ -577,10 +586,11 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         return sql
 
-    def store_object_ids(self, object_id, endpoint):
+    def store_object_ids(self, object_id, object_name, endpoint):
         """
         This functions will store the object id based on endpoints
         :param object_id: Object id of the created node
+        :param object_name: Object name
         :param endpoint:
         :return:
         """
@@ -590,3 +600,47 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             self.parent_ids['fid'] = object_id
         elif endpoint.__contains__("NODE-foreign_server"):
             self.parent_ids['fsid'] = object_id
+
+        # Store object id with object name
+        self.all_object_ids[object_name] = object_id
+
+    def preprocess_data(self, data):
+        """
+        This function iterate through data and check for any place holder
+        starts with '<' and ends with '>' and replace with respective object
+        ids.
+        :param data: Data
+        :return:
+        """
+
+        if isinstance(data, dict):
+            for key, val in data.items():
+                if isinstance(val, dict) or isinstance(val, list):
+                    data[key] = self.preprocess_data(val)
+                else:
+                    data[key] = self.replace_placeholder_with_id(val)
+        elif isinstance(data, list):
+            ret_list = []
+            for item in data:
+                if isinstance(item, dict) or isinstance(item, list):
+                    ret_list.append(self.preprocess_data(item))
+                else:
+                    ret_list.append(self.replace_placeholder_with_id(item))
+            return ret_list
+
+        return data
+
+    def replace_placeholder_with_id(self, value):
+        """
+        This function is used to replace the place holder with id.
+        :param value:
+        :return:
+        """
+        if isinstance(value, str) and \
+                value.startswith('<') and value.endswith('>'):
+            # Remove < and > from the string
+            temp_value = value[1:-1]
+            # Find the place holder OID in dictionary
+            if temp_value in self.all_object_ids:
+                return self.all_object_ids[temp_value]
+        return value

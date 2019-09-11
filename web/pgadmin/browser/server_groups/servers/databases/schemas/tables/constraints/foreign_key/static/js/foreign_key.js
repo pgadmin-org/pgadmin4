@@ -796,7 +796,7 @@ define('pgadmin.node.foreign_key', [
               return !(_.isUndefined(m.get('oid')) || m.get('convalidated'));
             }
             // We can't update condeferred of existing foreign key.
-            return !(m.isNew() || m.get('convalidated'));
+            return !(m.isNew() || !m.get('convalidated'));
           },
         },{
           id: 'autoindex', label: gettext('Auto FK index?'),
