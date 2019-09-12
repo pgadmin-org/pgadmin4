@@ -122,9 +122,48 @@
       },
       "expected_sql_file": "alter_seq_privs_remove.sql",
       "expected_msql_file": "alter_seq_privs_remove_msql.sql"
-    },{
+    }, {
       "type": "delete",
       "name": "Drop sequence",
+      "endpoint": "NODE-sequence.delete_id",
+      "data": {
+        "name": "Seq1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Sequence with Negative value",
+      "endpoint": "NODE-sequence.obj",
+      "sql_endpoint": "NODE-sequence.sql_id",
+      "msql_endpoint": "NODE-sequence.msql",
+      "data": {
+        "name": "Seq1_$%{}[]()&*^!@\"'`\\/#",
+        "seqowner": "enterprisedb",
+        "schema": "public",
+        "increment": "-5",
+        "start": "-30",
+        "maximum": "-10",
+        "minimum": "-40",
+        "cache": "1",
+        "cycled": false,
+        "relacl": [],
+        "securities": []
+      },
+      "expected_sql_file": "create_negative_sequence.sql",
+      "expected_msql_file": "create_negative_sequence_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Sequence properties with negative value",
+      "endpoint": "NODE-sequence.obj_id",
+      "sql_endpoint": "NODE-sequence.sql_id",
+      "msql_endpoint": "NODE-sequence.msql_id",
+      "data": {
+        "increment": "-7", "minimum": "-35", "maximum": "-15"
+      },
+      "expected_sql_file": "alter_neg_seq_props.sql",
+      "expected_msql_file": "alter_neg_seq_props_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop negative sequence",
       "endpoint": "NODE-sequence.delete_id",
       "data": {
         "name": "Seq1_$%{}[]()&*^!@\"'`\\/#"

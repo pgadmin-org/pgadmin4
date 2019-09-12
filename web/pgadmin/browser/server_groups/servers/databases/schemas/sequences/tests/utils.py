@@ -15,7 +15,8 @@ import traceback
 from regression.python_test_utils import test_utils as utils
 
 
-def create_sequences(server, db_name, schema_name, sequence_name):
+def create_sequences(server, db_name, schema_name, sequence_name,
+                     positive_seq=True):
     """
     This function used to create sequence in schema provided.
     :param server: server details
@@ -26,6 +27,8 @@ def create_sequences(server, db_name, schema_name, sequence_name):
     :type schema_name: str
     :param sequence_name: sequence name
     :type sequence_name: str
+    :param positive_seq: True is sequence will be created using positive values
+    :type positive_seq: boolean
     :return sequence_id: sequence id
     :rtype: int
     """
@@ -37,8 +40,12 @@ def create_sequences(server, db_name, schema_name, sequence_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        query = "CREATE SEQUENCE %s.%s START 101" % (schema_name,
-                                                     sequence_name)
+
+        query = "CREATE SEQUENCE %s.%s INCREMENT 5 START 30 " \
+                "MINVALUE 10 MAXVALUE 100" % (schema_name, sequence_name)
+        if not positive_seq:
+            query = "CREATE SEQUENCE %s.%s INCREMENT -5 START -30 " \
+                    "MINVALUE -40 MAXVALUE -10" % (schema_name, sequence_name)
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created sequence

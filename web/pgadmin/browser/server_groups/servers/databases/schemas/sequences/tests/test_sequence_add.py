@@ -25,7 +25,7 @@ class SequenceAddTestCase(BaseTestGenerator):
     scenarios = [
         # Fetching default URL for sequence node.
         (
-            'Fetch sequence Node URL (valid optional data)',
+            'Create sequence with positive values',
             dict(
                 url='/browser/sequence/obj/',
                 # Valid optional data
@@ -38,6 +38,23 @@ class SequenceAddTestCase(BaseTestGenerator):
                     "name": "test_sequence_add_%s" % (str(uuid.uuid4())[1:8]),
                     "securities": [],
                     "start": "100"
+                }
+            )
+        ),
+        (
+            'Create sequence with negative values',
+            dict(
+                url='/browser/sequence/obj/',
+                # Valid optional data
+                data={
+                    "cache": "1",
+                    "cycled": True,
+                    "increment": "-5",
+                    "maximum": "-10",
+                    "minimum": "-40",
+                    "name": "test_sequence_add_%s" % (str(uuid.uuid4())[1:8]),
+                    "securities": [],
+                    "start": "-30"
                 }
             )
         )

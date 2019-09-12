@@ -53,3 +53,4 @@ Bug fixes
 | `Issue #4681 <https://redmine.postgresql.org/issues/4681>`_ -  Increase cache control max age for static files to improve performance over longer run.
 | `Issue #4702 <https://redmine.postgresql.org/issues/4702>`_ -  Fix modified SQL for Index when reset the value of Fill factor and Clustered?.
 | `Issue #4703 <https://redmine.postgresql.org/issues/4703>`_ -  Fix reversed engineered SQL for btree Index when provided sort order and NULLs.
+| `Issue #4726 <https://redmine.postgresql.org/issues/4726>`_ -  Ensure sequence with negative value should be created.

@@ -25,7 +25,28 @@ class SequencePutTestCase(BaseTestGenerator):
     skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for sequence node.
-        ('Fetch sequence Node URL', dict(url='/browser/sequence/obj/'))
+        ('Alter positive sequence comment, increment, max and min value',
+         dict(
+             url='/browser/sequence/obj/',
+             data={
+                 "comment": "This is sequence update comment",
+                 "increment": "5",
+                 "maximum": "1000",
+                 "minimum": "10",
+             },
+             positive_seq=True
+         )),
+        ('Alter negative sequence comment, increment, max and min value',
+         dict(
+             url='/browser/sequence/obj/',
+             data={
+                 "comment": "This is sequence update comment",
+                 "increment": "-7",
+                 "maximum": "-15",
+                 "minimum": "-35",
+             },
+             positive_seq=False
+         ))
     ]
 
     def setUp(self):
@@ -47,7 +68,9 @@ class SequencePutTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to add sequence.")
         self.sequence_name = "test_sequence_delete_%s" % str(uuid.uuid4())[1:8]
         self.sequence_id = sequence_utils.create_sequences(
-            self.server, self.db_name, self.schema_name, self.sequence_name)
+            self.server, self.db_name, self.schema_name, self.sequence_name,
+            self.positive_seq
+        )
 
     def runTest(self):
         """This function will update added sequence under schema node."""
@@ -56,17 +79,17 @@ class SequencePutTestCase(BaseTestGenerator):
                                                            self.sequence_name)
         if not sequence_response:
             raise Exception("Could not find the sequence to delete.")
-        data = {
-            "comment": "This is sequence update comment",
-            "id": self.sequence_id
-        }
+
+        # Add sequence id.
+        self.data["id"] = self.sequence_id
+
         response = self.tester.put(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' +
             str(self.db_id) + '/' +
             str(self.schema_id) + '/' +
             str(self.sequence_id),
-            data=json.dumps(data),
+            data=json.dumps(self.data),
             follow_redirects=True)
         self.assertEquals(response.status_code, 200)
 

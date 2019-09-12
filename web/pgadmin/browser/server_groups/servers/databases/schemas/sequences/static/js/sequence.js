@@ -137,7 +137,6 @@ define('pgadmin.node.sequence', [
         },{
           id: 'increment', label: gettext('Increment'), type: 'int',
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
-          min: 1,
         },{
           id: 'start', label: gettext('Start'), type: 'int',
           mode: ['properties', 'create'], group: gettext('Definition'),
