@@ -4052,7 +4052,7 @@ msgstr "Troncare tabella"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:168
 #, python-format
 msgid "Are you sure you want to truncate table %s?"
-msgstr "Sei sicuro di voler troncare la tabella% s?"
+msgstr "Sei sicuro di voler troncare la tabella %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:231
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:212
@@ -4063,12 +4063,12 @@ msgstr "Ripristinare statistiche"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:213
 #, python-format
 msgid "Are you sure you want to reset the statistics for table \"%s\"?"
-msgstr "Sei sicuro di voler ripristinare le statistiche per la tabella \"% s\"?"
+msgstr "Sei sicuro di voler ripristinare le statistiche per la tabella \"%s\"?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:276
 #, python-format
 msgid "Are you sure you want to detach the partition %s?"
-msgstr "Sei sicuro di voler staccare la partizione% s?"
+msgstr "Sei sicuro di voler staccare la partizione %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:395
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:381
@@ -5404,7 +5404,7 @@ msgstr "Disconnetti il database"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:193
 #, python-format
 msgid "Are you sure you want to disconnect the database - %s?"
-msgstr "Sei sicuro di voler disconnettere il database -% s?"
+msgstr "Sei sicuro di voler disconnettere il database - %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:334
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:52
@@ -6903,7 +6903,7 @@ msgstr "Ricarica la configurazione del server"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:314
 #, python-format
 msgid "Are you sure you want to reload the server configuration on %s?"
-msgstr "Sei sicuro di voler ricaricare la configurazione del server su% s?"
+msgstr "Sei sicuro di voler ricaricare la configurazione del server su %s?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:351
 msgid "Enter the name of the restore point to add"
@@ -6980,7 +6980,7 @@ msgstr "Elimina password salvate"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:647
 #, python-format
 msgid "Are you sure you want to clear the saved password for server %s?"
-msgstr "Sei sicuro di voler cancellare la password salvata per il server% s?"
+msgstr "Sei sicuro di voler cancellare la password salvata per il server %s?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:685
 msgid "Clear SSH Tunnel password"
@@ -6989,7 +6989,7 @@ msgstr "Elimina password Tunnel SSH"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:687
 #, python-format
 msgid "Are you sure you want to clear the saved password of SSH Tunnel for server %s?"
-msgstr "Vuoi cancellare la password salvata del tunnel SSH per il server% s?"
+msgstr "Vuoi cancellare la password salvata del tunnel SSH per il server %s?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:761
 msgid "Server group"
@@ -7449,7 +7449,7 @@ msgstr "Ciò rimuoverà tutte le password salvate. Ciò rimuoverà anche le conn
 #: pgadmin/browser/static/js/browser.js:728
 #, python-format
 msgid "Are you sure you want to close the %s browser?"
-msgstr "Sei sicuro di voler chiudere il browser% s?"
+msgstr "Sei sicuro di voler chiudere il browser %s?"
 
 #: pgadmin/browser/static/js/browser.js:1797
 msgid "Error retrieving details for the node."
@@ -7561,12 +7561,12 @@ msgstr "Creazione - %s"
 #: pgadmin/browser/static/js/node.js:692
 #, python-format
 msgid "Are you sure want to stop editing the properties of %s \"%s\"?"
-msgstr "Vuoi davvero interrompere la modifica delle proprietà di% s \"% s\"?"
+msgstr "Vuoi davvero interrompere la modifica delle proprietà di %s \"%s\"?"
 
 #: pgadmin/browser/static/js/node.js:694
 #, python-format
 msgid "Are you sure want to reset the current changes and re-open the panel for %s \"%s\"?"
-msgstr "Desideri ripristinare le modifiche correnti e riaprire il pannello per% s \"% s\"?"
+msgstr "Desideri ripristinare le modifiche correnti e riaprire il pannello per %s \"%s\"?"
 
 #: pgadmin/browser/static/js/node.js:698
 msgid "Edit in progress?"
@@ -7575,7 +7575,7 @@ msgstr "Modifiche in corso?"
 #: pgadmin/browser/static/js/node.js:749
 #, python-format
 msgid "Are you sure you want to drop %s \"%s\" and all the objects that depend on it?"
-msgstr "Sei sicuro di voler eliminare% s \"% s\" e tutti gli oggetti che dipendono da esso?"
+msgstr "Sei sicuro di voler eliminare %s \"%s\" e tutti gli oggetti che dipendono da esso?"
 
 #: pgadmin/browser/static/js/node.js:751
 #, python-format
@@ -7590,7 +7590,7 @@ msgstr "%s \"%s\" non può essere eliminato."
 #: pgadmin/browser/static/js/node.js:763
 #, python-format
 msgid "Are you sure you want to drop %s \"%s\"?"
-msgstr "Sei sicuro di voler eliminare% s \"% s\"?"
+msgstr "Sei sicuro di voler eliminare %s \"%s\"?"
 
 #: pgadmin/browser/static/js/node.js:765
 #, python-format
@@ -8364,7 +8364,7 @@ msgstr "Recupero delle informazioni sulla dipendenza dal server ..."
 #: pgadmin/misc/dependents/static/js/dependents.js:225
 #, python-format
 msgid "Error retrieving data from the server: %s"
-msgstr "Errore durante il recupero dei dati dal server:% s"
+msgstr "Errore durante il recupero dei dati dal server: %s"
 
 #: pgadmin/misc/dependents/static/js/dependents.js:136
 msgid "No dependent information is available for the selected object."
@@ -8785,7 +8785,7 @@ msgstr "Per favore, inserire un numero valido"
 #: pgadmin/static/js/sqleditor/call_render_after_poll.js:38
 #, python-format
 msgid "Query returned successfully in %s."
-msgstr "La query è stata restituita correttamente in% s."
+msgstr "La query è stata restituita correttamente in %s."
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:35
 #: pgadmin/static/js/sqleditor/filter_dialog.js:57
@@ -10438,7 +10438,7 @@ msgstr "Caricamento dati dal server dei database e renderizzazione..."
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2440
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
-msgstr "Eseguito con successo. Durata totale della query:% s."
+msgstr "Eseguito con successo. Durata totale della query: %s."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2441
 #, python-format
@@ -10903,30 +10903,30 @@ msgstr "L'indirizzo email%s esiste già."
 #: pgadmin/tools/user_management/static/js/user_management.js:378
 #, python-format
 msgid "Role cannot be empty for user %s."
-msgstr "Il ruolo non può essere vuoto per l'utente% s."
+msgstr "Il ruolo non può essere vuoto per l'utente %s."
 
 #: pgadmin/tools/user_management/static/js/user_management.js:394
 #, python-format
 msgid "Password cannot be empty for user %s."
-msgstr "La password non può essere vuota per l'utente% s."
+msgstr "La password non può essere vuota per l'utente %s."
 
 #: pgadmin/tools/user_management/static/js/user_management.js:404
 #: pgadmin/tools/user_management/static/js/user_management.js:465
 #, python-format
 msgid "Password must be at least 6 characters for user %s."
-msgstr "La password deve contenere almeno 6 caratteri per l'utente% s."
+msgstr "La password deve contenere almeno 6 caratteri per l'utente %s."
 
 #: pgadmin/tools/user_management/static/js/user_management.js:418
 #: pgadmin/tools/user_management/static/js/user_management.js:475
 #, python-format
 msgid "Confirm Password cannot be empty for user %s."
-msgstr "Conferma password non può essere vuota per l'utente% s."
+msgstr "Conferma password non può essere vuota per l'utente %s."
 
 #: pgadmin/tools/user_management/static/js/user_management.js:431
 #: pgadmin/tools/user_management/static/js/user_management.js:484
 #, python-format
 msgid "Passwords do not match for user %s."
-msgstr "Le password non corrispondono per l'utente% s."
+msgstr "Le password non corrispondono per l'utente %s."
 
 #: pgadmin/tools/user_management/static/js/user_management.js:507
 msgid "Cannot delete user."

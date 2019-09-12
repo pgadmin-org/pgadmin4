@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #2828 <https://redmine.postgresql.org/issues/2828>`_ -  Added Gather Merge, Named Tuple Store Scan and Table Function Scan icon for explain module.
 | `Issue #4553 <https://redmine.postgresql.org/issues/4553>`_ -  Don't wait for the database connection before rendering the Query Tool UI, for improved UX.
 | `Issue #4651 <https://redmine.postgresql.org/issues/4651>`_ -  Allow configuration options to be set from the environment in the container distribution.
 | `Issue #4667 <https://redmine.postgresql.org/issues/4667>`_ -  Ensure editable and read-only columns in Query Tool should be identified by icons and tooltips in the column header.
@@ -32,7 +33,6 @@ Bug fixes
 *********
 
 | `Issue #2706 <https://redmine.postgresql.org/issues/2706>`_ -  Added ProjectSet icon for explain module.
-| `Issue #2828 <https://redmine.postgresql.org/issues/2828>`_ -  Added Gather Merge, Named Tuple Store Scan and Table Function Scan icon for explain module.
 | `Issue #3778 <https://redmine.postgresql.org/issues/3778>`_ -  Ensure Boolean columns should be editable using keyboard keys.
 | `Issue #3936 <https://redmine.postgresql.org/issues/3936>`_ -  Further code refactoring to stabilise the Feature Tests.
 | `Issue #4381 <https://redmine.postgresql.org/issues/4381>`_ -  Fix an issue where oid column should not be pasted when copy/paste row is used on query output containing the oid column.
@@ -54,3 +54,4 @@ Bug fixes
 | `Issue #4702 <https://redmine.postgresql.org/issues/4702>`_ -  Fix modified SQL for Index when reset the value of Fill factor and Clustered?.
 | `Issue #4703 <https://redmine.postgresql.org/issues/4703>`_ -  Fix reversed engineered SQL for btree Index when provided sort order and NULLs.
 | `Issue #4726 <https://redmine.postgresql.org/issues/4726>`_ -  Ensure sequence with negative value should be created.
+| `Issue #4736 <https://redmine.postgresql.org/issues/4736>`_ -  Fix query tool and view data issue with the Italian language.
