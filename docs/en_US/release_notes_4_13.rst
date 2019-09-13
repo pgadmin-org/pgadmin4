@@ -56,4 +56,5 @@ Bug fixes
 | `Issue #4702 <https://redmine.postgresql.org/issues/4702>`_ -  Fix modified SQL for Index when reset the value of Fill factor and Clustered?.
 | `Issue #4703 <https://redmine.postgresql.org/issues/4703>`_ -  Fix reversed engineered SQL for btree Index when provided sort order and NULLs.
 | `Issue #4726 <https://redmine.postgresql.org/issues/4726>`_ -  Ensure sequence with negative value should be created.
+| `Issue #4727 <https://redmine.postgresql.org/issues/4727>`_ -  Fix issue where EXEC script doesn't write the complete script for Procedures.
 | `Issue #4736 <https://redmine.postgresql.org/issues/4736>`_ -  Fix query tool and view data issue with the Italian language.

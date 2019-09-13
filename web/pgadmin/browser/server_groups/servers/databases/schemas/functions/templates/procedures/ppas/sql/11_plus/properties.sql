@@ -9,7 +9,7 @@ SELECT
     THEN
         pr.proname || '(' || pg_catalog.pg_get_function_identity_arguments(pr.oid) || ')'
     ELSE
-        pr.proname
+        pr.proname::text
     END) AS name_with_args,
     (SELECT
         array_agg(provider || '=' || label)

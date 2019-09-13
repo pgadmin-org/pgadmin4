@@ -5,7 +5,7 @@ SELECT
     THEN
         pr.proname || '(' || pg_catalog.pg_get_function_identity_arguments(pr.oid) || ')'
     ELSE
-        pr.proname
+        pr.proname::text
     END AS name,
     lanname, pg_get_userbyid(proowner) AS funcowner, description
 FROM
