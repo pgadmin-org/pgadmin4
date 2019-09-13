@@ -17,8 +17,6 @@
  *  @author Simon Georget <simon (at) linea21 (dot) com>
  *  @copyright  Authors
  */
-import loading_icon from 'acitree/image/load-root.gif';
-
 define([
   'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'sources/gettext', 'sources/url_for', 'dropzone', 'sources/pgadmin',
@@ -475,7 +473,7 @@ define([
 
     var loading_icon_url = url_for(
       'static', {
-        'filename': 'js/generated/' + loading_icon,
+        'filename': 'js/generated/load-root.gif',
       }
     );
 
