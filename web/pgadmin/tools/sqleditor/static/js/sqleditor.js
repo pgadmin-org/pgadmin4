@@ -1192,6 +1192,10 @@ define('tools.querytool', [
         }
       });
 
+      grid.onValidationError.subscribe(function (e, args) {
+        alertify.error(args.validationResults.msg);
+      });
+
       // Resize SlickGrid when window resize
       $(window).resize(function() {
         // Resize grid only when 'Data Output' panel is visible.

@@ -36,6 +36,7 @@ Bug fixes
 | `Issue #3778 <https://redmine.postgresql.org/issues/3778>`_ -  Ensure Boolean columns should be editable using keyboard keys.
 | `Issue #3936 <https://redmine.postgresql.org/issues/3936>`_ -  Further code refactoring to stabilise the Feature Tests.
 | `Issue #4381 <https://redmine.postgresql.org/issues/4381>`_ -  Fix an issue where oid column should not be pasted when copy/paste row is used on query output containing the oid column.
+| `Issue #4408 <https://redmine.postgresql.org/issues/4408>`_ -  Fix display of validation error message in SlickGrid cells.
 | `Issue #4412 <https://redmine.postgresql.org/issues/4412>`_ -  Fix issue where Validated switch option is inverted for the Foreign Key.
 | `Issue #4419 <https://redmine.postgresql.org/issues/4419>`_ -  Fix a debugger error when using Python 2.7.
 | `Issue #4461 <https://redmine.postgresql.org/issues/4461>`_ -  Fix error while importing data to a table using Import/Export dialog and providing "Not null columns" option.
