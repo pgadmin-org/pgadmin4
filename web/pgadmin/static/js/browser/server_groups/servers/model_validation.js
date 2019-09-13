@@ -36,12 +36,12 @@ export class ModelValidation {
       this.checkHostAndHostAddress();
 
       this.checkForEmpty('db', gettext('Maintenance database must be specified.'));
+      this.checkForEmpty('username', gettext('Username must be specified.'));
+      this.checkForEmpty('port', gettext('Port must be specified.'));
     } else {
+      this.checkForEmpty('db', gettext('Maintenance database must be specified.'));
       this.clearHostAddressAndDbErrors();
     }
-
-    this.checkForEmpty('username', gettext('Username must be specified.'));
-    this.checkForEmpty('port', gettext('Port must be specified.'));
 
     if (this.model.get('use_ssh_tunnel')) {
       this.checkForEmpty('tunnel_host', gettext('SSH Tunnel host must be specified.'));
@@ -73,7 +73,7 @@ export class ModelValidation {
   }
 
   clearHostAddressAndDbErrors() {
-    _.each(['host', 'hostaddr', 'db'], (item) => {
+    _.each(['host', 'hostaddr', 'db', 'username', 'port'], (item) => {
       this.setNullValueForEmptyString(item);
       this.model.errorModel.unset(item);
     });

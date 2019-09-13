@@ -47,9 +47,10 @@ describe('Server#ModelValidation', () => {
         });
       });
 
-      describe('Service id present', () => {
+      describe('Service id and Maintenance database present', () => {
         it('does not set any error in the model', () => {
           model.allValues['service'] = 'asdfg';
+          model.allValues['db'] = 'postgres';
           expect(modelValidation.validate()).toBeNull();
           expect(model.errorModel.set).toHaveBeenCalledWith({});
         });
@@ -147,14 +148,12 @@ describe('Server#ModelValidation', () => {
       });
 
       describe('Service id present', () => {
-        it('does not set any error in the model', () => {
+        it('set the "Maintenance database must be specified." error', () => {
+          model.allValues['name'] = 'some name';
           model.allValues['service'] = 'asdfg';
-          expect(modelValidation.validate()).toEqual('Name must be specified.');
-          expect(model.errorModel.set).toHaveBeenCalledTimes(1);
+          expect(modelValidation.validate()).toEqual('Maintenance database must be specified.');
           expect(model.errorModel.set).toHaveBeenCalledWith({
-            name: 'Name must be specified.',
-            username: 'Username must be specified.',
-            port: 'Port must be specified.',
+            db: 'Maintenance database must be specified.',
           });
         });
       });

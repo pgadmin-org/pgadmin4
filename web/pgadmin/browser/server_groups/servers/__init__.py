@@ -723,9 +723,8 @@ class ServerNode(PGChildNodeView):
         """Add a server node to the settings database"""
         required_args = [
             u'name',
-            u'port',
+            u'db',
             u'sslmode',
-            u'username'
         ]
 
         data = request.form if request.form else json.loads(
@@ -741,7 +740,8 @@ class ServerNode(PGChildNodeView):
         if 'service' in data and not data['service']:
             required_args.extend([
                 u'host',
-                u'db',
+                u'port',
+                u'username',
                 u'role'
             ])
         for arg in required_args:
