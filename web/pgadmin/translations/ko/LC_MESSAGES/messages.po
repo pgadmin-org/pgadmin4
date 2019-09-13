@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-08-16 17:49+0530\n"
+"POT-Creation-Date: 2019-09-13 18:11+0530\n"
 "PO-Revision-Date: 2018-07-12 01:04+0900\n"
 "Last-Translator: Ioseph Kim <ioseph@uri.sarang.net>\n"
 "Language: ko\n"
@@ -48,12 +48,12 @@ msgstr "데스크탑"
 #: pgadmin/static/js/slickgrid/editors.js:60
 #: pgadmin/static/js/slickgrid/editors.js:61
 #: pgadmin/static/js/sqleditor/filter_dialog.js:83
-#: pgadmin/tools/datagrid/static/js/show_data.js:143
-#: pgadmin/tools/datagrid/static/js/show_data.js:206
+#: pgadmin/tools/datagrid/static/js/show_data.js:130
+#: pgadmin/tools/datagrid/static/js/show_data.js:193
 #: pgadmin/tools/import_export/static/js/import_export.js:499
 #: pgadmin/tools/maintenance/static/js/maintenance.js:301
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1961
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1991
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1980
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2010
 msgid "OK"
 msgstr "확인"
 
@@ -198,9 +198,9 @@ msgstr "시스템 객체 보기?"
 #: pgadmin/tools/debugger/__init__.py:75
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:21
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:36
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:98
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:281
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:291
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:151
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:303
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:313
 msgid "Display"
 msgstr "화면"
 
@@ -319,30 +319,30 @@ msgstr "탐색기"
 #: pgadmin/tools/debugger/__init__.py:190
 #: pgadmin/tools/debugger/__init__.py:208
 #: pgadmin/tools/debugger/__init__.py:226
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:312
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:330
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:348
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:366
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:384
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:402
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:420
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:438
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:452
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:465
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:478
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:491
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:504
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:517
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:530
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:543
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:556
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:569
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:582
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:595
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:608
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:626
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:652
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:670
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:334
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:352
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:370
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:388
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:406
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:424
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:442
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:460
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:474
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:487
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:500
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:513
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:526
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:539
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:552
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:565
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:578
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:591
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:604
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:617
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:630
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:648
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:674
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:692
 msgid "Keyboard shortcuts"
 msgstr ""
 
@@ -422,12 +422,12 @@ msgstr "탐색기 새로고침"
 msgid "Add grid row"
 msgstr ""
 
-#: pgadmin/browser/utils.py:281
+#: pgadmin/browser/utils.py:305
 msgid "Unimplemented method ({0}) for this url ({1})"
 msgstr "이 URL({1})을 위한 구현되지 않은 메서드 ({0})"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:208
-#: pgadmin/browser/utils.py:339
+#: pgadmin/browser/utils.py:363
 msgid "Required properties are missing."
 msgstr "필수 입력 항목이 빠졌습니다."
 
@@ -439,7 +439,7 @@ msgstr "필수 입력 항목이 빠졌습니다."
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:225
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:469
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:121
-#: pgadmin/browser/utils.py:357 pgadmin/browser/utils.py:365
+#: pgadmin/browser/utils.py:381 pgadmin/browser/utils.py:389
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:102
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:163
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:303
@@ -579,7 +579,7 @@ msgstr "바뀐 매개 변수가 없습니다."
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:329
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:269
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:363
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:540
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:537
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:365
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:569
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:436
@@ -655,7 +655,7 @@ msgstr "서버 환경 설정 다시 반영 함."
 #: pgadmin/dashboard/static/js/dashboard.js:717
 #: pgadmin/static/js/sqleditor/execute_query.js:297
 #: pgadmin/static/js/sqleditor/query_tool_http_error_handler.js:51
-#: pgadmin/static/js/sqleditor_utils.js:164
+#: pgadmin/static/js/sqleditor_utils.js:167
 msgid ""
 "Not connected to the server or the connection to the server has been "
 "closed."
@@ -798,7 +798,7 @@ msgstr "데이터베이스 연결 끊김."
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:488
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:453
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:829
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:444
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:441
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:462
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1162
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:649
@@ -807,7 +807,7 @@ msgstr "데이터베이스 연결 끊김."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:729
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:770
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:762
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:749
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:764
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:627
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:398
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:717
@@ -824,7 +824,7 @@ msgstr "지정한 데이터베이스를 찾지 못했습니다.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:871
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:728
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1482
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1561
 msgid " -- definition incomplete"
 msgstr " -- 정의가 충분하지 않음"
 
@@ -1046,10 +1046,10 @@ msgstr "소스 자료형"
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:72
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:189
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:200
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:227
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:254
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:258
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:262
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:235
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:270
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:274
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:278
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:88
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:95
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:153
@@ -1094,11 +1094,11 @@ msgstr "소스 자료형"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:96
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:136
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:139
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:143
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:149
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:152
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:155
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:159
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:142
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:148
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:151
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:154
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:158
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:126
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:150
@@ -1155,13 +1155,13 @@ msgstr "소스 자료형"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:436
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:165
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:178
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:191
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:194
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:237
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:255
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:279
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:305
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:190
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:199
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:242
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:260
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:284
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:310
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:315
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:350
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:375
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:385
@@ -1235,7 +1235,7 @@ msgstr "시스템 형변환자?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:74
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:403
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:672
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:275
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:298
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:112
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:675
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:717
@@ -1246,7 +1246,7 @@ msgstr "시스템 형변환자?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:411
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:202
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:397
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:503
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:508
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:762
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:168
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:132
@@ -1354,38 +1354,38 @@ msgstr "활성화?"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:120
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:39
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:303
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:308
 msgid "Trigger function"
 msgstr "트리거 함수"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:124
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:191
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:236
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:241
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:334
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:375
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:379
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:392
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:405
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:417
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:447
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:197
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:259
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:264
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:339
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:380
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:384
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:397
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:410
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:422
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:452
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:457
 msgid "Events"
 msgstr "이벤트"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:132
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:233
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:444
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:256
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:449
 msgid "When"
 msgstr "언제"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:137
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:232
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:274
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:290
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:641
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:351
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:257
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:171
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:170
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:431
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:689
@@ -1413,7 +1413,7 @@ msgstr "보안 라벨"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:242
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:157
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:163
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:162
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:161
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:72
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:79
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:407
@@ -1532,18 +1532,18 @@ msgstr "재배치가능?"
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:249
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:158
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:124
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:286
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:302
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:655
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:368
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:172
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:276
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:177
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:190
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:189
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:479
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:195
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:290
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:313
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:491
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:518
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:523
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:811
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:452
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:473
@@ -1661,14 +1661,14 @@ msgstr "외부 서버를 없앴음"
 #: pgadmin/tools/maintenance/static/js/maintenance.js:117
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:80
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:88
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:113
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:122
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:132
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:141
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:151
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:161
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:171
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:182
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:96
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:106
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:117
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:166
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:175
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:185
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:194
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:204
 msgid "Options"
 msgstr "옵션"
 
@@ -1729,8 +1729,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:250
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:156
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:159
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:161
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:164
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:160
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:163
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:406
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:424
@@ -1946,7 +1946,7 @@ msgstr "지정한 카탈로그 객체를 찾을 수 없습니다."
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:594
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:23
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:238
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:261
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:786
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:787
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:908
@@ -1962,7 +1962,7 @@ msgstr "지정한 카탈로그 객체를 찾을 수 없습니다."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:401
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:495
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:496
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:449
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:454
 #: pgadmin/tools/import_export/static/js/import_export.js:179
 #: pgadmin/tools/import_export/static/js/import_export.js:199
 #: pgadmin/tools/import_export/static/js/import_export.js:236
@@ -2005,7 +2005,7 @@ msgstr "자료형"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.js:68
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:36
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:260
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:276
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:234
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:461
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:85
@@ -2175,13 +2175,13 @@ msgstr "바탕 자료형"
 msgid "Length"
 msgstr "길이"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:226
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:234
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:151
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:407
 msgid "Precision"
 msgstr "정밀도"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:253
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:269
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:204
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:215
@@ -2192,14 +2192,14 @@ msgstr "정밀도"
 msgid "Default"
 msgstr "초기값"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:257
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:273
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:219
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:522
 msgid "Not NULL?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:267
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:268
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:283
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:284
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:607
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:608
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:504
@@ -2221,7 +2221,7 @@ msgstr ""
 msgid "Constraints"
 msgstr "제약조건"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:291
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:307
 msgid "Base Type cannot be empty."
 msgstr "바탕 자료형을 지정하세요."
 
@@ -2236,11 +2236,11 @@ msgstr "지정한 외부 테이블을 찾을 수 없습니다."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:453
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:820
-#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:893
-#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1223
-#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1260
-#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1302
-#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1347
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:898
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1228
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1265
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1307
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1352
 msgid "Could not find the foreign table on the server."
 msgstr "해당 서버에서 그 외부 테이블을 찾을 수 없습니다."
 
@@ -2252,11 +2252,11 @@ msgstr "지정한 외부 테이블을 찾을 수 없습니다.\n"
 msgid "Foreign Table dropped"
 msgstr "외부 테이블 삭제됨"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1280
-#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1325
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1285
+#: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1330
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1477
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1527
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1277
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1356
 msgid "-- Please create column(s) first..."
 msgstr "-- 칼럼들을 먼저 만드세요..."
 
@@ -2310,7 +2310,7 @@ msgstr "상속"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:378
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:177
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:286
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:208
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:207
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:821
 msgid "Schema cannot be empty."
 msgstr "스키마를 지정하세요."
@@ -2694,7 +2694,7 @@ msgstr "인자 개수"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:327
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:150
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:79
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:309
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:314
 msgid "Arguments"
 msgstr "인자"
 
@@ -2718,8 +2718,8 @@ msgstr "반환 자료형"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:182
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:98
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:100
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:258
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:481
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:281
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:486
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:154
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:155
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:211
@@ -2790,13 +2790,13 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:402
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:508
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:366
-#: pgadmin/tools/debugger/static/js/direct.js:1709
+#: pgadmin/tools/debugger/static/js/direct.js:1707
 msgid "Parameters"
 msgstr "매개변수"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:373
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:281
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:199
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:198
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:485
 msgid "Owner cannot be empty."
 msgstr "소유주를 지정하세요."
@@ -2827,7 +2827,7 @@ msgstr "연결할 심블를 지정하세요."
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:406
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:314
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:307
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:330
 msgid "Code cannot be empty."
 msgstr "코드를 입력하세요."
 
@@ -2944,16 +2944,16 @@ msgstr "해당 패키지를 찾을 수 없습니다."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:269
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:310
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:584
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:661
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:581
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:658
 msgid "Could not find the package in the database."
 msgstr "해당 데이터베이스에서 그 패키지를 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:447
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:444
 msgid "The specified package could not be found.\n"
 msgstr "지정한 패키지를 찾을 수 없습니다.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:465
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:462
 msgid "Package dropped"
 msgstr "패키지 삭제됨"
 
@@ -3058,67 +3058,67 @@ msgstr "현재값"
 msgid "Increment"
 msgstr "증가분"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:142
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:141
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:607
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:290
 msgid "Start"
 msgstr "시작값"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:148
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:147
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:619
 msgid "Minimum"
 msgstr "최소값"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:151
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:150
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:624
 msgid "Maximum"
 msgstr "최대값"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:154
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:153
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:629
 msgid "Cache"
 msgstr "캐시"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:158
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:157
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:634
 msgid "Cycled"
 msgstr "순환"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:218
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:217
 msgid "Current value cannot be empty."
 msgstr "현재값을 입력하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:226
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:771
 msgid "Increment value cannot be empty."
 msgstr "증가분을 입력하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:236
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:235
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:780
 msgid "Minimum value cannot be empty."
 msgstr "최소값을 입력하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:245
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:244
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:789
 msgid "Maximum value cannot be empty."
 msgstr "최대값을 입력하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:254
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:253
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:798
 msgid "Cache value cannot be empty."
 msgstr "캐시값을 입력하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:261
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:260
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:805
 msgid "Minimum value must be less than maximum value."
 msgstr "최소값은 최대값보다 작아야합니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:262
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:261
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:806
 msgid "Start value cannot be less than minimum value."
 msgstr "시작값은 최소값보다 작을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:263
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:262
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:807
 msgid "Start value cannot be greater than maximum value."
 msgstr "시작값은 최대값보다 클 수 없습니다."
@@ -3282,10 +3282,9 @@ msgstr "공용 시노님?"
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:78
 #: pgadmin/static/js/backform.pgadmin.js:516
 #: pgadmin/static/js/backgrid.pgadmin.js:619
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1697
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1742
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2290
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3738
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1716
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1761
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2359
 msgid "Yes"
 msgstr "Yes"
 
@@ -3301,10 +3300,9 @@ msgstr "Yes"
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:77
 #: pgadmin/static/js/backform.pgadmin.js:517
 #: pgadmin/static/js/backgrid.pgadmin.js:620
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1698
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1743
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2291
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3739
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1717
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1762
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2360
 msgid "No"
 msgstr "No"
 
@@ -3378,7 +3376,7 @@ msgstr "-- 제외 제약조건 정의가 충분하지 않습니다"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:912
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:901
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:904
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:899
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:914
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:941
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2032
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:850
@@ -3411,7 +3409,7 @@ msgstr "칼럼 삭제됨"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:783
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:866
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:1009
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:1015
 msgid "Could not find the column on the server."
 msgstr "해당 서버에서 그 칼럼을 찾을 수 없습니다."
 
@@ -3572,39 +3570,45 @@ msgstr ""
 msgid "Trigger enabled?"
 msgstr "트리거 활성화?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:191
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:195
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:208
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:221
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:197
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:201
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:214
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:240
 msgid "FOR Events"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:193
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:377
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:199
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:382
 msgid "INSERT"
 msgstr "INSERT"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:206
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:390
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:212
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:395
 msgid "UPDATE"
 msgstr "UPDATE"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:219
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:403
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:225
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:408
 msgid "DELETE"
 msgstr "DELETE"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:272
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:500
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:238
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:421
+msgid "TRUNCATE"
+msgstr "TRUNCATE"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:295
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:505
 msgid "System trigger?"
 msgstr "시스템 트리거?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:297
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:531
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:320
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:536
 msgid "Specify at least one event."
 msgstr "적어도 하나 이상의 이벤트를 지정하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:316
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:339
 msgid ""
 "-- Enter any global declarations below:\n"
 "\n"
@@ -3631,6 +3635,13 @@ msgid ""
 "\n"
 "-- AFTER EACH ROW block. Delete if not required.\n"
 "AFTER EACH ROW IS\n"
+"    -- Enter any local declarations here\n"
+"BEGIN\n"
+"    -- Enter any required code here\n"
+"END;\n"
+"\n"
+"-- INSTEAD OF EACH ROW block. Delete if not required.\n"
+"INSTEAD OF EACH ROW IS\n"
 "    -- Enter any local declarations here\n"
 "BEGIN\n"
 "    -- Enter any required code here\n"
@@ -3802,7 +3813,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:732
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:577
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.js:563
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:254
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:259
 msgid "Deferrable?"
 msgstr ""
 
@@ -3810,7 +3821,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:745
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:605
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.js:591
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:278
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:283
 msgid "Deferred?"
 msgstr ""
 
@@ -4027,18 +4038,18 @@ msgid "Indexes"
 msgstr "인덱스"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:425
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:584
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:871
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:937
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:1054
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:599
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:886
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:952
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:1069
 msgid "Could not find the index in the table."
 msgstr "해당 테이블에서 인덱스를 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:752
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:767
 msgid "The specified index could not be found.\n"
 msgstr "지정한 인덱스를 찾을 수 없습니다.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:769
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:784
 msgid "Index is dropped"
 msgstr "인덱스 삭제됨"
 
@@ -5122,40 +5133,36 @@ msgstr "트리거 비활성화"
 msgid "Disable trigger failed"
 msgstr "트리거 비활성화 실패"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:193
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:198
 msgid "Row trigger?"
 msgstr "로우 트리거?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:234
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:239
 msgid "Constraint trigger?"
 msgstr "제약조건 트리거?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:333
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:338
 msgid "Fires"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:416
-msgid "TRUNCATE"
-msgstr "TRUNCATE"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:469
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:474
 msgid "Old table"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:470
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:476
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:475
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:481
 msgid "Transition"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:475
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:480
 msgid "New table"
 msgstr "새 테이블"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:524
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:529
 msgid "Trigger function cannot be empty."
 msgstr "트리거 함수를 지정하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:544
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:549
 msgid "Trigger code cannot be empty."
 msgstr "트리거 코드를 입력하세요."
 
@@ -5444,22 +5451,22 @@ msgid "View dropped"
 msgstr "뷰 삭제됨"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:683
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1032
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1181
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1242
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1110
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1260
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1321
 msgid "Could not find the view on the server."
 msgstr "서버에서 뷰를 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1359
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1573
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1438
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1652
 msgid "Could not find the materialized view on the server."
 msgstr "서버에서 구체화된 뷰를 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1717
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1796
 msgid "Could not find the materialized view."
 msgstr "구체화된 뷰를 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1784
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1863
 msgid "View refreshed"
 msgstr "뷰 갱신됨"
 
@@ -7073,16 +7080,16 @@ msgstr "비밀번호 변경 "
 #: pgadmin/static/js/slickgrid/editors.js:50
 #: pgadmin/static/js/sqleditor/filter_dialog.js:78
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:61
-#: pgadmin/tools/datagrid/static/js/show_data.js:139
+#: pgadmin/tools/datagrid/static/js/show_data.js:126
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:588
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:893
 #: pgadmin/tools/import_export/static/js/import_export.js:494
 #: pgadmin/tools/maintenance/static/js/maintenance.js:296
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:55
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1966
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2105
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4146
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4213
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1985
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2139
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4193
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4260
 msgid "Cancel"
 msgstr "취소"
 
@@ -7303,7 +7310,7 @@ msgid "Connection timeout (seconds)"
 msgstr "연결 제한시간(초)"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1133
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2133
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2167
 msgid "Connect to Server"
 msgstr "서버 접속"
 
@@ -7554,14 +7561,14 @@ msgstr "하위의존"
 #: pgadmin/browser/static/js/browser.js:345
 #: pgadmin/browser/static/js/toolbar.js:29
 #: pgadmin/browser/static/js/toolbar.js:88
-#: pgadmin/tools/datagrid/static/js/datagrid.js:75
+#: pgadmin/tools/datagrid/static/js/datagrid.js:74
 msgid "View Data"
 msgstr ""
 
 #: pgadmin/browser/static/js/browser.js:346
 #: pgadmin/browser/static/js/toolbar.js:20
 #: pgadmin/browser/static/js/toolbar.js:90
-#: pgadmin/tools/datagrid/static/js/datagrid.js:76
+#: pgadmin/tools/datagrid/static/js/datagrid.js:75
 msgid "Filtered Rows"
 msgstr ""
 
@@ -7785,7 +7792,7 @@ msgstr "이 대화창 각 값들을 초기화 합니다."
 #: pgadmin/preferences/static/js/preferences.js:431
 #: pgadmin/preferences/static/js/preferences.js:456
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:37
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4221
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4268
 msgid "Save"
 msgstr "저장"
 
@@ -7803,8 +7810,8 @@ msgstr "전체 해제"
 
 #: pgadmin/browser/static/js/toolbar.js:38
 #: pgadmin/browser/static/js/toolbar.js:86
-#: pgadmin/tools/datagrid/static/js/datagrid.js:104
-#: pgadmin/tools/datagrid/static/js/datagrid.js:116
+#: pgadmin/tools/datagrid/static/js/datagrid.js:103
+#: pgadmin/tools/datagrid/static/js/datagrid.js:115
 #: pgadmin/tools/sqleditor/__init__.py:68
 msgid "Query Tool"
 msgstr "쿼리 도구"
@@ -7843,7 +7850,6 @@ msgid "Finish"
 msgstr ""
 
 #: pgadmin/browser/templates/browser/index.html:98
-#: pgadmin/tools/datagrid/templates/datagrid/index.html:374
 msgid "Loading {0} v{1}..."
 msgstr "{0} v{1} 로딩중…"
 
@@ -8602,7 +8608,7 @@ msgid "There was an error renaming the file:"
 msgstr "해당 파일의 이름을 바꾸는데 오류가 발생했습니다:"
 
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:139
-#: pgadmin/misc/file_manager/static/js/utility.js:431
+#: pgadmin/misc/file_manager/static/js/utility.js:429
 msgid "Error occurred while checking access permission."
 msgstr "접근 권한 검사 도중 오류가 발생했습니다."
 
@@ -8611,14 +8617,15 @@ msgstr "접근 권한 검사 도중 오류가 발생했습니다."
 msgid "Select"
 msgstr "선택"
 
-#: pgadmin/misc/file_manager/static/js/utility.js:484
+#: pgadmin/misc/file_manager/static/js/utility.js:482
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:62
-#: pgadmin/tools/debugger/static/js/direct.js:1875
+#: pgadmin/tools/datagrid/templates/datagrid/index.html:374
+#: pgadmin/tools/debugger/static/js/direct.js:1867
 msgid "Loading..."
 msgstr "로딩중..."
 
-#: pgadmin/misc/file_manager/static/js/utility.js:1139
-#: pgadmin/misc/file_manager/static/js/utility.js:1146
+#: pgadmin/misc/file_manager/static/js/utility.js:1137
+#: pgadmin/misc/file_manager/static/js/utility.js:1144
 msgid "All Files"
 msgstr "모든 파일"
 
@@ -8808,14 +8815,14 @@ msgstr ""
 msgid "%(title)s (accesskey + %(key)s)"
 msgstr ""
 
-#: pgadmin/static/js/sqleditor_utils.js:150
+#: pgadmin/static/js/sqleditor_utils.js:153
 msgid "An unexpected error occurred - ensure you are logged into the application."
 msgstr "예상치 못한 오류 발생 - 접속 상태를 확인 하세요."
 
-#: pgadmin/static/js/sqleditor_utils.js:162
-#: pgadmin/tools/sqleditor/__init__.py:1404
-#: pgadmin/tools/sqleditor/__init__.py:1459
-#: pgadmin/tools/sqleditor/__init__.py:1463
+#: pgadmin/static/js/sqleditor_utils.js:165
+#: pgadmin/tools/sqleditor/__init__.py:1381
+#: pgadmin/tools/sqleditor/__init__.py:1436
+#: pgadmin/tools/sqleditor/__init__.py:1440
 msgid "Transaction status check failed."
 msgstr "트랜잭션 상태 검사 실패."
 
@@ -8858,14 +8865,15 @@ msgid "Failed to load preference %s of module %s"
 msgstr "%s 설정(해당 모듈: %s)을 불러오기 실패"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:38
+#: pgadmin/static/js/browser/server_groups/servers/model_validation.js:42
 msgid "Maintenance database must be specified."
 msgstr "접속할 데이터베이스를 입력해야 합니다."
 
-#: pgadmin/static/js/browser/server_groups/servers/model_validation.js:43
+#: pgadmin/static/js/browser/server_groups/servers/model_validation.js:39
 msgid "Username must be specified."
 msgstr "사용자이름을 지정해야합니다."
 
-#: pgadmin/static/js/browser/server_groups/servers/model_validation.js:44
+#: pgadmin/static/js/browser/server_groups/servers/model_validation.js:40
 msgid "Port must be specified."
 msgstr "포트를 지정해야합니다."
 
@@ -8956,8 +8964,8 @@ msgid "Filter updated successfully"
 msgstr "검색 조건이 적용되었음"
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:244
-#: pgadmin/tools/datagrid/static/js/show_data.js:226
-#: pgadmin/tools/datagrid/static/js/show_data.js:233
+#: pgadmin/tools/datagrid/static/js/show_data.js:213
+#: pgadmin/tools/datagrid/static/js/show_data.js:220
 msgid "Validation Error"
 msgstr "유효성 오류"
 
@@ -9148,7 +9156,7 @@ msgid "Running command:"
 msgstr "실행할 명령:"
 
 #: pgadmin/tools/backup/__init__.py:315 pgadmin/tools/backup/__init__.py:505
-#: pgadmin/tools/import_export/__init__.py:359
+#: pgadmin/tools/import_export/__init__.py:355
 #: pgadmin/tools/maintenance/__init__.py:293
 #: pgadmin/tools/restore/__init__.py:217 pgadmin/tools/restore/__init__.py:395
 msgid "Could not find the specified server."
@@ -9408,30 +9416,25 @@ msgstr "백업 작업을 실패했습니다."
 msgid "Please provide a filename"
 msgstr "파일 이름을 지정하세요"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:134
+#: pgadmin/tools/datagrid/static/js/datagrid.js:133
 msgid "All Rows"
 msgstr "모든 자료"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:147
+#: pgadmin/tools/datagrid/static/js/datagrid.js:146
 msgid "First 100 Rows"
 msgstr "처음 100개만"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:160
+#: pgadmin/tools/datagrid/static/js/datagrid.js:159
 msgid "Last 100 Rows"
 msgstr "마지막 100개만"
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:173
+#: pgadmin/tools/datagrid/static/js/datagrid.js:172
 msgid "Filtered Rows..."
 msgstr "조건에 맞는 자료만..."
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:177
+#: pgadmin/tools/datagrid/static/js/datagrid.js:176
 msgid "View/Edit Data"
 msgstr "자료 보기/편집"
-
-#: pgadmin/tools/datagrid/static/js/datagrid.js:253
-#: pgadmin/tools/datagrid/static/js/datagrid.js:257
-msgid "Query Tool initialization error"
-msgstr ""
 
 #: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:42
 msgid "File - "
@@ -9445,16 +9448,16 @@ msgstr ""
 msgid "Query Tool - "
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:29
+#: pgadmin/tools/datagrid/static/js/show_data.js:30
 msgid "Data Grid Error"
 msgstr "자료 그리드 오류"
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:30
-#: pgadmin/tools/datagrid/static/js/show_query_tool.js:51
+#: pgadmin/tools/datagrid/static/js/show_data.js:31
+#: pgadmin/tools/datagrid/static/js/show_query_tool.js:53
 msgid "No object selected."
 msgstr "선택한 객체 없음."
 
-#: pgadmin/tools/datagrid/static/js/show_query_tool.js:50
+#: pgadmin/tools/datagrid/static/js/show_query_tool.js:52
 msgid "Query Tool Error"
 msgstr "쿼리 도구 오류"
 
@@ -9688,17 +9691,17 @@ msgid "Edit grid values"
 msgstr "그리드 값 편집"
 
 #: pgadmin/tools/debugger/__init__.py:179
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:391
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:413
 msgid "Previous tab"
 msgstr "이전 탭"
 
 #: pgadmin/tools/debugger/__init__.py:197
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:409
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:431
 msgid "Next tab"
 msgstr "다음 탭"
 
 #: pgadmin/tools/debugger/__init__.py:215
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:427
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:449
 msgid "Switch Panel"
 msgstr ""
 
@@ -9779,14 +9782,14 @@ msgstr "pldbgapi 확장 묘듈을 1.1 이상 버전으로 업그레이드 한 �
 #: pgadmin/tools/debugger/__init__.py:1975
 #: pgadmin/tools/debugger/__init__.py:2002
 #: pgadmin/tools/debugger/__init__.py:2024
-#: pgadmin/tools/debugger/static/js/direct.js:1634
-#: pgadmin/tools/sqleditor/__init__.py:1032
-#: pgadmin/tools/sqleditor/command.py:195
-#: pgadmin/tools/sqleditor/command.py:407
-#: pgadmin/tools/sqleditor/command.py:548
-#: pgadmin/tools/sqleditor/command.py:645
-#: pgadmin/tools/sqleditor/command.py:981
-#: pgadmin/tools/sqleditor/utils/is_query_resultset_updatable.py:63
+#: pgadmin/tools/debugger/static/js/direct.js:1632
+#: pgadmin/tools/sqleditor/__init__.py:1009
+#: pgadmin/tools/sqleditor/command.py:196
+#: pgadmin/tools/sqleditor/command.py:408
+#: pgadmin/tools/sqleditor/command.py:549
+#: pgadmin/tools/sqleditor/command.py:646
+#: pgadmin/tools/sqleditor/command.py:997
+#: pgadmin/tools/sqleditor/utils/is_query_resultset_updatable.py:89
 msgid "Not connected to server or connection with the server has been closed."
 msgstr "데이터베이스 접속 실패. 데이터베이스 연결을 확인하세요."
 
@@ -9882,11 +9885,11 @@ msgstr "중단점 지정"
 #: pgadmin/tools/debugger/static/js/direct.js:982
 #: pgadmin/tools/debugger/static/js/direct.js:1337
 #: pgadmin/tools/debugger/static/js/direct.js:1366
-#: pgadmin/tools/debugger/static/js/direct.js:1569
-#: pgadmin/tools/debugger/static/js/direct.js:1573
-#: pgadmin/tools/debugger/static/js/direct.js:1597
-#: pgadmin/tools/debugger/static/js/direct.js:1601
-#: pgadmin/tools/debugger/static/js/direct.js:1641
+#: pgadmin/tools/debugger/static/js/direct.js:1567
+#: pgadmin/tools/debugger/static/js/direct.js:1571
+#: pgadmin/tools/debugger/static/js/direct.js:1595
+#: pgadmin/tools/debugger/static/js/direct.js:1599
+#: pgadmin/tools/debugger/static/js/direct.js:1639
 msgid "Debugger Error"
 msgstr "디버거 오류"
 
@@ -10009,29 +10012,29 @@ msgstr ""
 msgid "Error while selecting frame."
 msgstr "프래임 선택 중 오류가 발생했습니다."
 
-#: pgadmin/tools/debugger/static/js/direct.js:1574
-#: pgadmin/tools/debugger/static/js/direct.js:1602
+#: pgadmin/tools/debugger/static/js/direct.js:1572
+#: pgadmin/tools/debugger/static/js/direct.js:1600
 msgid "Error while starting debugging listener."
 msgstr "디버깅 리슨너 시작 중 오류가 발생했습니다."
 
-#: pgadmin/tools/debugger/static/js/direct.js:1642
+#: pgadmin/tools/debugger/static/js/direct.js:1640
 msgid "Error while fetching messages information."
 msgstr "메시지 정보 가져오는 중 오류가 발생했습니다."
 
-#: pgadmin/tools/debugger/static/js/direct.js:1720
+#: pgadmin/tools/debugger/static/js/direct.js:1718
 msgid "Local variables"
 msgstr "지역 변수들"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1731
+#: pgadmin/tools/debugger/static/js/direct.js:1729
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:257
 msgid "Messages"
 msgstr "메시지"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1742
+#: pgadmin/tools/debugger/static/js/direct.js:1740
 msgid "Results"
 msgstr "반환값"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1753
+#: pgadmin/tools/debugger/static/js/direct.js:1751
 msgid "Stack"
 msgstr "스택"
 
@@ -10490,18 +10493,18 @@ msgstr "쿼리 도구"
 #: pgadmin/tools/sqleditor/__init__.py:159
 #: pgadmin/tools/sqleditor/__init__.py:211
 #: pgadmin/tools/sqleditor/__init__.py:362
-#: pgadmin/tools/sqleditor/__init__.py:590
-#: pgadmin/tools/sqleditor/__init__.py:713
-#: pgadmin/tools/sqleditor/__init__.py:794
-#: pgadmin/tools/sqleditor/__init__.py:849
-#: pgadmin/tools/sqleditor/__init__.py:901
-#: pgadmin/tools/sqleditor/__init__.py:945
-#: pgadmin/tools/sqleditor/__init__.py:985
-#: pgadmin/tools/sqleditor/__init__.py:994
-#: pgadmin/tools/sqleditor/__init__.py:1065
-#: pgadmin/tools/sqleditor/__init__.py:1101
-#: pgadmin/tools/sqleditor/__init__.py:1146
-#: pgadmin/tools/sqleditor/__init__.py:1198
+#: pgadmin/tools/sqleditor/__init__.py:567
+#: pgadmin/tools/sqleditor/__init__.py:690
+#: pgadmin/tools/sqleditor/__init__.py:771
+#: pgadmin/tools/sqleditor/__init__.py:826
+#: pgadmin/tools/sqleditor/__init__.py:878
+#: pgadmin/tools/sqleditor/__init__.py:922
+#: pgadmin/tools/sqleditor/__init__.py:962
+#: pgadmin/tools/sqleditor/__init__.py:971
+#: pgadmin/tools/sqleditor/__init__.py:1042
+#: pgadmin/tools/sqleditor/__init__.py:1078
+#: pgadmin/tools/sqleditor/__init__.py:1123
+#: pgadmin/tools/sqleditor/__init__.py:1175
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:26
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:79
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:179
@@ -10513,28 +10516,28 @@ msgstr "해당 세션에 트랜잭션 ID가 없음."
 msgid "******* Error *******"
 msgstr "******* 오류 *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:729
+#: pgadmin/tools/sqleditor/__init__.py:706
 msgid "No primary key found for this object, so unable to save records."
 msgstr "이 객체에는 기본키가 없어, 자료를 저장할 수는 없습니다."
 
-#: pgadmin/tools/sqleditor/__init__.py:1038
+#: pgadmin/tools/sqleditor/__init__.py:1015
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:103
 msgid "Either transaction object or session object not found."
 msgstr "트랜잭션 객체도 세션 객체도 찾을 수 없음."
 
-#: pgadmin/tools/sqleditor/__init__.py:1272
+#: pgadmin/tools/sqleditor/__init__.py:1249
 msgid "File type not supported"
 msgstr "지원하지 않는 파일 형식"
 
-#: pgadmin/tools/sqleditor/command.py:73
+#: pgadmin/tools/sqleditor/command.py:74
 msgid "This feature has not been implemented for object type '{0}'."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/command.py:418
+#: pgadmin/tools/sqleditor/command.py:419
 msgid "Data cannot be saved for the current object."
 msgstr "현재 객체에 대해서 자료를 저장할 수 없습니다."
 
-#: pgadmin/tools/sqleditor/command.py:936
+#: pgadmin/tools/sqleditor/command.py:952
 msgid "Resultset is not updatable."
 msgstr ""
 
@@ -10572,245 +10575,251 @@ msgstr "알림"
 msgid "Geometry Viewer"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1233
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:824
+msgid "Editable column"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:826
+msgid "Read-only column"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1253
 msgid "Fetching all records..."
 msgstr "모든 자료를 가져오는 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1686
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2279
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3192
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3727
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1705
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2343
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3289
 msgid "Unsaved changes"
 msgstr "저장되지 않은 변경사항"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1687
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3193
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1706
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3290
 msgid "Are you sure you wish to discard the current changes?"
 msgstr "현재 변경 내용을 버릴까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1715
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1734
 msgid "Clear history"
 msgstr "내역 지우기"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1716
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1735
 msgid "Are you sure you wish to clear the history?"
 msgstr "내역을 정말 다 지울까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1717
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1736
 msgid ""
 "This will remove all of your query history from this and other sessions "
 "for this database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2066
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2100
 msgid "Connection Warning"
 msgstr "접속 경고"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2073
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2107
 msgid "The application has lost the database connection:"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2077
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2111
 msgid "⁃ If the connection was idle it may have been forcibly disconnected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2079
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2113
 msgid "⁃ The application server or database server may have been restarted."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2081
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2115
 msgid "⁃ The user session may have timed out."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2085
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2119
 msgid "Do you want to continue and establish a new session?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2104
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2138
 msgid "Continue"
 msgstr "계속"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2211
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2274
 #, python-format
 msgid "Error fetching SQL for script: %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2280
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3728
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2344
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr "자료가 변경되었지만 아직 저장되지 않았습니다. 저장할까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2314
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2388
 msgid "Running query..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2322
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2396
 msgid "Waiting for the query to complete..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2456
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2554
 msgid "Loading data from the database server and rendering..."
 msgstr "데이터베이스 서버에서 자료를 불러와서 랜더링 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2465
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2563
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "실행 완료. 총 쿼리 실행시간: %s."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2466
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2564
 #, python-format
 msgid "%s rows affected."
 msgstr "%s 로우가 영향받았음."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2741
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2840
 msgid ""
 "This query was generated by pgAdmin as part of a \"View/Edit Data\" "
 "operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2843
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2941
 msgid "Row(s) deleted."
 msgstr "로우가 삭제됨."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2917
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3015
 msgid "Saving the updated data..."
 msgstr "변경된 자료를 저장 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3034
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3131
 msgid "Data saved successfully."
 msgstr "자료 저장 성공."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3037
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3134
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3043
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3140
 #, python-format
 msgid "%s."
 msgstr "%s."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3048
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3145
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3070
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3167
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3231
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3328
 msgid "Loading the file..."
 msgstr "파일 불러오는 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3282
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3379
 msgid "Saving the queries in the file..."
 msgstr "쿼리를 파일에 저장 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3294
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3391
 msgid "File saved successfully."
 msgstr "파일 저장 성공."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3416
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3475
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3513
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3572
 msgid "Applying the new filter..."
 msgstr "새 필터 적용 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3436
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3446
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3533
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3543
 msgid "Filter By Selection Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3495
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3505
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3592
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3602
 msgid "Filter Exclude Selection Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3515
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3612
 msgid "Removing the filter..."
 msgstr "필터 삭제 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3533
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3543
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3630
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3640
 msgid "Remove Filter Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3638
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3739
 msgid "Setting the limit on the result..."
 msgstr "결과 제한 설정 중 ..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3657
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3666
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3758
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3767
 msgid "Change limit Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3846
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3865
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3893
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3912
 msgid "Cancel Query Error"
 msgstr "쿼리 실행 취소 오류"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3884
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3931
 msgid "Downloading CSV..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3938
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3985
 msgid "CSV Download cancelled."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3941
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:373
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3988
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:395
 msgid "Download CSV"
 msgstr "CSV 파일 다운로드"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3944
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3991
 msgid "Download CSV error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3979
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3986
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4026
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4033
 msgid "Auto Rollback Error"
 msgstr "자동 롤백 오류"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4012
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4018
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4059
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4065
 msgid "Auto Commit Error"
 msgstr "자동 커밋 오류"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4107
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4154
 msgid "The data has changed. Do you want to save changes?"
 msgstr "자료가 바뀌었습니다. 저장할까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4113
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4160
 msgid "The text has changed. Do you want to save changes?"
 msgstr "텍스트가 바뀌었습니다. 저장할까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4151
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:659
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4198
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:681
 msgid "Rollback"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4154
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:641
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4201
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:663
 msgid "Commit"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4192
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4239
 msgid ""
 "The current transaction is not commited to the database.Do you want to "
 "commit or rollback the transaction?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4195
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4242
 msgid "Commit transaction?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4218
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4265
 msgid "Don't save"
 msgstr "저장안함"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4261
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4308
 msgid "Save changes?"
 msgstr "바뀐 내용을 저장할까요?"
 
@@ -10871,10 +10880,67 @@ msgid "Set auto rollback on or off by default in new Query Tool tabs."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:95
+msgid "Prompt to save unsaved query changes?"
+msgstr "저장되지 않은 변경된 쿼리를 저장할지 물어봄?"
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:97
+msgid ""
+"Specifies whether or not to prompt user to save unsaved query on query "
+"tool exit."
+msgstr "쿼리 도구가 종료될 때 저장 되지 않은 쿼리에 대해서 저장할지를 물어봅니다."
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:105
+msgid "Prompt to save unsaved data changes?"
+msgstr "저장하지 않은 자료 변경이 있을 때 저장할지 물어봄?"
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:107
+msgid ""
+"Specifies whether or not to prompt user to save unsaved data on data grid"
+" exit."
+msgstr "자료 편집 그리드 창이 종료될 때, 저장하지 않은 자료에 대해서 저장할지 물어봅니다."
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:115
+msgid "Prompt to commit/rollback active transactions?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:118
+msgid ""
+"Specifies whether or not to prompt user to commit or rollback an active "
+"transaction on Query Tool exit."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:126
+msgid "Plain text mode?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:127
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:138
+msgid "Editor"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:128
+msgid ""
+"When set to True, keywords wont be highlighted and code folding will be "
+"disabled. Plain text mode will improve editor performance with large "
+"files."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:137
+msgid "Code folding?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:139
+msgid ""
+"Enable or disable code folding. In plain text mode, this will have no "
+"effect as code folding is always disabled in that mode. Disabling will "
+"improve editor performance with large files."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:148
 msgid "Font size"
 msgstr "폰트 크기"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:99
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:152
 msgid ""
 "The font size to use for the SQL text boxes and editors. The value "
 "specified is in \"em\" units, in which 1 is the default relative font "
@@ -10883,228 +10949,198 @@ msgid ""
 "maximum 10."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:110
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:163
 msgid "Tab size"
 msgstr "탭 크기"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:114
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:167
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
 msgstr "탭 여백 수. 최소 2, 최대 8."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:121
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:174
 msgid "Use spaces?"
 msgstr "공백문자로 처리할까요?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:123
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:176
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
 "key or auto-indent are used."
 msgstr "자동 들여쓰기 상황에서 탭 문자의 여백 만큼을 공백문자로 채웁니다."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:131
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:184
 msgid "Line wrapping?"
 msgstr "자동 줄바꿈 사용?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:133
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:186
 msgid "Specifies whether or not to wrap SQL code in the editor."
 msgstr "SQL 편집기에서 자동 줄 바꿈 기능을 사용합니다."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:140
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:193
 msgid "Insert bracket pairs?"
 msgstr "괄호 기호 짝꿍 자동 삽입?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:142
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:195
 msgid "Specifies whether or not to insert paired brackets in the editor."
 msgstr "편집기에서 괄호 관련 기호를 사용시, 자동으로 그 짝에 맞는 기호를 삽입합니다."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:150
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:203
 msgid "Brace matching?"
 msgstr "괄호 짝 맞추기 검사?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:152
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:205
 msgid "Specifies whether or not to highlight matched braces in the editor."
 msgstr "괄호 관련 기호들의 짝이 되는 기호에 대해서 표시합니다."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:160
-msgid "Prompt to save unsaved query changes?"
-msgstr "저장되지 않은 변경된 쿼리를 저장할지 물어봄?"
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:162
-msgid ""
-"Specifies whether or not to prompt user to save unsaved query on query "
-"tool exit."
-msgstr "쿼리 도구가 종료될 때 저장 되지 않은 쿼리에 대해서 저장할지를 물어봅니다."
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:170
-msgid "Prompt to save unsaved data changes?"
-msgstr "저장하지 않은 자료 변경이 있을 때 저장할지 물어봄?"
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:172
-msgid ""
-"Specifies whether or not to prompt user to save unsaved data on data grid"
-" exit."
-msgstr "자료 편집 그리드 창이 종료될 때, 저장하지 않은 자료에 대해서 저장할지 물어봅니다."
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:180
-msgid "Prompt to commit/rollback active transactions?"
-msgstr ""
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:183
-msgid ""
-"Specifies whether or not to prompt user to commit or rollback an active "
-"transaction on Query Tool exit."
-msgstr ""
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:191
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:213
 msgid "CSV quoting"
 msgstr "CSV 따옴표"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:192
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:205
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:214
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:227
 msgid "CSV Output"
 msgstr "CSV 출력"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:204
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:226
 msgid "CSV quote character"
 msgstr "CSV 따옴표 문자"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:216
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:238
 msgid "CSV field separator"
 msgstr "CSV 필드 구분문자"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:217
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:231
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:239
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:253
 msgid "CSV output"
 msgstr "CSV 출력"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:230
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:252
 msgid "Replace null values with"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:232
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:254
 msgid ""
 "Specifies the string that represents a null value while downloading query"
 " results as CSV. You can specify any arbitrary string to represent a null"
 " value, with quotes if desired."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:241
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:263
 msgid "Result copy quoting"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:242
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:255
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:267
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:264
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:277
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:289
 msgid "Results grid"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:254
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:276
 msgid "Result copy quote character"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:266
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:288
 msgid "Result copy field separator"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:280
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:302
 msgid "Connection status"
 msgstr "연결 상태"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:282
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:304
 msgid ""
 "If set to True, the Query Tool will monitor and display the connection "
 "and transaction status."
 msgstr "True로 설정하면, 쿼리 도구 창에서 연결 상태와 트랜잭션 상태를 확인할 수 있습니다."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:289
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:311
 msgid "Connection status refresh rate"
 msgstr "연결 상태 갱신 주기"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:292
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:314
 msgid "The number of seconds between connection/transaction status polls."
 msgstr "지정한 시간(초) 간격으로 연결 상태와 트랜잭션 상태를 확인합니다."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:301
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:323
 msgid "Execute query"
 msgstr "쿼리 실행"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:319
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:341
 msgid "Save data changes"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:337
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:359
 msgid "EXPLAIN query"
 msgstr "실행 계획 보기"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:355
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:377
 msgid "EXPLAIN ANALYZE query"
 msgstr "실행 결과 분석"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:445
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:467
 msgid "Accesskey (Open file)"
 msgstr "단축키 (파일 열기)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:458
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:480
 msgid "Accesskey (Save file)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:471
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:493
 msgid "Accesskey (Copy rows)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:484
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:506
 msgid "Accesskey (Paste rows)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:497
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:519
 msgid "Accesskey (Delete rows)"
 msgstr "단축키 (로우 삭제)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:510
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:532
 msgid "Accesskey (Filter dialog)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:523
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:545
 msgid "Accesskey (Filter options)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:536
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:558
 msgid "Accesskey (Rows limit)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:549
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:571
 msgid "Accesskey (Execute options)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:562
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:584
 msgid "Accesskey (Cancel query)"
 msgstr "단축키 (쿼리 중지)"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:575
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:597
 msgid "Accesskey (Clear editor options)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:588
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:610
 msgid "Accesskey (Connection status)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:601
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:623
 msgid "Accesskey (Find options)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:615
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:637
 msgid "Toggle case of selected text"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:632
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:654
 msgid "Keywords in uppercase"
 msgstr "예약어는 대문자로"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:633
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:655
 msgid "Auto completion"
 msgstr "자동 완성"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:634
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:656
 msgid ""
 "If set to True, Keywords will be displayed in upper case for auto "
 "completion."
@@ -11869,5 +11905,40 @@ msgstr "지정한 데이터베이스를 찾을 수 없음."
 #~ msgstr ""
 
 #~ msgid "length"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "-- Enter any global declarations below:\n"
+#~ "\n"
+#~ "-- BEFORE STATEMENT block. Delete if not required.\n"
+#~ "BEFORE STATEMENT IS\n"
+#~ "    -- Enter any local declarations here\n"
+#~ "BEGIN\n"
+#~ "    -- Enter any required code here\n"
+#~ "END;\n"
+#~ "\n"
+#~ "-- AFTER STATEMENT block. Delete if not required.\n"
+#~ "AFTER STATEMENT IS\n"
+#~ "    -- Enter any local declarations here\n"
+#~ "BEGIN\n"
+#~ "    -- Enter any required code here\n"
+#~ "END;\n"
+#~ "\n"
+#~ "-- BEFORE EACH ROW block. Delete if not required.\n"
+#~ "BEFORE EACH ROW IS\n"
+#~ "    -- Enter any local declarations here\n"
+#~ "BEGIN\n"
+#~ "    -- Enter any required code here\n"
+#~ "END;\n"
+#~ "\n"
+#~ "-- AFTER EACH ROW block. Delete if not required.\n"
+#~ "AFTER EACH ROW IS\n"
+#~ "    -- Enter any local declarations here\n"
+#~ "BEGIN\n"
+#~ "    -- Enter any required code here\n"
+#~ "END;"
+#~ msgstr ""
+
+#~ msgid "Query Tool initialization error"
 #~ msgstr ""
 
