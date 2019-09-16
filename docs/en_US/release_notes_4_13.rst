@@ -62,3 +62,4 @@ Bug fixes
 | `Issue #4727 <https://redmine.postgresql.org/issues/4727>`_ -  Fix issue where EXEC script doesn't write the complete script for Procedures.
 | `Issue #4736 <https://redmine.postgresql.org/issues/4736>`_ -  Fix query tool and view data issue with the Italian language.
 | `Issue #4742 <https://redmine.postgresql.org/issues/4742>`_ -  Ensure Primary Key should be created with Index.
+| `Issue #4750 <https://redmine.postgresql.org/issues/4750>`_ -  Fix query history exception for Python 3.6.

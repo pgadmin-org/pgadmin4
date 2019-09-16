@@ -19,7 +19,10 @@ class QueryHistory:
             data={
                 'status': True,
                 'msg': '',
-                'result': [bytes(rec.query_info) for rec in list(result)]
+                'result': [
+                    bytes(rec.query_info, encoding='utf8')
+                    for rec in list(result)
+                ]
             }
         )
 
