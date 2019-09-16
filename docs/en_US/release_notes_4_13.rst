@@ -55,6 +55,7 @@ Bug fixes
 | `Issue #4663 <https://redmine.postgresql.org/issues/4663>`_ -  Fix exception in query history for python 2.7.
 | `Issue #4674 <https://redmine.postgresql.org/issues/4674>`_ -  Fix query tool launch error if user name contain html characters.
 | `Issue #4681 <https://redmine.postgresql.org/issues/4681>`_ -  Increase cache control max age for static files to improve performance over longer run.
+| `Issue #4698 <https://redmine.postgresql.org/issues/4698>`_ -  Fix SQL issue of length and precision when changing the data type of Column.
 | `Issue #4702 <https://redmine.postgresql.org/issues/4702>`_ -  Fix modified SQL for Index when reset the value of Fill factor and Clustered?.
 | `Issue #4703 <https://redmine.postgresql.org/issues/4703>`_ -  Fix reversed engineered SQL for btree Index when provided sort order and NULLs.
 | `Issue #4726 <https://redmine.postgresql.org/issues/4726>`_ -  Ensure sequence with negative value should be created.

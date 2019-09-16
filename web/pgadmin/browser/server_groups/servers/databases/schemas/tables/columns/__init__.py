@@ -524,10 +524,20 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         Returns:
             Converted data
         """
-        if 'attlen' in data and data['attlen'] is not None:
+
+        # We need to handle the below case because jquery has changed
+        # undefined/null values to empty strings
+        # https://github.com/jquery/jquery/commit/36d2d9ae937f626d98319ed850905e8d1cbfd078
+        if 'attlen' in data and data['attlen'] == '':
+            data['attlen'] = None
+        elif 'attlen' in data and data['attlen'] is not None:
             data['attlen'] = str(data['attlen'])
-        if 'attprecision' in data and data['attprecision'] is not None:
+
+        if 'attprecision' in data and data['attprecision'] == '':
+            data['attprecision'] = None
+        elif 'attprecision' in data and data['attprecision'] is not None:
             data['attprecision'] = str(data['attprecision'])
+
         return data
 
     @check_precondition
@@ -790,6 +800,18 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if 'cltype' in old_data:
                 old_data['cltype'] = self._cltype_formatter(old_data['cltype'])
                 old_data['hasSqrBracket'] = self.hasSqrBracket
+
+                if 'cltype' in data and data['cltype'] != old_data['cltype']:
+                    length, precision, typeval = \
+                        self.get_length_precision(data['cltype'])
+
+                    # if new datatype does not have length or precision
+                    # then we cannot apply length or precision of old
+                    # datatype to new one.
+                    if not length:
+                        old_data['attlen'] = -1
+                    if not precision:
+                        old_data['attprecision'] = None
 
             # If name is not present in data then
             # we will fetch it from old data, we also need schema & table name
