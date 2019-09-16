@@ -571,7 +571,8 @@ class IndexConstraintView(PGChildNodeView):
         for arg in required_args:
             if isinstance(arg, list):
                 for param in arg:
-                    if param in data and is_key_list(param, data):
+                    if param in data and (param != 'columns' or
+                                          is_key_list(param, data)):
                         break
                 else:
                     return make_json_response(

@@ -26,6 +26,7 @@ Housekeeping
 | `Issue #4618 <https://redmine.postgresql.org/issues/4618>`_ -  Add Reverse Engineered and Modified SQL tests for Foreign Tables.
 | `Issue #4619 <https://redmine.postgresql.org/issues/4619>`_ -  Add Reverse Engineered and Modified SQL tests for FTS Templates.
 | `Issue #4621 <https://redmine.postgresql.org/issues/4621>`_ -  Add Reverse Engineered and Modified SQL tests for Indexes.
+| `Issue #4624 <https://redmine.postgresql.org/issues/4624>`_ -  Add Reverse Engineered and Modified SQL tests for Primary Keys.
 | `Issue #4627 <https://redmine.postgresql.org/issues/4627>`_ -  Add Reverse Engineered and Modified SQL tests for User Mappings.
 | `Issue #4690 <https://redmine.postgresql.org/issues/4690>`_ -  Add Modified SQL tests for Resource Group.
 
@@ -58,3 +59,4 @@ Bug fixes
 | `Issue #4726 <https://redmine.postgresql.org/issues/4726>`_ -  Ensure sequence with negative value should be created.
 | `Issue #4727 <https://redmine.postgresql.org/issues/4727>`_ -  Fix issue where EXEC script doesn't write the complete script for Procedures.
 | `Issue #4736 <https://redmine.postgresql.org/issues/4736>`_ -  Fix query tool and view data issue with the Italian language.
+| `Issue #4742 <https://redmine.postgresql.org/issues/4742>`_ -  Ensure Primary Key should be created with Index.

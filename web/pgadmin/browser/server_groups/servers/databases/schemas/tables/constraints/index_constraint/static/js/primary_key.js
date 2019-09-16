@@ -533,14 +533,11 @@ define('pgadmin.node.primary_key', [
           },
         },{
           id: 'index', label: gettext('Index'),
+          mode: ['create'],
           type: 'text', group: gettext('Definition'),
           control: Backform.NodeListByNameControl.extend({
             initialize:function() {
-              if (_.isUndefined(this.model.top)) {
-                Backform.NodeListByNameControl.prototype.initialize.apply(this,arguments);
-              } else {
-                Backform.Control.prototype.initialize.apply(this,arguments);
-              }
+              Backform.NodeListByNameControl.prototype.initialize.apply(this, arguments);
             },
           }),
           select2:{allowClear:true}, node: 'index',

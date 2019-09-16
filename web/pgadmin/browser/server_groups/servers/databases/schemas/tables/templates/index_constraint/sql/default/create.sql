@@ -9,7 +9,7 @@ ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
 
     DEFERRABLE{% if data.condeferred %}
  INITIALLY DEFERRED{% endif%}
-{% endif%};
+{% endif -%};
 {% if data.comment and data.name %}
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}

@@ -51,6 +51,13 @@
       "data": {
         "name": "Chk_$%{}[]()&*^!@\"'`\\/#a"
       }
+    }, {
+      "type": "delete",
+      "name": "Drop Table for Check Constraint",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "tableforcon"
+      }
     }
   ]
 }
