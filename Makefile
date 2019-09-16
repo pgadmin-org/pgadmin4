@@ -77,7 +77,7 @@ runtime:
 	cd runtime && qmake CONFIG+=release && make
 
 # Include all clean sub-targets in clean
-clean: clean-appbundle clean-docker clean-dist clean-docs clean-node clean-pip clean-src clean-runtime
+clean: clean-appbundle clean-dist clean-docs clean-node clean-pip clean-src clean-runtime
 	rm -rf web/pgadmin/static/js/generated/*
 	rm -rf web/pgadmin/static/js/generated/.cache
 	rm -rf web/pgadmin/static/css/generated/*
@@ -89,9 +89,6 @@ clean-runtime:
 
 clean-appbundle:
 	rm -rf mac-build/
-
-clean-docker:
-	rm -rf docker-build/
 
 clean-dist:
 	rm -rf dist/
@@ -109,7 +106,7 @@ clean-src:
 	rm -rf src-build/
 
 docker:
-	./pkg/docker/build.sh
+	docker build `python -c 'import web.config as c; print("-t {0} -t {0}:latest -t {0}:{1} -t {0}:{1}.{2}".format(c.APP_NAME.replace(" ", "").lower(), c.APP_RELEASE, c.APP_REVISION))'` .
 
 docs:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx html
