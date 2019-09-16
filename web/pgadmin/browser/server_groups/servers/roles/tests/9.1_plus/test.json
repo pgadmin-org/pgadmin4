@@ -5,6 +5,7 @@
       "name": "Create Role",
       "endpoint": "NODE-role.obj",
       "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql",
       "data": {
           "rolname": "Role1_$%{}[]()&*^!@\"'`\\/#",
           "rolcanlogin": false,
@@ -17,37 +18,42 @@
           "rolcatupdate": false,
           "rolreplication": false,
           "rolmembership": [],
-          "rolvaliduntil": null,
           "seclabels": [],
           "variables": []
       },
-      "expected_sql_file": "create_role.sql"
+      "expected_sql_file": "create_role.sql",
+      "expected_msql_file": "create_role.msql"
     },
     {
       "type": "alter",
       "name": "Alter Role description",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
       "data": {
         "description": "This is detailed description"
       },
-      "expected_sql_file": "alter_role_description.sql"
+      "expected_sql_file": "alter_role_description.sql",
+      "expected_msql_file": "create_role.msql"
     },
     {
       "type": "alter",
       "name": "Alter Role name",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
       "data": {
         "rolname": "Role2_$%{}[]()&*^!@\"'`\\/#"
       },
-      "expected_sql_file": "alter_role_name.sql"
+      "expected_sql_file": "alter_role_name.sql",
+      "expected_msql_file": "create_role.msql"
     },
     {
       "type": "alter",
       "name": "Alter Role options",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
       "data": {
         "rolsuper": true,
         "rolcreatedb": true,
@@ -57,7 +63,8 @@
         "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
         "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] }
       },
-      "expected_sql_file": "alter_role_options.sql"
+      "expected_sql_file": "alter_role_options.sql",
+      "expected_msql_file": "create_role.msql"
     },
     {
       "type": "delete",
@@ -70,6 +77,7 @@
       "name": "Create Login Role",
       "endpoint": "NODE-role.obj",
       "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql",
       "data": {
           "rolname": "Role1_$%{}[]()&*^!@\"'`\\/#",
           "rolcanlogin": true,
@@ -82,37 +90,42 @@
           "rolcatupdate": true,
           "rolreplication": true,
           "rolmembership": [],
-          "rolvaliduntil": null,
           "seclabels": [],
           "variables": []
       },
-      "expected_sql_file": "create_login_role.sql"
+      "expected_sql_file": "create_login_role.sql",
+      "expected_msql_file": "create_role.msql"
     },
     {
       "type": "alter",
       "name": "Alter Login Role description",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
       "data": {
         "description": "This is detailed description"
       },
-      "expected_sql_file": "alter_login_role_description.sql"
+      "expected_sql_file": "alter_login_role_description.sql",
+      "expected_msql_file": "create_role.msql"
     },
     {
       "type": "alter",
       "name": "Alter Login Role name",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
       "data": {
         "rolname": "Role2_$%{}[]()&*^!@\"'`\\/#"
       },
-      "expected_sql_file": "alter_login_role_name.sql"
+      "expected_sql_file": "alter_login_role_name.sql",
+      "expected_msql_file": "create_role.msql"
     },
     {
       "type": "alter",
       "name": "Alter Login Role options",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
       "data": {
         "rolsuper": false,
         "rolcreatedb": false,
@@ -122,7 +135,8 @@
         "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
         "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] }
       },
-      "expected_sql_file": "alter_login_role_options.sql"
+      "expected_sql_file": "alter_login_role_options.sql",
+      "expected_msql_file": "create_role.msql"
     },
     {
       "type": "delete",

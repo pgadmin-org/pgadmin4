@@ -506,8 +506,7 @@ rolmembership:{
                         "The current user does not have permission to create "
                         "the role."
                     )
-                elif action == 'msql' and 'rid' in kwargs and \
-                        kwargs['rid'] != -1:
+                elif action == 'msql' and 'rid' in kwargs:
                     fetch_name = True
 
                 if check_permission:
@@ -863,8 +862,8 @@ rolmembership:{
 
     @check_precondition(action='msql')
     @validate_request
-    def msql(self, gid, sid, rid=-1):
-        if rid == -1:
+    def msql(self, gid, sid, rid=None):
+        if rid is None:
             return make_json_response(
                 data=render_template(
                     self.sql_path + 'create.sql',

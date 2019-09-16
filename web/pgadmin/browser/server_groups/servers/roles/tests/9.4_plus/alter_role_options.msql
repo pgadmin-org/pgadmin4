@@ -1,0 +1,11 @@
+ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#"
+	SUPERUSER
+	CREATEDB
+	NOREPLICATION
+	CONNECTION LIMIT 100
+
+	VALID UNTIL '2050-01-01T00:00:00+05:30'
+	PASSWORD 'xxxxxx';
+
+ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#" IN DATABASE postgres
+    SET application_name TO 'pg4';
