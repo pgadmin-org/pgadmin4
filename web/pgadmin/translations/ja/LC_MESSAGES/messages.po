@@ -1,14 +1,14 @@
 # Japanese translations for pgAdmin 4.
 # Copyright (C) 2019 The pgAdmin Development Team
 # This file is distributed under the same license as the pgAdmin 4 project.
-# FIRST AUTHOR <www.postgresql.jp>, 2017.
+# Japan PostgreSQL User Group <www.postgresql.jp>, 2017.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 18:11+0530\n"
-"PO-Revision-Date: 2019-08-17 19:28+0900\n"
+"PO-Revision-Date: 2019-09-14 13:43+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -526,7 +526,7 @@ msgstr "ポート番号"
 #: pgadmin/browser/server_groups/servers/__init__.py:523
 #: pgadmin/browser/server_groups/servers/static/js/server.js:796
 msgid "Maintenance database"
-msgstr "データベースの管理"
+msgstr "管理用データベース"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:524
 #: pgadmin/browser/server_groups/servers/static/js/server.js:799
@@ -3651,6 +3651,42 @@ msgid ""
 "    -- Enter any required code here\n"
 "END;"
 msgstr ""
+"-- グローバルな範囲に適用する宣言は、ここへ入力します：\n"
+"\n"
+"-- BEFORE STATEMENT のブロックです。不要な場合は削除してください\n"
+"BEFORE STATEMENT IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;\n"
+"\n"
+"-- AFTER STATEMENT のブロックです。不要な場合は削除してください\n"
+"AFTER STATEMENT IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;\n"
+"\n"
+"-- BEFORE EACH ROW のブロックです。不要な場合は削除してください\n"
+"BEFORE EACH ROW IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;\n"
+"\n"
+"-- AFTER EACH ROW のブロックです。不要な場合は削除してください\n"
+"AFTER EACH ROW IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;\n"
+"\n"
+"-- INSTEAD OF EACH ROW のブロックです。不要な場合は削除してください\n"
+"INSTEAD OF EACH ROW IS\n"
+"    -- このイベントにのみ適用する宣言を、ここへ入力します\n"
+"BEGIN\n"
+"    -- 必要なコードを入力します\n"
+"END;"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:50
 msgid "Check Constraints"
@@ -10692,11 +10728,11 @@ msgstr "幾何データビューア"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:824
 msgid "Editable column"
-msgstr ""
+msgstr "編集可能な列"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:826
 msgid "Read-only column"
-msgstr ""
+msgstr "読み取り専用の列"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1253
 msgid "Fetching all records..."
@@ -11028,12 +11064,12 @@ msgstr "クエリツールを閉じる時、実行中のトランザクション
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:126
 msgid "Plain text mode?"
-msgstr ""
+msgstr "平文モード"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:127
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:138
 msgid "Editor"
-msgstr ""
+msgstr "エディタ"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:128
 msgid ""
@@ -11041,10 +11077,12 @@ msgid ""
 "disabled. Plain text mode will improve editor performance with large "
 "files."
 msgstr ""
+"True の場合、キーワードが強調表示されなくなり、コードを折り畳むこともできなくなりますが、"
+"巨大なファイルを扱う際のパフォーマンスが向上します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:137
 msgid "Code folding?"
-msgstr ""
+msgstr "コードの折り畳み"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:139
 msgid ""
@@ -11052,6 +11090,8 @@ msgid ""
 "effect as code folding is always disabled in that mode. Disabling will "
 "improve editor performance with large files."
 msgstr ""
+"コードを折り畳めるようにするかどうかを指定します。無効にすると、巨大なファイルを扱う際のパフォーマンスが向上します。"
+"平文モードでは、この設定に関わらず常に無効化されます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:148
 msgid "Font size"
