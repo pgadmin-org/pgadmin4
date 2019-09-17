@@ -9,7 +9,6 @@
 from __future__ import print_function
 import json
 import os
-import urllib
 import traceback
 from flask import url_for
 import regression
@@ -20,6 +19,17 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
+
+# import urlencode from urlib for python2.x and python3.x
+try:
+    from urllib import urlencode
+except Exception as e:
+    from urllib.parse import urlencode
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 def create_resql_module_list(all_modules, exclude_pkgs, for_modules):
@@ -363,7 +373,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             if isinstance(val, dict) or isinstance(val, list) else val
             for key, val in scenario['data'].items()}
 
-        params = urllib.parse.urlencode(msql_data)
+        params = urlencode(msql_data)
         params = params.replace('False', 'false').replace('True', 'true')
         url = msql_url + "?%s" % params
         response = self.tester.get(url,
@@ -636,7 +646,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         :param value:
         :return:
         """
-        if isinstance(value, str) and \
+
+        if isinstance(value, basestring) and \
                 value.startswith('<') and value.endswith('>'):
             # Remove < and > from the string
             temp_value = value[1:-1]
