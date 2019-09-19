@@ -9,6 +9,10 @@
 
 SHELL = /bin/sh
 
+APP_NAME := $(shell grep ^APP_NAME web/config.py | awk -F"=" '{print $$NF}' | tr -d '[:space:]' | tr -d "'" | awk '{print tolower($$0)}')
+APP_RELEASE := $(shell grep ^APP_RELEASE web/config.py | awk -F"=" '{print $$NF}' | tr -d '[:space:]')
+APP_REVISION := $(shell grep ^APP_REVISION web/config.py | awk -F"=" '{print $$NF}' | tr -d '[:space:]')
+
 #########################################################################
 # High-level targets
 #########################################################################
@@ -106,7 +110,8 @@ clean-src:
 	rm -rf src-build/
 
 docker:
-	docker build `python -c 'import web.config as c; print("-t {0} -t {0}:latest -t {0}:{1} -t {0}:{1}.{2}".format(c.APP_NAME.replace(" ", "").lower(), c.APP_RELEASE, c.APP_REVISION))'` .
+	echo $(APP_NAME)
+	docker build -t ${APP_NAME} -t $(APP_NAME):latest -t $(APP_NAME):$(APP_RELEASE) -t $(APP_NAME):$(APP_RELEASE).$(APP_REVISION) .
 
 docs:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx html
