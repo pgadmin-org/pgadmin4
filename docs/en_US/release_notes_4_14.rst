@@ -16,3 +16,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+| `Issue #4199 <https://redmine.postgresql.org/issues/4199>`_ -  Ensure that 'ENTER' key in the data filter should not run the query.

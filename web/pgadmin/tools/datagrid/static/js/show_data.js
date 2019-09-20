@@ -123,12 +123,24 @@ function initFilterDialog(alertify, pgBrowser) {
         setup:function() {
           return {
             buttons:[{
+              text: '',
+              key: 112,
+              className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
+              attrs: {
+                name: 'dialog_help',
+                type: 'button',
+                label: gettext('Data Filter'),
+                url: url_for('help.static', {
+                  'filename': 'viewdata_filter.html',
+                }),
+              },
+            },{
               text: gettext('Cancel'),
               key: 27,
               className: 'btn btn-secondary fa fa-times pg-alertify-button',
             },{
               text: gettext('OK'),
-              key: 13,
+              key: null,
               className: 'btn btn-primary fa fa-check pg-alertify-button',
             }],
             options: {
@@ -141,7 +153,19 @@ function initFilterDialog(alertify, pgBrowser) {
           };
         },
         build: function() {
-          alertify.pgDialogBuild.apply(this);
+          var that = this;
+          alertify.pgDialogBuild.apply(that);
+
+          // Set the tooltip of OK
+          $(that.__internal.buttons[2].element).attr('title', gettext('Use SHIFT + ENTER to apply filter...'));
+
+          // For sort/filter dialog we capture the keypress event
+          // and on "shift + enter" we clicked on "OK" button.
+          $(that.elements.body).on('keypress', function(evt) {
+            if (evt.shiftKey && evt.keyCode == 13) {
+              that.__internal.buttons[2].element.click();
+            }
+          });
         },
         prepare:function() {
           var that = this,
@@ -155,7 +179,7 @@ function initFilterDialog(alertify, pgBrowser) {
 
           this.setContent($content.get(0));
           // Disable OK button
-          that.__internal.buttons[1].element.disabled = true;
+          that.__internal.buttons[2].element.disabled = true;
 
           // Apply CodeMirror to filter text area.
           this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
@@ -181,9 +205,9 @@ function initFilterDialog(alertify, pgBrowser) {
 
           that.filter_obj.on('change', function() {
             if (that.filter_obj.getValue() !== '') {
-              that.__internal.buttons[1].element.disabled = false;
+              that.__internal.buttons[2].element.disabled = false;
             } else {
-              that.__internal.buttons[1].element.disabled = true;
+              that.__internal.buttons[2].element.disabled = true;
             }
           });
         },
@@ -221,6 +245,15 @@ function initFilterDialog(alertify, pgBrowser) {
                   e
                 );
               });
+          } else if(closeEvent.index == 0) {
+            /* help Button */
+            closeEvent.cancel = true;
+            pgBrowser.showHelp(
+              closeEvent.button.element.name,
+              closeEvent.button.element.getAttribute('url'),
+              null, null
+            );
+            return;
           }
         },
       };

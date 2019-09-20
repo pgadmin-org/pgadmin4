@@ -138,3 +138,8 @@ To delete a row from the grid, click the trash icon.
 * Click the *Help* button (?) to access online help.
 * Click the *Ok* button to save work.
 * Click the *Close* button to discard current changes and close the dialog.
+
+.. toctree::
+   :maxdepth: 2
+
+   viewdata_filter
