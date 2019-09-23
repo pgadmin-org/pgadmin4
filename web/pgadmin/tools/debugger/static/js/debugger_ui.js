@@ -10,9 +10,9 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backgrid', 'wcdocker',
+  'pgadmin.backgrid', 'sources/window', 'wcdocker',
 ], function(
-  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid
+  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid, pgWindow
 ) {
 
   var wcDocker = window.wcDocker;
@@ -168,7 +168,7 @@ define([
       Alertify.dialog('debuggerInputArgsDialog', function factory() {
         return {
           main: function(title, debug_info, restart_debug, is_edb_proc, trans_id) {
-            this.preferences = window.top.pgAdmin.Browser.get_preferences_for_module('debugger');
+            this.preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('debugger');
             this.set('title', title);
 
             // setting value in alertify settings allows us to access it from

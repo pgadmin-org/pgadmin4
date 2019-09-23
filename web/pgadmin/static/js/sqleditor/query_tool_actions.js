@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import $ from 'jquery';
+import pgWindow from 'sources/window';
 
 let queryToolActions = {
   _verbose: function () {
@@ -124,7 +125,7 @@ let queryToolActions = {
 
   focusOut: function () {
     document.activeElement.blur();
-    window.top.document.activeElement.blur();
+    pgWindow.document.activeElement.blur();
   },
 
   toggleCaseOfSelectedText: function (sqlEditorController) {

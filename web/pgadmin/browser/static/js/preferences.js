@@ -12,6 +12,7 @@ import url_for from 'sources/url_for';
 import $ from 'jquery';
 import * as Alertify from 'pgadmin.alertifyjs';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
+import pgWindow from 'sources/window';
 
 var modifyAnimation = require('sources/modify_animation');
 
@@ -148,16 +149,8 @@ _.extend(pgBrowser, {
   },
 
   onPreferencesChange: function(module, eventHandler) {
-    window.parent.$(parent.document).on('prefchange:'+module, function(event) {
-      /* If a sqleditor is closed, event handler will be called
-       * but the window.top will be null. Unbind the event handler
-       */
-      if(window.top === null) {
-        window.$(document).off(event);
-      }
-      else {
-        eventHandler(event);
-      }
+    $(pgWindow).on('prefchange:'+module, function(event) {
+      eventHandler(event);
     });
   },
 

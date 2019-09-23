@@ -10,10 +10,10 @@
 define([
   'sources/gettext', 'underscore', 'underscore.string', 'jquery',
   'backbone', 'backform', 'backgrid', 'codemirror', 'sources/sqleditor_utils',
-  'sources/keyboard_shortcuts',
+  'sources/keyboard_shortcuts', 'sources/window',
   'spectrum', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle',
 ], function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror,
-  SqlEditorUtils, keyboardShortcuts) {
+  SqlEditorUtils, keyboardShortcuts, pgWindow) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {}),
     pgBrowser = pgAdmin.Browser;
@@ -1303,7 +1303,7 @@ define([
 
       let tmp_browser = pgBrowser;
       if (pgBrowser.preferences_cache.length == 0)
-        tmp_browser = window.opener ? window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+        tmp_browser = pgWindow.default.pgAdmin.Browser;
 
       let preferences = tmp_browser.get_preferences_for_module('browser');
 
@@ -1602,7 +1602,7 @@ define([
 
       let tmp_browser = pgBrowser;
       if (pgBrowser.preferences_cache.length == 0)
-        tmp_browser = window.opener ? window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+        tmp_browser = pgWindow.default.pgAdmin.Browser;
 
       let preferences = tmp_browser.get_preferences_for_module('browser');
 
@@ -2383,8 +2383,7 @@ define([
         /* This control is used by filter dialog in query editor, so taking preferences from window
          * SQL Editor can be in different tab
          */
-        let browser = window.opener ?
-          window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+        let browser = pgWindow.default.pgAdmin.Browser;
 
         let sqlEditPreferences = browser.get_preferences_for_module('sqleditor');
 

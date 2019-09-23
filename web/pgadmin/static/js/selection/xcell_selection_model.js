@@ -11,9 +11,9 @@ define([
   'jquery',
   'underscore',
   'sources/selection/range_selection_helper',
-
+  'sources/window',
   'slickgrid',
-], function ($, _, RangeSelectionHelper) {
+], function ($, _, RangeSelectionHelper, pgWindow) {
   var XCellSelectionModel = function (options) {
 
     var KEY_ARROW_RIGHT = 39;
@@ -50,7 +50,7 @@ define([
       grid.registerPlugin(_selector);
       _selector.onCellRangeSelected.subscribe(handleCellRangeSelected);
       _selector.onBeforeCellRangeSelected.subscribe(handleBeforeCellRangeSelected);
-      $(window.parent).on('mouseup',handleWindowMouseUp);
+      $(pgWindow.default).on('mouseup',handleWindowMouseUp);
     }
 
     function destroy() {
@@ -59,7 +59,7 @@ define([
       _selector.onCellRangeSelected.unsubscribe(handleCellRangeSelected);
       _selector.onBeforeCellRangeSelected.unsubscribe(handleBeforeCellRangeSelected);
       _grid.unregisterPlugin(_selector);
-      $(window.parent).off('mouseup', handleWindowMouseUp);
+      $(pgWindow.default).off('mouseup', handleWindowMouseUp);
     }
 
     function removeInvalidRanges(ranges) {

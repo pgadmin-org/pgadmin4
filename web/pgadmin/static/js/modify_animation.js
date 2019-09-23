@@ -9,13 +9,10 @@
 
 import $ from 'jquery';
 import _ from 'underscore';
+import pgWindow from 'sources/window';
 
 function getBrowserInstance() {
-  if (!_.isUndefined(window.opener) && !_.isNull(window.opener)) {
-    return window.opener.pgAdmin.Browser;
-  } else {
-    return window.parent.pgAdmin.Browser;
-  }
+  return pgWindow.pgAdmin.Browser;
 }
 
 function modifyAcitreeAnimation(pgBrowser, tree) {

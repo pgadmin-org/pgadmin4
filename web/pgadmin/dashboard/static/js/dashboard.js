@@ -11,10 +11,10 @@ define('pgadmin.dashboard', [
   'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
   'sources/pgadmin', 'backbone', 'backgrid', './charting',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'sources/nodes/dashboard',
-  'sources/utils', 'pgadmin.browser', 'bootstrap', 'wcdocker',
+  'sources/utils', 'sources/window', 'pgadmin.browser', 'bootstrap', 'wcdocker',
 ], function(
   url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, charting,
-  Alertify, Backform, NodesDashboard, commonUtils
+  Alertify, Backform, NodesDashboard, commonUtils, pgWindow
 ) {
 
   pgAdmin.Browser = pgAdmin.Browser || {};
@@ -770,7 +770,7 @@ define('pgadmin.dashboard', [
        */
       let cacheIntervalId = setInterval(function() {
         try {
-          if(window.top.pgAdmin.Browser.preference_version() > 0) {
+          if(pgWindow.default.pgAdmin.Browser.preference_version() > 0) {
             clearInterval(cacheIntervalId);
             self.reflectPreferences();
           }
@@ -794,10 +794,10 @@ define('pgadmin.dashboard', [
       /* We will use old preferences for selective graph updates on preference change */
       if(self.preferences) {
         self.old_preferences = self.preferences;
-        self.preferences = window.top.pgAdmin.Browser.get_preferences_for_module('dashboards');
+        self.preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('dashboards');
       }
       else {
-        self.preferences = window.top.pgAdmin.Browser.get_preferences_for_module('dashboards');
+        self.preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('dashboards');
         self.old_preferences = self.preferences;
       }
 

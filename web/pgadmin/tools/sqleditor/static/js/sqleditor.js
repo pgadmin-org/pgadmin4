@@ -38,6 +38,7 @@ define('tools.querytool', [
   'sources/sqleditor/query_tool_preferences',
   'sources/csrf',
   'tools/datagrid/static/js/datagrid_panel_title',
+  'sources/window',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
   'backgrid.sizeable.columns',
@@ -52,7 +53,8 @@ define('tools.querytool', [
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   GeometryViewer, historyColl, queryHist, querySources,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
-  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, csrfToken, panelTitleFunc) {
+  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, csrfToken, panelTitleFunc,
+  pgWindow) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -77,8 +79,7 @@ define('tools.querytool', [
       this.$el = opts.el;
       this.handler = opts.handler;
       this.handler['col_size'] = {};
-      let browser = window.opener ?
-        window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+      let browser = pgWindow.default.pgAdmin.Browser;
       this.preferences = browser.get_preferences_for_module('sqleditor');
       this.handler.preferences = this.preferences;
       this.connIntervalId = null;
@@ -142,10 +143,9 @@ define('tools.querytool', [
 
     reflectPreferences: function() {
       let self = this,
-        browser = window.opener ?
-          window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+        browser = pgWindow.default.pgAdmin.Browser;
 
-      /* pgBrowser is different obj from window.top.pgAdmin.Browser
+      /* pgBrowser is different obj from pgWindow.default.pgAdmin.Browser
        * Make sure to get only the latest update. Older versions will be discarded
        * if function is called by older events.
        * This works for new tab sql editor also as it polls if latest version available
@@ -405,7 +405,7 @@ define('tools.querytool', [
 
       if (!self.preferences.new_browser_tab) {
         // Listen on the panel closed event and notify user to save modifications.
-        _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+        _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
           if (p.isVisible()) {
             p.on(wcDocker.EVENT.CLOSING, function() {
               return self.handler.check_needed_confirmations_before_closing_panel(true);
@@ -635,7 +635,7 @@ define('tools.querytool', [
        * to reload the shorcuts. As sqleditor is in iFrame of wcDocker
        * window parent is referred
        */
-      pgBrowser.onPreferencesChange('sqleditor', function() {
+      pgWindow.default.pgAdmin.Browser.onPreferencesChange('sqleditor', function() {
         self.reflectPreferences();
       });
 
@@ -645,7 +645,7 @@ define('tools.querytool', [
       if(self.preferences.new_browser_tab) {
         pgBrowser.bind_beforeunload();
         setInterval(()=>{
-          if(window.opener.pgAdmin) {
+          if(pgWindow.default.pgAdmin) {
             self.reflectPreferences();
           }
         }, 1000);
@@ -3270,7 +3270,7 @@ define('tools.querytool', [
         if (self.preferences.new_browser_tab) {
           window.document.title = title;
         } else {
-          _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+          _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
             if (p.isVisible()) {
               panelTitleFunc.setQueryToolDockerTitle(p, self.is_query_tool, title, is_file);
             }
@@ -3431,7 +3431,7 @@ define('tools.querytool', [
               title = window.document.title + ' *';
             } else {
               // Find the title of the visible panel
-              _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+              _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
                 if (p.isVisible()) {
                   self.gridView.panel_title = $(p._title).text();
                 }
@@ -3993,8 +3993,7 @@ define('tools.querytool', [
       },
 
       call_cache_preferences: function() {
-        let browser = window.opener ?
-          window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+        let browser = pgWindow.default.pgAdmin.Browser;
         browser.cache_preferences('sqleditor');
 
         /* This will make sure to get latest updates only and not older events */
@@ -4312,7 +4311,7 @@ define('tools.querytool', [
         var self = this;
 
         pgBrowser.Events.off('pgadmin:user:logged-in', this.initTransaction);
-        _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(panel) {
+        _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(panel) {
           if (panel.isVisible()) {
             window.onbeforeunload = null;
             panel.off(wcDocker.EVENT.CLOSING);
@@ -4320,7 +4319,7 @@ define('tools.querytool', [
             if (!_.isUndefined(self.col_size)) {
               delete self.col_size;
             }
-            window.top.pgAdmin.Browser.docker.removePanel(panel);
+            pgWindow.default.pgAdmin.Browser.docker.removePanel(panel);
           }
         });
       },

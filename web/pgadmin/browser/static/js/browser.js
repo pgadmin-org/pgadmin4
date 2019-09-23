@@ -12,7 +12,7 @@ define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
   'sources/check_node_visibility', './toolbar', 'pgadmin.help',
-  'sources/csrf', 'sources/utils', 'pgadmin.browser.utils',
+  'sources/csrf', 'sources/utils', 'sources/window', 'pgadmin.browser.utils',
   'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
@@ -24,7 +24,7 @@ define('pgadmin.browser', [
   tree,
   gettext, url_for, require, $, _, S,
   Bootstrap, pgAdmin, Alertify, codemirror,
-  checkNodeVisibility, toolBar, help, csrfToken, pgadminUtils,
+  checkNodeVisibility, toolBar, help, csrfToken, pgadminUtils, pgWindow
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
@@ -714,8 +714,7 @@ define('pgadmin.browser', [
     bind_beforeunload: function() {
       $(window).on('beforeunload', function(e) {
         /* Can open you in new tab */
-        let openerBrowser = window.opener ?
-          window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+        let openerBrowser = pgWindow.default.pgAdmin.Browser;
 
         let tree_save_interval = pgBrowser.get_preference('browser', 'browser_tree_state_save_interval'),
           confirm_on_refresh_close = openerBrowser.get_preference('browser', 'confirm_on_refresh_close');

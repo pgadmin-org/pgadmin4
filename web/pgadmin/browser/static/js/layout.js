@@ -13,6 +13,7 @@ import $ from 'jquery';
 import * as Alertify from 'pgadmin.alertifyjs';
 import gettext from 'sources/gettext';
 import 'wcdocker';
+import pgWindow from 'sources/window';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -74,8 +75,7 @@ _.extend(pgBrowser, {
     }
 
     /* preference available only with top/opener browser. */
-    let browser = window.opener ?
-      window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+    let browser = pgWindow.pgAdmin.Browser;
 
     /* interval required initially as preference load may take time */
     let cacheIntervalId = setInterval(()=> {
@@ -93,8 +93,7 @@ _.extend(pgBrowser, {
   },
 
   reflectLocklayoutChange: function(docker) {
-    let browser = window.opener ?
-      window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+    let browser = pgWindow.pgAdmin.Browser;
 
     let browserPref = browser.get_preferences_for_module('browser');
     browser.lock_layout(docker, browserPref.lock_layout);
@@ -125,8 +124,7 @@ _.extend(pgBrowser, {
   },
 
   save_lock_layout: function(op) {
-    let browser = window.opener ?
-      window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+    let browser = pgWindow.pgAdmin.Browser;
 
     $.ajax({
       url: url_for('browser.lock_layout'),

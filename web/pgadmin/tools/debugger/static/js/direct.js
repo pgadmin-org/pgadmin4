@@ -12,10 +12,11 @@ define([
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
   'pgadmin.backgrid', 'pgadmin.backform', 'sources/../bundle/codemirror',
   'pgadmin.tools.debugger.ui', 'sources/keyboard_shortcuts',
-  'pgadmin.tools.debugger.utils', 'wcdocker',
+  'pgadmin.tools.debugger.utils', 'sources/window', 'wcdocker',
 ], function(
   gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  Backform, codemirror, debug_function_again, keyboardShortcuts, debuggerUtils
+  Backform, codemirror, debug_function_again, keyboardShortcuts, debuggerUtils,
+  pgWindow
 ) {
 
   var CodeMirror = codemirror.default,
@@ -1525,8 +1526,7 @@ define([
       this.function_name_with_arguments = function_name_with_arguments;
       this.layout = layout;
 
-      let browser = window.opener ?
-        window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+      let browser = pgWindow.default.pgAdmin.Browser;
       this.preferences = browser.get_preferences_for_module('debugger');
 
       this.docker = new wcDocker(
@@ -1835,7 +1835,7 @@ define([
 
         let cacheIntervalId = setInterval(function() {
           try {
-            let browser = window.opener ? window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+            let browser = pgWindow.default.pgAdmin.Browser;
             if(browser.preference_version() > 0) {
               clearInterval(cacheIntervalId);
               self.reflectPreferences();
@@ -1846,7 +1846,7 @@ define([
               if(self.preferences.debugger_new_browser_tab) {
                 pgBrowser.bind_beforeunload();
                 let pollIntervalId = setInterval(()=>{
-                  if(window.opener && window.opener.pgAdmin) {
+                  if(pgWindow.default.pgAdmin) {
                     self.reflectPreferences();
                   }
                   else {
@@ -1888,13 +1888,13 @@ define([
       /* Register for preference changed event broadcasted in parent
        * to reload the shorcuts.
        */
-      pgBrowser.onPreferencesChange('debugger', function() {
+      pgWindow.default.pgAdmin.Browser.onPreferencesChange('debugger', function() {
         self.reflectPreferences();
       });
     },
     reflectPreferences: function() {
       let self = this,
-        browser = window.opener ? window.opener.pgAdmin.Browser : window.top.pgAdmin.Browser;
+        browser = pgWindow.default.pgAdmin.Browser;
       self.preferences = browser.get_preferences_for_module('debugger');
       self.toolbarView.preferences = self.preferences;
 
