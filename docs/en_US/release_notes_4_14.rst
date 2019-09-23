@@ -18,3 +18,4 @@ Bug fixes
 *********
 
 | `Issue #4199 <https://redmine.postgresql.org/issues/4199>`_ -  Ensure that 'ENTER' key in the data filter should not run the query.
+| `Issue #4755 <https://redmine.postgresql.org/issues/4755>`_ -  Ensure that pgAdmin should work behind reverse proxy if the inbuilt server is used as it is.

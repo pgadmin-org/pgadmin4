@@ -13,6 +13,7 @@ to start a web server."""
 
 import os
 import sys
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 if sys.version_info[0] >= 3:
     import builtins
@@ -69,7 +70,8 @@ if not os.path.isfile(config.SQLITE_PATH):
 ##########################################################################
 class ReverseProxied(object):
     def __init__(self, app):
-        self.app = app
+        # https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix/#module-werkzeug.middleware.proxy_fix
+        self.app = ProxyFix(app)
 
     def __call__(self, environ, start_response):
         script_name = environ.get("HTTP_X_SCRIPT_NAME", "")
@@ -95,7 +97,9 @@ if config.DEBUG:
 
 # Create the app!
 app = create_app()
-app.wsgi_app = ReverseProxied(app.wsgi_app)
+
+if config.SERVER_MODE:
+    app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 if config.DEBUG:
     app.debug = True
