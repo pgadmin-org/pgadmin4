@@ -12,6 +12,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4472 <https://redmine.postgresql.org/issues/4472>`_ -  Add Reverse Engineered and Modified SQL tests for Synonyms.
 | `Issue #4628 <https://redmine.postgresql.org/issues/4628>`_ -  Add Reverse Engineered and Modified SQL tests for Unique Constraints.
 
 Bug fixes

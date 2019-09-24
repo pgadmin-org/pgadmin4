@@ -200,7 +200,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     options['fsid'] = int(self.parent_ids['fsid'])
                 else:
                     if object_id is not None:
-                        options[arg] = int(object_id)
+                        try:
+                            options[arg] = int(object_id)
+                        except ValueError:
+                            options[arg] = object_id
 
             with self.app.test_request_context():
                 object_url = url_for(rule.endpoint, **options)
