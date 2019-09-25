@@ -18,6 +18,8 @@ class QueryHistory:
         # In Python 2.7, rec.query_info has buffer data type. Cast it.
         if IS_PY2:
             result = [bytes(rec.query_info) for rec in list(result)]
+        else:
+            result = [rec.query_info for rec in list(result)]
 
         return make_json_response(
             data={
