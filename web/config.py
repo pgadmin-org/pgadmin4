@@ -158,15 +158,21 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 # Reverse Proxy parameters
 # You must tell the middleware how many proxies set each header
 # so it knows what values to trust.
-# See https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix/#werkzeug.middleware.proxy_fix.ProxyFix for more info. # noqa
+# See https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix/#werkzeug.middleware.proxy_fix.ProxyFix
+# for more information.
+
 # Number of values to trust for X-Forwarded-For
 PROXY_X_FOR_COUNT = 1
+
 # Number of values to trust for X-Forwarded-Proto.
 PROXY_X_PROTO_COUNT = 0
+
 # Number of values to trust for X-Forwarded-Host.
 PROXY_X_HOST_COUNT = 0
+
 # Number of values to trust for X-Forwarded-Port.
 PROXY_X_PORT_COUNT = 1
+
 # Number of values to trust for X-Forwarded-Prefix.
 PROXY_X_PREFIX_COUNT = 0
 
