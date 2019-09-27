@@ -34,10 +34,15 @@ function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
       self.copied_rows = [];
       setPasteRowButtonEnablement(self.can_edit, false);
     }
-    var csvText = rangeBoundaryNavigator.rangesToCsv(dataView.getItems(), columnDefinitions, selectedRanges, CSVOptions);
+    var csvText = rangeBoundaryNavigator.rangesToCsv(dataView.getItems(), columnDefinitions,
+      selectedRanges, CSVOptions, copyWithHeader());
     if (csvText) {
       clipboard.copyTextToClipboard(csvText);
     }
+  };
+
+  var copyWithHeader = function () {
+    return !$('.copy-with-header').hasClass('visibility-hidden');
   };
 
   var setPasteRowButtonEnablement = function (canEditFlag, isEnabled) {

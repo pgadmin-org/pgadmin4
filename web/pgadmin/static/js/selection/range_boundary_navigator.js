@@ -66,7 +66,21 @@ define(['sources/selection/range_selection_helper'],
         }.bind(this));
       },
 
-      rangesToCsv: function (data, columnDefinitions, selectedRanges, CSVOptions) {
+      getHeaderData: function (columnDefinitions, CSVOptions) {
+        var headerData = [],
+          field_separator = CSVOptions.field_separator || '\t',
+          quote_char = CSVOptions.quote_char || '"';
+
+        _.each(columnDefinitions, function(col) {
+          if(col.display_name && col.selected) {
+            headerData.push(quote_char + col.display_name + quote_char);
+          }
+        });
+
+        return headerData.join(field_separator);
+      },
+
+      rangesToCsv: function (data, columnDefinitions, selectedRanges, CSVOptions, copyWithHeader) {
 
         var rowRangeBounds = selectedRanges.map(function (range) {
           return [range.fromRow, range.toRow];
@@ -83,6 +97,13 @@ define(['sources/selection/range_selection_helper'],
           var field_separator = CSVOptions.field_separator || '\t';
           return rowData.join(field_separator);
         });
+
+        if (copyWithHeader) {
+          var headerData = '';
+          headerData = this.getHeaderData(columnDefinitions, CSVOptions);
+
+          return headerData + '\n' + csvRows.join('\n');
+        }
 
         return csvRows.join('\n');
       },

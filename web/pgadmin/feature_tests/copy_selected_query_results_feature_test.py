@@ -58,6 +58,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         self._shift_resizes_rectangular_selection()
         self._shift_resizes_column_selection()
         self._mouseup_outside_grid_still_makes_a_selection()
+        self._copies_rows_with_header()
 
     def _copies_rows(self):
         pyperclip.copy("old clipboard contents")
@@ -71,6 +72,24 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
         self.assertEqual('"Some-Name"\t"6"\t"some info"',
                          pyperclip.paste())
+
+    def _copies_rows_with_header(self):
+        self.page.find_by_css_selector('#btn-copy-row-dropdown').click()
+        self.page.find_by_css_selector('a#btn-copy-with-header').click()
+
+        pyperclip.copy("old clipboard contents")
+        select_all = self.page.find_by_xpath(
+            QueryToolLocators.select_all_column)
+        select_all.click()
+
+        copy_button = self.page.find_by_css_selector(
+            QueryToolLocators.copy_button_css)
+        copy_button.click()
+
+        self.assertEqual("""\"some_column"\t"value"\t"details"
+\"Some-Name"\t"6"\t"some info"
+\"Some-Other-Name"\t"22"\t"some other info"
+\"Yet-Another-Name"\t"14"\t"cool info\"""", pyperclip.paste())
 
     def _copies_columns(self):
         pyperclip.copy("old clipboard contents")

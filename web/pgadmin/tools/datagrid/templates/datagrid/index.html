@@ -121,6 +121,18 @@
                         tabindex="0" disabled>
                     <i class="fa fa-files-o sql-icon-lg" aria-hidden="true"></i>
                 </button>
+                <button id="btn-copy-row-dropdown" type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        tabindex="0">
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" id="btn-copy-with-header" href="#" tabindex="0">
+                            <i class="copy-with-header fa fa-check visibility-hidden" aria-hidden="true"></i>
+                            <span> {{ _('Copy with headers') }} </span>
+                        </a>
+                    </li>
+                </ul>
                 <button id="btn-paste-row" type="button" class="btn btn-sm btn-secondary"
                         title=""
                         accesskey=""

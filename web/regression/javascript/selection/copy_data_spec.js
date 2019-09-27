@@ -17,7 +17,7 @@ import copyData from '../../../pgadmin/static/js/selection/copy_data';
 import RangeSelectionHelper from 'sources/selection/range_selection_helper';
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 describe('copyData', function () {
-  var grid, sqlEditor, gridContainer, buttonPasteRow;
+  var grid, sqlEditor, gridContainer, buttonPasteRow, buttonCopyWithHeader;
   var SlickGrid;
 
   beforeEach(function () {
@@ -65,7 +65,9 @@ describe('copyData', function () {
     gridContainer = $('<div id="grid"></div>');
     $('body').append(gridContainer);
     buttonPasteRow = $('<button id="btn-paste-row" disabled></button>');
+    buttonCopyWithHeader = $('<button class="copy-with-header visibility-hidden"></button>');
     $('body').append(buttonPasteRow);
+    $('body').append(buttonCopyWithHeader);
     grid = new SlickGrid('#grid', dataView, columns, {});
     grid.CSVOptions = CSVOptions;
     dataView.setItems(data, '__temp_PK');
@@ -77,6 +79,7 @@ describe('copyData', function () {
     grid.destroy();
     gridContainer.remove();
     buttonPasteRow.remove();
+    buttonCopyWithHeader.remove();
   });
 
   describe('when rows are selected', function () {

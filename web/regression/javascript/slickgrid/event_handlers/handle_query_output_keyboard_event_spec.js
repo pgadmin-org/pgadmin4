@@ -18,7 +18,7 @@ import $ from 'jquery';
 
 describe('#handleQueryOutputKeyboardEvent', function () {
   var event, grid, slickEvent;
-  var handleQueryOutputKeyboardEvent;
+  var handleQueryOutputKeyboardEvent, buttonCopyWithHeader;
 
   beforeEach(function () {
     event = {
@@ -46,6 +46,9 @@ describe('#handleQueryOutputKeyboardEvent', function () {
     slickEvent = {
       grid: grid,
     };
+
+    buttonCopyWithHeader = $('<button class="copy-with-header visibility-hidden"></button>');
+    $('body').append(buttonCopyWithHeader);
 
     spyOn(clipboard, 'copyTextToClipboard');
     handleQueryOutputKeyboardEvent = HandleQueryOutputKeyboardEvent.bind(window);

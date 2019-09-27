@@ -9,6 +9,8 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #3009 <https://redmine.postgresql.org/issues/3009>`_ -  Added Copy with headers functionality when copy data from Query Tool/View Data.
+
 Housekeeping
 ************
 

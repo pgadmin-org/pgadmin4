@@ -109,6 +109,7 @@ define('tools.querytool', [
       'click #btn-remove-filter': 'on_remove_filter',
       'click #btn-cancel': 'on_cancel',
       'click #btn-copy-row': 'on_copy_row',
+      'click #btn-copy-with-header': 'on_copy_row_with_header',
       'click #btn-paste-row': 'on_paste_row',
       'click #btn-flash': 'on_flash',
       'click #btn-flash-menu': 'on_flash',
@@ -1606,6 +1607,21 @@ define('tools.querytool', [
 
     },
 
+    // Callback function for copy with header button click.
+    on_copy_row_with_header: function(ev) {
+      var self = this;
+
+      this._stopEventPropogation(ev);
+
+      // Toggle the button
+      self.handler.trigger(
+        'pgadmin-sqleditor:button:copy_row_with_header',
+        self,
+        self.handler
+      );
+
+    },
+
     // Callback function for paste button click.
     on_paste_row: function() {
       var self = this;
@@ -2314,6 +2330,7 @@ define('tools.querytool', [
         self.on('pgadmin-sqleditor:button:exclude_filter', self._exclude_filter, self);
         self.on('pgadmin-sqleditor:button:remove_filter', self._remove_filter, self);
         self.on('pgadmin-sqleditor:button:copy_row', self._copy_row, self);
+        self.on('pgadmin-sqleditor:button:copy_row_with_header', self._copy_row_with_header, self);
         self.on('pgadmin-sqleditor:button:paste_row', self._paste_row, self);
         self.on('pgadmin-sqleditor:button:limit', self._set_limit, self);
         self.on('pgadmin-sqleditor:button:cancel-query', self._cancel_query, self);
@@ -3643,6 +3660,10 @@ define('tools.querytool', [
 
       // This function will copy the selected row.
       _copy_row: copyData,
+
+      _copy_row_with_header: function() {
+        $('.copy-with-header').toggleClass('visibility-hidden');
+      },
 
       // This function will paste the selected row.
       _paste_row: function() {

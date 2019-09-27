@@ -49,18 +49,44 @@ define([
         if (!(event.isPropagationStopped() || event.isImmediatePropagationStopped())) {
           updateRanges(grid, columnDefinition.id);
         }
+      } else {
+        toggleColumnHeaderForCopyHeader(grid);
       }
     };
+
+    var toggleColumnHeaderForCopyHeader = function(grid) {
+      if(!$('.copy-with-header').hasClass('visibility-hidden')) {
+        var selRowCnt = grid.getSelectedRows();
+        $('.slick-header-column').each(function (index, columnHeader) {
+          if (selRowCnt.length == 0) {
+            $(columnHeader).removeClass('selected');
+            grid.getColumns()[index].selected = false;
+          }
+          else {
+            if (index > 0 && grid.getColumns()[index].selectable) {
+              $(columnHeader).addClass('selected');
+              grid.getColumns()[index].selected = true;
+            }
+          }
+
+        });
+      } else {
+        $('.slick-header-column').each(function (index, columnHeader) {
+          $(columnHeader).removeClass('selected');
+        });
+      }
+    }.bind(RangeSelectionHelper);
 
     var handleSelectedRangesChanged = function (grid, event, selectedRanges) {
       $('.slick-header-column').each(function (index, columnHeader) {
         var $spanHeaderColumn = $(columnHeader).find('[data-cell-type="column-header-row"]');
         var columnIndex = grid.getColumnIndex($spanHeaderColumn.data('column-id'));
-
         if (isColumnSelected(grid, selectedRanges, columnIndex)) {
           $(columnHeader).addClass('selected');
-        } else {
+          if (columnIndex) grid.getColumns()[columnIndex].selected = true;
+        } else if(!RangeSelectionHelper.areAllRangesCompleteRows(grid, selectedRanges)){
           $(columnHeader).removeClass('selected');
+          if (columnIndex) grid.getColumns()[columnIndex].selected = false;
         }
       });
     };
@@ -132,6 +158,7 @@ define([
       'getColumnDefinitions': getColumnDefinitions,
       'onBeforeColumnSelectAll': onBeforeColumnSelectAll,
       'onColumnSelectAll': onColumnSelectAll,
+      'toggleColumnHeaderForCopyHeader': toggleColumnHeaderForCopyHeader,
     });
   };
   return ColumnSelector;
