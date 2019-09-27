@@ -71,7 +71,13 @@ if not os.path.isfile(config.SQLITE_PATH):
 class ReverseProxied(object):
     def __init__(self, app):
         # https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix/#module-werkzeug.middleware.proxy_fix
-        self.app = ProxyFix(app)
+        self.app = ProxyFix(app,
+                            x_for=config.PROXY_X_FOR_COUNT,
+                            x_proto=config.PROXY_X_PROTO_COUNT,
+                            x_host=config.PROXY_X_HOST_COUNT,
+                            x_port=config.PROXY_X_PORT_COUNT,
+                            x_prefix=config.PROXY_X_PREFIX_COUNT
+                            )
 
     def __call__(self, environ, start_response):
         script_name = environ.get("HTTP_X_SCRIPT_NAME", "")

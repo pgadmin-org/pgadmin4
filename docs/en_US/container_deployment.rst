@@ -197,6 +197,27 @@ for example:
         -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
         -d dpage/pgadmin4
 
+pgAdmin X-Forwarded-* configuration
+-----------------------------------
+
+You must tell the middleware how many proxies set each header so it knows what values to trust.
+Below are the pgAdmin configuration parameters for 'X-Forwarded-*' options with default values.
+pgAdmin is ready by default to run behind reverse proxy even on a non-standard port and
+these config options don't need to be changed. If required, you can tweak these config as per your need.
+
+.. code-block:: python
+
+    # Number of values to trust for X-Forwarded-For
+    PROXY_X_FOR_COUNT = 1
+    # Number of values to trust for X-Forwarded-Proto.
+    PROXY_X_PROTO_COUNT = 0
+    # Number of values to trust for X-Forwarded-Host.
+    PROXY_X_HOST_COUNT = 0
+    # Number of values to trust for X-Forwarded-Port.
+    PROXY_X_PORT_COUNT = 1
+    # Number of values to trust for X-Forwarded-Prefix.
+    PROXY_X_PREFIX_COUNT = 0
+
 HTTP via Nginx
 --------------
 
