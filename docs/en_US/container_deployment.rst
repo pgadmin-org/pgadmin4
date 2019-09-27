@@ -201,7 +201,7 @@ pgAdmin X-Forwarded-* configuration
 -----------------------------------
 
 You must tell the middleware how many proxies set each header so it knows what values to trust.
-Below are the pgAdmin configuration parameters for 'X-Forwarded-*' options with default values.
+Below are the pgAdmin configuration parameters for X-Forwarded-* options with default values.
 pgAdmin is ready by default to run behind reverse proxy even on a non-standard port and
 these config options don't need to be changed. If required, you can tweak these config as per your need.
 
