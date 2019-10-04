@@ -165,7 +165,7 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 PROXY_X_FOR_COUNT = 1
 
 # Number of values to trust for X-Forwarded-Proto.
-PROXY_X_PROTO_COUNT = 0
+PROXY_X_PROTO_COUNT = 1
 
 # Number of values to trust for X-Forwarded-Host.
 PROXY_X_HOST_COUNT = 0
