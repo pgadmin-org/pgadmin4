@@ -400,8 +400,8 @@ define('pgadmin.node.table', [
           id: 'coll_inherits', label: gettext('Inherited from table(s)'),
           url: 'get_inherits', type: 'array', group: gettext('Columns'),
           disabled: 'checkInheritance', deps: ['typname', 'is_partitioned'],
-          mode: ['create', 'edit'],
-          select2: { multiple: true, allowClear: true,
+          mode: ['create', 'edit'], first_empty: false,
+          select2: { multiple: true, allowClear: true, first_empty: false,
             placeholder: gettext('Select to inherit from...')},
           transform: function(data, cell) {
             var control = cell || this,
