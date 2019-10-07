@@ -1890,7 +1890,8 @@ define([
     },
   });
 
-  Backgrid.BooleanCellFormatter = _.extend(Backgrid.CellFormatter.prototype, {
+  var BooleanCellFormatter = Backgrid.BooleanCellFormatter = function() {};
+  _.extend(BooleanCellFormatter.prototype, {
     fromRaw: function (rawValue) {
       if (_.isUndefined(rawValue) || _.isNull(rawValue)) {
         return false;

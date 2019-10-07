@@ -87,7 +87,8 @@ function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode)
         setTimeout(function() {
           self.columns.each(function(col) {
             if (col.get('name') == 'value') {
-
+              // Reset old value
+              self.model.set({'value': undefined}, {silent:true});
               var idx = self.columns.indexOf(col),
                 cf = col.get('cellFunction'),
                 cell = new (cf.apply(col, [self.model]))({

@@ -23,6 +23,7 @@ Bug fixes
 | `Issue #4199 <https://redmine.postgresql.org/issues/4199>`_ -  Ensure that 'ENTER' key in the data filter should not run the query.
 | `Issue #4728 <https://redmine.postgresql.org/issues/4728>`_ -  Highlighted the color of closing or opening parenthesis when user select them in CodeMirror.
 | `Issue #4751 <https://redmine.postgresql.org/issues/4751>`_ -  Fix issue where export job fails when deselecting all the columns.
+| `Issue #4753 <https://redmine.postgresql.org/issues/4753>`_ -  Fix an error where 'false' string is displayed when we add a new parameter in the Parameters tab, also clear the old value when the user changes the parameter name.
 | `Issue #4755 <https://redmine.postgresql.org/issues/4755>`_ -  Ensure that pgAdmin should work behind reverse proxy if the inbuilt server is used as it is.
 | `Issue #4756 <https://redmine.postgresql.org/issues/4756>`_ -  Fix issue where pgAdmin does not load completely if loaded in an iframe.
 | `Issue #4760 <https://redmine.postgresql.org/issues/4760>`_ -  Ensure the search path should not be quoted for Database.
