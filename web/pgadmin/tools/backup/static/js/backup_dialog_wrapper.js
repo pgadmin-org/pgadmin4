@@ -253,7 +253,7 @@ export class BackupDialogWrapper extends DialogWrapper {
         this.view.model.set('schemas', [nodeData._label]);
       }
 
-      if (nodeData._type === 'table') {
+      if (nodeData._type === 'table' || nodeData._type === 'partition') {
         this.view.model.set('tables', [
           [treeInfo.schema._label, nodeData._label],
         ]);

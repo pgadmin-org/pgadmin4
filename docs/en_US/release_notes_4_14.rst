@@ -20,6 +20,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #3386 <https://redmine.postgresql.org/issues/3386>`_ -  Ensure backup a partition table should not backup the whole database.
 | `Issue #4199 <https://redmine.postgresql.org/issues/4199>`_ -  Ensure that 'ENTER' key in the data filter should not run the query.
 | `Issue #4728 <https://redmine.postgresql.org/issues/4728>`_ -  Highlighted the color of closing or opening parenthesis when user select them in CodeMirror.
 | `Issue #4751 <https://redmine.postgresql.org/issues/4751>`_ -  Fix issue where export job fails when deselecting all the columns.
