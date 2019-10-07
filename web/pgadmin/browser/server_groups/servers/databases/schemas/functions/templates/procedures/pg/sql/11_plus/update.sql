@@ -2,6 +2,7 @@
 {% import 'macros/functions/privilege.macros' as PRIVILEGE %}
 {% import 'macros/functions/variable.macros' as VARIABLE %}{% if data %}
 {% set name = o_data.name %}
+{% set exclude_quoting = ['search_path'] %}
 {% if data.name %}
 {% if data.name != o_data.name %}
 ALTER PROCEDURE {{ conn|qtIdent(o_data.pronamespace, o_data.name) }}{% if o_data.proargtypenames %}({{ o_data.proargtypenames }}){% endif %}
@@ -24,7 +25,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}({% if 
 {% if ('prosecdef' in data and data.prosecdef) or ('prosecdef' not in data and o_data.prosecdef) %}SECURITY DEFINER{% endif %}
 {% if data.merged_variables %}{% for v in data.merged_variables %}
 
-    SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
+    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
 {% endif %}
 
 AS {% if 'probin' in data or 'prosrc_c' in data %}

@@ -2,6 +2,7 @@
 {% import 'macros/functions/privilege.macros' as PRIVILEGE %}
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
+{% set exclude_quoting = ['search_path'] %}
 {% if data %}
 {% if query_for == 'sql_panel' and func_def is defined %}
 CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{func_def}}
@@ -25,7 +26,7 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
-    SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
+    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor %}
 {% endif %}
 
 AS {% if data.lanname == 'c' %}

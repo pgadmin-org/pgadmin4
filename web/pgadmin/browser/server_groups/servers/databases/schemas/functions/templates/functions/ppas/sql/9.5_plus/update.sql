@@ -2,6 +2,7 @@
 {% import 'macros/functions/privilege.macros' as PRIVILEGE %}
 {% import 'macros/functions/variable.macros' as VARIABLE %}{% if data %}
 {% set name = o_data.name %}
+{% set exclude_quoting = ['search_path'] %}
 {% if data.name %}
 {% if data.name != o_data.name %}
 ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, o_data.name) }}({{
@@ -32,7 +33,7 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if d
 
     ROWS {{data.prorows}}{% elif data.prorows is not defined and o_data.prorows and o_data.prorows != '0' %}    ROWS {{o_data.prorows}} {%endif -%}{% if data.merged_variables %}{% for v in data.merged_variables %}
 
-    SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
+    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
     {% endif %}
 
 AS {% if 'probin' in data or 'prosrc_c' in data %}

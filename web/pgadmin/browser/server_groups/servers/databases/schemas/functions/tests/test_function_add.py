@@ -59,7 +59,10 @@ class FunctionAddTestCase(BaseTestGenerator):
             "probin": "$libdir/",
             "provolatile": "s",
             "seclabels": [],
-            "variables": []
+            "variables": [{
+                "name": "search_path",
+                "value": "public, pg_temp"
+            }]
         }
 
         data["name"] = "test_function_add_%s" % str(uuid.uuid4())[1:8]

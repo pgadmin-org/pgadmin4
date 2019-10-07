@@ -2,6 +2,7 @@
 {% import 'macros/functions/privilege.macros' as PRIVILEGE %}
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
+{% set exclude_quoting = ['search_path'] %}
 {% if data %}
 CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
     RETURNS{% if data.proretset and data.prorettypename.startswith('SETOF ') %} {{ data.prorettypename }}{% elif data.proretset %} SETOF {{ data.prorettypename }}{% else %} {{ data.prorettypename }}{% endif %}
@@ -15,7 +16,7 @@ CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
-    SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
+    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor %}
 {% endif %}
 
 AS {% if data.lanname == 'c' %}

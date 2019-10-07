@@ -9,6 +9,7 @@ CREATE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     VOLATILE LEAKPROOF STRICT SECURITY DEFINER WINDOW
     ROWS 4321
     SET application_name='appname'
+    SET search_path=public, pg_temp
 AS $BODY$begin
 select 1;
 end;$BODY$;

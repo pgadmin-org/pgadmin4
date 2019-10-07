@@ -63,6 +63,9 @@ class TriggerFuncAddTestCase(BaseTestGenerator):
                 {
                     "name": "enable_sort",
                     "value": True
+                }, {
+                    "name": "search_path",
+                    "value": "public, pg_temp"
                 }
             ]
         }

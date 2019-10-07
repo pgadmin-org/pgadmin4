@@ -2,6 +2,7 @@
 {% import 'macros/functions/privilege.macros' as PRIVILEGE %}
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
+{% set exclude_quoting = ['search_path'] %}
 {% if data %}
 {% if query_for == 'sql_panel' and func_def is defined %}
 CREATE OR REPLACE PROCEDURE {{func_def}}
@@ -17,7 +18,7 @@ LANGUAGE {{ data.lanname|qtLiteral }}
 {% if data.prosecdef %}SECURITY DEFINER {% endif %}
 {% if data.variables %}{% for v in data.variables %}
 
-SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
+SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
 {% endif %}
 
 AS {% if data.lanname == 'c' %}

@@ -2,9 +2,10 @@
 {# This will be specific macro for Role objects     #}
 {####################################################}
 {% macro APPLY(conn, database, role, param, value) -%}
+{% set exclude_quoting = ['search_path'] %}
 ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
 
-    SET {{ conn|qtIdent(param) }} TO {{ value|qtLiteral }};
+    SET {{ conn|qtIdent(param) }} TO {% if param in exclude_quoting %}{{ value }}{% else %}{{ value|qtLiteral }}{% endif %};
 {%- endmacro %}
 {% macro RESET(conn, database, role, param) -%}
 ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}

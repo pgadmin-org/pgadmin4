@@ -53,6 +53,9 @@
           "added": [{
             "name": "application_name",
             "value": "appname"
+          },{
+            "name": "search_path",
+            "value": "public, pg_temp"
           }]
         }
       },
@@ -67,6 +70,9 @@
           "changed": [{
             "name": "application_name",
             "value": "appname2"
+          },{
+            "name": "search_path",
+            "value": "public, pg_catalog"
           }],
           "added": [{
             "name": "array_nulls",
@@ -109,6 +115,9 @@
         "variables": [{
           "name": "application_name",
           "value": "appname"
+        },{
+          "name": "search_path",
+          "value": "public, pg_temp"
         }],
         "schema": "public"
       },

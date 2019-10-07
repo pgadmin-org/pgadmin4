@@ -25,6 +25,8 @@ Bug fixes
 | `Issue #4751 <https://redmine.postgresql.org/issues/4751>`_ -  Fix issue where export job fails when deselecting all the columns.
 | `Issue #4755 <https://redmine.postgresql.org/issues/4755>`_ -  Ensure that pgAdmin should work behind reverse proxy if the inbuilt server is used as it is.
 | `Issue #4756 <https://redmine.postgresql.org/issues/4756>`_ -  Fix issue where pgAdmin does not load completely if loaded in an iframe.
+| `Issue #4760 <https://redmine.postgresql.org/issues/4760>`_ -  Ensure the search path should not be quoted for Database.
 | `Issue #4768 <https://redmine.postgresql.org/issues/4768>`_ -  Ensure pgAdmin should work behind reverse proxy on a non standard port.
 | `Issue #4769 <https://redmine.postgresql.org/issues/4769>`_ -  Fix query tool open issue on Internet Explorer.
 | `Issue #4777 <https://redmine.postgresql.org/issues/4777>`_ -  Fix issue where query history is not visible in the query history tab.
+| `Issue #4780 <https://redmine.postgresql.org/issues/4780>`_ -  Ensure the search path should not be quoted for Function, Procedure and Trigger Function.
