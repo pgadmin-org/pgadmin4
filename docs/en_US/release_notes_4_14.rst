@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #3009 <https://redmine.postgresql.org/issues/3009>`_ -  Added Copy with headers functionality when copy data from Query Tool/View Data.
+| `Issue #4778 <https://redmine.postgresql.org/issues/4778>`_ -  Implemeted the Query Plan Analyser.
 
 Housekeeping
 ************

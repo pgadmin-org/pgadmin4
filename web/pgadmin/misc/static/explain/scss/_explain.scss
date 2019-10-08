@@ -1,6 +1,143 @@
 .pgadmin-explain-tooltip {
   position: absolute;
-  opacity:0;
+  opacity: 0;
   color: $color-gray-lighter;
   background-color:  $color-gray-dark;
+}
+
+$explain-bg-color-2: #FFEE88;
+$explain-bg-color-3: #EE8800;
+$explain-bg-color-4: #880000;
+$explain-fg-color-3: #FFFFFF;
+$explain-fg-color-4: #FFFFFF;
+
+.sql-editor-explain {
+  .backform-tab {
+    .tab-content {
+      bottom: 0.5rem;
+      background-color: $color-bg;
+
+      div[data-explain-tabpanel=graphical] {
+        .btn-group {
+          position: absolute;
+          top: 4px;
+          margin-left: 4px;
+          opacity: 0.5;
+
+          &.pg-explain-download-area.btn-group {
+            left: 85px;
+          }
+
+          &.pg-explain-stats-area {
+            right: 4px;
+          }
+
+          .btn {
+            font-size: 0.75rem;
+          }
+
+          *:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+div.tab-pane[data-explain-tabpanel=table] {
+
+   border-bottom: $panel-border;
+
+  .pga-ex-exclusive-1,
+  .pga-ex-inclusive-1,
+  .pga-ex-rowsx-1 {}
+
+  td.pga-ex-exclusive-2,
+  td.pga-ex-inclusive-2,
+  td.pga-ex-rowsx-2 {
+    background-color: $explain-bg-color-2;
+  }
+
+  td.pga-ex-exclusive-3,
+  td.pga-ex-inclusive-3,
+  td.pga-ex-rowsx-3 {
+    background-color: $explain-bg-color-3;
+    color: $explain-fg-color-3;
+  }
+
+  td.pga-ex-exclusive-4,
+  td.pga-ex-inclusive-4,
+  td.pga-ex-rowsx-4 {
+    background-color: $explain-bg-color-4;
+    color: $explain-fg-color-4;
+  }
+
+  .pg-ex-subplans {
+    position: absolute;
+    margin-left: -20px;
+    margin-top: 3px;
+    font-weight: bold;
+  }
+
+  table {
+    tr {
+      &[data-collapsed=true] {
+        td {
+          border-bottom: $table-hover-border;
+          border-bottom-style: dotted !important;
+          border-bottom-width: medium !important;
+        }
+      }
+      td {
+        li {
+          font-size: small;
+          opacity: 0.75;
+          overflow-wrap: break-word;
+          word-break: break-all;
+          overflow: visible;
+          white-space: -moz-pre-wrap !important;
+          white-space: -pre-wrap;
+          white-space: -o-pre-wrap;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          white-space: -webkit-pre-wrap;
+          word-break: break-all;
+          white-space: normal;
+        }
+        &.pg-ex-highlighter {
+          color: $color-primary;
+        }
+      }
+      &.pga-ex-collapsible {
+        td {
+          &.clickable {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}
+
+div.tab-pane[data-explain-tabpanel=statistics] {
+  .badge {
+    cursor: initial;
+  }
+  table[for=per_table] {
+    tr {
+      &.table {
+        background-color: $color-gray-lighter;
+
+        td:first-child {
+          font-weight: bold !important;
+        }
+      }
+      &.node {
+        td.name {
+          padding-left: 30px;
+        }
+      }
+    }
+  }
 }

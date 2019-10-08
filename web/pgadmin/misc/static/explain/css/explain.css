@@ -1,39 +1,3 @@
-.pg-explain-zoom-area {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    opacity: 0.5;
-    cursor: pointer;
-}
-
-.pg-explain-zoom-btn,
-.pg-explain-download-btn {
-    top: 5px;
-    min-width: 25px;
-    cursor: pointer;
-    font-size: 0.75rem;
-}
-
-.pg-explain-zoom-area:hover,
-.pg-explain-stats-area:hover,
-.pg-explain-download-area:hover {
-   opacity: 1;
-}
-
-.pg-explain-stats-area {
-  position: absolute;
-  top: 5px;
-  right: 25px;
-  opacity: 0.5;
-}
-
-.pg-explain-stats-btn {
-  top: 5px;
-  min-width: 25px;
-  pointer-events: none;
-  font-size: 0.75rem;
-}
-
 .explain-tooltip {
   display: table-cell;
   text-align: left;
@@ -49,7 +13,6 @@ td.explain-tooltip-val {
   padding: 2px !important;
   font-size: small;
   font-weight: normal;
-
 }
 
 .pgadmin-tooltip-table {
@@ -57,17 +20,4 @@ td.explain-tooltip-val {
   border-spacing: 1px;
   top: auto;
   left: auto;
-}
-
-.pgadmin-explain-container {
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-}
-
-.pg-explain-download-area {
-    position: absolute;
-    top: 5px;
-    left: 79px;
-    opacity: 0.5;
 }

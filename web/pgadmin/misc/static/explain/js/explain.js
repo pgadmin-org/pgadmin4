@@ -10,13 +10,14 @@
 define('pgadmin.misc.explain', [
   'sources/url_for', 'jquery', 'underscore', 'underscore.string',
   'sources/pgadmin', 'backbone', 'snapsvg', 'explain_statistics',
-  'svg_downloader', 'image_maper',
-], function(url_for, $, _, S, pgAdmin, Backbone, Snap, StatisticsModel,
-  svgDownloader, imageMapper) {
+  'svg_downloader', 'image_maper', 'sources/gettext', 'bootstrap',
+], function(
+  url_for, $, _, S, pgAdmin, Backbone, Snap, StatisticsModel,
+  svgDownloader, imageMapper, gettext
+) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
   svgDownloader = svgDownloader.default;
-  var pgBrowser = pgAdmin.Browser;
 
   // Snap.svg plug-in to write multitext as image name
   Snap.plugin(function(Snap, Element, Paper) {
@@ -99,9 +100,6 @@ define('pgadmin.misc.explain', [
   var pgExplain = pgAdmin.Explain = {
     // Prefix path where images are stored
     prefix: url_for('misc.index') + 'static/explain/img/',
-    totalNodes: 0,
-    totalDownloadedNodes: 0,
-    isDownloaded: false,
   };
 
   // Some predefined constants used to calculate image location and its border
@@ -123,6 +121,477 @@ define('pgadmin.misc.explain', [
     INIT_ZOOM_FACTOR = 1;
   var ZOOM_RATIO = 0.05;
 
+  var _createExplainTable = () => {
+    return $([
+      '<table class="backgrid table presentation table-bordered ',
+      '       table-noouter-border table-hover">',
+      ' <thead>',
+      '  <tr>',
+      '    <th class="renderable pga-ex-collapsible" rowspan="2"></th>',
+      '    <th class="renderable" rowspan="2"><button disabled>',
+      gettext('#'), '</button></th>',
+      '    <th class="renderable" rowspan="2"><button disabled>',
+      gettext('Node'), '</button></th>',
+      '    <th class="renderable timings d-none" colspan="2"><button disabled>',
+      gettext('Timings'), '</button></th>',
+      '    <th class="renderable rowsx rows plan_rows d-none" colspan="3">',
+      '<button disabled>', gettext('Rows') ,'</button></th>',
+      '    <th class="renderable rows rowsx d-none" rowspan="2">',
+      '<button disabled>', gettext('Loops') ,'</button></th>',
+      /*
+       * TODO:: Remove the 'd-none' class, when showing the extra info row
+       * implemented.
+       */
+      '    <th class="renderable d-none" rowspan="2"><button disabled>',
+      '  </tr>',
+      '  <tr>',
+      '    <th class="renderable timings d-none"><button disabled>',
+      gettext('Exclusive') , '</button></th>',
+      '    <th class="renderable timings d-none"><button disabled>',
+      gettext('Inclusive') , '</button></th>',
+      '    <th class="renderable rowsx d-none"><button disabled>',
+      gettext('Rows X'), '</button></th>',
+      '    <th class="renderable rows rowsx d-none"><button disabled>',
+      gettext('Actual'), '</button></th>',
+      '    <th class="renderable plan_rows rowsx d-none"><button disabled>',
+      gettext('Plan'), '</button></th>',
+      '  </tr>',
+      ' </thead>',
+      '</table>',
+    ].join(''));
+  };
+
+  var _renderExplainTable = (_data, $_container) => {
+    var $explainTableData = $('<tbody></tbody>');
+    _.each(_data.rows, (_row) => {
+      var $tblRow = $(_row);
+      $tblRow.appendTo($explainTableData);
+    });
+    $explainTableData.appendTo($_container);
+
+    if (_data.show_timings === true) {
+      $_container.find('.timings').removeClass('d-none');
+    }
+
+    if (_data.show_rowsx === true) {
+      $_container.find('.rowsx').removeClass('d-none');
+    } else if (_data.show_rows === true) {
+      $_container.find('.rows').removeClass('d-none');
+      $_container.find('thead .rows[colspan=3]').attr('colspan', 1);
+    } else if (_data.show_plan_rows === true) {
+      $_container.find('.plan_rows').removeClass('d-none');
+      $_container.find('thead .rows[colspan=3]').attr('colspan', 1);
+    }
+  };
+
+  var _createStatisticsTables = () => {
+    return $([
+      '<div class="row row-eq-height">',
+      ' <div class="col-sm-6 col-xs-6">',
+      '  <div class="col-xs-12 badge">',
+      gettext('Statistics per Node Type'),
+      '  </div>',
+      '  <table class="backgrid table presentation table-bordered ',
+      '         table-hover" for="per_node_type">',
+      '   <thead>',
+      '    <tr>',
+      '      <th class="renderable"><button disabled>',
+      gettext('Node type') , '</button></th>',
+      '      <th class="renderable"><button disabled>',
+      gettext('Count'), '</button></th>',
+      '      <th class="renderable timings d-none"><button disabled>',
+      gettext('Time spent') ,'</button></th>',
+      '      <th class="renderable timings d-none"><button disabled>',
+      gettext('% of query') ,'</button></th>',
+      '    </tr>',
+      '   </thead>',
+      '  </table>',
+      ' </div>',
+      ' <div class="col-sm-6 col-xs-6">',
+      '  <div class="col-xs-12 badge">',
+      gettext('Statistics per Table'),
+      '  </div>',
+      '  <table class="backgrid table presentation table-bordered ',
+      '         table-hover" for="per_table">',
+      '   <thead>',
+      '    <tr>',
+      '      <th class="renderable"><button disabled>',
+      gettext('Table name') , '</button></th>',
+      '      <th class="renderable"><button disabled>',
+      gettext('Scan count'), '</button></th>',
+      '      <th class="renderable timings d-none"><button disabled>',
+      gettext('Total time') ,'</button></th>',
+      '      <th class="renderable timings d-none"><button disabled>',
+      gettext('% of query') ,'</button></th>',
+      '    </tr>',
+      '    <tr>',
+      '      <th class="renderable"><button disabled>',
+      gettext('Node type') , '</button></th>',
+      '      <th class="renderable"><button disabled>',
+      gettext('Count'), '</button></th>',
+      '      <th class="renderable timings d-none"><button disabled>',
+      gettext('Sum of times') ,'</button></th>',
+      '      <th class="renderable timings d-none"><button disabled>',
+      gettext('% of table') ,'</button></th>',
+      '    </tr>',
+      '   </thead>',
+      '  </table>',
+      ' </div>',
+      '</div>',
+    ].join(''));
+  };
+
+  var _statisticRowTemplate = _.template([
+    '<tr<% if (className) {%> class="<%=className%>"<%}%>>',
+    ' <td class="renderable name"><%- data.name %></td>',
+    ' <td class="renderable text-right"><%- data.count %></td>',
+    ' <td class="renderable timings d-none text-right">',
+    '<%=Math.ceil10(data.sum_of_times, -3)%> ms',
+    '</td>',
+    ' <td class="renderable timings d-none text-right">',
+    '<%=Math.ceil10(((data.sum_of_times||0)/(total_time||1)) * 100, -2)%>%',
+    '</td>',
+    '</tr>',
+  ].join(''));
+
+  var _renderStatisticsTable = (_data, $_container) => {
+    var $perTableTbl = $_container.find('table[for="per_table"]'),
+      $perNodeTbl =  $_container.find('table[for="per_node_type"]');
+
+    _.each(
+      _.sortBy(_.values(_data.statistics.nodes), 'name'),
+      (_node) => (
+        $perNodeTbl.append(_statisticRowTemplate({
+          'data': _node, 'total_time': _data.total_time,
+          'className': '',
+        }))
+      )
+    );
+
+    _.each(
+      _.sortBy(_.values(_data.statistics.tables), 'name'),
+      (_table) => {
+        _table.sum_of_times = 0;
+        _.each(_table.nodes, (_node) => (
+          _table.sum_of_times += _node.sum_of_times
+        ));
+        $perTableTbl.append(_statisticRowTemplate({
+          'data': _table, 'total_time': _data.total_time,
+          'className': 'table',
+        }));
+
+        _.each(
+          _.sortBy(_.values(_table.nodes), 'name'),
+          (_node) => {
+            $perTableTbl.append(_statisticRowTemplate({
+              'data': _node, 'total_time': _table.sum_of_times,
+              'className': 'node',
+            }));
+          }
+        );
+      }
+    );
+
+    if (_data.show_timings) {
+      $_container.find('.timings').removeClass('d-none');
+    }
+  };
+
+  var _explainRowTemplate = _.template([
+    '<tr class="pga-ex-row',
+    '<% if (data["Plans"] && data["Plans"].length > 0) {%>',
+    ' pga-ex-collapsible',
+    '<%}%>',
+    '<% if (data["exclusive_flag"] !== "undefined") {%>',
+    ' pga-ex-exclusive-', '<%- data["exclusive_flag"] %>',
+    '<%}%>',
+    '<% if (data["inclusive_flag"] !== "undefined") {%>',
+    ' pga-ex-inclusive-', '<%- data["inclusive_flag"] %>',
+    '<%}%>',
+    '<% if (data["rowsx_flag"] !== "undefined") {%>',
+    ' pga-ex-rowsx-', '<%- data["rowsx_flag"] %>',
+    '<%}%>',
+    '"',
+    '<% if (data["parent_node"]) {%>',
+    ' data-parent="pga_ex_<%= data["parent_node"] %>"',
+    '<%}%>',
+    ' data-ex-id="pga_ex_<%= data["level"].join("_") %>">',
+    ' <td class="renderable pg-ex-highlighter clickable">',
+    '  <i class="fa fa-circle invisible"></i>',
+    '</td>',
+    ' <td class="renderable clickable serial text-right">',
+    '<%= (data["_serial"]) %>.</td>',
+    ' <td class="renderable clickable" style="padding-left: ',
+    '<%= (data["level"].length) * 30%>px"',
+    'title="<%= tooltip_text %>"',
+    '>',
+    '  <i class="pg-ex-subplans fa fa-long-arrow-right"></i>',
+    '<%= display_text %>',
+    '<%if (node_extra_info && node_extra_info.length > 0 ) {%>',
+    '<ui>',
+    '<%  for (var node_info_idx=0; ',
+    ' node_info_idx<node_extra_info.length;node_info_idx++) {%>',
+    ' <li>', '<%= node_extra_info[node_info_idx] %>', '</li>',
+    '<% }%>',
+    '</ui>',
+    '<%}%>',
+    ' </td>',
+    ' <td class="renderable timings d-none text-right ',
+    '<% if (data["exclusive_flag"] !== "undefined") {%>',
+    'pga-ex-exclusive-', '<%- data["exclusive_flag"] %>',
+    '<%}%>',
+    '">',
+    '<% if (typeof(data["exclusive"]) !== "undefined") {%>', '<%= data["exclusive"] %> ms', '<%}%>',
+    ' </td>',
+    ' <td class="renderable timings d-none text-right ',
+    '<% if (data["inclusive_flag"] !== "undefined") {%>',
+    'pga-ex-inclusive-', '<%- data["inclusive_flag"] %>',
+    '<%}%>',
+    '">',
+    '<% if (typeof(data["inclusive"]) !== "undefined") {%>', '<%= data["inclusive"] %> ms', '<%}%>',
+    ' </td>',
+    ' <td class="renderable rowsx d-none text-right ',
+    '<% if (data["rowsx_flag"] !== "undefined") {%>',
+    'pga-ex-rowsx-', '<%- data["rowsx_flag"] %>',
+    '<%}%>',
+    '">',
+    '<% if (data["rowsx_direction"] === "positive") {%>',
+    '&uarr;',
+    '<%} else {%>',
+    '&darr;',
+    '<%}%> ',
+    '<% if (typeof(data["rowsx"]) !== "undefined") {%>',
+    '<%- data["rowsx"] %>',
+    '<%}%>  ',
+    ' </td>',
+    ' <td class="renderable rowsx rows d-none text-right">',
+    '<% if (typeof(data["Actual Rows"]) !== "undefined") {%>',
+    '<%= data["Actual Rows"] %>',
+    '<%}%>',
+    ' </td>',
+    ' <td class="renderable rowsx plan_rows d-none text-right">',
+    '<%= data["Plan Rows"] %>',
+    ' </td>',
+    ' <td class="renderable rows rowsx d-none text-right">',
+    '<% if (typeof(data["Actual Loops"]) !== "undefined") {%>',
+    '<%= data["Actual Loops"] %>',
+    '<%}%>',
+    ' </td>',
+    ' <td class="renderable d-none">',
+    '  <i class="fa fa-ellipsis-h"></i>',
+    ' </td>',
+    '</tr>',
+  ].join(''));
+
+  var _nodeExplainTableData = (_planData, _ctx) => {
+    let node_info,
+      display_text = ['<span class="pg-explain-text-name">'],
+      tooltip = [],
+      node_extra_info = [],
+      info = _ctx._explainTable;
+
+    // Display: <NODE>[ using <Index> ] [ on <Schema>.<Table>[ as <Alias>]]
+
+    if (/Scan/.test(_planData['Node Type'])) {
+      display_text.push(_planData['Node Type']);
+      tooltip.push(_planData['Node Type']);
+    } else {
+      display_text.push(_planData['image_text']);
+      tooltip.push(_planData['image_text']);
+    }
+    node_info = tooltip.join('');
+    display_text.push('</span>');
+
+    if (typeof(_planData['Index Name']) !== 'undefined') {
+      display_text.push(' using ');
+      tooltip.push(' using ');
+      display_text.push('<span class="pg-explain-text-name">');
+      display_text.push(_.escape(_planData['Index Name']));
+      tooltip.push(_planData['Index Name']);
+      display_text.push('</span>');
+    }
+
+    if (typeof(_planData['Relation Name']) !== 'undefined') {
+      display_text.push(' on ');
+      tooltip.push(' on ');
+      if (typeof(_planData['Schema']) !== 'undefined') {
+        display_text.push('<span class="pg-explain-text-name">');
+        display_text.push(_.escape(_planData['Schema']));
+        tooltip.push(_planData['Schema']);
+        display_text.push('</span>');
+        display_text.push('.');
+        tooltip.push('.');
+      }
+      display_text.push('<span class="pg-explain-text-name">');
+      display_text.push(_.escape(_planData['Relation Name']));
+      tooltip.push(_planData['Relation Name']);
+      display_text.push('</span>');
+
+      if (typeof(_planData['Alias']) !== 'undefined') {
+        display_text.push(' as ');
+        tooltip.push(' as ');
+        display_text.push('<span class="pg-explain-text-name">');
+        display_text.push(_.escape(_planData['Alias']));
+        tooltip.push(_planData['Alias']);
+        display_text.push('</span>');
+      }
+    }
+
+    if (
+      typeof(_planData['Plan Rows']) !== 'undefined' &&
+      typeof(_planData['Plan Width']) !== 'undefined'
+    ) {
+      let cost = [
+        ' (cost=',
+        (typeof(_planData['Startup Cost']) !== 'undefined' ?
+          _planData['Startup Cost'] : ''),
+        '..',
+        (typeof(_planData['Total Cost']) !== 'undefined' ?
+          _planData['Total Cost'] : ''),
+        ' rows=',
+        _planData['Plan Rows'],
+        ' width=',
+        _planData['Plan Width'],
+        ')',
+      ].join('');
+      display_text.push(cost);
+      tooltip.push(cost);
+    }
+
+    if (
+      typeof(_planData['Actual Startup Time']) !== 'undefined' ||
+      typeof(_planData['Actual Total Time']) !== 'undefined' ||
+      typeof(_planData['Actual Rows']) !== 'undefined'
+    ) {
+      let actual = [
+        ' (',
+        (typeof(_planData['Actual Startup Time']) !== 'undefined' ?
+          ('actual=' + _planData['Actual Startup Time']) + '..' : ''
+        ),
+        (typeof(_planData['Actual Total Time']) !== 'undefined' ?
+          _planData['Actual Total Time'] + ' ' : ''
+        ),
+        (typeof(_planData['Actual Rows']) !== 'undefined' ?
+          ('rows=' + _planData['Actual Rows']) : ''
+        ),
+        (typeof(_planData['Actual Loops']) !== 'undefined' ?
+          (' loops=' + _planData['Actual Loops']) : ''
+        ),
+        ')',
+      ].join('');
+
+      display_text.push(actual);
+      tooltip.push(actual);
+    }
+
+    if ('Join Filter' in _planData) {
+      node_extra_info.push(
+        '<b>Join Filter</b>: ' + _.escape(_planData['Join Filter'])
+      );
+    }
+
+    if ('Filter' in _planData) {
+      node_extra_info.push('<b>Filter</b>: ' + _.escape(_planData['Filter']));
+    }
+
+    if ('Index Cond' in _planData) {
+      node_extra_info.push('<b>Index Cond</b>: ' + _.escape(_planData['Index Cond']));
+    }
+
+    if ('Hash Cond' in _planData) {
+      node_extra_info.push('<b>Hash Cond</b>: ' + _.escape(_planData['Hash Cond']));
+    }
+
+    if ('Rows Removed by Filter' in _planData) {
+      node_extra_info.push(
+        '<b>Rows Removed by Filter</b>: ' +
+          _.escape(_planData['Rows Removed by Filter'])
+      );
+    }
+
+    if ('Peak Memory Usage' in _planData) {
+      var buffer = [
+        '<b>Buckets</b>:', _.escape(_planData['Hash Buckets']),
+        '<b>Batches</b>:', _.escape(_planData['Hash Batches']),
+        '<b>Memory Usage</b>:', _.escape(_planData['Peak Memory Usage']), 'kB',
+      ].join(' ');
+      node_extra_info.push(buffer);
+    }
+
+    if ('Recheck Cond' in _planData) {
+      node_extra_info.push('<b>Recheck Cond</b>: ' + _planData['Recheck Cond']);
+    }
+
+    if ('Exact Heap Blocks' in _planData) {
+      node_extra_info.push('<b>Heap Blocks</b>: exact=' + _planData['Exact Heap Blocks']);
+    }
+
+    info.rows.push(_explainRowTemplate({
+      data: _planData,
+      display_text: display_text.join(''),
+      tooltip_text: tooltip.join(''),
+      node_extra_info: node_extra_info,
+    }));
+
+    if (typeof(_planData['exclusive_flag']) !== 'undefined') {
+      info.show_timings = true;
+    }
+
+    if (typeof(_planData['rowsx_flag']) !== 'undefined') {
+      info.show_rowsx = true;
+    }
+
+    if (typeof(_planData['Actual Loops']) !== 'undefined') {
+      info.show_rows = true;
+    }
+
+    if (typeof(_planData['Plan Rows']) !== 'undefined') {
+      info.show_plan_rows = true;
+    }
+
+    if (typeof(_planData['total_time']) !== 'undefined') {
+      info.total_time = _planData['total_time'];
+    }
+
+    let node;
+
+    if (typeof(_planData['Relation Name']) !== 'undefined') {
+      let relationName = (
+          typeof(_planData['Schema']) !== 'undefined' ?
+            (_planData['Schema'] + '.') : ''
+        ) + _planData['Relation Name'],
+        table = info.statistics.tables[relationName] || {
+          name: relationName,
+          count: 0,
+          sum_of_times: 0,
+          nodes: {},
+        };
+
+      node = table.nodes[node_info] || {
+        name: node_info,
+        count: 0,
+        sum_of_times: 0,
+      };
+
+      table.count++;
+      table.sum_of_times += _planData['exclusive'];
+      node.count++;
+      node.sum_of_times += _planData['exclusive'];
+
+      table.nodes[node_info] = node;
+      info.statistics.tables[relationName] = table;
+    }
+
+    node = info.statistics.nodes[node_info] || {
+      name: node_info,
+      count: 0,
+      sum_of_times: 0,
+    };
+
+    node.count++;
+    node.sum_of_times += _planData['exclusive'];
+    info.statistics.nodes[node_info] = node;
+  };
 
   // Backbone model for each plan property of input JSON object
   var PlanModel = Backbone.Model.extend({
@@ -136,7 +605,12 @@ define('pgadmin.misc.explain', [
       width: pWIDTH,
       height: pHEIGHT,
     },
-    parse: function(data) {
+
+    _createSame: function() {
+      return new PlanModel();
+    },
+
+    parse: function(data, _opt) {
       var idx = 1,
         lvl = data.level = data.level || [idx],
         plans = [],
@@ -147,6 +621,10 @@ define('pgadmin.misc.explain', [
         ypos = data.ypos,
         maxChildWidth = 0;
 
+      _opt.ctx.totalNodes++;
+      _opt.ctx._explainTable.total_time = data['total_time'] || data['Actual Total Time'];
+
+      data['_serial'] = _opt.ctx.totalNodes;
       data['width'] = pWIDTH;
       data['height'] = pHEIGHT;
 
@@ -176,14 +654,48 @@ define('pgadmin.misc.explain', [
       data['image'] = mappedImage['image'];
       data['image_text'] = mappedImage['image_text'];
 
+      if ('Actual Total Time' in data && 'Actual Loops' in data) {
+        data['inclusive'] = Math.ceil10(
+          data['Actual Total Time'] * data['Actual Loops'], -3
+        );
+        data['exclusive'] = data['inclusive'];
+        data['inclusive_factor'] =  data['inclusive'] / (
+          data['total_time'] || data['Actual Total Time']
+        );
+        data['inclusive_flag'] = data['inclusive_factor'] <= 0.1 ? '1' :
+          data['inclusive_factor'] < 0.5 ? '2' :
+            data['inclusive_factor'] <= 0.9 ? '3' : '4';
+      }
+
+      if ('Actual Rows' in data && 'Plan Rows' in data) {
+        if (
+          data['Actual Rows'] === 0 || data['Actual Rows'] > data['Plan Rows']
+        ) {
+          data['rowsx'] = data['Plan Rows'] === 0 ? 0 :
+            (data['Actual Rows'] / data['Plan Rows']);
+          data['rowsx_direction'] = 'negative';
+        } else {
+          data['rowsx'] = data['Actual Rows'] === 0 ? 0 : (
+            data['Plan Rows'] / data['Actual Rows']
+          );
+          data['rowsx_direction'] = 'positive';
+        }
+        data['rowsx_flag'] = data['rowsx'] <= 10 ? '1' : (
+          data['rowsx'] <= 100 ? '2' : (data['rowsx'] <= 1000 ? '3' : '4')
+        );
+        data['rowsx'] = Math.ceil10(data['rowsx'], -2);
+      }
+
       // Start calculating xpos, ypos, width and height for child plans if any
       if ('Plans' in data) {
+        var obj = this,
+          inclusive;
 
         data['width'] += offsetX;
 
         _.each(data['Plans'], function(p) {
           var level = _.clone(lvl),
-            plan = new PlanModel();
+            plan = obj._createSame();
 
           level.push(idx);
           plan.set(plan.parse(_.extend(
@@ -191,10 +703,19 @@ define('pgadmin.misc.explain', [
               'level': level,
               xpos: xpos - offsetX,
               ypos: ypos,
-            })));
+              total_time: data['total_time'] || data['Actual Total Time'],
+              parent_node: lvl.join('_'),
+            }), _opt));
 
           if (maxChildWidth < plan.get('width')) {
             maxChildWidth = plan.get('width');
+          }
+
+          if ('exclusive' in data) {
+            inclusive = plan.get('inclusive');
+            if (inclusive) {
+              data['exclusive'] -= inclusive;
+            }
           }
 
           var childHeight = plan.get('height');
@@ -211,11 +732,139 @@ define('pgadmin.misc.explain', [
         });
       }
 
+      if ('exclusive' in data) {
+        data['exclusive'] = Math.ceil10(data['exclusive'], -3);
+        data['exclusive_factor'] = (
+          data['exclusive'] / (data['total_time'] || data['Actual Total Time'])
+        );
+        data['exclusive_flag'] = data['exclusive_factor'] <= 0.1 ? '1' :
+          data['exclusive_factor'] < 0.5 ? '2' :
+            data['exclusive_factor'] <= 0.9 ? '3' : '4';
+      }
+
       // Final Width and Height of current node
       data['width'] += maxChildWidth;
       data['Plans'] = plans;
 
       return data;
+    },
+
+    // Draw image, its name and its tooltip
+    draw: function(
+      s, xpos, ypos, pXpos, pYpos, graphContainer, toolTipContainer,
+      _ctx
+    ) {
+      var g = s.g();
+      var currentXpos = xpos + this.get('xpos'),
+        currentYpos = ypos + this.get('ypos'),
+        isSubPlan = (this.get('Parent Relationship') === 'SubPlan');
+
+      var planData = this.toJSON();
+
+      _nodeExplainTableData(planData, _ctx);
+
+      // Draw the subplan rectangle
+      if (isSubPlan) {
+        g.rect(
+          currentXpos - this.get('width') + pWIDTH + xMargin,
+          currentYpos - this.get('height') + pHEIGHT + yMargin - TXT_ALIGN,
+          this.get('width') - xMargin,
+          this.get('height') + (currentYpos - yMargin),
+          5
+        ).attr({
+          stroke: '#444444',
+          'strokeWidth': 1.2,
+          fill: 'gray',
+          fillOpacity: 0.2,
+        });
+
+        // Provide subplan name
+        g.text(
+          currentXpos + pWIDTH - (this.get('width') / 2) - xMargin,
+          currentYpos + pHEIGHT - (this.get('height') / 2) - yMargin,
+          this.get('Subplan Name')
+        ).attr({
+          fontSize: TXT_SIZE,
+          'text-anchor': 'start',
+          fill: 'red',
+        });
+      }
+
+      this._drawImage(
+        s, g, pgExplain.prefix + this.get('image'), currentXpos, currentYpos,
+        graphContainer, toolTipContainer, _ctx
+      );
+
+
+      // Draw text below the node
+      var node_label = this.get('Schema') == undefined ?
+        this.get('image_text') :
+        (this.get('Schema') + '.' + this.get('image_text'));
+      g.multitext(
+        currentXpos + (pWIDTH / 2) + TXT_ALIGN,
+        currentYpos + pHEIGHT - TXT_ALIGN,
+        node_label,
+        150, {
+          'font-size': TXT_SIZE,
+          'text-anchor': 'middle',
+        }
+      );
+
+      // Draw Arrow to parent only its not the first node
+      if (!_.isUndefined(pYpos)) {
+        var startx = currentXpos + pWIDTH;
+        var starty = currentYpos + (pHEIGHT / 2);
+        var endx = pXpos - ARROW_WIDTH;
+        var endy = pYpos + (pHEIGHT / 2);
+        var start_cost = this.get('Startup Cost'),
+          total_cost = this.get('Total Cost');
+        var arrow_size = DEFAULT_ARROW_SIZE;
+
+        // Calculate arrow width according to cost of a particular plan
+        if (start_cost != undefined && total_cost != undefined) {
+          arrow_size = Math.round(Math.log((start_cost + total_cost) / 2 + start_cost));
+          arrow_size = arrow_size < 1 ? 1 : arrow_size > 10 ? 10 : arrow_size;
+        }
+
+        var arrow_view_box = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT];
+        var opts = {
+            stroke: '#000000',
+            strokeWidth: arrow_size + 2,
+          },
+          subplanOpts = {
+            stroke: '#866486',
+            strokeWidth: arrow_size + 2,
+          },
+          arrowOpts = {
+            viewBox: arrow_view_box.join(' '),
+          };
+
+        // Draw an arrow from current node to its parent
+        this.drawPolyLine(
+          g, startx, starty, endx, endy,
+          isSubPlan ? subplanOpts : opts, arrowOpts
+        );
+      }
+
+      var plans = this.get('Plans');
+
+      // Draw nodes for current plan's children
+      _.each(plans, function(p) {
+        p.draw(
+          s, xpos, ypos, currentXpos, currentYpos, graphContainer,
+          toolTipContainer, _ctx
+        );
+      });
+    },
+
+    _drawImage: function(
+      s, g, image_url, startX, startY, graphContainer, toolTipContainer /*,
+      _ctx
+      */
+    ) {
+      this.drawImage(
+        g, image_url, startX, startY, graphContainer, toolTipContainer
+      );
     },
 
     /*
@@ -275,101 +924,10 @@ define('pgadmin.misc.explain', [
       });
     },
 
-    // Draw image, its name and its tooltip
-    draw: function(s, xpos, ypos, pXpos, pYpos, graphContainer, toolTipContainer) {
-      var g = s.g();
-      var currentXpos = xpos + this.get('xpos'),
-        currentYpos = ypos + this.get('ypos'),
-        isSubPlan = (this.get('Parent Relationship') === 'SubPlan');
-
-      // Draw the subplan rectangle
-      if (isSubPlan) {
-        g.rect(
-          currentXpos - this.get('width') + pWIDTH + xMargin,
-          currentYpos - this.get('height') + pHEIGHT + yMargin - TXT_ALIGN,
-          this.get('width') - xMargin,
-          this.get('height') + (currentYpos - yMargin),
-          5
-        ).attr({
-          stroke: '#444444',
-          'strokeWidth': 1.2,
-          fill: 'gray',
-          fillOpacity: 0.2,
-        });
-
-        // Provide subplan name
-        g.text(
-          currentXpos + pWIDTH - (this.get('width') / 2) - xMargin,
-          currentYpos + pHEIGHT - (this.get('height') / 2) - yMargin,
-          this.get('Subplan Name')
-        ).attr({
-          fontSize: TXT_SIZE,
-          'text-anchor': 'start',
-          fill: 'red',
-        });
-      }
-
-      this.draw_image(g, pgExplain.prefix + this.get('image'), currentXpos, currentYpos, graphContainer, toolTipContainer);
-
-      // Draw text below the node
-      var node_label = this.get('Schema') == undefined ?
-        this.get('image_text') :
-        (this.get('Schema') + '.' + this.get('image_text'));
-      g.multitext(
-        currentXpos + (pWIDTH / 2) + TXT_ALIGN,
-        currentYpos + pHEIGHT - TXT_ALIGN,
-        node_label,
-        150, {
-          'font-size': TXT_SIZE,
-          'text-anchor': 'middle',
-        }
-      );
-
-      // Draw Arrow to parent only its not the first node
-      if (!_.isUndefined(pYpos)) {
-        var startx = currentXpos + pWIDTH;
-        var starty = currentYpos + (pHEIGHT / 2);
-        var endx = pXpos - ARROW_WIDTH;
-        var endy = pYpos + (pHEIGHT / 2);
-        var start_cost = this.get('Startup Cost'),
-          total_cost = this.get('Total Cost');
-        var arrow_size = DEFAULT_ARROW_SIZE;
-
-        // Calculate arrow width according to cost of a particular plan
-        if (start_cost != undefined && total_cost != undefined) {
-          arrow_size = Math.round(Math.log((start_cost + total_cost) / 2 + start_cost));
-          arrow_size = arrow_size < 1 ? 1 : arrow_size > 10 ? 10 : arrow_size;
-        }
-
-        var arrow_view_box = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT];
-        var opts = {
-            stroke: '#000000',
-            strokeWidth: arrow_size + 2,
-          },
-          subplanOpts = {
-            stroke: '#866486',
-            strokeWidth: arrow_size + 2,
-          },
-          arrowOpts = {
-            viewBox: arrow_view_box.join(' '),
-          };
-
-        // Draw an arrow from current node to its parent
-        this.drawPolyLine(
-          g, startx, starty, endx, endy,
-          isSubPlan ? subplanOpts : opts, arrowOpts
-        );
-      }
-
-      var plans = this.get('Plans');
-
-      // Draw nodes for current plan's children
-      _.each(plans, function(p) {
-        p.draw(s, xpos, ypos, currentXpos, currentYpos, graphContainer, toolTipContainer);
-      });
-    },
-
-    draw_image: function(g, image_content, currentXpos, currentYpos, graphContainer, toolTipContainer) {
+    drawImage: function(
+      g, image_content, currentXpos, currentYpos, graphContainer,
+      toolTipContainer
+    ) {
       // Draw the actual image for current node
       var image = g.image(
         image_content,
@@ -459,7 +1017,6 @@ define('pgadmin.misc.explain', [
     },
   });
 
-
   /*
    * NOTE: embedding using .toDataURL() method hits the performance of the
    * plan rendering a lot, that is why we have written seprate Model for the same
@@ -468,213 +1025,57 @@ define('pgadmin.misc.explain', [
   // We override the PlanModel's draw() function so that we can embbed all the
   // svg in to main one SVG so that we can download it.
   let DownloadPlanModel = PlanModel.extend({
-    // Draw image, its name and its tooltip
-    parse: function(data) {
-      var idx = 1,
-        lvl = data.level = data.level || [idx],
-        plans = [],
-        node_type = data['Node Type'],
-        // Calculating relative xpos of current node from top node
-        xpos = data.xpos = data.xpos - pWIDTH,
-        // Calculating relative ypos of current node from top node
-        ypos = data.ypos,
-        maxChildWidth = 0;
-
-      data['width'] = pWIDTH;
-      data['height'] = pHEIGHT;
-
-      /*
-       * calculating xpos, ypos, width and height if current node is a subplan
-       */
-      if (data['Parent Relationship'] === 'SubPlan') {
-        data['width'] += (xMargin * 2) + (xMargin / 2);
-        data['height'] += (yMargin * 2);
-        data['ypos'] += yMargin;
-        xpos -= xMargin;
-        ypos += yMargin;
-      }
-
-      if (S.startsWith(node_type, '(slice'))
-        node_type = node_type.substring(0, 7);
-      // Get the image information for current node
-      let imageStore = imageMapper.default;
-      var mappedImage = (_.isFunction(imageStore[node_type]) &&
-          imageStore[node_type].apply(undefined, [data])) ||
-        imageStore[node_type] || {
-        'image': 'ex_unknown.svg',
-        'image_text': node_type,
-      };
-
-      data['image'] = mappedImage['image'];
-      data['image_text'] = mappedImage['image_text'];
-      pgExplain.totalNodes++;
-
-      // Start calculating xpos, ypos, width and height for child plans if any
-      if ('Plans' in data) {
-
-        data['width'] += offsetX;
-
-        _.each(data['Plans'], function(p) {
-          var level = _.clone(lvl),
-            plan = new DownloadPlanModel({ 'parse': true });
-
-          level.push(idx);
-          plan.set(plan.parse(_.extend(
-            p, {
-              'level': level,
-              xpos: xpos - offsetX,
-              ypos: ypos,
-            })));
-
-          if (maxChildWidth < plan.get('width')) {
-            maxChildWidth = plan.get('width');
-          }
-
-          var childHeight = plan.get('height');
-
-          if (idx !== 1) {
-            data['height'] = data['height'] + childHeight + offsetY;
-          } else if (childHeight > data['height']) {
-            data['height'] = childHeight;
-          }
-          ypos += childHeight + offsetY;
-
-          plans.push(plan);
-          idx++;
-        });
-      }
-
-      // Final Width and Height of current node
-      data['width'] += maxChildWidth;
-      data['Plans'] = plans;
-
-      return data;
+    _createSame: function() {
+      return new DownloadPlanModel({parse: true});
     },
-    draw: function(s, xpos, ypos, pXpos, pYpos, graphContainer, toolTipContainer) {
-      var g = s.g();
-      var currentXpos = xpos + this.get('xpos'),
-        currentYpos = ypos + this.get('ypos'),
-        isSubPlan = (this.get('Parent Relationship') === 'SubPlan');
 
-      // Draw the subplan rectangle
-      if (isSubPlan) {
-        g.rect(
-          currentXpos - this.get('width') + pWIDTH + xMargin,
-          currentYpos - this.get('height') + pHEIGHT + yMargin - TXT_ALIGN,
-          this.get('width') - xMargin,
-          this.get('height') + (currentYpos - yMargin),
-          5
-        ).attr({
-          stroke: '#444444',
-          'strokeWidth': 1.2,
-          fill: 'gray',
-          fillOpacity: 0.2,
-        });
-
-        // Provide subplan name
-        g.text(
-          currentXpos + pWIDTH - (this.get('width') / 2) - xMargin,
-          currentYpos + pHEIGHT - (this.get('height') / 2) - yMargin,
-          this.get('Subplan Name')
-        ).attr({
-          fontSize: TXT_SIZE,
-          'text-anchor': 'start',
-          fill: 'red',
-        });
-      }
-
+    _drawImage: function (
+      s, g, image_url, startX, startY, graphContainer, toolTipContainer, _ctx
+    ) {
       /* Check the current browser, if it is Internet Explorer then we will not
        * embed the SVG files for download feature as we are not bale to figure
        * out the solution for IE.
        */
 
       var current_browser = pgAdmin.Browser.get_browser();
-      if (current_browser.name === 'IE' ||
-        (current_browser.name === 'Safari' && parseInt(current_browser.version) < 10)) {
-        this.draw_image(g, pgExplain.prefix + this.get('image'), currentXpos, currentYpos, graphContainer, toolTipContainer);
+      if (current_browser.name === 'IE' || (
+        current_browser.name === 'Safari' &&
+        parseInt(current_browser.version) < 10
+      )) {
+        this.drawImage(
+          g, image_url, startX, startY, graphContainer, toolTipContainer
+        );
       } else {
-        /* This function is a callback function called when we load any svg file
-         * using Snap. In this function we append the SVG binary data to the new
-         * temporary Snap object and then embedded it to the original Snap() object.
+        /* This function is a callback function called when we load any svg
+         * file using Snap. In this function we append the SVG binary data to
+         * the new temporary Snap object and then embedded it to the original
+         * Snap() object.
          */
         var that = this;
         var onSVGLoaded = function(data) {
           var svg_image = Snap();
           svg_image.append(data);
 
-          that.draw_image(g, svg_image.toDataURL(), currentXpos, currentYpos, graphContainer, toolTipContainer);
-          pgExplain.totalDownloadedNodes++;
+          that.drawImage(
+            g, svg_image.toDataURL(), startX, startY, graphContainer,
+            toolTipContainer
+          );
 
           // This attribute is required to download the file as SVG image.
-          s.parent().attr({'xmlns:xlink':'http://www.w3.org/1999/xlink'});
+          s.parent().attr({
+            'xmlns:xlink':'http://www.w3.org/1999/xlink',
+          });
           setTimeout(() => {
-            pgBrowser.Events.trigger('pga:explain_plan:node_icon:fetched');
+            _ctx._onImageDownloaded();
           }, 100);
         };
 
         var svg_file = pgExplain.prefix + this.get('image');
+
         // Load the SVG file for explain plan
         Snap.load(svg_file, onSVGLoaded);
       }
-
-      // Draw text below the node
-      var node_label = this.get('Schema') == undefined ?
-        this.get('image_text') :
-        (this.get('Schema') + '.' + this.get('image_text'));
-      g.multitext(
-        currentXpos + (pWIDTH / 2) + TXT_ALIGN,
-        currentYpos + pHEIGHT - TXT_ALIGN,
-        node_label,
-        150, {
-          'font-size': TXT_SIZE,
-          'text-anchor': 'middle',
-        }
-      );
-
-      // Draw Arrow to parent only its not the first node
-      if (!_.isUndefined(pYpos)) {
-        var startx = currentXpos + pWIDTH;
-        var starty = currentYpos + (pHEIGHT / 2);
-        var endx = pXpos - ARROW_WIDTH;
-        var endy = pYpos + (pHEIGHT / 2);
-        var start_cost = this.get('Startup Cost'),
-          total_cost = this.get('Total Cost');
-        var arrow_size = DEFAULT_ARROW_SIZE;
-
-        // Calculate arrow width according to cost of a particular plan
-        if (start_cost != undefined && total_cost != undefined) {
-          arrow_size = Math.round(Math.log((start_cost + total_cost) / 2 + start_cost));
-          arrow_size = arrow_size < 1 ? 1 : arrow_size > 10 ? 10 : arrow_size;
-        }
-
-        var arrow_view_box = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT];
-        var opts = {
-            stroke: '#000000',
-            strokeWidth: arrow_size + 2,
-          },
-          subplanOpts = {
-            stroke: '#866486',
-            strokeWidth: arrow_size + 2,
-          },
-          arrowOpts = {
-            viewBox: arrow_view_box.join(' '),
-          };
-
-        // Draw an arrow from current node to its parent
-        this.drawPolyLine(
-          g, startx, starty, endx, endy,
-          isSubPlan ? subplanOpts : opts, arrowOpts
-        );
-      }
-
-      var plans = this.get('Plans');
-
-      // Draw nodes for current plan's children
-      _.each(plans, function(p) {
-        p.draw(s, xpos, ypos, currentXpos, currentYpos, graphContainer, toolTipContainer);
-      });
     },
-
   });
 
   // Main backbone model to store JSON object
@@ -690,16 +1091,17 @@ define('pgadmin.misc.explain', [
     },
 
     // Parse the JSON data and fetch its children plans
-    parse: function(data) {
+    parse: function(data, _opt) {
+
       if (data && 'Plan' in data) {
         var plan = this.get('Plan');
-        plan.set(
-          plan.parse(
-            _.extend(
-              data['Plan'], {
-                xpos: 0,
-                ypos: 0,
-              })));
+        plan.set(plan.parse(
+          _.extend(
+            data['Plan'], {
+              xpos: 0,
+              ypos: 0,
+            }), _opt
+        ));
 
         data['xpos'] = 0;
         data['ypos'] = 0;
@@ -732,9 +1134,14 @@ define('pgadmin.misc.explain', [
 
         statistics.set('Summary', summary);
       }
+      if (data && 'Settings' in data) {
+        statistics.set('Settings', data['Settings']);
+        delete data ['Settings'];
+      }
 
       return data;
     },
+
     toJSON: function() {
       var res = Backbone.Model.prototype.toJSON.apply(this, arguments);
 
@@ -744,7 +1151,8 @@ define('pgadmin.misc.explain', [
 
       return res;
     },
-    draw: function(s, xpos, ypos, graphContainer, toolTipContainer) {
+
+    draw: function(s, xpos, ypos, graphContainer, toolTipContainer, _ctx) {
       var g = s.g();
 
       //draw the border
@@ -758,7 +1166,8 @@ define('pgadmin.misc.explain', [
 
       // Draw explain graph
       plan.draw(
-        g, xpos, ypos, undefined, undefined, graphContainer, toolTipContainer
+        g, xpos, ypos, undefined, undefined, graphContainer, toolTipContainer,
+        _ctx
       );
 
       //Set the Statistics as tooltip
@@ -767,21 +1176,95 @@ define('pgadmin.misc.explain', [
     },
   });
 
+  var _createContainer = function() {
+    _createContainer.cnt = (_createContainer.cnt || 0) + 1;
+    let id = _createContainer.cnt,
+      createTab = (_idx, _type, _label, _active) => {
+        return [
+          '   <li class="nav-item" role="presentation">',
+          '    <a class="nav-link ', _active ? 'active' : '', '"',
+          '       data-toggle="tab" tabindex="-1"',
+          `       data-tab-index="${_idx}"`,
+          '       aria-selected="', _active ? 'true' : 'false', '"',
+          `       role="tab" data-explain-role="${_type}"`,
+          `       href="#pga_explain_${_type}_${id}"`,
+          `       aria-controls="pga_explain_${_type}_${id}"`,
+          `       id="pgah_explain_${_type}_${id}"> `,
+          _label, '</a>', '</li>',
+        ].join('');
+      },
+      createTabPanel = (_type, _active, _extraClasses) => {
+        return [
+          '   <div role="tabpanel" tabindex="-1" class="tab-pane pg-el-sm-12',
+          '        pg-el-md-12 pg-el-lg-12 pg-el-12 fade collapse',
+          _active ? ' active show' : '', ` ${_extraClasses}"`,
+          `        data-explain-tabpanel="${_type}"`,
+          `        id="pga_explain_${_type}_${id}"`,
+          `        aria-labelledby="pgah_explain_${_type}_${id}">`,
+          '   </div>',
+        ].join('');
+      };
+    return $([
+      '<div class="obj_properties container-fluid">',
+      ' <div tabindex="1" class="backform-tab pg-el-12" role="tabpanel">',
+      '  <ul class="nav nav-tabs" role="tablist">',
+      '   </li>',
+      '   <li class="nav-item" role="presentation">',
+      createTab(1, 'graphical', gettext('Graphical'), true),
+      createTab(2, 'table', gettext('Analysis'), false),
+      createTab(3, 'statistics', gettext('Statistics'), false),
+      '  </ul>',
+      '  <div class="tab-content pg-el-sm-12 pg-el-12">',
+      createTabPanel('graphical', true, 'w-100 h-100 p-0'),
+      createTabPanel('table', false, 'p-0'),
+      createTabPanel('statistics', false, ''),
+      '   </div>',
+      '  </div>',
+      ' </div>',
+      '</div>',
+    ].join(''));
+  };
+
   // Parse and draw full graphical explain
   _.extend(pgExplain, {
     // Assumption container is a jQuery object
-    DrawJSONPlan: function(container, plan, isDownload) {
-      pgExplain.totalNodes = 0;
-      pgExplain.totalDownloadedNodes = 0;
-      pgExplain.isDownloaded = false;
-      container.empty();
+    DrawJSONPlan: function(container, plan, isDownload, _ctx) {
+      var ctx = _.extend(_ctx || {}, {
+        totalNodes: 0,
+        totalDownloadedNodes: 0,
+        isDownloaded: 0,
+      });
+
+      container.empty()
+        .attr('el', 'sm').addClass('pg-no-overflow pg-el-container');
+
+      var explainContainer = _createContainer(),
+        explainTable = _createExplainTable(),
+        statisticsTables = _createStatisticsTables(),
+        graphicalContainer = explainContainer.find(
+          '[data-explain-tabpanel=graphical]'
+        ),
+        tableContainer =  explainContainer.find(
+          '[data-explain-tabpanel=table]'
+        );
+
+      ctx.currentTab = container.find(
+        '.nav-link[aria-selected=true]'
+      ).attr('data-explain-role');
+
+      explainContainer.appendTo(container);
+      explainTable.appendTo(tableContainer);
+      statisticsTables.appendTo(explainContainer.find(
+        '[data-explain-tabpanel=statistics]'
+      ));
+
       var orignalPlan = $.extend(true, [], plan);
       var curr_zoom_factor = 1.0;
 
       var zoomArea = $('<div></div>', {
           class: 'pg-explain-zoom-area btn-group',
           role: 'group',
-        }).appendTo(container),
+        }).appendTo(graphicalContainer),
         zoomInBtn = $('<button></button>', {
           class: 'btn btn-secondary pg-explain-zoom-btn badge',
           title: 'Zoom in',
@@ -810,7 +1293,7 @@ define('pgadmin.misc.explain', [
       var downloadArea = $('<div></div>', {
           class: 'pg-explain-download-area btn-group',
           role: 'group',
-        }).appendTo(container),
+        }).appendTo(graphicalContainer),
         downloadBtn = $('<button></button>', {
           id: 'btn-explain-download',
           class: 'btn btn-secondary pg-explain-download-btn badge',
@@ -835,9 +1318,9 @@ define('pgadmin.misc.explain', [
           }));
 
       var statsArea = $('<div></div>', {
-        class: 'pg-explain-stats-area d-none',
+        class: 'pg-explain-stats-area btn-group d-none',
         role: 'group',
-      }).appendTo(container);
+      }).appendTo(graphicalContainer);
 
       $('<button></button>', {
         id: 'btn-explain-stats',
@@ -851,19 +1334,41 @@ define('pgadmin.misc.explain', [
 
       // Main div to be drawn all images on
       var planDiv = $('<div></div>', {
-          class: 'pgadmin-explain-container',
-        }).appendTo(container),
+          class: 'pgadmin-explain-container p-3 w-100 h-100 overflow-auto',
+        }).appendTo(graphicalContainer),
         // Div to draw tool-tip on
         toolTip = $('<div></div>', {
           id: 'toolTip',
           class: 'pgadmin-explain-tooltip',
-        }).appendTo(container);
+        }).appendTo(graphicalContainer);
       toolTip.empty();
       planDiv.data('zoom-factor', curr_zoom_factor);
 
       var w = 0,
         h = yMargin;
 
+      ctx._explainTable = {
+        rows: [],
+        statistics: {
+          tables: {},
+          nodes: {},
+        },
+      };
+      ctx._onImageDownloaded = () => {
+        ctx.totalDownloadedNodes++;
+        if (!ctx.isDownloaded && ctx.totalNodes === ctx.totalDownloadedNodes) {
+          ctx.isDownloaded = true;
+          var s = Snap(
+            `#${graphicalContainer.attr('id')} .pgadmin-explain-container svg`
+          );
+          var today  = new Date();
+          var filename = 'explain_plan_' + today.getTime() + '.svg';
+          svgDownloader.downloadSVG(s.toString(), filename);
+          downloadBtn.trigger('blur');
+        }
+      };
+
+      // Lets regenrate the plan with embedded images
       _.each(plan, function(p) {
         var main_plan;
         if(isDownload) {
@@ -881,14 +1386,14 @@ define('pgadmin.misc.explain', [
         }
 
         // Parse JSON data to backbone model
-        main_plan.set(main_plan.parse(p));
+        main_plan.set(main_plan.parse(p, {ctx: ctx}));
         w = main_plan.get('width');
         h = main_plan.get('height');
 
         var s = Snap(w, h),
           $svg = $(s.node).detach();
         planDiv.append($svg);
-        main_plan.draw(s, w - xMargin, yMargin, planDiv, toolTip);
+        main_plan.draw(s, w - xMargin, yMargin, planDiv, toolTip, ctx);
 
         var initPanelWidth = planDiv.width();
 
@@ -965,11 +1470,11 @@ define('pgadmin.misc.explain', [
         });
 
         downloadBtn.on('click', function() {
-          // Lets regenrate the plan with embedded images
           pgExplain.DrawJSONPlan(container, orignalPlan, true);
-          pgBrowser.Events.on('pga:explain_plan:node_icon:fetched', function() {
-            if (!pgExplain.isDownloaded && pgExplain.totalNodes === pgExplain.totalDownloadedNodes) {
-              pgExplain.isDownloaded = true;
+          planDiv.on('explain:svg:downloaded', function() {
+            ctx.totalDownloadedNodes++;
+            if (!ctx.isDownloaded && ctx.totalNodes === ctx.totalDownloadedNodes) {
+              ctx.isDownloaded = true;
               var s = Snap('.pgadmin-explain-container svg');
               var today  = new Date();
               var filename = 'explain_plan_' + today.getTime() + '.svg';
@@ -979,8 +1484,58 @@ define('pgadmin.misc.explain', [
           });
         });
       });
+
+      _renderExplainTable(ctx._explainTable, explainTable);
+
+      _renderStatisticsTable(ctx._explainTable, statisticsTables);
+
+      container.on('shown.bs.tab', function() {
+        ctx.currentTab = container.find(
+          '.nav-link[aria-selected=true]'
+        ).attr('data-explain-role');
+      });
     },
   });
+
+  $(document)
+    .on('mouseenter', '.pga-ex-row.pga-ex-collapsible', function(ev) {
+      let $target = $(ev.currentTarget);
+
+      $target.parent().find(
+        '[data-parent=' + $target.attr('data-ex-id') +
+        '] > td.pg-ex-highlighter > i'
+      ).removeClass('invisible');
+    })
+    .on('mouseleave', '.pga-ex-row.pga-ex-collapsible', function(ev) {
+      let $target = $(ev.currentTarget);
+
+      $target.parent().find(
+        '.pga-ex-row[data-parent=' + $target.attr('data-ex-id') +
+        '] > td.pg-ex-highlighter > i'
+      ).addClass('invisible');
+    })
+    .on('click', '.pga-ex-row.pga-ex-collapsible', function(ev) {
+      let $target = $(ev.currentTarget),
+        collapsed = ($target.attr('data-collapsed') === 'true');
+
+      if (collapsed) {
+        $target.parent().find(
+          '.pga-ex-row[data-parent^=' + $target.attr('data-ex-id') + ']'
+        ).removeClass('d-none').filter('[data-collapsed=true]').each(
+          function(idx, el) {
+            var $el = $(el);
+            $el.parent().find(
+              '.pga-ex-row[data-parent^=' + $el.attr('data-ex-id') + ']'
+            ).addClass('d-none');
+          });
+        $target.attr('data-collapsed', 'false');
+      } else {
+        $target.parent().find(
+          '.pga-ex-row[data-parent^=' + $target.attr('data-ex-id') + ']'
+        ).addClass('d-none');
+        $target.attr('data-collapsed', 'true');
+      }
+    });
 
   return pgExplain;
 });

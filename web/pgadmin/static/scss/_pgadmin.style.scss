@@ -373,6 +373,20 @@
   }
 }
 
+.obj_properties {
+  .btn-group {
+    .btn {
+      @extend .rounded;
+      :not(:first-child) {
+        @extend .rounded-left;
+      }
+      :not(:last-child) {
+        @extend .rounded-right;
+      }
+    }
+  }
+}
+
 .obj_properties .badge .caret {
   display: inline-block;
   margin-left: 2px;
