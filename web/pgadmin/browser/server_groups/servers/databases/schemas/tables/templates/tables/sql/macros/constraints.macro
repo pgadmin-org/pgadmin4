@@ -74,7 +74,7 @@
         DEFERRABLE{% if data.condeferred %}
  INITIALLY DEFERRED{% endif%}
 {% endif%}
-{% if data.convalidated %}
+{% if not data.convalidated %}
 
         NOT VALID{% endif%}
 {% endfor %}

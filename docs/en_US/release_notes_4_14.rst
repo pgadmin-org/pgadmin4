@@ -35,3 +35,4 @@ Bug fixes
 | `Issue #4769 <https://redmine.postgresql.org/issues/4769>`_ -  Fix query tool open issue on Internet Explorer.
 | `Issue #4777 <https://redmine.postgresql.org/issues/4777>`_ -  Fix issue where query history is not visible in the query history tab.
 | `Issue #4780 <https://redmine.postgresql.org/issues/4780>`_ -  Ensure the search path should not be quoted for Function, Procedure and Trigger Function.
+| `Issue #4791 <https://redmine.postgresql.org/issues/4791>`_ -  Fix issue where VALID foreign keys show as NOT VALID in the SQL tab for tables.
