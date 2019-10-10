@@ -9,13 +9,13 @@
 
 define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.server.supported_servers', 'pgadmin.user_management.current_user',
   'pgadmin.alertifyjs', 'pgadmin.backform',
   'sources/browser/server_groups/servers/model_validation',
   'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, Backbone, S, pgAdmin, pgBrowser,
+  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser,
   supported_servers, current_user, Alertify, Backform,
   modelValidation
 ) {
@@ -260,10 +260,7 @@ define('pgadmin.node.server', [
           if (notify) {
             Alertify.confirm(
               gettext('Disconnect server'),
-              gettext(
-                'Are you sure you want to disconnect the server %(server)s?',
-                {server: d.label}
-              ),
+              gettext('Are you sure you want to disconnect the server %s?', d.label),
               function() { disconnect(); },
               function() { return true;}
             );
@@ -310,9 +307,7 @@ define('pgadmin.node.server', [
 
           Alertify.confirm(
             gettext('Reload server configuration'),
-            S(
-              gettext('Are you sure you want to reload the server configuration on %s?')
-            ).sprintf(d.label).value(),
+            gettext('Are you sure you want to reload the server configuration on %s?', d.label),
             function() {
               $.ajax({
                 url: obj.generate_url(i, 'reload', d, true),
@@ -643,9 +638,7 @@ define('pgadmin.node.server', [
 
           Alertify.confirm(
             gettext('Clear saved password'),
-            S(
-              gettext('Are you sure you want to clear the saved password for server %s?')
-            ).sprintf(d.label).value(),
+            gettext('Are you sure you want to clear the saved password for server %s?', d.label),
             function() {
               $.ajax({
                 url: obj.generate_url(i, 'clear_saved_password', d, true),
@@ -683,9 +676,7 @@ define('pgadmin.node.server', [
 
           Alertify.confirm(
             gettext('Clear SSH Tunnel password'),
-            S(
-              gettext('Are you sure you want to clear the saved password of SSH Tunnel for server %s?')
-            ).sprintf(d.label).value(),
+            gettext('Are you sure you want to clear the saved password of SSH Tunnel for server %s?', d.label),
             function() {
               $.ajax({
                 url: obj.generate_url(i, 'clear_sshtunnel_password', d, true),

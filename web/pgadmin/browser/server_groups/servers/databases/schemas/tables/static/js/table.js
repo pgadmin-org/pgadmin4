@@ -10,7 +10,7 @@
 define('pgadmin.node.table', [
   'pgadmin.tables.js/enable_disable_triggers',
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.tables.js/show_advanced_tab',
   'pgadmin.node.schema.dir/child','pgadmin.node.schema.dir/schema_child_tree_node',
@@ -18,7 +18,7 @@ define('pgadmin.node.table', [
   'pgadmin.node.constraints', 'pgadmin.browser.table.partition.utils',
 ], function(
   tableFunctions,
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
+  gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
   ShowAdvancedTab, SchemaChild, SchemaChildTreeNode
 ) {
 
@@ -165,7 +165,7 @@ define('pgadmin.node.table', [
 
           Alertify.confirm(
             gettext('Truncate Table'),
-            S(gettext('Are you sure you want to truncate table %s?')).sprintf(d.label).value(),
+            gettext('Are you sure you want to truncate table %s?', d.label),
             function (e) {
               if (e) {
                 var data = d;
@@ -210,7 +210,7 @@ define('pgadmin.node.table', [
 
           Alertify.confirm(
             gettext('Reset statistics'),
-            S(gettext('Are you sure you want to reset the statistics for table "%s"?')).sprintf(d._label).value(),
+            gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
             function (e) {
               if (e) {
                 var data = d;

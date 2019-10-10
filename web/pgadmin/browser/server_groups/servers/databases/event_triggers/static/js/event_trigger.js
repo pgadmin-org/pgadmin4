@@ -9,9 +9,9 @@
 
 define('pgadmin.node.event_trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.backform', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for event trigger collection
   if (!pgBrowser.Nodes['coll-event_trigger']) {

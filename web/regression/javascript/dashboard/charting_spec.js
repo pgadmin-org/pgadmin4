@@ -23,10 +23,6 @@ describe('In charting related testcases', ()=> {
     chartObj = new Chart(chartDiv, options);
   });
 
-  it('Chart api should be defined', ()=>{
-    expect(chartObj.chartApi).toBeDefined();
-  });
-
   it('Return the correct container', ()=>{
     expect(chartObj.getContainer()).toEqual(chartDiv);
   });

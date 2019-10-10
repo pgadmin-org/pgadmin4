@@ -9,12 +9,12 @@
 
 define('pgadmin.node.compound_trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.backform', 'pgadmin.alertifyjs',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify,
+  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, alertify,
   SchemaChildTreeNode
 ) {
 

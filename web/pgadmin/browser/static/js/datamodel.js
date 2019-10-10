@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 define([
-  'underscore', 'underscore.string', 'sources/pgadmin', 'jquery', 'backbone',
-], function(_, S, pgAdmin, $, Backbone) {
+  'underscore', 'sources/pgadmin', 'jquery', 'backbone', 'sources/utils',
+], function(_, pgAdmin, $, Backbone, pgadminUtils) {
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   pgBrowser.DataModel = Backbone.Model.extend({
@@ -777,23 +777,23 @@ define([
         max_value = field.max;
 
       if (!_.isUndefined(min_value) && value < min_value) {
-        return S(pgAdmin.Browser.messages.MUST_GR_EQ).sprintf(label, min_value).value();
+        return pgadminUtils.sprintf(pgAdmin.Browser.messages.MUST_GR_EQ, label, min_value);
       } else if (!_.isUndefined(max_value) && value > max_value) {
-        return S(pgAdmin.Browser.messages.MUST_LESS_EQ).sprintf(label, max_value).value();
+        return pgadminUtils.sprintf(pgAdmin.Browser.messages.MUST_LESS_EQ, label, max_value);
       }
       return null;
     },
     number_validate: function(value, field) {
       var pattern = new RegExp('^-?[0-9]+(\.?[0-9]*)?$');
       if (!pattern.test(value)) {
-        return S(pgAdmin.Browser.messages.MUST_BE_NUM).sprintf(field.label).value();
+        return pgadminUtils.sprintf(pgAdmin.Browser.messages.MUST_BE_NUM, field.label);
       }
       return this.check_min_max(value, field);
     },
     integer_validate: function(value, field) {
       var pattern = new RegExp('^-?[0-9]*$');
       if (!pattern.test(value)) {
-        return S(pgAdmin.Browser.messages.MUST_BE_INT).sprintf(field.label).value();
+        return pgadminUtils.sprintf(pgAdmin.Browser.messages.MUST_BE_INT, field.label);
       }
       return this.check_min_max(value, field);
     },

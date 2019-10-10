@@ -10,11 +10,11 @@
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.procedure', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
+  'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.node.function', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Function,
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify, Function,
   schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {

@@ -59,7 +59,7 @@ describe('#enableTriggers', () => {
 
   describe('a node is selected', () => {
     describe('node as no data', () => {
-      it('does not send the request to the backend', () => {
+      it('does not send the request to the backend', (done) => {
         tree.selectNode([{id: 'table-no-data'}]);
 
         networkMock.onAny('.*').reply(200, () => {
@@ -67,6 +67,7 @@ describe('#enableTriggers', () => {
 
         setTimeout(() => {
           expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+          done();
         }, 0);
       });
     });
@@ -186,7 +187,7 @@ describe('#disableTriggers', () => {
 
   describe('a node is selected', () => {
     describe('node as no data', () => {
-      it('does not send the request to the backend', () => {
+      it('does not send the request to the backend', (done) => {
         tree.selectNode([{id: 'table-no-data'}]);
 
         networkMock.onAny('.*').reply(200, () => {
@@ -194,6 +195,7 @@ describe('#disableTriggers', () => {
 
         setTimeout(() => {
           expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+          done();
         }, 0);
       });
     });

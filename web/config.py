@@ -180,10 +180,13 @@ PROXY_X_PREFIX_COUNT = 0
 #       longer part of the main configuration, but are stored in the
 #       configuration databases 'keys' table and are auto-generated.
 
-# Should HTML be minified on the fly when not in debug mode?
-# NOTE: The HTMLMIN module doesn't work with Python 2.6, so this option
-#       has no effect on <= Python 2.7.
-MINIFY_PAGE = True
+# COMPRESSION
+COMPRESS_MIMETYPES = [
+    'text/html', 'text/css', 'text/xml', 'application/json',
+    'application/javascript'
+]
+COMPRESS_LEVEL = 9
+COMPRESS_MIN_SIZE = 500
 
 # Set the cache control max age for static files in flask to 1 year
 SEND_FILE_MAX_AGE_DEFAULT = 31556952

@@ -11,11 +11,11 @@
 //import Mousetrap from 'mousetrap';
 
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
+  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'backbone', 'alertify', 'backform', 'backgrid', 'sources/browser/generate_url',
   'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node', 'backgrid.select.all',
-], function(gettext, $, _, S, pgAdmin, Backbone, Alertify, Backform, Backgrid, generateUrl) {
+], function(gettext, $, _, pgAdmin, Backbone, Alertify, Backform, Backgrid, generateUrl) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -315,8 +315,7 @@ define([
               info: info,
             })) {
               Alertify.pgNotifier(
-                error, xhr, S(gettext('Error retrieving properties - %s')).sprintf(
-                  error.message || that.label).value(),
+                error, xhr, gettext('Error retrieving properties - %s', error.message || that.label),
                 function(msg) {
                   if(msg === 'CRYPTKEY_SET') {
                     getAjaxHook();
@@ -383,8 +382,8 @@ define([
             }).fail(function(xhr, error) {
               Alertify.pgNotifier(
                 error, xhr,
-                S(gettext('Error dropping %s'))
-                  .sprintf(d._label.toLowerCase()).value(), function(msg) {
+                gettext('Error dropping %s', d._label.toLowerCase()),
+                function(msg) {
                   if (msg == 'CRYPTKEY_SET') {
                     onDrop(type, false);
                   } else {

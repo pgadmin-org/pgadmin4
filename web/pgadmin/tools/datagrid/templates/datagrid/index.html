@@ -392,7 +392,7 @@
 {% endblock %}
 
 {% block init_script %}
-	require(['sources/generated/sqleditor'], function(ctx) {
+	require(['sources/generated/sqleditor', 'sources/generated/browser_nodes', 'sources/generated/codemirror', 'sources/generated/slickgrid'], function(ctx) {
     var $ = pgAdmin.SqlEditor.jquery,
         S = pgAdmin.SqlEditor.S,
         editorPanel = $('.sql-editor'),

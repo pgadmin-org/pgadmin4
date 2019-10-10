@@ -7,11 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
-import Flotr from 'flotr2';
-
 export class Chart {
   constructor(container, options) {
-    this.chartApi = Flotr;
+    let self = this;
+
+    require.ensure(['flotr2'], function(require) {
+      self.chartApi = require('flotr2');
+    }, function(error){
+      throw(error);
+    }, 'chart');
+
     /* Html Node where the graph goes */
     this._container = container;
     /* Graph library options */
@@ -104,7 +109,9 @@ export class Chart {
   draw(dataset) {
     this._dataset = dataset;
     if(this._container) {
-      Flotr.draw(this._container, this._dataset, this._options);
+      if(this.chartApi) {
+        this.chartApi.draw(this._container, this._dataset, this._options);
+      }
     }
   }
 }

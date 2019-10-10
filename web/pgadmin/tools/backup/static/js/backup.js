@@ -10,13 +10,13 @@
 // Backup dialog
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin.alertifyjs', 'backbone', 'pgadmin.backgrid',
+  'pgadmin.alertifyjs', 'backbone', 'pgadmin.backgrid',
   'pgadmin.backform', 'pgadmin.browser', 'sources/utils',
   'tools/backup/static/js/menu_utils',
   'tools/backup/static/js/backup_dialog',
   'sources/nodes/supported_database_node',
 ], function(
-  gettext, url_for, $, _, S, alertify, Backbone, Backgrid, Backform, pgBrowser,
+  gettext, url_for, $, _, alertify, Backbone, Backgrid, Backform, pgBrowser,
   commonUtils, menuUtils, globalBackupDialog, supportedNodes
 ) {
 

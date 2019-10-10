@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 define('app', [
-  'babel-polyfill', 'sources/pgadmin', 'bundled_browser', 'pgadmin.datagrid',
-], function(babelPolyFill, pgAdmin) {
+  'sources/pgadmin', 'bundled_browser', 'pgadmin.datagrid',
+], function(pgAdmin) {
   var initializeModules = function(Object) {
     for (var key in Object) {
       var module = Object[key];

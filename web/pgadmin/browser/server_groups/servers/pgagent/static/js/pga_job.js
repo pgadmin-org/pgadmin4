@@ -9,9 +9,9 @@
 
 define('pgadmin.node.pga_job', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.node.pga_jobstep', 'pgadmin.node.pga_schedule',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-pga_job']) {
     pgBrowser.Nodes['coll-pga_job'] =

@@ -9,9 +9,9 @@
 
 define('misc.bgprocess', [
   'sources/pgadmin', 'sources/gettext', 'sources/url_for', 'underscore',
-  'underscore.string', 'jquery', 'pgadmin.browser', 'alertify',
+  'jquery', 'pgadmin.browser', 'alertify',
 ], function(
-  pgAdmin, gettext, url_for, _, S, $, pgBrowser, Alertify
+  pgAdmin, gettext, url_for, _, $, pgBrowser, Alertify
 ) {
 
   pgBrowser.BackgroundProcessObsorver = pgBrowser.BackgroundProcessObsorver || {};
@@ -226,7 +226,7 @@ define('misc.bgprocess', [
               self.curr_status = self.success_status_tpl({status_text:gettext('Successfully completed.')});
             } else {
               self.curr_status = self.failed_status_tpl(
-                {status_text:S(gettext('Failed (exit code: %s).')).sprintf(String(self.exit_code)).value()}
+                {status_text:gettext('Failed (exit code: %s).', String(self.exit_code))}
               );
             }
           }

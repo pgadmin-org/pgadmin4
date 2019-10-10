@@ -9,10 +9,10 @@
 
 define('pgadmin.node.pga_schedule', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'moment', 'pgadmin.browser', 'alertify',
+  'sources/pgadmin', 'moment', 'pgadmin.browser', 'alertify',
   'pgadmin.backform', 'pgadmin.backgrid',
 ], function(
-  gettext, url_for, $, _, S, pgAdmin, moment, pgBrowser, Alertify, Backform,
+  gettext, url_for, $, _, pgAdmin, moment, pgBrowser, Alertify, Backform,
   Backgrid
 ) {
 

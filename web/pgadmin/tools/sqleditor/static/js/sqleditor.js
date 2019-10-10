@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 define('tools.querytool', [
-  'babel-polyfill', 'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
-  'jqueryui.position', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
-  'sources/pgadmin', 'backbone', 'sources/../bundle/codemirror',
+  'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
+  'jqueryui.position', 'underscore', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'backbone', 'bundled_codemirror',
   'pgadmin.misc.explain',
   'sources/selection/grid_selector',
   'sources/selection/active_cell_capture',
@@ -41,14 +41,13 @@ define('tools.querytool', [
   'sources/window',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
-  'backgrid.sizeable.columns',
   'slick.pgadmin.formatters',
   'slick.pgadmin.editors',
   'slick.pgadmin.plugins/slick.autocolumnsize',
   'pgadmin.browser',
   'pgadmin.tools.user_management',
 ], function(
-  babelPollyfill, gettext, url_for, $, jqueryui, jqueryui_position, _, S, alertify, pgAdmin, Backbone, codemirror,
+  gettext, url_for, $, jqueryui, jqueryui_position, _, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   GeometryViewer, historyColl, queryHist, querySources,
@@ -1366,9 +1365,7 @@ define('tools.querytool', [
       /* history fetch fail should not affect query tool */
       });
     },
-    /* This function is responsible to create and render the
-     * new backgrid for the history tab.
-     */
+    /* This function is responsible to create and render the the history tab. */
     render_history_grid: function() {
       var self = this;
 
@@ -2185,7 +2182,7 @@ define('tools.querytool', [
           });
       },
       /* This function is used to create instance of SQLEditorView,
-       * call the render method of the grid view to render the backgrid
+       * call the render method of the grid view to render the slickgrid
        * header and loading icon and start execution of the sql query.
        */
       start: function(transId, url_params, layout) {
@@ -2287,7 +2284,7 @@ define('tools.querytool', [
                 );
 
                 pgBrowser.report_error(
-                  S(gettext('Error fetching SQL for script: %s.')).sprintf(msg).value()
+                  gettext('Error fetching SQL for script: %s.', msg)
                 );
               });
           } else {
@@ -2512,9 +2509,8 @@ define('tools.querytool', [
         executeQuery.delayedPoll(this);
       },
 
-      /* This function is used to create the backgrid columns,
-       * create the Backbone PageableCollection and finally render
-       * the data in the backgrid.
+      /* This function is used to create the slickgrid columns
+       * and render the data in the slickgrid.
        */
       _render: function(data) {
         var self = this;
@@ -2577,8 +2573,8 @@ define('tools.querytool', [
               self.query_start_time,
               self.query_end_time
             );
-            var msg1 = S(gettext('Successfully run. Total query runtime: %s.')).sprintf(self.total_time).value();
-            var msg2 = S(gettext('%s rows affected.')).sprintf(self.rows_affected).value();
+            var msg1 = gettext('Successfully run. Total query runtime: %s.',self.total_time);
+            var msg2 = gettext('%s rows affected.',self.rows_affected);
 
             // Display the notifier if the timeout is set to >= 0
             if (self.info_notifier_timeout >= 0) {
@@ -3154,7 +3150,7 @@ define('tools.querytool', [
             } else {
             // Something went wrong while saving data on the db server
               self.set_sql_message(res.data.result);
-              var err_msg = S(gettext('%s.')).sprintf(res.data.result).value();
+              var err_msg = gettext('%s.', res.data.result);
               alertify.error(err_msg, 20);
               // If the transaction is not idle, notify the user that previous queries are not rolled back,
               // only the failed save queries.
@@ -4358,7 +4354,6 @@ define('tools.querytool', [
       return new SqlEditorController(container);
     },
     jquery: $,
-    S: S,
   };
 
   return pgAdmin.SqlEditor;

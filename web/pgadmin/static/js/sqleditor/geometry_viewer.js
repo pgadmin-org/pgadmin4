@@ -8,16 +8,17 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import {Geometry} from 'wkx';
 import {Buffer} from 'buffer';
-import L from 'leaflet';
 import $ from 'jquery';
 
+var L = null;
+var Geometry = null;
 let GeometryViewer = {
   panel_closed: true,
 
-  render_geometries: function (handler, items, columns, columnIndex) {
+  go_for_render: function(handler, items, columns, columnIndex) {
     let self = this;
+
     if (!self.map_component) {
       self.map_component = initMapComponent();
     }
@@ -53,8 +54,19 @@ let GeometryViewer = {
 
     handler.gridView.geometry_viewer.focus();
     self.map_component.clearMap();
-    let dataObj = parseData(items, columns, columnIndex);
+    let dataObj = parseData(items, columns, columnIndex, Geometry);
     self.map_component.renderMap(dataObj);
+  },
+
+  render_geometries: function (handler, items, columns, columnIndex) {
+    let self = this;
+    require.ensure(['leaflet', 'wkx'], function(require) {
+      L = require('leaflet');
+      Geometry = require('wkx').Geometry;
+      self.go_for_render(handler, items, columns, columnIndex);
+    }, function(error){
+      throw(error);
+    }, 'geometry');
   },
 
   add_header_button: function (columnDefinition) {
@@ -275,7 +287,7 @@ function initMapComponent() {
   };
 }
 
-function parseData(items, columns, columnIndex) {
+function parseData(items, columns, columnIndex, GeometryLib) {
   const maxRenderByteLength = 20 * 1024 * 1024; //render geometry data up to 20MB
   const maxRenderGeometries = 100000; // render geometries up to 100000
   let field = columns[columnIndex].field;
@@ -304,7 +316,7 @@ function parseData(items, columns, columnIndex) {
     try {
       let value = item[field];
       let buffer = Buffer.from(value, 'hex');
-      let geometry = Geometry.parse(buffer);
+      let geometry = GeometryLib.parse(buffer);
       if (geometry.hasZ) {
         geometries3D.push(geometry);
       } else {

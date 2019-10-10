@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from '../gettext';
-import {sprintf} from 'sprintf-js';
+import {sprintf} from 'sources/utils';
 import {DialogFactory} from './dialog_factory';
 import Backform from '../backform.pgadmin';
 import {getTreeNodeHierarchyFromIdentifier} from '../tree/pgadmin_tree_node';

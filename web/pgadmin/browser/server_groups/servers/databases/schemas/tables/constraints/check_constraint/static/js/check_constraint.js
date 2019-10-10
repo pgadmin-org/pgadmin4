@@ -10,9 +10,9 @@
 // Check Constraint Module: Node
 define('pgadmin.node.check_constraint', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, schemaChildTreeNode) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify, schemaChildTreeNode) {
 
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraint']) {

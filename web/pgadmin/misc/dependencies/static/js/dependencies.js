@@ -8,9 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 define('misc.dependencies', [
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'backbone',
+  'sources/gettext', 'underscore', 'jquery', 'backbone',
   'pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs', 'pgadmin.backgrid',
-], function(gettext, _, S, $, Backbone, pgAdmin, pgBrowser, Alertify, Backgrid) {
+  'sources/utils',
+], function(gettext, _, $, Backbone, pgAdmin, pgBrowser, Alertify, Backgrid, pgadminUtils) {
 
   if (pgBrowser.NodeDependencies)
     return pgBrowser.NodeDependencies;
@@ -52,7 +53,7 @@ define('misc.dependencies', [
               (node['node_image'] || ('icon-' + res.type))) :
               ('icon-' + res.type);
           }
-          res.type = S.titleize(res.type.replace(/_/g, ' '), true);
+          res.type = pgadminUtils.titleize(res.type.replace(/_/g, ' '), true);
           return res;
         },
       });
@@ -216,8 +217,7 @@ define('misc.dependencies', [
               })) {
                 Alertify.pgNotifier(
                   error, xhr,
-                  S(gettext('Error retrieving data from the server: %s')).sprintf(
-                    message || _label).value(),
+                  gettext('Error retrieving data from the server: %s', message || _label),
                   function(msg) {
                     if(msg === 'CRYPTKEY_SET') {
                       self.showDependencies(item, data, node);

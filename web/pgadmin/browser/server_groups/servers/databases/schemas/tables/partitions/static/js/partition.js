@@ -9,14 +9,14 @@
 
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'sources/utils',
   'pgadmin.browser.collection', 'pgadmin.browser.table.partition.utils',
 ],
 function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
-  SchemaChildTreeNode
+  gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
+  SchemaChildTreeNode, pgadminUtils
 ) {
 
   if (!pgBrowser.Nodes['coll-partition']) {
@@ -107,13 +107,13 @@ function(
         info = (_.isUndefined(item) || _.isNull(item)) ?
           info || {} : this.getTreeNodeHierarchy(item);
 
-        return S('table/%s/%s/%s/%s/%s/%s').sprintf(
+        return pgadminUtils.sprintf('table/%s/%s/%s/%s/%s/%s',
           encodeURIComponent(type), encodeURIComponent(info['server_group']._id),
           encodeURIComponent(info['server']._id),
           encodeURIComponent(info['database']._id),
           encodeURIComponent(info['partition'].schema_id),
           encodeURIComponent(info['partition']._id)
-        ).value();
+        );
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
@@ -184,7 +184,7 @@ function(
 
           Alertify.confirm(
             gettext('Truncate Table'),
-            S(gettext('Are you sure you want to truncate table %s?')).sprintf(d.label).value(),
+            gettext('Are you sure you want to truncate table %s?', d.label),
             function (e) {
               if (e) {
                 var data = d;
@@ -229,7 +229,7 @@ function(
 
           Alertify.confirm(
             gettext('Reset statistics'),
-            S(gettext('Are you sure you want to reset the statistics for table "%s"?')).sprintf(d._label).value(),
+            gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
             function (e) {
               if (e) {
                 var data = d;
@@ -273,7 +273,7 @@ function(
 
           Alertify.confirm(
             gettext('Detach Partition'),
-            S(gettext('Are you sure you want to detach the partition %s?')).sprintf(d._label).value(),
+            gettext('Are you sure you want to detach the partition %s?', d._label),
             function (e) {
               if (e) {
                 $.ajax({

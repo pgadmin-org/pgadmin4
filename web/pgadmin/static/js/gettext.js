@@ -12,30 +12,37 @@ define(['translations'], function (translations) {
   /***
    * This method behaves as a drop-in replacement for flask translation rendering.
    * It uses the same translation file under the hood and uses flask to determine the language.
-   *
-   * ex. translate("some %(adjective)s text", {adjective: "cool"})
+   * It is slightly tweaked to work like sprintf
+   * ex. translate("some %s text", "cool")
    *
    * @param {String} text
-   * @param {Object} substitutions
    */
-  return function gettext(text, substitutions) {
+  return function gettext(text) {
 
     var rawTranslation = translations[text] ? translations[text] : text;
 
-    // captures things of the form %(substitutionName)s
-    var substitutionGroupsRegExp = /([^%]*)%\(([^\)]+)\)s(.*)/;
-    var matchFound;
+    if(arguments.length == 1) {
+      return rawTranslation;
+    }
 
-    var interpolated = rawTranslation;
-    do {
-      matchFound = false;
-      interpolated = interpolated.replace(substitutionGroupsRegExp, function (_, textBeginning, substitutionName, textEnd) {
-        matchFound = true;
-        return textBeginning + substitutions[substitutionName] + textEnd;
-      });
-    } while (matchFound);
-
-    return interpolated;
+    try {
+      let replaceArgs = arguments;
+      return rawTranslation.split('%s')
+        .map(function(w, i) {
+          if(i > 0) {
+            if(i < replaceArgs.length) {
+              return [replaceArgs[i], w].join('');
+            } else {
+              return ['%s', w].join('');
+            }
+          } else {
+            return w;
+          }
+        })
+        .join('');
+    } catch(e) {
+      console.error(e);
+      return rawTranslation;
+    }
   };
-
 });

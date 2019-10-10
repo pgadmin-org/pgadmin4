@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 define([
-  'underscore', 'underscore.string', 'sources/pgadmin', 'jquery',
-], function(_, S, pgAdmin, $) {
+  'underscore', 'sources/pgadmin', 'jquery', 'sources/utils',
+], function(_, pgAdmin, $, pgadminUtils) {
   'use strict';
 
   pgAdmin.Browser = pgAdmin.Browser || {};
@@ -141,7 +141,7 @@ define([
         cb.apply(o.module, [o.data, item]);
       } else {
         pgAdmin.Browser.report_error(
-          S('Developer Warning: Callback - "%s" not found!').sprintf(o.cb).value()
+          pgadminUtils.sprintf('Developer Warning: Callback - "%s" not found!', o.cb)
         );
       }
     },

@@ -9,13 +9,13 @@
 
 define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'underscore.string', 'pgadmin.alertifyjs', 'pgadmin.browser',
+  'pgadmin.alertifyjs', 'pgadmin.browser',
   'pgadmin.backgrid', 'pgadmin.backform', 'sources/utils',
   'tools/restore/static/js/menu_utils',
   'sources/nodes/supported_database_node',
   'tools/restore/static/js/restore_dialog',
 ], function(
-  gettext, url_for, $, _, Backbone, S, alertify, pgBrowser, Backgrid, Backform,
+  gettext, url_for, $, _, Backbone, alertify, pgBrowser, Backgrid, Backform,
   commonUtils, menuUtils, supportedNodes, restoreDialog
 ) {
 

@@ -53,18 +53,14 @@ function modifyAlertifyAnimation(pgBrowser) {
   ).value;
 
   if(enableAcitreeAnimation) {
-    $(document).find('link#alertify-no-animation')
-      .attr('disabled', 'disabled');
+    $(document).find('body').removeClass('alertify-no-animation');
     _.each(document.getElementsByTagName('iframe'), function(frame) {
-      $(frame.contentDocument).find('link#alertify-no-animation')
-        .attr('disabled', 'disabled');
+      $(frame.contentDocument).find('body').removeClass('alertify-no-animation');
     });
   } else {
-    $(document).find('link#alertify-no-animation')
-      .removeAttr('disabled', 'disabled');
+    $(document).find('body').addClass('alertify-no-animation');
     _.each(document.getElementsByTagName('iframe'), function(frame) {
-      $(frame.contentDocument).find('link#alertify-no-animation')
-        .removeAttr('disabled', 'disabled');
+      $(frame.contentDocument).find('body').addClass('alertify-no-animation');
     });
   }
 }

@@ -20,4 +20,3 @@ import 'slickgrid/plugins/slick.cellrangeselector';
 import 'sources/slickgrid/custom_header_buttons';
 
 export default window.Slick;
-

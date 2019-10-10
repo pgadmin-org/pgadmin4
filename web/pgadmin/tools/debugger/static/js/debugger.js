@@ -9,13 +9,13 @@
 
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'alertify', 'sources/pgadmin', 'pgadmin.browser',
+  'alertify', 'sources/pgadmin', 'pgadmin.browser',
   'backbone', 'pgadmin.backgrid', 'codemirror', 'pgadmin.backform',
-  'pgadmin.tools.debugger.ui', 'pgadmin.tools.debugger.utils',
+  'pgadmin.tools.debugger.ui', 'pgadmin.tools.debugger.utils', 'sources/utils',
   'wcdocker', 'pgadmin.browser.frame',
 ], function(
-  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  CodeMirror, Backform, get_function_arguments, debuggerUtils
+  gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
+  CodeMirror, Backform, get_function_arguments, debuggerUtils, pgadminUtils,
 ) {
   var pgTools = pgAdmin.Tools = pgAdmin.Tools || {},
     wcDocker = window.wcDocker;
@@ -281,7 +281,7 @@ define([
           }
         ),
         function(o) {
-          ref = S('%s/%s').sprintf(ref, encodeURI(o._id)).value();
+          ref = pgadminUtils.sprintf('%s/%s', ref, encodeURI(o._id));
         });
 
       var args = {

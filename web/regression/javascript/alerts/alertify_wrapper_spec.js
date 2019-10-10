@@ -40,7 +40,7 @@ describe('alertify_wrapper', function () {
   });
 
   describe('alertify_error calls pgRespErrorNotify notifier', function() {
-    it('which alertifies response error for ajax calls', () => {
+    it('which alertifies response error for ajax calls', (done) => {
       $.ajax({
         url: 'http://some/dummy/url',
         dataType: 'json',
@@ -107,6 +107,8 @@ describe('alertify_wrapper', function () {
           expect(spyOrigError.calls.mostRecent().args[0]).toContain(
             gettext('Some prefix message')
           );
+
+          done();
         },
       });
     });

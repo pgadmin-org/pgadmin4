@@ -9,10 +9,10 @@
 
 define('pgadmin.node.collation', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, schemaChild,
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild,
   schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-collation']) {

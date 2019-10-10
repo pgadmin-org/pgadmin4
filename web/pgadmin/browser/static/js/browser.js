@@ -9,7 +9,7 @@
 
 define('pgadmin.browser', [
   'sources/tree/tree',
-  'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
+  'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
   'sources/check_node_visibility', './toolbar', 'pgadmin.help',
   'sources/csrf', 'sources/utils', 'sources/window', 'pgadmin.browser.utils',
@@ -22,7 +22,7 @@ define('pgadmin.browser', [
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state',
 ], function(
   tree,
-  gettext, url_for, require, $, _, S,
+  gettext, url_for, require, $, _,
   Bootstrap, pgAdmin, Alertify, codemirror,
   checkNodeVisibility, toolBar, help, csrfToken, pgadminUtils, pgWindow
 ) {
@@ -724,7 +724,7 @@ define('pgadmin.browser', [
 
         if(!_.isUndefined(confirm_on_refresh_close) && confirm_on_refresh_close.value) {
           /* This message will not be displayed in Chrome, Firefox, Safari as they have disabled it*/
-          let msg = S(gettext('Are you sure you want to close the %s browser?')).sprintf(pgBrowser.utils.app_name).value();
+          let msg = gettext('Are you sure you want to close the %s browser?', pgBrowser.utils.app_name);
           e.originalEvent.returnValue = msg;
           return msg;
         }

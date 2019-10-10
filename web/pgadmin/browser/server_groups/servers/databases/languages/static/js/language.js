@@ -9,9 +9,9 @@
 
 define('pgadmin.node.language', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for languages collection
   if (!pgBrowser.Nodes['coll-language']) {

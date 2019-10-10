@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 define('pgadmin.node.catalog_object', [
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
+  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, $, _, S, pgAdmin, pgBrowser) {
+], function(gettext, $, _, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-catalog_object']) {
     pgAdmin.Browser.Nodes['coll-catalog_object'] =

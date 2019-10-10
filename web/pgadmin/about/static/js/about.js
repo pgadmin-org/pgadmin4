@@ -8,10 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 define(
-  ['jquery', 'alertify', 'sources/pgadmin', 'underscore.string', 'sources/gettext',
+  ['jquery', 'alertify', 'sources/pgadmin', 'sources/gettext',
     'sources/url_for',
   ],
-  function($, alertify, pgAdmin, S, gettext, url_for) {
+  function($, alertify, pgAdmin, gettext, url_for) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /* Return back, this has been called more than once */
@@ -53,7 +53,7 @@ define(
         $.get(url_for('about.index'),
           function(data) {
             alertify.aboutDialog(
-              S(gettext('About %s')).sprintf(pgAdmin.Browser.utils.app_name).value(), data
+              gettext('About %s', pgAdmin.Browser.utils.app_name), data
             ).resizeTo(pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
           });
       },

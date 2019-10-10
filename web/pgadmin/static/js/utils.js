@@ -205,3 +205,31 @@ export function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+export function titleize(i_str) {
+  return i_str.split(' ')
+    .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+    .join(' ');
+}
+
+export function sprintf(i_str) {
+  try {
+    let replaceArgs = arguments;
+    return i_str.split('%s')
+      .map(function(w, i) {
+        if(i > 0) {
+          if(i < replaceArgs.length) {
+            return [replaceArgs[i], w].join('');
+          } else {
+            return ['%s', w].join('');
+          }
+        } else {
+          return w;
+        }
+      })
+      .join('');
+  } catch(e) {
+    console.error(e);
+    return i_str;
+  }
+}

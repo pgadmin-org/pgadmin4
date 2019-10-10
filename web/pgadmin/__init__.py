@@ -705,11 +705,11 @@ def create_app(app_name=None):
             values.pop(config.APP_VERSION_PARAM)
 
     ##########################################################################
-    # Minify output
+    # Minify output. Not required in desktop mode
     ##########################################################################
-    if not config.DEBUG:
-        from flask_htmlmin import HTMLMIN
-        HTMLMIN(app)
+    if not config.DEBUG and config.SERVER_MODE:
+        from flask_compress import Compress
+        Compress(app)
 
     @app.context_processor
     def inject_blueprint():

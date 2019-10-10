@@ -6,7 +6,6 @@
 @import '~bootstrap4-toggle/css/bootstrap4-toggle.css';
 @import '~backgrid-select-all/backgrid-select-all.css';
 @import '~backgrid-filter/backgrid-filter.css';
-@import '~backgrid-sizeable-columns/backgrid-sizeable-columns.css';
 @import '~slickgrid/css/select2.css';
 @import '~jquery-contextmenu/dist/jquery.contextMenu.css';
 @import '~webcabin-docker/Build/wcDocker.css';
@@ -21,3 +20,5 @@
 @import '~slickgrid/slick.grid.css';
 @import '~slickgrid/slick-default-theme.css';
 @import '~slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css';
+
+@import '../vendor/backgrid/backgrid.css';

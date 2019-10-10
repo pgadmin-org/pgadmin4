@@ -68,9 +68,6 @@ var webpackShimConfig = {
     'backgrid.filter': {
       'deps': ['backgrid'],
     },
-    'backgrid.sizeable.columns': {
-      'deps': ['backgrid'],
-    },
     'jquery.event.drag': {
       'deps': ['jquery'], 'exports': 'jQuery.fn.drag',
     },
@@ -138,13 +135,12 @@ var webpackShimConfig = {
     'translations': path.join(__dirname, './pgadmin/tools/templates/js/translations'),
     'sources/gettext': path.join(__dirname, './pgadmin/static/js/gettext'),
     'sources/utils': path.join(__dirname, './pgadmin/static/js/utils'),
-    'babel-polyfill': path.join(__dirname, './node_modules/@babel/polyfill/dist/polyfill'),
     'tools': path.join(__dirname, './pgadmin/tools/'),
     'pgbrowser': path.join(__dirname, './pgadmin/browser/static/js/'),
 
     // Vendor JS
     'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
-    'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker'),
+    'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker.min'),
     'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
     'moment': path.join(__dirname, './node_modules/moment/moment'),
     'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.3.0'),
@@ -156,7 +152,7 @@ var webpackShimConfig = {
     'dropzone': path.join(__dirname, './node_modules/dropzone/dist/dropzone'),
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
     'json-bignumber': path.join(__dirname, './node_modules/json-bignumber/dist/JSONBigNumber.min'),
-    'snap.svg': path.join(__dirname, './node_modules/snapsvg/dist/snap.svg'),
+    'snap.svg': path.join(__dirname, './node_modules/snapsvg/dist/snap.svg-min'),
     'spectrum': path.join(__dirname, './node_modules/spectrum-colorpicker/spectrum'),
     'mousetrap': path.join(__dirname, './node_modules/mousetrap'),
 
@@ -170,12 +166,11 @@ var webpackShimConfig = {
     'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
     'backbone.undo': path.join(__dirname, './node_modules/backbone-undo/Backbone.Undo'),
     'backform': path.join(__dirname, './pgadmin/static/vendor/backform/backform'),
-    'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),
+    'backgrid': path.join(__dirname, './pgadmin/static/vendor/backgrid/backgrid'),
     'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
     'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle'),
     'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
     'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),
-    'backgrid.sizeable.columns': path.join(__dirname, './node_modules/backgrid-sizeable-columns/backgrid-sizeable-columns'),
     'backgrid.select.all': path.join(__dirname, './node_modules/backgrid-select-all/backgrid-select-all'),
     'pgadmin.alertifyjs': path.join(__dirname, './pgadmin/static/js/alertify.pgadmin.defaults'),
     'pgadmin.backform': path.join(__dirname, './pgadmin/static/js/backform.pgadmin'),
@@ -311,13 +306,36 @@ var webpackShimConfig = {
   isExternal: function(module) {
     var context = module.context;
     if (typeof context !== 'string') { return false; }
-    return context.indexOf('node_modules') !== -1;
+    return (context.indexOf('node_modules') !== -1 || context.indexOf('vendor') !== -1);
   },
   // Checks whether module is in pgLibs or not. Returns true if exists
   isPgAdminLib: function (module) {
     if (module.rawRequest === undefined) { return false; }
     return this.pgLibs.indexOf(module.rawRequest) !== -1;
   },
+  isBrowserNode: function(module) {
+    if (module.rawRequest === undefined) { return false; }
+    if(module.rawRequest.startsWith('pgadmin.node')) {
+      return true;
+    }
+    return false;
+  },
+  matchModules: function(module, match_modules) {
+    if (module.rawRequest === undefined) { return false; }
+    if(typeof match_modules === 'string') {
+      if(module.rawRequest.indexOf(match_modules) >= 0) {
+        return true;
+      }
+    } else {
+      for(let i=0; i<match_modules.length; i++) {
+        if(module.rawRequest.indexOf(match_modules[i]) >= 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  },
+
   /* These will be skipped when webpack picks css/scss files recursively to bundle */
   css_bundle_skip: [
     './pgadmin/static',

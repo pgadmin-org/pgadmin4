@@ -80,20 +80,14 @@ function shortcut_title(title, shortcut) {
   }
   text_representation += shortcut_key(shortcut);
 
-  return gettext('%(title)s (%(text_representation)s)',{
-    'title': title,
-    'text_representation': text_representation,
-  });
+  return `${title} (${text_representation})`;
 }
 
 /* Returns the key char of shortcut
  * shortcut object is browser.get_preference().value
  */
 function shortcut_accesskey_title(title, shortcut) {
-  return gettext('%(title)s (accesskey + %(key)s)',{
-    'title': title,
-    'key': shortcut_key(shortcut),
-  });
+  return `${title} (${gettext('accesskey')} + ${shortcut_key(shortcut)})`;
 }
 
 

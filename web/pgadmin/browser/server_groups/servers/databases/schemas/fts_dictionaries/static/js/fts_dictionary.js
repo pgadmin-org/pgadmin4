@@ -9,11 +9,11 @@
 
 define('pgadmin.node.fts_dictionary', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, schemaChild,
+  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild,
   schemaChildTreeNode
 ) {
 

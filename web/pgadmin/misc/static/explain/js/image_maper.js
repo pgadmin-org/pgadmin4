@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import S from 'underscore.string';
 /*
  * A map which is used to fetch the image to be drawn and
  * text which will appear below it
@@ -223,7 +222,7 @@ let imageMapper = {
       command = data['Command'];
 
     if (strategy == 'Hashed') {
-      if (S.startsWith(command, 'Intersect')) {
+      if (command.startsWith('Intersect')) {
         if (command == 'Intersect All')
           return {
             'image': 'ex_hash_setop_intersect_all.svg',
@@ -233,7 +232,7 @@ let imageMapper = {
           'image': 'ex_hash_setop_intersect.svg',
           'image_text': 'Hashed Intersect',
         };
-      } else if (S.startsWith(command, 'Except')) {
+      } else if (command.startsWith('Except')) {
         if (command == 'Except All')
           return {
             'image': 'ex_hash_setop_except_all.svg',

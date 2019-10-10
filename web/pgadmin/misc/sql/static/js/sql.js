@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 define('misc.sql', [
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery',
+  'sources/gettext', 'underscore', 'jquery',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
-], function(gettext, _, S, $, pgAdmin, pgBrowser, Alertify) {
+], function(gettext, _, $, pgAdmin, pgBrowser, Alertify) {
 
   pgBrowser.ShowNodeSQL = pgBrowser.ShowNodeSQL || {};
 
@@ -151,9 +151,8 @@ define('misc.sql', [
                   })) {
                     Alertify.pgNotifier(
                       error, xhr,
-                      S(gettext('Error retrieving the information - %s')).sprintf(
-                        message || _label
-                      ).value(), function(msg) {
+                      gettext('Error retrieving the information - %s', message || _label),
+                      function(msg) {
                         if(msg === 'CRYPTKEY_SET') {
                           ajaxHook();
                         } else {

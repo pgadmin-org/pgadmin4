@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////
 
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertifyjs',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
   'pgadmin.user_management.current_user',
   'backgrid.select.all', 'backgrid.filter',
 ], function(
-  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform,
+  gettext, url_for, $, _, alertify, pgBrowser, Backbone, Backgrid, Backform,
   pgNode, userInfo
 ) {
 
@@ -352,18 +352,18 @@ define([
               return errmsg;
             } else if (!!this.get('email') && !email_filter.test(this.get('email'))) {
 
-              errmsg = S(gettext('Invalid email address: %s.')).sprintf(
+              errmsg = gettext('Invalid email address: %s.',
                 this.get('email')
-              ).value();
+              );
               this.errorModel.set('email', errmsg);
               return errmsg;
             } else if (!!this.get('email') && this.collection.where({
               'email': this.get('email'),
             }).length > 1) {
 
-              errmsg = S(gettext('The email address %s already exists.')).sprintf(
+              errmsg = gettext('The email address %s already exists.',
                 this.get('email')
-              ).value();
+              );
 
               this.errorModel.set('email', errmsg);
               return errmsg;
@@ -375,9 +375,9 @@ define([
                 _.isNull(this.get('role')) ||
                 String(this.get('role')).replace(/^\s+|\s+$/g, '') == '')) {
 
-              errmsg = S(gettext('Role cannot be empty for user %s.')).sprintf(
+              errmsg = gettext('Role cannot be empty for user %s.',
                 (this.get('email') || '')
-              ).value();
+              );
 
               this.errorModel.set('role', errmsg);
               return errmsg;
@@ -391,9 +391,9 @@ define([
                   _.isNull(this.get('newPassword')) ||
                   this.get('newPassword') == '')) {
 
-                errmsg = S(gettext('Password cannot be empty for user %s.')).sprintf(
+                errmsg = gettext('Password cannot be empty for user %s.',
                   (this.get('email') || '')
-                ).value();
+                );
 
                 this.errorModel.set('newPassword', errmsg);
                 return errmsg;
@@ -401,9 +401,9 @@ define([
                 !_.isNull(this.get('newPassword')) &&
                 this.get('newPassword').length < 6) {
 
-                errmsg = S(gettext('Password must be at least 6 characters for user %s.')).sprintf(
+                errmsg = gettext('Password must be at least 6 characters for user %s.',
                   (this.get('email') || '')
-                ).value();
+                );
 
                 this.errorModel.set('newPassword', errmsg);
                 return errmsg;
@@ -415,9 +415,9 @@ define([
                   _.isNull(this.get('confirmPassword')) ||
                   this.get('confirmPassword') == '')) {
 
-                errmsg = S(gettext('Confirm Password cannot be empty for user %s.')).sprintf(
+                errmsg = gettext('Confirm Password cannot be empty for user %s.',
                   (this.get('email') || '')
-                ).value();
+                );
 
                 this.errorModel.set('confirmPassword', errmsg);
                 return errmsg;
@@ -428,9 +428,9 @@ define([
               if (!!this.get('newPassword') && !!this.get('confirmPassword') &&
                 this.get('newPassword') != this.get('confirmPassword')) {
 
-                errmsg = S(gettext('Passwords do not match for user %s.')).sprintf(
+                errmsg = gettext('Passwords do not match for user %s.',
                   (this.get('email') || '')
-                ).value();
+                );
 
                 this.errorModel.set('confirmPassword', errmsg);
                 return errmsg;
@@ -462,9 +462,9 @@ define([
                 !this.get('newPassword') == '' &&
                 this.get('newPassword').length < 6) {
 
-                errmsg = S(gettext('Password must be at least 6 characters for user %s.')).sprintf(
+                errmsg = gettext('Password must be at least 6 characters for user %s.',
                   (this.get('email') || '')
-                ).value();
+                );
 
                 this.errorModel.set('newPassword', errmsg);
                 return errmsg;
@@ -472,18 +472,18 @@ define([
                 _.isNull(this.get('confirmPassword')) ||
                 this.get('confirmPassword') == '') {
 
-                errmsg = S(gettext('Confirm Password cannot be empty for user %s.')).sprintf(
+                errmsg = gettext('Confirm Password cannot be empty for user %s.',
                   (this.get('email') || '')
-                ).value();
+                );
 
                 this.errorModel.set('confirmPassword', errmsg);
                 return errmsg;
               } else if (!!this.get('newPassword') && !!this.get('confirmPassword') &&
                 this.get('newPassword') != this.get('confirmPassword')) {
 
-                errmsg = S(gettext('Passwords do not match for user %s.')).sprintf(
+                errmsg = gettext('Passwords do not match for user %s.',
                   (this.get('email') || '')
-                ).value();
+                );
 
                 this.errorModel.set('confirmPassword', errmsg);
                 return errmsg;
@@ -740,16 +740,16 @@ define([
                           });
 
                           m.startNewSession();
-                          alertify.success(S(gettext('User \'%s\' saved.')).sprintf(
+                          alertify.success(gettext('User \'%s\' saved.',
                             m.get('email')
-                          ).value());
+                          ));
                         },
                         error: function(res, jqxhr) {
                           m.startNewSession();
                           alertify.error(
-                            S(gettext('Error saving user: \'%s\'')).sprintf(
+                            gettext('Error saving user: \'%s\'',
                               jqxhr.responseJSON.errormsg
-                            ).value()
+                            )
                           );
                         },
                       });

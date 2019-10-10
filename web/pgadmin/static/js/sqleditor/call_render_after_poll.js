@@ -9,7 +9,7 @@
 
 import {calculateQueryRunTime} from './calculate_query_run_time';
 import gettext from '../gettext';
-import {sprintf} from 'sprintf-js';
+import {sprintf} from 'sources/utils';
 
 function hasResultsToDisplay(res) {
   return res.colinfo != null;

@@ -9,10 +9,10 @@
 
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser.utils',
+  'sources/utils', 'sources/pgadmin', 'pgadmin.browser.utils',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege', 'pgadmin.browser.server.variable',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
+], function(gettext, url_for, $, _, pgadminUtils, pgAdmin, pgBrowser, Alertify, Backform) {
 
   if (!pgBrowser.Nodes['coll-database']) {
     pgBrowser.Nodes['coll-database'] =
@@ -190,7 +190,7 @@ define('pgadmin.node.database', [
 
           Alertify.confirm(
             gettext('Disconnect the database'),
-            S(gettext('Are you sure you want to disconnect the database - %s?')).sprintf(d.label).value(),
+            pgadminUtils.sprintf(gettext('Are you sure you want to disconnect the database - %s?'), d.label),
             function() {
               var data = d;
               $.ajax({

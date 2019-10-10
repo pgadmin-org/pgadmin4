@@ -9,9 +9,9 @@
 
 define('pgadmin.node.pga_jobstep', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify', 'backform',
+  'sources/pgadmin', 'pgadmin.browser', 'alertify', 'backform',
   'backgrid', 'pgadmin.backform', 'pgadmin.backgrid',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform, Backgrid) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid) {
 
   if (!pgBrowser.Nodes['coll-pga_jobstep']) {
     pgBrowser.Nodes['coll-pga_jobstep'] =
@@ -190,11 +190,9 @@ define('pgadmin.node.pga_jobstep', [
           id: 'jstconnstr', label: gettext('Connection string'), type: 'text',
           deps: ['jstkind', 'jstconntype'], disabled: function(m) {
             return !m.get('jstkind') || m.get('jstconntype');
-          }, helpMessage: S(
-            gettext('Please specify the connection string for the remote database server. Each parameter setting is in the form keyword = value. Spaces around the equal sign are optional. To write an empty value, or a value containing spaces, surround it with single quotes, e.g., keyword = \'a value\'. Single quotes and backslashes within the value must be escaped with a backslash, i.e., \' and \\.<br>For more information, please see the documentation on %s')
-          ).sprintf(
+          }, helpMessage: gettext('Please specify the connection string for the remote database server. Each parameter setting is in the form keyword = value. Spaces around the equal sign are optional. To write an empty value, or a value containing spaces, surround it with single quotes, e.g., keyword = \'a value\'. Single quotes and backslashes within the value must be escaped with a backslash, i.e., \' and \\.<br>For more information, please see the documentation on %s',
             '<a href="https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">libpq connection strings</a>'
-          ).value(), mode: ['create', 'edit'],
+          ), mode: ['create', 'edit'],
         },{
           id: 'jstonerror', label: gettext('On error'), cell: 'select2',
           control: 'select2', options: [
@@ -273,9 +271,7 @@ define('pgadmin.node.pga_jobstep', [
                     break;
                   }
 
-                  msg = S(
-                    gettext('Invalid parameter in the connection string - %s.')
-                  ).sprintf(m[1]).value();
+                  msg = gettext('Invalid parameter in the connection string - %s.', m[1]);
                   break;
                 }
               }

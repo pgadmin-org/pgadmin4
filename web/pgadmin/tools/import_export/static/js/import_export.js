@@ -8,13 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertifyjs',
   'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
   'sources/utils',
   'sources/nodes/supported_database_node',
   'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui',
 ], function(
-  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
+  gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
   Backform, commonUtils, supportedNodes
 ) {
 
@@ -460,7 +460,7 @@ define([
           return;
         }
       } else {
-        Alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
+        Alertify.alert(gettext('Failed to load preference %s of module %s', preference_name, module));
         return;
       }
 
@@ -690,9 +690,8 @@ define([
 
           // Open the Alertify dialog for the import/export module
           Alertify.ImportDialog(
-            S(
-              gettext('Import/Export data - table \'%s\'')
-            ).sprintf(treeInfo.table.label).value(), node, i, d
+            gettext('Import/Export data - table \'%s\'', treeInfo.table.label),
+            node, i, d
           ).set('resizable', true).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
         })
         .fail(function() {

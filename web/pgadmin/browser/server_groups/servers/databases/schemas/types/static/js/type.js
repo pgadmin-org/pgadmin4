@@ -218,9 +218,9 @@ define('pgadmin.node.type', [
       else if (this.get('is_tlength')
         && !_.isUndefined(this.get('tlength'))) {
         if (this.get('tlength') < this.get('min_val'))
-          errmsg = gettext('Length/precision should not be less than %(value)s', {value: this.get('min_val')});
+          errmsg = gettext('Length/precision should not be less than %s', this.get('min_val'));
         if (this.get('tlength') > this.get('max_val') )
-          errmsg = gettext('Length/precision should not be greater than %(value)s', {value: this.get('max_val')});
+          errmsg = gettext('Length/precision should not be greater than %s', this.get('max_val'));
           // If we have any error set then throw it to user
         if(errmsg) {
           this.errorModel.set('tlength', errmsg);
@@ -231,9 +231,9 @@ define('pgadmin.node.type', [
       else if (this.get('is_precision')
         && !_.isUndefined(this.get('precision'))) {
         if (this.get('precision') < this.get('min_val'))
-          errmsg = gettext('Scale should not be less than %(value)s', {value: this.get('min_val')});
+          errmsg = gettext('Scale should not be less than %s', this.get('min_val'));
         if (this.get('precision') > this.get('max_val'))
-          errmsg = gettext('Scale should not be greater than %(value)s', {value: this.get('max_val')});
+          errmsg = gettext('Scale should not be greater than %s', this.get('max_val'));
           // If we have any error set then throw it to user
         if(errmsg) {
           this.errorModel.set('precision', errmsg);

@@ -138,7 +138,7 @@
 
   background: $sql-hint-bg;
   font-size: 90%;
-  font-family: $font-family-editor;
+  font-family: $font-family-editor !important;
 
   max-height: 20em;
   overflow-y: auto;

@@ -19,14 +19,18 @@
     <link rel="shortcut icon" href="{{ url_for('redirects.favicon') }}"/>
 
     <!-- Base template stylesheets -->
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/backgrid/backgrid.css')}}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/style.css')}}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/pgadmin.css')}}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/alertify.noanimation.css')}}" id="alertify-no-animation"/>
 
      <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}
 
+    <script>
+        /* This is used to change publicPath of webpack at runtime */
+        window.getChunkURL = function() {
+            return "{{ url_for('static', filename='js') }}/generated/";
+        };
+    </script>
     <!-- Base template scripts -->
     <script type="text/javascript"
             src="{{ url_for('static', filename='vendor/require/require.js' if config.DEBUG else 'vendor/require/require.min.js') }}"></script>
@@ -40,8 +44,6 @@
                 shim: {},
                 paths: {
                     sources: "{{ url_for('static', filename='js') }}",
-                    slickgrid: "{{ url_for('static', filename='js/generated/slickgrid') }}",
-                    codemirror: "{{ url_for('static', filename='js/generated/codemirror') }}",
                     datagrid: "{{ url_for('static', filename='js/generated/datagrid') }}",
                     sqleditor: "{{ url_for('static', filename='js/generated/sqleditor') }}",
                     'pgadmin.browser.utils': "{{ url_for('browser.index') }}" + "js/utils",
@@ -54,10 +56,11 @@
             });
 
     </script>
-    <!-- View specified scripts -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/vendor.js') }}" ></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
 
+    <!-- View specified scripts -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/vendor.main.js') }}" ></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/vendor.others.js') }}" ></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
 
 </head>
 <body>

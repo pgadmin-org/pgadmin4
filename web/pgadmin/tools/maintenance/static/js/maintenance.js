@@ -9,14 +9,14 @@
 
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
+  'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
   'backgrid', 'backform', 'sources/utils',
   'tools/maintenance/static/js/menu_utils',
   'sources/nodes/supported_database_node',
   'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node.ui',
 ], function(
-  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
+  gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
   Backform, commonUtils,
   menuUtils, supportedNodes
 ) {
@@ -234,7 +234,7 @@ define([
           return;
         }
       } else {
-        Alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
+        Alertify.alert(gettext('Failed to load preference %s of module %s', preference_name, module));
         return;
       }
 

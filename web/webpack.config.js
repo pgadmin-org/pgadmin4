@@ -24,8 +24,12 @@ const extractStyle = new MiniCssExtractPlugin({
   filename: '[name].css',
   allChunks: true,
 });
+const WebpackRequireFromPlugin = require('webpack-require-from');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 const envType = PRODUCTION ? 'production': 'development';
 const devToolVal = PRODUCTION ? false : 'eval';
+const analyzerMode = process.env.ANALYZE=='true' ? 'static' : 'disabled';
 
 // Expose libraries in app context so they need not to
 // require('libname') when used in a module
@@ -34,7 +38,6 @@ const providePlugin = new webpack.ProvidePlugin({
   jQuery: 'jquery',
   'window.jQuery': 'jquery',
   _: 'underscore',
-  S: 'underscore.string',
   Backbone: 'backbone',
   Backgrid: 'backgrid',
   pgAdmin: 'pgadmin',
@@ -46,7 +49,11 @@ const providePlugin = new webpack.ProvidePlugin({
 const optimizeAssetsPlugin = new OptimizeCssAssetsPlugin({
   assetNameRegExp: /\.css$/g,
   cssProcessor: require('cssnano'),
-  cssProcessorOptions: { discardComments: {removeAll: true } },
+  cssProcessorOptions: {
+    discardComments: {
+      removeAll: true,
+    },
+  },
   canPrint: true,
 });
 
@@ -55,11 +62,22 @@ const optimizeAssetsPlugin = new OptimizeCssAssetsPlugin({
 // Reference: https://webpack.js.org/plugins/source-map-dev-tool-plugin/#components/sidebar/sidebar.jsx
 const sourceMapDevToolPlugin = new webpack.SourceMapDevToolPlugin({
   filename: '[name].js.map',
-  exclude: ['vendor.js', 'codemirror.js', 'popper.js'],
+  exclude: /(vendor|codemirror|slickgrid|pgadmin\.js|style\.js|popper)/,
   columns: false,
 });
 
+// Supress errors while compiling as the getChunkURL method will be available
+// on runtime. window.getChunkURL is defined in base.html
+const webpackRequireFrom = new WebpackRequireFromPlugin({
+  methodName: 'getChunkURL',
+  supressErrors: true,
+});
 
+// can be enabled using bundle:analyze
+const bundleAnalyzer = new BundleAnalyzerPlugin({
+  analyzerMode: analyzerMode,
+  reportFilename: 'analyze_report.html',
+});
 
 function cssToBeSkiped(curr_path) {
   /** Skip all templates **/
@@ -119,6 +137,7 @@ module.exports = {
   entry: {
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
+    slickgrid: sourceDir + '/bundle/slickgrid.js',
     sqleditor: './pgadmin/tools/sqleditor/static/js/sqleditor.js',
     debugger_direct: './pgadmin/tools/debugger/static/js/direct.js',
     file_utils: './pgadmin/misc/file_manager/static/js/utility.js',
@@ -131,6 +150,7 @@ module.exports = {
     libraryTarget: 'amd',
     path: __dirname + '/pgadmin/static/js/generated',
     filename: '[name].js',
+    chunkFilename: '[name].chunk.js',
     libraryExport: 'default',
   },
   // Templates files which contains python code needs to load dynamically
@@ -153,7 +173,7 @@ module.exports = {
       use: {
         loader: 'babel-loader',
         options: {
-          presets: [['@babel/preset-env', {'modules': 'commonjs'}]],
+          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}]],
         },
       },
     }, {
@@ -161,7 +181,7 @@ module.exports = {
       use: {
         loader: 'babel-loader',
         options: {
-          presets: [['@babel/preset-env', {'modules': 'commonjs'}]],
+          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}]],
         },
       },
     }, {
@@ -354,18 +374,58 @@ module.exports = {
         parallel: true,
         cache: true,
         uglifyOptions: {
-          compress: false,
+          compress: true,
+          extractComments: true,
+          output: {
+            comments: false,
+          },
         },
       }),
     ],
     splitChunks: {
       cacheGroups: {
-        vendors: {
-          name: 'vendors',
-          filename: 'vendor.js',
+        slickgrid: {
+          name: 'slickgrid',
+          filename: 'slickgrid.js',
           chunks: 'all',
           reuseExistingChunk: true,
-          priority: 1,
+          priority: 9,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.matchModules(module, 'slickgrid');
+          },
+        },
+        codemirror: {
+          name: 'codemirror',
+          filename: 'codemirror.js',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 8,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.matchModules(module, 'codemirror');
+          },
+        },
+        vendor_main: {
+          name: 'vendor_main',
+          filename: 'vendor.main.js',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 7,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.matchModules(module, ['wcdocker', 'backbone', 'jquery', 'bootstrap', 'popper']);
+          },
+        },
+        vendor_others: {
+          name: 'vendor_others',
+          filename: 'vendor.others.js',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 6,
           minChunks: 2,
           enforce: true,
           test(module) {
@@ -376,11 +436,22 @@ module.exports = {
           name: 'pgadmin_commons',
           filename: 'pgadmin_commons.js',
           chunks: 'all',
-          priority: 2,
+          priority: 5,
           minChunks: 2,
           enforce: true,
           test(module) {
             return webpackShimConfig.isPgAdminLib(module);
+          },
+        },
+        browser_nodes: {
+          name: 'browser_nodes',
+          filename: 'browser_nodes.js',
+          chunks: 'all',
+          priority: 4,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.isBrowserNode(module);
           },
         },
       },
@@ -393,9 +464,12 @@ module.exports = {
     providePlugin,
     optimizeAssetsPlugin,
     sourceMapDevToolPlugin,
+    webpackRequireFrom,
+    bundleAnalyzer,
   ]: [
     extractStyle,
     providePlugin,
     sourceMapDevToolPlugin,
+    webpackRequireFrom,
   ],
 };

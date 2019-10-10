@@ -8,91 +8,95 @@
 //////////////////////////////////////////////////////////////
 
 define('pgadmin.misc.explain', [
-  'sources/url_for', 'jquery', 'underscore', 'underscore.string',
-  'sources/pgadmin', 'backbone', 'snapsvg', 'explain_statistics',
+  'sources/url_for', 'jquery', 'underscore',
+  'sources/pgadmin', 'backbone', 'explain_statistics',
   'svg_downloader', 'image_maper', 'sources/gettext', 'bootstrap',
 ], function(
-  url_for, $, _, S, pgAdmin, Backbone, Snap, StatisticsModel,
+  url_for, $, _, pgAdmin, Backbone, StatisticsModel,
   svgDownloader, imageMapper, gettext
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
   svgDownloader = svgDownloader.default;
+  var Snap = null;
 
-  // Snap.svg plug-in to write multitext as image name
-  Snap.plugin(function(Snap, Element, Paper) {
-    Paper.prototype.multitext = function(x, y, txt, max_width, attributes) {
-      var svg = Snap(),
-        abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-        temp = svg.text(0, 0, abc);
+  var initSnap = function(snapModule) {
+    Snap = snapModule;
+    // Snap.svg plug-in to write multitext as image name
+    Snap.plugin(function(Snap, Element, Paper) {
+      Paper.prototype.multitext = function(x, y, txt, max_width, attributes) {
+        var svg = Snap(),
+          abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          temp = svg.text(0, 0, abc);
 
-      temp.attr(attributes);
+        temp.attr(attributes);
 
-      /*
-       * Find letter width in pixels and
-       * index from where the text should be broken
-       */
-      var letter_width = temp.getBBox().width / abc.length,
-        word_break_index = Math.round((max_width / letter_width)) - 1;
-
-      svg.remove();
-
-      var words = txt.split(' '),
-        width_so_far = 0,
-        lines = [],
-        curr_line = '',
         /*
-         * Function to divide string into multiple lines
-         * and store them in an array if it size crosses
-         * the max-width boundary.
+         * Find letter width in pixels and
+         * index from where the text should be broken
          */
-        splitTextInMultiLine = function(leading, so_far, line) {
-          var l = line.length,
-            res = [];
+        var letter_width = temp.getBBox().width / abc.length,
+          word_break_index = Math.round((max_width / letter_width)) - 1;
 
-          if (l == 0)
-            return res;
+        svg.remove();
 
-          if (so_far && (so_far + (l * letter_width) > max_width)) {
-            res.push(leading);
-            res = res.concat(splitTextInMultiLine('', 0, line));
-          } else if (so_far) {
-            res.push(leading + ' ' + line);
-          } else {
-            if (leading)
+        var words = txt.split(' '),
+          width_so_far = 0,
+          lines = [],
+          curr_line = '',
+          /*
+           * Function to divide string into multiple lines
+           * and store them in an array if it size crosses
+           * the max-width boundary.
+           */
+          splitTextInMultiLine = function(leading, so_far, line) {
+            var l = line.length,
+              res = [];
+
+            if (l == 0)
+              return res;
+
+            if (so_far && (so_far + (l * letter_width) > max_width)) {
               res.push(leading);
-            if (line.length > word_break_index + 1)
-              res.push(line.slice(0, word_break_index) + '-');
-            else
-              res.push(line);
-            res = res.concat(splitTextInMultiLine('', 0, line.slice(word_break_index)));
+              res = res.concat(splitTextInMultiLine('', 0, line));
+            } else if (so_far) {
+              res.push(leading + ' ' + line);
+            } else {
+              if (leading)
+                res.push(leading);
+              if (line.length > word_break_index + 1)
+                res.push(line.slice(0, word_break_index) + '-');
+              else
+                res.push(line);
+              res = res.concat(splitTextInMultiLine('', 0, line.slice(word_break_index)));
+            }
+
+            return res;
+          };
+
+        for (var i = 0; i < words.length; i++) {
+          var tmpArr = splitTextInMultiLine(
+            curr_line, width_so_far, words[i]
+          );
+
+          if (curr_line) {
+            lines = lines.slice(0, lines.length - 1);
           }
-
-          return res;
-        };
-
-      for (var i = 0; i < words.length; i++) {
-        var tmpArr = splitTextInMultiLine(
-          curr_line, width_so_far, words[i]
-        );
-
-        if (curr_line) {
-          lines = lines.slice(0, lines.length - 1);
+          lines = lines.concat(tmpArr);
+          curr_line = lines[lines.length - 1];
+          width_so_far = (curr_line.length * letter_width);
         }
-        lines = lines.concat(tmpArr);
-        curr_line = lines[lines.length - 1];
-        width_so_far = (curr_line.length * letter_width);
-      }
 
-      // Create multiple tspan for each string in array
-      var t = this.text(x, y, lines).attr(attributes);
-      t.selectAll('tspan:nth-child(n+2)').attr({
-        dy: '1.2em',
-        x: x,
-      });
-      return t;
-    };
-  });
+        // Create multiple tspan for each string in array
+        var t = this.text(x, y, lines).attr(attributes);
+        t.selectAll('tspan:nth-child(n+2)').attr({
+          dy: '1.2em',
+          x: x,
+        });
+        return t;
+      };
+    });
+  };
 
   if (pgAdmin.Explain)
     return pgAdmin.Explain;
@@ -639,7 +643,7 @@ define('pgadmin.misc.explain', [
         ypos += yMargin;
       }
 
-      if (S.startsWith(node_type, '(slice'))
+      if (node_type.startsWith('(slice'))
         node_type = node_type.substring(0, 7);
 
       // Get the image information for current node
@@ -1229,6 +1233,18 @@ define('pgadmin.misc.explain', [
   _.extend(pgExplain, {
     // Assumption container is a jQuery object
     DrawJSONPlan: function(container, plan, isDownload, _ctx) {
+      let self = this;
+      require.ensure(['snapsvg'], function(require) {
+        var module = require('snapsvg');
+        initSnap(module);
+        self.goForDraw(container, plan, isDownload, _ctx);
+      }, function(error){
+        throw(error);
+      }, 'snapsvg');
+    },
+
+    // Assumption container is a jQuery object
+    goForDraw: function(container, plan, isDownload, _ctx) {
       var ctx = _.extend(_ctx || {}, {
         totalNodes: 0,
         totalDownloadedNodes: 0,
@@ -1262,11 +1278,11 @@ define('pgadmin.misc.explain', [
       var curr_zoom_factor = 1.0;
 
       var zoomArea = $('<div></div>', {
-          class: 'pg-explain-zoom-area btn-group',
+          class: 'pg-explain-zoom-area btn-group btn-group-sm',
           role: 'group',
         }).appendTo(graphicalContainer),
         zoomInBtn = $('<button></button>', {
-          class: 'btn btn-secondary pg-explain-zoom-btn badge',
+          class: 'btn btn-secondary pg-explain-zoom-btn',
           title: 'Zoom in',
           tabindex: 0,
         }).appendTo(zoomArea).append(
@@ -1274,7 +1290,7 @@ define('pgadmin.misc.explain', [
             class: 'fa fa-search-plus',
           })),
         zoomToNormal = $('<button></button>', {
-          class: 'btn btn-secondary pg-explain-zoom-btn badge',
+          class: 'btn btn-secondary pg-explain-zoom-btn',
           title: 'Zoom to original',
           tabindex: 0,
         }).appendTo(zoomArea).append(
@@ -1282,7 +1298,7 @@ define('pgadmin.misc.explain', [
             class: 'fa fa-arrows-alt',
           })),
         zoomOutBtn = $('<button></button>', {
-          class: 'btn btn-secondary pg-explain-zoom-btn badge',
+          class: 'btn btn-secondary pg-explain-zoom-btn',
           title: 'Zoom out',
           tabindex: 0,
         }).appendTo(zoomArea).append(
@@ -1291,12 +1307,12 @@ define('pgadmin.misc.explain', [
           }));
 
       var downloadArea = $('<div></div>', {
-          class: 'pg-explain-download-area btn-group',
+          class: 'pg-explain-download-area btn-group btn-group-sm',
           role: 'group',
         }).appendTo(graphicalContainer),
         downloadBtn = $('<button></button>', {
           id: 'btn-explain-download',
-          class: 'btn btn-secondary pg-explain-download-btn badge',
+          class: 'btn btn-secondary pg-explain-download-btn',
           title: 'Download',
           tabindex: 0,
           disabled: function() {
@@ -1318,13 +1334,13 @@ define('pgadmin.misc.explain', [
           }));
 
       var statsArea = $('<div></div>', {
-        class: 'pg-explain-stats-area btn-group d-none',
+        class: 'pg-explain-stats-area btn-group btn-group-sm d-none',
         role: 'group',
       }).appendTo(graphicalContainer);
 
       $('<button></button>', {
         id: 'btn-explain-stats',
-        class: 'btn btn-secondary pg-explain-stats-btn badge',
+        class: 'btn btn-secondary pg-explain-stats-btn',
         title: 'Statistics',
         tabindex: 0,
       }).appendTo(statsArea).append(

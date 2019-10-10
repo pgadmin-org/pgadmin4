@@ -8,11 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 define([
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery',
+  'sources/gettext', 'underscore', 'jquery',
   'backbone', 'backform', 'backgrid', 'codemirror', 'sources/sqleditor_utils',
   'sources/keyboard_shortcuts', 'sources/window',
   'spectrum', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle',
-], function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror,
+], function(gettext, _, $, Backbone, Backform, Backgrid, CodeMirror,
   SqlEditorUtils, keyboardShortcuts, pgWindow) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {}),

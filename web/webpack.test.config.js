@@ -21,7 +21,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       jQuery: 'jquery',
       _: 'underscore',
-      'underscore.string': 'underscore.string',
       'window.jQuery': 'jquery',
       'moment': 'moment',
       'window.moment':'moment',
@@ -36,7 +35,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [['@babel/preset-env', {'modules': 'commonjs'}]],
+            presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}]],
             sourceMap: 'inline',
           },
         },
@@ -82,7 +81,7 @@ module.exports = {
       'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle'),
       'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
       'backform': path.join(__dirname, './node_modules/backform/src/backform'),
-      'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),
+      'backgrid': path.join(__dirname, './pgadmin/static/vendor/backgrid/backgrid'),
       'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),
       'sources': sourcesDir + '/js',
       'translations': regressionDir + '/javascript/fake_translations',

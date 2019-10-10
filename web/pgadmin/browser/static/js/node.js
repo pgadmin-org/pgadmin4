@@ -9,13 +9,13 @@
 
 define('pgadmin.browser.node', [
   'sources/tree/pgadmin_tree_node', 'sources/url_for',
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
+  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
   'backform', 'sources/browser/generate_url', 'pgadmin.help', 'sources/utils',
   'pgadmin.browser.utils', 'pgadmin.backform',
 ], function(
   pgadminTreeNode, url_for,
-  gettext, $, _, S, pgAdmin,
+  gettext, $, _, pgAdmin,
   Menu, Backbone, Alertify, pgBrowser,
   Backform, generateUrl, help,
   commonUtils
@@ -203,9 +203,7 @@ define('pgadmin.browser.node', [
         // For each script type create menu
         _.each(self.hasScriptTypes, function(stype) {
 
-          var type_label = S(
-            gettext('%s Script')
-          ).sprintf(stype.toUpperCase()).value();
+          var type_label = gettext('%s Script',stype.toUpperCase());
 
           stype = stype.toLowerCase();
 
@@ -435,9 +433,8 @@ define('pgadmin.browser.node', [
                   )) {
                     Alertify.pgNotifier(
                       options.textStatus, xhr,
-                      S(
-                        gettext('Error retrieving properties - %s')
-                      ).sprintf(options.errorThrown || _label).value(), function(msg) {
+                      gettext('Error retrieving properties - %s', options.errorThrown || _label),
+                      function(msg) {
                         if(msg === 'CRYPTKEY_SET') {
                           fetchAjaxHook();
                         } else {
@@ -672,8 +669,7 @@ define('pgadmin.browser.node', [
           if (!d)
             return;
 
-          l = S(gettext('Create - %s')).sprintf(
-            [this.label]).value();
+          l = gettext('Create - %s', this.label);
           p = addPanel();
 
           setTimeout(function() {
@@ -696,7 +692,7 @@ define('pgadmin.browser.node', [
 
               Alertify.confirm(
                 gettext('Edit in progress?'),
-                S(msg).sprintf(o.label.toLowerCase(), d.label).value(),
+                commonUtils.sprintf(msg, o.label.toLowerCase(), d.label),
                 function() {
                   setTimeout(function() {
                     o.showProperties(i, d, p, args.action);
@@ -746,29 +742,26 @@ define('pgadmin.browser.node', [
         var msg, title;
         if (input.url == 'delete') {
 
-          msg = S(gettext('Are you sure you want to drop %s "%s" and all the objects that depend on it?'))
-            .sprintf(obj.label.toLowerCase(), d.label).value();
-          title = S(gettext('DROP CASCADE %s?')).sprintf(obj.label).value();
+          msg = gettext('Are you sure you want to drop %s "%s" and all the objects that depend on it?',
+            obj.label.toLowerCase(), d.label);
+          title = gettext('DROP CASCADE %s?', obj.label);
 
           if (!(_.isFunction(obj.canDropCascade) ?
             obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
             Alertify.error(
-              S(gettext('The %s "%s" cannot be dropped.'))
-                .sprintf(obj.label, d.label).value(),
+              gettext('The %s "%s" cannot be dropped.', obj.label, d.label),
               10
             );
             return;
           }
         } else {
-          msg = S(gettext('Are you sure you want to drop %s "%s"?'))
-            .sprintf(obj.label.toLowerCase(), d.label).value();
-          title = S(gettext('DROP %s?')).sprintf(obj.label).value();
+          msg = gettext('Are you sure you want to drop %s "%s"?', obj.label.toLowerCase(), d.label);
+          title = gettext('DROP %s?', obj.label);
 
           if (!(_.isFunction(obj.canDrop) ?
             obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
             Alertify.error(
-              S(gettext('The %s "%s" cannot be dropped.'))
-                .sprintf(obj.label, d.label).value(),
+              gettext('The %s "%s" cannot be dropped.', obj.label, d.label),
               10
             );
             return;
@@ -800,9 +793,7 @@ define('pgadmin.browser.node', [
                   }
                 }
                 pgBrowser.report_error(
-                  S(gettext('Error dropping %s: "%s"'))
-                    .sprintf(obj.label, objName)
-                    .value(), msg);
+                  gettext('Error dropping %s: "%s"', obj.label, objName), msg);
               });
           },
           null).show();
@@ -1659,7 +1650,7 @@ define('pgadmin.browser.node', [
         )), function(o) {
           return o.priority;
         }), function(o) {
-          hash = S('%s/%s').sprintf(hash, encodeURI(o._id)).value();
+          hash = commonUtils.sprintf('%s/%s', hash, encodeURI(o._id));
         });
       }
 

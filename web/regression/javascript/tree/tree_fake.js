@@ -40,7 +40,7 @@ export class TreeFake extends Tree {
     super();
     this.aciTreeToOurTreeTranslator = {};
     this.aciTreeApi = jasmine.createSpyObj(
-      ['ACITreeApi'], ['setInode', 'unload', 'deselect', 'select']);
+      'ACITreeApi', ['setInode', 'unload', 'deselect', 'select']);
   }
 
   addNewNode(id, data, domNode, path) {

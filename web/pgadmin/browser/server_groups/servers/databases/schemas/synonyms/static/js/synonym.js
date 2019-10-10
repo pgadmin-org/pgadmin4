@@ -9,10 +9,10 @@
 
 define('pgadmin.node.synonym', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify,
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify,
   schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-synonym']) {

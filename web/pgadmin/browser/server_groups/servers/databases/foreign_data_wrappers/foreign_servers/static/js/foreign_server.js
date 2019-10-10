@@ -8,10 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 define('pgadmin.node.foreign_server', [
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
+  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.backform', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege',
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform) {
+], function(gettext, $, _, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's node model class to create a Options model
   var OptionsModel = pgAdmin.Browser.Node.Model.extend({

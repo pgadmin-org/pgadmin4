@@ -9,7 +9,7 @@ kbd,
 pre,
 samp,
 .CodeMirror pre {
-  font-family: $font-family-editor;
+  font-family: $font-family-editor !important;
 }
 
 .sql-editor-grid-container {

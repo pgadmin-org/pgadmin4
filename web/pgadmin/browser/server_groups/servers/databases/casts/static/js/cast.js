@@ -9,9 +9,9 @@
 
 define('pgadmin.node.cast', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Backform) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify, Backform) {
   // Extend the collection class for cast
   if (!pgBrowser.Nodes['coll-cast']) {
     pgAdmin.Browser.Nodes['coll-cast'] =

@@ -8,11 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 define('misc.statistics', [
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'backbone',
+  'sources/gettext', 'underscore', 'jquery', 'backbone',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backgrid', 'alertify', 'sources/size_prettify',
   'sources/misc/statistics/statistics',
 ], function(
-  gettext, _, S, $, Backbone, pgAdmin, pgBrowser, Backgrid, Alertify, sizePrettify,
+  gettext, _, $, Backbone, pgAdmin, pgBrowser, Backgrid, Alertify, sizePrettify,
   statisticsHelper
 ) {
 
@@ -315,9 +315,8 @@ define('misc.statistics', [
                 })) {
                   Alertify.pgNotifier(
                     error, xhr,
-                    S(gettext('Error retrieving the information - %s')).sprintf(
-                      message || _label
-                    ).value(), function(msg) {
+                    gettext('Error retrieving the information - %s', message || _label),
+                    function(msg) {
                       if(msg === 'CRYPTKEY_SET') {
                         ajaxHook();
                       } else {

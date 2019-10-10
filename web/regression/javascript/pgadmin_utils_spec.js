@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getEpoch, getGCD, getMod, quote_ident, parseFuncParams, getRandomInt } from 'sources/utils';
+import { getEpoch, getGCD, getMod, quote_ident, parseFuncParams, getRandomInt, sprintf } from 'sources/utils';
 
 describe('getEpoch', function () {
   it('should return non zero', function () {
@@ -140,5 +140,31 @@ describe('getRandomInt', function () {
   it('is between', function () {
     let id = getRandomInt(1, 9999999);
     expect(1 <= id && id <= 9999999).toBeTruthy();
+  });
+});
+
+describe('sprintf', function () {
+  it('single replace', function () {
+    expect(
+      sprintf('This is normal %s for testing.', 'replace')
+    ).toBe(
+      'This is normal replace for testing.'
+    );
+  });
+
+  it('multi replace', function () {
+    expect(
+      sprintf('This is multi %s for %s testing.', 'positions', 'replace')
+    ).toBe(
+      'This is multi positions for replace testing.'
+    );
+  });
+
+  it('text, numbers, empty replace', function () {
+    expect(
+      sprintf('This is a number - %s, text - %s, and not repalce - %s.', 4321, 'replace')
+    ).toBe(
+      'This is a number - 4321, text - replace, and not repalce - %s.'
+    );
   });
 });
