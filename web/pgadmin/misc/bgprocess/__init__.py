@@ -120,3 +120,18 @@ def stop_process(pid):
         return success_return()
     except LookupError as lerr:
         return gone(errormsg=str(lerr))
+
+
+def escape_dquotes_process_arg(arg):
+    # Double quotes has special meaning for shell command line and they are
+    # run without the double quotes. Add extra quotes to save our double
+    # quotes from stripping.
+
+    # This cannot be at common place as this file executes
+    # separately from pgadmin
+    dq_id = "#DQ#"
+
+    if arg.startswith('"') and arg.endswith('"'):
+        return r'{0}{1}{0}'.format(dq_id, arg)
+    else:
+        return arg

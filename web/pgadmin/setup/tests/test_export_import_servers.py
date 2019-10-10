@@ -36,13 +36,13 @@ class ImportExportServersTestCase(BaseTestGenerator):
 
         # Load the servers
         os.system(
-            "python %s --load-servers %s 2> %s" %
+            "python \"%s\" --load-servers \"%s\" 2> %s" %
             (setup, os.path.join(path, "servers.json"), os.devnull)
         )
 
         # And dump them again
         tf = tempfile.NamedTemporaryFile(delete=False)
-        os.system("python %s --dump-servers %s 2> %s" %
+        os.system("python \"%s\" --dump-servers \"%s\" 2> %s" %
                   (setup, tf.name, os.devnull))
 
         # Compare the JSON files, ignoring servers that exist in our

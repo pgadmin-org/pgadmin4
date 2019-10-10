@@ -60,6 +60,22 @@ else:
             )
 
 
+def unescape_dquotes_process_arg(arg):
+    # Double quotes has special meaning for shell command line and they are
+    # run without the double quotes.
+    #
+    # Remove the saviour #DQ#
+
+    # This cannot be at common place as this file executes
+    # separately from pgadmin
+    dq_id = "#DQ#"
+
+    if arg.startswith(dq_id) and arg.endswith(dq_id):
+        return '{0}'.format(arg[len(dq_id):-len(dq_id)])
+    else:
+        return arg
+
+
 def _log_exception():
     type_, value_, traceback_ = info = sys.exc_info()
 
@@ -274,14 +290,14 @@ def update_status(**kw):
         raise ValueError("Please verify pid and db_file arguments.")
 
 
-def execute():
+def execute(argv):
     """
     This function will execute the background process
 
     Returns:
         None
     """
-    command = sys.argv[1:]
+    command = argv[1:]
     args = dict()
     _log('Initialize the process execution: {0}'.format(command))
 
@@ -363,7 +379,7 @@ def execute():
                 process_stderr.log(data[1])
 
     # If executable not found or invalid arguments passed
-    except OSError:
+    except OSError as e:
         info = _log_exception()
         args.update({'exit_code': 500})
         if process_stderr:
@@ -421,6 +437,10 @@ def convert_environment_variables(env):
 
 if __name__ == '__main__':
 
+    argv = [
+        unescape_dquotes_process_arg(arg) for arg in sys.argv
+    ]
+
     _sys_encoding = sys.getdefaultencoding()
     if not _sys_encoding or _sys_encoding == 'ascii':
         # Fall back to 'utf-8', if we couldn't determine the default encoding,
@@ -466,7 +486,7 @@ if __name__ == '__main__':
             # Let's do the job assigning to it.
             try:
                 _log('Executing the command now from the detached child...')
-                execute()
+                execute(argv)
             except Exception:
                 _log_exception()
         else:
@@ -500,7 +520,7 @@ if __name__ == '__main__':
             }
 
             cmd = [sys.executable]
-            cmd.extend(sys.argv)
+            cmd.extend(argv)
 
             _log('[PARENT] Command executings: {0}'.format(cmd))
 
@@ -549,7 +569,7 @@ if __name__ == '__main__':
                 w.close()
 
                 _log('[CHILD] Start executing the background process...')
-                execute()
+                execute(argv)
             except Exception:
                 _log_exception()
                 sys.exit(1)

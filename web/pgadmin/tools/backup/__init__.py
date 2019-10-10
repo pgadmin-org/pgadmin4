@@ -24,6 +24,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
+from pgadmin.misc.bgprocess import escape_dquotes_process_arg
 
 # set template path for sql scripts
 MODULE_NAME = 'backup'
@@ -419,17 +420,23 @@ def create_backup_objects_job(sid):
 
     if 'schemas' in data:
         for s in data['schemas']:
-            args.extend(['--schema', s])
+            args.extend(['--schema', r'{0}'.format(
+                driver.qtIdent(conn, s).replace('"', '\"'))])
 
     if 'tables' in data:
         for s, t in data['tables']:
             args.extend([
-                '--table', driver.qtIdent(conn, s, t)
+                '--table', r'{0}'.format(
+                    driver.qtIdent(conn, s, t).replace('"', '\"'))
             ])
 
+    escaped_args = [
+        escape_dquotes_process_arg(arg) for arg in args
+    ]
     try:
         if backup_obj_type == 'objects':
             args.append(data['database'])
+            escaped_args.append(data['database'])
             p = BatchProcess(
                 desc=BackupMessage(
                     BACKUP.OBJECT, sid,
@@ -439,7 +446,7 @@ def create_backup_objects_job(sid):
                     *args,
                     database=data['database']
                 ),
-                cmd=utility, args=args
+                cmd=utility, args=escaped_args
             )
         else:
             p = BatchProcess(
@@ -452,7 +459,7 @@ def create_backup_objects_job(sid):
                     ) else data['file'],
                     *args
                 ),
-                cmd=utility, args=args
+                cmd=utility, args=escaped_args
             )
 
         manager.export_password_env(p.id)
