@@ -7,7 +7,7 @@ if [ ! -f /pgadmin4/config_distro.py ]; then
     cat << EOF > /pgadmin4/config_distro.py
 HELP_PATH = '../../docs'
 DEFAULT_BINARY_PATHS = {
-        'pg': '/usr/local/pgsql-11'
+        'pg': '/usr/local/pgsql-12'
 }
 EOF
 

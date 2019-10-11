@@ -98,6 +98,7 @@ FROM postgres:9.5-alpine as pg95-builder
 FROM postgres:9.6-alpine as pg96-builder
 FROM postgres:10-alpine as pg10-builder
 FROM postgres:11-alpine as pg11-builder
+FROM postgres:12-alpine as pg12-builder
 
 FROM alpine:3.10 as tool-builder
 
@@ -126,6 +127,11 @@ COPY --from=pg11-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-11/
 COPY --from=pg11-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-11/
 COPY --from=pg11-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-11/
 COPY --from=pg11-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-11/
+
+COPY --from=pg12-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-12/
+COPY --from=pg12-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-12/
+COPY --from=pg12-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-12/
+COPY --from=pg12-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-12/
 
 #########################################################################
 # Assemble everything into the final container.
