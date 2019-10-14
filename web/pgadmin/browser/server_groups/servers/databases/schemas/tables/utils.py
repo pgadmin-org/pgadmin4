@@ -1495,6 +1495,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         return internal_server_error(errormsg=res)
 
                     old_data = res['rows'][0]
+                    if 'name' not in c:
+                        c['name'] = old_data['name']
+
                     # Sql to update object
                     sql.append(
                         render_template("/".join([

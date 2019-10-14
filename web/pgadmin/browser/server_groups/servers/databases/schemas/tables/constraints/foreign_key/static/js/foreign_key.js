@@ -793,7 +793,7 @@ define('pgadmin.node.foreign_key', [
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
               // If OID is undefined then user is trying to add
               // new constraint which should allowed
-              return !(_.isUndefined(m.get('oid')) || m.get('convalidated'));
+              return !(_.isUndefined(m.get('oid')) || !m.get('convalidated'));
             }
             // We can't update condeferred of existing foreign key.
             return !(m.isNew() || !m.get('convalidated'));
