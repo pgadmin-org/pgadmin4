@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-11 17:34+0530\n"
-"PO-Revision-Date: 2019-09-14 13:43+0900\n"
+"PO-Revision-Date: 2019-10-12 04:41+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -4067,7 +4067,7 @@ msgstr "インデックス"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.js:632
 #, python-format
 msgid "Please specify columns for %s"
-msgstr ""
+msgstr "%sの列を指定してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:55
 msgid "Oid"
@@ -5282,22 +5282,22 @@ msgstr "データ型を指定してください"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:221
 #, python-format
 msgid "Length/precision should not be less than %s"
-msgstr ""
+msgstr "長さ/精度は %s 以上にしてください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:223
 #, python-format
 msgid "Length/precision should not be greater than %s"
-msgstr ""
+msgstr "長さ/精度は %s 以下にしてください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:234
 #, python-format
 msgid "Scale should not be less than %s"
-msgstr ""
+msgstr "位取りは %s 以上にしてください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:236
 #, python-format
 msgid "Scale should not be greater than %s"
-msgstr ""
+msgstr "位取りは %s 以下にしてください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:282
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:288
@@ -7184,7 +7184,7 @@ msgstr "サーバから切断"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:263
 #, python-format
 msgid "Are you sure you want to disconnect the server %s?"
-msgstr ""
+msgstr "サーバ %s から切断しますか？"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:309
 msgid "Reload server configuration"
@@ -7553,7 +7553,7 @@ msgstr "オブジェクトを移動..."
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:283
 #, python-format
 msgid "Are you sure you wish to move the objects from %s to %s?"
-msgstr ""
+msgstr "オブジェクトを %s から %s へ移動しますか？"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:347
 msgid "Location"
@@ -8831,92 +8831,92 @@ msgstr "情報の取得エラー - %s"
 
 #: pgadmin/misc/static/explain/js/explain.js:136
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: pgadmin/misc/static/explain/js/explain.js:138
 msgid "Node"
-msgstr ""
+msgstr "ノード"
 
 #: pgadmin/misc/static/explain/js/explain.js:140
 msgid "Timings"
-msgstr ""
+msgstr "タイミング"
 
 #: pgadmin/misc/static/explain/js/explain.js:142
 msgid "Rows"
-msgstr ""
+msgstr "行数"
 
 #: pgadmin/misc/static/explain/js/explain.js:144
 msgid "Loops"
-msgstr ""
+msgstr "ループ"
 
 #: pgadmin/misc/static/explain/js/explain.js:153
 msgid "Exclusive"
-msgstr ""
+msgstr "排他"
 
 #: pgadmin/misc/static/explain/js/explain.js:155
 msgid "Inclusive"
-msgstr ""
+msgstr "包括"
 
 #: pgadmin/misc/static/explain/js/explain.js:157
 msgid "Rows X"
-msgstr ""
+msgstr "行数 X"
 
 #: pgadmin/misc/static/explain/js/explain.js:159
 msgid "Actual"
-msgstr ""
+msgstr "実測値"
 
 #: pgadmin/misc/static/explain/js/explain.js:161
 msgid "Plan"
-msgstr ""
+msgstr "計画値"
 
 #: pgadmin/misc/static/explain/js/explain.js:196
 msgid "Statistics per Node Type"
-msgstr ""
+msgstr "ノード種類別の統計"
 
 #: pgadmin/misc/static/explain/js/explain.js:203
 #: pgadmin/misc/static/explain/js/explain.js:233
 msgid "Node type"
-msgstr ""
+msgstr "ノードの種類"
 
 #: pgadmin/misc/static/explain/js/explain.js:205
 #: pgadmin/misc/static/explain/js/explain.js:235
 msgid "Count"
-msgstr ""
+msgstr "回数"
 
 #: pgadmin/misc/static/explain/js/explain.js:207
 msgid "Time spent"
-msgstr ""
+msgstr "所要時間"
 
 #: pgadmin/misc/static/explain/js/explain.js:209
 #: pgadmin/misc/static/explain/js/explain.js:229
 #, python-format
 msgid "% of query"
-msgstr ""
+msgstr "クエリ処理全体を占める割合"
 
 #: pgadmin/misc/static/explain/js/explain.js:216
 msgid "Statistics per Table"
-msgstr ""
+msgstr "テーブル別の統計"
 
 #: pgadmin/misc/static/explain/js/explain.js:225
 msgid "Scan count"
-msgstr ""
+msgstr "スキャン回数"
 
 #: pgadmin/misc/static/explain/js/explain.js:237
 msgid "Sum of times"
-msgstr ""
+msgstr "時間の総和"
 
 #: pgadmin/misc/static/explain/js/explain.js:239
 #, python-format
 msgid "% of table"
-msgstr ""
+msgstr "テーブル処理全体を占める割合"
 
 #: pgadmin/misc/static/explain/js/explain.js:1217
 msgid "Graphical"
-msgstr ""
+msgstr "グラフィカル"
 
 #: pgadmin/misc/static/explain/js/explain.js:1218
 msgid "Analysis"
-msgstr ""
+msgstr "分析"
 
 #: pgadmin/misc/statistics/static/js/statistics.js:214
 msgid "No statistics are available for the selected object."
@@ -9692,11 +9692,11 @@ msgstr "オブジェクトが選択されていません"
 
 #: pgadmin/tools/datagrid/static/js/show_data.js:132
 msgid "Data Filter"
-msgstr ""
+msgstr "データのフィルタリング"
 
 #: pgadmin/tools/datagrid/static/js/show_data.js:160
 msgid "Use SHIFT + ENTER to apply filter..."
-msgstr ""
+msgstr "Shift + Enter を押すと、フィルタリングを行います..."
 
 #: pgadmin/tools/datagrid/static/js/show_query_tool.js:52
 msgid "Query Tool Error"
@@ -9704,7 +9704,7 @@ msgstr "クエリツールエラー"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:42
 msgid "Save As"
-msgstr "名前をつけて保存"
+msgstr "名前を付けて保存"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:56
 msgid "Find (Ctrl/Cmd+F)"
@@ -9772,7 +9772,7 @@ msgstr "行へ移動 (Alt+G)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:132
 msgid "Copy with headers"
-msgstr ""
+msgstr "ヘッダを付けてコピー"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:160
 msgid "Indent Selection (Tab)"
@@ -12899,19 +12899,19 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "クエリツールの初期化エラー"
 
 #~ msgid "Please specify columns for %(node)s"
-#~ msgstr "%(node)s の列を指定してください"
+#~ msgstr "%(node)sの列を指定してください"
 
 #~ msgid "Length/precision should not be less than %(value)s"
-#~ msgstr "長さ/精度は %(value)s 以上を指定してください"
+#~ msgstr "長さ/精度は %(value)s 以上にしてください"
 
 #~ msgid "Length/precision should not be greater than %(value)s"
-#~ msgstr "長さ/精度は %(value)s 以下を指定してください"
+#~ msgstr "長さ/精度は %(value)s 以下にしてください"
 
 #~ msgid "Scale should not be less than %(value)s"
-#~ msgstr "位取りは %(value)s 以上を指定してください"
+#~ msgstr "位取りは %(value)s 以上にしてください
 
 #~ msgid "Scale should not be greater than %(value)s"
-#~ msgstr "位取りは %(value)s 以下を指定してください"
+#~ msgstr "位取りは %(value)s 以下にしてください"
 
 #~ msgid "Are you sure you want to disconnect the server %(server)s?"
 #~ msgstr "サーバ %(server)s から切断しますか？"
@@ -12920,7 +12920,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ "Are you sure you wish to move "
 #~ "the objects from %(old_tablespace)s to "
 #~ "%(new_tablespace)s?"
-#~ msgstr "%(old_tablespace)s から %(new_tablespace)s へオブジェクトを移動しますか？"
+#~ msgstr "オブジェクトを %(old_tablespace)s から %(new_tablespace)s へ移動しますか？"
 
 #~ msgid "%(title)s (%(text_representation)s)"
 #~ msgstr "%(title)s （%(text_representation)s）"
