@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-11 17:34+0530\n"
+"POT-Creation-Date: 2019-10-14 12:39+0530\n"
 "PO-Revision-Date: 2018-08-08 09:29+0000\n"
 "Last-Translator: Isaias Sanchez <isaias.sanchez.l@gmail.com>\n"
 "Language: es\n"
@@ -8953,7 +8953,7 @@ msgstr ""
 #: pgadmin/misc/static/explain/js/explain.js:209
 #: pgadmin/misc/static/explain/js/explain.js:229
 #, python-format
-msgid "% of query"
+msgid "%% of query"
 msgstr ""
 
 #: pgadmin/misc/static/explain/js/explain.js:216
@@ -8970,7 +8970,7 @@ msgstr ""
 
 #: pgadmin/misc/static/explain/js/explain.js:239
 #, python-format
-msgid "% of table"
+msgid "%% of table"
 msgstr ""
 
 #: pgadmin/misc/static/explain/js/explain.js:1217
@@ -12358,5 +12358,11 @@ msgstr "No se pudo encontrar la base de datos especificada."
 #~ msgstr ""
 
 #~ msgid "%(title)s (accesskey + %(key)s)"
+#~ msgstr ""
+
+#~ msgid "% of query"
+#~ msgstr ""
+
+#~ msgid "% of table"
 #~ msgstr ""
 

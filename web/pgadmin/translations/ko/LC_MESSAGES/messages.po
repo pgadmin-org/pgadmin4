@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-11 17:34+0530\n"
+"POT-Creation-Date: 2019-10-14 12:39+0530\n"
 "PO-Revision-Date: 2018-07-12 01:04+0900\n"
 "Last-Translator: Ioseph Kim <ioseph@uri.sarang.net>\n"
 "Language: ko\n"
@@ -8737,7 +8737,7 @@ msgstr ""
 #: pgadmin/misc/static/explain/js/explain.js:209
 #: pgadmin/misc/static/explain/js/explain.js:229
 #, python-format
-msgid "% of query"
+msgid "%% of query"
 msgstr ""
 
 #: pgadmin/misc/static/explain/js/explain.js:216
@@ -8754,7 +8754,7 @@ msgstr ""
 
 #: pgadmin/misc/static/explain/js/explain.js:239
 #, python-format
-msgid "% of table"
+msgid "%% of table"
 msgstr ""
 
 #: pgadmin/misc/static/explain/js/explain.js:1217
@@ -12062,5 +12062,11 @@ msgstr "지정한 데이터베이스를 찾을 수 없음."
 #~ msgstr ""
 
 #~ msgid "%(title)s (accesskey + %(key)s)"
+#~ msgstr ""
+
+#~ msgid "% of query"
+#~ msgstr ""
+
+#~ msgid "% of table"
 #~ msgstr ""
 

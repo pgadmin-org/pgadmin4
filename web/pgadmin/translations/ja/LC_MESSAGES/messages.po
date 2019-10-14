@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-11 17:34+0530\n"
+"POT-Creation-Date: 2019-10-14 12:39+0530\n"
 "PO-Revision-Date: 2019-10-12 04:41+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
@@ -8890,7 +8890,7 @@ msgstr "所要時間"
 #: pgadmin/misc/static/explain/js/explain.js:209
 #: pgadmin/misc/static/explain/js/explain.js:229
 #, python-format
-msgid "% of query"
+msgid "%% of query"
 msgstr "クエリ処理全体を占める割合"
 
 #: pgadmin/misc/static/explain/js/explain.js:216
@@ -8907,7 +8907,7 @@ msgstr "時間の総和"
 
 #: pgadmin/misc/static/explain/js/explain.js:239
 #, python-format
-msgid "% of table"
+msgid "%% of table"
 msgstr "テーブル処理全体を占める割合"
 
 #: pgadmin/misc/static/explain/js/explain.js:1217
@@ -12908,7 +12908,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "長さ/精度は %(value)s 以下にしてください"
 
 #~ msgid "Scale should not be less than %(value)s"
-#~ msgstr "位取りは %(value)s 以上にしてください
+#~ msgstr "位取りは %(value)s 以上にしてくださ"
 
 #~ msgid "Scale should not be greater than %(value)s"
 #~ msgstr "位取りは %(value)s 以下にしてください"
