@@ -2690,7 +2690,7 @@ define([
         'focus input': 'clearInvalid',
         'focusout input': 'closePicker',
         'change.datetimepicker': 'onChange',
-        'click': 'togglePicker',
+        'click .input-group': 'togglePicker',
       },
       togglePicker: function() {
         if (this.has_datepicker) {
