@@ -757,5 +757,5 @@ class PgadminPage:
                     EC.visibility_of_element_located(verify_locator))
                 click_status = True
             except Exception:
-                attempt = +1
+                attempt += 1
         return click_status
