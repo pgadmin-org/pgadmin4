@@ -689,6 +689,7 @@ define([
         }
         var el = $((tmpls['panel'])(_.extend(o, {
           'tabIndex': idx,
+          'tabPanelCodeClass': o.tabPanelCodeClass ? o.tabPanelCodeClass : '',
         })))
           .appendTo(tabContent)
           .removeClass('collapse').addClass('collapse');

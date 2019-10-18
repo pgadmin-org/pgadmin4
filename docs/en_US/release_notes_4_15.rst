@@ -17,4 +17,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4845 <https://redmine.postgresql.org/issues/4845>`_ -  Fixed potential error in the properties dialog for the Code tab.
 | `Issue #4850 <https://redmine.postgresql.org/issues/4850>`_ -  Fixed an issue where Datetimepicker control opens when clicking on the label.
