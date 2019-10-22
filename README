@@ -58,7 +58,7 @@ and minor number. Do not specify micro level version.
 For example, given a Python version of A.B.C; A - Major number, B - Minor
 number, C - Micro level (Bug fix releases).
 
-If Python version is 2.7.12 than specify PYTHON_VERSION=27
+If Python version is 2.7.12 then specify PYTHON_VERSION=27
 
  e.g. PYTHON_HOME=C:\Python27\
       PYTHON_VERSION=27
@@ -180,7 +180,7 @@ At this point you will be able to run pgAdmin 4 from the command line in either
 server or desktop mode, and access it from a web browser using the URL shown in
 the terminal once pgAdmin has started up.
 
-Setup of an environment on Windows is somewhat more complicated unfortunately,
+Setup of an environment on Windows is somewhat more complicated, unfortunately,
 largely due to the lack of a native compiler toolset. Thankfully, Microsoft
 supply a free compiler specifically for Python 2.7 users. Download and install
 it from:
@@ -199,7 +199,7 @@ Building the Web Assets
 -----------------------
 
 pgAdmin is dependent on a number of third party Javascript libraries. These,
-along with it's own Javascript code, SCSS/CSS code and images must be
+along with its own Javascript code, SCSS/CSS code and images, must be
 compiled into a "bundle" which is transferred to the browser for execution
 and rendering. This is far more efficient than simply requesting each
 asset as it's needed by the client.
