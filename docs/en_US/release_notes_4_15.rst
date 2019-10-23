@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #1974 <https://redmine.postgresql.org/issues/1974>`_ -  Added encrypted password in reverse engineered SQL for roles.
 
 Housekeeping
 ************

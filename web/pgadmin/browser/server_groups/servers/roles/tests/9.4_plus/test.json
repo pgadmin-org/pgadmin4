@@ -65,7 +65,8 @@
       },
       "expected_sql_file": "alter_role_options.sql",
       "expected_msql_file": "alter_role_options.msql",
-      "convert_timestamp_columns": ["rolvaliduntil"]
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true
     },
     {
       "type": "delete",
@@ -138,7 +139,8 @@
       },
       "expected_sql_file": "alter_login_role_options.sql",
       "expected_msql_file": "alter_login_role_options.msql",
-      "convert_timestamp_columns": ["rolvaliduntil"]
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true
     },
     {
       "type": "delete",

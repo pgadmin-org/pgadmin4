@@ -735,9 +735,10 @@ rolmembership:{
 
     @check_precondition()
     def sql(self, gid, sid, rid):
+        show_password = self.conn.manager.user_info['is_superuser']
         status, res = self.conn.execute_scalar(
             render_template(
-                self.sql_path + 'sql.sql'
+                self.sql_path + 'sql.sql', show_password=show_password
             ),
             dict({'rid': rid})
         )

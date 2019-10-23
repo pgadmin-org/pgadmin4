@@ -9,6 +9,7 @@
 from __future__ import print_function
 import json
 import os
+import re
 import traceback
 from flask import url_for
 import regression
@@ -103,7 +104,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # while running the test cases
         self.JSON_PLACEHOLDERS = {'schema_id': '<SCHEMA_ID>',
                                   'owner': '<OWNER>',
-                                  'timestamptz': '<TIMESTAMPTZ>'}
+                                  'timestamptz': '<TIMESTAMPTZ>',
+                                  'password': '<PASSWORD>'}
 
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
@@ -416,14 +418,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 fp = open(output_file, "r")
                 # Used rstrip to remove trailing \n
                 sql = fp.read().rstrip()
-                # Replace place holder <owner> with the current username
-                # used to connect to the database
-                if 'username' in self.server:
-                    sql = sql.replace(self.JSON_PLACEHOLDERS['owner'],
-                                      self.server['username'])
-                # Convert timestamp with timezone from json file to the
-                # database server's correct timestamp
-                sql = self.convert_timestamptz(scenario, sql)
+                sql = self.preprocess_expected_sql(scenario, sql, resp_sql)
                 try:
                     self.assertEquals(sql, resp_sql)
                 except Exception as e:
@@ -477,14 +472,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 fp = open(output_file, "r")
                 # Used rstrip to remove trailing \n
                 sql = fp.read().rstrip()
-                # Replace place holder <owner> with the current username
-                # used to connect to the database
-                if 'username' in self.server:
-                    sql = sql.replace(self.JSON_PLACEHOLDERS['owner'],
-                                      self.server['username'])
-                # Convert timestamp with timezone from json file to the
-                # database server's correct timestamp
-                sql = self.convert_timestamptz(scenario, sql)
+                sql = self.preprocess_expected_sql(scenario, sql, resp_sql)
                 try:
                     self.assertEquals(sql, resp_sql)
                 except Exception as e:
@@ -500,14 +488,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     return False
         elif 'expected_sql' in scenario:
             exp_sql = scenario['expected_sql']
-            # Replace place holder <owner> with the current username
-            # used to connect to the database
-            if 'username' in self.server:
-                exp_sql = exp_sql.replace(self.JSON_PLACEHOLDERS['owner'],
-                                          self.server['username'])
-            # Convert timestamp with timezone from json file to the
-            # database server's correct timestamp
-            sql = self.convert_timestamptz(scenario, exp_sql)
+            exp_sql = self.preprocess_expected_sql(scenario, exp_sql, resp_sql)
             try:
                 self.assertEquals(exp_sql, resp_sql)
             except Exception as e:
@@ -642,6 +623,38 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             return ret_list
 
         return data
+
+    def preprocess_expected_sql(self, scenario, sql, resp_sql):
+        """
+        This function preprocesses expected sql before comparing
+        it with response sql.
+        :param data: sql
+        :param data: resp_sql
+        :return:
+        """
+        # Replace place holder <owner> with the current username
+        # used to connect to the database
+        if 'username' in self.server:
+            sql = sql.replace(self.JSON_PLACEHOLDERS['owner'],
+                              self.server['username'])
+        # Convert timestamp with timezone from json file to the
+        # database server's correct timestamp
+        sql = self.convert_timestamptz(scenario, sql)
+
+        # extract password fields from response and replace in expected
+        # to match the response
+        if 'replace_password' in scenario:
+            password = ''
+            for line in resp_sql.split('\n'):
+                if 'PASSWORD' in line:
+                    found = re.search("'([\w\W]*)'", line)
+                    if found:
+                        password = found.groups(0)[0]
+                    break
+
+            sql = sql.replace(self.JSON_PLACEHOLDERS['password'], password)
+
+        return sql
 
     def replace_placeholder_with_id(self, value):
         """

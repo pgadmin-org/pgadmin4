@@ -8,7 +8,6 @@ FROM
 		pg_catalog.quote_ident(rolname) || E';\n\nCREATE ROLE ' ||
 		pg_catalog.quote_ident(rolname) || E' WITH\n  ' ||
 		CASE WHEN rolcanlogin THEN 'LOGIN' ELSE 'NOLOGIN' END || E'\n  ' ||
-		CASE WHEN rolcanlogin AND rolpassword LIKE 'md5%%' THEN 'ENCRYPTED PASSWORD ' || quote_literal(rolpassword) || E'\n  ' ELSE '' END ||
 		CASE WHEN rolsuper THEN 'SUPERUSER' ELSE 'NOSUPERUSER' END || E'\n  ' ||
 		CASE WHEN rolinherit THEN 'INHERIT' ELSE 'NOINHERIT' END || E'\n  ' ||
 		CASE WHEN rolcreatedb THEN 'CREATEDB' ELSE 'NOCREATEDB' END || E'\n  ' ||
@@ -16,6 +15,12 @@ FROM
 		-- PostgreSQL >=  9.1
 		CASE WHEN rolreplication THEN 'REPLICATION' ELSE 'NOREPLICATION' END ||
 		CASE WHEN rolconnlimit > 0 THEN E'\n  CONNECTION LIMIT ' || rolconnlimit ELSE '' END ||
+{% if show_password %}
+        (SELECT CASE
+            WHEN (rolpassword LIKE 'md5%%' or rolpassword LIKE 'SCRAM%%') THEN E'\n  ENCRYPTED PASSWORD ''' || rolpassword || ''''
+            WHEN rolpassword IS NOT NULL THEN E'\n  PASSWORD ''' || rolpassword || ''''
+            ELSE '' END FROM pg_authid au WHERE au.oid=r.oid) ||
+{% endif %}
 		CASE WHEN rolvaliduntil IS NOT NULL THEN E'\n  VALID UNTIL ' || quote_literal(rolvaliduntil::text) ELSE '' END || ';' AS sql
 FROM
 	pg_roles r
