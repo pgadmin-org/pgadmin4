@@ -88,7 +88,7 @@ define('pgadmin.node.pga_job', [
           var d = pgBrowser.Node.Model.prototype.parse.apply(this, arguments);
 
           if (d) {
-            d.jobrunningat = d.jaghostagent || gettext('Not running currently.');
+            d.jobrunningat = d.jagagent || gettext('Not running currently.');
             d.jlgstatus = d.jlgstatus || gettext('Unknown');
           }
           return d;
