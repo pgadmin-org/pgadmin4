@@ -40,7 +40,7 @@ export function callRenderAfterPoll(sqlEditor, alertify, res) {
       res.result += '\n\n' + msg;
     else
       res.result = msg;
-    sqlEditor.update_msg_history(true, res.result, true);
+    sqlEditor.update_msg_history(true, res.result, false);
     sqlEditor.reset_data_store();
     if (isNotificationEnabled(sqlEditor)) {
       alertify.success(msg, sqlEditor.info_notifier_timeout);

@@ -82,7 +82,7 @@ describe('#callRenderAfterPoll', () => {
         expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
           true,
           'Some result\n\nQuery returned successfully in 0 msec.',
-          true
+          false
         );
       });
 
@@ -173,7 +173,7 @@ describe('#callRenderAfterPoll', () => {
         expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
           true,
           'Some result\n\nQuery returned successfully in 0 msec.',
-          true
+          false
         );
       });
 
