@@ -178,7 +178,10 @@ define([
       type: 'int',
       min: 0,
       max: 9,
-      disabled: false,
+      deps: ['format'],
+      disabled: function(m) {
+        return (m.get('format') === 'tar');
+      },
       visible: function(m) {
         if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
           return false;
@@ -207,7 +210,7 @@ define([
       type: 'int',
       deps: ['format'],
       disabled: function(m) {
-        return !(m.get('format') === 'Directory');
+        return !(m.get('format') === 'directory');
       },
       visible: function(m) {
         if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')

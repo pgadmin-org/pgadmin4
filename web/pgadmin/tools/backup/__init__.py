@@ -386,8 +386,10 @@ def create_backup_objects_job(sid):
             set_param('blobs', '--blobs')
         elif data['format'] == 'plain':
             args.extend(['--format=p'])
+            set_value('ratio', '--compress')
         elif data['format'] == 'directory':
             args.extend(['--format=d'])
+            set_value('ratio', '--compress')
 
     if 'only_data' in data and data['only_data']:
         set_param('only_data', '--data-only')
