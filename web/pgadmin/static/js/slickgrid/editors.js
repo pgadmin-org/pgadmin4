@@ -411,6 +411,7 @@ import gettext from 'sources/gettext';
           $input.addClass('pg-text-invalid');
           return {
             valid: false,
+            msg: e.message,
           };
         }
       }

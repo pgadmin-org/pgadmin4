@@ -139,9 +139,9 @@ describe('RangeBoundaryNavigator', function () {
         {'id':3, 'animal':'cougar', 'size':'9'},
         {'id':4, 'animal':'tiger', 'size':'10'}];
 
-      columnDefinitions = [{name: 'id', field: 'id', pos: 0},
-        {name: 'animal', field: 'animal', pos: 1},
-        {name: 'size', field: 'size', pos: 2}];
+      columnDefinitions = [{name: 'id', field: 'id', pos: 0, cell:'number'},
+        {name: 'animal', field: 'animal', pos: 1, cell:'string'},
+        {name: 'size', field: 'size', pos: 2, cell:'string'}];
       ranges = [new Slick.Range(0, 0, 0, 2), new Slick.Range(3, 0, 3, 2)];
 
       CSVOptions = [{'quoting': 'all', 'quote_char': '"', 'field_separator': ','},
@@ -166,9 +166,9 @@ describe('RangeBoundaryNavigator', function () {
     describe('when there is an extra column with checkboxes', function () {
       beforeEach(function () {
         columnDefinitions = [{name: 'not-a-data-column'},
-          {name: 'id', field: 'id', pos: 0},
-          {name: 'animal', field: 'animal', pos: 1},
-          {name: 'size', field: 'size',pos: 2}];
+          {name: 'id', field: 'id', pos: 0, cell:'number'},
+          {name: 'animal', field: 'animal', pos: 1, cell:'string'},
+          {name: 'size', field: 'size',pos: 2, cell:'string'}];
         ranges = [new Slick.Range(0, 0, 0, 3), new Slick.Range(3, 0, 3, 3)];
       });
 

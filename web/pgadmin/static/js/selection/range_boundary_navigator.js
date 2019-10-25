@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
-define(['sources/selection/range_selection_helper'],
-  function (RangeSelectionHelper) {
+define(['sources/selection/range_selection_helper', 'json-bignumber'],
+  function (RangeSelectionHelper, JSONBigNumber) {
     return {
       getUnion: function (allRanges) {
         if (_.isEmpty(allRanges)) {
@@ -135,12 +135,13 @@ define(['sources/selection/range_selection_helper'],
 
       csvCell: function (data, columnDefinitions, CSVOptions, rowId, colId) {
         var val = data[rowId][columnDefinitions[colId].field],
+          cell_type = columnDefinitions[colId].cell || '',
           quoting = CSVOptions.quoting || 'strings',
           quote_char = CSVOptions.quote_char || '"';
 
         if (quoting == 'all') {
           if (val && _.isObject(val)) {
-            val = quote_char + JSON.stringify(val) + quote_char;
+            val = quote_char + JSONBigNumber.stringify(val) + quote_char;
           } else if (val) {
             val = quote_char + val.toString() + quote_char;
           } else if (_.isNull(val) || _.isUndefined(val)) {
@@ -149,8 +150,8 @@ define(['sources/selection/range_selection_helper'],
         }
         else if(quoting == 'strings') {
           if (val && _.isObject(val)) {
-            val = quote_char + JSON.stringify(val) + quote_char;
-          } else if (val && typeof val != 'number' && typeof val != 'boolean') {
+            val = quote_char + JSONBigNumber.stringify(val) + quote_char;
+          } else if (val && cell_type != 'number' && cell_type != 'boolean') {
             val = quote_char + val.toString() + quote_char;
           } else if (_.isNull(val) || _.isUndefined(val)) {
             val = '';

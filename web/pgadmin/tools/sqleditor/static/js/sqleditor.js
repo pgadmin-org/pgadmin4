@@ -768,6 +768,7 @@ define('tools.querytool', [
           display_name: c.display_name,
           column_type: c.column_type,
           column_type_internal: c.column_type_internal,
+          cell: c.cell,
           not_null: c.not_null,
           has_default_val: c.has_default_val,
           is_array: c.is_array,
