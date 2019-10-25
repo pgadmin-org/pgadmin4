@@ -605,7 +605,7 @@ define('pgadmin.browser', [
                 /* OK Button */
                 self.set_master_password(
                   $('#frmMasterPassword #password').val(),
-                  parentDialog.set_callback,
+                  true,parentDialog.set_callback,
                 );
               } else if(event.index == 2) {
                 /* Cancel button */
@@ -677,12 +677,13 @@ define('pgadmin.browser', [
       });
     },
 
-    set_master_password: function(password='', set_callback=()=>{}) {
+    set_master_password: function(password='', button_click=false, set_callback=()=>{}) {
       let data=null, self = this;
 
       if(password != null || password!='') {
         data = JSON.stringify({
           'password': password,
+          'button_click': button_click,
         });
       }
 

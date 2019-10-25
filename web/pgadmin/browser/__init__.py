@@ -792,15 +792,16 @@ def set_master_password():
     # Master password is not applicable for server mode
     if not config.SERVER_MODE and config.MASTER_PASSWORD_REQUIRED:
 
+        # if master pass is set previously
+        if current_user.masterpass_check is not None:
+            if data.get('button_click') and not validate_master_password(data.get('password')):
+                return form_master_password_response(
+                    existing=True,
+                    present=False,
+                    errmsg=gettext("Incorrect master password")
+                )
+
         if data != '' and data.get('password', '') != '':
-            # if master pass is set previously
-            if current_user.masterpass_check is not None:
-                if not validate_master_password(data.get('password')):
-                    return form_master_password_response(
-                        existing=True,
-                        present=False,
-                        errmsg=gettext("Incorrect master password")
-                    )
 
             # store the master pass in the memory
             set_crypt_key(data.get('password'))
@@ -827,9 +828,14 @@ def set_master_password():
                 present=False,
             )
         elif not get_crypt_key()[0]:
+            error_message = None
+            if data.get('button_click') and data.get('password') == '':
+                # If user attempted to enter a blank password, then throw error
+                error_message = gettext("Master password cannot be empty")
             return form_master_password_response(
                 existing=False,
                 present=False,
+                errmsg=error_message
             )
 
     # if master password is disabled now, but was used once then

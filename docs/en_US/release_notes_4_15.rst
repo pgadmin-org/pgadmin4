@@ -20,6 +20,7 @@ Bug fixes
 
 | `Issue #3789 <https://redmine.postgresql.org/issues/3789>`_ -  Ensure context menus never get hidden below the menu bar.
 | `Issue #3913 <https://redmine.postgresql.org/issues/3913>`_ -  Ensure the correct "running at" agent is shown when a pgAgent job is executing.
+| `Issue #4341 <https://redmine.postgresql.org/issues/4341>`_ -  Give appropriate error messages when the user tries to use an blank master password.
 | `Issue #4459 <https://redmine.postgresql.org/issues/4459>`_ -  Don't quote bigints when copying them from the Query Tool results grid.
 | `Issue #4482 <https://redmine.postgresql.org/issues/4482>`_ -  Ensure compression level is passed to pg_dump when backing up in directory format.
 | `Issue #4483 <https://redmine.postgresql.org/issues/4483>`_ -  Ensure the number of jobs can be specified when backing up in directory format.
