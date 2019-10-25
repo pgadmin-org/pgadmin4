@@ -18,5 +18,6 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #3789 <https://redmine.postgresql.org/issues/3789>`_ -  Ensure context menus never get hidden below the menu bar.
 | `Issue #4845 <https://redmine.postgresql.org/issues/4845>`_ -  Fixed potential error in the properties dialog for the Code tab.
 | `Issue #4850 <https://redmine.postgresql.org/issues/4850>`_ -  Fixed an issue where Datetimepicker control opens when clicking on the label.

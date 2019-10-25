@@ -260,7 +260,7 @@
 
 .wcMenuList, .context-menu-list {
   border: 1px solid $dropdown-border-color;
-  z-index: 999 !important;
+  z-index: 9999 !important;
   background-color: $dropdown-bg;
   box-shadow: $dropdown-box-shadow;
   border-radius: $dropdown-border-radius;
