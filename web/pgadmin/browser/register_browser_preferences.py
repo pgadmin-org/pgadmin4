@@ -55,6 +55,17 @@ def register_browser_preferences(self):
     )
 
     self.preference.register(
+        'display', 'confirm_on_properties_close',
+        gettext("Confirm before closing properties with unsaved changes?"),
+        'boolean',
+        True, category_label=gettext('Display'),
+        help_str=gettext(
+            'Confirm before closure of the properties dialog for an object if '
+            'the changes are not saved.'
+        )
+    )
+
+    self.preference.register(
         'display', 'auto_expand_sole_children',
         gettext("Auto-expand sole children"), 'boolean', True,
         category_label=gettext('Display'),

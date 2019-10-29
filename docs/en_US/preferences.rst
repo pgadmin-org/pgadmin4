@@ -34,6 +34,10 @@ Use the fields on the *Display* panel to specify general display preferences:
   saving interval. A value of *-1* will disable the treeview state saving
   functionality.
 
+* When the *Confirm before closing properties with unsaved changes* switch is set to *True*,
+  pgAdmin will warn you before closing the properties dialog of an object if there
+  are any unsaved changes. On user confirmation, the properties dialog will close.
+
 * When the *Confirm on close or refresh* switch is set to *True*, pgAdmin will
   attempt to catch browser close or refresh events and prompt before allowing
   them to continue.

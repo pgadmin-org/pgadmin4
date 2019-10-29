@@ -1535,6 +1535,39 @@ define('pgadmin.browser.node', [
         onEdit = editInNewPanel.bind(panel);
       }
       if (panel.closeable()) {
+        panel.on(wcDocker.EVENT.CLOSING, function() {
+          var j = this.$container.find('.obj_properties').first(),
+            view = j && j.data('obj-view'),
+            self = this;
+
+          let confirm_on_properties_close = pgBrowser.get_preferences_for_module('browser').confirm_on_properties_close;
+          if (view && view.model && confirm_on_properties_close) {
+            if(view.model.sessChanged()){
+              Alertify.confirm(
+                gettext('Warning'),
+                gettext('Changes will be lost. Are you sure you want to close the dialog?'),
+                function() {
+                  setTimeout(function(){
+                    self.off(wcDocker.EVENT.CLOSING);
+                    self.close();
+                  }, 50);
+                  return true;
+                },
+                function() {
+                  return true;
+                }
+              ).set('labels', {
+                ok: gettext('Yes'),
+                cancel: gettext('No'),
+              }).show();
+            } else {
+              return true;
+            }
+          } else {
+            return true;
+          }
+        }.bind(panel));
+
         var onCloseFunc = function() {
           var j = this.$container.find('.obj_properties').first(),
             view = j && j.data('obj-view');
