@@ -169,22 +169,28 @@ class ExecuteQuery {
           self.enableSQLEditorButtons();
         }
 
-        if (ExecuteQuery.wasConnectionLostToPythonServer(error.response)) {
+        if(error.response) {
+          if(ExecuteQuery.wasConnectionLostToPythonServer(error.response)) {
+            self.handleConnectionToServerLost();
+            return;
+          }
+          const errorData = error.response.data;
+
+          if (self.userManagement.isPgaLoginRequired(errorData)) {
+            return self.userManagement.pgaLogin();
+          }
+
+          let msg = ExecuteQuery.extractErrorMessage(errorData);
+
+          self.sqlServerObject.update_msg_history(false, msg);
+          // Highlight the error in the sql panel
+          self.sqlServerObject._highlight_error(msg);
+        } else if(error.request) {
           self.handleConnectionToServerLost();
           return;
+        } else {
+          console.error(error);
         }
-
-        const errorData = error.response.data;
-
-        if (self.userManagement.isPgaLoginRequired(errorData)) {
-          return self.userManagement.pgaLogin();
-        }
-
-        let msg = ExecuteQuery.extractErrorMessage(errorData);
-
-        self.sqlServerObject.update_msg_history(false, msg);
-        // Highlight the error in the sql panel
-        self.sqlServerObject._highlight_error(msg);
       });
   }
 
