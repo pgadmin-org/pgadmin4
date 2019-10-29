@@ -164,6 +164,7 @@ class ExecuteQuery {
         self.sqlServerObject.resetQueryHistoryObject(self.sqlServerObject);
 
         self.loadingScreen.hide();
+        self.sqlServerObject.setIsQueryRunning(false);
         if (self.sqlServerObject.is_query_tool) {
           self.enableSQLEditorButtons();
         }
