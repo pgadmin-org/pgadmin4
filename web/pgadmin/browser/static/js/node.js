@@ -1033,7 +1033,8 @@ define('pgadmin.browser.node', [
         j = panel.$container.find('.obj_properties').first(),
         view = j.data('obj-view'),
         content = $('<div tabindex="1"></div>')
-          .addClass('pg-prop-content col-12');
+          .addClass('pg-prop-content col-12'),
+        confirm_close = true;
 
       // Handle key press events for Cancel, save and help button
       var handleKeyDown = function(event, context) {
@@ -1042,7 +1043,7 @@ define('pgadmin.browser.node', [
 
         switch (event.which) {
         case keyCode.ESCAPE:
-          closePanel();
+          closePanel(true);
           break;
         case keyCode.ENTER:
           // Return if event is fired from child element
@@ -1400,7 +1401,7 @@ define('pgadmin.browser.node', [
                 btn.on('click',() => {
                   // Removing the action-mode
                   panel.$container.removeAttr('action-mode');
-                  onCancelFunc.call(arguments);
+                  onCancelFunc.call(true);
                 });
               },
             }, {
@@ -1455,7 +1456,10 @@ define('pgadmin.browser.node', [
           // Show contents before buttons
           j.prepend(content);
         }.bind(panel),
-        closePanel = function() {
+        closePanel = function(confirm_close_flag) {
+          if(!_.isUndefined(confirm_close_flag)) {
+            confirm_close = confirm_close_flag;
+          }
           // Closing this panel
           this.close();
         }.bind(panel),
@@ -1484,7 +1488,7 @@ define('pgadmin.browser.node', [
               },
             }
           );
-          closePanel();
+          closePanel(false);
         },
         saveNewNode = function(that) {
           var panel = this,
@@ -1503,7 +1507,7 @@ define('pgadmin.browser.node', [
           } catch (e) {
             console.warn(e.stack || e);
           }
-          closePanel();
+          closePanel(false);
         }.bind(panel, that),
         editInNewPanel = function() {
           // Open edit in separate panel
@@ -1541,7 +1545,7 @@ define('pgadmin.browser.node', [
             self = this;
 
           let confirm_on_properties_close = pgBrowser.get_preferences_for_module('browser').confirm_on_properties_close;
-          if (view && view.model && confirm_on_properties_close) {
+          if (confirm_on_properties_close && confirm_close && view && view.model) {
             if(view.model.sessChanged()){
               Alertify.confirm(
                 gettext('Warning'),
