@@ -463,5 +463,24 @@ define([
     reverseButtons: true,
   });
 
+  /* Suppress the enter key events occurring from select2 boxes
+   * so that the dialog does not close.
+   * Alertify listens to keyup events on the body element unfortunately
+   * instead of alertify dialog
+   */
+  $('body').off('keyup').on('keyup', function(ev){
+    if(ev.which === 13) {
+      let suppressForClasses = ['select2-selection', 'select2-search__field'];
+      let $el = $(ev.target);
+      for(let i=0; i<suppressForClasses.length; i++){
+        if($el.hasClass(suppressForClasses[i])){
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+          ev.stopPropagation();
+          break;
+        }
+      }
+    }
+  });
   return alertify;
 });
