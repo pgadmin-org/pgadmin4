@@ -50,7 +50,8 @@ Editing Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *Save Data*          | Click the *Save Data* icon to save data changes in the Data Output Panel to the server.           | F6             |
+   | *Save Data Changes*  | Click the *Save Data Changes* icon to save data changes (insert, update, or delete) in the Data   | F6             |
+   |                      | Output Panel to the server.                                                                       |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Find*               | Use the *Find* menu to search, replace, or navigate the code displayed in the SQL Editor:         |                |
    |                      +---------------------------------------------------------------------------------------------------+----------------+
@@ -60,7 +61,7 @@ Editing Options
    |                      +---------------------------------------------------------------------------------------------------+----------------+
    |                      | Select *Find previous* to move to the last occurrence of the search target.                       | Cmd+Shift+G    |
    |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Pesistent find* to identify all occurrences of the search target within the editor.       |                |
+   |                      | Select *Persistent find* to identify all occurrences of the search target within the editor.      |                |
    |                      +---------------------------------------------------------------------------------------------------+----------------+
    |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Cmd+Shift+F    |
    |                      +---------------------------------------------------------------------------------------------------+----------------+
@@ -68,11 +69,17 @@ Editing Options
    |                      +---------------------------------------------------------------------------------------------------+----------------+
    |                      | Select *Jump* to navigate to the next occurrence of the search target.                            | Alt+G          |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Copy*               | Click the *Copy* icon to copy the content that is currently highlighted in the Data Output panel. | Accesskey + C  |
+   | *Copy*               | Click the *Copy* icon to copy the content with or without header:                                 |  Accesskey + C |
+   |                      |                                                                                                   |                |
+   |                      |  * Click the *Copy* icon to copy the content that is currently highlighted in the Data Output     |                |
+   |                      |     panel.                                                                                        |                |
+   |                      |                                                                                                   |                |
+   |                      |  *  Click *Copy with headers* to copy the highlighted content along with the header.              |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Paste*              | Click the *Paste* icon to paste a previously row into a new row.                                  | Accesskey + P  |
+   | *Paste*              | Click the *Paste* icon to paste a previously copied row into a new row.                           | Accesskey + P  |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Delete*             | Click the *Delete* icon to delete the selected rows.                                              | Accesskey + D  |
+   | *Delete*             | Click the *Delete* icon to mark the selected rows for deletion. These marked rows get deleted     |Accesskey + D   |
+   |                      | when you click the *Save Data Changes* icon.                                                      |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Edit*               | Use options on the *Edit* menu to access text editing tools; the options operate on the text      |                |
    |                      | displayed in the SQL Editor panel when in Query Tool mode:                                        |                |
@@ -103,7 +110,9 @@ View/Edit Data Resultset Control
    | *Filter*             | Click the *Filter* icon to set filtering and sorting criteria for the data when in View/Edit data | Accesskey + F  |
    |                      | mode. Click the down arrow to access other filtering and sorting options:                         |                |
    |                      |                                                                                                   |                |
-   |                      |  * Click *Sort/Filter* to open the sorting and filtering dialogue.                                |                |
+   |                      |  * Click *Sort/Filter* to open the sorting and filtering dialogue. In the *SQL Filter*, you can   |                |
+   |                      |    enter a SQL query as filtering criteria. In *Data Sorting*, you can select the column and      |                |
+   |                      |    specify the order for sorting.                                                                 |                |
    |                      |                                                                                                   |                |
    |                      |  * Click *Filter by Selection* to show only the rows containing the values in the selected cells. |                |
    |                      |                                                                                                   |                |
@@ -155,6 +164,8 @@ Query Execution
    |                      |                                                                                                   |                |
    |                      |  * Select *Timing* to include information about the startup time and the amount of time           |                |
    |                      |    spent in each node of the query.                                                               |                |
+   |                      |                                                                                                   |                |
+   |                      |  * Select *Summary* to include the summary information about the query plan.                      |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Commit*             | Click the *Commit* icon to commit the transaction.                                                | Shift+CTRL+M   |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+

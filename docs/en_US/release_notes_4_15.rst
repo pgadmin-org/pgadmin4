@@ -29,5 +29,7 @@ Bug fixes
 | `Issue #4564 <https://redmine.postgresql.org/issues/4564>`_ -  Ensure Javascript errors during Query Tool execution are reported as such and not as Ajax errors.
 | `Issue #4610 <https://redmine.postgresql.org/issues/4610>`_ -  Suppress Enter key presses in Alertify dialogues when the come from Select2 controls to allow item selection with Enter.
 | `Issue #4730 <https://redmine.postgresql.org/issues/4730>`_ -  Ensure all messages are retained in the Query Tool from long running queries.
+| `Issue #4734 <https://redmine.postgresql.org/issues/4734>`_ -  Updated documentation for the delete row button that only strikeout the row instead of deleting it.
+| `Issue #4779 <https://redmine.postgresql.org/issues/4779>`_ -  Updated documentation for the query tool toolbar buttons.
 | `Issue #4845 <https://redmine.postgresql.org/issues/4845>`_ -  Fixed potential error in the properties dialog for the Code tab.
 | `Issue #4850 <https://redmine.postgresql.org/issues/4850>`_ -  Fixed an issue where Datetimepicker control opens when clicking on the label.
