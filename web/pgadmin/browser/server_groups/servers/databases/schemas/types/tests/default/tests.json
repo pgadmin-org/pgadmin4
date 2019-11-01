@@ -108,6 +108,32 @@
       "data": {}
     },
 
+    {
+      "type": "create",
+      "name": "Create Composite type - one field",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {
+        "name": "composite_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"c",
+        "schema":"public",
+        "composite":[
+            {"member_name":"mname1","type":"bigint","is_tlength":false,"is_precision":false}
+        ],
+        "typacl":[],
+        "seclabels":[],
+        "description":""
+      },
+      "expected_sql_file": "create_composite_type_one_field.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Composite type - one field",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {}
+    },
 
     {
       "type": "create",
