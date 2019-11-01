@@ -34,3 +34,8 @@ TABLESPACE {{ conn|qtIdent(data.spcname) }};
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
     OWNER to {{conn|qtIdent(data.relowner)}};
 {% endif %}
+{### SQL for COMMENT ###}
+{% if data.description %}
+COMMENT ON TABLE {{conn|qtIdent(data.schema, data.name)}}
+    IS {{data.description|qtLiteral}};
+{% endif %}
