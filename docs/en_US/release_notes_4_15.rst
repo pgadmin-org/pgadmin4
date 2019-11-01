@@ -24,6 +24,7 @@ Bug fixes
 | `Issue #3913 <https://redmine.postgresql.org/issues/3913>`_ -  Ensure the correct "running at" agent is shown when a pgAgent job is executing.
 | `Issue #3915 <https://redmine.postgresql.org/issues/3915>`_ -  Fix an issue in the Query Tool where shortcut keys could be ignored following a query error.
 | `Issue #4191 <https://redmine.postgresql.org/issues/4191>`_ -  Ensure comments are shown in reverse engineered SQL for table partitions.
+| `Issue #4242 <https://redmine.postgresql.org/issues/4242>`_ -  Handle NULL values appropriately when sorting backgrid tables.
 | `Issue #4341 <https://redmine.postgresql.org/issues/4341>`_ -  Give appropriate error messages when the user tries to use an blank master password.
 | `Issue #4459 <https://redmine.postgresql.org/issues/4459>`_ -  Don't quote bigints when copying them from the Query Tool results grid.
 | `Issue #4482 <https://redmine.postgresql.org/issues/4482>`_ -  Ensure compression level is passed to pg_dump when backing up in directory format.

@@ -161,6 +161,8 @@ define([
 
           // compare as usual
           if (l === r) return 0;
+          else if (l === null && r != null) return -1;
+          else if (l != null && r === null) return 1;
           else if (l < r) return -1;
           return 1;
         }
