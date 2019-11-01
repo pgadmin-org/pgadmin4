@@ -1,2 +1,3 @@
+{% set enable_map = {'O':'ENABLE', 'D':'DISABLE'} %}
 ALTER TABLE {{ conn|qtIdent(data.schema, data.name) }}
-    {% if is_enable_trigger == True %}ENABLE{% else %}DISABLE{% endif %} TRIGGER ALL;
+    {{ enable_map[is_enable_trigger] }} TRIGGER ALL;

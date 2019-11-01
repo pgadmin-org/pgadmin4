@@ -410,8 +410,8 @@ class TriggerView(PGChildNodeView):
             rset['rows'][0]['oid'],
             tid,
             rset['rows'][0]['name'],
-            icon="icon-trigger" if
-            rset['rows'][0]['is_enable_trigger'] else "icon-trigger-bad"
+            icon="icon-trigger-bad" if
+            rset['rows'][0]['is_enable_trigger'] == 'D' else "icon-trigger"
         )
 
         return make_json_response(
@@ -449,8 +449,8 @@ class TriggerView(PGChildNodeView):
                     row['oid'],
                     tid,
                     row['name'],
-                    icon="icon-trigger" if row['is_enable_trigger']
-                    else "icon-trigger-bad"
+                    icon="icon-trigger-bad" if row['is_enable_trigger'] == 'D'
+                    else "icon-trigger"
                 ))
 
         return make_json_response(
@@ -804,9 +804,9 @@ class TriggerView(PGChildNodeView):
                     new_trid,
                     tid,
                     name,
-                    icon="icon-%s" % self.node_type if
-                    data['is_enable_trigger'] else
-                    "icon-%s-bad" % self.node_type
+                    icon="icon-%s-bad" % self.node_type if
+                    data['is_enable_trigger'] == 'D' else
+                    "icon-%s" % self.node_type
                 )
             )
         except Exception as e:
@@ -999,7 +999,7 @@ class TriggerView(PGChildNodeView):
         SQL = sql_header + '\n\n' + SQL.strip('\n')
 
         # If trigger is disbaled then add sql code for the same
-        if not data['is_enable_trigger']:
+        if data['is_enable_trigger'] != 'O':
             SQL += '\n\n'
             SQL += render_template("/".join([self.template_path,
                                              'enable_disable_trigger.sql']),
@@ -1025,8 +1025,7 @@ class TriggerView(PGChildNodeView):
             request.data, encoding='utf-8'
         )
 
-        # Convert str 'true' to boolean type
-        is_enable_flag = json.loads(data['enable'])
+        is_enable_trigger = data['is_enable_trigger']
 
         try:
 
@@ -1049,7 +1048,7 @@ class TriggerView(PGChildNodeView):
             # current trigger which is disabled already so we need to
             # alter the 'is_enable_trigger' flag so that we can render
             # correct SQL for operation
-            o_data['is_enable_trigger'] = is_enable_flag
+            o_data['is_enable_trigger'] = is_enable_trigger
 
             # Adding parent into data dict, will be using it while creating sql
             o_data['schema'] = self.schema

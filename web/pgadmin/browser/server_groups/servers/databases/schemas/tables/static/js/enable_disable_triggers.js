@@ -10,10 +10,10 @@
 import axios from 'axios';
 
 export function disableTriggers(tree, alertify, generateUrl, args) {
-  return setTriggers(tree, alertify, generateUrl, args, {enable: 'false' });
+  return setTriggers(tree, alertify, generateUrl, args, {is_enable_trigger: 'D' });
 }
 export function enableTriggers(tree, alertify, generateUrl, args) {
-  return setTriggers(tree, alertify, generateUrl, args, {enable: 'true' });
+  return setTriggers(tree, alertify, generateUrl, args, {is_enable_trigger: 'O' });
 }
 
 function setTriggers(tree, alertify, generateUrl, args, params) {

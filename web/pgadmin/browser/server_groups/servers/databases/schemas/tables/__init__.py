@@ -1228,7 +1228,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             request.data, encoding='utf-8'
         )
         # Convert str 'true' to boolean type
-        is_enable = json.loads(data['enable'])
+        is_enable_trigger = data['is_enable_trigger']
 
         try:
             SQL = render_template(
@@ -1245,7 +1245,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
                 "/".join([
                     self.table_template_path, 'enable_disable_trigger.sql'
                 ]),
-                data=data, is_enable_trigger=is_enable
+                data=data, is_enable_trigger=is_enable_trigger
             )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -1253,8 +1253,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
 
             return make_json_response(
                 success=1,
-                info=gettext("Trigger(s) have been enabled") if is_enable
-                else gettext("Trigger(s) have been disabled"),
+                info=gettext("Trigger(s) have been disabled")
+                if is_enable_trigger == 'D'
+                else gettext("Trigger(s) have been enabled"),
                 data={
                     'id': tid,
                     'scid': scid

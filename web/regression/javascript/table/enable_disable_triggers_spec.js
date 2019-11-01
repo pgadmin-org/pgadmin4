@@ -106,7 +106,7 @@ describe('#enableTriggers', () => {
         it('call backend with the correct parameters', (done) => {
           enableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
-            expect(networkMockCalledWith.data).toEqual(JSON.stringify({enable: 'true'}));
+            expect(networkMockCalledWith.data).toEqual(JSON.stringify({is_enable_trigger: 'O'}));
             done();
           }, 0);
         });
@@ -234,7 +234,7 @@ describe('#disableTriggers', () => {
         it('call backend with the correct parameters', (done) => {
           disableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
-            expect(networkMockCalledWith.data).toEqual(JSON.stringify({enable: 'false'}));
+            expect(networkMockCalledWith.data).toEqual(JSON.stringify({is_enable_trigger: 'D'}));
             done();
           }, 0);
         });

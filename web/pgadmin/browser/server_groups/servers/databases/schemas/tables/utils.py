@@ -1075,7 +1075,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             trigger_sql = sql_header + '\n\n' + trigger_sql.strip('\n')
 
             # If trigger is disabled then add sql code for the same
-            if not data['is_enable_trigger']:
+            if data['is_enable_trigger'] != 'O':
                 trigger_sql += '\n\n'
                 trigger_sql += render_template("/".join([
                     self.trigger_template_path,
@@ -1155,7 +1155,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     sql_header + '\n\n' + compound_trigger_sql.strip('\n')
 
                 # If trigger is disabled then add sql code for the same
-                if not data['is_enable_trigger']:
+                if data['is_enable_trigger'] != 'O':
                     compound_trigger_sql += '\n\n'
                     compound_trigger_sql += render_template("/".join(
                         [self.compound_trigger_template_path,

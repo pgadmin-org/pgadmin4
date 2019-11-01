@@ -1,4 +1,4 @@
-SELECT t.oid,t.tgname AS name, t.xmin, t.*, relname, CASE WHEN relkind = 'r' THEN TRUE ELSE FALSE END AS parentistable,
+SELECT t.oid,t.tgname AS name, t.xmin, t.tgenabled AS is_enable_trigger, t.*, relname, CASE WHEN relkind = 'r' THEN TRUE ELSE FALSE END AS parentistable,
     nspname, des.description, l.lanname, p.prosrc, p.proname AS tfunction,
     COALESCE(substring(pg_get_triggerdef(t.oid), 'WHEN (.*) EXECUTE PROCEDURE'),
     substring(pg_get_triggerdef(t.oid), 'WHEN (.*)  \$trigger')) AS whenclause,
@@ -7,8 +7,7 @@ SELECT t.oid,t.tgname AS name, t.xmin, t.*, relname, CASE WHEN relkind = 'r' THE
 {% if datlastsysoid %}
     (CASE WHEN t.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_trigger,
 {% endif %}
-    (CASE WHEN tgconstraint != 0::OID THEN true ElSE false END) AS is_constraint_trigger,
-    (CASE WHEN tgenabled = 'O' THEN true ElSE false END) AS is_enable_trigger
+    (CASE WHEN tgconstraint != 0::OID THEN true ElSE false END) AS is_constraint_trigger
 FROM pg_trigger t
     JOIN pg_class cl ON cl.oid=tgrelid
     JOIN pg_namespace na ON na.oid=relnamespace

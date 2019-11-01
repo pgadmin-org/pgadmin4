@@ -108,7 +108,7 @@ define('pgadmin.node.compound_trigger', [
           $.ajax({
             url: obj.generate_url(i, 'enable' , d, true),
             type:'PUT',
-            data: {'enable' : true},
+            data: {'is_enable_trigger' : 'O'},
             dataType: 'json',
           })
             .done(function(res) {
@@ -146,7 +146,7 @@ define('pgadmin.node.compound_trigger', [
           $.ajax({
             url: obj.generate_url(i, 'enable' , d, true),
             type:'PUT',
-            data: {'enable' : false},
+            data: {'is_enable_trigger' : 'D'},
             dataType: 'json',
           })
             .done(function(res) {
@@ -185,13 +185,20 @@ define('pgadmin.node.compound_trigger', [
           type: 'int', disabled: true, mode: ['properties'],
         },{
           id: 'is_enable_trigger', label: gettext('Trigger enabled?'),
-          type: 'switch', mode: ['edit', 'properties'],
+          mode: ['edit', 'properties'],
           disabled: function() {
             if(this.node_info && ('catalog' in this.node_info || 'view' in this.node_info)) {
               return true;
             }
             return false;
           },
+          options: [
+            {label: 'Enable', value: 'O'},
+            {label: 'Enable Replica', value: 'R'},
+            {label: 'Enable Always', value: 'A'},
+            {label: 'Disable', value: 'D'},
+          ],
+          control: 'select2', select2: { allowClear: false, width: '100%' },
         },{
           type: 'nested', control: 'fieldset', mode: ['create','edit', 'properties'],
           label: gettext('FOR Events'), group: gettext('Events'), contentClass: 'row',

@@ -45,6 +45,7 @@ COMMENT ON TRIGGER {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(o_data.nspna
     IS {{data.description|qtLiteral}};
 {% endif %}
 {% if data.is_enable_trigger is defined  and o_data.is_enable_trigger != data.is_enable_trigger %}
+{% set enable_map = {'R':'ENABLE REPLICA', 'A':'ENABLE ALWAYS', 'O':'ENABLE', 'D':'DISABLE'} %}
 ALTER TABLE {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
-    {% if data.is_enable_trigger == True %}ENABLE{% else %}DISABLE{% endif %} TRIGGER {{ conn|qtIdent(data.name) }};
+    {{ enable_map[data.is_enable_trigger] }} TRIGGER {{ conn|qtIdent(data.name) }};
 {% endif %}

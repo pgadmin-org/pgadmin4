@@ -108,7 +108,7 @@ define('pgadmin.node.trigger', [
           $.ajax({
             url: obj.generate_url(i, 'enable' , d, true),
             type:'PUT',
-            data: {'enable' : true},
+            data: {'is_enable_trigger' : 'O'},
             dataType: 'json',
           })
             .done(function(res) {
@@ -146,7 +146,7 @@ define('pgadmin.node.trigger', [
           $.ajax({
             url: obj.generate_url(i, 'enable' , d, true),
             type:'PUT',
-            data: {'enable' : false},
+            data: {'is_enable_trigger' : 'D'},
             dataType: 'json',
           })
             .done(function(res) {
@@ -187,13 +187,20 @@ define('pgadmin.node.trigger', [
           type: 'int', disabled: true, mode: ['properties'],
         },{
           id: 'is_enable_trigger', label: gettext('Trigger enabled?'),
-          type: 'switch', mode: ['edit', 'properties'], group: gettext('Definition'),
+          mode: ['edit', 'properties'], group: gettext('Definition'),
           disabled: function() {
             if(this.node_info && ('catalog' in this.node_info || 'view' in this.node_info)) {
               return true;
             }
             return false;
           },
+          options: [
+            {label: 'Enable', value: 'O'},
+            {label: 'Enable Replica', value: 'R'},
+            {label: 'Enable Always', value: 'A'},
+            {label: 'Disable', value: 'D'},
+          ],
+          control: 'select2', select2: { allowClear: false, width: '100%' },
         },{
           id: 'is_row_trigger', label: gettext('Row trigger?'),
           type: 'switch', group: gettext('Definition'),
@@ -352,7 +359,6 @@ define('pgadmin.node.trigger', [
               return view_options;
             }
           },
-          // If create mode then by default open composite type
           control: 'select2', select2: { allowClear: false, width: '100%' },
           disabled: function(m) {
             // If contraint trigger is set to True then only enable it

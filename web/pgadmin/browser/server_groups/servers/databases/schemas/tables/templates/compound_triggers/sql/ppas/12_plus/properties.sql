@@ -1,4 +1,4 @@
-SELECT t.oid,t.tgname AS name, t.xmin, t.tgtype, t.tgattr, relname,
+SELECT t.oid,t.tgname AS name, t.xmin, t.tgenabled AS is_enable_trigger, t.tgtype, t.tgattr, relname,
     CASE WHEN relkind = 'r' THEN TRUE ELSE FALSE END AS parentistable,
     nspname, des.description,
     regexp_replace(regexp_replace(pg_get_triggerdef(t.oid),
@@ -6,9 +6,8 @@ SELECT t.oid,t.tgname AS name, t.xmin, t.tgtype, t.tgattr, relname,
     ) AS prosrc,
     COALESCE(substring(pg_get_triggerdef(t.oid), 'WHEN (.*) \nCOMPOUND'), NULL) AS whenclause,
 {% if datlastsysoid %}
-    (CASE WHEN t.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_trigger,
+    (CASE WHEN t.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_trigger
 {% endif %}
-    (CASE WHEN tgenabled = 'O' THEN true ElSE false END) AS is_enable_trigger
 FROM pg_trigger t
     JOIN pg_class cl ON cl.oid=tgrelid
     JOIN pg_namespace na ON na.oid=relnamespace

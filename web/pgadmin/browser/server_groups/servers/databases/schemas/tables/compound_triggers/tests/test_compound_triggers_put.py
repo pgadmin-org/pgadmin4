@@ -45,12 +45,20 @@ class CompoundTriggersUpdateTestCase(BaseTestGenerator):
               })),
         ('Enable compound trigger',
          dict(url='/browser/compound_trigger/obj/',
-              data={"is_enable_trigger": True},
+              data={"is_enable_trigger": 'O'},
               disable_trigger=True
+              )),
+        ('Enable always compound trigger',
+         dict(url='/browser/compound_trigger/obj/',
+              data={"is_enable_trigger": 'A'}
+              )),
+        ('Enable replica compound trigger',
+         dict(url='/browser/compound_trigger/obj/',
+              data={"is_enable_trigger": 'R'}
               )),
         ('Disable compound trigger',
          dict(url='/browser/compound_trigger/obj/',
-              data={"is_enable_trigger": False}
+              data={"is_enable_trigger": 'D'}
               )),
     ]
 

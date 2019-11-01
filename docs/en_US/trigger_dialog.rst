@@ -48,6 +48,13 @@ Use the fields in the *Definition* tab to define the trigger:
   arguments to the function when the trigger is executed. The arguments are
   literal string constants.
 
+.. image:: images/trigger_definition_enabled.png
+    :alt: Trigger enabled in dialog tab
+    :align: center
+
+* *Trigger enabled* field is available in trigger dialog once the trigger is created.
+  You can select one of the four options available.
+
 Click the *Events* tab to continue.
 
 .. image:: images/trigger_events.png

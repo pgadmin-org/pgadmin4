@@ -24,6 +24,13 @@ Use the fields in the *General* tab to identify the compound trigger:
   The name will be displayed in the *pgAdmin* tree control.
 * Store notes about the compound trigger in the *Comment* field.
 
+.. image:: images/compound_trigger_general_enabled.png
+    :alt: Trigger enabled in dialog tab
+    :align: center
+
+* *Trigger enabled* field is available in compound trigger dialog once the trigger is created.
+  You can select one of the four options available.
+
 Click the *Events* tab to continue.
 
 .. image:: images/compound_trigger_events.png
