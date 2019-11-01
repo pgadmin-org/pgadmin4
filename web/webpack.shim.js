@@ -155,6 +155,7 @@ var webpackShimConfig = {
     'snap.svg': path.join(__dirname, './node_modules/snapsvg/dist/snap.svg-min'),
     'spectrum': path.join(__dirname, './node_modules/spectrum-colorpicker/spectrum'),
     'mousetrap': path.join(__dirname, './node_modules/mousetrap'),
+    'tablesorter-metric': path.join(__dirname, './node_modules/tablesorter/dist/js/parsers/parser-metric.min'),
 
     // AciTree
     'jquery.acitree': path.join(__dirname, './node_modules/acitree/js/jquery.aciTree.min'),

@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #4483 <https://redmine.postgresql.org/issues/4483>`_ -  Ensure the number of jobs can be specified when backing up in directory format.
 | `Issue #4564 <https://redmine.postgresql.org/issues/4564>`_ -  Ensure Javascript errors during Query Tool execution are reported as such and not as Ajax errors.
 | `Issue #4610 <https://redmine.postgresql.org/issues/4610>`_ -  Suppress Enter key presses in Alertify dialogues when the come from Select2 controls to allow item selection with Enter.
+| `Issue #4647 <https://redmine.postgresql.org/issues/4647>`_ -  Ensure that units are respected when sorting by file size in the File dialog.
 | `Issue #4730 <https://redmine.postgresql.org/issues/4730>`_ -  Ensure all messages are retained in the Query Tool from long running queries.
 | `Issue #4734 <https://redmine.postgresql.org/issues/4734>`_ -  Updated documentation for the delete row button that only strikeout the row instead of deleting it.
 | `Issue #4779 <https://redmine.postgresql.org/issues/4779>`_ -  Updated documentation for the query tool toolbar buttons.

@@ -20,7 +20,7 @@
 define([
   'jquery', 'underscore', 'pgadmin.alertifyjs',
   'sources/gettext', 'sources/url_for', 'dropzone', 'sources/pgadmin',
-  'sources/csrf', 'tablesorter',
+  'sources/csrf', 'tablesorter', 'tablesorter-metric',
 ], function($, _, Alertify, gettext, url_for, Dropzone, pgAdmin, csrfToken) {
 
   /*---------------------------------------------------------
@@ -588,8 +588,8 @@ define([
             result += '<table id="contents" class="table table-bordered table-noouter-border table-bottom-border table-hover tablesorter file_listing_table">';
             result += '<thead><tr><th>';
             result += '<span>' + lg.name + '</span></th>';
-            result += '<th><span>' + lg.size + '</span></th><th>';
-            result += '<span>' + lg.modified + '</span></th></tr></thead>';
+            result += '<th class="sorter-metric" data-metric-name-full="byte|Byte|BYTE" data-metric-name-abbr="b|B"><span>' + lg.size + '</span></th>';
+            result += '<th class="sorter-shortDate"><span>' + lg.modified + '</span></th></tr></thead>';
             result += '<tbody>';
 
             Object.keys(data).sort(function keyOrder(x, y) {
@@ -675,8 +675,8 @@ define([
            */
             result += '<table id="contents" class="table table-bordered table-noouter-border table-bottom-border table-hover tablesorter file_listing_table file_listing_table_no_data">';
             result += '<thead><tr><th><span>' + lg.name + '</span></th>' +
-                    '<th><span>' + lg.size + '</span></th>' +
-                    '<th><span>' + lg.modified + '</span></th>' +
+                    '<th class="sorter-metric" data-metric-name-full="byte|Byte|BYTE" data-metric-name-abbr="b|B"><span>' + lg.size + '</span></th>' +
+                    '<th class="sorter-shortDate"><span>' + lg.modified + '</span></th>' +
                     '</tr></thead>' +
                     '<tbody></tbody>';
             result += '</table>';
@@ -690,13 +690,7 @@ define([
 
         // Add the new markup to the DOM.
         $('.fileinfo .file_listing').html(result);
-        $('.fileinfo .file_listing #contents').tablesorter({
-          headers: {
-            2: {
-              sorter: 'shortDate',
-            },
-          },
-        });
+        $('.fileinfo .file_listing #contents').tablesorter();
 
         // rename file/folder
         $('.file_manager button.rename').off().on('click', function(e) {
