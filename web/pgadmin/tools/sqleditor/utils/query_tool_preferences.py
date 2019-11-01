@@ -641,7 +641,7 @@ def RegisterQueryToolPreferences(self):
             'shift': True,
             'control': True,
             'key': {
-                'key_code': 91,
+                'key_code': 85,
                 'char': 'u'
             }
         },
