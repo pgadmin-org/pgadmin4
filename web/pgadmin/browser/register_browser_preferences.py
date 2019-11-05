@@ -56,12 +56,12 @@ def register_browser_preferences(self):
 
     self.preference.register(
         'display', 'confirm_on_properties_close',
-        gettext("Confirm before closing properties with unsaved changes?"),
+        gettext("Confirm before Close/Reset in object properties dialog ?"),
         'boolean',
         True, category_label=gettext('Display'),
         help_str=gettext(
-            'Confirm before closure of the properties dialog for an object if '
-            'the changes are not saved.'
+            'Confirm before closing or resetting the changes in the '
+            'properties dialog for an object if the changes are not saved.'
         )
     )
 

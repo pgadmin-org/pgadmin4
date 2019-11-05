@@ -1241,6 +1241,39 @@ define('pgadmin.browser.node', [
           window.open(that.dialogHelp, 'pgadmin_help');
         }.bind(panel),
 
+        warnBeforeChangesLost = function(warn_text, yes_callback) {
+          var j = this.$container.find('.obj_properties').first(),
+            view = j && j.data('obj-view'),
+            self = this;
+
+          let confirm_on_properties_close = pgBrowser.get_preferences_for_module('browser').confirm_on_properties_close;
+          if (confirm_on_properties_close && confirm_close && view && view.model) {
+            if(view.model.sessChanged()){
+              Alertify.confirm(
+                gettext('Warning'),
+                warn_text,
+                function() {
+                  setTimeout(function(){
+                    yes_callback();
+                  }.bind(self), 50);
+                  return true;
+                },
+                function() {
+                  return true;
+                }
+              ).set('labels', {
+                ok: gettext('Yes'),
+                cancel: gettext('No'),
+              }).show();
+            } else {
+              return true;
+            }
+          } else {
+            yes_callback();
+            return true;
+          }
+        }.bind(panel),
+
         onSave = function(view, saveBtn) {
           var m = view.model,
             d = m.toJSON(true),
@@ -1413,9 +1446,15 @@ define('pgadmin.browser.node', [
               disabled: true,
               register: function(btn) {
                 btn.on('click',() => {
-                  setTimeout(function() {
-                    editFunc.call();
-                  }, 0);
+                  warnBeforeChangesLost.call(
+                    panel,
+                    gettext('Changes will be lost. Are you sure you want to reset?'),
+                    function() {
+                      setTimeout(function() {
+                        editFunc.call();
+                      }, 0);
+                    }
+                  );
                 });
               },
             }, {
@@ -1539,38 +1578,14 @@ define('pgadmin.browser.node', [
         onEdit = editInNewPanel.bind(panel);
       }
       if (panel.closeable()) {
-        panel.on(wcDocker.EVENT.CLOSING, function() {
-          var j = this.$container.find('.obj_properties').first(),
-            view = j && j.data('obj-view'),
-            self = this;
-
-          let confirm_on_properties_close = pgBrowser.get_preferences_for_module('browser').confirm_on_properties_close;
-          if (confirm_on_properties_close && confirm_close && view && view.model) {
-            if(view.model.sessChanged()){
-              Alertify.confirm(
-                gettext('Warning'),
-                gettext('Changes will be lost. Are you sure you want to close the dialog?'),
-                function() {
-                  setTimeout(function(){
-                    self.off(wcDocker.EVENT.CLOSING);
-                    self.close();
-                  }, 50);
-                  return true;
-                },
-                function() {
-                  return true;
-                }
-              ).set('labels', {
-                ok: gettext('Yes'),
-                cancel: gettext('No'),
-              }).show();
-            } else {
-              return true;
-            }
-          } else {
-            return true;
+        panel.on(wcDocker.EVENT.CLOSING, warnBeforeChangesLost.bind(
+          panel,
+          gettext('Changes will be lost. Are you sure you want to close the dialog?'),
+          function() {
+            panel.off(wcDocker.EVENT.CLOSING);
+            panel.close();
           }
-        }.bind(panel));
+        ));
 
         var onCloseFunc = function() {
           var j = this.$container.find('.obj_properties').first(),

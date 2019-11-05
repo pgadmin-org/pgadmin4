@@ -10,7 +10,7 @@ New features
 ************
 
 | `Issue #1974 <https://redmine.postgresql.org/issues/1974>`_ -  Added encrypted password in reverse engineered SQL for roles.
-| `Issue #4351 <https://redmine.postgresql.org/issues/4351>`_ -  Add an option to request confirmation before cancelling changes on a Properties dialog.
+| `Issue #4351 <https://redmine.postgresql.org/issues/4351>`_ -  Add an option to request confirmation before cancelling/resetting changes on a Properties dialog.
 | `Issue #4006 <https://redmine.postgresql.org/issues/4006>`_ -  Support Enable Always and Enable Replica on triggers.
 
 Housekeeping
