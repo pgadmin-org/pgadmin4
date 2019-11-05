@@ -188,7 +188,7 @@ define([
           'remove': function() {
             if (this.grid) {
               if (this.grid.collection) {
-                this.grid.collection.reset({silent: true});
+                this.grid.collection.reset([], {silent: true});
                 delete (this.grid.collection);
               }
               delete (this.grid);

@@ -40,3 +40,4 @@ Bug fixes
 | `Issue #4779 <https://redmine.postgresql.org/issues/4779>`_ -  Updated documentation for the query tool toolbar buttons.
 | `Issue #4845 <https://redmine.postgresql.org/issues/4845>`_ -  Fixed potential error in the properties dialog for the Code tab.
 | `Issue #4850 <https://redmine.postgresql.org/issues/4850>`_ -  Fixed an issue where Datetimepicker control opens when clicking on the label.
+| `Issue #4895 <https://redmine.postgresql.org/issues/4895>`_ -  Fixed potential issue in reset function for nested objects.

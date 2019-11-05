@@ -283,10 +283,16 @@ define([
     },
     // Create a reset function, which allow us to remove the nested object.
     reset: function(opts) {
-      var obj;
+      var obj,
+        reindex = !!(opts && opts.reindex);
 
       if (opts && opts.stop)
         this.stopSession();
+
+      // Let's not touch the child attributes, if reindex is false.
+      if (!reindex) {
+        return;
+      }
 
       for (var id in this.objects) {
         obj = this.get(id);
@@ -297,7 +303,7 @@ define([
           } else if (obj instanceof Backbone.Model) {
             obj.clear(opts);
           } else if (obj instanceof pgBrowser.DataCollection) {
-            obj.reset(opts);
+            obj.reset([], opts);
           } else if (obj instanceof Backbone.Collection) {
             obj.each(function(m) {
               if (m instanceof Backbone.DataModel) {
@@ -305,14 +311,11 @@ define([
                 obj.clear(opts);
               }
             });
-            if (!(opts instanceof Array)) {
-              opts = [opts];
-            }
-            Backbone.Collection.prototype.reset.apply(obj, opts);
+            Backbone.Collection.prototype.reset.call(obj, [], opts);
           }
         }
       }
-      this.clear(opts);
+      Backbone.Collection.prototype.reset.apply(this, arguments);
     },
     sessChanged: function() {
       var self = this;
@@ -996,7 +999,7 @@ define([
     },
     // Override the reset function, so that - we can reset the model
     // properly.
-    reset: function(opts) {
+    reset: function(_set, opts) {
       if (opts && opts.stop)
         this.stopSession();
       this.each(function(m) {
