@@ -273,13 +273,20 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   bindSubMenuCreate: function() {
     const tree = this.getTreeDetails();
-
-    if (!tree.d || pgAdmin.Browser.Nodes[tree.t.itemData(tree.i)._type].collection_node === true)
+    let node_obj = pgAdmin.Browser.Nodes[tree.t.itemData(tree.i)._type];
+    if (!tree.d){
       return;
+    } else if(node_obj.collection_node === true) {
+      if(node_obj.node) {
+        node_obj = pgAdmin.Browser.Nodes[node_obj.node];
+      } else {
+        return;
+      }
+    }
 
     // Open properties dialog in edit mode
     pgAdmin.Browser.Node.callbacks.show_obj_properties.call(
-      pgAdmin.Browser.Nodes[tree.t.itemData(tree.i)._type], {action: 'create'}
+      node_obj, {action: 'create', item: tree.i}
     );
   },
   bindSubMenuDelete: function() {

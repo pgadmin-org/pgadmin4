@@ -20,6 +20,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #3130 <https://redmine.postgresql.org/issues/3130>`_ -  Ensure create new object dialog should be opened when alt+shift+n key is pressed on the collection node.
 | `Issue #3789 <https://redmine.postgresql.org/issues/3789>`_ -  Ensure context menus never get hidden below the menu bar.
 | `Issue #3913 <https://redmine.postgresql.org/issues/3913>`_ -  Ensure the correct "running at" agent is shown when a pgAgent job is executing.
 | `Issue #3915 <https://redmine.postgresql.org/issues/3915>`_ -  Fix an issue in the Query Tool where shortcut keys could be ignored following a query error.
