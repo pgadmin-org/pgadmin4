@@ -480,7 +480,7 @@ define('pgadmin.preferences', [
               if(requires_refresh) {
                 Alertify.confirm(
                   gettext('Refresh required'),
-                  gettext('A page refresh is required to apply the theme. Do you wish to refresh the page now ?'),
+                  gettext('A page refresh is required to apply the theme. Do you wish to refresh the page now?'),
                   function() {
                     /* If user clicks Yes */
                     location.reload();
