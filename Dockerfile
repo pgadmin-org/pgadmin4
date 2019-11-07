@@ -166,6 +166,10 @@ RUN apk add --no-cache --virtual \
     pip install --no-cache-dir gunicorn && \
     apk del --no-cache build-deps
 
+# We need the v12 libpq, which is only in the 'edge' build of Alpine at present
+COPY --from=pg12-builder /usr/local/lib/libpq.so.5.12 /usr/lib/
+RUN ln -sf /usr/lib/libpq.so.5.12 /usr/lib/libpq.so.5
+
 # Copy the runner script
 COPY pkg/docker/run_pgadmin.py /pgadmin4
 COPY pkg/docker/entrypoint.sh /entrypoint.sh
