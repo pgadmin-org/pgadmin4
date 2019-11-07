@@ -219,6 +219,19 @@ can be used:
     C:\$PGADMIN4_SRC\web> yarn install
     C:\$PGADMIN4_SRC\web> yarn run bundle
 
+Creating pgAdmin themes
+-----------------------
+
+To create a pgAdmin theme, you need to create a directory under web/pgadmin/static/scss/resources.
+Copy the sample file _theme.variables.scss.sample to the new directory and rename it to _theme.variables.scss.
+Change the desired hexadecimal values of the colors and bundle pgAdmin. You can also add a preview image in the
+theme directory with the name as <dir name>_preview.png. It is recommended that the preview image should not be
+larger in size as it may take time to load on slow networks. Run the yarn run bundle and you're good to go.
+No other changes are required, pgAdmin bundle will read the directory and create other required entries to make them
+available in preferences.
+The name of the theme is derived from the directory name. Underscores (_) and hyphens (-) will be replaced with
+spaces and the result will be camel cased.
+
 Configuring the Runtime
 -----------------------
 

@@ -178,6 +178,14 @@ Expand the *Miscellaneous* node to specify miscellaneous display preferences.
 * Use the *User language* drop-down listbox to select the display language for
   the client.
 
+.. image:: images/preferences_misc_themes.png
+    :alt: Preferences dialog themes section
+    :align: center
+
+* Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
+  drop down. Note that, to apply the theme you need to refresh the pgAdmin page. You can also submit your
+  own themes, check `here <https://git.postgresql.org/gitweb/?p=pgadmin4.git;a=blob_plain;f=README>`_ how.
+
 The Paths Node
 **************
 

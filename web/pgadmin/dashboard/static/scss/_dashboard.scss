@@ -16,14 +16,6 @@
     margin-bottom: $grid-gutter-width/2;
 }
 
-.dashboard-tab-btn-group {
-    background-color: $color-gray-light;
-    border: 2px solid  $color-gray;
-    left: 0px;
-    right: 0px;
-    padding: 2px;
-}
-
 .graph-error {
     background-color: $color-gray-lighter;
     padding-top: 20px
@@ -44,5 +36,17 @@
 
 .dashboard-link a {
     cursor: pointer;
-    color: $color-fg-theme;
+    color: $color-fg;
+}
+
+.dashboard-graph-body {
+    & .flotr-labels {
+        color: $color-fg !important;
+    }
+   & .flotr-legend {
+        .flotr-legend-label {
+            color: $color-fg !important;
+            padding-left: 0.25rem;
+        }
+   }
 }

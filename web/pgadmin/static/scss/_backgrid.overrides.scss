@@ -80,8 +80,8 @@
 
 .backgrid thead td,
 .backgrid thead th{
-  background: $color-bg-theme;
-  background-color: $color-bg-theme !important;
+  background: $color-bg;
+  background-color: $color-bg !important;
   text-align: left;
 }
 
@@ -147,7 +147,7 @@ span.form-control:disabled {
 
 .subnode {
   border: $panel-border;
-  background: $color-bg-theme;
+  background: $color-bg;
 }
 
 .subnode-noouter-border {
@@ -203,8 +203,8 @@ span.form-control:disabled {
 }
 
 .subnode-header {
-    background-color: $color-bg-theme;
-    color: $color-fg-theme;
+    background-color: $color-bg;
+    color: $color-fg;
     border-bottom: $panel-border;
 }
 
@@ -240,7 +240,7 @@ span.form-control:disabled {
     }
 
     fieldset.inline-fieldset {
-      background: $color-bg-theme;
+      background: $color-bg;
     }
 }
 .subnode-footer {
@@ -289,7 +289,7 @@ table.backgrid {
   }
 
   & td.editor {
-    background-color: $color-bg-theme !important;
+    background-color: $color-bg !important;
   }
 
   & td.edit-cell.editor:focus {

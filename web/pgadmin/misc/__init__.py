@@ -23,6 +23,8 @@ MODULE_NAME = 'misc'
 
 
 class MiscModule(PgAdminModule):
+    LABEL = gettext('Miscellaneous')
+
     def get_own_javascripts(self):
         return [
             {
@@ -47,10 +49,6 @@ class MiscModule(PgAdminModule):
         """
         Register preferences for this module.
         """
-        self.misc_preference = Preferences(
-            'miscellaneous', gettext('Miscellaneous')
-        )
-
         lang_options = []
         for lang in config.LANGUAGES:
             lang_options.append(
@@ -61,11 +59,37 @@ class MiscModule(PgAdminModule):
             )
 
         # Register options for the User language settings
-        self.misc_preference.register(
-            'miscellaneous', 'user_language',
+        self.preference.register(
+            'user_language', 'user_language',
             gettext("User language"), 'options', 'en',
             category_label=gettext('User language'),
             options=lang_options
+        )
+
+        theme_options = []
+
+        for theme in config.THEMES:
+            theme_options.append({
+                'label': config.THEMES[theme]['disp_name']
+                .replace('_', ' ')
+                .replace('-', ' ')
+                .title(),
+                'value': theme,
+                'preview_src': url_for(
+                    'static', filename='js/generated/img/' +
+                    config.THEMES[theme]['preview_img']
+                )
+            })
+
+        self.preference.register(
+            'themes', 'theme',
+            gettext("Theme"), 'options', 'standard',
+            category_label=gettext('Themes'),
+            options=theme_options,
+            help_str=gettext(
+                'A refresh is required to apply the theme. Below is the '
+                'preview of the theme'
+            )
         )
 
     def get_exposed_url_endpoints(self):

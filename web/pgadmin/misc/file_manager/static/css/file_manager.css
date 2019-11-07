@@ -56,12 +56,6 @@
 /** Opera hack */
 x:-o-prefocus, .file-input-container {top:16px;width:198px;}
 
-@-moz-document url-prefix() {
-  .filepath {
-    padding:0.2em 0.3em;
-  }
-}
-
 /** Input file Replacement - end */
 .file_listing #contents.grid {
   text-align: left;

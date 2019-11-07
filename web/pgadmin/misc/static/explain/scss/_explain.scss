@@ -1,15 +1,11 @@
 .pgadmin-explain-tooltip {
   position: absolute;
   opacity: 0;
-  color: $color-gray-lighter;
-  background-color:  $color-gray-dark;
+  color: $popover-body-color;
+  background-color: $popover-bg;
+  border-color: $popover-border-color;
+  box-shadow: $popover-box-shadow;
 }
-
-$explain-bg-color-2: #FFEE88;
-$explain-bg-color-3: #EE8800;
-$explain-bg-color-4: #880000;
-$explain-fg-color-3: #FFFFFF;
-$explain-fg-color-4: #FFFFFF;
 
 .sql-editor-explain {
   .backform-tab {
@@ -56,21 +52,21 @@ div.tab-pane[data-explain-tabpanel=table] {
   td.pga-ex-exclusive-2,
   td.pga-ex-inclusive-2,
   td.pga-ex-rowsx-2 {
-    background-color: $explain-bg-color-2;
+    background-color: $explain-sev-2-bg;
   }
 
   td.pga-ex-exclusive-3,
   td.pga-ex-inclusive-3,
   td.pga-ex-rowsx-3 {
-    background-color: $explain-bg-color-3;
-    color: $explain-fg-color-3;
+    background-color: $explain-sev-3-bg;
+    color: $explain-sev-3-color;
   }
 
   td.pga-ex-exclusive-4,
   td.pga-ex-inclusive-4,
   td.pga-ex-rowsx-4 {
-    background-color: $explain-bg-color-4;
-    color: $explain-fg-color-4;
+    background-color: $explain-sev-4-bg;
+    color: $explain-sev-4-color;
   }
 
   .pg-ex-subplans {
@@ -140,4 +136,11 @@ div.tab-pane[data-explain-tabpanel=statistics] {
       }
     }
   }
+}
+
+/* Setting it to hardcoded white as the SVG generated is having white bg
+ * Need to check what can be done.
+ */
+.pgadmin-explain-container {
+  background-color: #fff;
 }

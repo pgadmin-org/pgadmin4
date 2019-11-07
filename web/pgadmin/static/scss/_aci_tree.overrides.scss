@@ -1,3 +1,19 @@
+.tree-icon-right:before {
+  font-family: $font-family-icon;
+  content: "\f054" !important;
+  right: 15px;
+  top: 3px;
+  font-size: 0.6rem;
+  line-height: 2;
+  border-style: none;
+}
+
+.aciTree {
+    & .aciTreeButton, & .aciTreePush, & .aciTreeItem, & .aciTreeIcon, & .aciTreeText, & .aciTreeColumn {
+        color: $color-fg;
+    }
+}
+
 .aciTree .aciTreeLi {
   display: grid !important;
   cursor: pointer;
@@ -6,13 +22,9 @@
 	font-family: $font-family-primary;
 	font-size: 0.815rem;
 }
-.aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine  {
-  background-color: $color-primary-light !important;
-	border-right: $active-border !important;
-}
 
 .aciTree .aciTreeSelected > .aciTreeLine {
-  background-color: $color-primary-light !important;
+  background-color: $tree-bg-selected !important;
 	border-color: $color-primary-light;
 	border-right: $active-border !important;
 	border-left: none !important;
@@ -21,13 +33,15 @@
   -webkit-border-radius: none !important;
   -moz-border-radius: none !important;
   border-radius: none !important;
-}
-.aciTree .aciTreeSelected > .aciTreeLine .aciTreeItem {
-  background-color: $color-primary-light;
-  border: 1px solid transparent;
-  -webkit-border-radius: none !important;
-  -moz-border-radius: none !important;
-  border-radius: none !important;
+
+  & .aciTreeItem {
+      background-color: $tree-bg-selected;
+      border: 1px solid transparent;
+      -webkit-border-radius: none !important;
+      -moz-border-radius: none !important;
+      border-radius: none !important;
+      color: $tree-fg-selected;
+  }
 }
 .aciTree .aciTreeItem {
 	white-space: nowrap !important;
@@ -36,31 +50,45 @@
 	background: none;
 }
 .aciTree .aciTreeLine.aciTreeHover {
-  background-color: $color-gray-light;
+  background-color: $tree-bg-hover;
   -webkit-border-radius: none !important;
   -moz-border-radius: none !important;
   border-radius: none !important;
+    & .aciTreeItem {
+        background-color: inherit;
+        border: 1px solid transparent;
+        -webkit-border-radius: none !important;
+        -moz-border-radius: none !important;
+        border-radius: none !important;
+        color: $tree-fg-hover;
+    }
 }
-.aciTree .aciTreeLine.aciTreeHover .aciTreeItem {
-  background-color: $color-gray-light;
-  border: 1px solid transparent;
-  -webkit-border-radius: none !important;
-  -moz-border-radius: none !important;
-  border-radius: none !important;
+
+.aciTree.aciTreeFocus {
+
+    & .aciTreeFocus > .aciTreeLine  {
+      background-color: $tree-bg-selected !important;
+        border-right: $active-border !important;
+    }
+
+    & .aciTreeSelected >.aciTreeLine .aciTreeItem {
+      background-color: $tree-bg-selected;
+    }
+
+    & .aciTreeFocus >.aciTreeLine .aciTreeItem,
+    & .aciTreeSelected.aciTreeFocus >.aciTreeLine .aciTreeItem {
+      border: 1px solid transparent;
+      color: $tree-fg-selected;
+    }
 }
-.aciTree.aciTreeFocus .aciTreeSelected >.aciTreeLine .aciTreeItem {
-  background-color: $color-primary-light;
-}
-.aciTree.aciTreeFocus .aciTreeFocus >.aciTreeLine .aciTreeItem,
-.aciTree.aciTreeFocus .aciTreeSelected.aciTreeFocus >.aciTreeLine .aciTreeItem {
-  border: 1px solid transparent;
-}
+
 .aciTree .aciTreeButton {
   background: none;
 }
 .aciTree .aciTreePush {
-  width: 30px;
-  background: url(../img/collapse_expand.svg) 12px 7px no-repeat;
+  background: none;
+  text-align: center;
+  font-size: 0.85em;
 }
 .aciTree .aciTreeEntry,
 .aciTree .aciTreeBranch,
@@ -68,11 +96,41 @@
     overflow:hidden;
     background: none !important;
 }
-.aciTree .aciTreeInode >.aciTreeLine .aciTreePush,
-.aciTree .aciTreeInode >.aciTreeLine .aciTreePush.aciTreeHover {
-  background-position: 6px center !important;
+
+
+.aciTree .aciTreeInode>.aciTreeLine .aciTreePush {
+    &:before,
+    &.aciTreeHover:before {
+      background-position: 6px center !important;
+      font-family: $font-family-icon;
+      content: "\f054" !important;
+      border-style: none;
+      margin-left: 5px;
+    }
 }
-.aciTree .aciTreeOpen >.aciTreeLine .aciTreePush,
-.aciTree .aciTreeOpen >.aciTreeLine .aciTreePush.aciTreeHover {
-  background-position: -14px center !important;
+
+.aciTree .aciTreeLoad>.aciTreeLine .aciTreePush {
+    &:before,
+    &.aciTreeHover:before {
+      content: " " !important;
+    }
+}
+
+.aciTree .aciTreeOpen >.aciTreeLine .aciTreePush {
+    &:before,
+    &.aciTreeHover:before {
+      background-position: -14px center !important;
+      font-family: $font-family-icon;
+      content: "\f078" !important;
+      border-style: none;
+      margin-left: 5px;
+    }
+}
+
+.aciTree .aciTreePush>span {
+    width: 15px;
+    height: 15px;
+    left: 2px;
+    background: $loader-icon-small 0 0 no-repeat;
+    background-color: inherit!important;
 }

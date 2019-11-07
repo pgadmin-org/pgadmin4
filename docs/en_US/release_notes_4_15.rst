@@ -10,8 +10,10 @@ New features
 ************
 
 | `Issue #1974 <https://redmine.postgresql.org/issues/1974>`_ -  Added encrypted password in reverse engineered SQL for roles.
-| `Issue #4351 <https://redmine.postgresql.org/issues/4351>`_ -  Add an option to request confirmation before cancelling/resetting changes on a Properties dialog.
+| `Issue #3741 <https://redmine.postgresql.org/issues/3741>`_ -  Added Dark(Beta) UI Theme option.
 | `Issue #4006 <https://redmine.postgresql.org/issues/4006>`_ -  Support Enable Always and Enable Replica on triggers.
+| `Issue #4351 <https://redmine.postgresql.org/issues/4351>`_ -  Add an option to request confirmation before cancelling/resetting changes on a Properties dialog.
+| `Issue #4348 <https://redmine.postgresql.org/issues/4348>`_ -  Added support for custom theme creation and selection.
 
 Housekeeping
 ************
@@ -27,6 +29,7 @@ Bug fixes
 | `Issue #3913 <https://redmine.postgresql.org/issues/3913>`_ -  Ensure the correct "running at" agent is shown when a pgAgent job is executing.
 | `Issue #3915 <https://redmine.postgresql.org/issues/3915>`_ -  Fix an issue in the Query Tool where shortcut keys could be ignored following a query error.
 | `Issue #3999 <https://redmine.postgresql.org/issues/3999>`_ -  Fix the toggle case shortcut key combination.
+| `Issue #4171 <https://redmine.postgresql.org/issues/4171>`_ -  Fix an issue where a black arrow-kind image is displaying at the background of browser tree images.
 | `Issue #4191 <https://redmine.postgresql.org/issues/4191>`_ -  Ensure comments are shown in reverse engineered SQL for table partitions.
 | `Issue #4242 <https://redmine.postgresql.org/issues/4242>`_ -  Handle NULL values appropriately when sorting backgrid tables.
 | `Issue #4341 <https://redmine.postgresql.org/issues/4341>`_ -  Give appropriate error messages when the user tries to use an blank master password.

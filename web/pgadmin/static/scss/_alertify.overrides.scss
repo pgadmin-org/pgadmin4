@@ -23,6 +23,11 @@
     }
   }
 
+  .ajs-body {
+    background-color: $color-bg !important;
+    color: $color-fg !important;
+  }
+
   &.ajs-resizable,
   &.ajs-maximized {
     & .ajs-body {
@@ -64,6 +69,8 @@
     padding: 0;
     min-height: $footer-min-height;
     border-top: $panel-border;
+    background-color: $color-bg !important;
+    color: $color-fg !important;
     & .ajs-buttons {
       border: none;
       border-radius: 0rem;
@@ -115,6 +122,8 @@
     border: $panel-border;
     border-radius: $panel-border-radius;
     box-shadow: $dialog-box-shadow;
+    background-color: $color-bg !important;
+    color: $color-fg !important;
   }
   .ajs-content {
     padding-left: 0 !important;

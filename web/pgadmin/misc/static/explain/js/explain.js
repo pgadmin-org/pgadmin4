@@ -1350,7 +1350,7 @@ define('pgadmin.misc.explain', [
 
       // Main div to be drawn all images on
       var planDiv = $('<div></div>', {
-          class: 'pgadmin-explain-container p-3 w-100 h-100 overflow-auto',
+          class: 'pgadmin-explain-container w-100 h-100 overflow-auto',
         }).appendTo(graphicalContainer),
         // Div to draw tool-tip on
         toolTip = $('<div></div>', {

@@ -1,6 +1,3 @@
-.cm-s-default .CodeMirror {
-  background: $color-editor-bg;
-}
 /* To override inbuilt Green color for matchingbracket */
 .cm-s-default .CodeMirror-matchingbracket {
     color:  $sql-bracket-match-fg !important;
@@ -10,6 +7,8 @@
 .CodeMirror {
   font-size: 1em;
   font-family: monospace, monospace;
+  background-color: $color-editor-bg;
+  color: $color-editor-fg;
 }
 
 /* Ensure the codemirror editor displays full height gutters when resized */
@@ -39,14 +38,34 @@
 }
 
 /* make syntax-highlighting bold */
-.cm-s-default .cm-keyword {
-  font-weight: 600;
-  color: $color-editor-keyword;
-}
+.cm-s-default {
+  & .cm-quote {color: #090;}
+  & .cm-keyword {color: $color-editor-keyword; font-weight: 600;}
+  & .cm-atom {color: $color-editor-fg;}
+  & .cm-number {color: $color-editor-number; font-weight: 600;}
+  & .cm-def {color: $color-editor-fg;}
+  & .cm-punctuation,
+  & .cm-property,
+  & .cm-operator { color: $color-editor-operator; }
+  & .cm-variable {color: $color-editor-variable; }
+  & .cm-variable-2,
+  & .cm-variable-3,
+  & .cm-type {color: $color-editor-variable-2;}
+  & .cm-comment {color: $color-editor-comment;}
+  & .cm-string {color: $color-editor-string;}
+  & .cm-string-2 {color: $color-editor-string;}
+  & .cm-meta {color: $color-editor-fg;}
+  & .cm-qualifier {color: $color-editor-fg;}
+  & .cm-builtin {color: $color-editor-builtin;}
+  & .cm-bracket {color: $color-editor-bracket;}
+  & .cm-tag {color: $color-editor-fg;}
+  & .cm-attribute {color: $color-editor-fg;}
+  & .cm-hr {color: $color-editor-fg;}
+  & .cm-link {color: $color-editor-fg;}
 
-.cm-s-default .cm-number {
-  font-weight: 600;
-  color: $color-editor-number;
+  & .CodeMirror-cursor {
+    border-color: $color-editor-fg;
+  }
 }
 
 /* Codemirror buttons */
@@ -84,7 +103,7 @@
 }
 
 .CodeMirror-linenumber {
-  color: $color-fg-theme;
+  color: $color-fg;
 }
 
 .debugger-container .breakpoints {

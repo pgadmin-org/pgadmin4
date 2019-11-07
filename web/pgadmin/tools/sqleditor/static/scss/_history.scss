@@ -3,7 +3,7 @@
 
   .list-item {
     border-bottom: $panel-border;
-    background-color: $color-bg-theme;
+    background-color: $color-bg;
   }
 
   .entry {
@@ -81,8 +81,8 @@
 
 .header-label {
   @extend .text-12;
-  @extend .text-gray;
   display: block;
+  color: $color-fg;
 }
 
 
@@ -98,7 +98,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
   .error-message-block {
     background: $sql-history-error-bg;
     flex: 0.3;
@@ -163,8 +163,8 @@
       float: left;
       position: relative;
       z-index: 10;
-      border: 1px solid $color-gray-light;
-      color: $color-primary;
+      border: 1px solid $border-color;
+      color: $color-fg;
       font-size: 12px;
       box-shadow: 1px 2px 4px 0px $color-gray-light;
       padding: 3px 12px 3px 10px;
@@ -172,13 +172,14 @@
       min-width: 75px;
     }
 
-    .copy-all {
+    .copy-all, .copy-to-editor {
       background-color: $color-bg;
     }
 
     .was-copied {
       background-color: $color-primary-light;
       border-color: $color-primary-light;
+      color: $active-color;
     }
 
     .CodeMirror-scroll {
@@ -217,6 +218,7 @@
           @extend .bg-white;
           @extend .text-13;
           font-family: $font-family-editor;
+          color: $color-fg;
           border: 0;
           padding-left: 0;
           position: absolute;

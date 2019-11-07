@@ -49,7 +49,7 @@
                         title=""
                         accesskey=""
                         tabindex="0" disabled>
-                    <i class="icon-save-data-changes sql-icon-lg" aria-hidden="true"></i>
+                    <i class="pg-font-icon icon-save-data-changes sql-icon-lg" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group mr-1" role="group" aria-label="">
@@ -324,12 +324,12 @@
                         title=""
                         accesskey=""
                         tabindex="0" disabled>
-                    <i class="icon-commit sql-icon-lg" aria-hidden="true"></i>
+                    <i class="pg-font-icon icon-commit sql-icon-lg" aria-hidden="true"></i>
                 </button>
                 <button id="btn-rollback" type="button" class="btn btn-sm btn-secondary"
                         title=""
                         tabindex="0" disabled>
-                    <i class="icon-rollback sql-icon-lg" aria-hidden="true"></i>
+                    <i class="pg-font-icon icon-rollback sql-icon-lg" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group mr-1" role="group" aria-label="">
@@ -370,7 +370,7 @@
                  data-panel-visible="visible"
                  accesskey=""
                  tabindex="0">
-                <i class="fa-custom fa-query-tool-disconnected obtaining-conn" aria-hidden="true"
+                <i class="pg-font-icon icon-query-tool-disconnected obtaining-conn d-flex m-auto" aria-hidden="true"
                     title="">
                 </i>
             </div>
@@ -392,55 +392,57 @@
 {% endblock %}
 
 {% block init_script %}
-	require(['sources/generated/sqleditor', 'sources/generated/browser_nodes', 'sources/generated/codemirror', 'sources/generated/slickgrid'], function(ctx) {
-    var $ = pgAdmin.SqlEditor.jquery,
-        S = pgAdmin.SqlEditor.S,
-        editorPanel = $('.sql-editor'),
-        loadingDiv = $('#fetching_data'),
-        msgDiv = loadingDiv.find('.sql-editor-busy-text');
+require(['sources/generated/browser_nodes', 'sources/generated/codemirror', 'sources/generated/slickgrid'], function() {
+    require(['sources/generated/sqleditor'], function(ctx) {
+        var $ = pgAdmin.SqlEditor.jquery,
+            S = pgAdmin.SqlEditor.S,
+            editorPanel = $('.sql-editor'),
+            loadingDiv = $('#fetching_data'),
+            msgDiv = loadingDiv.find('.sql-editor-busy-text');
 
-    // Register unload event on window close.
-    /* If opened in new tab, close the connection only on tab/window close and
-     * not on refresh attempt because the user may cancel the reload
-     */
-    if(window.opener) {
-      $(window).on('unload', function(ev) {
-        $.ajax({
-          method: 'DELETE',
-          url: "{{ url_for('datagrid.index') }}" + "close/" + {{ uniqueId }}
-        });
-      });
-    } else {
-      $(window).on('beforeunload', function(ev) {
-        $.ajax({
-          method: 'DELETE',
-          url: "{{ url_for('datagrid.index') }}" + "close/" + {{ uniqueId }}
-        });
-      });
-    }
+        // Register unload event on window close.
+        /* If opened in new tab, close the connection only on tab/window close and
+         * not on refresh attempt because the user may cancel the reload
+         */
+        if(window.opener) {
+          $(window).on('unload', function(ev) {
+            $.ajax({
+              method: 'DELETE',
+              url: "{{ url_for('datagrid.index') }}" + "close/" + {{ uniqueId }}
+            });
+          });
+        } else {
+          $(window).on('beforeunload', function(ev) {
+            $.ajax({
+              method: 'DELETE',
+              url: "{{ url_for('datagrid.index') }}" + "close/" + {{ uniqueId }}
+            });
+          });
+        }
 
-    // Get the controller object from pgAdmin.SqlEditor
-    var sqlEditorController = pgAdmin.SqlEditor.create(editorPanel);
+        // Get the controller object from pgAdmin.SqlEditor
+        var sqlEditorController = pgAdmin.SqlEditor.create(editorPanel);
 
-    // Listen on events to show/hide loading-icon and change messages.
-    sqlEditorController.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
-        msgDiv.text(msg);
-      }).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
-        loadingDiv.removeClass('d-none');
-        msgDiv.text(msg);
-      }).on('pgadmin-sqleditor:loading-icon:hide', function() {
-        loadingDiv.addClass('d-none');
-      });
-    {% if script_type_url %}
-        var script_type_url = '{{ script_type_url }}';
-    {% else %}
-        var script_type_url = '';
-    {% endif %}
-    // Start the query tool.
-    sqlEditorController.start(
-        {{ uniqueId }},
-        {{ url_params|safe}},
-        '{{ layout|safe }}'
-    );
+        // Listen on events to show/hide loading-icon and change messages.
+        sqlEditorController.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
+            msgDiv.text(msg);
+          }).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
+            loadingDiv.removeClass('d-none');
+            msgDiv.text(msg);
+          }).on('pgadmin-sqleditor:loading-icon:hide', function() {
+            loadingDiv.addClass('d-none');
+          });
+        {% if script_type_url %}
+            var script_type_url = '{{ script_type_url }}';
+        {% else %}
+            var script_type_url = '';
+        {% endif %}
+        // Start the query tool.
+        sqlEditorController.start(
+            {{ uniqueId }},
+            {{ url_params|safe}},
+            '{{ layout|safe }}'
+        );
+    });
 });
 {% endblock %}

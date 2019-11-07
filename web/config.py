@@ -14,6 +14,7 @@
 import logging
 import os
 import sys
+import json
 
 if sys.version_info[0] >= 3:
     import builtins
@@ -485,6 +486,26 @@ try:
     from config_local import *
 except ImportError:
     pass
+
+THEMES = {
+    "standard": {
+        "disp_name": "Standard",
+        "cssfile": "pgadmin",
+        "preview_img": "standard_preview.png"
+    }
+}
+
+OTHER_THEMES = {}
+try:
+    extra_themes = json.load(open('pgadmin.themes.json'))
+    OTHER_THEMES.update(extra_themes)
+except Exception:
+    pass
+
+# Set OTHER_THEMES to None here to disable all other themes
+
+if OTHER_THEMES is not None:
+    THEMES.update(OTHER_THEMES)
 
 # SUPPORT_SSH_TUNNEL can be override in local config file and if that
 # setting is False in local config then we should not check the Python version.

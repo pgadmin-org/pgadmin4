@@ -20,7 +20,8 @@
 
     <!-- Base template stylesheets -->
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/style.css')}}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/pgadmin.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/pgadmin.style.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename=('js/generated/'+get_theme_css())) }}"/>
 
      <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}

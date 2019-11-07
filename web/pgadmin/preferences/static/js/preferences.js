@@ -242,10 +242,17 @@ define('pgadmin.preferences', [
                 // Convert the array to SelectControl understandable options.
               _.each(p.options, function(o) {
                 if ('label' in o && 'value' in o) {
-                  opts.push({
+                  let push_var = {
                     'label': o.label,
                     'value': o.value,
-                  });
+                  };
+                  push_var['label'] = o.label;
+                  push_var['value'] = o.value;
+
+                  if('preview_src' in o) {
+                    push_var['preview_src'] = o.preview_src;
+                  }
+                  opts.push(push_var);
                   if (o.value == p.value)
                     has_value = true;
                 } else {
@@ -454,6 +461,7 @@ define('pgadmin.preferences', [
             }
 
             if (e.button.text == gettext('Save')) {
+              let requires_refresh = false;
               preferences.updateAll();
 
               /* Find the modules changed */
@@ -463,8 +471,27 @@ define('pgadmin.preferences', [
                 if(!modulesChanged[pref.module]) {
                   modulesChanged[pref.module] = true;
                 }
+
+                if(pref.name == 'theme') {
+                  requires_refresh = true;
+                }
               });
 
+              if(requires_refresh) {
+                Alertify.confirm(
+                  gettext('Refresh required'),
+                  gettext('A page refresh is required to apply the theme. Do you wish to refresh the page now ?'),
+                  function() {
+                    /* If user clicks Yes */
+                    location.reload();
+                    return true;
+                  },
+                  function() {/* If user clicks No */ return true;}
+                ).set('labels', {
+                  ok: gettext('Refresh'),
+                  cancel: gettext('Later'),
+                });
+              }
               // Refresh preferences cache
               pgBrowser.cache_preferences(modulesChanged);
             }

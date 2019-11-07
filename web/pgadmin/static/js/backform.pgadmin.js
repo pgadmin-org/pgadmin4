@@ -2065,6 +2065,11 @@ define([
         $(this.$sel).append($element);
         $(this.$sel).trigger('change');
       }
+
+      let new_value = _.findWhere(this.field.get('options'), {value: evt.params.data.id});
+      if(new_value.preview_src) {
+        this.$el.find('.preview-img img').attr('src', new_value.preview_src);
+      }
     },
 
     formatter: Select2Formatter,
@@ -2090,6 +2095,14 @@ define([
       ' <% if (helpMessage && helpMessage.length) { %>',
       ' <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       ' <% } %>',
+      ' <% for (var i=0; i < options.length; i++) {%>',
+      '   <% var option = options[i]; %>',
+      '     <% if (option.preview_src && option.value === rawValue) { %>',
+      '       <div class="preview-img mt-2">',
+      '         <img src="<%=option.preview_src%>" class="img-fluid mx-auto d-block w-50 border" alt="'+gettext('Preview not available...')+'">',
+      '       </div>',
+      '    <%}%>',
+      ' <%}%>',
       '</div>',
     ].join('\n')),
     render: function() {

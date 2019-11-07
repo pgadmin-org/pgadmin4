@@ -713,10 +713,26 @@ def create_app(app_name=None):
 
     @app.context_processor
     def inject_blueprint():
-        """Inject a reference to the current blueprint, if any."""
+        """
+        Inject a reference to the current blueprint, if any.
+        Also the get_theme_css func.
+        """
+
+        def get_theme_css():
+            misc_preference = Preferences.module('misc')
+            theme = misc_preference.preference('theme').get()
+            theme_css = config.THEMES['standard']['cssfile'] + '.css'
+
+            if theme not in config.THEMES:
+                pass
+            else:
+                theme_css = config.THEMES[theme]['cssfile'] + '.css'
+            return theme_css
+
         return {
             'current_app': current_app,
-            'current_blueprint': current_blueprint
+            'current_blueprint': current_blueprint,
+            'get_theme_css': get_theme_css,
         }
 
     @app.errorhandler(Exception)

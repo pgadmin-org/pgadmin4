@@ -47,3 +47,8 @@
 .pgadmin_header_logo {
   cursor: default;
 }
+
+.icon-drop-cascade:before  {
+  font-icon: url('../img/drop_cascade.svg');
+  font-size: 1.6em !important;
+}

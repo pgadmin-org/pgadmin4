@@ -49,5 +49,6 @@ samp,
 
 .pg-toolbar-btn {
   margin-left: 0.25rem;
-  border: $input-btn-border-width solid $btn-secondary-border;
+  border-style: solid;
+  border-width: 1px;
 }

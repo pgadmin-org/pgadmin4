@@ -22,7 +22,7 @@ let _defaultToolBarButtons = [
     text: '',
     toggled: false,
     toggleClass: '',
-    parentClass: 'pg-toolbar-btn',
+    parentClass: 'pg-toolbar-btn btn-secondary',
     enabled: false,
   },
   {
@@ -31,7 +31,7 @@ let _defaultToolBarButtons = [
     text: '',
     toggled: false,
     toggleClass: '',
-    parentClass: 'pg-toolbar-btn',
+    parentClass: 'pg-toolbar-btn btn-secondary',
     enabled: false,
   },
   {
@@ -40,7 +40,7 @@ let _defaultToolBarButtons = [
     text: '',
     toggled: false,
     toggleClass: '',
-    parentClass: 'pg-toolbar-btn',
+    parentClass: 'pg-toolbar-btn btn-secondary',
     enabled: false,
   },
 ];

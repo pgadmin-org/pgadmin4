@@ -14,30 +14,6 @@
   bottom: 0;
 }
 
-.sql-scratch {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  overflow-y: hidden;
-}
-
-.sql-scratch textarea {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  border: none;
-  resize: none;
-}
-
-.sql-editor-grid-container {
-  height: 100%;
-  overflow: auto;
-}
-
-.sql-editor-grid-container.has-no-footer {
-  height: 100%;
-}
-
 .filter-container .CodeMirror-scroll {
   min-height: 120px;
 }
@@ -274,53 +250,32 @@ input.editor-checkbox:focus {
   white-space: pre;
 }
 
-/* CSS for connection status icon */
-.connection_status .fa-custom {
-  height: 18px;
-  width: 18px;
-  display: block;
-  background-repeat: no-repeat;
-  content: '';
+.connection_status {
+  font-size: 1rem;
 }
 
-.connection_status .fa-query-tool-connected {
-  background-image: url('../img/connect.svg');
+.icon-query-tool-connected:before {
+  font-icon: url('../img/connect.svg');
 }
 
-.connection_status .fa-query-tool-disconnected {
-  background-image: url('../img/disconnect.svg');
+.icon-query-tool-disconnected:before {
+  font-icon: url('../img/disconnect.svg');
 }
 
-.connection_status .obtaining-conn {
-  background-image: url('../img/loading.gif') !important;
+.icon-commit:before {
+  font-icon: url('../img/commit.svg');
 }
 
-.icon-commit, .icon-rollback, .icon-save-data-changes, .icon-view-data {
-  display: inline-block;
-  align-content: center;
-  vertical-align: middle;
-  height: 18px;
-  width: 18px;
-  background-size: 22px !important;
-  background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: center;
+.icon-rollback:before {
+  font-icon: url('../img/rollback.svg');
 }
 
-.icon-commit {
-  background-image: url('../img/commit.svg') !important;
+.icon-save-data-changes:before {
+  font-icon: url('../img/save_data_changes.svg');
 }
 
-.icon-rollback {
-  background-image: url('../img/rollback.svg') !important;
-}
-
-.icon-save-data-changes {
-  background-image: url('../img/save_data_changes.svg') !important;
-}
-
-.icon-view-data {
-  background-image: url('../img/view_data.svg') !important;
+.icon-view-data:before {
+  font-icon: url('../img/view_data.svg');
 }
 
 .ajs-body .warn-header {

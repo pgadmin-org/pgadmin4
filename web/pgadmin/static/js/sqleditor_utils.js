@@ -135,7 +135,7 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
                 if(sqlEditorUtils.previousStatus != status &&
                         !$status_el.hasClass('fa-query_tool_connected')) {
                   $status_el.removeClass()
-                    .addClass('fa-custom fa-query-tool-connected');
+                    .addClass('pg-font-icon icon-query-tool-connected');
                   is_status_changed = true;
                 }
               }
@@ -153,10 +153,10 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
               msg = gettext('An unexpected error occurred - ' +
                           'ensure you are logged into the application.');
               $el.attr('data-content', msg);
-              if(!$status_el.hasClass('fa-query-tool-disconnected')) {
+              if(!$status_el.hasClass('icon-query-tool-disconnected')) {
                 $el.popover('hide');
                 $status_el.removeClass()
-                  .addClass('fa-custom fa-query-tool-disconnected');
+                  .addClass('pg-icon-font icon-query-tool-disconnected');
               }
             }
           })
@@ -173,10 +173,10 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
             // Set bootstrap popover
             $el.attr('data-content', msg);
             // Add error class
-            if(!$status_el.hasClass('fa-query-tool-disconnected')) {
+            if(!$status_el.hasClass('icon-query-tool-disconnected')) {
               $el.popover('hide');
               $status_el.removeClass()
-                .addClass('fa-custom fa-query-tool-disconnected');
+                .addClass('pg-font-icon icon-query-tool-disconnected');
             }
           });
       },

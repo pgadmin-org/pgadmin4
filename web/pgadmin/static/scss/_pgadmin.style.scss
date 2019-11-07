@@ -90,6 +90,7 @@
 
 .panel-link-heading:hover {
   text-decoration: none;
+  color: inherit;
 }
 
 .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
@@ -97,7 +98,7 @@
 }
 
 #navbar-user {
-  font-size: $navbar-user-font-size;
+  font-size: 0.9em;
 }
 
 
@@ -143,18 +144,11 @@
 
 .pg-navbar {
   font-size: $navbar-font-size;
-  background-color: $navbar-color-bg;
+  background-color: $navbar-bg;
   padding-left: 0rem;
   padding-right: 0.5rem;
   & .nav-item .nav-link{
     line-height: 1;
-  }
-
-  .pg-navbar-brand-arrow {
-    border: $navbar-height/2 solid $navbar-brand-arrow-bg;
-    border-right-color: transparent;
-    border-bottom-color: transparent;
-    border-top-color: transparent;
   }
 }
 
@@ -192,7 +186,7 @@
     &.pg-prop-btn-group-below {
       text-align: right;
       padding: $footer-padding;
-      background: $color-bg-theme;
+      background: $color-bg;
       border-top: $panel-border;
     }
   }
@@ -407,9 +401,9 @@
   padding: 0rem;
   border: $panel-border;
   border-radius: $card-border-radius;
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
   fieldset.inline-fieldset {
-    background: $color-bg-theme;
+    background: $color-bg;
   }
 }
 
@@ -548,7 +542,8 @@ fieldset.inline-fieldset > div {
 
 .dashboard-tab-container,
 .pg-panel-statistics-container,
-.pg-panel-depends-container,
+.pg-panel-dependencies-container,
+.pg-panel-dependents-container,
 .pg-prop-coll-container, {
     width: 100%;
     overflow: auto;
@@ -561,7 +556,7 @@ fieldset.inline-fieldset > div {
     left: 0px;
     right: 0px;
     top : 0px;
-    background-color: $color-bg-theme;
+    background-color: $color-bg;
 }
 
 /* Overrides/fixes for pgAdmin specific styling */
@@ -733,7 +728,7 @@ table tr th {
   & button {
     background: none;
     border: none;
-    color: $color-fg-theme;
+    color: $color-fg;
     padding: 0;
   }
   & button:focus {
@@ -843,11 +838,11 @@ body {
 }
 
 .pg-el-container {
-  background-color: $color-gray-lighter;
+  background-color: $negative-bg;
 }
 
 .nav-tabs {
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
 }
 
 .editor-toolbar {
@@ -967,18 +962,6 @@ table.table-empty-rows{
     background-size: 28px 28px;
   }
 }
-.icon-delete_multiple_cascade {
-  display: inline-block;
-  align-content: center;
-  vertical-align: middle;
-  height: 17px;
-  width: 22px;
-  background-image: url(/static/img/drop_cascade.svg) !important;
-  background-size: 25px !important;
-  background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: center;
-}
 
 .pgadmin-controls-radio-none {
   & input[type="radio"] {
@@ -1030,4 +1013,24 @@ table.table-empty-rows{
   border: $input-border-width solid $input-focus-border-color;
   border-radius: $input-border-radius;
   padding: $input-btn-padding-y $input-btn-padding-x;
+}
+
+::placeholder {
+  color: $input-placeholder-color;
+}
+
+.pg-font-icon {
+  &:before {
+    font-style: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 100%;
+    line-height: 1;
+    vertical-align: middle;
+  }
+}
+
+textarea {
+    color: $input-color;
+    background-color: $input-bg;
 }

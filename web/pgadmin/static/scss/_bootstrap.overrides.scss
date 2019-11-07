@@ -226,12 +226,6 @@ legend {
 	}
 }
 
-/* Override default bootstrap popover fonts & size */
-.popover-content {
-	font-family: $font-family-primary;
-	font-size: 13px;
-}
-
 .switch-cell {
 	height: 0px;
 	width: 0px;
@@ -252,10 +246,10 @@ td.switch-cell > div.toggle {
 		& .nav-link {
 			border: none !important;
 			padding: $tabs-padding;
-			color: $color-fg-theme;
+			color: $color-fg;
 			&.active {
 				border-bottom: $active-border !important;
-				color: $color-primary;
+				color: $active-color;
 			}
 		}
 	}
@@ -313,7 +307,7 @@ td.switch-cell > div.toggle {
 
 .btn-group label.btn.btn-primary.active {
   background-color: $color-primary-light;
-  color: $color-primary;
+  color: $color-primary-light-fg;
 }
 
 .btn-group.pgadmin-controls-radio-none.disabled {

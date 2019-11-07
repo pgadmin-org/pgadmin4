@@ -105,7 +105,7 @@
 .fm_folder_grid,
 .fm_file_grid,
 .fm_file_list {
-  color: $color-gray-darker;
+  color: $color-fg;
 }
 
 .fm_drive {
@@ -130,20 +130,6 @@
   wrap: no-wrap;
 }
 
-.filepath {
-  background-color: $color-gray-lighter;
-  border: 1px solid $color-gray-lighter;
-  margin: 0;
-  padding: 0.1em 0.3em;
-  line-height: 1.7em;
-  -webkit-border-top-left-radius: 6px;
-  -webkit-border-bottom-left-radius: 6px;
-  -moz-border-radius-topleft: 6px;
-  -moz-border-radius-bottomleft: 6px;
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
-}
-
 .file_listing #contents.grid li {
   display: block;
   float: left;
@@ -156,24 +142,6 @@
   -moz-border-radius: 2px;
   border-radius: 2px;
   border: 1px solid $color-bg;
-}
-
-.file_listing #contents.list thead {
-  background: $color-gray-lighter; /* Old browsers */
-  background: -moz-linear-gradient(top, rgba($color-primary, 0.71) 0%, rgba($color-primary, 0.98) 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba($color-primary, 0.71)), color-stop(100%,rgba($color-primary, 0.98))); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, rgba($color-primary, 0.71) 0%,rgba($color-primary, 0.98) 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, rgba($color-primary, 0.71) 0%,rgba($color-primary, 0.98) 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top, rgba($color-primary, 0.71) 0%,rgba($color-primary, 0.98) 100%); /* IE10+ */
-  background: linear-gradient(to bottom, rgba($color-primary, 0.71) 0%,rgba($color-primary, 0.98) 100%);
-  border-bottom: 1px solid $color-gray-lighter;
-  display: inline-block;
-  width: 100%;
-}
-
-.btn-group.filemanager-btn-group .btn:not(:first-child):not(:last-child),
-.btn-group.filemanager-path-group .btn:not(:first-child):not(:last-child) {
-  border-left: 1px solid $color-gray-light;
 }
 
 .file_manager {
@@ -191,7 +159,7 @@
 .file_manager #uploader .filemanager-path-group {
   padding: 0;
   display: block;
-  border: 1px solid  $color-gray;
+  border: 1px solid  $border-color;
   height: 30px;
   border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -207,7 +175,7 @@
 }
 
 .file_manager #uploader .filemanager-btn-group {
-  border: 1px solid  $color-gray;
+  border: 1px solid  $border-color;
   border-radius: 5px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -222,12 +190,12 @@
 
 .fileinfo .prompt-info {
   text-align: center;
-  color: $color-fg-theme;
+  color: $color-fg;
 }
 
 .allowed_file_types {
   border-top: $panel-border;
-  background: $color-bg-theme;
+  background: $color-bg;
   z-index: 5;
   padding: 0.25rem;
 }
@@ -261,7 +229,7 @@
   float: left;
   width: 100%;
   height: 21px !important;
-  border: 1px solid  $color-gray-dark;
+  border: 1px solid  $border-color;
   border-radius: 0 !important;
   -moz-border-radius: 0 !important;
   -webkit-border-radius: 0 !important;
@@ -313,7 +281,7 @@
   display: none;
   padding: 1rem;
   border-bottom: $panel-border;
-  background: $color-bg-theme;
+  background: $color-bg;
   position: absolute;
   top: 0;
   left: 0;
@@ -322,7 +290,7 @@
 }
 
 .upload_file .dz_cross_btn {
-  color: $color-fg-theme;
+  color: $color-fg;
   right: 0px;
   position: absolute;
   background: transparent;
@@ -359,7 +327,7 @@
 
 .file_selection_ctrl button.select_item {
   display: inline;
-  background:  $color-bg-theme;
+  background:  $color-bg;
   padding: 9px 0px 9px 0px;
   margin-left: 0px;
   margin-right: -7px;

@@ -1,30 +1,30 @@
 .wcDocker {
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
 }
 
 .wcModalBlocker {
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
 }
 
 .wcPanelBackground {
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
 }
 
 .wcPanelBackground .wcCenter {
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
 }
 
 .wcFrameFlasher {
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
 }
 
 .wcFrameShadower {
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
 }
 
 .wcFrameTitleBar {
   height: $title-height;
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
   border-bottom: $panel-border;
 }
 
@@ -43,7 +43,7 @@
 
 .wcFrameButton.disabled {
   pointer-events: none;
-  color: $color-gray;
+  opacity: $btn-disabled-opacity;
 }
 
 .wcFrameButton .fa {
@@ -52,7 +52,7 @@
 
 .wcFrameButtonBar {
   height: $title-height;
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
   border-bottom: $panel-border;
   padding: 0rem 0.25rem;
 
@@ -80,13 +80,13 @@
 }
 
 .wcPanelTab, .wcFrameTitle{
-  color: $color-fg-theme;
+  color: $color-fg;
   padding: $tabs-padding;
   margin: 0px;
 }
 
 .wcFloating {
-  box-shadow: $box-shadow;
+  box-shadow: $dialog-box-shadow;
   z-index: 1050 !important;
 
   &.wcFrame, & .wcPanelBackground {
@@ -152,7 +152,7 @@
 
 .wcFloating .wcPanelTabActive {
   border-bottom: none;
-  color: $color-fg-theme;
+  color: $color-fg;
   font-weight: bold;
 }
 
@@ -162,7 +162,7 @@
 
 .wcFloating .wcFrameTitleBar {
   height: $title-height;
-  background-color: $color-bg-theme;
+  background-color: $color-bg;
   border-bottom: $panel-border;
 }
 
@@ -182,7 +182,7 @@
 
 .wcPanelTabActive {
   border-bottom: $active-border;
-  color: $color-primary;
+  color: $active-color;
 }
 
 .wcFrameEdge {
