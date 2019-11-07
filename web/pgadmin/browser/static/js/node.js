@@ -28,6 +28,10 @@ define('pgadmin.browser.node', [
       F1: 112,
     };
 
+  const REMOVE_SERVER_PRIORITY = 5;
+  const REMOVE_SERVER_LABEL = 'Remove Server';
+  const SERVER = 'server';
+
   // It has already been defined.
   // Avoid running this script again.
   if (pgBrowser.Node)
@@ -142,8 +146,8 @@ define('pgadmin.browser.node', [
           module: self,
           applies: ['object', 'context'],
           callback: 'delete_obj',
-          priority: 2,
-          label: gettext('Delete/Drop'),
+          priority: self.get_menu_item_priority(self.type, 2),
+          label: self.change_menu_label(self.type, gettext('Delete/Drop')),
           data: {
             'url': 'drop',
           },
@@ -755,15 +759,31 @@ define('pgadmin.browser.node', [
             return;
           }
         } else {
-          msg = gettext('Are you sure you want to drop %s "%s"?', obj.label.toLowerCase(), d.label);
-          title = gettext('DROP %s?', obj.label);
+          var remove_drop_text;
+          if(obj.type === SERVER) {
+            remove_drop_text = 'Remove';
+          }
+          else {
+            remove_drop_text = 'DROP';
+          }
+
+          msg = gettext('Are you sure you want to %s %s "%s"?', remove_drop_text.toLowerCase(), obj.label.toLowerCase(), d.label);
+          title = gettext('%s %s?', remove_drop_text, obj.label);
 
           if (!(_.isFunction(obj.canDrop) ?
             obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
-            Alertify.error(
-              gettext('The %s "%s" cannot be dropped.', obj.label, d.label),
-              10
-            );
+            if(obj.type === SERVER) {
+              Alertify.error(
+                gettext('The %s "%s" cannot be removed.', obj.label, d.label),
+                10
+              );
+            }
+            else {
+              Alertify.error(
+                gettext('The %s "%s" cannot be dropped.', obj.label, d.label),
+                10
+              );
+            }
             return;
           }
         }
@@ -792,8 +812,14 @@ define('pgadmin.browser.node', [
                     console.warn(e.stack || e);
                   }
                 }
-                pgBrowser.report_error(
-                  gettext('Error dropping %s: "%s"', obj.label, objName), msg);
+                if(obj.type === SERVER) {
+                  pgBrowser.report_error(
+                    gettext('Error removing %s: "%s"', obj.label, objName), msg);
+                }
+                else {
+                  pgBrowser.report_error(
+                    gettext('Error dropping %s: "%s"', obj.label, objName), msg);
+                }
               });
           },
           null).show();
@@ -1756,6 +1782,18 @@ define('pgadmin.browser.node', [
         }
         return this.parent_type;
       }
+    },
+    get_menu_item_priority: function(type, default_priority) { //downgrade Remove Server priority in menus only for Servers
+      if(type && type === SERVER) {
+        return REMOVE_SERVER_PRIORITY;
+      }
+      return default_priority;
+    },
+    change_menu_label: function(type, default_label) { //change Delete/Drop menu option to Remove Server
+      if(type && type === SERVER) {
+        return gettext(REMOVE_SERVER_LABEL);
+      }
+      return default_label;
     },
   });
 
