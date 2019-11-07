@@ -14,7 +14,7 @@ body {
 
 div.body {
     font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-    font-size: 1rem;
+    font-size: 1.1rem;
     max-width: 100%;
     color: #222222;
     -webkit-font-smoothing: antialiased;
@@ -138,8 +138,21 @@ div.related[role=navigation] ~ div.related[role=navigation] {
     display: none;
 }
 
+
 div.related a {
     color: #fff;
+}
+
+div.footer div.related ul {
+    line-height: 0.85em;
+}
+
+div.footer div.related a {
+    text-decoration: none;
+}
+
+div.footer div.related a:hover {
+    text-decoration: underline;
 }
 
 div.document{
@@ -151,6 +164,7 @@ div.footer {
     padding: 5px 0;
     background-color: #295C85;
     top: calc(100% - 24px);
+    font-size: 1em;
 }
 
 .line-block {
@@ -379,14 +393,14 @@ div.sphinxsidebarwrapper {
 div.sphinxsidebarwrapper ul li.toctree-l1 ul li.toctree-l2 a:before{
     content: "●";
     padding-right: 5px;
-    font-size: 0.60rem;
+    font-size: 0.85rem;
     vertical-align: baseline;
 }
 
 div.sphinxsidebarwrapper ul li.toctree-l1 a:before{
     content: "●";
     padding-right: 5px;
-    font-size: 0.6rem;
+    font-size: 0.85rem;
 }
 
 div.body form input[type="text"]{
