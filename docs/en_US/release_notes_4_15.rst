@@ -48,3 +48,4 @@ Bug fixes
 | `Issue #4850 <https://redmine.postgresql.org/issues/4850>`_ -  Fixed an issue where Datetimepicker control opens when clicking on the label.
 | `Issue #4895 <https://redmine.postgresql.org/issues/4895>`_ -  Fixed potential issue in reset function for nested objects.
 | `Issue #4896 <https://redmine.postgresql.org/issues/4896>`_ -  Fixed an issue where escape key not working to close the open/save file dialog.
+| `Issue #4906 <https://redmine.postgresql.org/issues/4906>`_ -  Fixed an issue where keyboard shortcut for context menu is not working when using Firefox on CentOS7.

@@ -307,8 +307,9 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   bindContextMenu: function(event) {
     const tree = this.getTreeDetails();
-    const left = $(event.srcElement).find('.aciTreeEntry').position().left + 70;
-    const top = $(event.srcElement).find('.aciTreeEntry').position().top + 70;
+    let _srcElement = event.srcElement || event.target;
+    const left = $(_srcElement).find('.aciTreeEntry').position().left + 70;
+    const top = $(_srcElement).find('.aciTreeEntry').position().top + 70;
 
     tree.t.blur(tree.i);
     $('#tree').trigger('blur');
