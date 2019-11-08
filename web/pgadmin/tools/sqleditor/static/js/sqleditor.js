@@ -2256,7 +2256,7 @@ define('tools.querytool', [
          * loses focus and events don't work.
          */
         $(window).on('keydown', (e)=>{
-          if(self.gridView.keyAction) {
+          if(($('.sql-editor').find(e.target).length !== 0 || e.target == $('body.wcDesktop')[0]) && self.gridView.keyAction) {
             self.gridView.keyAction(e);
           }
         });
