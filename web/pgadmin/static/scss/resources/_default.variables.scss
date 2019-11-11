@@ -18,7 +18,7 @@ $color-secondary: $white !default;
 $color-danger: #e53935 !default;
 $color-danger-fg: $white !default;
 $color-danger-light: #F39999 !default;
-$color-danger-lighter: #F39999 !default;
+$color-danger-lighter: #FAECEC !default;
 
 $color-success: #43a047 !default;
 $color-success-fg: $black !default;
@@ -58,6 +58,8 @@ $grid-gutter-width: 15px;
 $border-radius: 0.25rem;
 
 $text-muted: $color-gray-dark !default;
+$header-bg: $color-bg !default;
+
 
 $navbar-bg: $color-primary;
 $navbar-font-size: 0.925rem;
@@ -72,6 +74,8 @@ $navbar-toggler-padding-y: 0.25rem; //no-change
 
 $form-group-margin-bottom:  0.5rem;
 $btn-active-box-shadow: none;
+
+$negative-bg: $color-gray-light !default;
 
 $dropdown-bg: $color-bg;
 $dropdown-color: $color-fg;
@@ -100,7 +104,7 @@ $card-spacer-y: 0rem;
 $card-spacer-x: 0rem;
 $card-border-radius: $border-radius;
 $card-border-color: $border-color;
-$card-cap-bg: $color-bg;
+$card-cap-bg: $header-bg;
 $card-bg: $color-bg;
 
 $navbar-padding-y: 0rem;
@@ -138,6 +142,11 @@ $input-btn-border-width: $border-width;
 $input-border-width: $input-btn-border-width;
 $input-btn-padding-y: .25rem;
 $input-btn-padding-x: .75rem;
+
+$btn-primary-color: $color-primary-fg;
+$btn-success-color: $color-success-fg;
+$btn-warning-color: $color-warning-fg;
+$btn-danger-color: $color-danger-fg;
 
 $component-active-bg: $color-primary;
 $input-btn-focus-width: .2rem;
@@ -183,7 +192,7 @@ $splitter-hover-width: 7px;
 
 $dropdown-submenu-top: -$dropdown-spacer;
 
-$table-bg: $color-bg;
+$table-bg: $color-bg !default;
 $table-bg-selected: $color-primary-light;
 $table-hover-border-color: $color-primary;
 $table-hover-border: $panel-border-width solid $color-primary !important;
@@ -205,7 +214,7 @@ $sql-title-bg: #5b6d7c;
 $sql-title-fg: $white;
 // Toolbar + editor title heights + title bottom border
 $sql-editor-panel-top: $title-height + $text-height-calc*16px + $sql-title-padding*2 + $panel-border-width;
-$sql-gutters-bg: $color-gray-light;
+$sql-gutters-bg: $negative-bg;
 $sql-history-detail-bg: $color-gray-lighter;
 $sql-history-success-bg: $color-primary-light;
 $sql-history-success-fg: $active-color;
@@ -224,7 +233,6 @@ $explain-sev-4-bg: #880000 !default;
 $explain-sev-3-color: #FFFFFF !default;
 $explain-sev-4-color: #FFFFFF !default;
 
-$negative-bg: $color-gray-light !default;
 $dialog-box-shadow: 0 0.5rem 3rem $shadow-base-color;
 
 $alert-icon-color: $white;
@@ -237,6 +245,9 @@ $card-header-padding : 0.25rem 0.5rem;
 $no-border-radius: 0px !important;
 
 $btn-checkbox-padding: $input-btn-padding-y $input-btn-padding-x;
+
+$scrollbar-color: $color-gray !default;
+$scrollbar-hover-color: $color-gray-dark !default;
 
 $security-text-color: $white;
 $security-btn-color: #038bba;

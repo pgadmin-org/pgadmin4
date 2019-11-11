@@ -35,6 +35,7 @@ const devToolVal = PRODUCTION ? false : 'eval';
 const analyzerMode = process.env.ANALYZE=='true' ? 'static' : 'disabled';
 
 const outputPath = __dirname + '/pgadmin/static/js/generated';
+const pgadminThemesJson = __dirname + '/pgadmin/misc/themes/pgadmin.themes.json';
 
 // Expose libraries in app context so they need not to
 // require('libname') when used in a module
@@ -84,7 +85,6 @@ const bundleAnalyzer = new BundleAnalyzerPlugin({
   reportFilename: 'analyze_report.html',
 });
 
-let pgadminThemesJson = 'pgadmin.themes.json';
 const copyFiles = new CopyPlugin([
   pgadminThemesJson,
   {

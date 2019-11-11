@@ -18,6 +18,11 @@
   z-index: 0;
 }
 
+.connection_status {
+  background-color: $sql-title-bg;
+  color: $sql-title-fg;
+  border-right: $border-width solid $border-color;
+}
 
 .editor-title {
   padding: $sql-title-padding;
@@ -39,10 +44,6 @@
   background: $color-primary-light;
 }
 
-.connection_status {
-  width: 40px;
-}
-
 
 .ajs-body .warn-icon {
   color: $color-warning;
@@ -55,16 +56,6 @@
   width: 100%;
   border-top: $panel-border;
   border-bottom: $panel-border;
-}
-
-.connection_status .fa-clock-o,
-.connection_status .fa-hourglass-half {
-  color: $color-warning;
-}
-
-.connection_status .fa-exclamation-circle,
-.connection_status .fa-exclamation-triangle {
-  color: $color-danger;
 }
 
 li.CodeMirror-hint-active {
@@ -328,14 +319,6 @@ div.strikeout:after {
     border: none;
     resize: none;
   }
-}
-
-.icon-query-tool-connected {
-  color: $color-primary;
-}
-
-.icon-query-tool-disconnected {
-  color: $color-danger;
 }
 
 .connection_status .obtaining-conn {

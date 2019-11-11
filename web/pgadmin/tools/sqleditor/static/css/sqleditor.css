@@ -252,6 +252,7 @@ input.editor-checkbox:focus {
 
 .connection_status {
   font-size: 1rem;
+  width: 40px;
 }
 
 .icon-query-tool-connected:before {

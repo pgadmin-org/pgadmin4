@@ -207,6 +207,7 @@ export function getRandomInt(min, max) {
 }
 
 export function titleize(i_str) {
+  if(i_str === '' || i_str === null) return i_str;
   return i_str.split(' ')
     .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
     .join(' ');

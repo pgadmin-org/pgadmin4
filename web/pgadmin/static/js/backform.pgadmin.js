@@ -2067,7 +2067,7 @@ define([
       }
 
       let new_value = _.findWhere(this.field.get('options'), {value: evt.params.data.id});
-      if(new_value.preview_src) {
+      if(new_value && !_.isUndefined(new_value.preview_src) && new_value.preview_src) {
         this.$el.find('.preview-img img').attr('src', new_value.preview_src);
       }
     },

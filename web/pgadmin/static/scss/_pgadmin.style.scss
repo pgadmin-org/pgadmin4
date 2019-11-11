@@ -186,7 +186,7 @@
     &.pg-prop-btn-group-below {
       text-align: right;
       padding: $footer-padding;
-      background: $color-bg;
+      background: $header-bg;
       border-top: $panel-border;
     }
   }
@@ -353,7 +353,7 @@
   display: block;
   text-align: left;
   cursor: pointer;
-  background-color: $color-bg;
+  background-color: $header-bg;
   padding: 7px;
   font-size: inherit;
   border-bottom: $panel-border;
@@ -842,7 +842,7 @@ body {
 }
 
 .nav-tabs {
-  background-color: $color-bg;
+  background-color: $header-bg;
 }
 
 .editor-toolbar {

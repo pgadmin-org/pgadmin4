@@ -14,9 +14,8 @@ from flask import url_for, render_template, Response, request
 from flask_babelex import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.csrf import pgCSRFProtect
-from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import cleanup_session_files
-
+from pgadmin.misc.themes import get_all_themes
 import config
 
 MODULE_NAME = 'misc'
@@ -68,16 +67,16 @@ class MiscModule(PgAdminModule):
 
         theme_options = []
 
-        for theme in config.THEMES:
+        for theme, theme_data in (get_all_themes()).items():
             theme_options.append({
-                'label': config.THEMES[theme]['disp_name']
+                'label': theme_data['disp_name']
                 .replace('_', ' ')
                 .replace('-', ' ')
                 .title(),
                 'value': theme,
                 'preview_src': url_for(
                     'static', filename='js/generated/img/' +
-                    config.THEMES[theme]['preview_img']
+                    theme_data['preview_img']
                 )
             })
 

@@ -1,0 +1,7 @@
+{
+    "dark": {
+        "disp_name": "dark_(Beta)",
+        "cssfile": "pgadmin.theme.dark",
+        "preview_img": "dark_preview.png"
+    }
+}

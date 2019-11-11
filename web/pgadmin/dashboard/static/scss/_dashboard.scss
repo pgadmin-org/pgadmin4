@@ -43,10 +43,23 @@
     & .flotr-labels {
         color: $color-fg !important;
     }
-   & .flotr-legend {
-        .flotr-legend-label {
+    & .flotr-legend {
+        border: none !important;
+        padding: 0.25rem 0.5rem;
+        & .flotr-legend-label {
             color: $color-fg !important;
             padding-left: 0.25rem;
         }
-   }
+
+        & .flotr-legend-color-box>div {
+            border: none !important;
+            &>div {
+                border: none !important;
+            }
+        }
+
+        & .flotr-legend-bg {
+            border-radius: $border-radius;
+        }
+    }
 }

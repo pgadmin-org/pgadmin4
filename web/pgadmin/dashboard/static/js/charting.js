@@ -32,6 +32,10 @@ export class Chart {
       },
       shadowSize: 0,
       resolution : 3,
+      grid: {
+        color: 'transparent',
+        tickColor: '#8f8f8f',
+      },
     };
 
     this._dataset = null;
