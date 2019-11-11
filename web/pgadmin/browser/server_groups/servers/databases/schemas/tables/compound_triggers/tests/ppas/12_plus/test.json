@@ -48,7 +48,7 @@
       "sql_endpoint": "NODE-compound_trigger.sql_id",
       "data": {
         "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#",
-        "prosrc": "var varchar2(20) := 'Global_var';\n\nBEFORE STATEMENT IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('Before Statement: ' || var);\n\tvar := 'BEFORE STATEMENT';\nEND;\n\nBEFORE EACH ROW IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('Before each row: ' || var);\n\tvar := 'BEFORE EACH ROW';\nEND;",
+        "prosrc": "var varchar2(20) := 'Global_var';\n\nBEFORE EACH ROW IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('Before each row: ' || var);\n\tvar := 'BEFORE EACH ROW';\nEND;",
         "evnt_insert": true,
         "evnt_update": false,
         "evnt_delete": false,
@@ -61,7 +61,7 @@
       "endpoint": "NODE-compound_trigger.obj_id",
       "sql_endpoint": "NODE-compound_trigger.sql_id",
       "data": {
-        "prosrc": "var varchar2(20) := 'Global_var';\n\nAFTER STATEMENT IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('After Statement: ' || var);\n\tvar := 'AFTER STATEMENT';\nEND;\n\nAFTER EACH ROW IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('After each row: ' || var);\n\tvar := 'AFTER EACH ROW';\nEND;",
+        "prosrc": "var varchar2(20) := 'Global_var';\n\nAFTER EACH ROW IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('After each row: ' || var);\n\tvar := 'AFTER EACH ROW';\nEND;",
         "evnt_update": true,
         "description": "This is test comment."
       },

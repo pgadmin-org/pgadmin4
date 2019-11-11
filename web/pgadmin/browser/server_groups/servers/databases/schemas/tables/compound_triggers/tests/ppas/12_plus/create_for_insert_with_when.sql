@@ -9,12 +9,6 @@ CREATE OR REPLACE TRIGGER "test_compound_trigger_$%{}[]()&*^!@""'`\/#"
     COMPOUND TRIGGER
 var character varying(20) DEFAULT 'Global_var';
 
-BEFORE STATEMENT IS
-BEGIN
-	DBMS_OUTPUT.PUT_LINE('Before Statement: ' || var);
-	var := 'BEFORE STATEMENT';
-END;
-
 BEFORE EACH ROW IS
 BEGIN
 	DBMS_OUTPUT.PUT_LINE('Before each row: ' || var);
