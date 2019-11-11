@@ -149,9 +149,9 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         self.page.remove_server(self.server)
 
     def _schema_node_expandable(self):
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
 
     def _check_datatype(self):
         # Slick grid does not render all the column if viewport is not enough

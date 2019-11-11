@@ -90,20 +90,22 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         self.verify_command()
 
     def _open_maintenance_dialogue(self):
-        self.page.toggle_open_server(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.database_name)
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.database_name)
         if self.test_level == 'table':
-            self.page.toggle_open_tree_item('Schemas')
-            self.page.toggle_open_tree_item('public')
-            self.page.toggle_open_tables_node()
+            self.page.toggle_open_schema_node(self.server['name'],
+                                              self.server['db_password'],
+                                              self.database_name, 'public')
+            self.page.toggle_open_tables_node(self.server['name'],
+                                              self.server['db_password'],
+                                              self.database_name, 'public')
             self.page.select_tree_item(self.table_name)
 
         self.page.retry_click(
             (By.LINK_TEXT,
              NavMenuLocators.tools_menu_link_text),
             (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css))
-
         maintenance_obj = self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css)))
         maintenance_obj.click()
@@ -118,11 +120,12 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             test_gui_helper.close_bgprocess_popup(self)
 
         self.assertEquals(status, "Successfully completed.")
-        self.page.find_by_css_selector(
-            NavMenuLocators.status_alertifier_more_btn_css).click()
 
-        self.wait.until(EC.visibility_of_element_located(
-            (By.XPATH, NavMenuLocators.process_watcher_alertfier)))
+        self.page.retry_click(
+            (By.CSS_SELECTOR,
+             NavMenuLocators.status_alertifier_more_btn_css),
+            (By.XPATH,
+             NavMenuLocators.process_watcher_alertfier))
 
         command = self.page.find_by_css_selector(
             NavMenuLocators.
@@ -148,13 +151,12 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
                                        "\nVACUUM VERBOSE"
                                        " public." + self.table_name + ";")
 
-        self.page.find_by_xpath(
-            NavMenuLocators.process_watcher_close_button_xpath).click()
+        test_gui_helper.close_process_watcher(self)
 
     def after(self):
         test_gui_helper.close_bgprocess_popup(self)
         self.page.remove_server(self.server)
-        test_utils.delete_table(self.server, self.test_db,
+        test_utils.delete_table(self.server, self.database_name,
                                 self.table_name)
         connection = test_utils.get_db_connection(
             self.server['db'],

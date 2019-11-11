@@ -58,7 +58,8 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
                              "<h1>test</h1>")
 
     def _role_node_expandable(self, role):
-        self.page.toggle_open_server(self.server['name'])
+        self.page.expand_server_node(
+            self.server['name'], self.server['db_password'])
         self.page.toggle_open_tree_item('Login/Group Roles')
         self.page.select_tree_item(role)
 
@@ -93,6 +94,6 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         """This will click and open membership tab of role"""
 
         self.page.retry_click(
-            (By.XPATH,
-             "//a[normalize-space(text())='Membership']"),
+            (By.LINK_TEXT,
+             "Membership"),
             (By.XPATH, "//input[@placeholder='Select members']"))

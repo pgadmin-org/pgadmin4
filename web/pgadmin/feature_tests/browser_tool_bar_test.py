@@ -47,7 +47,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
               file=sys.stderr, end="")
         self.test_view_data_tool_button()
         print("OK.", file=sys.stderr)
-
+        #
         # Check for filtered rows button
         print("\nFiltered Rows ToolBar Button ",
               file=sys.stderr, end="")
@@ -60,9 +60,9 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
                                 self.test_table_name)
 
     def test_query_tool_button(self):
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
         self.page.retry_click(
             (By.CSS_SELECTOR,
              BrowserToolBarLocators.open_query_tool_button_css),
@@ -70,9 +70,12 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
 
     def test_view_data_tool_button(self):
         self.page.select_tree_item(self.test_db)
-        self.page.toggle_open_tree_item('Schemas')
-        self.page.toggle_open_tree_item('public')
-        self.page.toggle_open_tables_node()
+        self.page.toggle_open_schema_node(
+            self.server['name'], self.server['db_password'],
+            self.test_db, 'public')
+        self.page.toggle_open_tables_node(
+            self.server['name'], self.server['db_password'],
+            self.test_db, 'public')
         self.page.select_tree_item(self.test_table_name)
 
         self.page.retry_click(

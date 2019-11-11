@@ -6,6 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+from regression.feature_utils.locators import NavMenuLocators
 
 
 def close_bgprocess_popup(tester):
@@ -41,3 +42,16 @@ def close_bgprocess_popup(tester):
     except Exception:
         tester.driver.find_element_by_css_selector(
             ".btn.btn-sm-sq.btn-primary.pg-bg-close > i").click()
+
+
+def close_process_watcher(tester):
+    attempt = 5
+    while attempt > 0:
+        close_btn = tester.page.find_by_xpath(
+            NavMenuLocators.process_watcher_close_button_xpath)
+        close_btn.click()
+        if not tester.page.check_if_element_exist_by_xpath(
+                NavMenuLocators.process_watcher_close_button_xpath, 1):
+            break
+        else:
+            attempt -= 1

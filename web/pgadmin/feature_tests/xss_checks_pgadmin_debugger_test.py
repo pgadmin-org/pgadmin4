@@ -39,10 +39,10 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         self.function_name = "a_test_function" + \
                              str(random.randint(10000, 65535))
         test_utils.create_debug_function(
-            self.server, "postgres", self.function_name
+            self.server, self.test_db, self.function_name
         )
 
-        if test_utils.does_function_exist(self.server, 'postgres',
+        if test_utils.does_function_exist(self.server, self.test_db,
                                           self.function_name) != 'True':
             raise Exception("The required function is not found")
 
@@ -54,15 +54,16 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
     def after(self):
         self.page.remove_server(self.server)
-        test_utils.drop_debug_function(self.server, "postgres",
+        test_utils.drop_debug_function(self.server, self.test_db,
                                        self.function_name)
 
     def _function_node_expandable(self):
-        self.page.toggle_open_server(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item('postgres')
-        self.page.toggle_open_tree_item('Schemas')
-        self.page.toggle_open_tree_item('public')
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
+        self.page.toggle_open_schema_node(self.server['name'],
+                                          self.server['db_password'],
+                                          self.test_db, 'public')
         self.page.toggle_open_function_node()
         self.page.select_tree_item(self.function_name + "()")
 

@@ -21,7 +21,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from regression.feature_utils.locators import QueryToolLocators, \
-    NavMenuLocators
+    NavMenuLocators, ConnectToServerDiv
 from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
 
@@ -223,7 +223,7 @@ class PgadminPage:
         self.click_element(server_to_remove)
         object_menu_item = self.find_by_partial_link_text("Object")
         self.click_element(object_menu_item)
-        delete_menu_item = self.find_by_partial_link_text("Delete/Drop")
+        delete_menu_item = self.find_by_partial_link_text("Remove Server")
         self.click_element(delete_menu_item)
         self.click_modal('OK')
 
@@ -244,14 +244,6 @@ class PgadminPage:
                 time.sleep(.4)
                 if attempts == 0:
                     raise Exception(e)
-
-    def get_expansion_status_of_node(self, xpath_node):
-        """get the expansion status for a node through xpath"""
-        node_is_expanded = False
-        element = self.find_by_xpath(xpath_node)
-        if element.get_attribute("aria-expanded") == 'true':
-            node_is_expanded = True
-        return node_is_expanded
 
     def toggle_open_servers_group(self):
         """This will open Servers group to display underlying nodes"""
@@ -280,50 +272,238 @@ class PgadminPage:
                   file=sys.stderr)
         return is_expanded
 
-    def toggle_open_tree_item(self, tree_item_text):
-        # 'sleep' here helps in cases where underlying nodes are auto opened.
-        # Otherwise, encountered situations where False value is returned
-        # even if the underlying node to be clicked was Opened.
-        time.sleep(.6)
-        item_with_text = self.find_by_xpath(
-            TreeAreaLocators.specified_tree_node.format(tree_item_text))
+    def expand_server_node(self, server_name, server_password):
+        """will expand a particular server node"""
+        server_node_expansion_status = False
+        if self.toggle_open_servers_group():
+            if self.wait_for_elements_to_appear(
+                self.driver,
+                    TreeAreaLocators.server_group_sub_nodes):
+                subnodes_of_servers = self.find_by_xpath_list(
+                    TreeAreaLocators.server_group_sub_nodes)
+                subnodes_of_servers_expansion_status = \
+                    self.find_by_xpath_list(
+                        TreeAreaLocators.
+                        server_group_sub_nodes_exp_status)
+                index_of_server_node = self.get_index_of_element(
+                    subnodes_of_servers, server_name)
 
-        self.driver.execute_script("arguments[0].scrollIntoView()",
-                                   item_with_text)
+                if not self.check_server_is_connected(
+                        index_of_server_node):
+                    if self.click_and_connect_server(
+                        subnodes_of_servers[index_of_server_node],
+                            server_password):
+                        server_node_expansion_status = True
+                    else:
+                        print(
+                            "(expand_server_node)The server node is "
+                            "not expanded",
+                            file=sys.stderr)
+                else:
+                    if not self.get_expansion_status_of_node_element(
+                        subnodes_of_servers_expansion_status[
+                            index_of_server_node]):
+                        webdriver.ActionChains(self.driver).double_click(
+                            subnodes_of_servers[
+                                index_of_server_node]).perform()
+                        if self.wait_for_elements_to_appear(
+                            self.driver, TreeAreaLocators.
+                                sub_nodes_of_a_server_node(server_name),
+                                30):
+                            server_node_expansion_status = True
+                    else:
+                        server_node_expansion_status = True
+        else:
+            print(
+                "(expand_server_node) The Servers node is"
+                " not expanded",
+                file=sys.stderr)
+        return server_node_expansion_status
 
-        if item_with_text.find_element_by_xpath(
-            ".//ancestor::*[@class='aciTreeLine']").get_attribute(
-                "aria-expanded") == 'false':
-            item = item_with_text.find_element_by_xpath(
-                ".//parent::*[@class='aciTreeItem']")
-            ActionChains(self.driver).double_click(item).perform()
-        retry = 3
-        while retry > 0:
-            try:
-                WebDriverWait(self.driver, 5).until((lambda item_with_text: (
-                    item_with_text.find_element_by_xpath(
-                        ".//ancestor::*[@class='aciTreeLine']").
-                    get_attribute("aria-expanded") == 'true')))
-                break
-            except TimeoutException:
-                retry -= 1
-                pass
+    def expand_databases_node(self, server_name, server_password):
+        """will expand databases node under server node"""
+        databases_node_expanded = False
+        if self.expand_server_node(server_name, server_password):
+            if self.wait_for_elements_to_appear(
+                self.driver,
+                    TreeAreaLocators.sub_nodes_of_a_server_node(server_name)):
+                subnodes_of_server_node = self.find_by_xpath_list(
+                    TreeAreaLocators.sub_nodes_of_a_server_node(server_name))
+                subnode_of_server_node_exp_status = self.find_by_xpath_list(
+                    TreeAreaLocators.sub_nodes_of_a_server_node_exp_status(
+                        server_name))
+                index_of_databases_node = self.get_index_of_element(
+                    subnodes_of_server_node,
+                    "Databases")
+                time.sleep(2)
+                expansion_status = self.get_expansion_status_of_node_element(
+                    subnode_of_server_node_exp_status[index_of_databases_node])
+                if not expansion_status:
+                    retry = 5
+                    while retry > 0:
+                        webdriver.ActionChains(self.driver).double_click(
+                            subnodes_of_server_node[
+                                index_of_databases_node].find_element_by_xpath(
+                                ".//*[@class='aciTreeItem']")
+                        ).perform()
+                        if self.wait_for_elements_to_appear(
+                            self.driver, TreeAreaLocators.
+                                sub_nodes_of_databases_node(server_name), 3):
+                            databases_node_expanded = True
+                            break
+                        else:
+                            retry -= 1
+                else:
+                    databases_node_expanded = True
+        else:
+            print("The server/previous nodes not expanded",
+                  file=sys.stderr)
+        return databases_node_expanded
 
-    def toggle_open_tables_node(self):
-        """The function will be used for opening Tables node only"""
+    def expand_database_node(self, server_name, server_password,
+                             name_of_database):
+        """will expand database node under databases node"""
+        db_node_expanded_status = False
+        if self.expand_databases_node(server_name, server_password):
+            sub_nodes_of_databases_node = self.find_by_xpath_list(
+                TreeAreaLocators.sub_nodes_of_databases_node(server_name))
+            index_of_required_db_node = self.get_index_of_element(
+                sub_nodes_of_databases_node,
+                name_of_database)
+            expansion_status = self.get_expansion_status_of_node_element(
+                self.find_by_xpath_list(
+                    TreeAreaLocators.
+                    sub_nodes_of_databases_node_exp_status(
+                        server_name))[
+                    index_of_required_db_node])
+            if not expansion_status:
+                self.driver.execute_script("arguments[0].scrollIntoView()",
+                                           sub_nodes_of_databases_node[
+                                               index_of_required_db_node])
+                webdriver.ActionChains(self.driver).double_click(
+                    sub_nodes_of_databases_node[
+                        index_of_required_db_node]).perform()
+                if self.wait_for_elements_to_appear(
+                    self.driver, TreeAreaLocators.
+                        sub_nodes_of_database_node(
+                        name_of_database)):
+                    db_node_expanded_status = True
+            else:
+                db_node_expanded_status = True
+        else:
+            print("The databases/previous nodes not expanded",
+                  file=sys.stderr)
+        return db_node_expanded_status
 
-        # get the element which contains 'aria-expanded' info
-        tables_expansion_ele = self.find_by_xpath("//div[div[div[div[div[div"
-                                                  "[div[div[span[span["
-                                                  "(@class='aciTreeText') and "
-                                                  "text()='Tables']]]]]]]]]]")
+    def toggle_open_schemas_node(self, server_name, server_password,
+                                 name_of_database):
+        """will expand schemas node under a db node"""
+        expansion_status = False
+        if self.expand_database_node(server_name, server_password,
+                                     name_of_database):
+            sub_nodes_db_node = self.find_by_xpath_list(
+                TreeAreaLocators.sub_nodes_of_database_node(
+                    name_of_database))
+            index_of_schemas_node = self.get_index_of_element(
+                sub_nodes_db_node, "Schemas")
+            expansion_status = self.get_expansion_status_of_node_element(
+                self.find_by_xpath_list(
+                    TreeAreaLocators.sub_nodes_of_database_node_exp_status(
+                        name_of_database))[
+                    index_of_schemas_node])
+            if not expansion_status:
+                self.driver.execute_script(
+                    "arguments[0].scrollIntoView()",
+                    sub_nodes_db_node[index_of_schemas_node])
+                webdriver.ActionChains(self.driver).double_click(
+                    sub_nodes_db_node[index_of_schemas_node]).perform()
+                if self.wait_for_elements_to_appear(
+                    self.driver, TreeAreaLocators.
+                        sub_nodes_of_schemas_node(name_of_database)):
+                    expansion_status = True
+            else:
+                expansion_status = True
+        else:
+            print(
+                "(expand_schemas_node) database/previous nodes "
+                "are not expanded",
+                file=sys.stderr)
+        return expansion_status
 
-        if tables_expansion_ele.get_attribute('aria-expanded') == 'false':
-            # button element of the Tables node to open it
-            item_button = self.find_by_xpath(
-                "//div[span[span[(@class='aciTreeText') and text()"
-                "='Tables']]]/span[@class='aciTreeButton']")
-            ActionChains(self.driver).click(item_button).perform()
+    def toggle_open_schema_node(
+        self, server_name, server_password,
+            name_of_database, name_of_schema_node):
+        """will expand schema node under schemas node"""
+        expansion_status = False
+        if self.toggle_open_schemas_node(
+                server_name, server_password, name_of_database):
+            sub_nodes_schemas_node = self.find_by_xpath_list(
+                TreeAreaLocators.sub_nodes_of_schemas_node(
+                    name_of_database))
+            index_of_schema_node = self.get_index_of_element(
+                sub_nodes_schemas_node,
+                name_of_schema_node)
+            expansion_status = self.get_expansion_status_of_node_element(
+                self.find_by_xpath_list(
+                    TreeAreaLocators.sub_nodes_of_schemas_node_exp_status(
+                        name_of_database))[
+                    index_of_schema_node])
+            if not expansion_status:
+                self.driver.execute_script(
+                    "arguments[0].scrollIntoView()",
+                    sub_nodes_schemas_node[index_of_schema_node])
+                webdriver.ActionChains(self.driver).double_click(
+                    sub_nodes_schemas_node[index_of_schema_node]).perform()
+                if self.wait_for_elements_to_appear(
+                    self.driver, TreeAreaLocators.
+                        sub_nodes_of_schema_node(name_of_database)):
+                    expansion_status = True
+            else:
+                expansion_status = True
+        else:
+            print(
+                "(expand_schema_node) schema/previous nodes are"
+                " not expanded",
+                file=sys.stderr)
+        return expansion_status
+
+    def toggle_open_tables_node(
+        self, server_name, server_password,
+            name_of_database, name_of_schema_node):
+        """will expand tables node under schema node"""
+        node_expanded_successfully = False
+        if self.toggle_open_schema_node(
+            server_name, server_password, name_of_database,
+                name_of_schema_node):
+            sub_nodes_of_schema_node = self.find_by_xpath_list(
+                TreeAreaLocators.sub_nodes_of_schema_node(
+                    name_of_database))
+            sub_nodes_of_schema_node_exp_status = self.find_by_xpath_list(
+                TreeAreaLocators.sub_nodes_of_schema_node_exp_status(
+                    name_of_database))
+            index_of_tables_node = self.get_index_of_element(
+                sub_nodes_of_schema_node, "Tables")
+            expansion_status = self.get_expansion_status_of_node_element(
+                sub_nodes_of_schema_node_exp_status[index_of_tables_node])
+            if not expansion_status:
+                self.driver.execute_script("arguments[0].scrollIntoView()",
+                                           sub_nodes_of_schema_node[
+                                               index_of_tables_node])
+                webdriver.ActionChains(self.driver).double_click(
+                    sub_nodes_of_schema_node[
+                        index_of_tables_node]).perform()
+                if self.wait_for_elements_to_appear(
+                    self.driver, TreeAreaLocators.
+                        sub_nodes_of_tables_node):
+                    node_expanded_successfully = True
+            else:
+                node_expanded_successfully = True
+        else:
+            print(
+                "(expand_tables_node) schema/previous nodes "
+                "are not expanded",
+                file=sys.stderr)
+        return node_expanded_successfully
 
     def toggle_open_function_node(self):
         """The function will be used for opening Functions node only"""
@@ -378,6 +558,124 @@ class PgadminPage:
                     attempts -= 1
             else:
                 node_expanded = True
+
+    def check_server_is_connected(self, index_of_server):
+        """This will check connected status of a server, as connection
+        status is contained either in span or div element so checking it"""
+        server_connected = False
+        try:
+            connection_status_elements = self.find_by_xpath_list(
+                TreeAreaLocators.server_group_sub_nodes_connected_status)
+            span_elements = connection_status_elements[
+                index_of_server].find_elements_by_tag_name("span")
+            div_elements = connection_status_elements[
+                index_of_server].find_elements_by_tag_name("div")
+
+            span_value_of_class_att = ""
+            div_value_of_class_att = ""
+
+            if len(span_elements) > 0:
+                span_value_of_class_att = \
+                    span_elements[0].get_attribute('class')
+            if len(div_elements) > 0:
+                div_value_of_class_att = \
+                    div_elements[0].get_attribute('class')
+            if (("aciTreeIcon icon-pg" in span_value_of_class_att or
+                 "aciTreeIcon icon-pg" in div_value_of_class_att or
+                 "aciTreeIcon icon-ppas" in
+                 span_value_of_class_att or
+                 "aciTreeIcon icon-ppas" in div_value_of_class_att) and
+                    ("aciTreeIcon icon-server-not-connected" not in
+                        span_value_of_class_att or
+                        "aciTreeIcon icon-server-not-connected" not in
+                        div_value_of_class_att)):
+                server_connected = True
+        except Exception as e:
+            print("There is some exception thrown in the function "
+                  "check_server_is_connected and is: " + str(e),
+                  file=sys.stderr)
+        return server_connected
+
+    def click_and_connect_server(self, server_element, password):
+        """will connect a server node, will provide the password in the
+        respective window"""
+        server_connection_status = False
+        try:
+            webdriver.ActionChains(self.driver).double_click(
+                server_element).perform()
+            if self.wait_for_element_to_appear(self.driver,
+                                               ConnectToServerDiv.ok_button):
+                self.fill_input_by_xpath(
+                    ConnectToServerDiv.password_field, password)
+                self.find_by_xpath(ConnectToServerDiv.ok_button).click()
+                self.wait_until_element_not_visible(
+                    ConnectToServerDiv.ok_button)
+                if self.wait_for_element_to_be_visible(
+                        self.driver, ConnectToServerDiv.error_message, 2):
+                    print(
+                        "While entering password in click_and_connect_server "
+                        "function, error is occurred : " + str(
+                            self.find_by_xpath(
+                                ConnectToServerDiv.error_message).text),
+                        file=sys.stderr)
+                else:
+                    server_connection_status = True
+        except Exception as e:
+            print(
+                "There is some exception thrown click_and_connect_server "
+                "and is: " + str(
+                    e), file=sys.stderr)
+        return server_connection_status
+
+    def get_expansion_status_of_node(self, xpath_node):
+        """get the expansion status for a node through xpath"""
+        node_is_expanded = False
+        element = self.find_by_xpath(xpath_node)
+        if element.get_attribute("aria-expanded") == 'true':
+            node_is_expanded = True
+        return node_is_expanded
+
+    def get_expansion_status_of_node_element(self, element):
+        """get the expansion status for an element"""
+        node_is_expanded = False
+        try:
+            if element.get_attribute("aria-expanded") == 'true':
+                node_is_expanded = True
+        except Exception as e:
+            print(
+                "There is some exception thrown in the function "
+                "get_expansion_status_of_node_element and is: " + str(
+                    e), file=sys.stderr)
+        return node_is_expanded
+
+    def toggle_open_tree_item(self, tree_item_text):
+        # 'sleep' here helps in cases where underlying nodes are auto opened.
+        # Otherwise, encountered situations where False value is returned
+        # even if the underlying node to be clicked was Opened.
+        time.sleep(.6)
+        item_with_text = self.find_by_xpath(
+            TreeAreaLocators.specified_tree_node.format(tree_item_text))
+
+        self.driver.execute_script("arguments[0].scrollIntoView()",
+                                   item_with_text)
+
+        if item_with_text.find_element_by_xpath(
+            ".//ancestor::*[@class='aciTreeLine']").get_attribute(
+                "aria-expanded") == 'false':
+            item = item_with_text.find_element_by_xpath(
+                ".//parent::*[@class='aciTreeItem']")
+            ActionChains(self.driver).double_click(item).perform()
+        retry = 3
+        while retry > 0:
+            try:
+                WebDriverWait(self.driver, 5).until((lambda item_with_text: (
+                    item_with_text.find_element_by_xpath(
+                        ".//ancestor::*[@class='aciTreeLine']").
+                    get_attribute("aria-expanded") == 'true')))
+                break
+            except TimeoutException:
+                retry -= 1
+                pass
 
     def toggle_open_server(self, tree_item_text):
         def check_for_password_dialog_or_tree_open(driver):
@@ -692,6 +990,19 @@ class PgadminPage:
 
         return self._wait_for("element to exist", element_if_it_exists)
 
+    def wait_for_elements_to_appear(self, driver, locator, time_value=20):
+        """This will wait until list of elements or an element is visible,
+        The time out value is userdefined"""
+        elements_located_status = False
+        try:
+            if WebDriverWait(driver, time_value).until(
+                    EC.visibility_of_any_elements_located((
+                        By.XPATH, locator))):
+                elements_located_status = True
+        except Exception as e:
+            pass
+        return elements_located_status
+
     def find_by_xpath_list(self, xpath):
         """This will find out list of elements through a single xpath"""
         return self.wait_for_elements(
@@ -749,11 +1060,11 @@ class PgadminPage:
         click_status = False
         attempt = 0
 
-        while click_status is not True and attempt < 5:
+        while click_status is not True and attempt < 10:
             try:
                 element = self.driver.find_element(*click_locator)
                 element.click()
-                WebDriverWait(self.driver, 5).until(
+                WebDriverWait(self.driver, 2).until(
                     EC.visibility_of_element_located(verify_locator))
                 click_status = True
             except Exception:

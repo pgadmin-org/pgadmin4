@@ -32,12 +32,12 @@ class TableDdlFeatureTest(BaseFeatureTest):
         test_utils.create_table(self.server, self.test_db,
                                 self.test_table_name)
 
-        self.page.toggle_open_server(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
-        self.page.toggle_open_tree_item('Schemas')
-        self.page.toggle_open_tree_item('public')
-        self.page.toggle_open_tree_item('Tables')
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
+        self.page.toggle_open_tables_node(
+            self.server['name'], self.server['db_password'],
+            self.test_db, 'public')
         self.page.select_tree_item(self.test_table_name)
         self.page.click_tab("SQL")
 

@@ -87,7 +87,7 @@ class NavMenuLocators:
         ".bg-process-details .bg-detailed-desc"
 
     process_watcher_close_button_xpath = \
-        "//div[contains(@class,'wcFloatingFocus')]//" \
+        "//div[contains(@class,'wcFloating')]//" \
         "div[contains(@class,'fa-close')]"
 
     restore_file_name_xpath = "//div[contains(text(),'Restore')]" \
@@ -227,3 +227,20 @@ class QueryToolLocators:
     read_only_column_icon_xpath = "//div[contains(@class," \
                                   " 'editable-column-header-icon')]" \
                                   "/i[contains(@class, 'fa-lock')]"
+
+
+class ConnectToServerDiv:
+    # This will contain xpaths for element relating to Connect to server div
+
+    password_field = "//input[@id='password']"
+
+    ok_button = \
+        "//div [@class='alertify  ajs-modeless ajs-movable ajs-zoom']" \
+        "//button[text()='OK']"
+
+    error_message = \
+        "//form[@id='frmPassword']/div/div//div[@class='alert-text']"
+
+    cancel_button = \
+        "//div [@class='alertify  ajs-modeless ajs-movable ajs-zoom']" \
+        "//button[text()='Cancel']"

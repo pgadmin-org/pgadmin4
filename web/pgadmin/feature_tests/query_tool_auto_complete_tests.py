@@ -56,9 +56,9 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         test_utils.create_table(self.server, self.test_db,
                                 self.second_table_name)
 
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
 
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()

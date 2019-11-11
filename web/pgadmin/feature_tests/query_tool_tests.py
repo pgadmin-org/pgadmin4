@@ -35,9 +35,9 @@ class QueryToolFeatureTest(BaseFeatureTest):
     def before(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
         self._reset_options()
@@ -254,7 +254,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
             )
             # Table height takes some time to update, for which their is no
             # particular way
-            time.sleep(1)
+            time.sleep(2)
             if canvas_ele.size['height'] == scrolling_height:
                 break
             else:

@@ -60,9 +60,9 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         print("OK.", file=sys.stderr)
 
     def _navigate_to_query_tool(self):
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
         self.page.open_query_tool()
 
     def _create_new_file(self):

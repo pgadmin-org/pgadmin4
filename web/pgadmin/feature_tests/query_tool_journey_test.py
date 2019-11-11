@@ -103,7 +103,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
             QueryToolLocators.copy_button_css)
         copy_row.click()
 
-        self.assertEqual('"Some-Name"\t"6"\t"some info"',
+        self.assertEqual('"Some-Name"\t6\t"some info"',
                          pyperclip.paste())
 
     def _test_copies_columns(self):
@@ -380,9 +380,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_modal('Yes')
 
     def _navigate_to_query_tool(self):
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
 

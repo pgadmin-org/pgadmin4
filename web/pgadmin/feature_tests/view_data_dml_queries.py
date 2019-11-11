@@ -122,12 +122,12 @@ CREATE TABLE public.nonintpkey
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
 
-        self.page.toggle_open_tree_item(self.server['name'])
-        self.page.toggle_open_tree_item('Databases')
-        self.page.toggle_open_tree_item(self.test_db)
-        self.page.toggle_open_tree_item('Schemas')
-        self.page.toggle_open_tree_item('public')
-        self.page.toggle_open_tree_item('Tables')
+        self.page.expand_database_node(
+            self.server['name'],
+            self.server['db_password'], self.test_db)
+        self.page.toggle_open_tables_node(self.server['name'],
+                                          self.server['db_password'],
+                                          self.test_db, 'public')
 
         self._load_config_data('table_insert_update_cases')
         # iterate on both tables
@@ -349,13 +349,13 @@ CREATE TABLE public.nonintpkey
             element = result_row.find_element_by_class_name("r" + str(idx))
             self.page.driver.execute_script(
                 "arguments[0].scrollIntoView(false)", element)
-
-            self.assertEquals(element.text, config_check_data[str(idx)][1])
+            time.sleep(0.4)
             self.assertEquals(element.text, config_check_data[str(idx)][1])
 
         # scroll browser back to the left
         # to reset position so other assertions can succeed
         for idx in reversed(list(config_check_data.keys())):
+            time.sleep(0.4)
             element = result_row.find_element_by_class_name("r" + str(idx))
             self.page.driver.execute_script(
                 "arguments[0].scrollIntoView(false)", element)
