@@ -33,7 +33,7 @@ $color-gray: #bac1cd !default;
 $color-gray-light: #ebeef3 !default;
 $color-gray-lighter: #f3f5f9 !default;
 
-$color-brand: $white !default;
+$color-brand: $color-primary !default;
 
 
 /* Typography */
@@ -213,7 +213,7 @@ $sql-title-padding: 3px;
 $sql-title-bg: #5b6d7c;
 $sql-title-fg: $white;
 // Toolbar + editor title heights + title bottom border
-$sql-editor-panel-top: $title-height + $text-height-calc*16px + $sql-title-padding*2 + $panel-border-width;
+$sql-editor-panel-top: $title-height + $text-height-calc*16px + $sql-title-padding*2 + $panel-border-width - 0.5px;
 $sql-gutters-bg: $negative-bg;
 $sql-history-detail-bg: $color-gray-lighter;
 $sql-history-success-bg: $color-primary-light;

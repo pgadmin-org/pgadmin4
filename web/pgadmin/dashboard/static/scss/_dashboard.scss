@@ -1,5 +1,5 @@
 .dashboard-icon {
-    color: $color-primary;
+    color: $color-brand;
 }
 
 .dashboard-container {
@@ -61,5 +61,18 @@
         & .flotr-legend-bg {
             border-radius: $border-radius;
         }
+    }
+}
+
+.welcome-logo {
+    width: 400px;
+    & .app-name {
+        fill: $color-brand;
+    }
+    & .app-name-underline {
+        stroke: $color-fg;
+    }
+    & .app-tagline {
+        fill: $color-fg;
     }
 }
