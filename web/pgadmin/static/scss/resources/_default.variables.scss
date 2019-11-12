@@ -246,8 +246,8 @@ $no-border-radius: 0px !important;
 
 $btn-checkbox-padding: $input-btn-padding-y $input-btn-padding-x;
 
-$scrollbar-color: $color-gray !default;
-$scrollbar-hover-color: $color-gray-dark !default;
+$scrollbar-base-color: #bac1cd !default;
+$scrollbar-width: 1rem;
 
 $security-text-color: $white;
 $security-btn-color: #038bba;

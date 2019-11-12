@@ -179,3 +179,29 @@
 .CodeMirror-activeline-background {
   background: $color-danger-lighter !important;
 }
+
+.CodeMirror-simplescroll-horizontal {
+    height: $scrollbar-width;
+}
+
+.CodeMirror-simplescroll-vertical {
+    width: $scrollbar-width;
+}
+
+.CodeMirror-scrollbar-filler, .CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
+    background: rgba($scrollbar-base-color, 0.2);
+}
+
+.CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
+
+    & div {
+        border: 0.25rem solid transparent;
+        border-radius: $border-radius*2;
+        background-clip: content-box;
+        background-color: rgba($scrollbar-base-color, 0.7);
+
+        &:hover {
+            background-color: $scrollbar-base-color;
+        }
+    }
+}

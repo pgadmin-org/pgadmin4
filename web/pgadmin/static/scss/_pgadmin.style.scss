@@ -1034,3 +1034,20 @@ textarea {
     color: $input-color;
     background-color: $input-bg;
 }
+
+::-webkit-scrollbar, ::-webkit-scrollbar-corner {
+    width: $scrollbar-width;
+    height: $scrollbar-width;
+    background-color: rgba($scrollbar-base-color, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+    border: 0.25rem solid transparent;
+    border-radius: $border-radius*2;
+    background-clip: content-box;
+    background-color: rgba($scrollbar-base-color, 0.7);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: $scrollbar-base-color;
+}
