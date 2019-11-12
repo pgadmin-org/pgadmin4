@@ -49,3 +49,4 @@ Bug fixes
 | `Issue #4895 <https://redmine.postgresql.org/issues/4895>`_ -  Fixed potential issue in reset function for nested objects.
 | `Issue #4896 <https://redmine.postgresql.org/issues/4896>`_ -  Fixed an issue where escape key not working to close the open/save file dialog.
 | `Issue #4906 <https://redmine.postgresql.org/issues/4906>`_ -  Fixed an issue where keyboard shortcut for context menu is not working when using Firefox on CentOS7.
+| `Issue #4924 <https://redmine.postgresql.org/issues/4924>`_ -  Fixed docker container exit issue occurs due to change in Gunicorn's latest version.

@@ -163,7 +163,7 @@ RUN apk add --no-cache --virtual \
         postgresql-libs && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir gunicorn && \
+    pip install --no-cache-dir gunicorn==19.9.0 && \
     apk del --no-cache build-deps
 
 # We need the v12 libpq, which is only in the 'edge' build of Alpine at present
