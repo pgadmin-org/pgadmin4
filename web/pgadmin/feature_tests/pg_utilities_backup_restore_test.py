@@ -55,13 +55,11 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self.server['sslmode']
         )
         test_utils.drop_database(connection, self.database_name)
-
         test_utils.create_database(self.server, self.database_name)
+        test_gui_helper.close_bgprocess_popup(self)
         self.page.add_server(self.server)
 
         self.wait = WebDriverWait(self.page.driver, 20)
-
-        test_gui_helper.close_bgprocess_popup(self)
 
     def runTest(self):
         self.page.expand_database_node(

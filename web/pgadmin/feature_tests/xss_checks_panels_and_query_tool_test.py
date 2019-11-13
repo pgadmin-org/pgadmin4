@@ -16,6 +16,7 @@ from regression.feature_utils.base_feature_test import BaseFeatureTest
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException
 from regression.feature_utils.locators import QueryToolLocators
+from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
 
 class CheckForXssFeatureTest(BaseFeatureTest):
@@ -100,7 +101,9 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tables_node(self.server['name'],
                                           self.server['db_password'],
                                           self.test_db, 'public')
-        self.page.select_tree_item(self.test_table_name)
+        self.page.click_a_tree_node(
+            self.test_table_name,
+            TreeAreaLocators.sub_nodes_of_tables_node)
 
     def _check_xss_in_browser_tree(self):
         print(

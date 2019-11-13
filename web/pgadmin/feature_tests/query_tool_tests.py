@@ -207,7 +207,6 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
                     ElementClickInterceptedException):
                 count += 1
                 pass
-        print(count)
 
         self._check_ondemand_result(row_id_to_find)
         print("OK.", file=sys.stderr)
@@ -244,6 +243,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
     def _check_ondemand_result(self, row_id_to_find):
         # scroll to bottom to bring last row of next chunk in viewport.
         scroll = 10
+        status = False
         while scroll:
             canvas_ele = self.page.find_by_css_selector('.grid-canvas')
             scrolling_height = canvas_ele.size['height']
@@ -255,14 +255,18 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
             # Table height takes some time to update, for which their is no
             # particular way
             time.sleep(2)
-            if canvas_ele.size['height'] == scrolling_height:
+            if canvas_ele.size['height'] == scrolling_height and \
+                self.page.check_if_element_exist_by_xpath(
+                    QueryToolLocators.output_column_data_xpath.format(
+                        row_id_to_find)):
+                status = True
                 break
             else:
                 scroll -= 1
 
-        self.assertTrue(self.page.check_if_element_exist_by_xpath(
-            QueryToolLocators.output_column_data_xpath.format(row_id_to_find)
-        ))
+        self.assertTrue(
+            status, "Element is not loaded to the rows id: "
+                    "{}".format(row_id_to_find))
 
     def _query_tool_explain_with_verbose_and_cost(self):
         query = """-- Explain query with verbose and cost
@@ -372,11 +376,7 @@ CREATE TABLE public.{}();""".format(table_name)
 -- 3. ROLLBACK transaction.
 -- 4. Check if table is *NOT* created.
 ROLLBACK;"""
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
-
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.execute_query(query)
         self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('ROLLBACK')),
@@ -389,11 +389,8 @@ ROLLBACK;"""
 -- 4. Check if table is *NOT* created.
 SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
 
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.execute_query(query)
         self.page.click_tab('Data Output')
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
@@ -411,11 +408,7 @@ SELECT relname FROM pg_class
         -- 3. ROLLBACK transaction.
         -- 4. Check if table is *NOT* created.
         ROLLBACK;"""
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
-
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        self.page.execute_query(query)
 
     def _query_tool_auto_commit_enabled(self):
         query = """-- 1. Enable auto commit.
@@ -481,10 +474,8 @@ ROLLBACK;"""
 -- 5. Check if table is created event after ROLLBACK.
 SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
-        self.page.fill_codemirror_area_with(query)
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
 
+        self.page.execute_query(query)
         self.page.click_tab('Data Output')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 

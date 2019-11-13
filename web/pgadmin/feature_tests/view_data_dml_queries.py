@@ -21,6 +21,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from regression.feature_utils.locators import QueryToolLocators, \
     NavMenuLocators
+from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -167,7 +168,9 @@ CREATE TABLE public.nonintpkey
         config_data = config_data_json[config_key]
 
     def _perform_test_for_table(self, table_name):
-        self.page.select_tree_item(table_name)
+        self.page.click_a_tree_node(
+            table_name,
+            TreeAreaLocators.sub_nodes_of_tables_node)
         # Open Object -> View/Edit data
         self._view_data_grid(table_name)
 
@@ -354,7 +357,11 @@ CREATE TABLE public.nonintpkey
 
         # scroll browser back to the left
         # to reset position so other assertions can succeed
-        for idx in reversed(list(config_check_data.keys())):
+        list_item = list(config_check_data.keys())
+        for item in range(0, len(list_item)):
+            list_item[item] = int(list_item[item])
+        list_item.sort(reverse=True)
+        for idx in list_item:
             time.sleep(0.4)
             element = result_row.find_element_by_class_name("r" + str(idx))
             self.page.driver.execute_script(

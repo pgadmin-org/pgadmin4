@@ -45,7 +45,7 @@ def close_bgprocess_popup(tester):
 
 
 def close_process_watcher(tester):
-    attempt = 5
+    attempt = 10
     while attempt > 0:
         close_btn = tester.page.find_by_xpath(
             NavMenuLocators.process_watcher_close_button_xpath)

@@ -18,6 +18,7 @@ from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
 from regression.python_test_utils import test_gui_helper
 from regression.feature_utils.locators import NavMenuLocators
+from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
 
 class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
@@ -71,9 +72,9 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         test_utils.create_database(self.server, self.database_name)
         test_utils.create_table(self.server, self.database_name,
                                 self.table_name)
+        test_gui_helper.close_bgprocess_popup(self)
         self.page.add_server(self.server)
         self.wait = WebDriverWait(self.page.driver, 20)
-        test_gui_helper.close_bgprocess_popup(self)
 
     def runTest(self):
         self._open_maintenance_dialogue()
@@ -100,7 +101,9 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             self.page.toggle_open_tables_node(self.server['name'],
                                               self.server['db_password'],
                                               self.database_name, 'public')
-            self.page.select_tree_item(self.table_name)
+            self.page.click_a_tree_node(
+                self.table_name,
+                TreeAreaLocators.sub_nodes_of_tables_node)
 
         self.page.retry_click(
             (By.LINK_TEXT,

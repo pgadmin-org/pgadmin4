@@ -245,6 +245,36 @@ class PgadminPage:
                 if attempts == 0:
                     raise Exception(e)
 
+    def click_a_tree_node(self, element_name, list_of_element):
+        """It will click a tree node eg. server, schema, table name etc
+        will take server name and list of element where this node lies"""
+        operation_status = False
+        elements = list_of_element = self.find_by_xpath_list(
+            list_of_element)
+        if len(elements) > 0:
+            index_of_element = self.get_index_of_element(
+                elements, element_name)
+            if index_of_element >= 0:
+                self.driver.execute_script(
+                    "arguments[0].scrollIntoView()",
+                    list_of_element[index_of_element])
+                self.wait_for_elements_to_appear(
+                    self.driver, list_of_element[index_of_element])
+                time.sleep(1)
+                self.driver.execute_script(
+                    "arguments[0].click()",
+                    list_of_element[index_of_element])
+                operation_status = True
+            else:
+                print("{ERROR} - The required element with name: " + str(
+                    element_name) +
+                    " is not found in function click_a_tree_node, "
+                    "so click operation is not performed")
+        else:
+            print("{ERROR} - The element list passed to function "
+                  "click_a_tree_node seems empty")
+        return operation_status
+
     def toggle_open_servers_group(self):
         """This will open Servers group to display underlying nodes"""
         is_expanded = False

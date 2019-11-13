@@ -21,6 +21,7 @@ from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.feature_utils.locators import NavMenuLocators, \
     QueryToolLocators
+from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -156,7 +157,9 @@ class PGDataypeFeatureTest(BaseFeatureTest):
     def _check_datatype(self):
         # Slick grid does not render all the column if viewport is not enough
         # wide. So execute test as batch of queries.
-        self.page.select_tree_item(self.test_db)
+        self.page.click_a_tree_node(
+            self.test_db,
+            TreeAreaLocators.sub_nodes_of_databases_node(self.server['name']))
         self.page.open_query_tool()
         self._create_enum_type()
         for batch in config_data:

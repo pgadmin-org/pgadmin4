@@ -48,6 +48,11 @@ class TreeAreaLocators():
         "contains(text(),'Tables')]]]]]]]]]]/" \
         "following-sibling::ul/li/div//div/span[2]/span[2]"
 
+    sub_nodes_of_functions_node = \
+        "//div[div[div[div[div[div[div[div[span[span[" \
+        "contains(text(),'Functions')]]]]]]]]]]/" \
+        "following-sibling::ul/li/div//div/span[2]/span[2]"
+
     @staticmethod
     def sub_nodes_of_a_server_node(server_name):
         xpath = "//div[div[div[span[span[contains(text(),'%s')]]]]]/" \

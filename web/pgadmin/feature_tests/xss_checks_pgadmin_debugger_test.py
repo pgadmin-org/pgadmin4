@@ -14,6 +14,7 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+from regression.feature_utils.tree_area_locators import TreeAreaLocators
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -65,7 +66,9 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
                                           self.server['db_password'],
                                           self.test_db, 'public')
         self.page.toggle_open_function_node()
-        self.page.select_tree_item(self.function_name + "()")
+        self.page.click_a_tree_node(
+            self.function_name + "()",
+            TreeAreaLocators.sub_nodes_of_functions_node)
 
     def _debug_function(self):
         self.page.driver.find_element_by_link_text("Object").click()

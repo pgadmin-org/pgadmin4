@@ -14,6 +14,7 @@ import random
 from regression.python_test_utils import test_utils
 from regression.feature_utils.locators import BrowserToolBarLocators
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+from regression.feature_utils.tree_area_locators import TreeAreaLocators
 from selenium.webdriver.common.by import By
 
 
@@ -69,14 +70,18 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
             (By.CSS_SELECTOR, BrowserToolBarLocators.query_tool_panel_css))
 
     def test_view_data_tool_button(self):
-        self.page.select_tree_item(self.test_db)
+        self.page.click_a_tree_node(
+            self.test_db,
+            TreeAreaLocators.sub_nodes_of_databases_node(self.server['name']))
         self.page.toggle_open_schema_node(
             self.server['name'], self.server['db_password'],
             self.test_db, 'public')
         self.page.toggle_open_tables_node(
             self.server['name'], self.server['db_password'],
             self.test_db, 'public')
-        self.page.select_tree_item(self.test_table_name)
+        self.page.click_a_tree_node(
+            self.test_table_name,
+            TreeAreaLocators.sub_nodes_of_tables_node)
 
         self.page.retry_click(
             (By.CSS_SELECTOR,

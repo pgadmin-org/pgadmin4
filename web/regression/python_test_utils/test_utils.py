@@ -820,6 +820,7 @@ def reset_layout_db(user_id=None):
                     '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
                     ' AND USER_ID=?', user_id
                 )
+            cur.execute('DELETE FROM process')
             conn.commit()
             conn.close()
             break
