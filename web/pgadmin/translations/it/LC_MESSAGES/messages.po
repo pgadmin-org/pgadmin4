@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PgAdmin 4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-11-08 18:48+0530\n"
-"PO-Revision-Date: 2019-09-08 17:16+0200\n"
-"Last-Translator: Domenico Sgarbossa <sbraaaa@yahoo.it>\n"
+"PO-Revision-Date: 2019-11-14 10:16+0100\n"
+"Last-Translator: Sgarbossa Domenico <sgarbossa.domenico@gmail.com>\n"
 "Language: it_IT\n"
 "Language-Team: Sgarbossa Domenico\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: pgadmin/__init__.py:509 pgadmin/__init__.py:562
 #, python-format
@@ -142,8 +143,8 @@ msgid ""
 "This will be used to secure and later unlock saved passwords and other "
 "credentials."
 msgstr ""
-"Sarà usata per criptare e in seguito decriptare le password salvate e le "
-"altre credenziali."
+"Sarà usata per criptare e in seguito decriptare le password salvate e le altre "
+"credenziali."
 
 #: pgadmin/browser/__init__.py:736
 msgid "Unlock Saved Passwords"
@@ -158,8 +159,8 @@ msgid ""
 "This is required to unlock saved passwords and reconnect to the database "
 "server(s)."
 msgstr ""
-"Ciò è necessario per sbloccare le password salvate e riconnettersi ai "
-"server del database."
+"Ciò è necessario per sbloccare le password salvate e riconnettersi ai server del "
+"database."
 
 #: pgadmin/browser/__init__.py:802
 msgid "Incorrect master password"
@@ -167,7 +168,7 @@ msgstr "Password principale non corretta"
 
 #: pgadmin/browser/__init__.py:835
 msgid "Master password cannot be empty"
-msgstr ""
+msgstr "La password principale non può essere vuota"
 
 #: pgadmin/browser/__init__.py:903 pgadmin/browser/__init__.py:995
 #: pgadmin/browser/__init__.py:1066
@@ -227,11 +228,11 @@ msgstr "Intervallo di salvataggio dello stato della struttura del browser"
 
 #: pgadmin/browser/register_browser_preferences.py:41
 msgid ""
-"Browser tree state saving interval in seconds.Use -1 to disable the tree "
-"saving mechanism."
+"Browser tree state saving interval in seconds.Use -1 to disable the tree saving "
+"mechanism."
 msgstr ""
-"Intervallo di salvataggio dello stato dell'albero del browser in secondi."
-" Utilizzare -1 per disabilitare il meccanismo di salvataggio dell'albero."
+"Intervallo di salvataggio dello stato dell'albero del browser in secondi. "
+"Utilizzare -1 per disabilitare il meccanismo di salvataggio dell'albero."
 
 #: pgadmin/browser/register_browser_preferences.py:49
 msgid "Confirm on close or refresh ?"
@@ -239,21 +240,25 @@ msgstr "Confermare alla chiusura o all'aggiornamento?"
 
 #: pgadmin/browser/register_browser_preferences.py:51
 msgid ""
-"Confirm closure or refresh of the browser or browser tab is intended "
-"before proceeding."
+"Confirm closure or refresh of the browser or browser tab is intended before "
+"proceeding."
 msgstr ""
-"Prima di procedere, confermare la chiusura o l'aggiornamento del browser "
-"o della scheda del browser."
+"Prima di procedere, confermare la chiusura o l'aggiornamento del browser o della "
+"scheda del browser."
 
 #: pgadmin/browser/register_browser_preferences.py:59
 msgid "Confirm before Close/Reset in object properties dialog ?"
 msgstr ""
+"Conferma prima di Chiudi / Ripristina nella finestra di dialogo delle proprietà "
+"dell'oggetto?"
 
 #: pgadmin/browser/register_browser_preferences.py:62
 msgid ""
-"Confirm before closing or resetting the changes in the properties dialog "
-"for an object if the changes are not saved."
+"Confirm before closing or resetting the changes in the properties dialog for an "
+"object if the changes are not saved."
 msgstr ""
+"Conferma prima di chiudere o ripristinare le modifiche nella finestra di dialogo "
+"delle proprietà di un oggetto se le modifiche non sono state salvate."
 
 #: pgadmin/browser/register_browser_preferences.py:70
 msgid "Auto-expand sole children"
@@ -261,8 +266,8 @@ msgstr "Espandere automaticamente i figli unici"
 
 #: pgadmin/browser/register_browser_preferences.py:72
 msgid ""
-"If a treeview node is expanded and has only a single child, automatically"
-" expand the child node as well."
+"If a treeview node is expanded and has only a single child, automatically expand "
+"the child node as well."
 msgstr ""
 "Se un nodo treeview viene espanso e ha solo un singolo figlio, espande "
 "automaticamente anche il nodo figlio."
@@ -287,11 +292,10 @@ msgstr "Righe massime della cronologia delle operazioni"
 
 #: pgadmin/browser/register_browser_preferences.py:104
 msgid ""
-"The maximum number of history rows to show on the Statistics tab for "
-"pgAgent jobs"
+"The maximum number of history rows to show on the Statistics tab for pgAgent jobs"
 msgstr ""
-"Il numero massimo di righe della cronologia da mostrare nella scheda "
-"Statistiche per i lavori pgAgent"
+"Il numero massimo di righe della cronologia da mostrare nella scheda Statistiche "
+"per i lavori pgAgent"
 
 #: pgadmin/browser/register_browser_preferences.py:111
 #: pgadmin/utils/__init__.py:307 pgadmin/utils/__init__.py:316
@@ -338,14 +342,10 @@ msgstr "Albero di esplorazione"
 #: pgadmin/browser/register_browser_preferences.py:398
 #: pgadmin/browser/register_browser_preferences.py:413
 #: pgadmin/tools/debugger/__init__.py:89 pgadmin/tools/debugger/__init__.py:102
-#: pgadmin/tools/debugger/__init__.py:115
-#: pgadmin/tools/debugger/__init__.py:128
-#: pgadmin/tools/debugger/__init__.py:141
-#: pgadmin/tools/debugger/__init__.py:154
-#: pgadmin/tools/debugger/__init__.py:172
-#: pgadmin/tools/debugger/__init__.py:190
-#: pgadmin/tools/debugger/__init__.py:208
-#: pgadmin/tools/debugger/__init__.py:226
+#: pgadmin/tools/debugger/__init__.py:115 pgadmin/tools/debugger/__init__.py:128
+#: pgadmin/tools/debugger/__init__.py:141 pgadmin/tools/debugger/__init__.py:154
+#: pgadmin/tools/debugger/__init__.py:172 pgadmin/tools/debugger/__init__.py:190
+#: pgadmin/tools/debugger/__init__.py:208 pgadmin/tools/debugger/__init__.py:226
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:334
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:352
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:370
@@ -514,8 +514,8 @@ msgid ""
 "The specified server could not be found.\n"
 "Does the user have permission to access the server?"
 msgstr ""
-"Impossibile trovare il server specificato. \\ NL'utente ha i permessi per"
-" accedere al server?"
+"Impossibile trovare il server specificato. \\ NL'utente ha i permessi per "
+"accedere al server?"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:473
 msgid "Server deleted"
@@ -684,8 +684,7 @@ msgstr "Configurazione del server ricaricata."
 #: pgadmin/static/js/sqleditor/query_tool_http_error_handler.js:51
 #: pgadmin/static/js/sqleditor_utils.js:167
 msgid ""
-"Not connected to the server or the connection to the server has been "
-"closed."
+"Not connected to the server or the connection to the server has been closed."
 msgstr "Non connesso al server oppure connessione al server chiusa."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1236
@@ -747,11 +746,11 @@ msgstr "Percorso binario Advanced Server EDB"
 
 #: pgadmin/browser/server_groups/servers/ppas.py:16
 msgid ""
-"Path to the directory containing the EDB Advanced Server utility programs"
-" (pg_dump, pg_restore etc)."
+"Path to the directory containing the EDB Advanced Server utility programs "
+"(pg_dump, pg_restore etc)."
 msgstr ""
-"Percorso della directory contenente i programmi di utilità EDB Advanced "
-"Server (pg_dump, pg_restore ecc.)."
+"Percorso della directory contenente i programmi di utilità EDB Advanced Server "
+"(pg_dump, pg_restore ecc.)."
 
 #: pgadmin/browser/server_groups/servers/ppas.py:26
 msgid "EDB Advanced Server"
@@ -763,14 +762,13 @@ msgstr "Percorso binario PostgreSQL"
 
 #: pgadmin/browser/server_groups/servers/types.py:31
 msgid ""
-"Path to the directory containing the PostgreSQL utility programs "
-"(pg_dump, pg_restore etc)."
+"Path to the directory containing the PostgreSQL utility programs (pg_dump, "
+"pg_restore etc)."
 msgstr ""
-"Percorso della directory contenente i programmi di utilità PostgreSQL "
-"(pg_dump, pg_restore ecc.)."
+"Percorso della directory contenente i programmi di utilità PostgreSQL (pg_dump, "
+"pg_restore ecc.)."
 
-#: pgadmin/browser/server_groups/servers/types.py:59
-#: pgadmin/help/__init__.py:53
+#: pgadmin/browser/server_groups/servers/types.py:59 pgadmin/help/__init__.py:53
 msgid "Paths"
 msgstr "Percorsi"
 
@@ -889,8 +887,7 @@ msgstr "Impossibile generare codice SQL inverso per il cast. \\n \\ n {0}"
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:672
 msgid "Could not generate reversed engineered SQL for the cast node.\n"
 msgstr ""
-"Impossibile generare il codice SQL di progettazione inversa per il nodo "
-"cast. \n"
+"Impossibile generare il codice SQL di progettazione inversa per il nodo cast. \n"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:20
 msgid "Casts"
@@ -1944,11 +1941,11 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:534
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:815
 msgid ""
-"Could not find the schema in the database. It may have been removed by "
-"another user."
+"Could not find the schema in the database. It may have been removed by another "
+"user."
 msgstr ""
-"Impossibile trovare lo schema nel database. Potrebbe essere stato rimosso"
-" da un altro utente."
+"Impossibile trovare lo schema nel database. Potrebbe essere stato rimosso da un "
+"altro utente."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:687
 msgid "The specified schema could not be found.\n"
@@ -2070,8 +2067,8 @@ msgstr "Impossibile trovare l'oggetto di confronto nel database."
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:447
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:178
 msgid ""
-"Definition incomplete. Please provide Locale OR Copy Collation OR "
-"LC_TYPE/LC_COLLATE."
+"Definition incomplete. Please provide Locale OR Copy Collation OR LC_TYPE/"
+"LC_COLLATE."
 msgstr ""
 "Definizione incompleta. Fornisci impostazioni internazionali O Copia "
 "fascicolazione OR LC_TYPE / LC_COLLATE."
@@ -2121,8 +2118,7 @@ msgid ""
 msgstr ""
 "\n"
 "Impossibile trovare il nominio nel database.\n"
-"Potrebbe essere stato rimosso da un altro utente o spostate su un altro "
-"schema.\n"
+"Potrebbe essere stato rimosso da un altro utente o spostate su un altro schema.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:606
 msgid "The specified domain could not be found.\n"
@@ -2390,14 +2386,14 @@ msgid ""
 "Could not generate reversed engineered query for the FTS Configuration.\n"
 "{0}"
 msgstr ""
-"Impossibile generare la query di ingegneria inversa per la configurazione"
-" FTS. \\n {0}"
+"Impossibile generare la query di ingegneria inversa per la configurazione FTS. "
+"\\n {0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:881
 msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
-"Impossibile generare una query di ingegneria inversa per il nodo "
-"Configurazione FTS."
+"Impossibile generare una query di ingegneria inversa per il nodo Configurazione "
+"FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:29
 msgid "Token"
@@ -2548,8 +2544,7 @@ msgid ""
 "Could not generate reversed engineered query for the FTS Parser.\n"
 "{0}"
 msgstr ""
-"Impossibile generare la query di ingegneria inversa per il parser FTS. "
-"\\n {0}"
+"Impossibile generare la query di ingegneria inversa per il parser FTS. \\n {0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:815
 msgid "Could not generate reversed engineered query for FTS Parser node"
@@ -2625,14 +2620,12 @@ msgid ""
 "Could not generate reversed engineered query for the FTS Template.\n"
 "{0}"
 msgstr ""
-"Impossibile generare una query di ingegneria inversa per il modello FTS. "
-"\\n {0}"
+"Impossibile generare una query di ingegneria inversa per il modello FTS. \\n {0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:692
 msgid "Could not generate reversed engineered query for FTS Template node."
 msgstr ""
-"Impossibile generare una query di ingegneria inversa per il nodo Modello "
-"FTS."
+"Impossibile generare una query di ingegneria inversa per il nodo Modello FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:36
 msgid "FTS Template"
@@ -2824,7 +2817,7 @@ msgstr "A prova di perdita?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:318
 msgid "Support function"
-msgstr ""
+msgstr "Funzione di supporto"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:338
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:245
@@ -3320,8 +3313,7 @@ msgstr "Sinonimo Pubblico?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:789
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:806
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:275
-#: pgadmin/browser/static/js/browser.js:628
-#: pgadmin/browser/static/js/node.js:1291
+#: pgadmin/browser/static/js/browser.js:628 pgadmin/browser/static/js/node.js:1291
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:71
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:78
 #: pgadmin/static/js/backform.pgadmin.js:516
@@ -3339,8 +3331,7 @@ msgstr "Si"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:807
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:275
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:147
-#: pgadmin/browser/static/js/browser.js:629
-#: pgadmin/browser/static/js/node.js:1292
+#: pgadmin/browser/static/js/browser.js:629 pgadmin/browser/static/js/node.js:1292
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:70
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:77
 #: pgadmin/static/js/backform.pgadmin.js:517
@@ -3387,7 +3378,7 @@ msgstr "I trigger(s) sono stati abilitati"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1612
 #, python-format
 msgid "Table rows counted: %s"
-msgstr ""
+msgstr "Righe tabella rilevate: %s"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1261
 msgid "Table statistics have been reset"
@@ -3488,16 +3479,16 @@ msgstr "Memoria di archivizione"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:545
 msgid "NONE"
-msgstr ""
+msgstr "NONE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:546
 msgid "IDENTITY"
-msgstr ""
+msgstr "IDENTITY"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:554
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:559
 msgid "GENERATED"
-msgstr ""
+msgstr "GENERATED"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:582
 msgid "Identity"
@@ -3562,12 +3553,12 @@ msgstr "Precisione non deve essere maggiore di: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:755
 msgid "Expression value cannot be empty."
-msgstr ""
+msgstr "Il valore dell'espressione non può essere vuoto."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:25
 msgid "Compound Triggers"
-msgstr ""
+msgstr "Trigger composti"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:367
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:516
@@ -3576,19 +3567,19 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:868
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:934
 msgid "Could not find the compound trigger in the table."
-msgstr ""
+msgstr "Impossibile trovare Il trigger composto nella tabella."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:652
 msgid "The specified compound trigger could not be found.\n"
-msgstr ""
+msgstr "Il trigger composto specificato non esiste.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:672
 msgid "Compound Trigger is dropped"
-msgstr ""
+msgstr "Il trigger composto è stato eliminato."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:38
 msgid "Compound Trigger"
-msgstr ""
+msgstr "Trigger composto"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:55
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:61
@@ -3596,19 +3587,19 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:73
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:89
 msgid "Compound Trigger..."
-msgstr ""
+msgstr "Trigger composto..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:79
 msgid "Enable compound trigger"
-msgstr ""
+msgstr "Abilita il trigger composto"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:84
 msgid "Disable compound trigger"
-msgstr ""
+msgstr "Disabilita il trigger composto"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:168
 msgid "Disable compound trigger failed"
-msgstr ""
+msgstr "Disattivazione del trigger fallita"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:187
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:189
@@ -3621,7 +3612,7 @@ msgstr "Trigger abilitato?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:234
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:247
 msgid "FOR Events"
-msgstr ""
+msgstr "FOR Events"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:206
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:388
@@ -3692,6 +3683,42 @@ msgid ""
 "    -- Enter any required code here\n"
 "END;"
 msgstr ""
+"-- Inserisci le dichiarazioni globali  qui sotto\n"
+"\n"
+"-- Blocco BEFORE STATEMENT. Rimuovere se non previsto.\n"
+"BEFORE STATEMENT IS\n"
+"    -- Inserisci le dichiarazioni locali qui\n"
+"BEGIN\n"
+"    -- Inserisci il codice sorgente richiesto qui\n"
+"END;\n"
+"\n"
+"-- Blocco AFTER STATEMENT. Rimuovere se non previsto.\n"
+"AFTER STATEMENT IS\n"
+"    -- Inserisci le dichiarazioni locali qui\n"
+"BEGIN\n"
+"    -- Inserisci il codice sorgente richiesto qui\n"
+"END;\n"
+"\n"
+"-- Blocco BEFORE EACH ROW. Rimuovere se non previsto.\n"
+"BEFORE EACH ROW IS\n"
+"    -- Inserisci le dichiarazioni locali qui\n"
+"BEGIN\n"
+"    -- Inserisci il codice sorgente richiesto qui\n"
+"END;\n"
+"\n"
+"-- Blocco AFTER EACH ROW. Rimuovere se non previsto.\n"
+"AFTER EACH ROW IS\n"
+"    -- Inserisci le dichiarazioni locali qui\n"
+"BEGIN\n"
+"    -- Inserisci il codice sorgente richiesto qui\n"
+"END;\n"
+"\n"
+"-- INSTEAD OF EACH ROW block. Delete if not required.\n"
+"INSTEAD OF EACH ROW IS\n"
+"    -- Inserisci le dichiarazioni locali qui\n"
+"BEGIN\n"
+"    -- Inserisci il codice sorgente richiesto qui\n"
+"END;"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:50
 msgid "Check Constraints"
@@ -4070,7 +4097,7 @@ msgstr "Indice"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.js:632
 #, python-format
 msgid "Please specify columns for %s"
-msgstr ""
+msgstr "Indica le colonne per %s"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:55
 msgid "Oid"
@@ -4500,20 +4527,18 @@ msgstr "Errore durante il recupero delle tabelle da allegare"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:933
 msgid ""
-"The control above is used to Create/Attach/Detach "
-"partitions.<br><ul><li>Create Mode: User will be able to create N number "
-"of partitions. Mode switch control is disabled in this "
-"scenario.</li><li>Edit Mode: User will be able to create/attach/detach N "
-"number of partitions. In attach mode there will be list of suitable "
+"The control above is used to Create/Attach/Detach partitions.<br><ul><li>Create "
+"Mode: User will be able to create N number of partitions. Mode switch control is "
+"disabled in this scenario.</li><li>Edit Mode: User will be able to create/attach/"
+"detach N number of partitions. In attach mode there will be list of suitable "
 "tables to be attached.</li></ul>"
 msgstr ""
-"Il controllo sopra è usato per creare / allegare / staccare le "
-"partizioni. <br> <ul> <li> Modalità di creazione: l'utente sarà in grado "
-"di creare N numero di partizioni. In questo scenario il controllo del "
-"cambio di modalità è disabilitato. </li> <li> Modalità modifica: l'utente"
-" sarà in grado di creare / collegare / scollegare N numero di partizioni."
-" In modalità collegamento ci sarà un elenco di tabelle adatte da "
-"allegare. </li> </ul>"
+"Il controllo sopra è usato per creare / allegare / staccare le partizioni. <br> "
+"<ul> <li> Modalità di creazione: l'utente sarà in grado di creare N numero di "
+"partizioni. In questo scenario il controllo del cambio di modalità è "
+"disabilitato. </li> <li> Modalità modifica: l'utente sarà in grado di creare / "
+"collegare / scollegare N numero di partizioni. In modalità collegamento ci sarà "
+"un elenco di tabelle adatte da allegare. </li> </ul>"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:948
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:193
@@ -4732,8 +4757,7 @@ msgstr "Colonna: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:995
 msgid "User can select any column from the list of available columns."
 msgstr ""
-"L'utente può selezionare qualsiasi colonna dalla lista delle colonne "
-"disponibili."
+"L'utente può selezionare qualsiasi colonna dalla lista delle colonne disponibili."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:997
 msgid "Expression: "
@@ -4742,8 +4766,7 @@ msgstr "Espressione: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:998
 msgid "User can specify expression to create partition key."
 msgstr ""
-"L'utente può indicare un'espressione per creare la chiave della "
-"partizione."
+"L'utente può indicare un'espressione per creare la chiave della partizione."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1000
 msgid "Example: "
@@ -4751,14 +4774,14 @@ msgstr "Esempio: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1001
 msgid ""
-"Let's say, we want to create a partition table based per year for the "
-"column 'saledate', having datatype 'date/timestamp', then we need to "
-"specify the expression as 'extract(YEAR from saledate)' as partition key."
+"Let's say, we want to create a partition table based per year for the column "
+"'saledate', having datatype 'date/timestamp', then we need to specify the "
+"expression as 'extract(YEAR from saledate)' as partition key."
 msgstr ""
-"Diciamo, vogliamo creare una tabella delle partizioni in base all'anno "
-"per la colonna 'saledate', con tipo di dati 'data / timestamp', quindi "
-"dobbiamo specificare l'espressione come 'extract (YEAR from saledate)' "
-"come chiave di partizione."
+"Diciamo, vogliamo creare una tabella delle partizioni in base all'anno per la "
+"colonna 'saledate', con tipo di dati 'data / timestamp', quindi dobbiamo "
+"specificare l'espressione come 'extract (YEAR from saledate)' come chiave di "
+"partizione."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1086
 msgid "Create a table: "
@@ -4766,12 +4789,12 @@ msgstr "Creazione tabella: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1087
 msgid ""
-"User can create multiple partitions while creating new partitioned table."
-" Operation switch is disabled in this scenario."
+"User can create multiple partitions while creating new partitioned table. "
+"Operation switch is disabled in this scenario."
 msgstr ""
-"L'utente può creare partizioni multiple mentre è in fase di creazione un "
-"nuova tabella partizionata. Il cambio di operazione è disabilitato in "
-"questa situazione."
+"L'utente può creare partizioni multiple mentre è in fase di creazione un nuova "
+"tabella partizionata. Il cambio di operazione è disabilitato in questa "
+"situazione."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1089
 msgid "Edit existing table: "
@@ -4779,12 +4802,12 @@ msgstr "Modifica tabella esistente: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1090
 msgid ""
-"User can create/attach/detach multiple partitions. In attach operation "
-"user can select table from the list of suitable tables to be attached."
+"User can create/attach/detach multiple partitions. In attach operation user can "
+"select table from the list of suitable tables to be attached."
 msgstr ""
-"L'utente può creare/agganciare/sganciare molteplici partizioni. In fase "
-"di aggancio l'utente può selezionare la tabella dalla lista delle tabelle"
-" adatte ad essere agganciate."
+"L'utente può creare/agganciare/sganciare molteplici partizioni. In fase di "
+"aggancio l'utente può selezionare la tabella dalla lista delle tabelle adatte ad "
+"essere agganciate."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1092
 msgid "Default: "
@@ -4795,8 +4818,8 @@ msgid ""
 "The default partition can store rows that do not fall into any existing "
 "partition’s range or list."
 msgstr ""
-"La partizione di default può memorizzare righe che non fanno parte in "
-"nessun insieme o lista delle partizioni esistenti."
+"La partizione di default può memorizzare righe che non fanno parte in nessun "
+"insieme o lista delle partizioni esistenti."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1095
 msgid "From/To/In input: "
@@ -4804,12 +4827,12 @@ msgstr "Da/A/In ingresso: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1096
 msgid ""
-"From/To/In input: Values for these fields must be quoted with single "
-"quote. For more than one partition key values must be comma(,) separated."
+"From/To/In input: Values for these fields must be quoted with single quote. For "
+"more than one partition key values must be comma(,) separated."
 msgstr ""
 "Da / A / In input: i valori per questi campi devono essere indicati con "
-"virgolette singole. Per più di una chiave di partizione i valori devono "
-"essere separati da virgola (,)."
+"virgolette singole. Per più di una chiave di partizione i valori devono essere "
+"separati da virgola (,)."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1098
 msgid "Example: From/To: "
@@ -4817,12 +4840,12 @@ msgstr "Esempio: Da/A: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1099
 msgid ""
-"Enabled for range partition. Consider partitioned table with multiple "
-"keys of type Integer, then values should be specified like '100','200'."
+"Enabled for range partition. Consider partitioned table with multiple keys of "
+"type Integer, then values should be specified like '100','200'."
 msgstr ""
-"Abilita per l'insieme della partizione. Considera la tabella partizionata"
-" con più chiavi di tipo Intero, quindi i valori devono essere specificati"
-" come '100', '200'."
+"Abilita per l'insieme della partizione. Considera la tabella partizionata con "
+"più chiavi di tipo Intero, quindi i valori devono essere specificati come '100', "
+"'200'."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1101
 msgid "In: "
@@ -4830,11 +4853,11 @@ msgstr "In: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1102
 msgid ""
-"Enabled for list partition. Values must be comma(,) separated and quoted "
-"with single quote."
+"Enabled for list partition. Values must be comma(,) separated and quoted with "
+"single quote."
 msgstr ""
-"Abilitato per la partizione elenco. I valori devono essere separati da "
-"virgola (,) e indicati tra virgolette singole."
+"Abilitato per la partizione elenco. I valori devono essere separati da virgola "
+"(,) e indicati tra virgolette singole."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1104
 msgid "Modulus/Remainder: "
@@ -5272,8 +5295,7 @@ msgstr "Il sottotipo deve essere definito nell'insieme dei tipi."
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:954
 msgid "External types require both input and output conversion functions."
 msgstr ""
-"I tipi esterni richiedono entrambe le funzioni di conversione di input e "
-"output."
+"I tipi esterni richiedono entrambe le funzioni di conversione di input e output."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1099
 msgid "The specified type could not be found.\n"
@@ -5306,22 +5328,22 @@ msgstr "Si prega di specificare il tipo."
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:221
 #, python-format
 msgid "Length/precision should not be less than %s"
-msgstr ""
+msgstr "La lunghezza/precisione non dovrebbe essere minore di %s"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:223
 #, python-format
 msgid "Length/precision should not be greater than %s"
-msgstr ""
+msgstr "La lunghezza/precisione non dovrebbe essere maggiore di %s"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:234
 #, python-format
 msgid "Scale should not be less than %s"
-msgstr ""
+msgstr "La scala non dovrebbe essere minore di %s"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:236
 #, python-format
 msgid "Scale should not be greater than %s"
-msgstr ""
+msgstr "La scalka non dovrebbe essere maggiore di %s"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:282
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:288
@@ -5615,7 +5637,7 @@ msgstr "Cascata"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:192
 msgid "Please enter view code."
-msgstr ""
+msgstr "Inserisci il codice sorgente della vista."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:27
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:41
@@ -6362,29 +6384,27 @@ msgstr "Ripetere"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:359
 msgid ""
-"Schedules are specified using a <b>cron-style</b> format.<br/><ul><li>For"
-" each selected time or date element, the schedule will execute.<br/>e.g. "
-"To execute at 5 minutes past every hour, simply select ‘05’ in the "
-"Minutes list box.<br/></li><li>Values from more than one field may be "
-"specified in order to further control the schedule.<br/>e.g. To execute "
-"at 12:05 and 14:05 every Monday and Thursday, you would click minute 05, "
-"hours 12 and 14, and weekdays Monday and Thursday.</li><li>For additional"
-" flexibility, the Month Days check list includes an extra Last Day "
-"option. This matches the last day of the month, whether it happens to be "
-"the 28th, 29th, 30th or 31st.</li></ul>"
+"Schedules are specified using a <b>cron-style</b> format.<br/><ul><li>For each "
+"selected time or date element, the schedule will execute.<br/>e.g. To execute at "
+"5 minutes past every hour, simply select ‘05’ in the Minutes list box.<br/></"
+"li><li>Values from more than one field may be specified in order to further "
+"control the schedule.<br/>e.g. To execute at 12:05 and 14:05 every Monday and "
+"Thursday, you would click minute 05, hours 12 and 14, and weekdays Monday and "
+"Thursday.</li><li>For additional flexibility, the Month Days check list includes "
+"an extra Last Day option. This matches the last day of the month, whether it "
+"happens to be the 28th, 29th, 30th or 31st.</li></ul>"
 msgstr ""
-"Le pianificazioni vengono specificate utilizzando un formato <b> cron-"
-"style </b>. <br/> <ul> <li> Per ogni elemento di data o ora selezionato, "
-"la pianificazione verrà eseguita. <br/> ad es. Per eseguire ogni 5 minuti"
-" ogni ora, seleziona semplicemente '05' nella casella di riepilogo "
-"Minuti. <br/> </li> <li> È possibile specificare valori da più di un "
-"campo per controllare ulteriormente la pianificazione. <Br /> es. Per "
-"eseguire alle 12:05 e alle 14:05 ogni Lunedì e Giovedì, fare clic sul "
-"minuto 05, ore 12 e 14 e i giorni della settimana Lunedì e Giovedì. </li>"
-" <li> Per maggiore flessibilità, l'elenco di controllo Giorni del mese "
-"include un opzione Ultimo giorno. Questa coinciderà all'ultimo giorno del"
-" mese, indipendentemente dal fatto che si tratti del 28, 29, 30 o 31. "
-"</li> </ul>"
+"Le pianificazioni vengono specificate utilizzando un formato <b> cron-style </"
+"b>. <br/> <ul> <li> Per ogni elemento di data o ora selezionato, la "
+"pianificazione verrà eseguita. <br/> ad es. Per eseguire ogni 5 minuti ogni ora, "
+"seleziona semplicemente '05' nella casella di riepilogo Minuti. <br/> </li> <li> "
+"È possibile specificare valori da più di un campo per controllare ulteriormente "
+"la pianificazione. <Br /> es. Per eseguire alle 12:05 e alle 14:05 ogni Lunedì e "
+"Giovedì, fare clic sul minuto 05, ore 12 e 14 e i giorni della settimana Lunedì "
+"e Giovedì. </li> <li> Per maggiore flessibilità, l'elenco di controllo Giorni "
+"del mese include un opzione Ultimo giorno. Questa coinciderà all'ultimo giorno "
+"del mese, indipendentemente dal fatto che si tratti del 28, 29, 30 o 31. </li> </"
+"ul>"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:362
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:381
@@ -6467,11 +6487,11 @@ msgstr "Classe dell'operazione"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:113
 msgid ""
-"Please select a class to categorize the job. This option will not affect "
-"the way the job runs."
+"Please select a class to categorize the job. This option will not affect the way "
+"the job runs."
 msgstr ""
-"Seleziona una classe per classificare il lavoro. Questa opzione non "
-"influirà sulla modalità di esecuzione del lavoro."
+"Seleziona una classe per classificare il lavoro. Questa opzione non influirà "
+"sulla modalità di esecuzione del lavoro."
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:115
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:119
@@ -6480,13 +6500,12 @@ msgstr "Agent del server host"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:117
 msgid ""
-"Enter the hostname of a machine running pgAgent if you wish to ensure "
-"only that machine will run this job. Leave blank if any host may run the "
-"job."
+"Enter the hostname of a machine running pgAgent if you wish to ensure only that "
+"machine will run this job. Leave blank if any host may run the job."
 msgstr ""
 "Immettere il nome host di una macchina che esegue pgAgent se si desidera "
-"assicurarsi che solo quella macchina eseguirà questo lavoro. Lasciare "
-"vuoto se un host può eseguire il processo."
+"assicurarsi che solo quella macchina eseguirà questo lavoro. Lasciare vuoto se "
+"un host può eseguire il processo."
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:123
 msgid "Created"
@@ -6564,12 +6583,12 @@ msgstr "Remoto"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:174
 msgid ""
-"Select <b>Local</b> if the job step will execute on the local database "
-"server, or <b>Remote</b> to specify a remote database server."
+"Select <b>Local</b> if the job step will execute on the local database server, "
+"or <b>Remote</b> to specify a remote database server."
 msgstr ""
-"Selezionare <b> Locale </b> se il passaggio del processo verrà eseguito "
-"sul server di database locale o <b> Remoto </b> per specificare un server"
-" di database remoto."
+"Selezionare <b> Locale </b> se il passaggio del processo verrà eseguito sul "
+"server di database locale o <b> Remoto </b> per specificare un server di "
+"database remoto."
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:180
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:190
@@ -6579,28 +6598,25 @@ msgstr "Stringa di connessione"
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:188
 msgid "Please select the database on which the job step will run."
 msgstr ""
-"Selezionare il database su cui verrà eseguito questo passaggio del "
-"processo."
+"Selezionare il database su cui verrà eseguito questo passaggio del processo."
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:193
 #, python-format
 msgid ""
-"Please specify the connection string for the remote database server. Each"
-" parameter setting is in the form keyword = value. Spaces around the "
-"equal sign are optional. To write an empty value, or a value containing "
-"spaces, surround it with single quotes, e.g., keyword = 'a value'. Single"
-" quotes and backslashes within the value must be escaped with a "
-"backslash, i.e., ' and \\.<br>For more information, please see the "
-"documentation on %s"
+"Please specify the connection string for the remote database server. Each "
+"parameter setting is in the form keyword = value. Spaces around the equal sign "
+"are optional. To write an empty value, or a value containing spaces, surround it "
+"with single quotes, e.g., keyword = 'a value'. Single quotes and backslashes "
+"within the value must be escaped with a backslash, i.e., ' and \\.<br>For more "
+"information, please see the documentation on %s"
 msgstr ""
-"Specificare la stringa di connessione per il server di database remoto. "
-"Ogni impostazione di parametro è nel formato parola chiave = valore. Gli "
-"spazi attorno al segno uguale sono opzionali. Per scrivere un valore "
-"vuoto o un valore contenente spazi, racchiuderlo tra virgolette singole, "
-"ad esempio parola chiave = \"un valore\". Virgolette singole e barre "
-"rovesciate all'interno del valore devono essere salvate con una barra "
-"rovesciata, ovvero \"e \\. <br> Per ulteriori informazioni, consultare la"
-" documentazione su %s"
+"Specificare la stringa di connessione per il server di database remoto. Ogni "
+"impostazione di parametro è nel formato parola chiave = valore. Gli spazi "
+"attorno al segno uguale sono opzionali. Per scrivere un valore vuoto o un valore "
+"contenente spazi, racchiuderlo tra virgolette singole, ad esempio parola chiave "
+"= \"un valore\". Virgolette singole e barre rovesciate all'interno del valore "
+"devono essere salvate con una barra rovesciata, ovvero \"e \\. <br> Per "
+"ulteriori informazioni, consultare la documentazione su %s"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:197
 msgid "On error"
@@ -6745,8 +6761,7 @@ msgstr "Il limite di connessione deve essere un valore intero o uguale a -1."
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:172
 msgid ""
 "\n"
-"Role membership information must be passed as an array of JSON objects in"
-" the\n"
+"Role membership information must be passed as an array of JSON objects in the\n"
 "following format:\n"
 "\n"
 "rolmembership:[{\n"
@@ -6757,8 +6772,7 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"Le informazioni del ruoto di appartenenza devono essere passate come "
-"array di\n"
+"Le informazioni del ruoto di appartenenza devono essere passate come array di\n"
 "oggetti JSON nel seguente formato:\n"
 "\n"
 "rolmembership:[{\n"
@@ -6771,8 +6785,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:198
 msgid ""
 "\n"
-"Role membership information must be passed as a string representing an "
-"array of\n"
+"Role membership information must be passed as a string representing an array of\n"
 "JSON objects in the following format:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
@@ -6795,8 +6808,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"Le informazioni del ruoto di appartenenza devono essere passate come "
-"array di\n"
+"Le informazioni del ruoto di appartenenza devono essere passate come array di\n"
 "oggetti JSON nel seguente formato:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
@@ -6821,8 +6833,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:278
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON objects in the "
-"following\n"
+"Security Label must be passed as an array of JSON objects in the following\n"
 "format:\n"
 "seclabels:[{\n"
 "    provider: <provider>,\n"
@@ -6832,8 +6843,8 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"L'etichetta di sicurezza deve essere passata come array di oggetti JSON "
-"nel seguente\n"
+"L'etichetta di sicurezza deve essere passata come array di oggetti JSON nel "
+"seguente\n"
 "formato:\n"
 "seclabels:[{\n"
 "    provider: <provider>,\n"
@@ -6845,8 +6856,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:296
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON objects in the "
-"following\n"
+"Security Label must be passed as an array of JSON objects in the following\n"
 "format:\n"
 "seclabels:{\n"
 "    'added': [{\n"
@@ -6869,8 +6879,8 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"L'etichetta di sicurezza deve essere passata come array di oggetti JSON "
-"nel seguente\n"
+"L'etichetta di sicurezza deve essere passata come array di oggetti JSON nel "
+"seguente\n"
 "formato:\n"
 "seclabels:{\n"
 "    'added': [{\n"
@@ -6895,8 +6905,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:359
 msgid ""
 "\n"
-"Configuration parameters/variables must be passed as an array of JSON "
-"objects\n"
+"Configuration parameters/variables must be passed as an array of JSON objects\n"
 "in the following format in create mode:\n"
 "variables:[{\n"
 "    database: <database> or null,\n"
@@ -6907,8 +6916,8 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"I parametri/variabili di configurazione devono essere passati come array "
-"di oggetti JSON\n"
+"I parametri/variabili di configurazione devono essere passati come array di "
+"oggetti JSON\n"
 "nel seguente formato in modalità di creazione:\n"
 "variables:[{\n"
 "    database: <database> o null,\n"
@@ -6921,8 +6930,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:377
 msgid ""
 "\n"
-"Configuration parameters/variables must be passed as an array of JSON "
-"objects\n"
+"Configuration parameters/variables must be passed as an array of JSON objects\n"
 "in the following format in update mode:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
@@ -6948,8 +6956,8 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"I parametri/variabili di configurazione devono essere passati come array "
-"di oggetti JSON\n"
+"I parametri/variabili di configurazione devono essere passati come array di "
+"oggetti JSON\n"
 "nel seguente formato in modalità di creazione:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
@@ -7013,8 +7021,8 @@ msgid ""
 "Error fetching role information from the database server.\n"
 "{0}"
 msgstr ""
-"Errore durante il recupero delle informazioni sul ruolo dal server del "
-"database. \\n {0}"
+"Errore durante il recupero delle informazioni sul ruolo dal server del database. "
+"\\n {0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:641
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:684
@@ -7057,8 +7065,8 @@ msgid ""
 "Error retrieving variable information for the role.\n"
 "{0}"
 msgstr ""
-"Errore durante il recupero delle informazioni sulle variabili per il "
-"ruolo. \\n {0}"
+"Errore durante il recupero delle informazioni sulle variabili per il ruolo. \\n "
+"{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1102
 msgid ""
@@ -7159,8 +7167,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:503
 msgid "Roles shown with a check mark have the WITH ADMIN OPTION set."
 msgstr ""
-"I ruoli mostrati con un segno di spunta hanno l'impostazione WITH ADMIN "
-"OPTION."
+"I ruoli mostrati con un segno di spunta hanno l'impostazione WITH ADMIN OPTION."
 
 #: pgadmin/browser/server_groups/servers/static/js/privilege.js:59
 msgid "Grantee"
@@ -7232,7 +7239,7 @@ msgstr "Disconnetti server"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:263
 #, python-format
 msgid "Are you sure you want to disconnect the server %s?"
-msgstr ""
+msgstr "Sei sicuro di volerti disconnettere dal server %s?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:309
 msgid "Reload server configuration"
@@ -7274,8 +7281,7 @@ msgstr "Cambia la password "
 #: pgadmin/browser/server_groups/servers/static/js/server.js:429
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1198
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:197
-#: pgadmin/browser/static/js/browser.js:580
-#: pgadmin/browser/static/js/node.js:1453
+#: pgadmin/browser/static/js/browser.js:580 pgadmin/browser/static/js/node.js:1453
 #: pgadmin/browser/static/js/wizard.js:137
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:24
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:188
@@ -7309,11 +7315,11 @@ msgstr "Cambia la password"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:519
 msgid ""
-"Please make sure to disconnect the server and update the new password in "
-"the pgpass file before performing any other operation"
+"Please make sure to disconnect the server and update the new password in the "
+"pgpass file before performing any other operation"
 msgstr ""
-"Assicurarsi di scollegare il server e aggiornare la nuova password nel "
-"file pgpass prima di eseguire qualsiasi altra operazione"
+"Assicurarsi di scollegare il server e aggiornare la nuova password nel file "
+"pgpass prima di eseguire qualsiasi altra operazione"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:640
 msgid "Clear saved password"
@@ -7331,8 +7337,7 @@ msgstr "Elimina password Tunnel SSH"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:679
 #, python-format
 msgid ""
-"Are you sure you want to clear the saved password of SSH Tunnel for "
-"server %s?"
+"Are you sure you want to clear the saved password of SSH Tunnel for server %s?"
 msgstr "Vuoi cancellare la password salvata del tunnel SSH per il server %s?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:752
@@ -7603,7 +7608,7 @@ msgstr "Sposta oggetti..."
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:283
 #, python-format
 msgid "Are you sure you wish to move the objects from %s to %s?"
-msgstr ""
+msgstr "Sei sicuro di voler spostare l'oggetto da %s a %s?"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:347
 msgid "Location"
@@ -7615,31 +7620,28 @@ msgstr "L'ubicazione non può essere vuota."
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:3
 msgid ""
-"Please enter the password for the user '{0}' to connect the server - "
-"\"{1}\""
+"Please enter the password for the user '{0}' to connect the server - \"{1}\""
 msgstr ""
-"Inserisci la password per l'utente ' {0} ' per connettere il server - \\ "
-"\" {1} \""
+"Inserisci la password per l'utente ' {0} ' per connettere il server - \\ \" {1} "
+"\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:5
 msgid ""
-"SSH Tunnel password for the identity file '{0}' to connect the server "
-"\"{1}\""
+"SSH Tunnel password for the identity file '{0}' to connect the server \"{1}\""
 msgstr ""
-"Password del tunnel SSH per il file di identità ' {0} ' per connettere il"
-" server \\ \" {1} \""
+"Password del tunnel SSH per il file di identità ' {0} ' per connettere il server "
+"\\ \" {1} \""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:7
 msgid "SSH Tunnel password for the user '{0}' to connect the server \"{1}\""
 msgstr ""
-"Password tunnel SSH per l'utente ' {0} ' per connettere il server \\ \" "
-"{1} \""
+"Password tunnel SSH per l'utente ' {0} ' per connettere il server \\ \" {1} \""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:24
 msgid "Database server password for the user '{0}' to connect the server \"{1}\""
 msgstr ""
-"Password del server di database per l'utente ' {0} ' per connettere il "
-"server \\ \" {1} \""
+"Password del server di database per l'utente ' {0} ' per connettere il server \\ "
+"\" {1} \""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:31
@@ -7771,15 +7773,13 @@ msgstr "Dipendenze"
 msgid "Dependents"
 msgstr "Dipendenti da"
 
-#: pgadmin/browser/static/js/browser.js:345
-#: pgadmin/browser/static/js/toolbar.js:29
+#: pgadmin/browser/static/js/browser.js:345 pgadmin/browser/static/js/toolbar.js:29
 #: pgadmin/browser/static/js/toolbar.js:88
 #: pgadmin/tools/datagrid/static/js/datagrid.js:74
 msgid "View Data"
 msgstr "Vista dati"
 
-#: pgadmin/browser/static/js/browser.js:346
-#: pgadmin/browser/static/js/toolbar.js:20
+#: pgadmin/browser/static/js/browser.js:346 pgadmin/browser/static/js/toolbar.js:20
 #: pgadmin/browser/static/js/toolbar.js:90
 #: pgadmin/tools/datagrid/static/js/datagrid.js:75
 msgid "Filtered Rows"
@@ -7800,13 +7800,13 @@ msgstr "Ripristina password principale"
 
 #: pgadmin/browser/static/js/browser.js:618
 msgid ""
-"This will remove all the saved passwords. This will also remove "
-"established connections to the server and you may need to reconnect "
-"again. Do you wish to continue ?"
+"This will remove all the saved passwords. This will also remove established "
+"connections to the server and you may need to reconnect again. Do you wish to "
+"continue ?"
 msgstr ""
-"Ciò rimuoverà tutte le password salvate. Ciò rimuoverà anche le "
-"connessioni stabilite al server e potrebbe essere necessario "
-"riconnettersi nuovamente. Vuoi continuare ?"
+"Ciò rimuoverà tutte le password salvate. Ciò rimuoverà anche le connessioni "
+"stabilite al server e potrebbe essere necessario riconnettersi nuovamente. Vuoi "
+"continuare ?"
 
 #: pgadmin/browser/static/js/browser.js:728
 #, python-format
@@ -7817,13 +7817,11 @@ msgstr "Sei sicuro di voler chiudere il browser %s?"
 msgid "Error retrieving details for the node."
 msgstr "Errore durante il recupero dei dettagli per il nodo."
 
-#: pgadmin/browser/static/js/collection.js:49
-#: pgadmin/browser/static/js/node.js:122
+#: pgadmin/browser/static/js/collection.js:49 pgadmin/browser/static/js/node.js:122
 msgid "Refresh..."
 msgstr "Aggiorna..."
 
-#: pgadmin/browser/static/js/collection.js:59
-#: pgadmin/browser/static/js/node.js:191
+#: pgadmin/browser/static/js/collection.js:59 pgadmin/browser/static/js/node.js:191
 msgid "Query Tool..."
 msgstr "Query editor..."
 
@@ -7871,11 +7869,11 @@ msgstr "Seleziona almeno un oggetto da eliminare."
 
 #: pgadmin/browser/static/js/collection.js:355
 msgid ""
-"Are you sure you want to drop all the selected objects and all the "
-"objects that depend on them?"
+"Are you sure you want to drop all the selected objects and all the objects that "
+"depend on them?"
 msgstr ""
-"Sei sicuro di voler eliminare tutti gli oggetti selezionati e tutti gli "
-"oggetti a loro collegati?"
+"Sei sicuro di voler eliminare tutti gli oggetti selezionati e tutti gli oggetti "
+"a loro collegati?"
 
 #: pgadmin/browser/static/js/collection.js:356
 msgid "DROP CASCADE multiple objects?"
@@ -7884,8 +7882,8 @@ msgstr "Rimuovi in cascata oggetti multipli?"
 #: pgadmin/browser/static/js/collection.js:359
 msgid "Are you sure you want to drop all the selected objects?"
 msgstr ""
-"Sei sicuro di voler eliminare tutti gli oggetti selezionati e tutti gli "
-"oggetti a loro collegati?"
+"Sei sicuro di voler eliminare tutti gli oggetti selezionati e tutti gli oggetti "
+"a loro collegati?"
 
 #: pgadmin/browser/static/js/collection.js:360
 msgid "DROP multiple objects?"
@@ -7934,11 +7932,10 @@ msgstr "Vuoi davvero interrompere la modifica delle proprietà di %s \"%s\"?"
 #: pgadmin/browser/static/js/node.js:694
 #, python-format
 msgid ""
-"Are you sure want to reset the current changes and re-open the panel for "
-"%s \"%s\"?"
+"Are you sure want to reset the current changes and re-open the panel for %s \"%s"
+"\"?"
 msgstr ""
-"Desideri ripristinare le modifiche correnti e riaprire il pannello per %s"
-" \"%s\"?"
+"Desideri ripristinare le modifiche correnti e riaprire il pannello per %s \"%s\"?"
 
 #: pgadmin/browser/static/js/node.js:698
 msgid "Edit in progress?"
@@ -7947,11 +7944,10 @@ msgstr "Modifiche in corso?"
 #: pgadmin/browser/static/js/node.js:750
 #, python-format
 msgid ""
-"Are you sure you want to drop %s \"%s\" and all the objects that depend "
-"on it?"
+"Are you sure you want to drop %s \"%s\" and all the objects that depend on it?"
 msgstr ""
-"Sei sicuro di voler eliminare %s \"%s\" e tutti gli oggetti che dipendono"
-" da esso?"
+"Sei sicuro di voler eliminare %s \"%s\" e tutti gli oggetti che dipendono da "
+"esso?"
 
 #: pgadmin/browser/static/js/node.js:751
 #, python-format
@@ -7966,51 +7962,48 @@ msgstr "%s \"%s\" non può essere eliminato."
 #: pgadmin/browser/static/js/node.js:770
 #, python-format
 msgid "Are you sure you want to %s %s \"%s\"?"
-msgstr ""
+msgstr "Sei sicuro di voler %s %s %s?"
 
 #: pgadmin/browser/static/js/node.js:771
 #, python-format
 msgid "%s %s?"
-msgstr ""
+msgstr "%s %s?"
 
 #: pgadmin/browser/static/js/node.js:777
 #, python-format
 msgid "The %s \"%s\" cannot be removed."
-msgstr ""
+msgstr "%s %s non può essere rimosso."
 
 #: pgadmin/browser/static/js/node.js:817
 #, python-format
 msgid "Error removing %s: \"%s\""
-msgstr ""
+msgstr "Errore in fase di rimozione di %s: \"%s\""
 
 #: pgadmin/browser/static/js/node.js:821
 #, python-format
 msgid "Error dropping %s: \"%s\""
 msgstr "Errore durante la caduta di %s : \\ \" %s \""
 
-#: pgadmin/browser/static/js/node.js:1211
-#: pgadmin/browser/static/js/node.js:1213
+#: pgadmin/browser/static/js/node.js:1211 pgadmin/browser/static/js/node.js:1213
 #: pgadmin/browser/templates/browser/index.html:120
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:154
 msgid "Edit"
 msgstr "Modifica"
 
-#: pgadmin/browser/static/js/node.js:1227
-#: pgadmin/browser/static/js/node.js:1431
+#: pgadmin/browser/static/js/node.js:1227 pgadmin/browser/static/js/node.js:1431
 msgid "SQL help for this object type."
 msgstr "Guida SQL per questo tipo di oggetto."
 
 #: pgadmin/browser/static/js/node.js:1279
 msgid "Warning"
-msgstr ""
+msgstr "Avviso"
 
 #: pgadmin/browser/static/js/node.js:1349
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1152
 msgid "Error saving properties"
 msgstr "Errore durante il salvataggio delle proprietà"
 
-#: pgadmin/browser/static/js/node.js:1443
-#: pgadmin/browser/static/js/wizard.js:131
+#: pgadmin/browser/static/js/node.js:1443 pgadmin/browser/static/js/wizard.js:131
 msgid "Help for this dialog."
 msgstr "Aiuto per questa finestra di dialogo."
 
@@ -8028,7 +8021,7 @@ msgstr "Ripristina i campi di questa maschera."
 
 #: pgadmin/browser/static/js/node.js:1477
 msgid "Changes will be lost. Are you sure you want to reset?"
-msgstr ""
+msgstr "Le modifiche saranno perse. Sei sicuro di voler effettuare il ripristino?"
 
 #: pgadmin/browser/static/js/node.js:1487
 #: pgadmin/preferences/static/js/preferences.js:438
@@ -8045,6 +8038,7 @@ msgstr "Salva questo oggetto."
 #: pgadmin/browser/static/js/node.js:1609
 msgid "Changes will be lost. Are you sure you want to close the dialog?"
 msgstr ""
+"Le modifiche saranno perse. Sei sicuro di voler chiudere la maschera di dialogo?"
 
 #: pgadmin/browser/static/js/node.ui.js:37
 msgid "Select All"
@@ -8054,8 +8048,7 @@ msgstr "Seleziona tutto"
 msgid "Unselect All"
 msgstr "Deseleziona tutto"
 
-#: pgadmin/browser/static/js/toolbar.js:38
-#: pgadmin/browser/static/js/toolbar.js:86
+#: pgadmin/browser/static/js/toolbar.js:38 pgadmin/browser/static/js/toolbar.js:86
 #: pgadmin/tools/datagrid/static/js/datagrid.js:103
 #: pgadmin/tools/datagrid/static/js/datagrid.js:115
 #: pgadmin/tools/sqleditor/__init__.py:68
@@ -8130,19 +8123,18 @@ msgstr "Disconnettersi"
 
 #: pgadmin/browser/templates/browser/upgrade.html:1
 msgid ""
-"You are currently running version {0} of {1}, however the current version"
-" is {2}."
+"You are currently running version {0} of {1}, however the current version is {2}."
 msgstr ""
-"Attualmente stai eseguendo la versione {0} di {1}, tuttavia la versione "
-"corrente è {2}."
+"Attualmente stai eseguendo la versione {0} di {1}, tuttavia la versione corrente "
+"è {2}."
 
 #: pgadmin/browser/templates/browser/upgrade.html:3
 msgid ""
-"Please click <a class=\"alert-link\" href=\"{0}\" "
-"target=\"_new\">here</a> for more information."
+"Please click <a class=\"alert-link\" href=\"{0}\" target=\"_new\">here</a> for "
+"more information."
 msgstr ""
-"Fai clic <a class=\"alert-link\" href=\"{0}\" target=\"_new\"> qui </a> "
-"per ulteriori informazioni."
+"Fai clic <a class=\"alert-link\" href=\"{0}\" target=\"_new\"> qui </a> per "
+"ulteriori informazioni."
 
 #: pgadmin/dashboard/__init__.py:56
 msgid "Dashboard"
@@ -8199,8 +8191,8 @@ msgstr "Mostra attività?"
 #: pgadmin/dashboard/__init__.py:129
 msgid "If set to True, activity tables will be displayed on dashboards."
 msgstr ""
-"Se impostato su True, le tabelle delle attività verranno visualizzate sui"
-" dashboard."
+"Se impostato su True, le tabelle delle attività verranno visualizzate sui "
+"dashboard."
 
 #: pgadmin/dashboard/__init__.py:135
 msgid "Show graph data points?"
@@ -8209,8 +8201,7 @@ msgstr "Mostra punti dati del grafico?"
 #: pgadmin/dashboard/__init__.py:137
 msgid "If set to True, data points will be visible on graph lines."
 msgstr ""
-"Se impostato su True, i punti dati saranno visibili sulle linee del "
-"grafico."
+"Se impostato su True, i punti dati saranno visibili sulle linee del grafico."
 
 #: pgadmin/dashboard/__init__.py:143
 msgid "Show mouse hover tooltip?"
@@ -8218,11 +8209,11 @@ msgstr "Mostra la descrizione del mouse al passaggio del mouse?"
 
 #: pgadmin/dashboard/__init__.py:145
 msgid ""
-"If set to True, tooltip will appear on mouse hover on the graph lines "
-"giving the data point details"
+"If set to True, tooltip will appear on mouse hover on the graph lines giving the "
+"data point details"
 msgstr ""
-"Se impostato su True, la descrizione comandi apparirà al passaggio del "
-"mouse sulle linee del grafico fornendo i dettagli del punto dati"
+"Se impostato su True, la descrizione comandi apparirà al passaggio del mouse "
+"sulle linee del grafico fornendo i dettagli del punto dati"
 
 #: pgadmin/dashboard/__init__.py:202 pgadmin/dashboard/__init__.py:232
 #: pgadmin/dashboard/static/js/dashboard.js:725
@@ -8549,16 +8540,15 @@ msgstr "Open Source"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:13
 msgid ""
-"pgAdmin is an Open Source administration and management tool for the "
-"PostgreSQL database. It includes a graphical administration interface, an"
-" SQL query tool, a procedural code debugger and much more. The tool is "
-"designed to answer the needs of developers, DBAs and system "
-"administrators alike."
+"pgAdmin is an Open Source administration and management tool for the PostgreSQL "
+"database. It includes a graphical administration interface, an SQL query tool, a "
+"procedural code debugger and much more. The tool is designed to answer the needs "
+"of developers, DBAs and system administrators alike."
 msgstr ""
 "pgAdmin è uno strumento di amministrazione e gestione Open Source per il "
-"database PostgreSQL. Include un'interfaccia di amministrazione grafica, "
-"un editor di query SQL, un debugger di codice procedurale e molto altro. "
-"Lo strumento è progettato per rispondere alle esigenze di sviluppatori, "
+"database PostgreSQL. Include un'interfaccia di amministrazione grafica, un "
+"editor di query SQL, un debugger di codice procedurale e molto altro. Lo "
+"strumento è progettato per rispondere alle esigenze di sviluppatori, "
 "amministratori di database e amministratori di sistema."
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:22
@@ -8684,11 +8674,11 @@ msgstr "Percorso di aiuto PostgreSQL"
 
 #: pgadmin/help/__init__.py:60
 msgid ""
-"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the"
-" major.minor version number."
+"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the major."
+"minor version number."
 msgstr ""
-"Percorso della documentazione PostgreSQL. $ VERSION $ verrà sostituito "
-"con il numero di versione major.minor."
+"Percorso della documentazione PostgreSQL. $ VERSION $ verrà sostituito con il "
+"numero di versione major.minor."
 
 #: pgadmin/help/__init__.py:68
 msgid "EDB Advanced Server Help Path"
@@ -8696,8 +8686,8 @@ msgstr "Percorso di aiuto del server avanzato EDB"
 
 #: pgadmin/help/__init__.py:71
 msgid ""
-"Path to the EDB Advanced Server documentation. $VERSION$ will be replaced"
-" with the major.minor version number."
+"Path to the EDB Advanced Server documentation. $VERSION$ will be replaced with "
+"the major.minor version number."
 msgstr ""
 "Percorso della documentazione del server avanzato EDB. $ VERSION $ verrà "
 "sostituito con il numero di versione major.minor."
@@ -8725,20 +8715,18 @@ msgstr "Linguaggio utente"
 
 #: pgadmin/misc/__init__.py:86
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: pgadmin/misc/__init__.py:87
 msgid "Themes"
-msgstr ""
+msgstr "Temi"
 
 #: pgadmin/misc/__init__.py:89
-msgid ""
-"A refresh is required to apply the theme. Below is the preview of the "
-"theme"
+msgid "A refresh is required to apply the theme. Below is the preview of the theme"
 msgstr ""
+"Un rifresco è necessario per applicare il tema. Sotto c'è la preview del tema"
 
-#: pgadmin/misc/bgprocess/processes.py:86
-#: pgadmin/misc/bgprocess/processes.py:649
+#: pgadmin/misc/bgprocess/processes.py:86 pgadmin/misc/bgprocess/processes.py:649
 #: pgadmin/misc/bgprocess/processes.py:692
 msgid "Could not find a process with the specified ID."
 msgstr "Impossibile trovare un processo con l'ID specificato."
@@ -8754,8 +8742,7 @@ msgstr "Il processo è già terminato e non può essere riavviato."
 #: pgadmin/misc/bgprocess/processes.py:554
 msgid "Status for the background process '{0}' could not be loaded."
 msgstr ""
-"Non è stato possibile caricare lo stato per il processo in background "
-"'{0}'."
+"Non è stato possibile caricare lo stato per il processo in background '{0}'."
 
 #: pgadmin/misc/bgprocess/processes.py:703
 msgid "Unable to kill the background process '{0}'"
@@ -8798,8 +8785,7 @@ msgstr "Tempo di esecuzione"
 #: pgadmin/misc/dependencies/static/js/dependencies.js:136
 msgid "No dependency information is available for the selected object."
 msgstr ""
-"Non sono disponibili informazioni sulla dipendenza per l'oggetto "
-"selezionato."
+"Non sono disponibili informazioni sulla dipendenza per l'oggetto selezionato."
 
 #: pgadmin/misc/dependencies/static/js/dependencies.js:145
 #: pgadmin/misc/dependents/static/js/dependents.js:150
@@ -8890,8 +8876,7 @@ msgstr "Si è verificato un errore durante la ridenominazione del file:"
 #: pgadmin/misc/file_manager/static/js/utility.js:429
 msgid "Error occurred while checking access permission."
 msgstr ""
-"Si è verificato un errore durante il controllo dell'autorizzazione di "
-"accesso."
+"Si è verificato un errore durante il controllo dell'autorizzazione di accesso."
 
 #: pgadmin/misc/file_manager/static/js/select_dialogue.js:90
 #: pgadmin/misc/file_manager/static/js/select_dialogue.js:115
@@ -8958,92 +8943,92 @@ msgstr "Errore durante il recupero delle informazioni - %s"
 
 #: pgadmin/misc/static/explain/js/explain.js:136
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: pgadmin/misc/static/explain/js/explain.js:138
 msgid "Node"
-msgstr ""
+msgstr "Nodo"
 
 #: pgadmin/misc/static/explain/js/explain.js:140
 msgid "Timings"
-msgstr ""
+msgstr "Tempistiche"
 
 #: pgadmin/misc/static/explain/js/explain.js:142
 msgid "Rows"
-msgstr ""
+msgstr "Righe"
 
 #: pgadmin/misc/static/explain/js/explain.js:144
 msgid "Loops"
-msgstr ""
+msgstr "Cicli"
 
 #: pgadmin/misc/static/explain/js/explain.js:153
 msgid "Exclusive"
-msgstr ""
+msgstr "Esclusivo"
 
 #: pgadmin/misc/static/explain/js/explain.js:155
 msgid "Inclusive"
-msgstr ""
+msgstr "Inclusivo"
 
 #: pgadmin/misc/static/explain/js/explain.js:157
 msgid "Rows X"
-msgstr ""
+msgstr "Righe X"
 
 #: pgadmin/misc/static/explain/js/explain.js:159
 msgid "Actual"
-msgstr ""
+msgstr "Attuale"
 
 #: pgadmin/misc/static/explain/js/explain.js:161
 msgid "Plan"
-msgstr ""
+msgstr "Piano"
 
 #: pgadmin/misc/static/explain/js/explain.js:196
 msgid "Statistics per Node Type"
-msgstr ""
+msgstr "Statistiche per tipologia nodo"
 
 #: pgadmin/misc/static/explain/js/explain.js:203
 #: pgadmin/misc/static/explain/js/explain.js:233
 msgid "Node type"
-msgstr ""
+msgstr "Tipo nodo"
 
 #: pgadmin/misc/static/explain/js/explain.js:205
 #: pgadmin/misc/static/explain/js/explain.js:235
 msgid "Count"
-msgstr ""
+msgstr "Conteggio"
 
 #: pgadmin/misc/static/explain/js/explain.js:207
 msgid "Time spent"
-msgstr ""
+msgstr "Tempo speso"
 
 #: pgadmin/misc/static/explain/js/explain.js:209
 #: pgadmin/misc/static/explain/js/explain.js:229
 #, python-format
 msgid "%% of query"
-msgstr ""
+msgstr "%% della query"
 
 #: pgadmin/misc/static/explain/js/explain.js:216
 msgid "Statistics per Table"
-msgstr ""
+msgstr "Statistiche per tabella"
 
 #: pgadmin/misc/static/explain/js/explain.js:225
 msgid "Scan count"
-msgstr ""
+msgstr "Conteggio della scansione"
 
 #: pgadmin/misc/static/explain/js/explain.js:237
 msgid "Sum of times"
-msgstr ""
+msgstr "Somma dei tempi"
 
 #: pgadmin/misc/static/explain/js/explain.js:239
 #, python-format
 msgid "%% of table"
-msgstr ""
+msgstr "%% della tabella"
 
 #: pgadmin/misc/static/explain/js/explain.js:1217
 msgid "Graphical"
-msgstr ""
+msgstr "Grafico"
 
 #: pgadmin/misc/static/explain/js/explain.js:1218
 msgid "Analysis"
-msgstr ""
+msgstr "Analisi"
 
 #: pgadmin/misc/statistics/static/js/statistics.js:214
 msgid "No statistics are available for the selected object."
@@ -9078,17 +9063,19 @@ msgstr "Non è stata selezionata la categoria."
 
 #: pgadmin/preferences/static/js/preferences.js:482
 msgid "Refresh required"
-msgstr ""
+msgstr "Rinfresco necessario"
 
 #: pgadmin/preferences/static/js/preferences.js:483
 msgid ""
-"A page refresh is required to apply the theme. Do you wish to refresh the"
-" page now?"
+"A page refresh is required to apply the theme. Do you wish to refresh the page "
+"now?"
 msgstr ""
+"Un rinfresco della pagina è necessario per mostrare il tema. Vuoi rinfrescare la "
+"pagina adesso?"
 
 #: pgadmin/preferences/static/js/preferences.js:492
 msgid "Later"
-msgstr ""
+msgstr "Più tardi"
 
 #: pgadmin/settings/__init__.py:46
 msgid "Reset Layout"
@@ -9097,8 +9084,7 @@ msgstr "Ripristina disposizione"
 #: pgadmin/settings/__init__.py:89 pgadmin/tools/backup/__init__.py:222
 #: pgadmin/tools/debugger/__init__.py:264
 #: pgadmin/tools/import_export/__init__.py:162
-#: pgadmin/tools/maintenance/__init__.py:150
-#: pgadmin/tools/restore/__init__.py:142
+#: pgadmin/tools/maintenance/__init__.py:150 pgadmin/tools/restore/__init__.py:142
 #: pgadmin/tools/user_management/__init__.py:121
 msgid "This URL cannot be called directly."
 msgstr "Questo URL non può essere chiamato direttamente."
@@ -9112,8 +9098,8 @@ msgid ""
 "Are you sure you want to reset the current layout? This will cause the "
 "application to reload and any un-saved data will be lost."
 msgstr ""
-"Sei sicuro di voler ripristinare il layout attuale? Ciò causerà il "
-"ricaricamento dell'applicazione e la perdita di tutti i dati non salvati."
+"Sei sicuro di voler ripristinare il layout attuale? Ciò causerà il ricaricamento "
+"dell'applicazione e la perdita di tutti i dati non salvati."
 
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:103
 msgid "Connection Lost"
@@ -9142,7 +9128,7 @@ msgstr "Generale"
 
 #: pgadmin/static/js/backform.pgadmin.js:2102
 msgid "Preview not available..."
-msgstr ""
+msgstr "Anteprima non disponibile..."
 
 #: pgadmin/static/js/backform.pgadmin.js:2555
 #: pgadmin/tools/backup/static/js/backup.js:95
@@ -9198,8 +9184,8 @@ msgstr "Alt"
 #: pgadmin/static/js/sqleditor_utils.js:153
 msgid "An unexpected error occurred - ensure you are logged into the application."
 msgstr ""
-"Si è verificato un errore imprevisto: assicurarsi di aver effettuato "
-"l'accesso all'applicazione."
+"Si è verificato un errore imprevisto: assicurarsi di aver effettuato l'accesso "
+"all'applicazione."
 
 #: pgadmin/static/js/sqleditor_utils.js:165
 #: pgadmin/tools/sqleditor/__init__.py:1381
@@ -9208,14 +9194,13 @@ msgstr ""
 msgid "Transaction status check failed."
 msgstr "Controllo sullo stato della transazione fallito."
 
-#: pgadmin/static/js/alertify/dialog.js:59
-#: pgadmin/static/js/alertify/dialog.js:143
+#: pgadmin/static/js/alertify/dialog.js:59 pgadmin/static/js/alertify/dialog.js:143
 msgid ""
-"Databases with = symbols in the name cannot be backed up or restored "
-"using this utility."
+"Databases with = symbols in the name cannot be backed up or restored using this "
+"utility."
 msgstr ""
-"Non è possibile eseguire il backup o il ripristino di database con "
-"simboli = nel nome utilizzando questa utility."
+"Non è possibile eseguire il backup o il ripristino di database con simboli = nel "
+"nome utilizzando questa utility."
 
 #: pgadmin/static/js/alertify/dialog.js:76
 msgid "Please select server or child node from the browser tree."
@@ -9226,18 +9211,16 @@ msgstr "Seleziona il nodo server o figlio dalla struttura del browser."
 #: pgadmin/tools/maintenance/static/js/maintenance.js:221
 msgid "Please configure the PostgreSQL Binary Path in the Preferences dialog."
 msgstr ""
-"Configurare il percorso binario PostgreSQL nella finestra di dialogo "
-"Preferenze."
+"Configurare il percorso binario PostgreSQL nella finestra di dialogo Preferenze."
 
 #: pgadmin/static/js/alertify/dialog.js:91
 #: pgadmin/tools/import_export/static/js/import_export.js:452
 #: pgadmin/tools/maintenance/static/js/maintenance.js:226
 msgid ""
-"Please configure the EDB Advanced Server Binary Path in the Preferences "
-"dialog."
+"Please configure the EDB Advanced Server Binary Path in the Preferences dialog."
 msgstr ""
-"Configurare il percorso binario del server avanzato EDB nella finestra di"
-" dialogo Preferenze."
+"Configurare il percorso binario del server avanzato EDB nella finestra di "
+"dialogo Preferenze."
 
 #: pgadmin/static/js/alertify/dialog.js:97
 #: pgadmin/tools/import_export/static/js/import_export.js:459
@@ -9460,11 +9443,11 @@ msgstr "Recupera password"
 
 #: pgadmin/templates/security/forgot_password.html:10
 msgid ""
-"Enter the email address for the user account you wish to recover the "
-"password for:"
+"Enter the email address for the user account you wish to recover the password "
+"for:"
 msgstr ""
-"Immettere l'indirizzo e-mail per l'account utente per il quale si "
-"desidera recuperare la password per:"
+"Immettere l'indirizzo e-mail per l'account utente per il quale si desidera "
+"recuperare la password per:"
 
 #: pgadmin/templates/security/login_user.html:4
 #: pgadmin/templates/security/login_user.html:7
@@ -9539,21 +9522,19 @@ msgstr "Backup degli oggetti globali sul server '{0}'..."
 msgid "Backing up the server '{0}'..."
 msgstr "Backup del server '{0}'..."
 
-#: pgadmin/tools/backup/__init__.py:211
-#: pgadmin/tools/import_export/__init__.py:151
+#: pgadmin/tools/backup/__init__.py:211 pgadmin/tools/import_export/__init__.py:151
 #: pgadmin/tools/restore/__init__.py:132
 msgid "Running command:"
 msgstr "Comando in esecuzione:"
 
 #: pgadmin/tools/backup/__init__.py:316 pgadmin/tools/backup/__init__.py:514
 #: pgadmin/tools/import_export/__init__.py:355
-#: pgadmin/tools/maintenance/__init__.py:293
-#: pgadmin/tools/restore/__init__.py:217 pgadmin/tools/restore/__init__.py:395
+#: pgadmin/tools/maintenance/__init__.py:293 pgadmin/tools/restore/__init__.py:217
+#: pgadmin/tools/restore/__init__.py:395
 msgid "Could not find the specified server."
 msgstr "Impossibile trovare il server specificato."
 
-#: pgadmin/tools/backup/__init__.py:329
-#: pgadmin/tools/maintenance/__init__.py:213
+#: pgadmin/tools/backup/__init__.py:329 pgadmin/tools/maintenance/__init__.py:213
 #: pgadmin/tools/restore/__init__.py:231
 msgid "Please connect to the server first."
 msgstr "Per favore, connettiti prima al server."
@@ -9585,11 +9566,10 @@ msgstr "Forza la doppia virgoletta sugli identificatori"
 
 #: pgadmin/tools/backup/static/js/backup.js:96
 msgid ""
-"Only objects global to the entire database will be backed up, in PLAIN "
-"format"
+"Only objects global to the entire database will be backed up, in PLAIN format"
 msgstr ""
-"Verrà eseguito il backup solo degli oggetti globali per l'intero "
-"database, in formato PLAIN"
+"Verrà eseguito il backup solo degli oggetti globali per l'intero database, in "
+"formato PLAIN"
 
 #: pgadmin/tools/backup/static/js/backup.js:143
 #: pgadmin/tools/import_export/static/js/import_export.js:87
@@ -9851,11 +9831,11 @@ msgstr "Nessun oggetto selezionato."
 
 #: pgadmin/tools/datagrid/static/js/show_data.js:132
 msgid "Data Filter"
-msgstr ""
+msgstr "Filtro dati"
 
 #: pgadmin/tools/datagrid/static/js/show_data.js:160
 msgid "Use SHIFT + ENTER to apply filter..."
-msgstr ""
+msgstr "Usa SHIFT + ENTER per applicare il filtro..."
 
 #: pgadmin/tools/datagrid/static/js/show_query_tool.js:52
 msgid "Query Tool Error"
@@ -9931,7 +9911,7 @@ msgstr "Vai a (Alt+G)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:132
 msgid "Copy with headers"
-msgstr ""
+msgstr "Copia con le intestazioni"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:160
 msgid "Indent Selection (Tab)"
@@ -10065,8 +10045,7 @@ msgstr "Apri in una nuova tab del browser"
 #: pgadmin/tools/debugger/__init__.py:76
 msgid "If set to True, the Debugger will be opened in a new browser tab."
 msgstr ""
-"Se impostato su True, il debugger verrà aperto in una nuova scheda del "
-"browser."
+"Se impostato su True, il debugger verrà aperto in una nuova scheda del browser."
 
 #: pgadmin/tools/debugger/__init__.py:82
 msgid "Accesskey (Continue/Start)"
@@ -10122,26 +10101,25 @@ msgstr "Non è possibile eseguire il debug delle funzioni con due punti nel nome
 #: pgadmin/tools/debugger/__init__.py:418
 msgid "EDB Advanced Server wrapped functions cannot be debugged."
 msgstr ""
-"Non è possibile eseguire il debug delle funzioni con wrapping Advanced "
-"Server EDB."
+"Non è possibile eseguire il debug delle funzioni con wrapping Advanced Server "
+"EDB."
 
 #: pgadmin/tools/debugger/__init__.py:425
 msgid ""
-"An 'edbspl' target with a variadic argument is not supported and cannot "
-"be debugged."
+"An 'edbspl' target with a variadic argument is not supported and cannot be "
+"debugged."
 msgstr ""
-"Un target \"edbspl\" con un argomento variadico non è supportato e non "
-"può essere sottoposto a debug."
+"Un target \"edbspl\" con un argomento variadico non è supportato e non può "
+"essere sottoposto a debug."
 
-#: pgadmin/tools/debugger/__init__.py:438
-#: pgadmin/tools/debugger/__init__.py:452
+#: pgadmin/tools/debugger/__init__.py:438 pgadmin/tools/debugger/__init__.py:452
 msgid "Failed to find the pldbgapi extension in this database."
 msgstr "Impossibile trovare l'estensione pldbgapi in questo database."
 
 #: pgadmin/tools/debugger/__init__.py:459
 msgid ""
-"The debugger plugin is not enabled. Please create the pldbgapi extension "
-"in this database."
+"The debugger plugin is not enabled. Please create the pldbgapi extension in this "
+"database."
 msgstr ""
 "Il plug-in del debugger non è abilitato. Si prega di creare l'estensione "
 "pldbgapi in questo database."
@@ -10155,8 +10133,8 @@ msgid ""
 "You must be a superuser to set a global breakpoint and perform indirect "
 "debugging."
 msgstr ""
-"Devi essere un superutente per impostare un breakpoint globale ed "
-"eseguire il debug indiretto."
+"Devi essere un superutente per impostare un breakpoint globale ed eseguire il "
+"debug indiretto."
 
 #: pgadmin/tools/debugger/__init__.py:670
 msgid "Could not fetch debugger plugin information."
@@ -10165,45 +10143,32 @@ msgstr "Impossibile recuperare le informazioni sul plug-in del debugger."
 #: pgadmin/tools/debugger/__init__.py:676
 msgid ""
 "The debugger plugin is not enabled. Please add the plugin to the "
-"shared_preload_libraries setting in the postgresql.conf file and restart "
-"the database server for indirect debugging."
+"shared_preload_libraries setting in the postgresql.conf file and restart the "
+"database server for indirect debugging."
 msgstr ""
-"Il plug-in del debugger non è abilitato. Aggiungi il plug-in "
-"all'impostazione shared_preload_libraries nel file postgresql.conf e "
-"riavvia il server di database per il debug indiretto."
+"Il plug-in del debugger non è abilitato. Aggiungi il plug-in all'impostazione "
+"shared_preload_libraries nel file postgresql.conf e riavvia il server di "
+"database per il debug indiretto."
 
 #: pgadmin/tools/debugger/__init__.py:698
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
 msgstr "Aggiorna l'estensione pldbgapi alla versione 1.1 o successiva e riprova."
 
-#: pgadmin/tools/debugger/__init__.py:821
-#: pgadmin/tools/debugger/__init__.py:864
-#: pgadmin/tools/debugger/__init__.py:1085
-#: pgadmin/tools/debugger/__init__.py:1094
-#: pgadmin/tools/debugger/__init__.py:1130
-#: pgadmin/tools/debugger/__init__.py:1186
-#: pgadmin/tools/debugger/__init__.py:1215
-#: pgadmin/tools/debugger/__init__.py:1259
-#: pgadmin/tools/debugger/__init__.py:1291
-#: pgadmin/tools/debugger/__init__.py:1370
-#: pgadmin/tools/debugger/__init__.py:1427
-#: pgadmin/tools/debugger/__init__.py:1458
-#: pgadmin/tools/debugger/__init__.py:1496
-#: pgadmin/tools/debugger/__init__.py:1526
-#: pgadmin/tools/debugger/__init__.py:1574
-#: pgadmin/tools/debugger/__init__.py:1604
-#: pgadmin/tools/debugger/__init__.py:1639
-#: pgadmin/tools/debugger/__init__.py:1874
-#: pgadmin/tools/debugger/__init__.py:1975
-#: pgadmin/tools/debugger/__init__.py:2002
+#: pgadmin/tools/debugger/__init__.py:821 pgadmin/tools/debugger/__init__.py:864
+#: pgadmin/tools/debugger/__init__.py:1085 pgadmin/tools/debugger/__init__.py:1094
+#: pgadmin/tools/debugger/__init__.py:1130 pgadmin/tools/debugger/__init__.py:1186
+#: pgadmin/tools/debugger/__init__.py:1215 pgadmin/tools/debugger/__init__.py:1259
+#: pgadmin/tools/debugger/__init__.py:1291 pgadmin/tools/debugger/__init__.py:1370
+#: pgadmin/tools/debugger/__init__.py:1427 pgadmin/tools/debugger/__init__.py:1458
+#: pgadmin/tools/debugger/__init__.py:1496 pgadmin/tools/debugger/__init__.py:1526
+#: pgadmin/tools/debugger/__init__.py:1574 pgadmin/tools/debugger/__init__.py:1604
+#: pgadmin/tools/debugger/__init__.py:1639 pgadmin/tools/debugger/__init__.py:1874
+#: pgadmin/tools/debugger/__init__.py:1975 pgadmin/tools/debugger/__init__.py:2002
 #: pgadmin/tools/debugger/__init__.py:2024
 #: pgadmin/tools/debugger/static/js/direct.js:1632
-#: pgadmin/tools/sqleditor/__init__.py:1009
-#: pgadmin/tools/sqleditor/command.py:196
-#: pgadmin/tools/sqleditor/command.py:408
-#: pgadmin/tools/sqleditor/command.py:549
-#: pgadmin/tools/sqleditor/command.py:646
-#: pgadmin/tools/sqleditor/command.py:997
+#: pgadmin/tools/sqleditor/__init__.py:1009 pgadmin/tools/sqleditor/command.py:196
+#: pgadmin/tools/sqleditor/command.py:408 pgadmin/tools/sqleditor/command.py:549
+#: pgadmin/tools/sqleditor/command.py:646 pgadmin/tools/sqleditor/command.py:997
 #: pgadmin/tools/sqleditor/utils/is_query_resultset_updatable.py:89
 msgid "Not connected to server or connection with the server has been closed."
 msgstr "Non connesso al server oppure connessione al server chiusa."
@@ -10224,13 +10189,11 @@ msgstr "Valore depositato correttamente"
 msgid "Error while setting the value"
 msgstr "Errore durante l'impostazione del valore"
 
-#: pgadmin/tools/debugger/__init__.py:1894
-#: pgadmin/tools/debugger/__init__.py:1927
+#: pgadmin/tools/debugger/__init__.py:1894 pgadmin/tools/debugger/__init__.py:1927
 msgid "Execution completed with an error."
 msgstr "Esecuzione completata con un errore."
 
-#: pgadmin/tools/debugger/__init__.py:1917
-#: pgadmin/tools/debugger/__init__.py:1949
+#: pgadmin/tools/debugger/__init__.py:1917 pgadmin/tools/debugger/__init__.py:1949
 msgid "Execution Completed."
 msgstr "Esecuzione completata."
 
@@ -10515,13 +10478,11 @@ msgstr "Finale (selezione della recensione) (passaggio 3 di 3)"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1056
 msgid ""
-"The SQL below will be executed on the database server to grant the "
-"selected privileges. Please click on <b>Finish</b> to complete the "
-"process."
+"The SQL below will be executed on the database server to grant the selected "
+"privileges. Please click on <b>Finish</b> to complete the process."
 msgstr ""
 "L'SQL sottostante verrà eseguito sul server di database per garantire i "
-"privilegi selezionati. Fai clic su <b> Fine </b> per completare il "
-"processo."
+"privilegi selezionati. Fai clic su <b> Fine </b> per completare il processo."
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1115
 msgid "Grant Wizard"
@@ -10535,8 +10496,8 @@ msgstr "Importa/Esporta"
 #: pgadmin/tools/import_export/__init__.py:114
 msgid "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})"
 msgstr ""
-"Copia dei dati della tabella '{0}. {1}' sul database '{2}' e sul server "
-"({3}: {4})"
+"Copia dei dati della tabella '{0}. {1}' sul database '{2}' e sul server ({3}: "
+"{4})"
 
 #: pgadmin/tools/import_export/__init__.py:127
 msgid "Copying table data"
@@ -10545,8 +10506,7 @@ msgstr "Copia dei dati della tabella"
 #: pgadmin/tools/import_export/__init__.py:136
 msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'"
 msgstr ""
-"Copia dei dati della tabella '{0}. {1}' sul database '{2}' per il server "
-"'{3}'"
+"Copia dei dati della tabella '{0}. {1}' sul database '{2}' per il server '{3}'"
 
 #: pgadmin/tools/import_export/__init__.py:225
 #: pgadmin/tools/maintenance/__init__.py:201
@@ -10589,11 +10549,11 @@ msgstr "Colonne per l'importazione..."
 #: pgadmin/tools/import_export/static/js/import_export.js:188
 #: pgadmin/tools/import_export/static/js/import_export.js:231
 msgid ""
-"An optional list of columns to be copied. If no column list is specified,"
-" all columns of the table will be copied."
+"An optional list of columns to be copied. If no column list is specified, all "
+"columns of the table will be copied."
 msgstr ""
-"Un elenco opzionale di colonne da copiare. Se non viene specificato alcun"
-" elenco di colonne, verranno copiate tutte le colonne della tabella."
+"Un elenco opzionale di colonne da copiare. Se non viene specificato alcun elenco "
+"di colonne, verranno copiate tutte le colonne della tabella."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:191
 msgid "Columns to export"
@@ -10609,18 +10569,17 @@ msgstr "Stringa NULL"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:240
 msgid ""
-"Specifies the string that represents a null value. The default is \\N "
-"(backslash-N) in text format, and an unquoted empty string in CSV format."
-" You might prefer an empty string even in text format for cases where you"
-" don't want to distinguish nulls from empty strings. This option is not "
-"allowed when using binary format."
+"Specifies the string that represents a null value. The default is \\N (backslash-"
+"N) in text format, and an unquoted empty string in CSV format. You might prefer "
+"an empty string even in text format for cases where you don't want to "
+"distinguish nulls from empty strings. This option is not allowed when using "
+"binary format."
 msgstr ""
-"Specifica la stringa che rappresenta un valore null. L'impostazione "
-"predefinita è \\n (barra rovesciata-N) in formato testo e una stringa "
-"vuota non quotata in formato CSV. È possibile preferire una stringa vuota"
-" anche in formato testo per i casi in cui non si desidera distinguere i "
-"null da stringhe vuote. Questa opzione non è consentita quando si "
-"utilizza il formato binario."
+"Specifica la stringa che rappresenta un valore null. L'impostazione predefinita "
+"è \\n (barra rovesciata-N) in formato testo e una stringa vuota non quotata in "
+"formato CSV. È possibile preferire una stringa vuota anche in formato testo per "
+"i casi in cui non si desidera distinguere i null da stringhe vuote. Questa "
+"opzione non è consentita quando si utilizza il formato binario."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:243
 msgid "Not null columns"
@@ -10632,17 +10591,16 @@ msgstr "Colonne non nulle..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:258
 msgid ""
-"Do not match the specified column values against the null string. In the "
-"default case where the null string is empty, this means that empty values"
-" will be read as zero-length strings rather than nulls, even when they "
-"are not quoted. This option is allowed only in import, and only when "
-"using CSV format."
+"Do not match the specified column values against the null string. In the default "
+"case where the null string is empty, this means that empty values will be read "
+"as zero-length strings rather than nulls, even when they are not quoted. This "
+"option is allowed only in import, and only when using CSV format."
 msgstr ""
 "Non abbinare i valori di colonna specificati alla stringa null. Nel caso "
-"predefinito in cui la stringa nulla è vuota, ciò significa che i valori "
-"vuoti verranno letti come stringhe di lunghezza zero anziché null, anche "
-"quando non sono quotati. Questa opzione è consentita solo in importazione"
-" e solo quando si utilizza il formato CSV."
+"predefinito in cui la stringa nulla è vuota, ciò significa che i valori vuoti "
+"verranno letti come stringhe di lunghezza zero anziché null, anche quando non "
+"sono quotati. Questa opzione è consentita solo in importazione e solo quando si "
+"utilizza il formato CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:309
 #: pgadmin/tools/import_export/static/js/import_export.js:336
@@ -10652,16 +10610,15 @@ msgstr "Seleziona dall'elenco..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:311
 msgid ""
-"Specifies the character that separates columns within each row (line) of "
-"the file. The default is a tab character in text format, a comma in CSV "
-"format. This must be a single one-byte character. This option is not "
-"allowed when using binary format."
+"Specifies the character that separates columns within each row (line) of the "
+"file. The default is a tab character in text format, a comma in CSV format. This "
+"must be a single one-byte character. This option is not allowed when using "
+"binary format."
 msgstr ""
-"Specifica il carattere che separa le colonne all'interno di ogni riga "
-"(riga) del file. L'impostazione predefinita è un carattere di tabulazione"
-" in formato testo, una virgola in formato CSV. Questo deve essere un "
-"singolo carattere a un byte. Questa opzione non è consentita quando si "
-"utilizza il formato binario."
+"Specifica il carattere che separa le colonne all'interno di ogni riga (riga) del "
+"file. L'impostazione predefinita è un carattere di tabulazione in formato testo, "
+"una virgola in formato CSV. Questo deve essere un singolo carattere a un byte. "
+"Questa opzione non è consentita quando si utilizza il formato binario."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:315
 msgid "Quote"
@@ -10669,14 +10626,14 @@ msgstr "Citazione"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:338
 msgid ""
-"Specifies the quoting character to be used when a data value is quoted. "
-"The default is double-quote. This must be a single one-byte character. "
-"This option is allowed only when using CSV format."
+"Specifies the quoting character to be used when a data value is quoted. The "
+"default is double-quote. This must be a single one-byte character. This option "
+"is allowed only when using CSV format."
 msgstr ""
-"Specifica il carattere di quotazione da utilizzare quando viene quotato "
-"un valore di dati. L'impostazione predefinita è la doppia virgoletta. "
-"Questo deve essere un singolo carattere a un byte. Questa opzione è "
-"consentita solo quando si utilizza il formato CSV."
+"Specifica il carattere di quotazione da utilizzare quando viene quotato un "
+"valore di dati. L'impostazione predefinita è la doppia virgoletta. Questo deve "
+"essere un singolo carattere a un byte. Questa opzione è consentita solo quando "
+"si utilizza il formato CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:342
 msgid "Escape"
@@ -10684,17 +10641,16 @@ msgstr "Fuga"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:365
 msgid ""
-"Specifies the character that should appear before a data character that "
-"matches the QUOTE value. The default is the same as the QUOTE value (so "
-"that the quoting character is doubled if it appears in the data). This "
-"must be a single one-byte character. This option is allowed only when "
-"using CSV format."
+"Specifies the character that should appear before a data character that matches "
+"the QUOTE value. The default is the same as the QUOTE value (so that the quoting "
+"character is doubled if it appears in the data). This must be a single one-byte "
+"character. This option is allowed only when using CSV format."
 msgstr ""
-"Specifica il carattere che deve apparire prima di un carattere di dati "
-"che corrisponde al valore QUOTE. Il valore predefinito è uguale al valore"
-" QUOTE (in modo che il carattere di citazione sia raddoppiato se appare "
-"nei dati). Questo deve essere un singolo carattere a un byte. Questa "
-"opzione è consentita solo quando si utilizza il formato CSV."
+"Specifica il carattere che deve apparire prima di un carattere di dati che "
+"corrisponde al valore QUOTE. Il valore predefinito è uguale al valore QUOTE (in "
+"modo che il carattere di citazione sia raddoppiato se appare nei dati). Questo "
+"deve essere un singolo carattere a un byte. Questa opzione è consentita solo "
+"quando si utilizza il formato CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:411
 msgid "Import/Export..."
@@ -10833,11 +10789,11 @@ msgstr "Errore di manutenzione"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:257
 msgid ""
-"Maintenance job creation failed. Databases with = symbols in the name "
-"cannot be maintained using this utility."
+"Maintenance job creation failed. Databases with = symbols in the name cannot be "
+"maintained using this utility."
 msgstr ""
-"Creazione dell'operazione di manutenzione fallita. I database con il "
-"simbolo = nel nome non possono essere manutenuti con questa utility."
+"Creazione dell'operazione di manutenzione fallita. I database con il simbolo = "
+"nel nome non possono essere manutenuti con questa utility."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:386
 #: pgadmin/tools/maintenance/static/js/maintenance.js:393
@@ -10929,18 +10885,12 @@ msgstr "Operazione di ripristino fallita."
 msgid "Query tool"
 msgstr "Query editor"
 
-#: pgadmin/tools/sqleditor/__init__.py:151
-#: pgadmin/tools/sqleditor/__init__.py:159
-#: pgadmin/tools/sqleditor/__init__.py:211
-#: pgadmin/tools/sqleditor/__init__.py:362
-#: pgadmin/tools/sqleditor/__init__.py:567
-#: pgadmin/tools/sqleditor/__init__.py:690
-#: pgadmin/tools/sqleditor/__init__.py:771
-#: pgadmin/tools/sqleditor/__init__.py:826
-#: pgadmin/tools/sqleditor/__init__.py:878
-#: pgadmin/tools/sqleditor/__init__.py:922
-#: pgadmin/tools/sqleditor/__init__.py:962
-#: pgadmin/tools/sqleditor/__init__.py:971
+#: pgadmin/tools/sqleditor/__init__.py:151 pgadmin/tools/sqleditor/__init__.py:159
+#: pgadmin/tools/sqleditor/__init__.py:211 pgadmin/tools/sqleditor/__init__.py:362
+#: pgadmin/tools/sqleditor/__init__.py:567 pgadmin/tools/sqleditor/__init__.py:690
+#: pgadmin/tools/sqleditor/__init__.py:771 pgadmin/tools/sqleditor/__init__.py:826
+#: pgadmin/tools/sqleditor/__init__.py:878 pgadmin/tools/sqleditor/__init__.py:922
+#: pgadmin/tools/sqleditor/__init__.py:962 pgadmin/tools/sqleditor/__init__.py:971
 #: pgadmin/tools/sqleditor/__init__.py:1042
 #: pgadmin/tools/sqleditor/__init__.py:1078
 #: pgadmin/tools/sqleditor/__init__.py:1123
@@ -10959,8 +10909,8 @@ msgstr "******* Error *******"
 #: pgadmin/tools/sqleditor/__init__.py:706
 msgid "No primary key found for this object, so unable to save records."
 msgstr ""
-"Nessuna chiave primaria trovata per questo oggetto, quindi impossibile "
-"salvare i record."
+"Nessuna chiave primaria trovata per questo oggetto, quindi impossibile salvare i "
+"record."
 
 #: pgadmin/tools/sqleditor/__init__.py:1015
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:103
@@ -11019,11 +10969,11 @@ msgstr "Visualizzatore delle geometrie"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:825
 msgid "Editable column"
-msgstr ""
+msgstr "Colonna modificabile"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:827
 msgid "Read-only column"
-msgstr ""
+msgstr "Colonna di sola lettura"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1254
 msgid "Fetching all records..."
@@ -11050,11 +11000,11 @@ msgstr "Sei sicuro di voler cancellare la cronologia?"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1750
 msgid ""
-"This will remove all of your query history from this and other sessions "
-"for this database."
+"This will remove all of your query history from this and other sessions for this "
+"database."
 msgstr ""
-"Ciò rimuoverà tutta la cronologia delle query da questa e altre sessioni "
-"per questo database."
+"Ciò rimuoverà tutta la cronologia delle query da questa e altre sessioni per "
+"questo database."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2114
 msgid "Connection Warning"
@@ -11067,14 +11017,12 @@ msgstr "L'applicativo ha perso la connessione col database:"
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2125
 msgid "⁃ If the connection was idle it may have been forcibly disconnected."
 msgstr ""
-"- Se la connessione era inattiva potrebbe essere stata chiusa "
-"forzatamente."
+"- Se la connessione era inattiva potrebbe essere stata chiusa forzatamente."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2127
 msgid "⁃ The application server or database server may have been restarted."
 msgstr ""
-"- L'application server o il database server potrebbero essere stati "
-"riavviati."
+"- L'application server o il database server potrebbero essere stati riavviati."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2129
 msgid "⁃ The user session may have timed out."
@@ -11095,11 +11043,11 @@ msgstr "Errore durante il recupero di SQL per lo script: %s ."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2359
 msgid ""
-"The data has been modified, but not saved. Are you sure you wish to "
-"discard the changes?"
+"The data has been modified, but not saved. Are you sure you wish to discard the "
+"changes?"
 msgstr ""
-"I dati sono stati modificati, ma non salvati. Sei sicuro di voler "
-"annullare le modifiche?"
+"I dati sono stati modificati, ma non salvati. Sei sicuro di voler annullare le "
+"modifiche?"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2403
 msgid "Running query..."
@@ -11125,9 +11073,10 @@ msgstr "%s righe interessate."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2854
 msgid ""
-"This query was generated by pgAdmin as part of a \"View/Edit Data\" "
-"operation"
+"This query was generated by pgAdmin as part of a \"View/Edit Data\" operation"
 msgstr ""
+"Questa query è stata generata da pgAdmin come parte di una operazione di \"vista/"
+"modifica dati\""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2955
 msgid "Row(s) deleted."
@@ -11144,8 +11093,8 @@ msgstr "Dati salvati correttamente."
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3148
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
-"Il commit automatico è disattivato. È ancora necessario eseguire il "
-"commit delle modifiche al database."
+"Il commit automatico è disattivato. È ancora necessario eseguire il commit delle "
+"modifiche al database."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3154
 #, python-format
@@ -11154,16 +11103,17 @@ msgstr "%s."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3159
 msgid ""
-"Saving data changes was rolled back but the current transaction is still "
-"active; previous queries are unaffected."
+"Saving data changes was rolled back but the current transaction is still active; "
+"previous queries are unaffected."
 msgstr ""
-"Il salvataggio delle modifiche ai dati è stato eseguito il rollback ma la"
-" transazione corrente è ancora attiva; le query precedenti non sono "
-"interessate."
+"Il salvataggio delle modifiche ai dati è stato eseguito il rollback ma la "
+"transazione corrente è ancora attiva; le query precedenti non sono interessate."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3181
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
+"Questa query è stata generata da pgAdmin come parte di una operazione di "
+"\"salvataggio dati\""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3342
 msgid "Loading the file..."
@@ -11262,11 +11212,11 @@ msgstr "Commettere"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4256
 msgid ""
-"The current transaction is not commited to the database.Do you want to "
-"commit or rollback the transaction?"
+"The current transaction is not commited to the database.Do you want to commit or "
+"rollback the transaction?"
 msgstr ""
-"La transazione corrente non è sottoposta a commit nel database. Vuoi "
-"eseguire il commit o il rollback della transazione?"
+"La transazione corrente non è sottoposta a commit nel database. Vuoi eseguire il "
+"commit o il rollback della transazione?"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4259
 msgid "Commit transaction?"
@@ -11294,22 +11244,21 @@ msgstr "Timeout notificatore informazioni query"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:24
 msgid ""
-"The length of time to display the query info notifier after execution has"
-" completed. A value of -1 disables the notifier and a value of 0 displays"
-" it until clicked. Values greater than 0 display the notifier for the "
-"number of seconds specified."
+"The length of time to display the query info notifier after execution has "
+"completed. A value of -1 disables the notifier and a value of 0 displays it "
+"until clicked. Values greater than 0 display the notifier for the number of "
+"seconds specified."
 msgstr ""
-"Il tempo di visualizzazione del notificatore di informazioni sulla query "
-"al termine dell'esecuzione. Un valore -1 disabilita il notificatore e un "
-"valore 0 lo visualizza fino a quando non viene cliccato. I valori "
-"maggiori di 0 visualizzano il notificatore per il numero di secondi "
-"specificato."
+"Il tempo di visualizzazione del notificatore di informazioni sulla query al "
+"termine dell'esecuzione. Un valore -1 disabilita il notificatore e un valore 0 "
+"lo visualizza fino a quando non viene cliccato. I valori maggiori di 0 "
+"visualizzano il notificatore per il numero di secondi specificato."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:37
 msgid "If set to True, the Query Tool will be opened in a new browser tab."
 msgstr ""
-"Se impostato su True, lo Strumento di query verrà aperto in una nuova "
-"scheda del browser."
+"Se impostato su True, lo Strumento di query verrà aperto in una nuova scheda del "
+"browser."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:43
 msgid "Verbose output?"
@@ -11338,14 +11287,14 @@ msgstr "Mostra le impostazioni?"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:81
 msgid "Set auto commit on or off by default in new Query Tool tabs."
 msgstr ""
-"Attiva o disattiva il commit automatico per impostazione predefinita "
-"nelle nuove schede del query editor."
+"Attiva o disattiva il commit automatico per impostazione predefinita nelle nuove "
+"schede del query editor."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:89
 msgid "Set auto rollback on or off by default in new Query Tool tabs."
 msgstr ""
-"Attiva o disattiva il rollback automatico per impostazione predefinita "
-"nelle nuove schede del query editor."
+"Attiva o disattiva il rollback automatico per impostazione predefinita nelle "
+"nuove schede del query editor."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:95
 msgid "Prompt to save unsaved query changes?"
@@ -11353,11 +11302,10 @@ msgstr "Richiesta di salvare le modifiche della query non salvate?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:97
 msgid ""
-"Specifies whether or not to prompt user to save unsaved query on query "
-"tool exit."
+"Specifies whether or not to prompt user to save unsaved query on query tool exit."
 msgstr ""
-"Specifica se richiedere o meno all'utente di salvare la query non salvata"
-" all'uscita dallo strumento di query."
+"Specifica se richiedere o meno all'utente di salvare la query non salvata "
+"all'uscita dallo strumento di query."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:105
 msgid "Prompt to save unsaved data changes?"
@@ -11365,8 +11313,7 @@ msgstr "Richiesta di salvare le modifiche ai dati non salvati?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:107
 msgid ""
-"Specifies whether or not to prompt user to save unsaved data on data grid"
-" exit."
+"Specifies whether or not to prompt user to save unsaved data on data grid exit."
 msgstr ""
 "Specifica se richiedere o meno all'utente di salvare i dati non salvati "
 "all'uscita dalla griglia di dati."
@@ -11380,35 +11327,41 @@ msgid ""
 "Specifies whether or not to prompt user to commit or rollback an active "
 "transaction on Query Tool exit."
 msgstr ""
-"Specifica se richiedere o meno all'utente di eseguire il commit o il "
-"rollback di una transazione attiva all'uscita dello Strumento di query."
+"Specifica se richiedere o meno all'utente di eseguire il commit o il rollback di "
+"una transazione attiva all'uscita dello Strumento di query."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:126
 msgid "Plain text mode?"
-msgstr ""
+msgstr "Modalità testo normale?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:127
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:138
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:128
 msgid ""
 "When set to True, keywords wont be highlighted and code folding will be "
-"disabled. Plain text mode will improve editor performance with large "
-"files."
+"disabled. Plain text mode will improve editor performance with large files."
 msgstr ""
+"Se impostato a Vero, le parole chiave non verranno evidenziate e la il code "
+"folding verrà disabilitato. La modalità testo normale migliorerà le prestazioni "
+"dell'editor con file di grandi dimensioni."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:137
 msgid "Code folding?"
-msgstr ""
+msgstr "Code folding?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:139
 msgid ""
-"Enable or disable code folding. In plain text mode, this will have no "
-"effect as code folding is always disabled in that mode. Disabling will "
-"improve editor performance with large files."
+"Enable or disable code folding. In plain text mode, this will have no effect as "
+"code folding is always disabled in that mode. Disabling will improve editor "
+"performance with large files."
 msgstr ""
+"Abilita o disabilita il code folding. In modalità testo normale, ciò non avrà "
+"alcun effetto poiché il code folding è sempre disabilitato in quella modalità. "
+"La disabilitazione migliorerà le prestazioni dell'editor con file di grandi "
+"dimensioni."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:148
 msgid "Font size"
@@ -11416,18 +11369,16 @@ msgstr "Dimensione del font"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:152
 msgid ""
-"The font size to use for the SQL text boxes and editors. The value "
-"specified is in \"em\" units, in which 1 is the default relative font "
-"size. For example, to increase the font size by 20 percent use a value of"
-" 1.2, or to reduce by 20 percent, use a value of 0.8. Minimum 0.1, "
-"maximum 10."
+"The font size to use for the SQL text boxes and editors. The value specified is "
+"in \"em\" units, in which 1 is the default relative font size. For example, to "
+"increase the font size by 20 percent use a value of 1.2, or to reduce by 20 "
+"percent, use a value of 0.8. Minimum 0.1, maximum 10."
 msgstr ""
-"La dimensione del carattere da utilizzare per le caselle di testo e gli "
-"editor SQL. Il valore specificato è in \\ \"em \" unità, in cui 1 è la "
-"dimensione del carattere relativa predefinita. Ad esempio, per aumentare "
-"la dimensione del carattere del 20 percento, utilizzare un valore di 1,2 "
-"o per ridurre del 20 percento, utilizzare un valore di 0,8. Minimo 0,1, "
-"massimo 10."
+"La dimensione del carattere da utilizzare per le caselle di testo e gli editor "
+"SQL. Il valore specificato è in \\ \"em \" unità, in cui 1 è la dimensione del "
+"carattere relativa predefinita. Ad esempio, per aumentare la dimensione del "
+"carattere del 20 percento, utilizzare un valore di 1,2 o per ridurre del 20 "
+"percento, utilizzare un valore di 0,8. Minimo 0,1, massimo 10."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:163
 msgid "Tab size"
@@ -11443,11 +11394,11 @@ msgstr "Usa gli spazi?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:176
 msgid ""
-"Specifies whether or not to insert spaces instead of tabs when the tab "
-"key or auto-indent are used."
+"Specifies whether or not to insert spaces instead of tabs when the tab key or "
+"auto-indent are used."
 msgstr ""
-"Specifica se inserire o meno spazi anziché tabulazioni quando vengono "
-"utilizzati il tasto tabulazione o il rientro automatico."
+"Specifica se inserire o meno spazi anziché tabulazioni quando vengono utilizzati "
+"il tasto tabulazione o il rientro automatico."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:184
 msgid "Line wrapping?"
@@ -11501,14 +11452,13 @@ msgstr "Sostituisci valori null con"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:254
 msgid ""
-"Specifies the string that represents a null value while downloading query"
-" results as CSV. You can specify any arbitrary string to represent a null"
-" value, with quotes if desired."
+"Specifies the string that represents a null value while downloading query "
+"results as CSV. You can specify any arbitrary string to represent a null value, "
+"with quotes if desired."
 msgstr ""
-"Specifica la stringa che rappresenta un valore null durante il download "
-"dei risultati della query come CSV. È possibile specificare qualsiasi "
-"stringa arbitraria per rappresentare un valore null, con virgolette se lo"
-" si desidera."
+"Specifica la stringa che rappresenta un valore null durante il download dei "
+"risultati della query come CSV. È possibile specificare qualsiasi stringa "
+"arbitraria per rappresentare un valore null, con virgolette se lo si desidera."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:263
 msgid "Result copy quoting"
@@ -11534,11 +11484,11 @@ msgstr "Stato della connessione"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:304
 msgid ""
-"If set to True, the Query Tool will monitor and display the connection "
-"and transaction status."
+"If set to True, the Query Tool will monitor and display the connection and "
+"transaction status."
 msgstr ""
-"Se impostato su True, lo Strumento di query monitorerà e visualizzerà lo "
-"stato della connessione e della transazione."
+"Se impostato su True, lo Strumento di query monitorerà e visualizzerà lo stato "
+"della connessione e della transazione."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:311
 msgid "Connection status refresh rate"
@@ -11547,8 +11497,7 @@ msgstr "Frequenza di aggiornamento dello stato della connessione"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:314
 msgid "The number of seconds between connection/transaction status polls."
 msgstr ""
-"Il numero di secondi tra sondaggi sullo stato della connessione / "
-"transazione."
+"Il numero di secondi tra sondaggi sullo stato della connessione / transazione."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:323
 msgid "Execute query"
@@ -11632,11 +11581,10 @@ msgstr "Auto completamento"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:656
 msgid ""
-"If set to True, Keywords will be displayed in upper case for auto "
-"completion."
+"If set to True, Keywords will be displayed in upper case for auto completion."
 msgstr ""
-"Se impostato su True, le parole chiave verranno visualizzate in maiuscolo"
-" per il completamento automatico."
+"Se impostato su True, le parole chiave verranno visualizzate in maiuscolo per il "
+"completamento automatico."
 
 #: pgadmin/tools/user_management/__init__.py:107
 msgid "Invalid email address."
@@ -11765,20 +11713,17 @@ msgstr "Ignorare le modifiche non salvate?"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:880
 msgid ""
-"Are you sure you want to close the dialog? Any unsaved changes will be "
-"lost."
+"Are you sure you want to close the dialog? Any unsaved changes will be lost."
 msgstr ""
-"Sei sicuro di voler chiudere la finestra di dialogo? Eventuali modifiche "
-"non salvate andranno perse."
+"Sei sicuro di voler chiudere la finestra di dialogo? Eventuali modifiche non "
+"salvate andranno perse."
 
 #: pgadmin/utils/__init__.py:297
 #, python-format
 msgid ""
-"'%s' file not found. Please correct the Binary Path in the Preferences "
-"dialog"
+"'%s' file not found. Please correct the Binary Path in the Preferences dialog"
 msgstr ""
-"'%s'  file non trovato. Correggi il percorso nella maschera delle "
-"preferenze"
+"'%s'  file non trovato. Correggi il percorso nella maschera delle preferenze"
 
 #: pgadmin/utils/ajax.py:156
 msgid "Not implemented."
@@ -11790,11 +11735,11 @@ msgstr "Servizio non disponibile"
 
 #: pgadmin/utils/exception.py:68
 msgid ""
-"Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to "
-"the database server."
+"Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to the "
+"database server."
 msgstr ""
-"La connessione al tunnel SSH per l'host '{0}' è andata persa. "
-"Riconnettersi al server di database."
+"La connessione al tunnel SSH per l'host '{0}' è andata persa. Riconnettersi al "
+"server di database."
 
 #: pgadmin/utils/exception.py:99
 msgid "Crypt key is missing."
@@ -11862,17 +11807,17 @@ msgstr "Impossibile impostare il ruolo con messaggio di errore: \\ n {0}"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:584
 msgid ""
-"Failed to create cursor for psycopg2 connection with error message for "
-"the server#{1}:{2}:\n"
+"Failed to create cursor for psycopg2 connection with error message for the "
+"server#{1}:{2}:\n"
 "{0}"
 msgstr ""
-"Impossibile creare il cursore per la connessione psycopg2 con messaggio "
-"di errore per il server # {1} : {2} : \\ n {0}"
+"Impossibile creare il cursore per la connessione psycopg2 con messaggio di "
+"errore per il server # {1} : {2} : \\ n {0}"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:596
 msgid ""
-"Attempting to reconnect to the database server (#{server_id}) for the "
-"connection - '{conn_id}'."
+"Attempting to reconnect to the database server (#{server_id}) for the connection "
+"- '{conn_id}'."
 msgstr ""
 "Tentativo di riconnettersi al server di database (# {server_id}) per la "
 "connessione - '{conn_id}'."
@@ -11899,8 +11844,7 @@ msgid ""
 "{0}"
 msgstr ""
 "\n"
-"Impossibile ripristinare la connessione al server a causa del seguente "
-"errore:\n"
+"Impossibile ripristinare la connessione al server a causa del seguente errore:\n"
 "{0}"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1641
@@ -11909,20 +11853,18 @@ msgstr "Non connesso al database server."
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1655
 msgid ""
-"Asynchronous notification \"{0}\" with payload \"{1}\" received from "
-"server process with PID {2}\n"
+"Asynchronous notification \"{0}\" with payload \"{1}\" received from server "
+"process with PID {2}\n"
 msgstr ""
-"Notificación asíncrona \"{0}\" con carga útil \"{1}\" recibida del "
-"proceso del servidor con PID {2}\n"
+"Notificación asíncrona \"{0}\" con carga útil \"{1}\" recibida del proceso del "
+"servidor con PID {2}\n"
 " \n"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1661
 msgid ""
-"Asynchronous notification \"{0}\" received from server process with PID "
-"{1}\n"
+"Asynchronous notification \"{0}\" received from server process with PID {1}\n"
 msgstr ""
-"Notificación asíncrona \"{0}\" recibida del proceso del servidor con PID "
-"{1}\n"
+"Notificación asíncrona \"{0}\" recibida del proceso del servidor con PID {1}\n"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:1755
 msgid "SQL state: "
@@ -11988,12 +11930,10 @@ msgstr "Impossibile trovare il database richiesto."
 #~ msgstr "Sei sicuro di voler disconnettere il server %(server)s?"
 
 #~ msgid ""
-#~ "Are you sure you wish to move "
-#~ "the objects from %(old_tablespace)s to "
+#~ "Are you sure you wish to move the objects from %(old_tablespace)s to "
 #~ "%(new_tablespace)s?"
 #~ msgstr ""
-#~ "Sei sicuro di voler spostare gli "
-#~ "oggetti da  %(old_tablespace)s a "
+#~ "Sei sicuro di voler spostare gli oggetti da  %(old_tablespace)s a "
 #~ "%(new_tablespace)s?"
 
 #~ msgid "%(title)s (%(text_representation)s)"
@@ -12001,12 +11941,6 @@ msgstr "Impossibile trovare il database richiesto."
 
 #~ msgid "%(title)s (accesskey + %(key)s)"
 #~ msgstr "%(title)s (accesskey + %(key)s)"
-
-#~ msgid "% of query"
-#~ msgstr ""
-
-#~ msgid "% of table"
-#~ msgstr ""
 
 #~ msgid "Composite types require at least two members."
 #~ msgstr "I tipi compositi richiedono almeno due membri."
@@ -12016,4 +11950,3 @@ msgstr "Impossibile trovare il database richiesto."
 
 #~ msgid "DROP %s?"
 #~ msgstr "DROP %s?"
-
