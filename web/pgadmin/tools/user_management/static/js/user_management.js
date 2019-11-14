@@ -586,7 +586,7 @@ define([
                     label: gettext('Users'),
                     url: url_for(
                       'help.static', {
-                        'filename': 'pgadmin_user.html',
+                        'filename': 'user_management.html',
                       }),
                   },
                 }, {
