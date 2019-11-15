@@ -469,7 +469,7 @@ define([
    * instead of alertify dialog
    */
   $('body').off('keyup').on('keyup', function(ev){
-    if(ev.which === 13) {
+    if(ev.which === 13 || ev.which === 27) {
       let suppressForClasses = ['select2-selection', 'select2-search__field'];
       let $el = $(ev.target);
       for(let i=0; i<suppressForClasses.length; i++){

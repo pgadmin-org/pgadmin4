@@ -606,7 +606,8 @@ define([
 
       this.$input = this.$el.find('input[type=checkbox]').first();
       this.$input.bootstrapToggle();
-      this.$el.find('.toggle.btn').attr('tabindex', '0');
+      // When disable then set tabindex value to -1
+      this.$el.find('.toggle.btn').attr('tabindex', data.options.disabled ? '-1' : '0');
       this.updateInvalid();
 
       return this;

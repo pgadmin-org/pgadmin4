@@ -20,3 +20,4 @@ Bug fixes
 | `Issue #4792 <https://redmine.postgresql.org/issues/4792>`_ - Ensure that the superuser should be able to create database, as the superuser overrides all the access restrictions.
 | `Issue #4878 <https://redmine.postgresql.org/issues/4878>`_ - Ensure that the superuser should be able to create role, as the superuser overrides all the access restrictions.
 | `Issue #4934 <https://redmine.postgresql.org/issues/4934>`_ - Fix the help button link on the User Management dialog.
+| `Issue #4935 <https://redmine.postgresql.org/issues/4935>`_ - Fix accessibility issues.
