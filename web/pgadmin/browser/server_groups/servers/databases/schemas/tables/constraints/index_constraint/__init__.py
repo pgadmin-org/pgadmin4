@@ -20,6 +20,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.index_constraint import utils as idxcons_utils
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
@@ -247,16 +249,10 @@ class IndexConstraintView(PGChildNodeView):
                 .format(self.manager.version)
 
             # We need parent's name eg table name and schema name
-            SQL = render_template("/".join([self.template_path,
-                                            'get_parent.sql']),
-                                  tid=kwargs['tid'])
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=rset)
+            schema, table = idxcons_utils.get_parent(self.conn, kwargs['tid'])
+            self.schema = schema
+            self.table = table
 
-            for row in rset['rows']:
-                self.schema = row['schema']
-                self.table = row['table']
             return f(*args, **kwargs)
 
         return wrap
@@ -284,49 +280,20 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
-                              did=did,
-                              tid=tid,
-                              cid=cid,
-                              constraint_type=self.constraint_type)
-        status, res = self.conn.execute_dict(sql)
-
+        status, res = idxcons_utils.get_index_constraints(self.conn, did, tid,
+                                                          self.constraint_type,
+                                                          cid)
         if not status:
-            return internal_server_error(errormsg=res)
+            return res
 
-        if len(res['rows']) == 0:
+        if len(res) == 0:
             return gone(_("""Could not find the {} in the table.""".format(
                 "primary key" if self.constraint_type == "p" else "unique key"
             )))
 
-        result = res['rows'][0]
-
-        sql = render_template(
-            "/".join([self.template_path, 'get_constraint_cols.sql']),
-            cid=cid,
-            colcnt=result['col_count'])
-        status, res = self.conn.execute_dict(sql)
-
-        if not status:
-            return internal_server_error(errormsg=res)
-
-        columns = []
-        for row in res['rows']:
-            columns.append({"column": row['column'].strip('"')})
-
-        result['columns'] = columns
-
-        # Add Include details of the index supported for PG-11+
-        if self.manager.version >= 110000:
-            sql = render_template(
-                "/".join([self.template_path, 'get_constraint_include.sql']),
-                cid=cid)
-            status, res = self.conn.execute_dict(sql)
-
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            result['include'] = [col['colname'] for col in res['rows']]
+        result = res
+        if cid:
+            result = res[0]
 
         return ajax_response(
             response=result,
@@ -381,16 +348,9 @@ class IndexConstraintView(PGChildNodeView):
             .format(self.manager.version)
 
         # We need parent's name eg table name and schema name
-        SQL = render_template("/".join([self.template_path,
-                                        'get_parent.sql']),
-                              tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        for row in rset['rows']:
-            self.schema = row['schema']
-            self.table = row['table']
+        schema, table = idxcons_utils.get_parent(self.conn, tid)
+        self.schema = schema
+        self.table = table
 
         SQL = render_template("/".join([self.template_path, 'properties.sql']),
                               did=did,
@@ -503,16 +463,9 @@ class IndexConstraintView(PGChildNodeView):
             .format(self.manager.version)
 
         # We need parent's name eg table name and schema name
-        SQL = render_template("/".join([self.template_path,
-                                        'get_parent.sql']),
-                              tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        for row in rset['rows']:
-            self.schema = row['schema']
-            self.table = row['table']
+        schema, table = idxcons_utils.get_parent(self.conn, tid)
+        self.schema = schema
+        self.table = table
 
         res = []
         SQL = render_template("/".join([self.template_path, 'nodes.sql']),
@@ -686,7 +639,8 @@ class IndexConstraintView(PGChildNodeView):
         try:
             data['schema'] = self.schema
             data['table'] = self.table
-            sql, name = self.get_sql(data, did, tid, cid)
+            sql, name = idxcons_utils.get_sql(self.conn, data, did, tid,
+                                              self.constraint_type, cid)
             if not isinstance(sql, (str, unicode)):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -826,7 +780,8 @@ class IndexConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql, name = self.get_sql(data, did, tid, cid)
+            sql, name = idxcons_utils.get_sql(self.conn, data, did, tid,
+                                              self.constraint_type, cid)
             if not isinstance(sql, (str, unicode)):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -839,77 +794,6 @@ class IndexConstraintView(PGChildNodeView):
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
-    def get_sql(self, data, did, tid, cid=None):
-        """
-        This function will generate sql from model data.
-
-        Args:
-          data: Contains the data of the selected primary key constraint.
-          tid: Table ID.
-          cid: Primary key constraint ID
-
-        Returns:
-
-        """
-        if cid is not None:
-            sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                did=did,
-                tid=tid,
-                cid=cid,
-                constraint_type=self.constraint_type
-            )
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
-                return gone(
-                    _("""Could not find the {} in the table.""".format(
-                        "primary key" if self.constraint_type == "p"
-                        else "unique key"
-                    ))
-                )
-
-            old_data = res['rows'][0]
-            required_args = [u'name']
-            for arg in required_args:
-                if arg not in data:
-                    data[arg] = old_data[arg]
-
-            sql = render_template("/".join([self.template_path, 'update.sql']),
-                                  data=data,
-                                  o_data=old_data)
-        else:
-            required_args = [
-                [u'columns', u'index']  # Either of one should be there.
-            ]
-
-            def is_key_str(key, data):
-                return isinstance(data[key], str) and data[key] != ""
-
-            def is_key_list(key, data):
-                return isinstance(data[key], list) and len(data[param]) > 0
-
-            for arg in required_args:
-                if isinstance(arg, list):
-                    for param in arg:
-                        if param in data:
-                            if is_key_str(param, data) \
-                                    or is_key_list(param, data):
-                                break
-                    else:
-                        return _('-- definition incomplete')
-
-                elif arg not in data:
-                    return _('-- definition incomplete')
-
-            sql = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data,
-                                  conn=self.conn,
-                                  constraint_name=self.constraint_name)
-
-        return sql, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, cid=None):

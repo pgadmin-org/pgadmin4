@@ -17,6 +17,7 @@ CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|
     ON {{ conn|qtIdent(data.schema, data.table) }}
 {% if data.tgdeferrable %}
     DEFERRABLE{% if data.tginitdeferred %} INITIALLY DEFERRED{% endif %}
+
 {% endif %}
     FOR EACH{% if data.is_row_trigger %} ROW{% else %} STATEMENT{% endif %}
 {% if data.whenclause %}

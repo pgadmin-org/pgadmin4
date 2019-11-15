@@ -20,6 +20,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.exclusion_constraint import utils as exclusion_utils
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
@@ -228,16 +230,10 @@ class ExclusionConstraintView(PGChildNodeView):
                 self.manager.version)
 
             # We need parent's name eg table name and schema name
-            SQL = render_template("/".join([self.template_path,
-                                            'get_parent.sql']),
-                                  tid=kwargs['tid'])
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            for row in rset['rows']:
-                self.schema = row['schema']
-                self.table = row['table']
+            schema, table = exclusion_utils.get_parent(self.conn,
+                                                       kwargs['tid'])
+            self.schema = schema
+            self.table = table
 
             return f(*args, **kwargs)
         return wrap
@@ -265,60 +261,19 @@ class ExclusionConstraintView(PGChildNodeView):
         Returns:
 
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
-                              did=did, tid=tid, cid=exid)
-
-        status, res = self.conn.execute_dict(sql)
-
+        status, res = exclusion_utils.get_exclusion_constraints(
+            self.conn, did, tid, exid)
         if not status:
-            return internal_server_error(errormsg=res)
+            return res
 
-        if len(res['rows']) == 0:
+        if len(res) == 0:
             return gone(_(
                 """Could not find the exclusion constraint in the table."""
             ))
 
-        result = res['rows'][0]
-
-        sql = render_template(
-            "/".join([self.template_path, 'get_constraint_cols.sql']),
-            cid=exid,
-            colcnt=result['col_count'])
-        status, res = self.conn.execute_dict(sql)
-
-        if not status:
-            return internal_server_error(errormsg=res)
-
-        columns = []
-        for row in res['rows']:
-            if row['options'] & 1:
-                order = False
-                nulls_order = True if (row['options'] & 2) else False
-            else:
-                order = True
-                nulls_order = True if (row['options'] & 2) else False
-
-            columns.append({"column": row['coldef'].strip('"'),
-                            "oper_class": row['opcname'],
-                            "order": order,
-                            "nulls_order": nulls_order,
-                            "operator": row['oprname'],
-                            "col_type": row['datatype']
-                            })
-
-        result['columns'] = columns
-
-        # Add Include details of the index supported for PG-11+
-        if self.manager.version >= 110000:
-            sql = render_template(
-                "/".join([self.template_path, 'get_constraint_include.sql']),
-                cid=exid)
-            status, res = self.conn.execute_dict(sql)
-
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            result['include'] = [col['colname'] for col in res['rows']]
+        result = res
+        if exid:
+            result = res[0]
 
         return ajax_response(
             response=result,
@@ -374,16 +329,9 @@ class ExclusionConstraintView(PGChildNodeView):
             self.manager.version)
 
         # We need parent's name eg table name and schema name
-        SQL = render_template("/".join([self.template_path,
-                                        'get_parent.sql']),
-                              tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        for row in rset['rows']:
-            self.schema = row['schema']
-            self.table = row['table']
+        schema, table = exclusion_utils.get_parent(self.conn, tid)
+        self.schema = schema
+        self.table = table
 
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
@@ -489,16 +437,9 @@ class ExclusionConstraintView(PGChildNodeView):
             self.manager.version)
 
         # We need parent's name eg table name and schema name
-        SQL = render_template("/".join([self.template_path,
-                                        'get_parent.sql']),
-                              tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        for row in rset['rows']:
-            self.schema = row['schema']
-            self.table = row['table']
+        schema, table = exclusion_utils.get_parent(self.conn, tid)
+        self.schema = schema
+        self.table = table
 
         res = []
         SQL = render_template("/".join([self.template_path,
@@ -656,7 +597,8 @@ class ExclusionConstraintView(PGChildNodeView):
         try:
             data['schema'] = self.schema
             data['table'] = self.table
-            sql, name = self.get_sql(data, did, tid, exid)
+            sql, name = \
+                exclusion_utils.get_sql(self.conn, data, did, tid, exid)
             if not isinstance(sql, (str, unicode)):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -787,7 +729,8 @@ class ExclusionConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql, name = self.get_sql(data, did, tid, exid)
+            sql, name = \
+                exclusion_utils.get_sql(self.conn, data, did, tid, exid)
             if not isinstance(sql, (str, unicode)):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -800,53 +743,6 @@ class ExclusionConstraintView(PGChildNodeView):
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
-    def get_sql(self, data, did, tid, exid=None):
-        """
-        This function will generate sql from model data.
-
-        Args:
-          data: Contains the data of the selected Exclusion constraint.
-          tid: Table ID.
-          exid: Exclusion constraint ID
-
-        Returns:
-
-        """
-        if exid is not None:
-            sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                did=did,
-                tid=tid,
-                cid=exid
-            )
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
-                return gone(_("Could not find the exclusion constraint."))
-
-            old_data = res['rows'][0]
-            required_args = ['name']
-            for arg in required_args:
-                if arg not in data:
-                    data[arg] = old_data[arg]
-
-            sql = render_template("/".join([self.template_path, 'update.sql']),
-                                  data=data, o_data=old_data)
-        else:
-            required_args = ['columns']
-
-            for arg in required_args:
-                if arg not in data:
-                    return _('-- definition incomplete')
-                elif isinstance(data[arg], list) and len(data[arg]) < 1:
-                    return _('-- definition incomplete')
-
-            sql = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data, conn=self.conn)
-
-        return sql, data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, exid=None):

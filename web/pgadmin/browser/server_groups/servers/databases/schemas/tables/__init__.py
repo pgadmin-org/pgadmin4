@@ -22,6 +22,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from .utils import BaseTableView
 from pgadmin.utils.preferences import Preferences
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.foreign_key import utils as fkey_utils
 
 
 class TableModule(SchemaChildModule):
@@ -1011,18 +1013,10 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
 
         if 'foreign_key' in data:
             for c in data['foreign_key']:
-                SQL = render_template(
-                    "/".join([
-                        self.foreign_key_template_path, 'get_parent.sql'
-                    ]),
-                    tid=c['columns'][0]['references']
-                )
-                status, rset = self.conn.execute_2darray(SQL)
-                if not status:
-                    return internal_server_error(errormsg=rset)
-
-                c['remote_schema'] = rset['rows'][0]['schema']
-                c['remote_table'] = rset['rows'][0]['table']
+                schema, table = fkey_utils.get_parent(
+                    self.conn, c['columns'][0]['references'])
+                c['remote_schema'] = schema
+                c['remote_table'] = table
 
         try:
             partitions_sql = ''

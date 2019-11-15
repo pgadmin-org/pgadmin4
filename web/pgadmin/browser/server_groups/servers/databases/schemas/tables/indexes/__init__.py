@@ -25,6 +25,8 @@ from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
+from pgadmin.browser.server_groups.servers.databases.schemas. \
+    tables.indexes import utils as index_utils
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -256,17 +258,9 @@ class IndexesView(PGChildNodeView):
             # We need parent's name eg table name and schema name
             # when we create new index in update we can fetch it using
             # property sql
-            SQL = render_template(
-                "/".join([self.template_path, 'get_parent.sql']),
-                tid=kwargs['tid']
-            )
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            for row in rset['rows']:
-                self.schema = row['schema']
-                self.table = row['table']
+            schema, table = index_utils.get_parent(self.conn, kwargs['tid'])
+            self.schema = schema
+            self.table = table
 
             return f(*args, **kwargs)
 
@@ -474,99 +468,6 @@ class IndexesView(PGChildNodeView):
             status=200
         )
 
-    def _column_details(self, idx, data, mode='properties'):
-        """
-        This functional will fetch list of column details for index
-
-        Args:
-            idx: Index OID
-            data: Properties data
-
-        Returns:
-            Updated properties data with column details
-        """
-
-        SQL = render_template(
-            "/".join([self.template_path, 'column_details.sql']), idx=idx
-        )
-        status, rset = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-        # 'attdef' comes with quotes from query so we need to strip them
-        # 'options' we need true/false to render switch ASC(false)/DESC(true)
-        columns = []
-        cols = []
-        for row in rset['rows']:
-            # We need all data as collection for ColumnsModel
-            # we will not strip down colname when using in SQL to display
-            cols_data = {
-                'colname': row['attdef'] if mode == 'create' else
-                row['attdef'].strip('"'),
-                'collspcname': row['collnspname'],
-                'op_class': row['opcname'],
-            }
-
-            # ASC/DESC and NULLS works only with btree indexes
-            if 'amname' in data and data['amname'] == 'btree':
-                cols_data['sort_order'] = False
-                if row['options'][0] == 'DESC':
-                    cols_data['sort_order'] = True
-
-                cols_data['nulls'] = False
-                if row['options'][1].split(" ")[1] == 'FIRST':
-                    cols_data['nulls'] = True
-
-            columns.append(cols_data)
-
-            # We need same data as string to display in properties window
-            # If multiple column then separate it by colon
-            cols_str = row['attdef']
-            if row['collnspname']:
-                cols_str += ' COLLATE ' + row['collnspname']
-            if row['opcname']:
-                cols_str += ' ' + row['opcname']
-
-            # ASC/DESC and NULLS works only with btree indexes
-            if 'amname' in data and data['amname'] == 'btree':
-                # Append sort order
-                cols_str += ' ' + row['options'][0]
-                # Append nulls value
-                cols_str += ' ' + row['options'][1]
-
-            cols.append(cols_str)
-
-        # Push as collection
-        data['columns'] = columns
-        # Push as string
-        data['columns_csv'] = ', '.join(cols)
-
-        return data
-
-    def _include_details(self, idx, data, mode='properties'):
-        """
-        This functional will fetch list of include details for index
-        supported with Postgres 11+
-
-        Args:
-            idx: Index OID
-            data: Properties data
-
-        Returns:
-            Updated properties data with include details
-        """
-
-        SQL = render_template(
-            "/".join([self.template_path, 'include_details.sql']), idx=idx
-        )
-        status, rset = self.conn.execute_2darray(SQL)
-
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        # Push as collection
-        data['include'] = [col['colname'] for col in rset['rows']]
-        return data
-
     @check_precondition
     def properties(self, gid, sid, did, scid, tid, idx):
         """
@@ -602,11 +503,11 @@ class IndexesView(PGChildNodeView):
         data = dict(res['rows'][0])
 
         # Add column details for current index
-        data = self._column_details(idx, data)
+        data = index_utils.get_column_details(self.conn, idx, data)
 
         # Add Include details of the index
         if self.manager.version >= 110000:
-            data = self._include_details(idx, data)
+            data = index_utils.get_include_details(self.conn, idx, data)
 
         return ajax_response(
             response=data,
@@ -806,7 +707,8 @@ class IndexesView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            SQL, name = self.get_sql(did, scid, tid, idx, data)
+            SQL, name = index_utils.get_sql(
+                self.conn, data, did, tid, idx, self.datlastsysoid)
             if not isinstance(SQL, (str, unicode)):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
@@ -855,7 +757,9 @@ class IndexesView(PGChildNodeView):
         data['table'] = self.table
 
         try:
-            sql, name = self.get_sql(did, scid, tid, idx, data, mode='create')
+            sql, name = index_utils.get_sql(
+                self.conn, data, did, tid, idx, self.datlastsysoid,
+                mode='create')
             if not isinstance(sql, (str, unicode)):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -867,64 +771,6 @@ class IndexesView(PGChildNodeView):
             )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
-    def get_sql(self, did, scid, tid, idx, data, mode=None):
-        """
-        This function will genrate sql from model data
-        """
-        if idx is not None:
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
-            )
-
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
-                return gone(
-                    gettext("""Could not find the index in the table.""")
-                )
-
-            old_data = dict(res['rows'][0])
-
-            # If name is not present in data then
-            # we will fetch it from old data, we also need schema & table name
-            if 'name' not in data:
-                data['name'] = old_data['name']
-
-            SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
-                data=data, o_data=old_data, conn=self.conn
-            )
-        else:
-            required_args = {
-                'name': 'Name',
-                'columns': 'Columns'
-            }
-            for arg in required_args:
-                err = False
-                if arg == 'columns' and len(data['columns']) < 1:
-                    err = True
-
-                if arg not in data:
-                    err = True
-                    # Check if we have at least one column
-                if err:
-                    return gettext('-- definition incomplete')
-
-            # If the request for new object which do not have did
-            SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
-                data=data, conn=self.conn, mode=mode
-            )
-            SQL += "\n"
-            SQL += render_template(
-                "/".join([self.template_path, 'alter.sql']),
-                data=data, conn=self.conn
-            )
-
-        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, idx):
@@ -940,40 +786,9 @@ class IndexesView(PGChildNodeView):
            idx: Index ID
         """
 
-        SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
-            did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
-        )
-
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
-        if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the index in the table."""))
-
-        data = dict(res['rows'][0])
-        # Adding parent into data dict, will be using it while creating sql
-        data['schema'] = self.schema
-        data['table'] = self.table
-
-        # Add column details for current index
-        data = self._column_details(idx, data, 'create')
-
-        # Add Include details of the index
-        if self.manager.version >= 110000:
-            data = self._include_details(idx, data, 'create')
-
-        SQL, name = self.get_sql(did, scid, tid, None, data)
-        if not isinstance(SQL, (str, unicode)):
-            return SQL
-        sql_header = u"-- Index: {0}\n\n-- ".format(data['name'])
-
-        sql_header += render_template(
-            "/".join([self.template_path, 'delete.sql']),
-            data=data, conn=self.conn
-        )
-
-        SQL = sql_header + '\n\n' + SQL
+        SQL = index_utils.get_reverse_engineered_sql(
+            self.conn, self.schema, self.table, did, tid, idx,
+            self.datlastsysoid)
 
         return ajax_response(response=SQL)
 

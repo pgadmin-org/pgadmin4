@@ -26,8 +26,8 @@
 {% if data.columns|length > 0 %}{% if loop.index !=1 %},{% endif %}
 
     {% if data.name %}CONSTRAINT {{conn|qtIdent(data.name)}} {% endif %}UNIQUE ({% for c in data.columns%}
-{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% endfor %})
-{% if data.include|length > 0 %}
+{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% endfor %}){% if data.include|length > 0 %}
+
         INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %}){% endif %}
 {% if data.fillfactor %}
 
@@ -89,8 +89,10 @@
         INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %})
 {% endif %}{% if data.fillfactor %}
         WITH (FILLFACTOR={{data.fillfactor}}){% endif %}{% if data.spcname and data.spcname != "pg_default" %}
-        USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}
-        {% if data.indconstraint %}WHERE ({{data.indconstraint}}){% endif%}{% if data.condeferrable %}
+
+        USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}{% if data.indconstraint %}
+
+        WHERE ({{data.indconstraint}}){% endif%}{% if data.condeferrable %}
 
         DEFERRABLE{% if data.condeferred %}
  INITIALLY DEFERRED{% endif%}

@@ -117,6 +117,13 @@
       }
     }, {
       "type": "delete",
+      "name": "Drop Index",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "uindex"
+      }
+    }, {
+      "type": "delete",
       "name": "Drop Index Constraint Table",
       "endpoint": "NODE-table.delete_id",
       "data": {

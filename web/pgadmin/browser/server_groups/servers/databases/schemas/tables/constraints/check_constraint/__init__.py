@@ -21,6 +21,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.check_constraint import utils as check_utils
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 
@@ -141,10 +143,6 @@ class CheckConstraintView(PGChildNodeView):
     * msql(gid, sid, did, scid, doid=None):
       - Returns the modified SQL.
 
-    * get_sql(gid, sid, data, scid, tid=None):
-      - Generates the SQL statements to create/update the Check Constraint.
-        object.
-
     * dependents(gid, sid, did, scid, tid, cid):
       - Returns the dependents for the Check Constraint object.
 
@@ -202,15 +200,9 @@ class CheckConstraintView(PGChildNodeView):
             self.template_path = 'check_constraint/sql/#{0}#'.format(
                 self.manager.version)
 
-            SQL = render_template("/".join([self.template_path,
-                                            'get_parent.sql']),
-                                  tid=kwargs['tid'])
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            self.schema = rset['rows'][0]['schema']
-            self.table = rset['rows'][0]['table']
+            schema, table = check_utils.get_parent(self.conn, kwargs['tid'])
+            self.schema = schema
+            self.table = table
 
             return f(*args, **kwargs)
 
@@ -272,15 +264,9 @@ class CheckConstraintView(PGChildNodeView):
         self.template_path = 'check_constraint/sql/#{0}#'.format(
             self.manager.version)
 
-        SQL = render_template("/".join([self.template_path,
-                                        'get_parent.sql']),
-                              tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        self.schema = rset['rows'][0]['schema']
-        self.table = rset['rows'][0]['table']
+        schema, table = check_utils.get_parent(self.conn, tid)
+        self.schema = schema
+        self.table = table
 
         SQL = render_template("/".join([self.template_path, 'properties.sql']),
                               tid=tid)
@@ -391,15 +377,9 @@ class CheckConstraintView(PGChildNodeView):
         self.template_path = 'check_constraint/sql/#{0}#'.format(
             self.manager.version)
 
-        SQL = render_template("/".join([self.template_path,
-                                        'get_parent.sql']),
-                              tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        self.schema = rset['rows'][0]['schema']
-        self.table = rset['rows'][0]['table']
+        schema, table = check_utils.get_parent(self.conn, tid)
+        self.schema = schema
+        self.table = table
 
         res = []
         SQL = render_template("/".join([self.template_path,
@@ -438,20 +418,21 @@ class CheckConstraintView(PGChildNodeView):
             cid: Check Constraint Id
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
-                              tid=tid, cid=cid)
-        status, res = self.conn.execute_dict(SQL)
+        status, res = check_utils.get_check_constraints(self.conn, tid, cid)
         if not status:
-            return internal_server_error(errormsg=res)
-        if len(res['rows']) == 0:
-            return gone(
-                _("Could not find the object on the server.")
-            )
+            return res
 
-        data = res['rows'][0]
+        if len(res) == 0:
+            return gone(_(
+                """Could not find the check constraint in the table."""
+            ))
+
+        result = res
+        if cid:
+            result = res[0]
+
         return ajax_response(
-            response=data,
+            response=result,
             status=200
         )
 
@@ -653,7 +634,7 @@ class CheckConstraintView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
 
-            SQL, name = self.get_sql(gid, sid, data, scid, tid, cid)
+            SQL, name = check_utils.get_sql(self.conn, data, tid, cid)
             if not SQL:
                 return name
             SQL = SQL.strip('\n').strip(' ')
@@ -763,7 +744,7 @@ class CheckConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql, name = self.get_sql(gid, sid, data, scid, tid, cid)
+            sql, name = check_utils.get_sql(self.conn, data, tid, cid)
             if not sql:
                 return name
             sql = sql.strip('\n').strip(' ')
@@ -776,56 +757,6 @@ class CheckConstraintView(PGChildNodeView):
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
-    def get_sql(self, gid, sid, data, scid, tid, cid=None):
-        """
-        Generates the SQL statements to create/update the Check Constraint.
-
-         Args:
-            gid: Server Group Id
-            sid: Server Id
-            did: Database Id
-            scid: Schema Id
-            tid: Table Id
-            cid: Check Constraint Id
-        """
-        if cid is not None:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  tid=tid, cid=cid)
-            status, res = self.conn.execute_dict(SQL)
-
-            if not status:
-                return False, internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
-                return False, gone(
-                    _("Could not find the object on the server.")
-                )
-
-            old_data = res['rows'][0]
-            required_args = ['name']
-            for arg in required_args:
-                if arg not in data:
-                    data[arg] = old_data[arg]
-
-            SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
-                data=data, o_data=old_data, conn=self.conn
-            )
-        else:
-            required_args = ['consrc']
-
-            for arg in required_args:
-                if arg not in data:
-                    return _('-- definition incomplete')
-                elif isinstance(data[arg], list) and len(data[arg]) < 1:
-                    return _('-- definition incomplete')
-
-            SQL = render_template("/".join([self.template_path,
-                                            'create.sql']),
-                                  data=data)
-
-        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, cid):

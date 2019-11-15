@@ -17,6 +17,7 @@ CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|
     ON {{ conn|qtIdent(data.schema, data.table) }}
 {% if data.tgdeferrable %}
     DEFERRABLE{% if data.tginitdeferred %} INITIALLY DEFERRED{% endif %}
+
 {% endif %}
 {% if data.tgoldtable or data.tgnewtable %}
     REFERENCING{% if data.tgnewtable %} NEW TABLE AS {{ conn|qtIdent(data.tgnewtable) }}{% endif %}{% if data.tgoldtable %} OLD TABLE AS {{ conn|qtIdent(data.tgoldtable) }}{% endif %}

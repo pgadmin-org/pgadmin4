@@ -19,6 +19,10 @@ from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    compound_triggers import utils as compound_trigger_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.utils \
+    import trigger_definition
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
@@ -199,9 +203,6 @@ class CompoundTriggerView(PGChildNodeView):
       - This function is used to return modified SQL for the selected
         Compound Trigger node
 
-    * get_sql(data, scid, tid, trid)
-      - This function will generate sql from model data
-
     * sql(gid, sid, did, scid, tid, trid):
       - This function will generate sql to show it in sql pane for the
         selected Compound Trigger node.
@@ -213,13 +214,6 @@ class CompoundTriggerView(PGChildNodeView):
     * dependent(gid, sid, did, scid, tid, trid):
       - This function will generate dependent list to show it in dependent
         pane for the selected Compound Trigger node.
-
-    * _column_details(tid, clist)::
-      - This function will fetch the columns for compound trigger
-
-    * _trigger_definition(data):
-      - This function will set additional compound trigger definitions in
-        AJAX response
     """
 
     node_type = blueprint.node_type
@@ -281,28 +275,10 @@ class CompoundTriggerView(PGChildNodeView):
             # We need parent's name eg table name and schema name
             # when we create new compound trigger in update we can fetch
             # it using property sql
-            SQL = render_template("/".join([self.template_path,
-                                            'get_parent.sql']),
-                                  tid=kwargs['tid'])
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            for row in rset['rows']:
-                self.schema = row['schema']
-                self.table = row['table']
-
-            # Here we are storing compound trigger definition
-            # We will use it to check compound trigger type definition
-            self.trigger_definition = {
-                'TRIGGER_TYPE_ROW': (1 << 0),
-                'TRIGGER_TYPE_BEFORE': (1 << 1),
-                'TRIGGER_TYPE_INSERT': (1 << 2),
-                'TRIGGER_TYPE_DELETE': (1 << 3),
-                'TRIGGER_TYPE_UPDATE': (1 << 4),
-                'TRIGGER_TYPE_TRUNCATE': (1 << 5),
-                'TRIGGER_TYPE_INSTEAD': (1 << 6)
-            }
+            schema, table = compound_trigger_utils.get_parent(
+                self.conn, kwargs['tid'])
+            self.schema = schema
+            self.table = table
 
             return f(*args, **kwargs)
 
@@ -422,67 +398,6 @@ class CompoundTriggerView(PGChildNodeView):
             status=200
         )
 
-    def _column_details(self, tid, clist):
-        """
-        This functional will fetch list of column for compound trigger
-
-        Args:
-            tid: Table OID
-            clist: List of columns
-
-        Returns:
-            Updated properties data with column
-        """
-
-        SQL = render_template("/".join([self.template_path,
-                                        'get_columns.sql']),
-                              tid=tid, clist=clist)
-        status, rset = self.conn.execute_2darray(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-        # 'tgattr' contains list of columns from table used in
-        # compound trigger
-        columns = []
-
-        for row in rset['rows']:
-            columns.append(row['name'])
-
-        return columns
-
-    def _trigger_definition(self, data):
-        """
-        This functional will set the compound trigger definition
-
-        Args:
-            data: Properties data
-
-        Returns:
-            Updated properties data with compound trigger definition
-        """
-
-        # Event definition
-        if data['tgtype'] & self.trigger_definition['TRIGGER_TYPE_INSERT']:
-            data['evnt_insert'] = True
-        else:
-            data['evnt_insert'] = False
-
-        if data['tgtype'] & self.trigger_definition['TRIGGER_TYPE_DELETE']:
-            data['evnt_delete'] = True
-        else:
-            data['evnt_delete'] = False
-
-        if data['tgtype'] & self.trigger_definition['TRIGGER_TYPE_UPDATE']:
-            data['evnt_update'] = True
-        else:
-            data['evnt_update'] = False
-
-        if data['tgtype'] & self.trigger_definition['TRIGGER_TYPE_TRUNCATE']:
-            data['evnt_truncate'] = True
-        else:
-            data['evnt_truncate'] = False
-
-        return data
-
     @check_precondition
     def properties(self, gid, sid, did, scid, tid, trid):
         """
@@ -520,9 +435,10 @@ class CompoundTriggerView(PGChildNodeView):
         data = dict(res['rows'][0])
         if len(data['tgattr']) >= 1:
             columns = ', '.join(data['tgattr'].split(' '))
-            data['columns'] = self._column_details(tid, columns)
+            data['columns'] = compound_trigger_utils.get_column_details(
+                self.conn, tid, columns)
 
-        data = self._trigger_definition(data)
+        data = trigger_definition(data)
 
         return ajax_response(
             response=data,
@@ -696,7 +612,8 @@ class CompoundTriggerView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
 
-            SQL, name = self.get_sql(scid, tid, trid, data)
+            SQL, name = compound_trigger_utils.get_sql(
+                self.conn, data, tid, trid, self.datlastsysoid)
             if not isinstance(SQL, (str, unicode)):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
@@ -775,7 +692,8 @@ class CompoundTriggerView(PGChildNodeView):
         data['table'] = self.table
 
         try:
-            sql, name = self.get_sql(scid, tid, trid, data)
+            sql, name = compound_trigger_utils.get_sql(
+                self.conn, data, tid, trid, self.datlastsysoid)
             if not isinstance(sql, (str, unicode)):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -788,58 +706,6 @@ class CompoundTriggerView(PGChildNodeView):
             )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
-    def get_sql(self, scid, tid, trid, data):
-        """
-        This function will genrate sql from model data
-        """
-        if trid is not None:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  tid=tid, trid=trid,
-                                  datlastsysoid=self.datlastsysoid)
-
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
-                return gone(gettext(
-                    """Could not find the compound trigger in the table.""")
-                )
-
-            old_data = dict(res['rows'][0])
-
-            # If name is not present in data then
-            # we will fetch it from old data, we also need schema & table name
-            if 'name' not in data:
-                data['name'] = old_data['name']
-
-            self.trigger_name = data['name']
-            self.is_trigger_enabled = old_data['is_enable_trigger']
-
-            if len(old_data['tgattr']) > 1:
-                columns = ', '.join(old_data['tgattr'].split(' '))
-                old_data['columns'] = self._column_details(tid, columns)
-
-            old_data = self._trigger_definition(old_data)
-
-            SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
-                data=data, o_data=old_data, conn=self.conn
-            )
-        else:
-            required_args = {
-                'name': 'Name'
-            }
-
-            for arg in required_args:
-                if arg not in data:
-                    return gettext('-- definition incomplete')
-
-            # If the request for new object which do not have did
-            SQL = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data, conn=self.conn)
-        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, trid):
@@ -855,46 +721,12 @@ class CompoundTriggerView(PGChildNodeView):
            tid: Table ID
            trid: Trigger ID
         """
-
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
-                              tid=tid, trid=trid,
-                              datlastsysoid=self.datlastsysoid)
-
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
-        if len(res['rows']) == 0:
-            return gone(gettext(
-                """Could not find the compound trigger in the table."""))
-
-        data = dict(res['rows'][0])
-        # Adding parent into data dict, will be using it while creating sql
-        data['schema'] = self.schema
-        data['table'] = self.table
-
-        if len(data['tgattr']) >= 1:
-            columns = ', '.join(data['tgattr'].split(' '))
-            data['columns'] = self._column_details(tid, columns)
-
-        data = self._trigger_definition(data)
-
-        SQL, name = self.get_sql(scid, tid, None, data)
-
-        sql_header = u"-- Compound Trigger: {0}\n\n-- ".format(data['name'])
-
-        sql_header += render_template("/".join([self.template_path,
-                                                'delete.sql']),
-                                      data=data, conn=self.conn)
-
-        SQL = sql_header + '\n\n' + SQL.strip('\n')
-
-        # If compound trigger is disbaled then add sql code for the same
-        if data['is_enable_trigger'] != 'O':
-            SQL += '\n\n'
-            SQL += render_template("/".join([self.template_path,
-                                             'enable_disable_trigger.sql']),
-                                   data=data, conn=self.conn)
+        try:
+            SQL = compound_trigger_utils.get_reverse_engineered_sql(
+                self.conn, self.schema, self.table, tid, trid,
+                self.datlastsysoid)
+        except Exception as e:
+            return internal_server_error(errormsg=SQL)
 
         return ajax_response(response=SQL)
 

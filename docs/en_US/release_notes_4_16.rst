@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4807 <https://redmine.postgresql.org/issues/4807>`_ -  Refactored code of table and it's child nodes.
 
 Bug fixes
 *********

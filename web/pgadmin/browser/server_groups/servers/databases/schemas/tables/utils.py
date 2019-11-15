@@ -20,7 +20,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas\
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
-    import DataTypeReader, trigger_definition, parse_rule_definition
+    import DataTypeReader, parse_rule_definition
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
@@ -28,6 +28,18 @@ from pgadmin.utils import IS_PY2
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.foreign_key import utils as fkey_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.check_constraint import utils as check_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.exclusion_constraint import utils as exclusion_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.index_constraint import utils as idxcons_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    triggers import utils as trigger_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    compound_triggers import utils as compound_trigger_utils
 
 
 class BaseTableView(PGChildNodeView, BasePartitionTable):
@@ -48,10 +60,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
     * _columns_formatter(tid, data):
       - It will return formatted output of query result
         as per client model format for column node
-
-    * _index_constraints_formatter(self, did, tid, data):
-      - It will return formatted output of query result
-        as per client model format for index constraint node
 
     * _cltype_formatter(type): (staticmethod)
       - We need to remove [] from type and append it
@@ -76,12 +84,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
     * reset_statistics(self, scid, tid):
       - This function will reset statistics of table.
-
-    * get_trigger_function_schema(self, data)
-      - This function will return trigger function with schema name
-
-    * _format_args(self, arg)
-      - This function will format trigger function arguments.
     """
     @staticmethod
     def check_precondition(f):
@@ -121,18 +123,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             # Template for Column ,check constraint and exclusion
             # constraint node
             self.column_template_path = 'columns/sql/#{0}#'.format(ver)
-            self.check_constraint_template_path = compile_template_path(
-                'check_constraint/sql', server_type, ver)
-            self.exclusion_constraint_template_path = compile_template_path(
-                'exclusion_constraint/sql', server_type, ver)
-
-            # Template for PK & Unique constraint node
-            self.index_constraint_template_path = 'index_constraint/sql/#{0}#'\
-                .format(ver)
-
-            # Template for foreign key constraint node
-            self.foreign_key_template_path = compile_template_path(
-                'foreign_key/sql', server_type, ver)
 
             # Template for index node
             self.index_template_path = compile_template_path(
@@ -158,48 +148,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             return f(*args, **kwargs)
 
         return wrap
-
-    def get_trigger_function_schema(self, data):
-        """
-        This function will return trigger function with schema name
-        """
-        # If language is 'edbspl' then trigger function should be
-        # 'Inline EDB-SPL' else we will find the trigger function
-        # with schema name.
-        if data['lanname'] == 'edbspl':
-            data['tfunction'] = 'Inline EDB-SPL'
-        else:
-            SQL = render_template(
-                "/".join(
-                    [self.trigger_template_path, 'get_triggerfunctions.sql']
-                ),
-                tgfoid=data['tgfoid'],
-                show_system_objects=self.blueprint.show_system_objects
-            )
-
-            status, result = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=result)
-
-            # Update the trigger function which we have fetched with
-            # schema name
-            if 'rows' in result and len(result['rows']) > 0 and \
-                    'tfunctions' in result['rows'][0]:
-                data['tfunction'] = result['rows'][0]['tfunctions']
-        return data
-
-    def _format_args(self, args):
-        """
-        This function will format arguments.
-
-        Args:
-            args: Arguments
-
-        Returns:
-            Formated arguments for function
-        """
-        formatted_args = ["'{0}'".format(arg) for arg in args]
-        return ', '.join(formatted_args)
 
     def _columns_formatter(self, tid, data):
         """
@@ -324,247 +272,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         return data
 
-    def _index_constraints_formatter(self, did, tid, data):
-        """
-        Args:
-            tid: Table OID
-            data: dict of query result
-
-        Returns:
-            It will return formatted output of query result
-            as per client model format for index constraint node
-        """
-
-        # We will fetch all the index constraints for the table
-        index_constraints = {
-            'p': 'primary_key', 'u': 'unique_constraint'
-        }
-
-        for ctype in index_constraints.keys():
-            data[index_constraints[ctype]] = []
-
-            sql = render_template(
-                "/".join(
-                    [self.index_constraint_template_path, 'properties.sql']
-                ),
-                did=did,
-                tid=tid,
-                constraint_type=ctype
-            )
-            status, res = self.conn.execute_dict(sql)
-
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            for row in res['rows']:
-                result = row
-                sql = render_template(
-                    "/".join([self.index_constraint_template_path,
-                              'get_constraint_cols.sql']),
-                    cid=row['oid'],
-                    colcnt=row['col_count'])
-                status, res = self.conn.execute_dict(sql)
-
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                columns = []
-                for r in res['rows']:
-                    columns.append({"column": r['column'].strip('"')})
-
-                result['columns'] = columns
-
-                # INCLUDE clause in index is supported from PG-11+
-                if self.manager.version >= 110000:
-                    sql = render_template(
-                        "/".join([self.index_constraint_template_path,
-                                  'get_constraint_include.sql']),
-                        cid=row['oid'])
-                    status, res = self.conn.execute_dict(sql)
-
-                    if not status:
-                        return internal_server_error(errormsg=res)
-
-                    result['include'] = [col['colname'] for col in res['rows']]
-
-                # If not exists then create list and/or append into
-                # existing list [ Adding into main data dict]
-                data.setdefault(index_constraints[ctype], []).append(result)
-
-        return data
-
-    def _foreign_key_formatter(self, tid, data):
-        """
-        Args:
-            tid: Table OID
-            data: dict of query result
-
-        Returns:
-            It will return formatted output of query result
-            as per client model format for foreign key constraint node
-        """
-
-        # We will fetch all the index constraints for the table
-        sql = render_template("/".join([self.foreign_key_template_path,
-                                        'properties.sql']),
-                              tid=tid)
-
-        status, result = self.conn.execute_dict(sql)
-
-        if not status:
-            return internal_server_error(errormsg=result)
-
-        for fk in result['rows']:
-
-            sql = render_template("/".join([self.foreign_key_template_path,
-                                            'get_constraint_cols.sql']),
-                                  tid=tid,
-                                  keys=zip(fk['confkey'], fk['conkey']),
-                                  confrelid=fk['confrelid'])
-
-            status, res = self.conn.execute_dict(sql)
-
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            columns = []
-            cols = []
-            for row in res['rows']:
-                columns.append({"local_column": row['conattname'],
-                                "references": fk['confrelid'],
-                                "referenced": row['confattname']})
-                cols.append(row['conattname'])
-
-            fk['columns'] = columns
-
-            SQL = render_template("/".join([self.foreign_key_template_path,
-                                            'get_parent.sql']),
-                                  tid=fk['columns'][0]['references'])
-
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            fk['remote_schema'] = rset['rows'][0]['schema']
-            fk['remote_table'] = rset['rows'][0]['table']
-
-            coveringindex = self.search_coveringindex(tid, cols)
-
-            fk['coveringindex'] = coveringindex
-            if coveringindex:
-                fk['autoindex'] = True
-                fk['hasindex'] = True
-            else:
-                fk['autoindex'] = False
-                fk['hasindex'] = False
-            # If not exists then create list and/or append into
-            # existing list [ Adding into main data dict]
-            data.setdefault('foreign_key', []).append(fk)
-
-        return data
-
-    def _check_constraint_formatter(self, tid, data):
-        """
-        Args:
-            tid: Table OID
-            data: dict of query result
-
-        Returns:
-            It will return formatted output of query result
-            as per client model format for check constraint node
-        """
-
-        # We will fetch all the index constraints for the table
-        SQL = render_template("/".join([self.check_constraint_template_path,
-                                        'properties.sql']),
-                              tid=tid)
-
-        status, res = self.conn.execute_dict(SQL)
-
-        if not status:
-            return internal_server_error(errormsg=res)
-        # If not exists then create list and/or append into
-        # existing list [ Adding into main data dict]
-
-        data['check_constraint'] = res['rows']
-
-        return data
-
-    def _exclusion_constraint_formatter(self, did, tid, data):
-        """
-        Args:
-            tid: Table OID
-            data: dict of query result
-
-        Returns:
-            It will return formatted output of query result
-            as per client model format for exclusion constraint node
-        """
-
-        # We will fetch all the index constraints for the table
-        sql = render_template(
-            "/".join(
-                [self.exclusion_constraint_template_path, 'properties.sql']
-            ),
-            did=did, tid=tid
-        )
-
-        status, result = self.conn.execute_dict(sql)
-
-        if not status:
-            return internal_server_error(errormsg=result)
-
-        for ex in result['rows']:
-
-            sql = render_template("/".join(
-                [self.exclusion_constraint_template_path,
-                 'get_constraint_cols.sql']),
-                cid=ex['oid'],
-                colcnt=ex['col_count'])
-
-            status, res = self.conn.execute_dict(sql)
-
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            columns = []
-            for row in res['rows']:
-                if row['options'] & 1:
-                    order = False
-                    nulls_order = True if (row['options'] & 2) else False
-                else:
-                    order = True
-                    nulls_order = True if (row['options'] & 2) else False
-
-                columns.append({"column": row['coldef'].strip('"'),
-                                "oper_class": row['opcname'],
-                                "order": order,
-                                "nulls_order": nulls_order,
-                                "operator": row['oprname'],
-                                "col_type": row['datatype']
-                                })
-
-            ex['columns'] = columns
-
-            # INCLUDE clause in index is supported from PG-11+
-            if self.manager.version >= 110000:
-                sql = render_template(
-                    "/".join([self.exclusion_constraint_template_path,
-                              'get_constraint_include.sql']),
-                    cid=ex['oid'])
-                status, res = self.conn.execute_dict(sql)
-
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                ex['include'] = [col['colname'] for col in res['rows']]
-
-            # If not exists then create list and/or append into
-            # existing list [ Adding into main data dict]
-            data.setdefault('exclude_constraint', []).append(ex)
-
-        return data
-
     def _formatter(self, did, scid, tid, data):
         """
         Args:
@@ -680,10 +387,36 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             data = self._columns_formatter(tid, data)
 
         # Here we will add constraint in our output
-        data = self._index_constraints_formatter(did, tid, data)
-        data = self._foreign_key_formatter(tid, data)
-        data = self._check_constraint_formatter(tid, data)
-        data = self._exclusion_constraint_formatter(did, tid, data)
+        index_constraints = {
+            'p': 'primary_key', 'u': 'unique_constraint'
+        }
+        for ctype in index_constraints.keys():
+            data[index_constraints[ctype]] = []
+            status, constraints = \
+                idxcons_utils.get_index_constraints(self.conn, did, tid, ctype)
+            if status:
+                for cons in constraints:
+                    data.setdefault(
+                        index_constraints[ctype], []).append(cons)
+
+        # Add Foreign Keys
+        status, foreign_keys = fkey_utils.get_foreign_keys(self.conn, tid)
+        if status:
+            for fk in foreign_keys:
+                data.setdefault('foreign_key', []).append(fk)
+
+        # Add Check Constraints
+        status, check_constraints = \
+            check_utils.get_check_constraints(self.conn, tid)
+        if status:
+            data['check_constraint'] = check_constraints
+
+        # Add Exclusion Constraint
+        status, exclusion_constraints = \
+            exclusion_utils.get_exclusion_constraints(self.conn, did, tid)
+        if status:
+            for ex in exclusion_constraints:
+                data.setdefault('exclude_constraint', []).append(ex)
 
         return data
 
@@ -920,91 +653,18 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         if not status:
             return internal_server_error(errormsg=rset)
 
+        # Dynamically load index utils to avoid circular dependency.
+        from pgadmin.browser.server_groups.servers.databases.schemas. \
+            tables.indexes import utils as index_utils
         for row in rset['rows']:
-
-            SQL = render_template("/".join([self.index_template_path,
-                                            'properties.sql']),
-                                  did=did, tid=tid, idx=row['oid'],
-                                  datlastsysoid=self.datlastsysoid)
-
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            data = dict(res['rows'][0])
-            # Adding parent into data dict, will be using it while creating sql
-            data['schema'] = schema
-            data['table'] = table
-            # We also need to fecth columns of index
-            SQL = render_template("/".join([self.index_template_path,
-                                            'column_details.sql']),
-                                  idx=row['oid'])
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            # 'attdef' comes with quotes from query so we need to strip them
-            # 'options' we need true/false to render switch
-            # ASC(false)/DESC(true)
-            columns = []
-            cols = []
-            for col_row in rset['rows']:
-                # We need all data as collection for ColumnsModel
-                # Only for displaying SQL, we can omit strip on colname
-                cols_data = {
-                    'colname': col_row['attdef'],
-                    'collspcname': col_row['collnspname'],
-                    'op_class': col_row['opcname'],
-                }
-                if col_row['options'][0] == 'DESC':
-                    cols_data['sort_order'] = True
-                columns.append(cols_data)
-
-                # We need same data as string to display in properties window
-                # If multiple column then separate it by colon
-                cols_str = col_row['attdef']
-                if col_row['collnspname']:
-                    cols_str += ' COLLATE ' + col_row['collnspname']
-                if col_row['opcname']:
-                    cols_str += ' ' + col_row['opcname']
-                if col_row['options'][0] == 'DESC':
-                    cols_str += ' DESC'
-                cols.append(cols_str)
-
-            # Push as collection
-            data['columns'] = columns
-            # Push as string
-            data['cols'] = ', '.join(cols)
-
-            if self.manager.version >= 110000:
-                SQL = render_template(
-                    "/".join([self.index_template_path,
-                              'include_details.sql']),
-                    idx=row['oid'])
-                status, res = self.conn.execute_dict(SQL)
-
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                data['include'] = [col['colname'] for col in res['rows']]
-
-            sql_header = u"\n-- Index: {0}\n\n-- ".format(data['name'])
-
-            sql_header += render_template("/".join([self.index_template_path,
-                                                    'delete.sql']),
-                                          data=data, conn=self.conn)
-
-            index_sql = render_template("/".join([self.index_template_path,
-                                                  'create.sql']),
-                                        data=data, conn=self.conn)
-            index_sql += "\n"
-            index_sql += render_template("/".join([self.index_template_path,
-                                                   'alter.sql']),
-                                         data=data, conn=self.conn)
+            index_sql = index_utils.get_reverse_engineered_sql(
+                self.conn, schema, table, did, tid, row['oid'],
+                self.datlastsysoid)
+            index_sql = u"\n" + index_sql
 
             # Add into main sql
             index_sql = re.sub('\n{2,}', '\n\n', index_sql)
-            main_sql.append(sql_header + '\n\n' + index_sql.strip('\n'))
+            main_sql.append(index_sql)
 
         """
         ########################################
@@ -1018,69 +678,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
-            SQL = render_template("/".join([self.trigger_template_path,
-                                            'properties.sql']),
-                                  tid=tid, trid=row['oid'],
-                                  datlastsysoid=self.datlastsysoid)
-
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if len(res['rows']) == 0:
-                continue
-            data = dict(res['rows'][0])
-            # Adding parent into data dict, will be using it while creating sql
-            data['schema'] = schema
-            data['table'] = table
-
-            data = self.get_trigger_function_schema(data)
-
-            if len(data['custom_tgargs']) > 1:
-                # We know that trigger has more than 1 argument, let's
-                # join them
-                data['tgargs'] = self._format_args(data['custom_tgargs'])
-
-            if len(data['tgattr']) >= 1:
-                columns = ', '.join(data['tgattr'].split(' '))
-
-                SQL = render_template("/".join([self.trigger_template_path,
-                                                'get_columns.sql']),
-                                      tid=tid, clist=columns)
-
-                status, rset = self.conn.execute_2darray(SQL)
-                if not status:
-                    return internal_server_error(errormsg=rset)
-                # 'tgattr' contains list of columns from table used in trigger
-                columns = []
-
-                for col_row in rset['rows']:
-                    columns.append(col_row['name'])
-
-                data['columns'] = columns
-
-            data = trigger_definition(data)
-
-            sql_header = u"\n-- Trigger: {0}\n\n-- ".format(data['name'])
-
-            sql_header += render_template("/".join([self.trigger_template_path,
-                                                    'delete.sql']),
-                                          data=data, conn=self.conn)
-
-            # If the request for new object which do not have did
-            trigger_sql = render_template("/".join([self.trigger_template_path,
-                                                    'create.sql']),
-                                          data=data, conn=self.conn)
-
-            trigger_sql = sql_header + '\n\n' + trigger_sql.strip('\n')
-
-            # If trigger is disabled then add sql code for the same
-            if data['is_enable_trigger'] != 'O':
-                trigger_sql += '\n\n'
-                trigger_sql += render_template("/".join([
-                    self.trigger_template_path,
-                    'enable_disable_trigger.sql']),
-                    data=data, conn=self.conn)
+            trigger_sql = trigger_utils.get_reverse_engineered_sql(
+                self.conn, schema, table, tid, row['oid'],
+                self.datlastsysoid, self.blueprint.show_system_objects)
+            trigger_sql = u"\n" + trigger_sql
 
             # Add into main sql
             trigger_sql = re.sub('\n{2,}', '\n\n', trigger_sql)
@@ -1102,65 +703,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 return internal_server_error(errormsg=rset)
 
             for row in rset['rows']:
-                SQL = render_template("/".join(
-                    [self.compound_trigger_template_path, 'properties.sql']),
-                    tid=tid, trid=row['oid'],
-                    datlastsysoid=self.datlastsysoid)
-
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                if len(res['rows']) == 0:
-                    continue
-                data = dict(res['rows'][0])
-                # Adding parent into data dict, will be using it while
-                # creating sql
-                data['schema'] = schema
-                data['table'] = table
-
-                if len(data['tgattr']) >= 1:
-                    columns = ', '.join(data['tgattr'].split(' '))
-
-                    SQL = render_template("/".join(
-                        [self.compound_trigger_template_path,
-                         'get_columns.sql']), tid=tid, clist=columns)
-
-                    status, rset = self.conn.execute_2darray(SQL)
-                    if not status:
-                        return internal_server_error(errormsg=rset)
-                    # 'tgattr' contains list of columns from table
-                    # used in trigger
-                    columns = []
-
-                    for col_row in rset['rows']:
-                        columns.append(col_row['name'])
-
-                    data['columns'] = columns
-
-                data = trigger_definition(data)
-                sql_header = \
-                    u"\n-- Compound Trigger: {0}\n\n-- ".format(data['name'])
-
-                sql_header += render_template("/".join(
-                    [self.compound_trigger_template_path, 'delete.sql']),
-                    data=data, conn=self.conn)
-
-                # If the request for new object which do not have did
-                compound_trigger_sql = render_template("/".join(
-                    [self.compound_trigger_template_path, 'create.sql']),
-                    data=data, conn=self.conn)
-
                 compound_trigger_sql = \
-                    sql_header + '\n\n' + compound_trigger_sql.strip('\n')
-
-                # If trigger is disabled then add sql code for the same
-                if data['is_enable_trigger'] != 'O':
-                    compound_trigger_sql += '\n\n'
-                    compound_trigger_sql += render_template("/".join(
-                        [self.compound_trigger_template_path,
-                         'enable_disable_trigger.sql']),
-                        data=data, conn=self.conn)
+                    compound_trigger_utils.get_reverse_engineered_sql(
+                        self.conn, schema, table, tid, row['oid'],
+                        self.datlastsysoid)
+                compound_trigger_sql = u"\n" + compound_trigger_sql
 
                 # Add into main sql
                 compound_trigger_sql = \
@@ -1174,7 +721,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         """
 
         SQL = render_template("/".join(
-            [self.rules_template_path, 'properties.sql']), tid=tid)
+            [self.rules_template_path, 'nodes.sql']), tid=tid)
 
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -1350,399 +897,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             if isinstance(data['name'], (int, float)):
                 data['name'] = str(data['name'])
         return data
-
-    def get_index_constraint_sql(self, did, tid, data):
-        """
-         Args:
-           tid: Table ID
-           data: data dict coming from the client
-
-        Returns:
-        This function will generate modified sql for index constraints
-        (Primary Key & Unique)
-        """
-        sql = []
-        # We will fetch all the index constraints for the table
-        index_constraints = {
-            'p': 'primary_key', 'u': 'unique_constraint'
-        }
-
-        for ctype in index_constraints.keys():
-            # Check if constraint is in data
-            # If yes then we need to check for add/change/delete
-            if index_constraints[ctype] in data:
-                constraint = data[index_constraints[ctype]]
-                # If constraint(s) is/are deleted
-                if 'deleted' in constraint:
-                    for c in constraint['deleted']:
-                        c['schema'] = data['schema']
-                        c['table'] = data['name']
-
-                        # Sql for drop
-                        sql.append(
-                            render_template("/".join(
-                                [self.index_constraint_template_path,
-                                 'delete.sql']),
-                                data=c, conn=self.conn).strip('\n')
-                        )
-
-                if 'changed' in constraint:
-                    for c in constraint['changed']:
-                        c['schema'] = data['schema']
-                        c['table'] = data['name']
-
-                        properties_sql = render_template(
-                            "/".join(
-                                [
-                                    self.index_constraint_template_path,
-                                    'properties.sql'
-                                ]
-                            ),
-                            did=did,
-                            tid=tid,
-                            cid=c['oid'],
-                            constraint_type=ctype
-                        )
-                        status, res = self.conn.execute_dict(properties_sql)
-                        if not status:
-                            return internal_server_error(errormsg=res)
-
-                        old_data = res['rows'][0]
-
-                        # If changes are from table node
-                        if 'name' not in c:
-                            c['name'] = old_data['name']
-                        # Sql to update object
-                        sql.append(
-                            render_template("/".join([
-                                self.index_constraint_template_path,
-                                'update.sql']), data=c, o_data=old_data,
-                                conn=self.conn).strip('\n')
-                        )
-
-                if 'added' in constraint:
-                    for c in constraint['added']:
-                        c['schema'] = data['schema']
-                        c['table'] = data['name']
-
-                        # Sql to add object
-                        if self.validate_constrains(
-                                index_constraints[ctype], c):
-                            sql.append(
-                                render_template(
-                                    "/".join(
-                                        [self.index_constraint_template_path,
-                                            'create.sql']
-                                    ),
-                                    data=c, conn=self.conn,
-                                    constraint_name='PRIMARY KEY'
-                                    if ctype == 'p' else 'UNIQUE'
-                                ).strip('\n')
-                            )
-                        else:
-                            sql.append(
-                                gettext(
-                                    '-- definition incomplete for {0} '
-                                    'constraint'.format(
-                                        index_constraints[ctype]
-                                    )
-                                )
-                            )
-        if len(sql) > 0:
-            # Join all the sql(s) as single string
-            return '\n\n'.join(sql)
-        else:
-            return None
-
-    def get_foreign_key_sql(self, tid, data):
-        """
-         Args:
-           tid: Table ID
-           data: data dict coming from the client
-
-        Returns:
-        This function will generate modified sql for foreign key
-        """
-        sql = []
-        # Check if constraint is in data
-        # If yes then we need to check for add/change/delete
-        if 'foreign_key' in data:
-            constraint = data['foreign_key']
-            # If constraint(s) is/are deleted
-            if 'deleted' in constraint:
-                for c in constraint['deleted']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    # Sql for drop
-                    sql.append(
-                        render_template("/".join(
-                            [self.foreign_key_template_path,
-                             'delete.sql']),
-                            data=c, conn=self.conn).strip('\n')
-                    )
-
-            if 'changed' in constraint:
-                for c in constraint['changed']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    properties_sql = render_template("/".join(
-                        [self.foreign_key_template_path, 'properties.sql']),
-                        tid=tid, cid=c['oid'])
-                    status, res = self.conn.execute_dict(properties_sql)
-                    if not status:
-                        return internal_server_error(errormsg=res)
-
-                    old_data = res['rows'][0]
-                    if 'name' not in c:
-                        c['name'] = old_data['name']
-
-                    # Sql to update object
-                    sql.append(
-                        render_template("/".join([
-                            self.foreign_key_template_path,
-                            'update.sql']), data=c, o_data=old_data,
-                            conn=self.conn).strip('\n')
-                    )
-
-                    if not self.validate_constrains('foreign_key', c):
-                        sql.append(
-                            gettext(
-                                '-- definition incomplete for foreign_key '
-                                'constraint'
-                            )
-                        )
-                        return '\n\n'.join(sql)
-
-                    if 'columns' in c:
-                        cols = []
-                        for col in c['columns']:
-                            cols.append(col['local_column'])
-
-                        coveringindex = self.search_coveringindex(tid, cols)
-
-                        if coveringindex is None and \
-                            'autoindex' in c and \
-                            c['autoindex'] and \
-                            ('coveringindex' in c and
-                                c['coveringindex'] != ''):
-                            sql.append(render_template(
-                                "/".join(
-                                    [
-                                        self.foreign_key_template_path,
-                                        'create_index.sql'
-                                    ]
-                                ), data=c, conn=self.conn).strip('\n')
-                            )
-
-            if 'added' in constraint:
-                for c in constraint['added']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    # Sql to add object
-                    # Columns
-
-                    if not self.validate_constrains('foreign_key', c):
-                        sql.append(
-                            gettext(
-                                '-- definition incomplete for foreign_key '
-                                'constraint'
-                            )
-                        )
-                        return '\n\n'.join(sql)
-
-                    SQL = render_template(
-                        "/".join(
-                            [self.foreign_key_template_path, 'get_parent.sql']
-                        ), tid=c['columns'][0]['references']
-                    )
-                    status, rset = self.conn.execute_2darray(SQL)
-                    if not status:
-                        return internal_server_error(errormsg=rset)
-
-                    c['remote_schema'] = rset['rows'][0]['schema']
-                    c['remote_table'] = rset['rows'][0]['table']
-
-                    sql.append(
-                        render_template(
-                            "/".join([self.foreign_key_template_path,
-                                      'create.sql']),
-                            data=c, conn=self.conn
-                        ).strip('\n')
-                    )
-
-                    if c['autoindex']:
-                        sql.append(
-                            render_template(
-                                "/".join([self.foreign_key_template_path,
-                                          'create_index.sql']),
-                                data=c, conn=self.conn).strip('\n')
-                        )
-
-        if len(sql) > 0:
-            # Join all the sql(s) as single string
-            return '\n\n'.join(sql)
-        else:
-            return None
-
-    def get_check_constraint_sql(self, tid, data):
-        """
-         Args:
-           tid: Table ID
-           data: data dict coming from the client
-
-        Returns:
-          This function will generate modified sql for check constraint
-        """
-        sql = []
-        # Check if constraint is in data
-        # If yes then we need to check for add/change/delete
-        if 'check_constraint' in data:
-            constraint = data['check_constraint']
-            # If constraint(s) is/are deleted
-            if 'deleted' in constraint:
-                for c in constraint['deleted']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    # Sql for drop
-                    sql.append(
-                        render_template("/".join(
-                            [self.check_constraint_template_path,
-                             'delete.sql']),
-                            data=c, conn=self.conn).strip('\n')
-                    )
-
-            if 'changed' in constraint:
-                for c in constraint['changed']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    properties_sql = render_template(
-                        "/".join(
-                            [self.check_constraint_template_path,
-                             'properties.sql']
-                        ), tid=tid, cid=c['oid']
-                    )
-                    status, res = self.conn.execute_dict(properties_sql)
-                    if not status:
-                        return internal_server_error(errormsg=res)
-
-                    old_data = res['rows'][0]
-                    # Sql to update object
-                    sql.append(
-                        render_template("/".join([
-                            self.check_constraint_template_path,
-                            'update.sql']), data=c, o_data=old_data,
-                            conn=self.conn).strip('\n')
-                    )
-
-            if 'added' in constraint:
-                for c in constraint['added']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    if not self.validate_constrains('check_constraint', c):
-                        sql.append(
-                            gettext(
-                                '-- definition incomplete for check_constraint'
-                            )
-                        )
-                        return '\n\n'.join(sql)
-
-                    sql.append(
-                        render_template(
-                            "/".join([self.check_constraint_template_path,
-                                      'create.sql']),
-                            data=c, conn=self.conn
-                        ).strip('\n')
-                    )
-
-        if len(sql) > 0:
-            # Join all the sql(s) as single string
-            return '\n\n'.join(sql)
-        else:
-            return None
-
-    def get_exclusion_constraint_sql(self, did, tid, data):
-        """
-         Args:
-           tid: Table ID
-           data: data dict coming from the client
-
-        Returns:
-          This function will generate modified sql for exclusion constraint
-        """
-        sql = []
-        # Check if constraint is in data
-        # If yes then we need to check for add/change/delete
-        if 'exclude_constraint' in data:
-            constraint = data['exclude_constraint']
-            # If constraint(s) is/are deleted
-            if 'deleted' in constraint:
-                for c in constraint['deleted']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    # Sql for drop
-                    sql.append(
-                        render_template("/".join(
-                            [self.exclusion_constraint_template_path,
-                             'delete.sql']),
-                            data=c, conn=self.conn).strip('\n')
-                    )
-
-            if 'changed' in constraint:
-                for c in constraint['changed']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    properties_sql = render_template("/".join(
-                        [self.exclusion_constraint_template_path,
-                         'properties.sql']),
-                        did=did, tid=tid, cid=c['oid'])
-                    status, res = self.conn.execute_dict(properties_sql)
-                    if not status:
-                        return internal_server_error(errormsg=res)
-
-                    old_data = res['rows'][0]
-                    # Sql to update object
-                    sql.append(
-                        render_template("/".join([
-                            self.exclusion_constraint_template_path,
-                            'update.sql']), data=c, o_data=old_data,
-                            conn=self.conn).strip('\n')
-                    )
-
-            if 'added' in constraint:
-                for c in constraint['added']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
-
-                    if not self.validate_constrains('exclude_constraint', c):
-                        sql.append(
-                            gettext(
-                                '-- definition incomplete for '
-                                'exclusion_constraint'
-                            )
-                        )
-                        return '\n\n'.join(sql)
-
-                    sql.append(
-                        render_template(
-                            "/".join([self.exclusion_constraint_template_path,
-                                      'create.sql']),
-                            data=c, conn=self.conn
-                        ).strip('\n')
-                    )
-
-        if len(sql) > 0:
-            # Join all the sql(s) as single string
-            return u'\n\n'.join(sql)
-        else:
-            return None
 
     def get_sql(self, did, scid, tid, data, res):
         """
@@ -1999,27 +1153,31 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 SQL += '\n' + partitions_sql.strip('\n')
 
             # Check if index constraints are added/changed/deleted
-            index_constraint_sql = self.get_index_constraint_sql(
-                did, tid, data)
+            index_constraint_sql = \
+                idxcons_utils.get_index_constraint_sql(
+                    self.conn, did, tid, data)
             # If we have index constraint sql then ad it in main sql
             if index_constraint_sql is not None:
                 SQL += '\n' + index_constraint_sql
 
             # Check if foreign key(s) is/are added/changed/deleted
-            foreign_key_sql = self.get_foreign_key_sql(tid, data)
+            foreign_key_sql = fkey_utils.get_foreign_key_sql(
+                self.conn, tid, data)
             # If we have foreign key sql then ad it in main sql
             if foreign_key_sql is not None:
                 SQL += '\n' + foreign_key_sql
 
             # Check if check constraint(s) is/are added/changed/deleted
-            check_constraint_sql = self.get_check_constraint_sql(tid, data)
+            check_constraint_sql = check_utils.get_check_constraint_sql(
+                self.conn, tid, data)
             # If we have check constraint sql then ad it in main sql
             if check_constraint_sql is not None:
                 SQL += '\n' + check_constraint_sql
 
             # Check if exclusion constraint(s) is/are added/changed/deleted
-            exclusion_constraint_sql = self.get_exclusion_constraint_sql(
-                did, tid, data)
+            exclusion_constraint_sql = \
+                exclusion_utils.get_exclusion_constraint_sql(
+                    self.conn, did, tid, data)
             # If we have check constraint sql then ad it in main sql
             if exclusion_constraint_sql is not None:
                 SQL += '\n' + exclusion_constraint_sql
@@ -2056,16 +1214,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
             if 'foreign_key' in data:
                 for c in data['foreign_key']:
-                    SQL = render_template("/".join(
-                        [self.foreign_key_template_path,
-                         'get_parent.sql']),
-                        tid=c['columns'][0]['references'])
-                    status, rset = self.conn.execute_2darray(SQL)
-                    if not status:
-                        return internal_server_error(errormsg=rset)
-
-                    c['remote_schema'] = rset['rows'][0]['schema']
-                    c['remote_table'] = rset['rows'][0]['table']
+                    schema, table = fkey_utils.get_parent(
+                        self.conn, c['columns'][0]['references'])
+                    c['remote_schema'] = schema
+                    c['remote_table'] = table
 
             partitions_sql = ''
             if 'is_partitioned' in data and data['is_partitioned']:
@@ -2524,46 +1676,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         if 'attprecision' in data and data['attprecision'] is not None:
             data['attprecision'] = str(data['attprecision'])
         return data
-
-    def search_coveringindex(self, tid, cols):
-        """
-
-        Args:
-          tid: Table id
-          cols: column list
-
-        Returns:
-
-        """
-
-        cols = set(cols)
-        SQL = render_template("/".join([self.foreign_key_template_path,
-                                        'get_constraints.sql']),
-                              tid=tid)
-        status, constraints = self.conn.execute_dict(SQL)
-
-        if not status:
-            raise Exception(constraints)
-
-        for costrnt in constraints['rows']:
-
-            sql = render_template(
-                "/".join([self.foreign_key_template_path, 'get_cols.sql']),
-                cid=costrnt['oid'],
-                colcnt=costrnt['col_count'])
-            status, rest = self.conn.execute_dict(sql)
-
-            if not status:
-                return internal_server_error(errormsg=rest)
-
-            indexcols = set()
-            for r in rest['rows']:
-                indexcols.add(r['column'].strip('"'))
-
-            if len(cols - indexcols) == len(indexcols - cols) == 0:
-                return costrnt["idxname"]
-
-        return None
 
     def update_vacuum_settings(self, vacuum_key, old_data, data):
         """
