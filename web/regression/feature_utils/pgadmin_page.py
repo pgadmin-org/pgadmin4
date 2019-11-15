@@ -176,6 +176,18 @@ class PgadminPage:
         execute_button.click()
         self.wait_for_query_tool_loading_indicator_to_disappear()
 
+    def click_execute_query_button(self):
+        retry = 5
+        execute_button = self.find_by_css_selector(
+            QueryToolLocators.btn_execute_query_css)
+        while retry > 0:
+            execute_button.click()
+            if self.wait_for_query_tool_loading_indicator_to_appear():
+                break
+            else:
+                retry -= 1
+        self.wait_for_query_tool_loading_indicator_to_disappear()
+
     def check_execute_option(self, option):
         """"This function will check auto commit or auto roll back based on
         user input. If button is already checked, no action will be taken"""
@@ -394,6 +406,7 @@ class PgadminPage:
                              name_of_database):
         """will expand database node under databases node"""
         db_node_expanded_status = False
+        retry = 5
         if self.expand_databases_node(server_name, server_password):
             sub_nodes_of_databases_node = self.find_by_xpath_list(
                 TreeAreaLocators.sub_nodes_of_databases_node(server_name))
@@ -410,9 +423,17 @@ class PgadminPage:
                 self.driver.execute_script("arguments[0].scrollIntoView()",
                                            sub_nodes_of_databases_node[
                                                index_of_required_db_node])
-                webdriver.ActionChains(self.driver).double_click(
-                    sub_nodes_of_databases_node[
-                        index_of_required_db_node]).perform()
+                while retry > 0:
+                    webdriver.ActionChains(self.driver).double_click(
+                        sub_nodes_of_databases_node[
+                            index_of_required_db_node]).perform()
+                    if self.check_if_element_exist_by_xpath(
+                        "//div[@class='ajs-header'and text()='INTERNAL SERVER "
+                            "ERROR']", 1):
+                        self.click_modal('OK')
+                        retry -= 1
+                    else:
+                        break
                 if self.wait_for_elements_to_appear(
                     self.driver, TreeAreaLocators.
                         sub_nodes_of_database_node(
@@ -935,7 +956,7 @@ class PgadminPage:
                     return False
 
                 return True
-            except NoSuchElementException:
+            except (NoSuchElementException, StaleElementReferenceException):
                 return True
 
         return self._wait_for("element to disappear", element_if_it_disappears)
@@ -976,9 +997,10 @@ class PgadminPage:
         self._wait_for("spinner to disappear", spinner_has_disappeared, 20)
 
     def wait_for_query_tool_loading_indicator_to_appear(self):
-        self.check_if_element_exist_by_xpath(
+        status = self.check_if_element_exist_by_xpath(
             "//div[@id='editor-panel']//"
-            "div[@class='pg-sp-container sql-editor-busy-fetching']")
+            "div[@class='pg-sp-container sql-editor-busy-fetching']", 1)
+        return status
 
     def wait_for_app(self):
         def page_shows_app(driver):

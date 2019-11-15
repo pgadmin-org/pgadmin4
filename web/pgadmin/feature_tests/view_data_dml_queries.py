@@ -308,7 +308,11 @@ CREATE TABLE public.nonintpkey
         self._verify_row_data(False, updated_row_data)
 
     def _add_update_save_row(self, data, row=1):
-        for idx in data.keys():
+        items = list(data.keys())
+        for item in range(0, len(items)):
+            items[item] = int(items[item])
+        items.sort(reverse=False)
+        for idx in items:
             cell_xpath = CheckForViewDataTest._get_cell_xpath(
                 'r' + str(idx), row
             )
@@ -347,9 +351,21 @@ CREATE TABLE public.nonintpkey
 
         result_row = self.page.find_by_xpath(xpath)
 
-        # List of row values in an array
-        for idx in config_check_data.keys():
-            element = result_row.find_element_by_class_name("r" + str(idx))
+        # Verify the List of actual values with the expected list
+        actual_list = list(config_check_data.keys())
+        for value in range(0, len(actual_list)):
+            actual_list[value] = int(actual_list[value])
+        actual_list.sort(reverse=False)
+        retry = 5
+        for idx in actual_list:
+            while retry > 0:
+                try:
+                    element = \
+                        result_row.find_element_by_class_name("r" + str(idx))
+                    break
+                except Exception:
+                    print("stale reference exception at id:", idx)
+                    retry -= 1
             self.page.driver.execute_script(
                 "arguments[0].scrollIntoView(false)", element)
             time.sleep(0.4)

@@ -26,19 +26,19 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
 
     scenarios = [
         ("Test for PG maintenance: database", dict(
-            database_name='pg_maintenance',
-            table_name='pg_maintenance_table',
+            database_name='pg_maintenance_',
+            table_name='table_',
             test_level='database',
             is_xss_check=False,
         )),
         ("Test for PG maintenance: table", dict(
-            database_name='pg_maintenance',
-            table_name='pg_maintenance_table',
+            database_name='pg_maintenance_',
+            table_name='table_',
             test_level='table',
             is_xss_check=False,
         )),
         ("Test for XSS in maintenance dialog", dict(
-            database_name='pg_maintenance',
+            database_name='pg_maintenance_',
             table_name='<h1>test_me</h1>',
             test_level='table',
             is_xss_check=True,
@@ -67,7 +67,9 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             self.server['sslmode']
         )
 
-        self.table_name = self.table_name + str(random.randint(1000, 3000))
+        self.table_name = self.table_name + str(random.randint(100, 1000))
+        self.database_name = \
+            self.database_name + str(random.randint(100, 1000))
         test_utils.drop_database(connection, self.database_name)
         test_utils.create_database(self.server, self.database_name)
         test_utils.create_table(self.server, self.database_name,
@@ -87,7 +89,6 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR,
              NavMenuLocators.bcg_process_status_alertifier_css)))
-
         self.verify_command()
 
     def _open_maintenance_dialogue(self):
@@ -101,9 +102,18 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             self.page.toggle_open_tables_node(self.server['name'],
                                               self.server['db_password'],
                                               self.database_name, 'public')
-            self.page.click_a_tree_node(
-                self.table_name,
-                TreeAreaLocators.sub_nodes_of_tables_node)
+            retry = 5
+            status = False
+            while retry > 0:
+                status = self.page.click_a_tree_node(
+                    self.table_name,
+                    TreeAreaLocators.sub_nodes_of_tables_node)
+                if status:
+                    break
+                else:
+                    retry -= 1
+            self.assertTrue(status, "Table name {} is not selected".format(
+                self.table_name))
 
         self.page.retry_click(
             (By.LINK_TEXT,
@@ -118,17 +128,17 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
 
     def verify_command(self):
         status = test_utils.get_watcher_dialogue_status(self)
-        if status != "Successfully completed.":
-
-            test_gui_helper.close_bgprocess_popup(self)
-
-        self.assertEquals(status, "Successfully completed.")
-
         self.page.retry_click(
             (By.CSS_SELECTOR,
              NavMenuLocators.status_alertifier_more_btn_css),
             (By.XPATH,
              NavMenuLocators.process_watcher_alertfier))
+        self.page.wait_for_element_to_disappear(
+            lambda driver: driver.find_element_by_css_selector(".loading-logs")
+        )
+
+        if status != "Successfully completed.":
+            self.assertEquals(status, "Successfully completed.")
 
         command = self.page.find_by_css_selector(
             NavMenuLocators.
@@ -158,9 +168,9 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
 
     def after(self):
         test_gui_helper.close_bgprocess_popup(self)
-        self.page.remove_server(self.server)
         test_utils.delete_table(self.server, self.database_name,
                                 self.table_name)
+        self.page.remove_server(self.server)
         connection = test_utils.get_db_connection(
             self.server['db'],
             self.server['username'],

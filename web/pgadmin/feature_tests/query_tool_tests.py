@@ -135,18 +135,10 @@ class QueryToolFeatureTest(BaseFeatureTest):
         query_op.click()
 
         # disable auto rollback only if they are enabled
-        btn = self.page.find_by_css_selector(
-            QueryToolLocators.btn_auto_rollback)
-        check = btn.find_element_by_tag_name('i')
-        if 'visibility-hidden' not in check.get_attribute('class'):
-            btn.click()
+        self.uncheck_execute_option('auto_rollback')
 
         # enable autocommit only if it's disabled
-        btn = self.page.find_by_css_selector(
-            QueryToolLocators.btn_auto_commit)
-        check = btn.find_element_by_tag_name('i')
-        if 'visibility-hidden' in check.get_attribute('class'):
-            btn.click()
+        self.check_execute_option('auto_commit')
 
         # close menu
         query_op.click()
@@ -181,8 +173,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         print("On demand result set on grid select all... ",
               file=sys.stderr, end="")
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
+        self.page.click_execute_query_button()
 
         # wait for header of the table to be visible
         canvas = self.page.find_by_css_selector(
@@ -213,8 +204,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         print("On demand result set on column select all... ",
               file=sys.stderr, end="")
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
+        self.page.click_execute_query_button()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
@@ -349,18 +339,16 @@ CREATE TABLE public.{}();""".format(table_name)
 
         self.page.fill_codemirror_area_with(query)
 
-        # open auto commit option and disable it
+        # disable auto commit option
         query_op = self.page.find_by_css_selector(
             QueryToolLocators.btn_query_dropdown)
         query_op.click()
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_auto_commit).click()
+        self.uncheck_execute_option('auto_commit')
         # close option
         query_op.click()
 
         # execute query
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
+        self.page.click_execute_query_button()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
@@ -424,13 +412,12 @@ END;"""
             QueryToolLocators.btn_query_dropdown)
         query_op.click()
 
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_auto_commit).click()
+        # Enable auto_commit if it is disabled
+        self.check_execute_option('auto_commit')
 
         query_op.click()
 
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
+        self.page.click_execute_query_button()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
@@ -504,14 +491,13 @@ END;"""
             QueryToolLocators.btn_query_dropdown)
         query_op.click()
 
-        # uncheckt auto commit and check auto-rollback
+        # uncheck auto commit and check auto-rollback
         self.uncheck_execute_option('auto_commit')
         self.check_execute_option('auto_rollback')
 
         query_op.click()
 
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
+        self.page.click_execute_query_button()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.clear_query_tool()
@@ -606,11 +592,20 @@ SELECT 1, pg_sleep(300)"""
         self.uncheck_execute_option('auto_rollback')
         # close drop down
         query_op.click()
+        # Execute query
+        retry = 5
+        execute_button = self.page.find_by_css_selector(
+            QueryToolLocators.btn_execute_query_css)
+        while retry > 0:
+            execute_button.click()
+            if self.page.wait_for_query_tool_loading_indicator_to_appear():
+                break
+            else:
+                retry -= 1
+        # Providing a second of sleep since clicks on the execute and stop
+        # query button is too quick that the query is not able run properly
+        time.sleep(1)
 
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
-
-        self.page.find_by_xpath("//*[@id='fetching_data']")
         self.page.find_by_css_selector(
             QueryToolLocators.btn_cancel_query).click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()

@@ -108,16 +108,17 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         status = test_utils.get_watcher_dialogue_status(self)
 
-        if status != "Successfully completed.":
-            test_gui_helper.close_bgprocess_popup(self)
-
-        self.assertEquals(status, "Successfully completed.")
-
         self.page.retry_click(
             (By.CSS_SELECTOR,
              NavMenuLocators.status_alertifier_more_btn_css),
             (By.XPATH,
              NavMenuLocators.process_watcher_alertfier))
+        self.page.wait_for_element_to_disappear(
+            lambda driver: driver.find_element_by_css_selector(".loading-logs")
+        )
+
+        if status != "Successfully completed.":
+            self.assertEquals(status, "Successfully completed.")
 
         backup_file = None
         # Check for XSS in Backup details
@@ -177,16 +178,17 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         status = test_utils.get_watcher_dialogue_status(self)
 
-        if status != "Successfully completed.":
-            test_gui_helper.close_bgprocess_popup(self)
-
-        self.assertEquals(status, "Successfully completed.")
-
         self.page.retry_click(
             (By.CSS_SELECTOR,
              NavMenuLocators.status_alertifier_more_btn_css),
             (By.XPATH,
              NavMenuLocators.process_watcher_alertfier))
+        self.page.wait_for_element_to_disappear(
+            lambda driver: driver.find_element_by_css_selector(".loading-logs")
+        )
+
+        if status != "Successfully completed.":
+            self.assertEquals(status, "Successfully completed.")
 
         # Check for XSS in Restore details
         if self.is_xss_check:

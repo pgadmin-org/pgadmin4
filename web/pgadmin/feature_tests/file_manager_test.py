@@ -15,6 +15,7 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException, \
     TimeoutException
 from regression.feature_utils.base_feature_test import BaseFeatureTest
@@ -83,7 +84,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.find_by_css_selector('.change_file_types')
         self.page.fill_input_by_css_selector(
             QueryToolLocators.input_file_path_css,
-            "/tmp/", key_after_input=Keys.RETURN)
+            "/tmp", key_after_input=Keys.RETURN)
 
         if self.page.driver.capabilities['browserName'] == 'firefox':
             table = self.page.wait_for_element_to_reload(
@@ -91,6 +92,12 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
                     QueryToolLocators.select_file_content_css)
             )
         else:
+            self.wait.until(EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, QueryToolLocators.select_file_content_css)))
+            self.wait.until(lambda element:
+                            self.page.driver.find_element_by_css_selector(
+                                '[name=home]').is_enabled())
+
             table = self.page.driver.find_element_by_css_selector(
                 QueryToolLocators.select_file_content_css)
         retry_count = 0
@@ -113,7 +120,8 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         # For XSS we need to search against element's html code
         assert source_code.find(
             string_to_find
-        ) != -1, "{0} might be vulnerable to XSS ".format(source)
+        ) != -1, "{0} might be vulnerable to XSS, source code is: {1}".format(
+            source, source_code)
 
     def _check_file_sorting(self):
         load_file = self.page.find_by_css_selector(
