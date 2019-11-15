@@ -134,7 +134,7 @@ _.extend(pgBrowser.keyboardNavigation, {
   bindRightPanel: function(event, combo) {
     let allPanels = pgAdmin.Browser.docker.findPanels();
     let activePanel = 0;
-    let nextPanel = allPanels.length;
+    let nextPanel = allPanels.length - 1;
     let prevPanel = 1;
     let activePanelId = 0;
     let activePanelFlag = false;

@@ -626,6 +626,10 @@ fieldset.inline-fieldset > div {
     height: 100%;
   }
 
+  & .btn-secondary:focus {
+    box-shadow: $input-btn-focus-box-shadow;
+  }
+
   & .input-group {
     & .input-group-text {
       background: $input-bg;

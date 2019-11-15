@@ -52,6 +52,13 @@ define('pgadmin.dashboard', [
           '\'></i>'
         );
       }
+      this.$el.attr('tabindex', 0);
+      this.$el.on('keydown', function(e) {
+        // terminating session or cancel the active query.
+        if (e.keyCode == 32) {
+          self.$el.click();
+        }
+      }),
       this.delegateEvents();
       return this;
     },

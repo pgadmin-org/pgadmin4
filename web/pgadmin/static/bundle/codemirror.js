@@ -26,4 +26,16 @@ import 'codemirror/addon/comment/comment';
 import 'sources/codemirror/addon/fold/pgadmin-sqlfoldcode';
 import 'sources/codemirror/extension/centre_on_line';
 
+var cmds = CodeMirror.commands;
+cmds.focusOut = function(){
+  event.stopPropagation();
+  document.activeElement.blur();
+  if(event.currentTarget.parents().find('.sql-code-control')) {
+    // for code mirror in dialogs
+    event.currentTarget.parents().find('.sql-code-control').focus();
+  }
+};
+
+CodeMirror.keyMap.default['Esc'] = 'focusOut';
+
 export default CodeMirror;
