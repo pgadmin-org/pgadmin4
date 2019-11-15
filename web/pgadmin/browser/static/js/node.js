@@ -346,7 +346,12 @@ define('pgadmin.browser.node', [
                 this.empty().css('visibility', 'hidden');
               }.bind(that.statusBar));
             }
-            callback(true);
+
+            var sessHasChanged = false;
+            if(this.sessChanged && this.sessChanged()){
+              sessHasChanged = true;
+            }
+            callback(true, sessHasChanged);
 
             return true;
           };
