@@ -212,6 +212,11 @@ define('misc.bgprocess', [
           });
         }
 
+        if(self.logs_loading) {
+          self.logs_loading.remove();
+          self.logs_loading = null;
+        }
+
         if (self.stime) {
           self.curr_status = self.other_status_tpl({status_text:gettext('Started')});
 
@@ -414,6 +419,8 @@ define('misc.bgprocess', [
           setTimeout(function() {
             self.logs[0].scrollTop = self.logs[0].scrollHeight;
           });
+          self.logs_loading = $(`<li class="pg-bg-res-out loading-logs">${gettext('Loading process logs...')}</li>`);
+          self.logs.append(self.logs_loading);
           // set bgprocess detailed description
           $header.find('.bg-detailed-desc').html(self.detailed_desc);
         }
@@ -602,6 +609,7 @@ define('misc.bgprocess', [
           showTitle: true,
           isCloseable: true,
           isPrivate: true,
+          isLayoutMember: false,
           content: '<div class="bg-process-details">' +
               '<div class="bg-detailed-desc"></div>' +
               '<div class="bg-process-stats d-flex py-1">' +
