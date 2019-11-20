@@ -449,7 +449,6 @@ dropzone                                                         5.5.1          
 duplexer                                                         0.1.1            MIT                                  git://github.com/Raynos/duplexer.git
 duplexify                                                        3.7.1            MIT                                  git://github.com/mafintosh/duplexify
 ecc-jsbn                                                         0.1.2            MIT                                  https://github.com/quartzjer/ecc-jsbn.git
-eclint                                                           2.8.1            MIT                                  https://github.com/jedmao/eclint.git
 editorconfig                                                     0.15.3           MIT                                  git://github.com/editorconfig/editorconfig-core-js.git
 ee-first                                                         1.1.1            MIT                                  https://github.com/jonathanong/ee-first.git
 elliptic                                                         6.5.1            MIT                                  git@github.com:indutny/elliptic

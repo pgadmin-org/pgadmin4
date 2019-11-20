@@ -16,7 +16,6 @@
     "copy-webpack-plugin": "^5.0.4",
     "core-js": "^3.2.1",
     "cross-env": "^5.2.0",
-    "eclint": "^2.8.1",
     "eslint": "5.15.1",
     "file-loader": "^3.0.1",
     "iconfont-webpack-plugin": "^4.2.1",
