@@ -4,8 +4,10 @@ from pgadmin.utils.preferences import Preferences
 
 
 def get_all_themes():
+    # Themes file is copied in generated directory
     theme_file_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
+        '../../static/js/generated',
         'pgadmin.themes.json'
     )
 
