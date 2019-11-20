@@ -135,10 +135,10 @@ class QueryToolFeatureTest(BaseFeatureTest):
         query_op.click()
 
         # disable auto rollback only if they are enabled
-        self.uncheck_execute_option('auto_rollback')
+        self.page.uncheck_execute_option('auto_rollback')
 
         # enable autocommit only if it's disabled
-        self.check_execute_option('auto_commit')
+        self.page.check_execute_option('auto_commit')
 
         # close menu
         query_op.click()
@@ -343,7 +343,7 @@ CREATE TABLE public.{}();""".format(table_name)
         query_op = self.page.find_by_css_selector(
             QueryToolLocators.btn_query_dropdown)
         query_op.click()
-        self.uncheck_execute_option('auto_commit')
+        self.page.uncheck_execute_option('auto_commit')
         # close option
         query_op.click()
 
@@ -413,7 +413,7 @@ END;"""
         query_op.click()
 
         # Enable auto_commit if it is disabled
-        self.check_execute_option('auto_commit')
+        self.page.check_execute_option('auto_commit')
 
         query_op.click()
 
@@ -492,8 +492,8 @@ END;"""
         query_op.click()
 
         # uncheck auto commit and check auto-rollback
-        self.uncheck_execute_option('auto_commit')
-        self.check_execute_option('auto_rollback')
+        self.page.uncheck_execute_option('auto_commit')
+        self.page.check_execute_option('auto_rollback')
 
         query_op.click()
 
@@ -588,8 +588,8 @@ SELECT 1, pg_sleep(300)"""
         query_op.click()
 
         # enable auto-commit and disable auto-rollback
-        self.check_execute_option('auto_commit')
-        self.uncheck_execute_option('auto_rollback')
+        self.page.check_execute_option('auto_commit')
+        self.page.uncheck_execute_option('auto_rollback')
         # close drop down
         query_op.click()
         # Execute query
@@ -728,38 +728,6 @@ SELECT 1, pg_sleep(300)"""
         canvas.find_element_by_xpath("//*[contains(string(), 'JIT')]")
 
         self.page.clear_query_tool()
-
-    def check_execute_option(self, option):
-        """"This function will check auto commit or auto roll back based on
-        user input. If button is already checked, no action will be taken"""
-        if option == 'auto_commit':
-            check_status = self.driver.find_element_by_css_selector(
-                QueryToolLocators.btn_auto_commit_check_status)
-            if 'visibility-hidden' in check_status.get_attribute('class'):
-                self.page.find_by_css_selector(QueryToolLocators.
-                                               btn_auto_commit).click()
-        if option == 'auto_rollback':
-            check_status = self.driver.find_element_by_css_selector(
-                QueryToolLocators.btn_auto_rollback_check_status)
-            if 'visibility-hidden' in check_status.get_attribute('class'):
-                self.page.find_by_css_selector(QueryToolLocators.
-                                               btn_auto_rollback).click()
-
-    def uncheck_execute_option(self, option):
-        """"This function will uncheck auto commit or auto roll back based on
-        user input. If button is already unchecked, no action will be taken"""
-        if option == 'auto_commit':
-            check_status = self.driver.find_element_by_css_selector(
-                QueryToolLocators.btn_auto_commit_check_status)
-            if 'visibility-hidden' not in check_status.get_attribute('class'):
-                self.page.find_by_css_selector(QueryToolLocators.
-                                               btn_auto_commit).click()
-        if option == 'auto_rollback':
-            check_status = self.driver.find_element_by_css_selector(
-                QueryToolLocators.btn_auto_rollback_check_status)
-            if 'visibility-hidden' not in check_status.get_attribute('class'):
-                self.page.find_by_css_selector(QueryToolLocators.
-                                               btn_auto_rollback).click()
 
 
 class WaitForAnyElementWithText(object):

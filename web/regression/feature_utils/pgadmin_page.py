@@ -180,9 +180,15 @@ class PgadminPage:
         retry = 5
         execute_button = self.find_by_css_selector(
             QueryToolLocators.btn_execute_query_css)
+        first_click = execute_button.get_attribute('data-click-counter')
         while retry > 0:
             execute_button.click()
-            if self.wait_for_query_tool_loading_indicator_to_appear():
+            execute_button = self.find_by_css_selector(
+                QueryToolLocators.btn_execute_query_css)
+            second_click = execute_button.get_attribute(
+                'data-click-counter')
+            if first_click != second_click:
+                self.wait_for_query_tool_loading_indicator_to_appear()
                 break
             else:
                 retry -= 1
@@ -191,34 +197,65 @@ class PgadminPage:
     def check_execute_option(self, option):
         """"This function will check auto commit or auto roll back based on
         user input. If button is already checked, no action will be taken"""
+        retry = 3
         if option == 'auto_commit':
             check_status = self.driver.find_element_by_css_selector(
                 QueryToolLocators.btn_auto_commit_check_status)
             if 'visibility-hidden' in check_status.get_attribute('class'):
-                self.find_by_css_selector(
-                    QueryToolLocators.btn_auto_commit).click()
+                while retry > 0:
+                    self.find_by_css_selector(
+                        QueryToolLocators.btn_auto_commit).click()
+                    time.sleep(0.2)
+                    if 'visibility-hidden' not in \
+                            check_status.get_attribute('class'):
+                        break
+                    else:
+                        retry -= 1
+
         if option == 'auto_rollback':
             check_status = self.driver.find_element_by_css_selector(
                 QueryToolLocators.btn_auto_rollback_check_status)
             if 'visibility-hidden' in check_status.get_attribute('class'):
-                self.find_by_css_selector(
-                    QueryToolLocators.btn_auto_rollback).click()
+                while retry > 0:
+                    self.find_by_css_selector(
+                        QueryToolLocators.btn_auto_rollback).click()
+                    time.sleep(0.2)
+                    if 'visibility-hidden' not in \
+                            check_status.get_attribute('class'):
+                        break
+                    else:
+                        retry -= 1
 
     def uncheck_execute_option(self, option):
         """"This function will uncheck auto commit or auto roll back based on
         user input. If button is already unchecked, no action will be taken"""
+        retry = 3
         if option == 'auto_commit':
             check_status = self.driver.find_element_by_css_selector(
                 QueryToolLocators.btn_auto_commit_check_status)
             if 'visibility-hidden' not in check_status.get_attribute('class'):
-                self.find_by_css_selector(
-                    QueryToolLocators.btn_auto_commit).click()
+                while retry > 0:
+                    self.find_by_css_selector(
+                        QueryToolLocators.btn_auto_commit).click()
+                    time.sleep(0.2)
+                    if 'visibility-hidden' in \
+                            check_status.get_attribute('class'):
+                        break
+                    else:
+                        retry -= 1
         if option == 'auto_rollback':
             check_status = self.driver.find_element_by_css_selector(
                 QueryToolLocators.btn_auto_rollback_check_status)
             if 'visibility-hidden' not in check_status.get_attribute('class'):
-                self.find_by_css_selector(
-                    QueryToolLocators.btn_auto_rollback).click()
+                while retry > 0:
+                    self.find_by_css_selector(
+                        QueryToolLocators.btn_auto_rollback).click()
+                    time.sleep(0.2)
+                    if 'visibility-hidden' in \
+                            check_status.get_attribute('class'):
+                        break
+                    else:
+                        retry -= 1
 
     def close_data_grid(self):
         self.driver.switch_to_default_content()
@@ -273,9 +310,7 @@ class PgadminPage:
                 self.wait_for_elements_to_appear(
                     self.driver, list_of_element[index_of_element])
                 time.sleep(1)
-                self.driver.execute_script(
-                    "arguments[0].click()",
-                    list_of_element[index_of_element])
+                list_of_element[index_of_element].click()
                 operation_status = True
             else:
                 print("{ERROR} - The required element with name: " + str(
@@ -430,7 +465,10 @@ class PgadminPage:
                     if self.check_if_element_exist_by_xpath(
                         "//div[@class='ajs-header'and text()='INTERNAL SERVER "
                             "ERROR']", 1):
-                        self.click_modal('OK')
+                        try:
+                            self.click_modal('OK')
+                        except Exception:
+                            pass
                         retry -= 1
                     else:
                         break

@@ -429,7 +429,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
         ActionChains(self.driver).double_click(cell_el).perform()
         ActionChains(self.driver).send_keys(new_value). \
             send_keys(Keys.ENTER).perform()
+
         # Check if the value was updated
+        # Finding element again to avoid stale element reference exception
+        cell_el = self.page.find_by_xpath(
+            "//div[contains(@style, 'top:0px')]//div[contains(@class, "
+            "'l{0} r{1}')]".format(cell_index, cell_index))
         return int(cell_el.text) == new_value
 
     def _check_can_add_row(self):
@@ -438,6 +443,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def after(self):
         self.page.close_query_tool()
-        self.page.remove_server(self.server)
         test_utils.delete_table(
             self.server, self.test_db, self.test_table_name)
+        test_utils.delete_table(
+            self.server, self.test_db, self.test_editable_table_name)
+        self.page.remove_server(self.server)

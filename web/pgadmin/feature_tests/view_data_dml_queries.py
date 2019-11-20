@@ -349,8 +349,6 @@ CREATE TABLE public.nonintpkey
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        result_row = self.page.find_by_xpath(xpath)
-
         # Verify the List of actual values with the expected list
         actual_list = list(config_check_data.keys())
         for value in range(0, len(actual_list)):
@@ -360,14 +358,15 @@ CREATE TABLE public.nonintpkey
         for idx in actual_list:
             while retry > 0:
                 try:
+                    result_row = self.page.find_by_xpath(xpath)
                     element = \
                         result_row.find_element_by_class_name("r" + str(idx))
+                    self.page.driver.execute_script(
+                        "arguments[0].scrollIntoView(false)", element)
                     break
                 except Exception:
                     print("stale reference exception at id:", idx)
                     retry -= 1
-            self.page.driver.execute_script(
-                "arguments[0].scrollIntoView(false)", element)
             time.sleep(0.4)
             self.assertEquals(element.text, config_check_data[str(idx)][1])
 

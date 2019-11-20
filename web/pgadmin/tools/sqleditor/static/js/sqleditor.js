@@ -1653,6 +1653,10 @@ define('tools.querytool', [
 
     // Callback function for the flash button click.
     on_flash: function() {
+      let data_click_counter = $('#btn-flash').attr('data-click-counter');
+      data_click_counter = (parseInt(data_click_counter) + 1)%10;
+      $('#btn-flash').attr('data-click-counter', data_click_counter);
+
       this.handler.history_query_source = QuerySources.EXECUTE;
 
       queryToolActions.executeQuery(this.handler);

@@ -53,6 +53,10 @@ class TreeAreaLocators():
         "contains(text(),'Functions')]]]]]]]]]]/" \
         "following-sibling::ul/li/div//div/span[2]/span[2]"
 
+    sub_nodes_of_login_group_node = \
+        "//div[div[div[span[span[contains(text(),'Login/Group Roles')]]]]]" \
+        "/following::ul/li/div[@class='aciTreeLine']"
+
     @staticmethod
     def sub_nodes_of_a_server_node(server_name):
         xpath = "//div[div[div[span[span[contains(text(),'%s')]]]]]/" \
