@@ -338,9 +338,7 @@ CREATE TABLE public.nonintpkey
         self.assertEquals(text, messages_ele.text)
 
     def _verify_row_data(self, is_new_row, config_check_data):
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css).click()
-
+        self.page.click_execute_query_button()
         # First row if row height = 0, second row if its 25
         row_height = 0 if is_new_row else 25
 

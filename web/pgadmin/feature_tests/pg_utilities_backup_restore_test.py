@@ -17,6 +17,7 @@ from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
 from regression.python_test_utils import test_gui_helper
 from regression.feature_utils.locators import NavMenuLocators
+from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
 
 class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
@@ -55,7 +56,10 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self.server['sslmode']
         )
         test_utils.drop_database(connection, self.database_name)
-        test_utils.create_database(self.server, self.database_name)
+        db_id = test_utils.create_database(self.server, self.database_name)
+        if not db_id:
+            self.assertTrue(False, "Database {} is not "
+                                   "created".format(self.database_name))
         test_gui_helper.close_bgprocess_popup(self)
         self.page.add_server(self.server)
 

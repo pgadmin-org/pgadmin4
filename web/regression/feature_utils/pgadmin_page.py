@@ -171,10 +171,7 @@ class PgadminPage:
 
     def execute_query(self, query):
         self.fill_codemirror_area_with(query)
-        execute_button = self.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css)
-        execute_button.click()
-        self.wait_for_query_tool_loading_indicator_to_disappear()
+        self.click_execute_query_button()
 
     def click_execute_query_button(self):
         retry = 5
