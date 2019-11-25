@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4696 <https://redmine.postgresql.org/issues/4696>`_ -  Add Reverse Engineered and Modified SQL tests for Materialized Views.
 | `Issue #4807 <https://redmine.postgresql.org/issues/4807>`_ -  Refactored code of table and it's child nodes.
 
 Bug fixes

@@ -1,0 +1,11 @@
+CREATE MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
+TABLESPACE pg_default
+AS
+SELECT 1
+WITH NO DATA;
+
+ALTER TABLE public."testmview_$%{}[]()&*^!/@`#"
+    OWNER TO postgres;
+
+COMMENT ON MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
+    IS 'comment1';

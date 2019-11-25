@@ -1,13 +1,18 @@
--- View: public."testmview_$%{}[]()&*^!@""'`\/#"
+-- View: public."testmview_$%{}[]()&*^!/@`#"
 
--- DROP MATERIALIZED VIEW public."testmview_$%{}[]()&*^!@""'`\/#";
+-- DROP MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#";
 
-CREATE MATERIALIZED VIEW public."testmview_$%{}[]()&*^!@""'`\/#"
+CREATE MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
 TABLESPACE pg_default
 AS
- SELECT test_mview_table.col1
-   FROM test_mview_table
-WITH DATA;
+ SELECT 1
+WITH NO DATA;
 
-ALTER TABLE public."testmview_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE public."testmview_$%{}[]()&*^!/@`#"
     OWNER TO postgres;
+
+COMMENT ON MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
+    IS 'comment1';
+
+GRANT ALL ON TABLE public."testmview_$%{}[]()&*^!/@`#" TO postgres;
+GRANT ALL ON TABLE public."testmview_$%{}[]()&*^!/@`#" TO PUBLIC;

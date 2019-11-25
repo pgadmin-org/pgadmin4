@@ -10,14 +10,13 @@ CREATE MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }}
 {% if(data.fillfactor or data['vacuum_data']|length > 0) %}
 WITH (
 {% if data.fillfactor %}
-    FILLFACTOR = {{ data.fillfactor }}{% if data['autovacuum_enabled'] or data['toast_autovacuum_enabled'] or data['vacuum_data']|length > 0 %},{{ '\r' }}{% endif %}
+    FILLFACTOR = {{ data.fillfactor }}{% if data['autovacuum_enabled'] or data['toast_autovacuum_enabled'] or data['vacuum_data']|length > 0 %},{{ '\n' }}{% endif %}
 {% endif %}
 {% for field in data['vacuum_data'] %}
 {% if field.value is defined and field.value != '' and field.value != none %}
 {% if loop.index > 1 %},
-{% endif %}    {{ field.name }} = {{ field.value|lower }}{% endif %}
-{% endfor %}{{ '\r' }}
-)
+{% endif %}    {{ field.name }} = {{ field.value|lower }}{% endif %}{% endfor %}
+{{ '\n' }})
 {% endif %}
 {% if data.spcname %}TABLESPACE {{ data.spcname }}
 {% endif %}AS

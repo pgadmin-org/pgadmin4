@@ -23,6 +23,7 @@
       "name": "Create View",
       "endpoint": "NODE-view.obj",
       "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql",
       "data": {
         "definition": "select col1 from test_view_table;",
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
@@ -34,15 +35,16 @@
         "datacl":[{"grantee":"postgres", "grantor":"postgres", "privileges":[{"privilege_type": "a", "privilege": true,
                   "with_grant":false}]}]
       },
-      "expected_sql_file": "create_view.sql"
+      "expected_sql_file": "create_view.sql",
+      "expected_msql_file": "create_view_msql.sql"
     },
     {
       "type": "alter",
       "name": "Alter View",
       "endpoint": "NODE-view.obj_id",
       "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
       "data": {
-        "definition": "select col1 from test_view_table;",
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
         "owner": "postgres",
         "schema": "public",
@@ -52,7 +54,105 @@
         "datacl":[{"grantee":"postgres", "grantor":"postgres", "privileges":[{"privilege_type": "a", "privilege": true,
                   "with_grant":false}]}]
       },
-      "expected_sql_file": "alter_view.sql"
+      "expected_sql_file": "alter_view.sql",
+      "expected_msql_file": "alter_view_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter View (changing code)",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "definition": "SELECT * FROM test_view_table;"
+      },
+      "expected_sql_file": "alter_view_definition.sql",
+      "expected_msql_file": "alter_view_definition_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter View (adding privileges)",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "postgres",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":{
+            "added":[
+                {
+                  "grantee":"PUBLIC",
+                  "grantor":"postgres",
+                  "privileges":[
+                      {
+                        "privilege_type":"r",
+                        "privilege":true,
+                        "with_grant":false
+                      },
+                    {
+                      "privilege_type":"w",
+                      "privilege":true,
+                      "with_grant":false
+                    },
+                    {
+                      "privilege_type":"d",
+                      "privilege":true,
+                      "with_grant":false
+                    }
+                  ]
+                }
+            ]
+        }
+      },
+      "expected_sql_file": "alter_view_add_some_priv.sql",
+      "expected_msql_file": "alter_view_add_some_priv_msql.sql"
+    },
+     {
+      "type": "alter",
+      "name": "Alter View (deleting privileges)",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "postgres",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":
+          {
+            "deleted":[
+              {
+                "grantee":"PUBLIC",
+                "grantor":"postgres",
+                "privileges":[
+                  {
+                    "privilege_type":"r",
+                    "privilege":true,
+                    "with_grant":false
+                  },
+                  {
+                    "privilege_type":"w",
+                    "privilege":true,
+                    "with_grant":false
+                  },
+                  {
+                    "privilege_type":"d",
+                    "privilege":true,
+                    "with_grant":false
+                  }
+                ]
+              }
+            ]
+          }
+      },
+      "expected_sql_file": "alter_view_delete_priv.sql",
+      "expected_msql_file": "alter_view_delete_priv_msql.sql"
     },
     {
       "type": "delete",
