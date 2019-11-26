@@ -55,8 +55,7 @@ the object.
   more privileges to grant the selected privileges to the specified user. If
   privileges have previously been granted on a database object, unchecking a
   privilege for a group or user will result in revoking that privilege.
-* If enabled, select the name of the role from the drop-down listbox in the
-  *Grantor* field. The default grantor is the owner of the database.
+* The current user, who is the default grantor for granting the privilege, is displayed in the *Grantor* field.
 * Click the *Add* icon (+) to assign a set of privileges to another role; to
   discard a privilege, click the trash icon to the left of the row and confirm
   deletion in the *Delete Row* dialog.

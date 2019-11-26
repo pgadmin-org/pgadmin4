@@ -61,8 +61,7 @@ Use the *Privileges* panel to assign privileges to a role. Click the *Add* icon
 * Select the name of the role from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or
   more privileges to grant the selected privilege to the specified user.
-* Select the name of the role from the drop-down listbox in the *Grantor* field.
-  The default grantor is the owner of the database.
+* The current user, who is the default grantor for granting the privilege, is displayed in the *Grantor* field.
 
 Click add to set additional privileges; to discard a privilege, click the trash
 icon to the left of the row and confirm deletion in the *Delete Row* popup.
@@ -121,4 +120,3 @@ allows unlimited connections, and is available to all authenticated users.
 * Click the *Save* button to save work.
 * Click the *Cancel* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
-

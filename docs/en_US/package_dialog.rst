@@ -51,8 +51,7 @@ package to a role. Click the *Add* icon (+) to set privileges for the package:
 * Select the name of the role from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of a
   privilege to grant the selected privilege to the specified user.
-* Select the name of a role from the drop-down listbox in the *Grantor* field.
-  The default grantor is the owner of the package.
+* The current user, who is the default grantor for granting the privilege, is displayed in the *Grantor* field.
 
 Click the *Add* icon (+) to assign additional privileges; to discard a
 privilege, click the trash icon to the left of the row, and confirm the deletion
@@ -73,5 +72,3 @@ two function and two procedure.
 * Click the *Save* button to save work.
 * Click the *Cancel* button to exit without saving work.
 * Click the *Reset* button to delete any changes to the dialog.
-
-

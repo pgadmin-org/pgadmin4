@@ -65,9 +65,7 @@ Click *Add* before you assign a set of privileges.
 * Select the name of the role from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or
   more privileges to grant the selected privileges to the specified user.
-* Select the name of the role from the drop-down listbox in the *Grantor* field.
-  The default grantor is the owner of the foreign server. This is a required
-  field.
+* The current user, who is the default grantor for granting the privilege, is displayed in the *Grantor* field.
 
 Click *Add* to assign a new set of privileges; to discard a privilege, click the
 trash icon to the left of the row and confirm deletion in the *Delete Row*

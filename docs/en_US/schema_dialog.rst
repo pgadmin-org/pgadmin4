@@ -38,9 +38,7 @@ panel:
 * Select the name of the role from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or
   more privileges to grant the selected privileges to the specified user.
-* Select the name of the role that is granting the privilege from the drop-down
-  listbox in the *Grantor* field. The default grantor is the owner of the
-  schema.
+* The current user, who is the default grantor for granting the privilege, is displayed in the *Grantor* field.
 
 Click the *Add* icon (+) to assign additional sets of privileges; to discard a
 privilege, click the trash icon to the left of the row and confirm deletion in
@@ -75,8 +73,7 @@ privileges:
   the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or
   more privileges to grant the selected privileges to the specified user.
-* Select the name of the role that is granting the privilege from the drop-down
-  listbox in the *Grantor* field. The default grantor is the owner of the schema.
+* The current user, who is the default grantor for granting the privilege, is displayed in the *Grantor* field.
 
 Click the *SQL* tab to continue.
 
@@ -101,6 +98,3 @@ The example creates a schema named hr; the command grants *USAGE* privileges to
 * Click the *Save* button to save work.
 * Click the *Cancel* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
-
-
-
