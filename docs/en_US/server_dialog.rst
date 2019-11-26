@@ -170,7 +170,8 @@ Use the fields in the *Advanced* tab to configure a connection:
   `Section 33.15 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgpass.html>`_.
 * Use the *Connection timeout* field to specify the maximum wait for connection,
   in seconds. Zero or not specified means wait indefinitely. It is not
-  recommended to use a timeout of less than 2 seconds.
+  recommended to use a timeout of less than 2 seconds. By default it is set to
+  10 seconds.
 
 .. note:: The password file option is only supported when pgAdmin is using libpq
     v10.0 or later to connect to the server.

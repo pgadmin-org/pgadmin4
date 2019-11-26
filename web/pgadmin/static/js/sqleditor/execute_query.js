@@ -12,6 +12,7 @@ import $ from 'jquery';
 import url_for from '../url_for';
 import axios from 'axios';
 import * as httpErrorHandler from './query_tool_http_error_handler';
+import * as queryTxnStatus from 'sources/sqleditor/query_txn_status_constants';
 
 class LoadingScreen {
   constructor(sqlEditor) {
@@ -83,7 +84,8 @@ class ExecuteQuery {
           self.loadingScreen.hide();
           self.enableSQLEditorButtons();
           // Enable/Disable commit and rollback button.
-          if (result.data.data.transaction_status == 2 || result.data.data.transaction_status == 3) {
+          if (result.data.data.transaction_status == queryTxnStatus.TRANSACTION_STATUS_INTRANS
+            || result.data.data.transaction_status == queryTxnStatus.TRANSACTION_STATUS_INERROR) {
             self.enableTransactionButtons();
           } else {
             self.disableTransactionButtons();
@@ -123,7 +125,8 @@ class ExecuteQuery {
         self.updateSqlEditorLastTransactionStatus(httpMessage.data.data.transaction_status);
 
         // Enable/Disable commit and rollback button.
-        if (httpMessage.data.data.transaction_status == 2 || httpMessage.data.data.transaction_status == 3) {
+        if (httpMessage.data.data.transaction_status == queryTxnStatus.TRANSACTION_STATUS_INTRANS
+          || httpMessage.data.data.transaction_status == queryTxnStatus.TRANSACTION_STATUS_INERROR) {
           self.enableTransactionButtons();
         } else {
           self.disableTransactionButtons();
@@ -131,7 +134,7 @@ class ExecuteQuery {
 
         if (ExecuteQuery.isQueryFinished(httpMessage)) {
           if (this.sqlServerObject.close_on_idle_transaction &&
-              httpMessage.data.data.transaction_status == 0)
+              httpMessage.data.data.transaction_status == queryTxnStatus.TRANSACTION_STATUS_IDLE)
             this.sqlServerObject.check_needed_confirmations_before_closing_panel();
 
           self.loadingScreen.setMessage('Loading data from the database server and rendering...');

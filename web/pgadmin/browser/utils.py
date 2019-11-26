@@ -17,7 +17,8 @@ from flask.views import View, MethodViewType, with_metaclass
 from flask_babelex import gettext
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import make_json_response, precondition_required
+from pgadmin.utils.ajax import make_json_response, precondition_required,\
+    internal_server_error
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 
@@ -377,11 +378,7 @@ class PGChildNodeView(NodeView):
             if not conn.connected():
                 status, msg = conn.connect()
                 if not status:
-                    return precondition_required(
-                        gettext(
-                            "Connection to the server has been lost."
-                        )
-                    )
+                    return internal_server_error(errormsg=msg)
         except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
             raise
         except Exception as e:

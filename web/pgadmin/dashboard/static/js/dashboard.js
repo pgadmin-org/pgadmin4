@@ -543,6 +543,7 @@ define('pgadmin.dashboard', [
       );
       const WAIT_COUNTER = 3;
       let last_poll_wait_counter = 0;
+      let resp_not_received_counter = 0;
 
       /* Stop if running, only one poller lives */
       self.stopChartsPoller();
@@ -563,7 +564,7 @@ define('pgadmin.dashboard', [
         /* If none of the chart wants data, don't trouble
          * If response not received from prev poll, don't trouble !!
          */
-        if(chart_names_to_get.length == 0 || last_poll_wait_counter > 0) {
+        if(chart_names_to_get.length == 0 || last_poll_wait_counter > 0 || resp_not_received_counter >= WAIT_COUNTER) {
           /* reduce the number of tries, request should be sent if last_poll_wait_counter
            * completes WAIT_COUNTER times.*/
           last_poll_wait_counter--;
@@ -571,12 +572,12 @@ define('pgadmin.dashboard', [
         }
 
         var path = self.getStatsUrl(sid, did, chart_names_to_get);
+        resp_not_received_counter++;
         $.ajax({
           url: path,
           type: 'GET',
         })
           .done(function(resp) {
-            last_poll_wait_counter = 0;
             for(let chart_name in resp) {
               let chart_obj = chart_store[chart_name].chart_obj;
               $(chart_obj.getContainer()).removeClass('graph-error');
@@ -584,7 +585,6 @@ define('pgadmin.dashboard', [
             }
           })
           .fail(function(xhr) {
-            last_poll_wait_counter = 0;
             let err = '';
             let msg = '';
             let cls = 'info';
@@ -613,6 +613,10 @@ define('pgadmin.dashboard', [
                 '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
               );
             }
+          })
+          .always(function() {
+            last_poll_wait_counter = 0;
+            resp_not_received_counter--;
           });
         last_poll_wait_counter = WAIT_COUNTER;
       };

@@ -36,6 +36,7 @@ define('tools.querytool', [
   'sources/sqleditor/calculate_query_run_time',
   'sources/sqleditor/call_render_after_poll',
   'sources/sqleditor/query_tool_preferences',
+  'sources/sqleditor/query_txn_status_constants',
   'sources/csrf',
   'tools/datagrid/static/js/datagrid_panel_title',
   'sources/window',
@@ -52,7 +53,7 @@ define('tools.querytool', [
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   GeometryViewer, historyColl, queryHist, querySources,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
-  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, csrfToken, panelTitleFunc,
+  modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, queryTxnStatus, csrfToken, panelTitleFunc,
   pgWindow) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
@@ -4182,8 +4183,9 @@ define('tools.querytool', [
           self.unsaved_changes_user_confirmation(msg, false);
         } // If a transaction is currently ongoing
         else if (self.preferences.prompt_commit_transaction
-                 && self.last_transaction_status > 0) { // 0 -> idle (no transaction)
-          var is_commit_disabled = self.last_transaction_status == 3;  // 3 -> Failed transaction
+                 && (self.last_transaction_status === queryTxnStatus.TRANSACTION_STATUS_INTRANS
+                    || self.last_transaction_status === queryTxnStatus.TRANSACTION_STATUS_INERROR)) {
+          var is_commit_disabled = self.last_transaction_status == queryTxnStatus.TRANSACTION_STATUS_INERROR;
           self.uncommitted_transaction_user_confirmation(is_commit_disabled);
         }
         else {

@@ -25,12 +25,9 @@ from pgadmin.model import Server, User
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 from pgadmin.utils.master_password import get_crypt_key
-from threading import Lock
 
 if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
-
-connection_restore_lock = Lock()
 
 
 class ServerManager(object):
@@ -292,80 +289,79 @@ WHERE db.oid = {0}""".format(did))
 
         connections = data['connections']
 
-        with connection_restore_lock:
-            for conn_id in connections:
-                conn_info = connections[conn_id]
-                if conn_info['conn_id'] in self.connections:
-                    conn = self.connections[conn_info['conn_id']]
-                else:
-                    conn = self.connections[conn_info['conn_id']] = Connection(
-                        self, conn_info['conn_id'], conn_info['database'],
-                        conn_info['auto_reconnect'], conn_info['async_'],
-                        use_binary_placeholder=conn_info[
-                            'use_binary_placeholder'],
-                        array_to_string=conn_info['array_to_string']
+        for conn_id in connections:
+            conn_info = connections[conn_id]
+            if conn_info['conn_id'] in self.connections:
+                conn = self.connections[conn_info['conn_id']]
+            else:
+                conn = self.connections[conn_info['conn_id']] = Connection(
+                    self, conn_info['conn_id'], conn_info['database'],
+                    conn_info['auto_reconnect'], conn_info['async_'],
+                    use_binary_placeholder=conn_info[
+                        'use_binary_placeholder'],
+                    array_to_string=conn_info['array_to_string']
+                )
+
+            # only try to reconnect if connection was connected previously
+            # and auto_reconnect is true.
+            if conn_info['wasConnected'] and conn_info['auto_reconnect']:
+                try:
+                    # Check SSH Tunnel needs to be created
+                    if self.use_ssh_tunnel == 1 and \
+                       not self.tunnel_created:
+                        status, error = self.create_ssh_tunnel(
+                            data['tunnel_password'])
+
+                        # Check SSH Tunnel is alive or not.
+                        self.check_ssh_tunnel_alive()
+
+                    conn.connect(
+                        password=data['password'],
+                        server_types=ServerType.types()
                     )
-
-                # only try to reconnect if connection was connected previously
-                # and auto_reconnect is true.
-                if conn_info['wasConnected'] and conn_info['auto_reconnect']:
-                    try:
-                        # Check SSH Tunnel needs to be created
-                        if self.use_ssh_tunnel == 1 and \
-                           not self.tunnel_created:
-                            status, error = self.create_ssh_tunnel(
-                                data['tunnel_password'])
-
-                            # Check SSH Tunnel is alive or not.
-                            self.check_ssh_tunnel_alive()
-
-                        conn.connect(
-                            password=data['password'],
-                            server_types=ServerType.types()
-                        )
-                        # This will also update wasConnected flag in
-                        # connection so no need to update the flag manually.
-                    except CryptKeyMissing:
-                        # maintain the status as this will help to restore once
-                        # the key is available
-                        conn.wasConnected = conn_info['wasConnected']
-                        conn.auto_reconnect = conn_info['auto_reconnect']
-                    except Exception as e:
-                        current_app.logger.exception(e)
-                        self.connections.pop(conn_info['conn_id'])
-                        raise
+                    # This will also update wasConnected flag in
+                    # connection so no need to update the flag manually.
+                except CryptKeyMissing:
+                    # maintain the status as this will help to restore once
+                    # the key is available
+                    conn.wasConnected = conn_info['wasConnected']
+                    conn.auto_reconnect = conn_info['auto_reconnect']
+                except Exception as e:
+                    current_app.logger.exception(e)
+                    self.connections.pop(conn_info['conn_id'])
+                    raise
 
     def _restore_connections(self):
-        with connection_restore_lock:
-            for conn_id in self.connections:
-                conn = self.connections[conn_id]
-                # only try to reconnect if connection was connected previously
-                # and auto_reconnect is true.
-                wasConnected = conn.wasConnected
-                auto_reconnect = conn.auto_reconnect
-                if conn.wasConnected and conn.auto_reconnect:
-                    try:
-                        # Check SSH Tunnel needs to be created
-                        if self.use_ssh_tunnel == 1 and \
-                           not self.tunnel_created:
-                            status, error = self.create_ssh_tunnel(
-                                self.tunnel_password
-                            )
+        for conn_id in self.connections:
+            conn = self.connections[conn_id]
+            # only try to reconnect if connection was connected previously
+            # and auto_reconnect is true.
+            wasConnected = conn.wasConnected
+            auto_reconnect = conn.auto_reconnect
+            if conn.wasConnected and conn.auto_reconnect:
+                try:
+                    # Check SSH Tunnel needs to be created
+                    if self.use_ssh_tunnel == 1 and \
+                       not self.tunnel_created:
+                        status, error = self.create_ssh_tunnel(
+                            self.tunnel_password
+                        )
 
-                            # Check SSH Tunnel is alive or not.
-                            self.check_ssh_tunnel_alive()
+                        # Check SSH Tunnel is alive or not.
+                        self.check_ssh_tunnel_alive()
 
-                        conn.connect()
-                        # This will also update wasConnected flag in
-                        # connection so no need to update the flag manually.
-                    except CryptKeyMissing:
-                        # maintain the status as this will help to restore once
-                        # the key is available
-                        conn.wasConnected = wasConnected
-                        conn.auto_reconnect = auto_reconnect
-                    except Exception as e:
-                        current_app.logger.exception(e)
-                        raise
+                    conn.connect()
+                    # This will also update wasConnected flag in
+                    # connection so no need to update the flag manually.
+                except CryptKeyMissing:
+                    # maintain the status as this will help to restore once
+                    # the key is available
+                    conn.wasConnected = wasConnected
+                    conn.auto_reconnect = auto_reconnect
+                except Exception as e:
+                    self.connections.pop(conn_id)
+                    current_app.logger.exception(e)
+                    raise
 
     def release(self, database=None, conn_id=None, did=None):
         # Stop the SSH tunnel if release() function calls without

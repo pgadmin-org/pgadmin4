@@ -9,6 +9,7 @@
 
 import {isValidData} from 'sources/utils';
 import $ from 'jquery';
+import Alertify from 'pgadmin.alertifyjs';
 
 export class TreeNode {
   constructor(id, data, domNode, parent) {
@@ -261,6 +262,9 @@ export class Tree {
 
           const parentId = this.translateTreeNodeIdFromACITree(api.parent(item));
           this.addNewNode(id, data, item, parentId);
+          if(data.errmsg) {
+            Alertify.error(data.errmsg);
+          }
         }
       }
     }.bind(this));

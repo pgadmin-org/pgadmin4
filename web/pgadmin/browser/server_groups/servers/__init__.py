@@ -28,6 +28,7 @@ from pgadmin.model import db, Server, ServerGroup, User
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing
+from psycopg2 import Error as psycopg2_Error, OperationalError
 
 
 def has_any(data, keys):
@@ -58,7 +59,7 @@ def recovery_state(connection, postgres_version):
     else:
         in_recovery = None
         wal_paused = None
-    return in_recovery, wal_paused
+    return status, result, in_recovery, wal_paused
 
 
 def server_icon_and_background(is_connected, manager, server):
@@ -121,19 +122,21 @@ class ServerModule(sg.ServerGroupPluginModule):
         for server in servers:
             connected = False
             manager = None
+            errmsg = None
+            was_connected = False
+            in_recovery = None
+            wal_paused = None
             try:
                 manager = driver.connection_manager(server.id)
                 conn = manager.connection()
-                connected = conn.connected()
+                was_connected = conn.wasConnected
             except CryptKeyMissing:
                 # show the nodes at least even if not able to connect.
                 pass
+            except psycopg2_Error as e:
+                current_app.logger.exception(e)
+                errmsg = str(e)
 
-            in_recovery = None
-            wal_paused = None
-
-            if connected:
-                in_recovery, wal_paused = recovery_state(conn, manager.version)
             yield self.generate_browser_node(
                 "%d" % (server.id),
                 gid,
@@ -151,7 +154,9 @@ class ServerModule(sg.ServerGroupPluginModule):
                 is_password_saved=True if server.password is not None
                 else False,
                 is_tunnel_password_saved=True
-                if server.tunnel_password is not None else False
+                if server.tunnel_password is not None else False,
+                was_connected=was_connected,
+                errmsg=errmsg
             )
 
     @property
@@ -352,12 +357,16 @@ class ServerNode(PGChildNodeView):
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
             connected = conn.connected()
-
+            errmsg = None
+            in_recovery = None
+            wal_paused = None
             if connected:
-                in_recovery, wal_paused = recovery_state(conn, manager.version)
-            else:
-                in_recovery = None
-                wal_paused = None
+                status, result, in_recovery, wal_paused =\
+                    recovery_state(conn, manager.version)
+                if not status:
+                    connected = False
+                    manager.release()
+                    errmsg = "{0} : {1}".format(server.name, result)
 
             res.append(
                 self.blueprint.generate_browser_node(
@@ -377,7 +386,8 @@ class ServerNode(PGChildNodeView):
                     is_password_saved=True if server.password is not None
                     else False,
                     is_tunnel_password_saved=True
-                    if server.tunnel_password is not None else False
+                    if server.tunnel_password is not None else False,
+                    errmsg=errmsg
                 )
             )
 
@@ -409,12 +419,16 @@ class ServerNode(PGChildNodeView):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
         conn = manager.connection()
         connected = conn.connected()
-
+        errmsg = None
+        in_recovery = None
+        wal_paused = None
         if connected:
-            in_recovery, wal_paused = recovery_state(conn, manager.version)
-        else:
-            in_recovery = None
-            wal_paused = None
+            status, result, in_recovery, wal_paused =\
+                recovery_state(conn, manager.version)
+            if not status:
+                connected = False
+                manager.release()
+                errmsg = "{0} : {1}".format(server.name, result)
 
         return make_json_response(
             result=self.blueprint.generate_browser_node(
@@ -434,8 +448,9 @@ class ServerNode(PGChildNodeView):
                 is_password_saved=True if server.password is not None
                 else False,
                 is_tunnel_password_saved=True
-                if server.tunnel_password is not None else False
-            )
+                if server.tunnel_password is not None else False,
+                errmsg=errmsg
+            ),
         )
 
     @login_required
@@ -949,19 +964,33 @@ class ServerNode(PGChildNodeView):
 
     def connect_status(self, gid, sid):
         """Check and return the connection status."""
+        server = Server.query.filter_by(id=sid).first()
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
-        res = conn.connected()
+        connected = conn.connected()
+        in_recovery = None
+        wal_paused = None
+        errmsg = None
+        if connected:
+            status, result, in_recovery, wal_paused =\
+                recovery_state(conn, manager.version)
 
-        if res:
-            from pgadmin.utils.exception import ConnectionLost, \
-                SSHTunnelConnectionLost
-            try:
-                conn.execute_scalar('SELECT 1')
-            except (ConnectionLost, SSHTunnelConnectionLost):
-                res = False
+            if not status:
+                connected = False
+                manager.release()
+                errmsg = "{0} : {1}".format(server.name, result)
 
-        return make_json_response(data={'connected': res})
+        return make_json_response(
+            data={
+                'icon': server_icon_and_background(connected, manager, server),
+                'connected': connected,
+                'in_recovery': in_recovery,
+                'wal_pause': wal_paused,
+                'server_type': manager.server_type if connected else "pg",
+                'user': manager.user_info if connected else None,
+                'errmsg': errmsg
+            }
+        )
 
     def connect(self, gid, sid):
         """
@@ -1078,6 +1107,8 @@ class ServerNode(PGChildNodeView):
                 tunnel_password=tunnel_password,
                 server_types=ServerType.types()
             )
+        except OperationalError as e:
+            return internal_server_error(errormsg=str(e))
         except Exception as e:
             current_app.logger.exception(e)
             return self.get_response_for_password(
@@ -1088,7 +1119,7 @@ class ServerNode(PGChildNodeView):
                 errmsg = errmsg.decode('utf-8')
 
             current_app.logger.error(
-                "Could not connected to server(#{0}) - '{1}'.\nError: {2}"
+                "Could not connect to server(#{0}) - '{1}'.\nError: {2}"
                 .format(server.id, server.name, errmsg)
             )
             return self.get_response_for_password(server, 401, True,
@@ -1125,7 +1156,8 @@ class ServerNode(PGChildNodeView):
                 %s - %s' % (server.id, server.name))
             # Update the recovery and wal pause option for the server
             # if connected successfully
-            in_recovery, wal_paused = recovery_state(conn, manager.version)
+            _, _, in_recovery, wal_paused =\
+                recovery_state(conn, manager.version)
 
             return make_json_response(
                 success=1,

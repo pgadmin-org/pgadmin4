@@ -292,6 +292,10 @@ define('pgadmin.node.server', [
 
           // Call added method of node.js
           pgAdmin.Browser.Node.callbacks.added.apply(this, arguments);
+
+          if(data.was_connected) {
+            fetch_connection_status(this, data, pgBrowser.tree, item);
+          }
           return true;
         },
         /* Reload configuration */
@@ -732,7 +736,7 @@ define('pgadmin.node.server', [
           tunnel_password: undefined,
           tunnel_authentication: 0,
           save_tunnel_password: false,
-          connect_timeout: 0,
+          connect_timeout: 10,
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -1273,7 +1277,14 @@ define('pgadmin.node.server', [
         }
       };
 
+      /* Wait till the existing request completes */
+      if(data.is_connecting) {
+        return;
+      }
       data.is_connecting = true;
+      tree.setLeaf(item);
+      tree.removeIcon(item);
+      tree.addIcon(item, {icon: 'icon-server-connecting'});
       var url = obj.generate_url(item, 'connect', data, true);
       $.post(url)
         .done(function(res) {
@@ -1287,6 +1298,40 @@ define('pgadmin.node.server', [
           return onFailure(
             xhr, status, error, obj, data, tree, item, wasConnected
           );
+        })
+        .always(function(){
+          data.is_connecting = false;
+        });
+    };
+    var fetch_connection_status = function(obj, data, tree, item) {
+      var url = obj.generate_url(item, 'connect', data, true);
+
+      tree.setLeaf(item);
+      tree.removeIcon(item);
+      tree.addIcon(item, {icon: 'icon-server-connecting'});
+      $.get(url)
+        .done(function(res) {
+          tree.setInode(item);
+          if (res && res.data) {
+            if (typeof res.data.icon == 'string') {
+              tree.removeIcon(item);
+              data.icon = res.data.icon;
+              tree.addIcon(item, {icon: data.icon});
+            }
+            _.extend(data, res.data);
+
+            var serverInfo = pgBrowser.serverInfo = pgBrowser.serverInfo || {};
+            serverInfo[data._id] = _.extend({}, data);
+
+            if(data.errmsg) {
+              Alertify.error(data.errmsg);
+            }
+          }
+        })
+        .fail(function(xhr, status, error) {
+          tree.setInode(item);
+          tree.addIcon(item, {icon: 'icon-server-not-connected'});
+          Alertify.pgRespErrorNotify(xhr, error);
         });
     };
   }

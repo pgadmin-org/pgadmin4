@@ -14,18 +14,20 @@ object.
 
 """
 import datetime
-from flask import session, request
+from flask import session
 from flask_login import current_user
-from flask_babelex import gettext
 import psycopg2
 from psycopg2.extensions import adapt
+from threading import Lock
 
 import config
-from pgadmin.model import Server, User
+from pgadmin.model import Server
 from .keywords import ScanKeyword
 from ..abstract import BaseDriver
 from .connection import Connection
 from .server_manager import ServerManager
+
+connection_restore_lock = Lock()
 
 
 class Driver(BaseDriver):
@@ -80,21 +82,30 @@ class Driver(BaseDriver):
             return None
 
         if session.sid not in self.managers:
-            self.managers[session.sid] = managers = dict()
-            if '__pgsql_server_managers' in session:
-                session_managers = session['__pgsql_server_managers'].copy()
+            with connection_restore_lock:
+                # The wait is over but the object might have been loaded
+                # by some other thread check again
+                if session.sid not in self.managers:
+                    self.managers[session.sid] = managers = dict()
+                    if '__pgsql_server_managers' in session:
+                        session_managers =\
+                            session['__pgsql_server_managers'].copy()
+                        for server in \
+                                Server.query.filter_by(
+                                    user_id=current_user.id):
+                            manager = managers[str(server.id)] =\
+                                ServerManager(server)
+                            if server.id in session_managers:
+                                manager._restore(session_managers[server.id])
+                                manager.update_session()
 
-                for server in Server.query.filter_by(user_id=current_user.id):
-                    manager = managers[str(server.id)] = ServerManager(server)
-                    if server.id in session_managers:
-                        manager._restore(session_managers[server.id])
-                        manager.update_session()
         else:
             managers = self.managers[session.sid]
             if str(sid) in managers:
                 manager = managers[str(sid)]
-                manager._restore_connections()
-                manager.update_session()
+                with connection_restore_lock:
+                    manager._restore_connections()
+                    manager.update_session()
 
         managers['pinged'] = datetime.datetime.now()
         if str(sid) not in managers:
