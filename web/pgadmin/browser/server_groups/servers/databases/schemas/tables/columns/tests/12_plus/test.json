@@ -238,11 +238,22 @@
         "name": "new_col_5_$%{}[]()&*^!@\"'`\\/#",
         "attnum": 5,
         "attlen":"15",
-        "attprecision":"0",
+        "attprecision":"6",
         "description": "Comment for alter",
         "attacl":{"added":[{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false}]}]}
       },
       "expected_sql_file": "alter_column_numeric.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column (Remove Length)",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "data": {
+        "attnum": 3,
+        "attlen":""
+      },
+      "expected_sql_file": "alter_column_remove_length.sql"
     },
     {
       "type": "delete",

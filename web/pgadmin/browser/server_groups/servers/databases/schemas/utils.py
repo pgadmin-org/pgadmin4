@@ -144,7 +144,12 @@ class DataTypeReader:
                         # Max of integer value
                         max_val = 2147483647
                     else:
-                        max_val = 10
+                        # Max value is 6 for data type like
+                        # interval, timestamptz, etc..
+                        if typeval == 'D':
+                            max_val = 6
+                        else:
+                            max_val = 10
 
                 res.append({
                     'label': row['typname'], 'value': row['typname'],
@@ -206,7 +211,8 @@ class DataTypeReader:
 
         return length, precision, typeval
 
-    def get_full_type(self, nsp, typname, isDup, numdims, typmod):
+    @staticmethod
+    def get_full_type(nsp, typname, isDup, numdims, typmod):
         """
         Returns full type name with Length and Precision.
 
@@ -273,6 +279,10 @@ class DataTypeReader:
             elif name == 'interval':
                 _prec = 0
                 _len = typmod & 0xffff
+                # Max length for interval data type is 6
+                # If length is greater then 6 then set length to None
+                if _len > 6:
+                    _len = ''
                 length += str(_len)
             elif name == 'date':
                 # Clear length
@@ -330,6 +340,10 @@ class DataTypeReader:
                 from re import sub as sub_str
                 pattern = r'(\(\d+\))'
                 type_name = sub_str(pattern, '', type_name)
+        # We need special handling for interval types like
+        # interval hours to minute.
+        elif type_name.startswith("interval"):
+            type_name = 'interval'
 
         if is_array:
             type_name += "[]"

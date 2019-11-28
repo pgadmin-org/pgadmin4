@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-""" Implements Utility class for Foreign Keys. """
+""" Implements Utility class for Compound Triggers. """
 
 from flask import render_template
 from flask_babelex import gettext as _

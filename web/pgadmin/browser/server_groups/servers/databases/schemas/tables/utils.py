@@ -29,6 +29,8 @@ from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    columns import utils as column_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.foreign_key import utils as fkey_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.check_constraint import utils as check_utils
@@ -56,15 +58,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
     * _formatter(data, tid)
       - It will return formatted output of query result
         as per client model format
-
-    * _columns_formatter(tid, data):
-      - It will return formatted output of query result
-        as per client model format for column node
-
-    * _cltype_formatter(type): (staticmethod)
-      - We need to remove [] from type and append it
-        after length/precision so we will send flag for
-        sql template.
 
     * get_table_dependents(self, tid):
       - This function get the dependents and return ajax response
@@ -148,129 +141,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             return f(*args, **kwargs)
 
         return wrap
-
-    def _columns_formatter(self, tid, data):
-        """
-        Args:
-            tid: Table OID
-            data: dict of query result
-
-        Returns:
-            It will return formatted output of query result
-            as per client model format for column node
-        """
-        for column in data['columns']:
-
-            # We need to format variables according to client js collection
-            if 'attoptions' in column and column['attoptions'] is not None:
-                spcoptions = []
-                for spcoption in column['attoptions']:
-                    k, v = spcoption.split('=')
-                    spcoptions.append({'name': k, 'value': v})
-
-                column['attoptions'] = spcoptions
-
-            # Need to format security labels according to client js collection
-            if 'seclabels' in column and column['seclabels'] is not None:
-                seclabels = []
-                for seclbls in column['seclabels']:
-                    k, v = seclbls.split('=')
-                    seclabels.append({'provider': k, 'label': v})
-
-                column['seclabels'] = seclabels
-
-            if 'attnum' in column and column['attnum'] is not None \
-                    and column['attnum'] > 0:
-                # We need to parse & convert ACL coming from database to
-                # json format
-                SQL = render_template("/".join(
-                    [self.column_template_path, 'acl.sql']),
-                    tid=tid, clid=column['attnum']
-                )
-                status, acl = self.conn.execute_dict(SQL)
-
-                if not status:
-                    return internal_server_error(errormsg=acl)
-
-                # We will set get privileges from acl sql so we don't need
-                # it from properties sql
-                column['attacl'] = []
-
-                for row in acl['rows']:
-                    priv = parse_priv_from_db(row)
-                    column.setdefault(row['deftype'], []).append(priv)
-
-                # we are receiving request when in edit mode
-                # we will send filtered types related to current type
-
-                type_id = column['atttypid']
-
-                fulltype = self.get_full_type(
-                    column['typnspname'], column['typname'],
-                    column['isdup'], column['attndims'], column['atttypmod']
-                )
-
-                length = False
-                precision = False
-                if 'elemoid' in column:
-                    length, precision, typeval = \
-                        self.get_length_precision(column['elemoid'])
-
-                # Set length and precision to None
-                column['attlen'] = None
-                column['attprecision'] = None
-
-                # If we have length & precision both
-                if length and precision:
-                    matchObj = re.search(r'(\d+),(\d+)', fulltype)
-                    if matchObj:
-                        column['attlen'] = matchObj.group(1)
-                        column['attprecision'] = matchObj.group(2)
-                elif length:
-                    # If we have length only
-                    matchObj = re.search(r'(\d+)', fulltype)
-                    if matchObj:
-                        column['attlen'] = matchObj.group(1)
-                        column['attprecision'] = None
-
-                SQL = render_template("/".join([self.column_template_path,
-                                                'is_referenced.sql']),
-                                      tid=tid, clid=column['attnum'])
-
-                status, is_reference = self.conn.execute_scalar(SQL)
-
-                edit_types_list = list()
-                # We will need present type in edit mode
-                edit_types_list.append(column['cltype'])
-
-                if int(is_reference) == 0:
-                    SQL = render_template("/".join([self.column_template_path,
-                                                    'edit_mode_types.sql']),
-                                          type_id=type_id)
-                    status, rset = self.conn.execute_2darray(SQL)
-
-                    for row in rset['rows']:
-                        edit_types_list.append(row['typname'])
-
-                column['edit_types'] = edit_types_list
-                column['cltype'] = DataTypeReader.parse_type_name(
-                    column['cltype']
-                )
-
-                if 'indkey' in column:
-                    # Current column
-                    attnum = str(column['attnum'])
-
-                    # Single/List of primary key column(s)
-                    indkey = str(column['indkey'])
-
-                    # We will check if column is in primary column(s)
-                    if attnum in indkey.split(" "):
-                        column['is_primary_key'] = True
-                    else:
-                        column['is_primary_key'] = False
-
-        return data
 
     def _formatter(self, did, scid, tid, data):
         """
@@ -363,28 +233,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         # We will fetch all the columns for the table using
         # columns properties.sql, so we need to set template path
-        SQL = render_template("/".join([self.column_template_path,
-                                        'properties.sql']),
-                              tid=tid,
-                              show_sys_objects=False
-                              )
-
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
-        all_columns = res['rows']
-
-        # Add inheritedfrom details from other columns - type, table
-        for col in all_columns:
-            for other_col in other_columns:
-                if col['name'] == other_col['name']:
-                    col['inheritedfrom' + table_or_type] = \
-                        other_col['inheritedfrom']
-
-        data['columns'] = all_columns
-
-        if 'columns' in data and len(data['columns']) > 0:
-            data = self._columns_formatter(tid, data)
+        data = column_utils.get_formatted_columns(self.conn, tid,
+                                                  data, other_columns,
+                                                  table_or_type)
 
         # Here we will add constraint in our output
         index_constraints = {
@@ -419,23 +270,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 data.setdefault('exclude_constraint', []).append(ex)
 
         return data
-
-    @staticmethod
-    def _cltype_formatter(data_type):
-        """
-
-        Args:
-            data_type: Type string
-
-        Returns:
-            We need to remove [] from type and append it
-            after length/precision so we will send flag for
-            sql template
-        """
-        if '[]' in data_type:
-            return data_type[:-2], True
-        else:
-            return data_type, False
 
     def get_table_dependents(self, tid):
         """
@@ -608,7 +442,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 # check type for '[]' in it
                 if 'cltype' in c:
                     c['cltype'], c['hasSqrBracket'] = \
-                        self._cltype_formatter(c['cltype'])
+                        column_utils.type_formatter(c['cltype'])
 
         sql_header = u"-- Table: {0}\n\n-- ".format(
             self.qtIdent(self.conn, data['schema'], data['name']))
@@ -971,7 +805,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             # Parse/Format columns & create sql
             if 'columns' in data:
                 # Parse the data coming from client
-                data = self._parse_format_columns(data, mode='edit')
+                data = column_utils.parse_format_columns(data, mode='edit')
 
                 columns = data['columns']
                 column_sql = '\n'
@@ -1010,80 +844,16 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                         old_col_data['cltype'], \
                             old_col_data['hasSqrBracket'] = \
-                            self._cltype_formatter(old_col_data['cltype'])
+                            column_utils.type_formatter(old_col_data['cltype'])
                         old_col_data = \
-                            BaseTableView.convert_length_precision_to_string(
-                                old_col_data
-                            )
-
-                        fulltype = self.get_full_type(
-                            old_col_data['typnspname'],
-                            old_col_data['typname'],
-                            old_col_data['isdup'],
-                            old_col_data['attndims'],
-                            old_col_data['atttypmod']
-                        )
-
-                        def get_type_attr(key, data):
-                            """Utility function"""
-                            if key in data:
-                                return data[key]
-                            return None
-
-                        # If the column data type has not changed then fetch
-                        # old length and precision
-                        if 'elemoid' in old_col_data and 'cltype' not in c:
-                            length, precision, typeval = \
-                                self.get_length_precision(
-                                    old_col_data['elemoid'])
-
-                            # If we have length & precision both
-                            if length and precision:
-                                matchObj = re.search(r'(\d+),(\d+)', fulltype)
-                                if matchObj:
-                                    c['attlen'] = get_type_attr(
-                                        'attlen', c
-                                    ) or matchObj.group(1)
-                                    c['attprecision'] = get_type_attr(
-                                        'attprecision', c
-                                    ) or matchObj.group(2)
-                            elif length:
-                                # If we have length only
-                                matchObj = re.search(r'(\d+)', fulltype)
-                                if matchObj:
-                                    c['attlen'] = get_type_attr(
-                                        'attlen', c
-                                    ) or matchObj.group(1)
-                                    c['attprecision'] = None
-                            else:
-                                c['attlen'] = None
-                                c['attprecision'] = None
-
-                        if 'cltype' in c:
-                            typename = c['cltype']
-                            if 'hasSqrBracket' in c and c['hasSqrBracket']:
-                                typename += '[]'
-                            length, precision, typeval = \
-                                self.get_length_precision(typename)
-
-                            # if new datatype does not have length or precision
-                            # then we cannot apply length or precision of old
-                            # datatype to new one.
-
-                            if not length:
-                                old_col_data['attlen'] = -1
-
-                            if not precision:
-                                old_col_data['attprecision'] = None
+                            column_utils.convert_length_precision_to_string(
+                                old_col_data)
+                        old_col_data = column_utils.fetch_length_precision(
+                            old_col_data)
 
                         old_col_data['cltype'] = \
                             DataTypeReader.parse_type_name(
                                 old_col_data['cltype'])
-
-                        if int(old_col_data['attlen']) == -1:
-                            old_col_data['attlen'] = None
-                        if 'attprecision' not in old_col_data:
-                            old_col_data['attprecision'] = None
 
                         # Sql for alter column
                         if 'inheritedfrom' not in c:
@@ -1098,7 +868,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         c['schema'] = data['schema']
                         c['table'] = data['name']
 
-                        c = BaseTableView.convert_length_precision_to_string(c)
+                        c = column_utils.convert_length_precision_to_string(c)
 
                         if 'inheritedfrom' not in c:
                             column_sql += render_template("/".join(
@@ -1209,7 +979,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
             # Parse & format columns
-            data = self._parse_format_columns(data)
+            data = column_utils.parse_format_columns(data)
             data = BaseTableView.check_and_convert_name_to_string(data)
 
             if 'foreign_key' in data:
@@ -1658,24 +1428,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             return internal_server_error(errormsg=table_name)
 
         return schema_name, table_name
-
-    @staticmethod
-    def convert_length_precision_to_string(data):
-        """
-        This function is used to convert length & precision to string
-        to handle case like when user gives 0 as length
-
-        Args:
-            data: Data from client
-
-        Returns:
-            Converted data
-        """
-        if 'attlen' in data and data['attlen'] is not None:
-            data['attlen'] = str(data['attlen'])
-        if 'attprecision' in data and data['attprecision'] is not None:
-            data['attprecision'] = str(data['attprecision'])
-        return data
 
     def update_vacuum_settings(self, vacuum_key, old_data, data):
         """

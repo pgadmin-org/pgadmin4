@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-""" Implements Utility class for Exclusion Constraint. """
+""" Implements Utility class for Index Constraint. """
 
 from flask import render_template
 from flask_babelex import gettext as _

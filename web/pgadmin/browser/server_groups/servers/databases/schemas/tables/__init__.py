@@ -24,6 +24,8 @@ from .utils import BaseTableView
 from pgadmin.utils.preferences import Preferences
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.foreign_key import utils as fkey_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    columns import utils as column_utils
 
 
 class TableModule(SchemaChildModule):
@@ -209,10 +211,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
 
     * get_toast_table_vacuum(gid, sid, did, scid=None, tid=None)
       - Fetch the default values for toast table auto-vacuum
-
-    * _parse_format_columns(self, data, mode=None):
-       - This function will parse and return formatted list of columns
-         added by user
 
     * get_index_constraint_sql(self, did, tid, data):
       - This function will generate modified sql for index constraints
@@ -886,75 +884,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def _parse_format_columns(self, data, mode=None):
-        """
-        data:
-            Data coming from client side
-
-        Returns:
-            This function will parse and return formatted list of columns
-            added by user
-        """
-        columns = data['columns']
-        # 'EDIT' mode
-        if mode is not None:
-            for action in ['added', 'changed']:
-                if action in columns:
-                    final_columns = []
-                    for c in columns[action]:
-                        if 'inheritedfrom' not in c:
-                            final_columns.append(c)
-
-                    for c in final_columns:
-                        if 'attacl' in c:
-                            if 'added' in c['attacl']:
-                                c['attacl']['added'] = parse_priv_to_db(
-                                    c['attacl']['added'], self.column_acl
-                                )
-                            elif 'changed' in c['attacl']:
-                                c['attacl']['changed'] = parse_priv_to_db(
-                                    c['attacl']['changed'], self.column_acl
-                                )
-                            elif 'deleted' in c['attacl']:
-                                c['attacl']['deleted'] = parse_priv_to_db(
-                                    c['attacl']['deleted'], self.column_acl
-                                )
-                        if 'cltype' in c:
-                            # check type for '[]' in it
-                            c['cltype'], c['hasSqrBracket'] = \
-                                self._cltype_formatter(c['cltype'])
-
-                        c = TableView.convert_length_precision_to_string(c)
-
-                    data['columns'][action] = final_columns
-        else:
-            # We need to exclude all the columns which are inherited from other
-            # tables 'CREATE' mode
-            final_columns = []
-
-            for c in columns:
-                if 'inheritedfrom' not in c:
-                    final_columns.append(c)
-
-            # Now we have all lis of columns which we need
-            # to include in our create definition, Let's format them
-            for c in final_columns:
-                if 'attacl' in c:
-                    c['attacl'] = parse_priv_to_db(
-                        c['attacl'], self.column_acl
-                    )
-
-                if 'cltype' in c:
-                    # check type for '[]' in it
-                    c['cltype'], c['hasSqrBracket'] = \
-                        self._cltype_formatter(c['cltype'])
-
-                c = TableView.convert_length_precision_to_string(c)
-
-            data['columns'] = final_columns
-
-        return data
-
     @BaseTableView.check_precondition
     def create(self, gid, sid, did, scid):
         """
@@ -1000,7 +929,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
         # Parse & format columns
-        data = self._parse_format_columns(data)
+        data = column_utils.parse_format_columns(data)
         data = TableView.check_and_convert_name_to_string(data)
 
         # 'coll_inherits' is Array but it comes as string from browser

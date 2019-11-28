@@ -3,7 +3,7 @@
 -- ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#" DROP COLUMN "new_col_5_$%{}[]()&*^!@""'`\/#";
 
 ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
-    ADD COLUMN "new_col_5_$%{}[]()&*^!@""'`\/#" numeric(15,6) NOT NULL;
+    ADD COLUMN "new_col_5_$%{}[]()&*^!@""'`\/#" numeric NOT NULL;
 
 COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#"."new_col_5_$%{}[]()&*^!@""'`\/#"
     IS 'Comment for alter';

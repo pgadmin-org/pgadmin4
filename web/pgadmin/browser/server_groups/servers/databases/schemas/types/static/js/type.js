@@ -111,7 +111,7 @@ define('pgadmin.node.type', [
       // Note: There are ambiguities in the PG catalogs and docs between
       // precision and scale. In the UI, we try to follow the docs as
       // closely as possible, therefore we use Length/Precision and Scale
-      id: 'tlength', label: gettext('Length/precision'), deps: ['type'], type: 'text',
+      id: 'tlength', label: gettext('Length/Precision'), deps: ['type'], type: 'text',
       disabled: false, cell: IntegerDepCell,
       editable: function(m) {
         // We will store type from selected from combobox
@@ -214,13 +214,13 @@ define('pgadmin.node.type', [
         this.errorModel.set('type', errmsg);
         return errmsg;
       }
-      // Validation for Length/precision field (see comments above if confused about the naming!)
+      // Validation for Length/Precision field (see comments above if confused about the naming!)
       else if (this.get('is_tlength')
         && !_.isUndefined(this.get('tlength'))) {
         if (this.get('tlength') < this.get('min_val'))
-          errmsg = gettext('Length/precision should not be less than %s', this.get('min_val'));
+          errmsg = gettext('Length/Precision should not be less than %s', this.get('min_val'));
         if (this.get('tlength') > this.get('max_val') )
-          errmsg = gettext('Length/precision should not be greater than %s', this.get('max_val'));
+          errmsg = gettext('Length/Precision should not be greater than %s', this.get('max_val'));
           // If we have any error set then throw it to user
         if(errmsg) {
           this.errorModel.set('tlength', errmsg);

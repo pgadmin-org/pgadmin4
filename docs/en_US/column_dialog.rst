@@ -34,7 +34,7 @@ are disabled if inapplicable.)
   column. For more information on the data types that are supported by
   PostgreSQL, refer to Chapter 8 of the Postgres core documentation. This field
   is required.
-* Use the *Length* and *Precision* fields to specify the maximum number of
+* Use the *Length/Precision* and *Scale* fields to specify the maximum number of
   significant digits in a numeric value, or the maximum number of characters in
   a text value.
 * Use the drop-down listbox next to *Collation* to apply a collation setting to

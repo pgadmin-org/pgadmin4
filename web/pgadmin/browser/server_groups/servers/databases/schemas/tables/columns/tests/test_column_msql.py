@@ -53,7 +53,7 @@ class ColumnMsqlTestCase(BaseTestGenerator):
              old_len=5,
              new_precision=4,
              expected_res='ALTER TABLE {schema}.{table}\n    ALTER COLUMN '
-                          '{column} TYPE numeric ({len}, {precision})[];'
+                          '{column} TYPE numeric({len}, {precision})[];'
          )),
         ('msql column change numeric precision',
          dict(
@@ -62,7 +62,7 @@ class ColumnMsqlTestCase(BaseTestGenerator):
              old_len=6,
              new_precision=5,
              expected_res='ALTER TABLE {schema}.{table}\n    ALTER COLUMN '
-                          '{column} TYPE numeric ({len}, {precision});'
+                          '{column} TYPE numeric({len}, {precision});'
          )),
         ('msql column change numeric array length',
          dict(
@@ -71,7 +71,7 @@ class ColumnMsqlTestCase(BaseTestGenerator):
              new_len=8,
              old_precision=3,
              expected_res='ALTER TABLE {schema}.{table}\n    ALTER COLUMN '
-                          '{column} TYPE numeric ({len}, {precision})[];'
+                          '{column} TYPE numeric({len}, {precision})[];'
          )),
         ('msql column change numeric length',
          dict(
@@ -80,7 +80,7 @@ class ColumnMsqlTestCase(BaseTestGenerator):
              new_len=8,
              old_precision=4,
              expected_res='ALTER TABLE {schema}.{table}\n    ALTER COLUMN '
-                          '{column} TYPE numeric ({len}, {precision});'
+                          '{column} TYPE numeric({len}, {precision});'
          )),
         ('msql column change numeric array len and precision',
          dict(
@@ -89,7 +89,7 @@ class ColumnMsqlTestCase(BaseTestGenerator):
              new_len=15,
              new_precision=8,
              expected_res='ALTER TABLE {schema}.{table}\n    ALTER COLUMN '
-                          '{column} TYPE numeric ({len}, {precision})[];'
+                          '{column} TYPE numeric({len}, {precision})[];'
          )),
         ('msql column change numeric len and precision',
          dict(
@@ -98,7 +98,7 @@ class ColumnMsqlTestCase(BaseTestGenerator):
              new_len=14,
              new_precision=9,
              expected_res='ALTER TABLE {schema}.{table}\n    ALTER COLUMN '
-                          '{column} TYPE numeric ({len}, {precision});'
+                          '{column} TYPE numeric({len}, {precision});'
          ))
     ]
 

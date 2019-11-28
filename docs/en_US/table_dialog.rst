@@ -50,9 +50,9 @@ the *Columns* table:
   the column. This can include array specifiers. For more information on the
   data types supported by PostgreSQL, refer to Chapter 8 of the core
   documentation.
-* If enabled, use the *Length* and *Precision* fields to specify the maximum
-  number of significant digits in a numeric value, or the maximum number of
-  characters in a text value.
+* If enabled, use the *Length/Precision* and *Scale* fields to specify the
+  maximum number of significant digits in a numeric value, or the maximum
+  number of characters in a text value.
 * Move the *Not NULL?* switch to the *Yes* position to require a value in the
   column field.
 * Move the *Primary key?* switch to the *Yes* position to specify the column is
