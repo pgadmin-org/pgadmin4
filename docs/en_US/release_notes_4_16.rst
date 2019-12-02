@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4435 <https://redmine.postgresql.org/issues/4435>`_ -  Allow drag and drop functionality for all the nodes under the database node, excluding collection nodes.
 
 Housekeeping
 ************
