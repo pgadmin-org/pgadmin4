@@ -11,6 +11,7 @@ New features
 
 | `Issue #4396 <https://redmine.postgresql.org/issues/4396>`_ -  Warn the user on changing the definition of Materialized View about the loss of data and its dependent objects.
 | `Issue #4435 <https://redmine.postgresql.org/issues/4435>`_ -  Allow drag and drop functionality for all the nodes under the database node, excluding collection nodes.
+| `Issue #4773 <https://redmine.postgresql.org/issues/4773>`_ -  Added role="status" attribute to all the status messages for accessibility.
 
 Housekeeping
 ************

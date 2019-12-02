@@ -636,7 +636,7 @@ define([
                   '        <div class="pr-2"> ',
                   '          <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ',
                   '        </div> ',
-                  '        <div class="alert-text"></div> ',
+                  '        <div class="alert-text" role="status></div> ',
                   '        <div class="ml-auto close-error-bar"> ',
                   '          <a class="close-error fa fa-times text-danger"></a> ',
                   '        </div> ',

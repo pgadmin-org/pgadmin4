@@ -127,7 +127,7 @@ define([
               alertMessage = '\
                   <div class="media text-danger text-14">\
                     <div class="media-body media-middle">\
-                      <div class="alert-text">' + promptmsg + '</div><br/>\
+                      <div class="alert-text" role="status">' + promptmsg + '</div><br/>\
                       <div class="alert-text">' + gettext('Click for details.') + '</div>\
                     </div>\
                   </div>';
@@ -172,7 +172,7 @@ define([
           var alertMessage = '\
                 <div class="media text-danger text-14">\
                   <div class="media-body media-middle">\
-                    <div class="alert-text">' + gettext('INTERNAL SERVER ERROR') + '</div><br/>\
+                    <div class="alert-text" role="status">' + gettext('INTERNAL SERVER ERROR') + '</div><br/>\
                     <div class="alert-text">' + gettext('Click for details.') + '</div>\
                   </div>\
                 </div>';
@@ -422,7 +422,7 @@ define([
         <div class="pr-2">
           <i class="fa fa-check text-success" aria-hidden="true"></i>
         </div>
-        <div class="text-body">${message}</div>
+        <div class="text-body" role="status">${message}</div>
       </div>`;
       return alertify.orig_success(alertMessage, timeout, callback);
     },
@@ -432,7 +432,7 @@ define([
         <div class="pr-2">
           <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
         </div>
-        <div class="text-body">${message}</div>
+        <div class="text-body" role="status">${message}</div>
       </div>`;
       return alertify.orig_error(alertMessage, timeout, callback);
     },
@@ -442,7 +442,7 @@ define([
         <div class="mr-3">
           <i class="fa fa-info text-primary" aria-hidden="true"></i>
         </div>
-        <div class="text-body">${message}</div>
+        <div class="text-body" role="status">${message}</div>
       </div>`;
       var alert = alertify.notify(alertMessage, timeout);
       return alert;

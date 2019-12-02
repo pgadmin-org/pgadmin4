@@ -1103,7 +1103,7 @@ define('pgadmin.browser.node', [
 
       // Template function to create the status bar
       var createStatusBar = function(location) {
-          var statusBar = $('<div></div>').addClass(
+          var statusBar = $('<div role="status"></div>').addClass(
             'pg-prop-status-bar'
           ).appendTo(j);
           statusBar.css('visibility', 'hidden');

@@ -128,7 +128,7 @@ let FilterDialog = {
               '      <div class="pr-2"> ' +
               '        <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ' +
               '      </div> ' +
-              '      <div class="alert-text"></div> ' +
+              '      <div class="alert-text" role="status"></div> ' +
               '    </div> ' +
               '  </div> ' +
               '</div>').appendTo($container);
