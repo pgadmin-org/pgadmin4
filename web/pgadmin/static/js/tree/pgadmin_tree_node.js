@@ -43,6 +43,7 @@ export function getTreeNodeHierarchyFromElement(pgBrowser, treeNode) {
 export function getTreeNodeHierarchyFromIdentifier(aciTreeNodeIdentifier) {
   let identifier = this.treeMenu.translateTreeNodeIdFromACITree(aciTreeNodeIdentifier);
   let currentNode = this.treeMenu.findNode(identifier);
+  if (currentNode === null) return null;
   return getTreeNodeHierarchy.call(this, currentNode);
 }
 
