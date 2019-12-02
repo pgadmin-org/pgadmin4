@@ -69,6 +69,7 @@ if not os.path.isfile(config.SQLITE_PATH):
 ##########################################################################
 class ReverseProxied(object):
     def __init__(self, app):
+        self.app = app
         # https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix/#module-werkzeug.middleware.proxy_fix
         try:
             from werkzeug.middleware.proxy_fix import ProxyFix

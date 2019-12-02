@@ -38,3 +38,4 @@ Bug fixes
 | `Issue #4935 <https://redmine.postgresql.org/issues/4935>`_ -  Fix accessibility issues.
 | `Issue #4964 <https://redmine.postgresql.org/issues/4964>`_ -  Fix an issue where length and precision are not removed from table/column dialog.
 | `Issue #4965 <https://redmine.postgresql.org/issues/4965>`_ -  Fix an issue where the Interval data type is not displayed in the properties dialog of table/column.
+| `Issue #4978 <https://redmine.postgresql.org/issues/4978>`_ -  Fix pgAdmin4 failed to start issue after upgrading to version 4.15.
