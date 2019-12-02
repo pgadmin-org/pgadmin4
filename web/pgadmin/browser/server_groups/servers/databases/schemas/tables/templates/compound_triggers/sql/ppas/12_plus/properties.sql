@@ -4,10 +4,10 @@ SELECT t.oid,t.tgname AS name, t.xmin, t.tgenabled AS is_enable_trigger, t.tgtyp
     regexp_replace(regexp_replace(pg_get_triggerdef(t.oid),
         'CREATE TRIGGER (.*) FOR (.*) ON (.*) \nCOMPOUND TRIGGER (.*)\n', ''), '[\n]?END$', ''
     ) AS prosrc,
-    COALESCE(substring(pg_get_triggerdef(t.oid), 'WHEN (.*) \nCOMPOUND'), NULL) AS whenclause,
 {% if datlastsysoid %}
-    (CASE WHEN t.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_trigger
+    (CASE WHEN t.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_trigger,
 {% endif %}
+    COALESCE(substring(pg_get_triggerdef(t.oid), 'WHEN (.*) \nCOMPOUND'), NULL) AS whenclause
 FROM pg_trigger t
     JOIN pg_class cl ON cl.oid=tgrelid
     JOIN pg_namespace na ON na.oid=relnamespace
