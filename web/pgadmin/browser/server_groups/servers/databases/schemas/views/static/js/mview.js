@@ -142,6 +142,7 @@ define('pgadmin.node.mview', [
           spcname: undefined,
           toast_autovacuum_enabled: false,
           autovacuum_enabled: false,
+          warn_text: undefined,
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
@@ -171,7 +172,22 @@ define('pgadmin.node.mview', [
           id: 'definition', label: gettext('Definition'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           tabPanelCodeClass: 'sql-code-control',
-          control: Backform.SqlCodeControl,
+          control: Backform.SqlCodeControl.extend({
+            onChange: function() {
+              Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
+              if(this.model && this.model.changed) {
+                if(this.model.origSessAttrs && (this.model.changed.definition != this.model.origSessAttrs.definition)) {
+                  this.model.warn_text = gettext('Updating the definition will drop and re-create the materialized view. It may result in loss of information about its dependent objects. Do you want to continue?');
+                }
+                else {
+                  this.model.warn_text = undefined;
+                }
+              }
+              else {
+                this.model.warn_text = undefined;
+              }
+            },
+          }),
         },{
           id: 'with_data', label: gettext('With data?'),
           group: gettext('Storage'), mode: ['edit', 'create'],

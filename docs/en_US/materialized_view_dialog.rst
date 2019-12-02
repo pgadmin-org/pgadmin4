@@ -35,7 +35,9 @@ Click the *Definition* tab to continue.
     :align: center
 
 Use the text editor field in the *Definition* tab to provide the query that will
-populate the materialized view.
+populate the materialized view. Please note that updating the definition of existing
+materialized view would result in loss of Parameter(Table, Toast), Security(Privileges & Security labels),
+Indexes and other dependent objects.
 
 Click the *Storage* tab to continue.
 

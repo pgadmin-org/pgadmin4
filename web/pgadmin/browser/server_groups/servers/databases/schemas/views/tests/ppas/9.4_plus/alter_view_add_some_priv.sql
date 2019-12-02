@@ -15,5 +15,5 @@ ALTER TABLE public."testview_$%{}[]()&*^!@""'`\/#"
 COMMENT ON VIEW public."testview_$%{}[]()&*^!@""'`\/#"
     IS 'Testcomment-updated';
 
-GRANT SELECT, UPDATE, DELETE ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
+GRANT SELECT ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
 GRANT ALL ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO enterprisedb;

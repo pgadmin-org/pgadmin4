@@ -3,4 +3,4 @@ SET(
   FILLFACTOR = 18
 );
 
-REFRESH MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#" WITH NO DATA;
+REFRESH MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#" WITH DATA;

@@ -205,7 +205,7 @@
       "msql_endpoint": "NODE-mview.msql_id",
       "data": {
         "fillfactor": "18",
-        "with_data": false
+        "with_data": true
       },
       "expected_sql_file": "alter_mview_add_fillfactor.sql",
       "expected_msql_file": "alter_mview_add_fillfactor_msql.sql"

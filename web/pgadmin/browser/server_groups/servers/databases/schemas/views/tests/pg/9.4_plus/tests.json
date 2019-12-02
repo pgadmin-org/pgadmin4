@@ -88,18 +88,8 @@
                   "grantee":"PUBLIC",
                   "grantor":"postgres",
                   "privileges":[
-                      {
-                        "privilege_type":"r",
-                        "privilege":true,
-                        "with_grant":false
-                      },
                     {
-                      "privilege_type":"w",
-                      "privilege":true,
-                      "with_grant":false
-                    },
-                    {
-                      "privilege_type":"d",
+                      "privilege_type":"r",
                       "privilege":true,
                       "with_grant":false
                     }
@@ -133,16 +123,6 @@
                 "privileges":[
                   {
                     "privilege_type":"r",
-                    "privilege":true,
-                    "with_grant":false
-                  },
-                  {
-                    "privilege_type":"w",
-                    "privilege":true,
-                    "with_grant":false
-                  },
-                  {
-                    "privilege_type":"d",
                     "privilege":true,
                     "with_grant":false
                   }

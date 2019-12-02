@@ -1305,6 +1305,40 @@ define('pgadmin.browser.node', [
           }
         }.bind(panel),
 
+        warnBeforeAttributeChange = function(yes_callback) {
+          var j = this.$container.find('.obj_properties').first(),
+            view = j && j.data('obj-view'),
+            self = this;
+
+          if (view && view.model && !_.isUndefined(view.model.warn_text) && !_.isNull(view.model.warn_text)) {
+            let warn_text;
+            warn_text = gettext(view.model.warn_text);
+            if(view.model.sessChanged()){
+              Alertify.confirm(
+                gettext('Warning'),
+                warn_text,
+                function() {
+                  setTimeout(function(){
+                    yes_callback();
+                  }.bind(self), 50);
+                  return true;
+                },
+                function() {
+                  return true;
+                }
+              ).set('labels', {
+                ok: gettext('Yes'),
+                cancel: gettext('No'),
+              }).show();
+            } else {
+              return true;
+            }
+          } else {
+            yes_callback();
+            return true;
+          }
+        }.bind(panel),
+
         onSave = function(view, saveBtn) {
           var m = view.model,
             d = m.toJSON(true),
@@ -1498,7 +1532,14 @@ define('pgadmin.browser.node', [
               register: function(btn) {
                 // Save the changes
                 btn.on('click',() => {
-                  onSave.call(this, view, btn);
+                  warnBeforeAttributeChange.call(
+                    panel,
+                    function() {
+                      setTimeout(function() {
+                        onSave.call(this, view, btn);
+                      }, 0);
+                    }
+                  );
                 });
               },
             }], 'footer', 'pg-prop-btn-group-below');

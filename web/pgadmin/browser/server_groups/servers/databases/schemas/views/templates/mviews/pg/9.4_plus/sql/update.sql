@@ -27,9 +27,14 @@ ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
 {% if def and def != o_data.definition.rstrip(';') %}
 DROP MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }};
 CREATE MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
-{% if data.fillfactor or (data['vacuum_data']['changed']|length > 0 ) %}
+{% if data.fillfactor or o_data.fillfactor %}
 WITH(
-{% if data.fillfactor %} FILLFACTOR = {{ data.fillfactor }}{% if data['vacuum_data']['changed']|length > 0 %},{% endif %}{{ '\n' }} {% endif %}
+{% if data.fillfactor %}
+FILLFACTOR = {{ data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) or (o_data['vacuum_data'] is defined and o_data['vacuum_data']['changed']|length > 0)  %},{% endif %}
+{% elif o_data.fillfactor %}
+FILLFACTOR = {{ o_data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) or (o_data['vacuum_data'] is defined and o_data['vacuum_data']['changed']|length > 0)  %},{% endif %}
+{% endif %}
+
 {% if data['vacuum_data']['changed']|length > 0 %}
 {% for field in data['vacuum_data']['changed'] %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{{ '\n' }}{% endif %}
 {% endfor %}
@@ -40,10 +45,13 @@ WITH(
 {{ def }}
 {% if data.with_data is defined %}
  WITH {{ 'DATA' if data.with_data else 'NO DATA' }};
-
-{% elif o_data.with_data %}
+{% elif o_data.with_data is defined %}
  WITH {{ 'DATA' if o_data.with_data else 'NO DATA' }};
 
+{% endif %}
+{% if o_data.comment and not data.comment  %}
+COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+    IS {{ o_data.comment|qtLiteral }};
 {% endif %}
 {% else %}
 {# ======= Alter Tablespace ========= #}

@@ -10,7 +10,10 @@ WITH (
 TABLESPACE pg_default
 AS
  SELECT 12
-WITH NO DATA;
+WITH DATA;
 
 ALTER TABLE public."testmview_$%{}[]()&*^!/@`#"
     OWNER TO postgres;
+
+COMMENT ON MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
+    IS 'comment1';

@@ -16,4 +16,4 @@ COMMENT ON VIEW public."testview_$%{}[]()&*^!@""'`\/#"
     IS 'Testcomment-updated';
 
 GRANT ALL ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO postgres;
-GRANT SELECT, UPDATE, DELETE ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
+GRANT SELECT ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
