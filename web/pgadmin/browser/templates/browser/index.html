@@ -100,8 +100,8 @@ window.onload = function(e){
 </div>
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark pg-navbar">
     <a class="navbar-brand pgadmin_header_logo" onClick="return false;" href="{{ '#' }}"
-       title="{{ config.APP_NAME }} {{ _('logo') }}">
-        <i class="app-icon {{ config.APP_ICON }}"></i>
+       title="{{ config.APP_NAME }} {{ _('logo') }}" aria-label="{ config.APP_NAME }} {{ _('logo') }}">
+        <i class="app-icon {{ config.APP_ICON }}" aria-hidden="true"></i>
     </a>
     <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu">
         <span class="sr-only">{{ _('Toggle navigation') }}</span>
@@ -113,11 +113,6 @@ window.onload = function(e){
             <li id="mnu_file" class="nav-item active dropdown d-none">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
                     _('File') }} <span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu"></ul>
-            </li>
-            <li id="mnu_edit" class="nav-item active dropdown d-none">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
-                    _('Edit') }} <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu"></ul>
             </li>
             <li id="mnu_obj" class="nav-item active dropdown ">

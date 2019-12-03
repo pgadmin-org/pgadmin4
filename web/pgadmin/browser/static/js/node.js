@@ -1115,7 +1115,8 @@ define('pgadmin.browser.node', [
               tmpl = _.template([
                 '<button tabindex="0" type="<%= type %>" ',
                 'class="btn <%=extraClasses.join(\' \')%>"',
-                '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>">',
+                '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>"',
+                '<% if (label != "") {} else { %> aria-label="<%-tooltip%>"<% } %> >',
                 '<span class="<%= icon %>"></span><% if (label != "") { %>&nbsp;<%-label%><% } %></button>',
               ].join(' '));
             if (location == 'header') {

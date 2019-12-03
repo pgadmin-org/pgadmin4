@@ -11,6 +11,7 @@ import {shortcut_key, shortcut_accesskey_title, shortcut_title}
   from 'sources/keyboard_shortcuts';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
 import $ from 'jquery';
+import gettext from 'sources/gettext';
 
 function updateUIPreferences(sqlEditor) {
   let $el = sqlEditor.$el,
@@ -26,51 +27,63 @@ function updateUIPreferences(sqlEditor) {
 
   /* Accessed using accesskey direct w/o ctrl,atl,shift */
   $el.find('#btn-load-file')
-    .attr('title', shortcut_accesskey_title('Open File',preferences.btn_open_file))
+    .attr('title', shortcut_accesskey_title(gettext('Open File'),preferences.btn_open_file))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Open File'),preferences.btn_open_file))
     .attr('accesskey', shortcut_key(preferences.btn_open_file));
 
   $el.find('#btn-save-file')
-    .attr('title', shortcut_accesskey_title('Save File',preferences.btn_save_file))
+    .attr('title', shortcut_accesskey_title(gettext('Save File'),preferences.btn_save_file))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Save File'),preferences.btn_save_file))
     .attr('accesskey', shortcut_key(preferences.btn_save_file));
 
   $el.find('#btn-find-menu-dropdown')
-    .attr('title', shortcut_accesskey_title('Find',preferences.btn_find_options))
+    .attr('title', shortcut_accesskey_title(gettext('Find'),preferences.btn_find_options))
+    .attr('aria-label',shortcut_accesskey_title(gettext('Find'),preferences.btn_find_options))
     .attr('accesskey', shortcut_key(preferences.btn_find_options));
 
   $el.find('#btn-copy-row')
-    .attr('title', shortcut_accesskey_title('Copy',preferences.btn_copy_row))
+    .attr('title', shortcut_accesskey_title(gettext('Copy'),preferences.btn_copy_row))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Copy'),preferences.btn_copy_row))
     .attr('accesskey', shortcut_key(preferences.btn_copy_row));
 
   $el.find('#btn-paste-row')
-    .attr('title', shortcut_accesskey_title('Paste',preferences.btn_paste_row))
+    .attr('title', shortcut_accesskey_title(gettext('Paste'),preferences.btn_paste_row))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Paste'),preferences.btn_paste_row))
     .attr('accesskey', shortcut_key(preferences.btn_paste_row));
 
   $el.find('#btn-delete-row')
-    .attr('title', shortcut_accesskey_title('Delete',preferences.btn_delete_row))
+    .attr('title', shortcut_accesskey_title(gettext('Delete'),preferences.btn_delete_row))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Delete'),preferences.btn_delete_row))
     .attr('accesskey', shortcut_key(preferences.btn_delete_row));
 
   $el.find('#btn-filter')
-    .attr('title', shortcut_accesskey_title('Filter',preferences.btn_filter_dialog))
+    .attr('title', shortcut_accesskey_title(gettext('Filter'),preferences.btn_filter_dialog))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Filter'),preferences.btn_filter_dialog))
     .attr('accesskey', shortcut_key(preferences.btn_filter_dialog));
 
   $el.find('#btn-filter-dropdown')
-    .attr('title', shortcut_accesskey_title('Filter options',preferences.btn_filter_options))
+    .attr('title', shortcut_accesskey_title(gettext('Filter options'),preferences.btn_filter_options))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Filter options'),preferences.btn_filter_options))
     .attr('accesskey', shortcut_key(preferences.btn_filter_options));
 
   $el.find('#btn-rows-limit')
-    .attr('title', shortcut_accesskey_title('Rows limit',preferences.btn_rows_limit))
+    .attr('title', shortcut_accesskey_title(gettext('Rows limit'),preferences.btn_rows_limit))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Rows limit'),preferences.btn_rows_limit))
     .attr('accesskey', shortcut_key(preferences.btn_rows_limit));
 
   $el.find('#btn-query-dropdown')
-    .attr('title', shortcut_accesskey_title('Execute options',preferences.btn_execute_options))
+    .attr('title', shortcut_accesskey_title(gettext('Execute options'),preferences.btn_execute_options))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Execute options'),preferences.btn_execute_options))
     .attr('accesskey', shortcut_key(preferences.btn_execute_options));
 
   $el.find('#btn-cancel-query')
-    .attr('title', shortcut_accesskey_title('Cancel query',preferences.btn_cancel_query))
+    .attr('title', shortcut_accesskey_title(gettext('Cancel query'),preferences.btn_cancel_query))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Cancel query'),preferences.btn_cancel_query))
     .attr('accesskey', shortcut_key(preferences.btn_cancel_query));
 
   $el.find('#btn-clear-dropdown')
-    .attr('title', shortcut_accesskey_title('Clear',preferences.btn_clear_options))
+    .attr('title', shortcut_accesskey_title(gettext('Clear'),preferences.btn_clear_options))
+    .attr('aria-label', shortcut_accesskey_title(gettext('Clear'),preferences.btn_clear_options))
     .attr('accesskey', shortcut_key(preferences.btn_clear_options));
 
   $el.find('#btn-conn-status')
@@ -83,31 +96,45 @@ function updateUIPreferences(sqlEditor) {
   /* Accessed using ctrl,atl,shift and key */
   $el.find('#btn-flash')
     .attr('title',
-      shortcut_title('Execute/Refresh',preferences.execute_query));
+      shortcut_title(gettext('Execute/Refresh'),preferences.execute_query))
+    .attr('aria-label',
+      shortcut_title(gettext('Execute/Refresh'),preferences.execute_query));
 
   $el.find('#btn-explain')
     .attr('title',
-      shortcut_title('Explain',preferences.explain_query));
+      shortcut_title(gettext('Explain'),preferences.explain_query))
+    .attr('aria-label',
+      shortcut_title(gettext('Explain'),preferences.explain_query));
 
   $el.find('#btn-explain-analyze')
     .attr('title',
-      shortcut_title('Explain Analyze',preferences.explain_analyze_query));
+      shortcut_title(gettext('Explain Analyze'),preferences.explain_analyze_query))
+    .attr('aria-label',
+      shortcut_title(gettext('Explain Analyze'),preferences.explain_analyze_query));
 
   $el.find('#btn-download')
     .attr('title',
-      shortcut_title('Download as CSV',preferences.download_csv));
+      shortcut_title(gettext('Download as CSV'),preferences.download_csv))
+    .attr('aria-label',
+      shortcut_title(gettext('Download as CSV'),preferences.download_csv));
 
   $el.find('#btn-save-data')
     .attr('title',
-      shortcut_title('Save Data Changes',preferences.save_data));
+      shortcut_title(gettext('Save Data Changes'),preferences.save_data))
+    .attr('aria-label',
+      shortcut_title(gettext('Save Data Changes'),preferences.save_data));
 
   $el.find('#btn-commit')
     .attr('title',
-      shortcut_title('Commit',preferences.commit_transaction));
+      shortcut_title(gettext('Commit'),preferences.commit_transaction))
+    .attr('aria-label',
+      shortcut_title(gettext('Commit'),preferences.commit_transaction));
 
   $el.find('#btn-rollback')
     .attr('title',
-      shortcut_title('Rollback',preferences.rollback_transaction));
+      shortcut_title(gettext('Rollback'),preferences.rollback_transaction))
+    .attr('aria-label',
+      shortcut_title(gettext('Rollback'),preferences.rollback_transaction));
 
   /* Set explain options on query editor */
   if (preferences.explain_verbose){

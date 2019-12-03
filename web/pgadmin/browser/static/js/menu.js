@@ -72,6 +72,7 @@ define([
           'href': this.url,
           'target': this.target,
           'data-toggle': 'pg-menu',
+          'role': 'menuitem',
         }).data('pgMenu', {
           module: this.module || pgAdmin.Browser,
           cb: this.callback,

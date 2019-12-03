@@ -173,11 +173,9 @@ define([
     },
 
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled readonly" : ""%>>',
-      '    <%-value%>',
-      '  </span>',
+      '  <input class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled readonly" : ""%> id="<%=cId%>" value="<%-value%>" />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -239,6 +237,7 @@ define([
         required: evalF(data.required, data, this.model),
       });
 
+      data.cId = data.cId || _.uniqueId('pgC_');
       // Clean up first
       this.$el.removeClass(Backform.hiddenClassName);
 
@@ -258,6 +257,15 @@ define([
    */
   _.extend(
     Backform.InputControl.prototype, {
+      template: _.template([
+        '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
+        '<div class="<%=Backform.controlContainerClassName%>">',
+        '  <input type="<%=type%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+        '  <% if (helpMessage && helpMessage.length) { %>',
+        '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+        '  <% } %>',
+        '</div>',
+      ].join('\n')),
       events: {
         'change input': 'onChange',
         'blur input': 'onChange',
@@ -300,9 +308,9 @@ define([
         'focus textarea': 'clearInvalid',
       },
       template: _.template([
-        '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+        '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
         '<div class="<%=Backform.controlsClassName%>">',
-        '  <textarea ',
+        '  <textarea id="<%=cId%>"',
         '    class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>"',
         '  <% if (maxlength) { %>',
         '    maxlength="<%=maxlength%>"',
@@ -365,6 +373,7 @@ define([
       }
     }
 
+    data.cId = data.cId || _.uniqueId('pgC_');
     // Clean up first
     this.$el.removeClass(Backform.hiddenClassName);
 
@@ -376,18 +385,31 @@ define([
 
     return this;
   };
+
+  Backform.SelectControl.prototype.template = _.template([
+    '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
+    '<div class="<%=Backform.controlContainerClassName%>">',
+    '  <select id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
+    '    <% for (var i=0; i < options.length; i++) { %>',
+    '      <% var option = options[i]; %>',
+    '      <option value="<%-formatter.fromRaw(option.value)%>" <%=option.value === rawValue ? "selected=\'selected\'" : ""%> <%=option.disabled ? "disabled=\'disabled\'" : ""%>><%-option.label%></option>',
+    '    <% } %>',
+    '  </select>',
+    '</div>',
+  ].join('\n'));
+
   _.extend(Backform.SelectControl.prototype.defaults, {
     helpMessage: null,
   });
 
   Backform.ReadonlyOptionControl = Backform.SelectControl.extend({
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
       '<% for (var i=0; i < options.length; i++) { %>',
       ' <% var option = options[i]; %>',
       ' <% if (option.value === rawValue) { %>',
-      ' <span class="<%=Backform.controlClassName%> uneditable-input" disabled readonly><%-option.label%></span>',
+      ' <input id="<%=cId%>" class="<%=Backform.controlClassName%> uneditable-input" disabled readonly value="<%-option.label%>"></span>',
       ' <% } %>',
       '<% } %>',
       '<% if (helpMessage && helpMessage.length) { %>',
@@ -529,8 +551,9 @@ define([
     },
     template: _.template([
       '<label class="<%=controlLabelClassName%>"><%=label%></label>',
+      '<label class="sr-value sr-only" for="<%=cId%>"></label>',
       '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
-      '      <input tabindex="-1" type="checkbox" data-style="quick" data-toggle="toggle"',
+      '      <input tabindex="-1" type="checkbox" aria-hidden="true" aria-label="Toggle button" data-style="quick" data-toggle="toggle"',
       '      data-size="<%=options.size%>" data-height="<%=options.height%>"  ',
       '      data-on="<%=options.onText%>" data-off="<%=options.offText%>" ',
       '      data-onstyle="<%=options.onColor%>" data-offstyle="<%=options.offColor%>" data-width="<%=options.width%>" ',
@@ -550,10 +573,29 @@ define([
       'change input': 'onChange',
       'keyup': 'toggleSwitch',
     },
+    setSrValue: function() {
+      let {onText, offText} = _.defaults(this.field.get('options'), this.defaults.options);
+      let label = this.field.get('label');
+
+      if(this.$el.find('.toggle.btn').hasClass('off')) {
+        this.$el.find('.sr-value').text(`
+          ${label}. ${offText}. ${gettext('Toggle button')}
+        `);
+      } else {
+        this.$el.find('.sr-value').text(`
+          ${label}. ${onText}. ${gettext('Toggle button')}
+        `);
+      }
+    },
+    onChange: function() {
+      Backform.InputControl.prototype.onChange.apply(this, arguments);
+      this.setSrValue();
+    },
     toggleSwitch: function(e) {
       if (e.keyCode == 32) {
         this.$el.find('input[type=checkbox]').bootstrapToggle('toggle');
         e.preventDefault();
+        this.setSrValue();
       }
     },
     render: function() {
@@ -580,6 +622,7 @@ define([
         required: evalF(data.required, field, this.model),
       });
 
+      data.cId = data.cId || _.uniqueId('pgC_');
       // Clean up first
       this.$el.removeClass(Backform.hiddenClassName);
 
@@ -607,7 +650,13 @@ define([
       this.$input = this.$el.find('input[type=checkbox]').first();
       this.$input.bootstrapToggle();
       // When disable then set tabindex value to -1
-      this.$el.find('.toggle.btn').attr('tabindex', data.options.disabled ? '-1' : '0');
+      this.$el.find('.toggle.btn')
+        .attr('tabindex', data.options.disabled ? '-1' : '0')
+        .attr('id', data.cId);
+
+      this.$el.find('.toggle.btn .toggle-group .btn').attr('aria-hidden', true);
+      this.setSrValue();
+
       this.updateInvalid();
 
       return this;
@@ -1834,9 +1883,9 @@ define([
       helpMessage: null,
     },
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<label for="<%=cId%>" class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <input type="<%=type%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '  <input type="<%=type%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -2075,9 +2124,9 @@ define([
 
     formatter: Select2Formatter,
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      ' <select class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
+      ' <select id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
       '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%>',
       '  <%=required ? "required" : ""%><%= select2.multiple ? " multiple>" : ">" %>',
       '  <%=select2.first_empty ? " <option></option>" : ""%>',
@@ -2158,6 +2207,7 @@ define([
         }
       }
 
+      data.cId = data.cId || _.uniqueId('pgC_');
       // Clean up first
       this.$el.removeClass(Backform.hiddenClassName);
 
@@ -2599,12 +2649,12 @@ define([
       Backform.InputControl.prototype.initialize.apply(this, arguments);
     },
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
       '<div class="input-group">',
-      '<input type="<%=type%>" class="form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '<input type="<%=type%>" id="<%=cId%>" class="form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '<div class="input-group-append">',
-      '<button class="btn btn-secondary fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> ></button>',
+      '<button class="btn btn-secondary fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> aria-hidden="true" aria-label="Select file" title="Select file"></button>',
       '</div>',
       '</div>',
       '<% if (helpMessage && helpMessage.length) { %>',
@@ -2853,9 +2903,9 @@ define([
       defaultColor: '',
     },
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <input class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '  <input id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -2890,6 +2940,7 @@ define([
         required: evalF(data.required, data, this.model),
       });
 
+      data.cId = data.cId || _.uniqueId('pgC_');
       // Clean up first
       this.$el.empty();
 

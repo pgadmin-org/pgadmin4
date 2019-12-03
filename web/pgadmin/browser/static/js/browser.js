@@ -226,7 +226,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="sql_textarea"><textarea id="sql-textarea" name="sql-textarea"></textarea></div>',
+        content: '<div class="sql_textarea"><textarea id="sql-textarea" name="sql-textarea" title="'+gettext('SQL Code')+'"></textarea></div>',
       }),
       // Dependencies of the object
       'dependencies': new pgAdmin.Browser.Panel({
@@ -357,7 +357,6 @@ define('pgadmin.browser', [
       // enabled/disabled.
       _.each([
         {m: 'file', id: '#mnu_file'},
-        {m: 'edit', id: '#mnu_edit'},
         {m: 'management', id: '#mnu_management'},
         {m: 'tools', id: '#mnu_tools'},
         {m: 'help', id:'#mnu_help'}], function(o) {
@@ -827,7 +826,6 @@ define('pgadmin.browser', [
 
       _.each([
         {menu: 'file', id: '#mnu_file'},
-        {menu: 'edit', id: '#mnu_edit'},
         {menu: 'management', id: '#mnu_management'},
         {menu: 'tools', id: '#mnu_tools'},
         {menu: 'help', id:'#mnu_help'}],

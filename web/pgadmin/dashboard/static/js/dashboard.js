@@ -43,13 +43,13 @@ define('pgadmin.dashboard', [
         this.$el.html(
           '<i class=\'fa fa-stop\' data-toggle=\'tooltip\' ' +
           'title=\'' + gettext('Cancel the active query') +
-          '\'></i>'
+          '\' aria-label=\''+ gettext('Cancel the active query') +'\'></i>'
         );
       } else {
         this.$el.html(
           '<i class=\'fa fa-times-circle text-danger\' data-toggle=\'tooltip\' ' +
           'title=\'' + gettext('Terminate the session') +
-          '\'></i>'
+          '\' aria-label=\''+ gettext('Terminate the session') +'\'></i>'
         );
       }
       this.$el.attr('tabindex', 0);
@@ -147,7 +147,7 @@ define('pgadmin.dashboard', [
       this.$el.html(
         '<i class=\'fa fa-caret-right\' data-toggle=\'tooltip\' ' +
         'title=\'' + gettext('View the active session details') +
-        '\'></i>'
+        '\' aria-label=\''+ gettext('View the active session details') +'\'></i>'
       );
       this.delegateEvents();
       if (this.grabFocus)

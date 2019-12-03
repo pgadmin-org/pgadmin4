@@ -541,11 +541,13 @@
       id: _.uniqueId('bf_')
     },
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=controlLabel%></label>',
+      '<label class="<%=Backform.controlLabelClassName%>" for="<%=id%>"><%=controlLabel%></label>',
       '<div class="<%=Backform.controlContainerClassName%>">',
       '  <div class="form-check">',
       '    <input type="<%=type%>" class="form-check-input <%=extraClasses.join(\' \')%>" id="<%=id%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '    <label class="form-check-label" for="<%=id%>"><%=label%></label>',
+      '    <% if (label && label.length) { %>',
+      '       <label class="form-check-label" for="<%=id%>"><%=label%></label>',
+      '    <% } %>',
       '  </div>',
       '</div>'
     ].join("\n")),

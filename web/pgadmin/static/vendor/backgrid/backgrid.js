@@ -2191,6 +2191,39 @@ var HeaderCell = Backgrid.HeaderCell = Backbone.View.extend({
 });
 
 /**
+   EmptyHeaderCell is a special cell class that renders a column header cell.
+   The text is empty here and it is not sortable.
+
+   @class Backgrid.EmptyHeaderCell
+   @extends Backbone.View
+ */
+var EmptyHeaderCell = Backgrid.EmptyHeaderCell = Backbone.View.extend({
+
+  /** @property */
+  tagName: "td",
+
+  /**
+     Initializer.
+
+     @param {Object} options
+     @param {Backgrid.Column|Object} options.column
+   */
+  initialize: function (options) {
+    this.column = options.column;
+  },
+
+  /**
+     Renders a empty header cell with no events
+   */
+  render: function () {
+    this.$el.empty();
+    this.$el.addClass(this.column.get("name"));
+    this.$el.addClass("renderable");
+    return this;
+  }
+});
+
+/**
    HeaderRow is a controller for a row of header cells.
 
    @class Backgrid.HeaderRow
@@ -2215,7 +2248,13 @@ var HeaderRow = Backgrid.HeaderRow = Backgrid.Row.extend({
   },
 
   makeCell: function (column, options) {
-    var headerCell = column.get("headerCell") || options.headerCell || HeaderCell;
+    var headerCell = null;
+    if(column.get("label") === "" || !column.get("label")) {
+      headerCell = column.get("headerCell") || options.headerCell || EmptyHeaderCell;
+    } else {
+      headerCell = column.get("headerCell") || options.headerCell || HeaderCell;
+    }
+
     headerCell = new headerCell({
       column: column,
       collection: this.collection

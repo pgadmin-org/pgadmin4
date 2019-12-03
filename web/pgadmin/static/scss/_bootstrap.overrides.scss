@@ -195,9 +195,23 @@ legend {
 		}
 	}
 
-	& thead, & tbody {
+	& thead {
 		& tr {
-			& td, & th {
+			& th {
+				&:first-of-type {
+					border-left: none;
+				}
+
+				&:last-of-type {
+					border-right: none;
+				}
+			}
+		}
+	}
+
+	& tbody {
+		& tr {
+			& td {
 				&:first-of-type {
 					border-left: none;
 				}
