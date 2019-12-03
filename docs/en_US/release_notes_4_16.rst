@@ -33,6 +33,7 @@ Bug fixes
 | `Issue #4818 <https://redmine.postgresql.org/issues/4818>`_ -  Fix server connection drops out issue in query tool.
 | `Issue #4836 <https://redmine.postgresql.org/issues/4836>`_ -  Updated the json file name from 'servers.json' to 'pgadmin4/servers.json' in the container deployment section of the documentation.
 | `Issue #4878 <https://redmine.postgresql.org/issues/4878>`_ -  Ensure that the superuser should be able to create role, as the superuser overrides all the access restrictions.
+| `Issue #4923 <https://redmine.postgresql.org/issues/4923>`_ -  Enhance the logic to change the label from 'Delete/Drop' to 'Remove' for the server and server group node.
 | `Issue #4925 <https://redmine.postgresql.org/issues/4925>`_ -  Shown some text on process watcher till the initial logs are loaded.
 | `Issue #4926 <https://redmine.postgresql.org/issues/4926>`_ -  Fix VPN network disconnect issue where pgAdmin4 hangs on expanding the Servers node.
 | `Issue #4930 <https://redmine.postgresql.org/issues/4930>`_ -  Fix main window tab navigation accessibility issue.

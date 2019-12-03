@@ -70,6 +70,7 @@ define('pgadmin.node.server_group', [
         },
       }),
       canDrop: function(itemData) { return itemData.can_delete; },
+      dropAsRemove: true,
       canDelete: function(i) {
         var s = pgAdmin.Browser.tree.siblings(i, true);
 

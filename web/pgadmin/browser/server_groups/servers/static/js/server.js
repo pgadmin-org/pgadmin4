@@ -58,6 +58,8 @@ define('pgadmin.node.server', [
       dialogHelp: url_for('help.static', {'filename': 'server_dialog.html'}),
       label: gettext('Server'),
       canDrop: true,
+      dropAsRemove: true,
+      dropPriority: 5,
       hasStatistics: true,
       hasCollectiveStatistics: true,
       can_expand: function(d) {
