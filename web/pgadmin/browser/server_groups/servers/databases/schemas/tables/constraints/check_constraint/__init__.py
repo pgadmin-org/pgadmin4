@@ -289,6 +289,7 @@ class CheckConstraintView(PGChildNodeView):
         """
         SQL = render_template("/".join([self.template_path,
                                         'nodes.sql']),
+                              tid=tid,
                               cid=cid)
         status, rset = self.conn.execute_2darray(SQL)
 
