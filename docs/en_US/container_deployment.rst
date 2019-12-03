@@ -76,6 +76,13 @@ than using the default.
 Override the default file path for the server definition list. See the
 /pgadmin4/servers.json mapped file below for more information.
 
+**GUNICORN_ACCESS_LOGFILE**
+
+*Default: -* (stdout)
+
+Specify an output file in which to store the Gunicorn access logs, instead of
+sending them to stdout.
+
 **GUNICORN_THREADS**
 
 *Default: 25*
