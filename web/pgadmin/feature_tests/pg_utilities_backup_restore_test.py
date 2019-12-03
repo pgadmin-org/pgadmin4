@@ -118,8 +118,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             (By.XPATH,
              NavMenuLocators.process_watcher_alertfier))
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".loading-logs")
-        )
+            lambda driver: driver.find_element_by_css_selector(
+                ".loading-logs"), 10)
 
         if status != "Successfully completed.":
             self.assertEquals(status, "Successfully completed.")
@@ -188,8 +188,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             (By.XPATH,
              NavMenuLocators.process_watcher_alertfier))
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".loading-logs")
-        )
+            lambda driver: driver.find_element_by_css_selector(
+                ".loading-logs"), 10)
 
         if status != "Successfully completed.":
             self.assertEquals(status, "Successfully completed.")
@@ -215,6 +215,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 os.remove(backup_file)
 
     def after(self):
+        test_gui_helper.close_process_watcher(self)
         test_gui_helper.close_bgprocess_popup(self)
         self.page.remove_server(self.server)
         connection = test_utils.get_db_connection(

@@ -218,12 +218,6 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
              QueryToolLocators.query_output_cells))
         )
 
-        # click on first data column to select all column.
-        column_1 = \
-            self.page.find_by_css_selector(
-                QueryToolLocators.output_column_header_css.format('id1'))
-        column_1.click()
-
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
@@ -235,6 +229,11 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
         scroll = 10
         status = False
         while scroll:
+            # click on first data column to select all column.
+            column_1 = \
+                self.page.find_by_css_selector(
+                    QueryToolLocators.output_column_header_css.format('id1'))
+            column_1.click()
             canvas_ele = self.page.find_by_css_selector('.grid-canvas')
             scrolling_height = canvas_ele.size['height']
             self.driver.execute_script(

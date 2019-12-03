@@ -164,11 +164,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         self._create_enum_type()
         for batch in config_data:
             query = self.construct_select_query(batch)
-            self.page.fill_codemirror_area_with(query)
-            execute_query = self.page.find_by_css_selector(
-                QueryToolLocators.btn_execute_query_css)
-            execute_query.click()
-
+            self.page.execute_query(query)
             wait = WebDriverWait(self.page.driver, 5)
 
             # wait for the visibility of the grid to appear

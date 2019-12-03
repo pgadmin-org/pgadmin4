@@ -173,7 +173,7 @@ class PgadminPage:
         self.fill_codemirror_area_with(query)
         self.click_execute_query_button()
 
-    def click_execute_query_button(self):
+    def click_execute_query_button(self, timeout=20):
         retry = 5
         execute_button = self.find_by_css_selector(
             QueryToolLocators.btn_execute_query_css)
@@ -189,7 +189,7 @@ class PgadminPage:
                 break
             else:
                 retry -= 1
-        self.wait_for_query_tool_loading_indicator_to_disappear()
+        self.wait_for_query_tool_loading_indicator_to_disappear(timeout)
 
     def check_execute_option(self, option):
         """"This function will check auto commit or auto roll back based on
@@ -689,15 +689,17 @@ class PgadminPage:
         try:
             webdriver.ActionChains(self.driver).double_click(
                 server_element).perform()
-            if self.wait_for_element_to_appear(self.driver,
-                                               ConnectToServerDiv.ok_button):
-                self.fill_input_by_xpath(
-                    ConnectToServerDiv.password_field, password)
+            if self.check_if_element_exist_by_xpath(
+                    ConnectToServerDiv.ok_button):
+                field = self.find_by_xpath(
+                    ConnectToServerDiv.password_field)
+                self.fill_input(field, password)
                 self.find_by_xpath(ConnectToServerDiv.ok_button).click()
-                self.wait_until_element_not_visible(
-                    ConnectToServerDiv.ok_button)
-                if self.wait_for_element_to_be_visible(
-                        self.driver, ConnectToServerDiv.error_message, 2):
+                self.wait_for_element_to_disappear(
+                    lambda driver: driver.find_element_by_xpath(
+                        ConnectToServerDiv.ok_button))
+                if self.check_if_element_exist_by_xpath(
+                        ConnectToServerDiv.error_message, 2):
                     print(
                         "While entering password in click_and_connect_server "
                         "function, error is occurred : " + str(
@@ -983,7 +985,7 @@ class PgadminPage:
         self._wait_for("element to exist", element_if_it_exists)
         return find_method_with_args(self.driver)
 
-    def wait_for_element_to_disappear(self, find_method_with_args):
+    def wait_for_element_to_disappear(self, find_method_with_args, timeout=5):
         def element_if_it_disappears(driver):
             try:
                 element = find_method_with_args(driver)
@@ -994,7 +996,8 @@ class PgadminPage:
             except (NoSuchElementException, StaleElementReferenceException):
                 return True
 
-        return self._wait_for("element to disappear", element_if_it_disappears)
+        return self._wait_for("element to disappear",
+                              element_if_it_disappears, timeout)
 
     def wait_for_reloading_indicator_to_disappear(self):
         def reloading_indicator_has_disappeared(driver):
@@ -1017,7 +1020,7 @@ class PgadminPage:
 
         self._wait_for("spinner to disappear", spinner_has_disappeared, 20)
 
-    def wait_for_query_tool_loading_indicator_to_disappear(self):
+    def wait_for_query_tool_loading_indicator_to_disappear(self, timeout=20):
         def spinner_has_disappeared(driver):
             try:
                 spinner = driver.find_element_by_css_selector(
@@ -1029,7 +1032,8 @@ class PgadminPage:
                 time.sleep(0.5)
                 return True
 
-        self._wait_for("spinner to disappear", spinner_has_disappeared, 20)
+        self._wait_for(
+            "spinner to disappear", spinner_has_disappeared, timeout)
 
     def wait_for_query_tool_loading_indicator_to_appear(self):
         status = self.check_if_element_exist_by_xpath(
@@ -1151,7 +1155,7 @@ class PgadminPage:
             try:
                 element = self.driver.find_element(*click_locator)
                 element.click()
-                WebDriverWait(self.driver, 2).until(
+                WebDriverWait(self.driver, 10).until(
                     EC.visibility_of_element_located(verify_locator))
                 click_status = True
             except Exception:

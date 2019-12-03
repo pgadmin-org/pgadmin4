@@ -108,6 +108,7 @@ def clear_node_info_dict():
 
 def create_database(server, db_name, encoding=None):
     """This function used to create database and returns the database id"""
+    db_id = ''
     try:
         connection = get_db_connection(
             server['db'],
@@ -135,13 +136,13 @@ def create_database(server, db_name, encoding=None):
         pg_cursor.execute("SELECT db.oid from pg_database db WHERE"
                           " db.datname='%s'" % db_name)
         oid = pg_cursor.fetchone()
-        db_id = ''
         if oid:
             db_id = oid[0]
         connection.close()
         return db_id
     except Exception:
         traceback.print_exc(file=sys.stderr)
+        return db_id
 
 
 def create_table(server, db_name, table_name, extra_columns=[]):
@@ -777,6 +778,27 @@ def configure_preferences(default_binary_path=None):
             ' WHERE PID = ?', (-1, pref_tree_state_save_interval.pid)
         )
 
+    # Disable auto expand sole children tree state for tests
+    pref_auto_expand_sol_children = \
+        browser_pref.preference('auto_expand_sole_children')
+
+    user_pref = cur.execute(
+        'SELECT pid, uid FROM user_preferences '
+        'where pid=?', (pref_auto_expand_sol_children.pid,)
+    )
+
+    if len(user_pref.fetchall()) == 0:
+        cur.execute(
+            'INSERT INTO user_preferences(pid, uid, value)'
+            ' VALUES (?,?,?)', (pref_auto_expand_sol_children.pid, 1, 'False')
+        )
+    else:
+        cur.execute(
+            'UPDATE user_preferences'
+            ' SET VALUE = ?'
+            ' WHERE PID = ?', ('False', pref_auto_expand_sol_children.pid)
+        )
+
     # Disable reload warning on browser
     pref_confirm_on_refresh_close = \
         browser_pref.preference('confirm_on_refresh_close')
@@ -1103,18 +1125,21 @@ def get_watcher_dialogue_status(self):
     """This will get watcher dialogue status"""
     import time
     attempts = 120
-
+    status = None
     while attempts > 0:
-        status = self.page.find_by_css_selector(
-            ".pg-bg-status-text").text
+        try:
+            status = self.page.find_by_css_selector(
+                ".pg-bg-status-text").text
 
-        if 'Failed' in status:
-            break
-        if status == 'Started' or status == 'Running...':
+            if 'Failed' in status:
+                break
+            if status == 'Started' or status == 'Running...':
+                attempts -= 1
+                time.sleep(.5)
+            else:
+                break
+        except Exception:
             attempts -= 1
-            time.sleep(.5)
-        else:
-            break
     return status
 
 

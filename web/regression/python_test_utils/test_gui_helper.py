@@ -47,11 +47,14 @@ def close_bgprocess_popup(tester):
 def close_process_watcher(tester):
     attempt = 10
     while attempt > 0:
-        close_btn = tester.page.find_by_xpath(
-            NavMenuLocators.process_watcher_close_button_xpath)
-        close_btn.click()
-        if not tester.page.check_if_element_exist_by_xpath(
-                NavMenuLocators.process_watcher_close_button_xpath, 1):
-            break
-        else:
+        try:
+            if not tester.page.check_if_element_exist_by_xpath(
+                    NavMenuLocators.process_watcher_close_button_xpath, 1):
+                break
+            else:
+                close_btn = tester.page.find_by_xpath(
+                    NavMenuLocators.process_watcher_close_button_xpath)
+                close_btn.click()
+                attempt -= 1
+        except Exception:
             attempt -= 1

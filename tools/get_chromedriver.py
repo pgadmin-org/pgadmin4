@@ -17,7 +17,12 @@ import os
 import platform
 import subprocess
 import sys
-import urllib.request
+try:
+    from urllib.request import urlopen, urlretrieve
+    from urllib.error import URLError
+except Exception:
+    from urllib import urlopen, urlretrieve
+    URLError = Exception
 import zipfile
 
 
@@ -85,13 +90,13 @@ def get_chrome_version(args):
         # On Linux/Mac we run the Chrome executable with the --version flag,
         # then parse the output.
         try:
-            result = subprocess.run([args.chrome, '--version'],
-                                    stdout=subprocess.PIPE)
-        except FileNotFoundError as e:
+            result = subprocess.Popen([args.chrome, '--version'],
+                                      stdout=subprocess.PIPE)
+        except FileNotFoundError:
             print('The specified Chrome executable could not be found.')
             sys.exit(1)
 
-        version_str = result.stdout.decode("utf-8").strip()
+        version_str = result.stdout.read().decode("utf-8")
         # Check for 'Chrom' not 'Chrome' in case the user is using Chromium.
         if "Chrom" not in version_str:
             print('The specified Chrome executable output an unexpected '
@@ -120,8 +125,8 @@ def get_chromedriver_version(chrome_version):
         .format(chrome_version)
 
     try:
-        fp = urllib.request.urlopen(url)
-    except urllib.error.URLError as e:
+        fp = urlopen(url)
+    except URLError as e:
         print('The chromedriver catalog URL could not be accessed: {}'
               .format(e))
         sys.exit(1)
@@ -173,8 +178,8 @@ print('Downloading chromedriver v{} for Chrome v{} on {}...'
       .format(chromedriver_version, chrome_version, system))
 
 try:
-    file, headers = urllib.request.urlretrieve(url)
-except urllib.error.URLError as e:
+    file, headers = urlretrieve(url)
+except URLError as e:
     print('The chromedriver download URL could not be accessed: {}'
           .format(e))
     sys.exit(1)
