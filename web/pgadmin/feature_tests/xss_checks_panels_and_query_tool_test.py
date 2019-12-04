@@ -64,7 +64,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.add_server(self.server)
         self._tables_node_expandable()
         self._check_xss_in_browser_tree()
-        self._check_xss_in_properties_tab()
         self._check_xss_in_sql_tab()
 
         # sometime the tab for dependent does not show info, so refreshing
@@ -119,21 +118,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             source_code,
             "&lt;h1&gt;X",
             "Browser tree"
-        )
-
-    def _check_xss_in_properties_tab(self):
-        print(
-            "\n\tChecking the Properties tab for XSS vulnerabilities",
-            file=sys.stderr, end=""
-        )
-        self.page.click_tab("Properties")
-        source_code = self.page.find_by_xpath(
-            "//span[contains(@class,'uneditable-input')]"
-        ).get_attribute('innerHTML')
-        self._check_escaped_characters(
-            source_code,
-            "&lt;h1&gt;X",
-            "Properties tab (Backform Control)"
         )
 
     def _check_xss_in_sql_tab(self):

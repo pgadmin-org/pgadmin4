@@ -977,7 +977,7 @@ class PgadminPage:
         def element_if_it_exists(driver):
             try:
                 element = find_method_with_args(driver)
-                if element.is_displayed() and element.is_enabled():
+                if element.is_displayed():
                     return True
             except (NoSuchElementException, StaleElementReferenceException):
                 return False
