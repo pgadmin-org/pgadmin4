@@ -271,7 +271,7 @@
   background-color: $dropdown-bg;
 }
 
-.wcMenuItemHover, .wcMenuItem:hover, .context-menu-item:not(.context-menu-not-selectable).hover, .context-menu-item:not(.context-menu-not-selectable):hover {
+.wcMenuItemHover, .wcMenuItem:hover, .context-menu-item:not(.context-menu-not-selectable).hover, .context-menu-item:not(.context-menu-not-selectable):hover, .context-menu-hover {
   color: $dropdown-link-hover-color;
   background-color: $dropdown-link-hover-bg !important;
 }
