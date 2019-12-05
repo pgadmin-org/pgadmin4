@@ -15,6 +15,8 @@ from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import trigger_definition
+from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.driver import get_driver
 from functools import wraps
 
 
@@ -121,9 +123,10 @@ def get_trigger_function_and_columns(conn, data, tid,
             data['tfunction'] = result['rows'][0]['tfunctions']
 
         if len(data['custom_tgargs']) > 0:
+            driver = get_driver(PG_DEFAULT_DRIVER)
             # We know that trigger has more than 1 argument, let's join them
             # and convert it to string
-            formatted_args = ["'{0}'".format(arg)
+            formatted_args = [driver.qtLiteral(arg)
                               for arg in data['custom_tgargs']]
             formatted_args = ', '.join(formatted_args)
 
