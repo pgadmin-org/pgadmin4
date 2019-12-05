@@ -43,6 +43,7 @@ Bug fixes
 | `Issue #4935 <https://redmine.postgresql.org/issues/4935>`_ -  Fix accessibility issues.
 | `Issue #4952 <https://redmine.postgresql.org/issues/4952>`_ -  Fix an issue of retrieving properties for Compound Triggers. It's a regression of #4006.
 | `Issue #4953 <https://redmine.postgresql.org/issues/4953>`_ -  Fix an issue where pgAdmin4 unable to retrieve table node if the trigger is already disabled and the user clicks on Enable All.
+| `Issue #4958 <https://redmine.postgresql.org/issues/4958>`_ -  Fix reverse engineering SQL issue for triggers when passed a single argument to trigger function.
 | `Issue #4964 <https://redmine.postgresql.org/issues/4964>`_ -  Fix an issue where length and precision are not removed from table/column dialog.
 | `Issue #4965 <https://redmine.postgresql.org/issues/4965>`_ -  Fix an issue where the Interval data type is not displayed in the properties dialog of table/column.
 | `Issue #4966 <https://redmine.postgresql.org/issues/4966>`_ -  Fix 'Could not find the object on the server.' error while refreshing the check constraint.

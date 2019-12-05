@@ -120,7 +120,7 @@ def get_trigger_function_and_columns(conn, data, tid,
                 'tfunctions' in result['rows'][0]:
             data['tfunction'] = result['rows'][0]['tfunctions']
 
-        if len(data['custom_tgargs']) > 1:
+        if len(data['custom_tgargs']) > 0:
             # We know that trigger has more than 1 argument, let's join them
             # and convert it to string
             formatted_args = ["'{0}'".format(arg)
