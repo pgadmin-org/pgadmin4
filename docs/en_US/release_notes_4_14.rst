@@ -10,7 +10,7 @@ New features
 ************
 
 | `Issue #3009 <https://redmine.postgresql.org/issues/3009>`_ -  Added Copy with headers functionality when copy data from Query Tool/View Data.
-| `Issue #4778 <https://redmine.postgresql.org/issues/4778>`_ -  Implemeted the Query Plan Analyser.
+| `Issue #4778 <https://redmine.postgresql.org/issues/4778>`_ -  Implemented the Query Plan Analyser.
 | `Issue #4823 <https://redmine.postgresql.org/issues/4823>`_ -  Include PostgreSQL 12 binaries in the container.
 
 Housekeeping
