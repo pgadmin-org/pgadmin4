@@ -4,11 +4,19 @@
 
 .user_container {
   border-bottom: $panel-border;
+  height: 100%;
+  min-height: 0;
+  margin-top: $title-height;
 }
 
 .user_management {
   height: 100%;
   overflow: hidden;
+
+  & .navtab-inline-controls {
+    position: absolute;
+    width: 100%;
+  }
 }
 
 .user_management .search_users form {

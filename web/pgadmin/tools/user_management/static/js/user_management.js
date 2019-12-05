@@ -777,7 +777,7 @@ define([
                   add_title: gettext('Add new user'),
                 },
                 $gridBody = $('<div></div>', {
-                  class: 'user_container',
+                  class: 'user_container flex-grow-1',
                 });
 
               $.ajax({
@@ -801,12 +801,12 @@ define([
                 row: UserRow,
                 columns: gridSchema.columns,
                 collection: userCollection,
-                className: 'backgrid table table-bordered table-noouter-border table-hover',
+                className: 'backgrid table table-bordered table-noouter-border table-bottom-border table-hover',
               });
 
               $gridBody.append(view.render().$el[0]);
 
-              this.$content = $('<div class=\'user_management object subnode subnode-noouter-border\'></div>').append(
+              this.$content = $('<div class=\'user_management object subnode subnode-noouter-border d-flex flex-column\'></div>').append(
                 headerTpl(data)).append($gridBody).append($statusBar);
 
               this.elements.content.appendChild(this.$content[0]);
