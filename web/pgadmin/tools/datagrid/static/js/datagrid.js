@@ -227,7 +227,7 @@ define('pgadmin.datagrid', [
         queryToolForm +=`
           </form>
             <script>
-              document.getElementById("title").value = "${panel_title}";
+              document.getElementById("title").value = "${_.escape(panel_title)}";
               document.getElementById("queryToolForm").submit();
             </script>
           `;

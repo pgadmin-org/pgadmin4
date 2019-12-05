@@ -28,6 +28,7 @@ Bug fixes
 
 | `Issue #3538 <https://redmine.postgresql.org/issues/3538>`_ -  Fix issue where the Reset button does not get enabled till all the mandatory fields are provided in the dialog.
 | `Issue #4659 <https://redmine.postgresql.org/issues/4659>`_ -  Updated documentation for default privileges to clarify more on the grantor.
+| `Issue #4674 <https://redmine.postgresql.org/issues/4674>`_ -  Fix query tool launch error if user name contains HTML characters. It's a regression.
 | `Issue #4724 <https://redmine.postgresql.org/issues/4724>`_ -  Fix network disconnect issue while establishing the connection via SSH Tunnel and it impossible to expand the Servers node.
 | `Issue #4761 <https://redmine.postgresql.org/issues/4761>`_ -  Fix an issue where the wrong type is displayed when changing the datatype from timestamp with time zone to timestamp without time zone.
 | `Issue #4792 <https://redmine.postgresql.org/issues/4792>`_ -  Ensure that the superuser should be able to create database, as the superuser overrides all the access restrictions.
