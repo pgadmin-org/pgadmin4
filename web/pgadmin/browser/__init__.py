@@ -584,7 +584,7 @@ def index():
 
     # Set the language cookie after login, so next time the user will have that
     # same option at the login time.
-    misc_preference = Preferences.module('miscellaneous')
+    misc_preference = Preferences.module('misc')
     user_languages = misc_preference.preference(
         'user_language'
     )

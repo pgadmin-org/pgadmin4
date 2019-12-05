@@ -285,7 +285,7 @@ def create_app(app_name=None):
                 if user is not None:
                     user_id = user.id
             user_language = Preferences.raw_value(
-                'miscellaneous', 'user_language', None, user_id
+                'misc', 'user_language', 'user_language', user_id
             )
             if user_language is not None:
                 language = user_language
@@ -411,7 +411,7 @@ def create_app(app_name=None):
             language = data['language']
 
             # Set the user language preference
-            misc_preference = Preferences.module('miscellaneous')
+            misc_preference = Preferences.module('misc')
             user_languages = misc_preference.preference(
                 'user_language'
             )

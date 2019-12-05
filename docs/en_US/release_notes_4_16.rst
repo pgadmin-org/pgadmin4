@@ -49,6 +49,7 @@ Bug fixes
 | `Issue #4964 <https://redmine.postgresql.org/issues/4964>`_ -  Fix an issue where length and precision are not removed from table/column dialog.
 | `Issue #4965 <https://redmine.postgresql.org/issues/4965>`_ -  Fix an issue where the Interval data type is not displayed in the properties dialog of table/column.
 | `Issue #4966 <https://redmine.postgresql.org/issues/4966>`_ -  Fix 'Could not find the object on the server.' error while refreshing the check constraint.
+| `Issue #4975 <https://redmine.postgresql.org/issues/4975>`_ -  Fix issue where the user can not switch the UI language. It's a regression of #4348.
 | `Issue #4978 <https://redmine.postgresql.org/issues/4978>`_ -  Fix pgAdmin4 failed to start issue after upgrading to version 4.15.
 | `Issue #4985 <https://redmine.postgresql.org/issues/4985>`_ -  Fix an issue where the inherited table name with quotes did not escape correctly.
 | `Issue #4991 <https://redmine.postgresql.org/issues/4991>`_ -  Fix an issue where context menu is open along with submenu and the focus is not on context menu or submenu.
