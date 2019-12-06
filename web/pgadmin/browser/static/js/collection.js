@@ -57,7 +57,7 @@ define([
               name: 'show_query_tool', node: this.type, module: this,
               applies: ['context'], callback: 'show_query_tool',
               priority: 998, label: gettext('Query Tool...'),
-              icon: 'fa fa-bolt',
+              icon: 'pg-font-icon icon-query-tool',
             }]);
           }
         }

@@ -15,6 +15,7 @@ New features
 | `Issue #4772 <https://redmine.postgresql.org/issues/4772>`_ -  Added aria-label to provide an invisible label where a visible label cannot be used.
 | `Issue #4773 <https://redmine.postgresql.org/issues/4773>`_ -  Added role="status" attribute to all the status messages for accessibility.
 | `Issue #4944 <https://redmine.postgresql.org/issues/4944>`_ -  Allow Gunicorn logs in the container to be directed to a file specified through GUNICORN_ACCESS_LOGFILE.
+| `Issue #4990 <https://redmine.postgresql.org/issues/4990>`_ -  Changed the open query tool and data filter icons.
 
 Housekeeping
 ************

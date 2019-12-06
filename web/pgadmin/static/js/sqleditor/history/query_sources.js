@@ -12,7 +12,7 @@
 
 export const QuerySources = {
   EXECUTE: {
-    ICON_CSS_CLASS: 'fa fa-bolt',
+    ICON_CSS_CLASS: 'fa fa-play',
   },
   EXPLAIN: {
     ICON_CSS_CLASS: 'fa fa-hand-pointer-o',

@@ -113,7 +113,7 @@ define('pgadmin.datagrid', [
           enable: query_tool_menu_enabled,
           priority: 1,
           label: gettext('Query Tool'),
-          icon: 'fa fa-bolt',
+          icon: 'pg-font-icon icon-query-tool',
         }];
 
         // Create context menu

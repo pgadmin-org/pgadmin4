@@ -13,7 +13,8 @@ class BrowserToolBarLocators():
     open_query_tool_button_css = \
         ".wcFrameButton[title='Query Tool']:not(.disabled)"
 
-    query_tool_panel_css = ".wcPanelTab .wcTabIcon.fa.fa-bolt"
+    query_tool_panel_css = \
+        ".wcPanelTab .wcTabIcon.pg-font-icon.icon-query-tool"
 
     view_table_data_button_css = \
         ".wcFrameButton[title='View Data']:not(.disabled)"
@@ -205,7 +206,7 @@ class QueryToolLocators:
 
     commit_icon = "icon-commit"
 
-    execute_icon = "fa-bolt"
+    execute_icon = "fa-play"
 
     explain_icon = "fa-hand-pointer-o"
 

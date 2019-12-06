@@ -18,7 +18,7 @@ let _browserPanel = null;
 let _defaultToolBarButtons = [
   {
     label: gettext('Filtered Rows'),
-    btnClass: 'fa fa-filter',
+    btnClass: 'pg-font-icon icon-filter-table-toolbar',
     text: '',
     toggled: false,
     toggleClass: '',
@@ -36,7 +36,7 @@ let _defaultToolBarButtons = [
   },
   {
     label: gettext('Query Tool'),
-    btnClass: 'fa fa-bolt',
+    btnClass: 'pg-font-icon icon-query-tool',
     text: '',
     toggled: false,
     toggleClass: '',
