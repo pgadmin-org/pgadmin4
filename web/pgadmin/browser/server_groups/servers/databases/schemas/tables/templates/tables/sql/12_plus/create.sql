@@ -153,6 +153,21 @@ COMMENT ON COLUMN {{conn|qtIdent(data.schema, data.name, c.name)}}
 
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
     {{ VARIABLE.SET(conn, 'COLUMN', c.name, c.attoptions) }}
+
+{% endif %}
+{###  Alter column statistics value ###}
+{% if c.attstattarget is defined and c.attstattarget > -1 %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    ALTER COLUMN {{conn|qtTypeIdent(c.name)}} SET STATISTICS {{c.attstattarget}};
+
+{% endif %}
+{###  Alter column storage value ###}
+{% if c.attstorage is defined and c.attstorage != c.defaultstorage %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    ALTER COLUMN {{conn|qtTypeIdent(c.name)}} SET STORAGE {%if c.attstorage == 'p' %}
+PLAIN{% elif c.attstorage == 'm'%}MAIN{% elif c.attstorage == 'e'%}
+EXTERNAL{% elif c.attstorage == 'x'%}EXTENDED{% endif %};
+
 {% endif %}
 {###  ACL ###}
 {% if c.attacl and c.attacl|length > 0 %}

@@ -33,13 +33,13 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 
 {% endif %}
 {###  Alter column statistics value ###}
-{% if data.attstattarget and data.attstattarget != o_data.attstattarget %}
+{% if data.attstattarget is defined and data.attstattarget != o_data.attstattarget %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET STATISTICS {{data.attstattarget}};
 
 {% endif %}
 {###  Alter column storage value ###}
-{% if data.attstorage and data.attstorage != o_data.attstorage %}
+{% if data.attstorage is defined and data.attstorage != o_data.attstorage %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET STORAGE {%if data.attstorage == 'p' %}
 PLAIN{% elif data.attstorage == 'm'%}MAIN{% elif data.attstorage == 'e'%}

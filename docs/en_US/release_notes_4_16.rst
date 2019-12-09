@@ -30,6 +30,7 @@ Bug fixes
 
 | `Issue #3538 <https://redmine.postgresql.org/issues/3538>`_ -  Fix issue where the Reset button does not get enabled till all the mandatory fields are provided in the dialog.
 | `Issue #4220 <https://redmine.postgresql.org/issues/4220>`_ -  Fix scrolling issue in 'Users' dialog.
+| `Issue #4516 <https://redmine.postgresql.org/issues/4516>`_ -  Remove the sorting of table headers with no labels.
 | `Issue #4659 <https://redmine.postgresql.org/issues/4659>`_ -  Updated documentation for default privileges to clarify more on the grantor.
 | `Issue #4674 <https://redmine.postgresql.org/issues/4674>`_ -  Fix query tool launch error if user name contains HTML characters. It's a regression.
 | `Issue #4724 <https://redmine.postgresql.org/issues/4724>`_ -  Fix network disconnect issue while establishing the connection via SSH Tunnel and it impossible to expand the Servers node.
@@ -55,5 +56,6 @@ Bug fixes
 | `Issue #4975 <https://redmine.postgresql.org/issues/4975>`_ -  Fix issue where the user can not switch the UI language. It's a regression of #4348.
 | `Issue #4976 <https://redmine.postgresql.org/issues/4976>`_ -  Fix reverse engineering SQL issue where when clause is not visible for PG/EPAS 12.
 | `Issue #4978 <https://redmine.postgresql.org/issues/4978>`_ -  Fix pgAdmin4 failed to start issue after upgrading to version 4.15.
+| `Issue #4982 <https://redmine.postgresql.org/issues/4982>`_ -  Added statistics and storage information in reverse engineering SQL of table/column.
 | `Issue #4985 <https://redmine.postgresql.org/issues/4985>`_ -  Fix an issue where the inherited table name with quotes did not escape correctly.
 | `Issue #4991 <https://redmine.postgresql.org/issues/4991>`_ -  Fix an issue where context menu is open along with submenu and the focus is not on context menu or submenu.

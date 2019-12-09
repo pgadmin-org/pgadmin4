@@ -23,6 +23,20 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     {{ VARIABLE.SET(conn, 'COLUMN', data.name, data.attoptions) }}
 
 {% endif %}
+{###  Alter column statistics value ###}
+{% if data.attstattarget is defined and data.attstattarget > -1 %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+    ALTER COLUMN {{conn|qtTypeIdent(data.name)}} SET STATISTICS {{data.attstattarget}};
+
+{% endif %}
+{###  Alter column storage value ###}
+{% if data.attstorage is defined and data.attstorage != data.defaultstorage %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+    ALTER COLUMN {{conn|qtTypeIdent(data.name)}} SET STORAGE {%if data.attstorage == 'p' %}
+PLAIN{% elif data.attstorage == 'm'%}MAIN{% elif data.attstorage == 'e'%}
+EXTERNAL{% elif data.attstorage == 'x'%}EXTENDED{% endif %};
+
+{% endif %}
 {###  ACL ###}
 {% if data.attacl %}
 {% for priv in data.attacl %}

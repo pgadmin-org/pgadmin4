@@ -86,7 +86,7 @@
         "attnum": 2,
         "name": "new_col_2_$%{}[]()&*^!@\"'`\\/#",
         "attlen": null,
-        "attstattarget": "0",
+        "attstattarget": "5",
         "attstorage": "p",
         "description": "Comment for alter",
         "cltype":"character",
