@@ -1,9 +1,10 @@
 #!/bin/sh
 
-# Create config_distro.py. This has some default config, as well as anything
+# Populate config_distro.py. This has some default config, as well as anything
 # provided by the user through the PGADMIN_CONFIG_* environment variables.
-# Only write the file on first launch.
-if [ ! -f /pgadmin4/config_distro.py ]; then
+# Only update the file on first launch. The empty file is created during the
+# container build so it can have the required ownership.
+if [ `wc -m /pgadmin4/config_distro.py | awk '{ print $1 }'` = "0" ]; then
     cat << EOF > /pgadmin4/config_distro.py
 HELP_PATH = '../../docs'
 DEFAULT_BINARY_PATHS = {

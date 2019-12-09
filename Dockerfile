@@ -160,7 +160,9 @@ RUN apk add --no-cache --virtual \
     apk add \
         postfix \
         postgresql-client \
-        postgresql-libs && \
+        postgresql-libs \
+        shadow \
+        libcap && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir gunicorn==19.9.0 && \
@@ -176,6 +178,17 @@ COPY pkg/docker/entrypoint.sh /entrypoint.sh
 
 # Precompile and optimize python code to save time and space on startup
 RUN python -O -m compileall -x node_modules /pgadmin4
+
+RUN groupadd -g 5050 pgadmin && \
+    useradd -r -u 5050 -g pgadmin pgadmin && \
+    mkdir -p /var/lib/pgadmin && \
+    chown pgadmin:pgadmin /var/lib/pgadmin && \
+    mkdir -p /var/log/pgadmin && \
+    chown pgadmin:pgadmin /var/log/pgadmin && \
+    touch /pgadmin4/config_distro.py && \
+    chown pgadmin:pgadmin /pgadmin4/config_distro.py && \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.7
+USER pgadmin
 
 # Finish up
 VOLUME /var/lib/pgadmin
