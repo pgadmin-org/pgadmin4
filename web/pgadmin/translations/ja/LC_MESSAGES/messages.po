@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-06 19:29+0530\n"
-"PO-Revision-Date: 2019-11-09 12:42+0900\n"
+"PO-Revision-Date: 2019-12-07 19:19+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -3441,7 +3441,7 @@ msgstr "継承元"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:353
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:114
 msgid "Length/Precision"
-msgstr ""
+msgstr "長さ/精度"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:409
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:144
@@ -3516,19 +3516,19 @@ msgstr "列のデータ型は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:728
 msgid "Length/Precision should not be less than: "
-msgstr ""
+msgstr "長さ/精度は次の値以上にしてください："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:730
 msgid "Length/Precision should not be greater than: "
-msgstr ""
+msgstr "長さ/精度は次の値以下にしてください："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:744
 msgid "Scale should not be less than: "
-msgstr ""
+msgstr "位取りは次の値以上にしてください："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:746
 msgid "Scale should not be greater than: "
-msgstr ""
+msgstr "位取りは次の値以下にしてください："
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:757
 msgid "Expression value cannot be empty."
@@ -3710,7 +3710,7 @@ msgstr "検査制約が見つかりませんでした"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:427
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/utils.py:157
 msgid "Could not find the check constraint in the table."
-msgstr ""
+msgstr "テーブルに検査制約が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:594
 msgid "The specified check constraint could not be found.\n"
@@ -4070,7 +4070,7 @@ msgstr "一意性制約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/utils.py:196
 msgid "Could not find the constraint in the table."
-msgstr ""
+msgstr "テーブルに制約が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:535
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.js:521
@@ -5285,12 +5285,12 @@ msgstr "データ型を指定してください"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:221
 #, python-format
 msgid "Length/Precision should not be less than %s"
-msgstr ""
+msgstr "長さ/精度は %s 以上にしてください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:223
 #, python-format
 msgid "Length/Precision should not be greater than %s"
-msgstr ""
+msgstr "長さ/精度は %s 以下にしてください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:234
 #, python-format
@@ -5563,6 +5563,8 @@ msgid ""
 " may result in loss of information about its dependent objects. Do you "
 "want to continue?"
 msgstr ""
+"定義を更新すると、マテリアライズドビューが削除・再作成されます。これにより、依存関係の情報が"
+"失われるかもしれません。続行しますか？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:192
 msgid "With data?"
@@ -7717,7 +7719,7 @@ msgstr "ツリー表示からオブジェクトを選択してください"
 
 #: pgadmin/browser/static/js/browser.js:229
 msgid "SQL Code"
-msgstr ""
+msgstr "SQL コード"
 
 #: pgadmin/browser/static/js/browser.js:234
 msgid "Dependencies"
@@ -7864,7 +7866,7 @@ msgstr "プロパティ..."
 #: pgadmin/browser/static/js/node.js:146
 #, python-format
 msgid "Remove %s"
-msgstr ""
+msgstr "%s を削除"
 
 #: pgadmin/browser/static/js/node.js:206
 #, python-format
@@ -7926,12 +7928,12 @@ msgstr "%s %s？"
 #: pgadmin/browser/static/js/node.js:780
 #, python-format
 msgid "The %s \"%s\" cannot be dropped/removed."
-msgstr ""
+msgstr "%s 「%s」は削除できません"
 
 #: pgadmin/browser/static/js/node.js:812
 #, python-format
 msgid "Error dropping/removing %s: \"%s\""
-msgstr ""
+msgstr "%s の削除エラー： 「%s」"
 
 #: pgadmin/browser/static/js/node.js:1203
 #: pgadmin/browser/static/js/node.js:1205
@@ -8454,7 +8456,7 @@ msgstr "プリペアードトランザクション"
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:84
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:86
 msgid "Search"
-msgstr ""
+msgstr "検索"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:88
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:92
@@ -9347,12 +9349,12 @@ msgstr "」を受信しました。送信元サーバのプロセス ID："
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:30
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:31
 msgid "Open File"
-msgstr ""
+msgstr "ファイルを開く"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:35
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:36
 msgid "Save File"
-msgstr ""
+msgstr "ファイルを保存"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:40
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:41
@@ -9363,52 +9365,52 @@ msgstr "検索"
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:45
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:46
 msgid "Copy"
-msgstr ""
+msgstr "コピー"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:50
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:51
 msgid "Paste"
-msgstr ""
+msgstr "貼り付け"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:55
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:56
 msgid "Delete"
-msgstr ""
+msgstr "削除"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:60
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:61
 msgid "Filter"
-msgstr ""
+msgstr "フィルタ"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:65
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:66
 msgid "Filter options"
-msgstr ""
+msgstr "フィルタオプション"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:70
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:71
 msgid "Rows limit"
-msgstr ""
+msgstr "行数制限"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:75
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:76
 msgid "Execute options"
-msgstr ""
+msgstr "実行オプション"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:80
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:81
 msgid "Cancel query"
-msgstr ""
+msgstr "クエリをキャンセル"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:85
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:86
 msgid "Clear"
-msgstr ""
+msgstr "消去"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:99
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:101
 msgid "Execute/Refresh"
-msgstr ""
+msgstr "実行/更新"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:105
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:107
@@ -9425,17 +9427,17 @@ msgstr "EXPLAIN"
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:111
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:113
 msgid "Explain Analyze"
-msgstr ""
+msgstr "EXPLAIN ANALYZE"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:117
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:119
 msgid "Download as CSV"
-msgstr ""
+msgstr "CSV 形式でダウンロード"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:123
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:125
 msgid "Save Data Changes"
-msgstr ""
+msgstr "変更データを保存"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:129
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:131
@@ -12515,7 +12517,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "EXPLAIN ANALYZE (Shift+F7)"
 
 #~ msgid "Download as CSV (F8)"
-#~ msgstr "CSV としてダウンロード (F8)"
+#~ msgstr "CSV 形式でダウンロード (F8)"
 
 #~ msgid "Error fetching SQL for script: \"%s\""
 #~ msgstr "スクリプトの SQL 取得エラー： 「%s」"
