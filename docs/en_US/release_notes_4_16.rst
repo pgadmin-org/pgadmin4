@@ -47,6 +47,7 @@ Bug fixes
 | `Issue #4933 <https://redmine.postgresql.org/issues/4933>`_ -  Ensure that the Servers collection node should expand independently of server connections.
 | `Issue #4934 <https://redmine.postgresql.org/issues/4934>`_ -  Fix the help button link on the User Management dialog.
 | `Issue #4935 <https://redmine.postgresql.org/issues/4935>`_ -  Fix accessibility issues.
+| `Issue #4947 <https://redmine.postgresql.org/issues/4947>`_ -  Fix XSS issue in explain and explain analyze for table and type which contain HTML.
 | `Issue #4952 <https://redmine.postgresql.org/issues/4952>`_ -  Fix an issue of retrieving properties for Compound Triggers. It's a regression of #4006.
 | `Issue #4953 <https://redmine.postgresql.org/issues/4953>`_ -  Fix an issue where pgAdmin4 unable to retrieve table node if the trigger is already disabled and the user clicks on Enable All.
 | `Issue #4958 <https://redmine.postgresql.org/issues/4958>`_ -  Fix reverse engineering SQL issue for triggers when passed a single argument to trigger function.

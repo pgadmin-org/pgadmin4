@@ -436,7 +436,7 @@ define('pgadmin.misc.explain', [
         tooltip.push(' as ');
         display_text.push('<span class="pg-explain-text-name">');
         display_text.push(_.escape(_planData['Alias']));
-        tooltip.push(_planData['Alias']);
+        tooltip.push(_.escape(_planData['Alias']));
         display_text.push('</span>');
       }
     }
