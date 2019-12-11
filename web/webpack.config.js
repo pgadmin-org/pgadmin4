@@ -18,7 +18,7 @@ const sourceDir = __dirname + '/pgadmin/static';
 const webpackShimConfig = require('./webpack.shim');
 const PRODUCTION = process.env.NODE_ENV === 'production';
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const extractStyle = new MiniCssExtractPlugin({
   filename: '[name].css',
@@ -518,13 +518,12 @@ module.exports = [{
     poll: 1000,
     ignored: /node_modules/,
   },
-  // Webpack 4: uglifyPlugin moved from plugins to optimization
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
+      new TerserPlugin({
         parallel: true,
         cache: true,
-        uglifyOptions: {
+        terserOptions: {
           compress: true,
           extractComments: true,
           output: {
