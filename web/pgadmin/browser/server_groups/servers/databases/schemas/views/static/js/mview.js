@@ -203,7 +203,7 @@ define('pgadmin.node.mview', [
         },{
           id: 'fillfactor', label: gettext('Fill factor'),
           group: gettext('Storage'), mode: ['edit', 'create'],
-          type: 'int',
+          type: 'int', min: 10, max: 100,
         },{
           type: 'nested', control: 'tab', id: 'materialization',
           label: gettext('Parameter'), mode: ['edit', 'create'],

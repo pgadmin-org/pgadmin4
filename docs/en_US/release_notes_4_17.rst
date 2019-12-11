@@ -17,4 +17,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4506 <https://redmine.postgresql.org/issues/4506>`_ -  Fix an issue where clicking on an empty textbox like fill factor or comments, considers it as change and enabled the save button.
 | `Issue #5004 <https://redmine.postgresql.org/issues/5004>`_ -  Fix vulnerability issues reported by 'yarn audit'. Replace the deprecated uglifyjs-webpack-plugin with a terser-webpack-plugin.

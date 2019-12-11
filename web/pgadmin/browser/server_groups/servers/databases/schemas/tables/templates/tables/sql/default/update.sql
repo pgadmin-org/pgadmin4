@@ -64,6 +64,9 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% if data.fillfactor and data.fillfactor != o_data.fillfactor %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
     SET (FILLFACTOR={{data.fillfactor}});
+{% elif data.fillfactor == '' and data.fillfactor != o_data.fillfactor %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    RESET (FILLFACTOR);
 
 {% endif %}
 {###############################}

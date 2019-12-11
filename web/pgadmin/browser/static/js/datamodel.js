@@ -367,7 +367,8 @@ define([
             return;
           }
           attrs[k] = v;
-          if (_.isEqual(self.origSessAttrs[k], v)) {
+          /* If the orig value was null and new one is empty string, then its a "no change" */
+          if (_.isEqual(self.origSessAttrs[k], v) || (self.origSessAttrs[k] === null && v === '')) {
             delete self.sessAttrs[k];
           } else {
             self.sessAttrs[k] = v;
@@ -738,9 +739,7 @@ define([
         field = this.fieldData[keys[i]];
         msg = null;
 
-        if (!(_.isUndefined(value) || _.isNull(value) ||
-            String(value).replace(/^\s+|\s+$/g, '') == '')) {
-
+        if (!(_.isUndefined(value) || _.isNull(value) || String(value) === '')) {
           if (!field) {
             continue;
           }
