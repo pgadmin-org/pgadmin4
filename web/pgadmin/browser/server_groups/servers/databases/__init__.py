@@ -30,6 +30,7 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, unauthorized
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
+from pgadmin.model import Server
 
 
 class DatabaseModule(CollectionNodeModule):
@@ -468,7 +469,9 @@ class DatabaseView(PGChildNodeView):
                 info=_("Database connected."),
                 data={
                     'icon': 'pg-icon-database',
-                    'connected': True
+                    'connected': True,
+                    'info_prefix': '{0}/{1}'.
+                    format(Server.query.filter_by(id=sid)[0].name, conn.db)
                 }
             )
 
@@ -478,7 +481,7 @@ class DatabaseView(PGChildNodeView):
         # Release Connection
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-
+        conn = manager.connection(did=did, auto_reconnect=True)
         status = manager.release(did=did)
 
         if not status:
@@ -489,7 +492,9 @@ class DatabaseView(PGChildNodeView):
                 info=_("Database disconnected."),
                 data={
                     'icon': 'icon-database-not-connected',
-                    'connected': False
+                    'connected': False,
+                    'info_prefix': '{0}/{1}'.
+                    format(Server.query.filter_by(id=sid)[0].name, conn.db)
                 }
             )
 

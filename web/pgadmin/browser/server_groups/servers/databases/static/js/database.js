@@ -200,6 +200,9 @@ define('pgadmin.node.database', [
                 .done(function(res) {
                   if (res.success == 1) {
                     var prv_i = t.parent(i);
+                    if(res.data.info_prefix) {
+                      res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
+                    }
                     Alertify.success(res.info);
                     t.removeIcon(i);
                     data.connected = false;
@@ -518,6 +521,9 @@ define('pgadmin.node.database', [
                 tree.removeIcon(item);
                 data.icon = res.data.icon;
                 tree.addIcon(item, {icon: data.icon});
+              }
+              if(res.data.info_prefix) {
+                res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
               }
 
               Alertify.success(res.info);
