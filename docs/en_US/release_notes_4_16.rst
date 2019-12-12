@@ -6,6 +6,15 @@ Release date: 2019-12-12
 
 This release contains a number of bug fixes and new features since the release of pgAdmin4 4.15.
 
+.. warning:: Warning: This release includes a change to the container
+    distribution to run pgAdmin as a non-root user. Those users of the
+    container who are running with mapped storage directories may need to
+    change the ownership on the host machine, for example:
+
+    .. code-block:: bash
+
+        sudo chown -R 5050:5050 <host_directory>
+
 New features
 ************
 
