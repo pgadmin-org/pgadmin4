@@ -341,8 +341,8 @@ void Server::run()
 
     // Set the port number and key, and force SERVER_MODE off.
     Logger::GetLogger()->Log("Set the port number, key and force SERVER_MODE off");
-    PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
-    PyRun_SimpleString(QString("PGADMIN_KEY = '%1'").arg(m_key).toLatin1());
+    PyRun_SimpleString(QString("PGADMIN_INT_PORT = %1").arg(m_port).toLatin1());
+    PyRun_SimpleString(QString("PGADMIN_INT_KEY = '%1'").arg(m_key).toLatin1());
     PyRun_SimpleString(QString("SERVER_MODE = False").toLatin1());
 
     // Run the app!

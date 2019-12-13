@@ -106,7 +106,7 @@ config.CONSOLE_LOG_LEVEL = WARNING
 # Create the app
 app = create_app()
 
-app.PGADMIN_KEY = ''
+app.PGADMIN_INT_KEY = ''
 app.config.update({'SESSION_COOKIE_DOMAIN': None})
 driver = None
 app_starter = None
