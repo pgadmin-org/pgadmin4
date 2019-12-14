@@ -61,7 +61,7 @@ export class Dialog {
             )
           );
         } else {
-          if (databaseNode.hasParent(isServerNode))
+          if (databaseNode.anyParent(isServerNode))
             serverInformation = nodeData;
         }
       } else {
