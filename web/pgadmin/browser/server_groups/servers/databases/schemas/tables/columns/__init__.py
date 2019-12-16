@@ -717,7 +717,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     column_utils.type_formatter(data['cltype'])
 
             # We will add table & schema as well
-            data = column_utils.column_formatter(self.conn, tid, clid, data)
+            # Passing edit_types_list param so that it does not fetch
+            # edit types. It is not required here.
+            data = column_utils.column_formatter(self.conn, tid, clid,
+                                                 data, [])
 
             SQL, name = self.get_sql(scid, tid, None, data, is_sql=True)
             if not isinstance(SQL, (str, unicode)):

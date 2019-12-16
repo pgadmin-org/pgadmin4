@@ -64,7 +64,8 @@ def get_parent(conn, tid, template_path=None):
 
 
 @get_template_path
-def column_formatter(conn, tid, clid, data, template_path=None):
+def column_formatter(conn, tid, clid, data, edit_types_list=None,
+                     template_path=None):
     """
     This function will return formatted output of query result
     as per client model format for column node
@@ -144,25 +145,17 @@ def column_formatter(conn, tid, clid, data, template_path=None):
     # we will send filtered types related to current type
     type_id = data['atttypid']
 
-    SQL = render_template("/".join([template_path, 'is_referenced.sql']),
-                          tid=tid, clid=clid)
-
-    status, is_reference = conn.execute_scalar(SQL)
-
-    edit_types_list = list()
-    # We will need present type in edit mode
-    edit_types_list.append(data['cltype'])
-
-    if int(is_reference) == 0:
+    if edit_types_list is None:
+        edit_types_list = []
         SQL = render_template("/".join([template_path,
                                         'edit_mode_types.sql']),
                               type_id=type_id)
         status, rset = conn.execute_2darray(SQL)
+        edit_types_list = [row['typname'] for row in rset['rows']]
 
-        for row in rset['rows']:
-            edit_types_list.append(row['typname'])
-
-    data['edit_types'] = edit_types_list
+    # We will need present type in edit mode
+    edit_types_list.append(data['cltype'])
+    data['edit_types_list'] = edit_types_list
 
     data['cltype'] = DataTypeReader.parse_type_name(data['cltype'])
 
@@ -191,9 +184,10 @@ def get_formatted_columns(conn, tid, data, other_columns,
         raise Exception(res)
 
     all_columns = res['rows']
-
+    edit_types = {}
     # Add inherited from details from other columns - type, table
     for col in all_columns:
+        edit_types[col['atttypid']] = []
         for other_col in other_columns:
             if col['name'] == other_col['name']:
                 col['inheritedfrom' + table_or_type] = \
@@ -202,8 +196,17 @@ def get_formatted_columns(conn, tid, data, other_columns,
     data['columns'] = all_columns
 
     if 'columns' in data and len(data['columns']) > 0:
+        SQL = render_template("/".join([template_path,
+                                        'edit_mode_types_multi.sql']),
+                              type_ids=",".join(map(lambda x: str(x),
+                                                    edit_types.keys())))
+        status, res = conn.execute_2darray(SQL)
+        for row in res['rows']:
+            edit_types[row['main_oid']] = row['edit_types']
+
         for column in data['columns']:
-            column_formatter(conn, tid, column['attnum'], column)
+            column_formatter(conn, tid, column['attnum'], column,
+                             edit_types[col['atttypid']])
 
     return data
 
