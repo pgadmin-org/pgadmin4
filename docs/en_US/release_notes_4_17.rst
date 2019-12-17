@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4764 <https://redmine.postgresql.org/issues/4764>`_ -  Allow screen-reader to read relationship attributes in nested elements.
 
 Housekeeping
 ************

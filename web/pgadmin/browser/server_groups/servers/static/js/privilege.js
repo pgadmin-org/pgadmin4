@@ -353,7 +353,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         this.$el.attr('target', this.elId);
 
         var collection = this.model.get(this.column.get('name')),
-          tbl = $('<table></table>').appendTo(this.$el),
+          tbl = $('<table aria-label='+this.column.get('label')+'></table>').appendTo(this.$el),
           self = this,
           privilege = true, with_grant = true;
 

@@ -36,21 +36,21 @@ define('misc.bgprocess', [
       success_status_tpl: _.template(`
       <div class="d-flex px-2 py-1 bg-success-light border border-success rounded">
         <div class="pr-2">
-          <i class="fa fa-check fa-lg text-success pg-bg-status-icon" aria-hidden="true"></i>
+          <i class="fa fa-check fa-lg text-success pg-bg-status-icon" aria-hidden="true" role="img"></i>
         </div>
         <div class="text-body mx-auto pg-bg-status-text"><%-status_text%></div>
       </div>`),
       failed_status_tpl: _.template(`
       <div class="d-flex px-2 py-1 bg-danger-lighter border border-danger rounded">
         <div class="pr-2">
-          <i class="fa fa-close fa-lg text-danger pg-bg-status-icon" aria-hidden="true"></i>
+          <i class="fa fa-close fa-lg text-danger pg-bg-status-icon" aria-hidden="true" role="img"></i>
         </div>
         <div class="text-body mx-auto pg-bg-status-text"><%-status_text%></div>
       </div>`),
       other_status_tpl: _.template(`
       <div class="d-flex px-2 py-1 bg-primary-light border border-primary rounded">
         <div class="pr-2">
-          <i class="fa fa-info fa-lg text-primary pg-bg-status-icon" aria-hidden="true"></i>
+          <i class="fa fa-info fa-lg text-primary pg-bg-status-icon" aria-hidden="true" role="img"></i>
         </div>
         <div class="text-body mx-auto pg-bg-status-text"><%-status_text%></div>
       </div>`),
@@ -299,7 +299,7 @@ define('misc.bgprocess', [
               <div class="card-header bg-primary d-flex">
                 <div>${self.type_desc}</div>
                 <div class="ml-auto">
-                  <button class="btn btn-sm-sq btn-primary pg-bg-close"><i class="fa fa-lg fa-close"></i></button>
+                  <button class="btn btn-sm-sq btn-primary pg-bg-close"><i class="fa fa-lg fa-close" role="img"></i></button>
                 </div>
               </div>
               <div class="card-body px-2">
@@ -307,12 +307,12 @@ define('misc.bgprocess', [
                 <div class="py-1">${self.stime.toString()}</div>
                 <div class="d-flex py-1">
                   <div class="my-auto mr-2">
-                    <span class="fa fa-clock-o fa-2x"></span>
+                    <span class="fa fa-clock-o fa-2x" role="img"></span>
                   </div>
                   <div class="pg-bg-etime my-auto mr-2"></div>
                   <div class="ml-auto">
-                    <button class="btn btn-secondary pg-bg-more-details"><span class="fa fa-info-circle"></span>&nbsp;${gettext('More details...')}</button>
-                    <button class="btn btn-danger bg-process-stop"><span class="fa fa-times-circle"></span>&nbsp;${gettext('Stop Process')}</button>
+                    <button class="btn btn-secondary pg-bg-more-details"><span class="fa fa-info-circle" role="img"></span>&nbsp;${gettext('More details...')}</button>
+                    <button class="btn btn-danger bg-process-stop"><span class="fa fa-times-circle" role="img"></span>&nbsp;${gettext('Stop Process')}</button>
                   </div>
                 </div>
                 <div class="pg-bg-status py-1">
@@ -614,14 +614,14 @@ define('misc.bgprocess', [
               '<div class="bg-detailed-desc"></div>' +
               '<div class="bg-process-stats d-flex py-1">' +
                 '<div class="my-auto mr-2">' +
-                  '<span class="fa fa-clock-o fa-2x"></span>' +
+                  '<span class="fa fa-clock-o fa-2x" role="img"></span>' +
                 '</div>' +
                 '<div class="pg-bg-etime my-auto mr-2">'+
                   '<span>' + gettext('Start time') + ': <span class="bgprocess-start-time"></span>' +
                   '</span>'+
                 '</div>' +
                 '<div class="ml-auto">' +
-                  '<button type="button" class="btn btn-danger bg-process-stop"><span class="fa fa-times-circle"></span>&nbsp;' + gettext('Stop Process') + '</button>' +
+                  '<button type="button" class="btn btn-danger bg-process-stop"><span class="fa fa-times-circle" role="img"></span>&nbsp;' + gettext('Stop Process') + '</button>' +
                 '</div>' +
               '</div>' +
             '</div>' +

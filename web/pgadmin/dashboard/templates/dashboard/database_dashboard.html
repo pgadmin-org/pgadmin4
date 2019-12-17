@@ -57,22 +57,22 @@
     </div>
     <div id="dashboard-activity" class="card dashboard-row dashboard-hidden">
         <div class="card-header">
-            {{ _('Server activity') }}
+            <span id="dashboard-activity-header">{{ _('Server activity') }}</span>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-9 col-12 pr-0">
-                    <ul class="nav nav-tabs" role="tablist">
+                    <ul class="nav nav-tabs" role="tablist" aria-labelledby="dashboard-activity-header">
                         <li class="nav-item">
-                            <a class="nav-link active show" href="#tab_panel_database_activity" aria-controls="tab_database_activity"
+                            <a class="nav-link active show" id="tab_panel_database_activity_tab" href="#tab_panel_database_activity" aria-controls="tab_database_activity"
                                 role="tab" data-toggle="tab">{{ _('Sessions') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#tab_panel_database_locks" aria-controls="tab_database_locks"
+                            <a class="nav-link" id="tab_panel_database_locks_tab" href="#tab_panel_database_locks" aria-controls="tab_database_locks"
                                role="tab" data-toggle="tab">{{ _('Locks') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#tab_panel_database_prepared" aria-controls="tab_database_prepared"
+                            <a class="nav-link" id="tab_panel_database_prepared_tab" href="#tab_panel_database_prepared" aria-controls="tab_database_prepared"
                                role="tab" data-toggle="tab">{{ _('Prepared Transactions') }}</a>
                         </li>
                     </ul>
@@ -96,13 +96,13 @@
 
             <!-- Tab panes -->
             <div class="tab-content">
-                <div role="tabpanel" class="tab-pane negative-space p-2 active show" id="tab_panel_database_activity">
+                <div role="tabpanel" class="tab-pane negative-space p-2 active show" id="tab_panel_database_activity" aria-labelledby="tab_panel_database_activity_tab">
                     <div id="database_activity" class="grid-container"></div>
                 </div>
-                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_database_locks">
+                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_database_locks" aria-labelledby="tab_panel_database_locks_tab">
                     <div id="database_locks" class="grid-container"></div>
                 </div>
-                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_database_prepared">
+                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_database_prepared" aria-labelledby="tab_panel_database_prepared_tab">
                     <div id="database_prepared" class="grid-container"></div>
                 </div>
             </div>

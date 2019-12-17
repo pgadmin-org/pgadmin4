@@ -57,26 +57,26 @@
     </div>
     <div id="dashboard-activity" class="card dashboard-row dashboard-hidden">
         <div class="card-header">
-            {{ _('Server activity') }}
+            <span id="server-activity-header">{{ _('Server activity') }}</span>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-9 col-12 pr-0">
-                    <ul class="nav nav-tabs" role="tablist">
+                    <ul class="nav nav-tabs" role="tablist" aria-labelledby="server-activity-header">
                         <li class="nav-item">
-                            <a class="nav-link active show" href="#tab_panel_server_activity" aria-controls="tab_server_activity"
+                            <a class="nav-link active show" id="tab_panel_server_activity_tab" href="#tab_panel_server_activity" aria-controls="tab_server_activity"
                                 role="tab" data-toggle="tab">{{_('Sessions') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#tab_panel_server_locks" aria-controls="tab_server_locks"
+                            <a class="nav-link" id="tab_panel_server_locks_tab" href="#tab_panel_server_locks" aria-controls="tab_server_locks"
                                 role="tab" data-toggle="tab">{{ _('Locks') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#tab_panel_server_prepared" aria-controls="tab_server_prepared"
+                            <a class="nav-link" id="tab_panel_server_prepared_tab" href="#tab_panel_server_prepared" aria-controls="tab_server_prepared"
                                 role="tab" data-toggle="tab">{{ _('Prepared Transactions') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#tab_panel_server_config" aria-controls="tab_server_config"
+                            <a class="nav-link" id="tab_panel_server_config_tab" href="#tab_panel_server_config" aria-controls="tab_server_config"
                                 role="tab" data-toggle="tab">{{ _('Configuration') }}</a>
                         </li>
                     </ul>
@@ -100,16 +100,16 @@
 
             <!-- Tab panes -->
             <div class="tab-content">
-                <div role="tabpanel" class="tab-pane negative-space p-2 active show" id="tab_panel_server_activity">
+                <div role="tabpanel" class="tab-pane negative-space p-2 active show" id="tab_panel_server_activity" aria-labelledby="tab_panel_server_activity_tab">
                     <div id="server_activity" class="grid-container"></div>
                 </div>
-                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_locks">
+                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_locks" aria-labelledby="tab_panel_server_locks_tab">
                     <div id="server_locks" class="grid-container"></div>
                 </div>
-                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_prepared">
+                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_prepared" aria-labelledby="tab_panel_server_prepared_tab">
                     <div id="server_prepared" class="grid-container"></div>
                 </div>
-                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_config">
+                <div role="tabpanel" class="tab-pane negative-space p-2" id="tab_panel_server_config" aria-labelledby="tab_panel_server_config_tab">
                     <div id="server_config" class="grid-container"></div>
                 </div>
             </div>

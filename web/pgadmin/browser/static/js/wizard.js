@@ -117,7 +117,7 @@ define([
       '          <div class="error-in-footer"> ' +
       '            <div class="d-flex px-2 py-1"> ' +
       '              <div class="pr-2"> ' +
-      '                <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ' +
+      '                <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true" role="img"></i> ' +
       '              </div> ' +
       '              <div class="alert-text"></div> ' +
       '              <div class="ml-auto close-error-bar"> ' +
@@ -130,18 +130,18 @@ define([
       '          <div>' +
       '            <button title = "' + gettext('Help for this dialog.') + '"' +
       '              class="btn btn-secondary pull-left wizard-help" <%=this.options.wizard_help ? "" : "disabled" %>>' +
-      '              <span class="fa fa-lg fa-question"></span></button>' +
+      '              <span class="fa fa-lg fa-question" role="img"></span></button>' +
       '          </div>' +
       '          <div class="ml-auto">' +
       '              <button class="btn btn-secondary wizard-cancel" <%=this.options.disable_cancel ? "disabled" : ""%>>' +
-      '                <i class="fa fa-close"></i>&nbsp;' + gettext('Cancel') + '</button>' +
+      '                <i class="fa fa-close" role="img"></i>&nbsp;' + gettext('Cancel') + '</button>' +
       '              <button class="btn btn-secondary wizard-back" <%=this.options.disable_prev ? "disabled" : ""%>>' +
-      '                <i class="fa fa-backward"></i>&nbsp;' + gettext('Back') + '</button>' +
+      '                <i class="fa fa-backward" role="img"></i>&nbsp;' + gettext('Back') + '</button>' +
       '              <button class="btn btn-secondary wizard-next" <%=this.options.disable_next ? "disabled" : ""%>>' +
       '                ' + gettext('Next') +
       '                &nbsp;<i class="fa fa-forward"></i></button>' +
       '              <button class="btn btn-primary wizard-finish" <%=this.options.disable_finish ? "disabled" : ""%>>' +
-      '                <i class="fa fa-check"></i>&nbsp;' + gettext('Finish') + '</button>' +
+      '                <i class="fa fa-check" role="img"></i>&nbsp;' + gettext('Finish') + '</button>' +
       '          </div>' +
       '        </div>' +
       '      </div>' +

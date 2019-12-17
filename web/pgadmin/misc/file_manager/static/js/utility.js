@@ -552,7 +552,7 @@ define([
               '"><div class="clip"><span data-alt="' +
               file_path_orig + '" class="' + class_type + '"></span>';
               if ((data[key]).Protected == 1) {
-                result += '<span class="fa fa-lock fm_lock_icon" data-protected="protected"></span>';
+                result += '<span class="fa fa-lock fm_lock_icon" data-protected="protected" role="img"></span>';
               }
 
               result += '</div>';
@@ -632,7 +632,7 @@ define([
 
               let data_protected = '';
               if ((data[key]).Protected == 1) {
-                data_protected = '<i class="fa fa-lock tbl_lock_icon" data-protected="protected"></i>';
+                data_protected = '<i class="fa fa-lock tbl_lock_icon" data-protected="protected" role="img"></i>';
               }
               if (!has_capability(data[key], 'rename')) {
                 result += data_protected;
@@ -1586,7 +1586,7 @@ define([
           // template for creating new folder
           folder_div =
             '<li class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
-            '<div class=\'clip\'><span data-alt=\'\' class=\'fa fa-folder-open fm_folder_grid\'></span></div>' +
+            '<div class=\'clip\'><span data-alt=\'\' class=\'fa fa-folder-open fm_folder_grid\' role="img"></span></div>' +
             '<div><input type=\'text\' class=\'fm_file_rename\'><span class="less_text" title=\'\'>New_Folder</span></div>' +
             '<span class=\'meta size\'></span><span class=\'meta created\'></span><span class=\'meta modified\'></span></li>';
 
@@ -1625,7 +1625,7 @@ define([
           folder_div = $(
             '<tr class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
             '<td title=\'\' class=\' tbl_folder\'>' +
-            '<span class="fa fa-folder-open fm_folder_list"></span>' +
+            '<span class="fa fa-folder-open fm_folder_list" role="img"></span>' +
             '<span class="less_text">' + lg.new_folder + '</span>' +
             '<input type=\'text\' class=\'fm_file_rename\'>'+
             '</td>'+

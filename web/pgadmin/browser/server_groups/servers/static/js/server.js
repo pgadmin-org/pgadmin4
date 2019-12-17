@@ -43,7 +43,7 @@ define('pgadmin.node.server', [
         if (_.isUndefined(this.get('label')) ||
           _.isNull(this.get('label')) ||
             String(this.get('label')).replace(/^\s+|\s+$/g, '') == '') {
-          var errmsg = gettext('Label must be specified.');
+          var errmsg = gettext('Security label must be specified.');
           this.errorModel.set('label', errmsg);
           return errmsg;
         }

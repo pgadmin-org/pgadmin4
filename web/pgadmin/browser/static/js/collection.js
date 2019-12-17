@@ -99,7 +99,7 @@ define([
                   '<button tabindex="0" type="<%= type %>" ',
                   'class="btn <%=extraClasses.join(\' \')%>"',
                   '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>">',
-                  '<span class="<%= icon %>"></span><% if (label != "") { %>&nbsp;<%-label%><% } %></button>',
+                  '<span class="<%= icon %>" role="img"></span><% if (label != "") { %>&nbsp;<%-label%><% } %></button>',
                 ].join(' '));
               if (location == 'header') {
                 btnGroup.appendTo(that.header);

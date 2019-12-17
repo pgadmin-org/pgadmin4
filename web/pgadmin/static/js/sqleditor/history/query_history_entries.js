@@ -87,7 +87,9 @@ export class QueryHistoryItem {
 
     let query_source = this.entry.query_source;
     if(query_source)
-      this.$el.find('#query_source_icon').addClass(query_source.ICON_CSS_CLASS);
+      this.$el.find('#query_source_icon')
+        .addClass(query_source.ICON_CSS_CLASS)
+        .attr('role', 'img');
 
     if(this.entry.is_pgadmin_query) {
       this.$el.addClass('pgadmin-query-history-entry');

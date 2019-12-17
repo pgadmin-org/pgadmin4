@@ -697,8 +697,8 @@ define([
     },
     template: {
       'header': _.template([
-        '<li class="nav-item" role="presentation" <%=disabled ? "disabled" : ""%>>',
-        ' <a class="nav-link" data-toggle="tab" tabindex="-1" data-tab-index="<%=tabIndex%>" href="#<%=cId%>"',
+        '<li class="nav-item" <%=disabled ? "disabled" : ""%>>',
+        ' <a class="nav-link" data-toggle="tab" role="tab" tabindex="-1" data-tab-index="<%=tabIndex%>" href="#<%=cId%>"',
         '  id="<%=hId%>" aria-controls="<%=cId%>">',
         '<%=label%></a></li>',
       ].join(' ')),
@@ -830,7 +830,7 @@ define([
       'header': _.template([
         '<div class="<%=Backform.accordianGroupClassName%>" <%=disabled ? "disabled" : ""%>>',
         ' <% if (legend != false) { %>',
-        '  <div class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
+        '  <div class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>" aria-controls="<%=cId%>" role="heading" tabindex="0"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
         ' <% } %>',
         '</div>',
       ].join('\n')),
@@ -1252,10 +1252,11 @@ define([
       return this;
     },
     showGridControl: function(data) {
+      data.cId = data.cId || _.uniqueId('pgC_');
       var self = this,
         gridHeader = _.template([
           '<div class="subnode-header">',
-          '  <label class="control-label pg-el-sm-10"><%-label%></label>',
+          '  <label class="control-label pg-el-sm-10" id="<%=cId%>"><%-label%></label>',
           '  <button class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"><%-add_label%></button>',
           '</div>',
         ].join('\n')),
@@ -1339,6 +1340,9 @@ define([
         columns: gridSchema.columns,
         collection: collection,
         className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
+        attr: {
+          'aria-labelledby': data.cId,
+        },
       });
 
       // Render subNode grid

@@ -327,7 +327,7 @@ define('pgadmin.browser.node', [
             <div class="error-in-footer">
               <div class="d-flex px-2 py-1">
                 <div class="pr-2">
-                  <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
+                  <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true" role="img"></i>
                 </div>
                 <div class="alert-text">${msg}</div>
                 <div class="ml-auto close-error-bar">
