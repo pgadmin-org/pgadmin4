@@ -12,7 +12,7 @@
 # and clean up the web/ source code
 #########################################################################
 
-FROM node:8-alpine AS app-builder
+FROM node:10-alpine AS app-builder
 
 RUN apk add --no-cache \
     autoconf \
