@@ -111,7 +111,16 @@ Mapped Files and Directories
 
 The following files or directories can be mapped from the container onto the
 host machine to allow configuration to be customised and shared between
-instances:
+instances.
+
+.. warning:: Warning: pgAdmin runs as the *pgadmin* user (UID: 5050) in the
+    *pgadmin* group (GID: 5050) in the container. You must ensure that all files
+    are readable, and where necessary (e.g. the working/session directory) for
+    this user on the host machine. For example:
+
+    .. code-block:: bash
+
+        sudo chown -R 5050:5050 <host_directory>
 
 **/var/lib/pgadmin**
 
