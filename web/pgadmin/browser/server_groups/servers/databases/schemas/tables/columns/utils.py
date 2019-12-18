@@ -155,7 +155,7 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
 
     # We will need present type in edit mode
     edit_types_list.append(data['cltype'])
-    data['edit_types_list'] = edit_types_list
+    data['edit_types'] = edit_types_list
 
     data['cltype'] = DataTypeReader.parse_type_name(data['cltype'])
 
@@ -206,7 +206,7 @@ def get_formatted_columns(conn, tid, data, other_columns,
 
         for column in data['columns']:
             column_formatter(conn, tid, column['attnum'], column,
-                             edit_types[col['atttypid']])
+                             edit_types[column['atttypid']])
 
     return data
 
