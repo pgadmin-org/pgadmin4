@@ -15,6 +15,7 @@ Housekeeping
 ************
 
 | `Issue #5017 <https://redmine.postgresql.org/issues/5017>`_ -  Use cheroot as default production server for pgAdmin4.
+| `Issue #5023 <https://redmine.postgresql.org/issues/5023>`_ -  Refactored SQL of Views and Materialized Views.
 
 Bug fixes
 *********
