@@ -15,6 +15,7 @@
 #       ignored when building a PIP Wheel.
 ##############################################################################
 blinker==1.4
+cheroot==8.2.1
 Flask==1.0.2
 Werkzeug>=0.15.0
 Flask-Gravatar==0.5.0

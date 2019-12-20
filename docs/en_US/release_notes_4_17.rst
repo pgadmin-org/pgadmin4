@@ -14,6 +14,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5017 <https://redmine.postgresql.org/issues/5017>`_ -  Use cheroot as default production server for pgAdmin4.
 
 Bug fixes
 *********
