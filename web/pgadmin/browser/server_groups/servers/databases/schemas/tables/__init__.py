@@ -26,6 +26,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.foreign_key import utils as fkey_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     columns import utils as column_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    constraints.exclusion_constraint import utils as exclusion_utils
 
 
 class TableModule(SchemaChildModule):
@@ -500,20 +502,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         Returns:
 
         """
-        res = [{'label': '', 'value': ''}]
-        sql = render_template("/".join([
-            self.exclusion_constraint_template_path, 'get_access_methods.sql'
-        ]))
+        res = exclusion_utils.get_access_methods(self.conn)
 
-        status, rest = self.conn.execute_2darray(sql)
-
-        if not status:
-            return internal_server_error(errormsg=rest)
-
-        for row in rest['rows']:
-            res.append(
-                {'label': row['amname'], 'value': row['amname']}
-            )
         return make_json_response(
             data=res,
             status=200
@@ -537,21 +527,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         data = request.args if request.args else None
         try:
             if data and 'indextype' in data:
-                SQL = render_template(
-                    "/".join([
-                        self.exclusion_constraint_template_path,
-                        'get_oper_class.sql'
-                    ]),
-                    indextype=data['indextype']
-                )
+                result = exclusion_utils.get_oper_class(
+                    self.conn, data['indextype'])
 
-                status, res = self.conn.execute_2darray(SQL)
-
-                if not status:
-                    return internal_server_error(errormsg=res)
-                result = []
-                for row in res['rows']:
-                    result.append([row['opcname'], row['opcname']])
                 return make_json_response(
                     data=result,
                     status=200
@@ -577,22 +555,10 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         data = request.args if request.args else None
         try:
             if data and 'col_type' in data:
-                SQL = render_template(
-                    "/".join([
-                        self.exclusion_constraint_template_path,
-                        'get_operator.sql'
-                    ]),
-                    type=data['col_type'],
-                    show_sysobj=self.blueprint.show_system_objects
-                )
+                result = exclusion_utils.get_operator(
+                    self.conn, data['col_type'],
+                    self.blueprint.show_system_objects)
 
-                status, res = self.conn.execute_2darray(SQL)
-
-                if not status:
-                    return internal_server_error(errormsg=res)
-                result = []
-                for row in res['rows']:
-                    result.append([row['oprname'], row['oprname']])
                 return make_json_response(
                     data=result,
                     status=200

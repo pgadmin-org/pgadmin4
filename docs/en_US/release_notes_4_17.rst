@@ -14,6 +14,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4988 <https://redmine.postgresql.org/issues/4988>`_ -  Refactored SQL of Table's and it's child nodes.
 | `Issue #5017 <https://redmine.postgresql.org/issues/5017>`_ -  Use cheroot as default production server for pgAdmin4.
 | `Issue #5023 <https://redmine.postgresql.org/issues/5023>`_ -  Refactored SQL of Views and Materialized Views.
 
@@ -24,3 +25,5 @@ Bug fixes
 | `Issue #4943 <https://redmine.postgresql.org/issues/4943>`_ -  Added more information to the 'Database connected/disconnected' message.
 | `Issue #4999 <https://redmine.postgresql.org/issues/4999>`_ -  Rename some internal environment variables that could conflict with Kubernetes.
 | `Issue #5004 <https://redmine.postgresql.org/issues/5004>`_ -  Fix vulnerability issues reported by 'yarn audit'. Replace the deprecated uglifyjs-webpack-plugin with a terser-webpack-plugin.
+| `Issue #5008 <https://redmine.postgresql.org/issues/5008>`_ -  Ensure that the error message should not be displayed if Tablespace is not selected while creating the index.
+| `Issue #5009 <https://redmine.postgresql.org/issues/5009>`_ -  Fix an issue where operator, access method and operator class is not visible for exclusion constraints.

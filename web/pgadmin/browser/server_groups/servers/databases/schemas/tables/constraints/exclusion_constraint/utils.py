@@ -213,3 +213,76 @@ def get_sql(conn, data, did, tid, exid=None, template_path=None):
                               data=data, conn=conn)
 
     return sql, name
+
+
+@get_template_path
+def get_access_methods(conn, template_path=None):
+    """
+    This function is used to get the access methods.
+
+    :param conn:
+    :param template_path:
+    :return:
+    """
+    res = [{'label': '', 'value': ''}]
+    sql = render_template("/".join([template_path, 'get_access_methods.sql']))
+
+    status, rest = conn.execute_2darray(sql)
+    if not status:
+        return internal_server_error(errormsg=rest)
+
+    for row in rest['rows']:
+        res.append(
+            {'label': row['amname'], 'value': row['amname']}
+        )
+
+    return res
+
+
+@get_template_path
+def get_oper_class(conn, indextype, template_path=None):
+    """
+    This function is used to get the operator class methods.
+
+    :param conn:
+    :param indextype:
+    :param template_path:
+    :return:
+    """
+    SQL = render_template("/".join([template_path, 'get_oper_class.sql']),
+                          indextype=indextype)
+
+    status, res = conn.execute_2darray(SQL)
+    if not status:
+        return internal_server_error(errormsg=res)
+
+    result = []
+    for row in res['rows']:
+        result.append([row['opcname'], row['opcname']])
+
+    return result
+
+
+@get_template_path
+def get_operator(conn, coltype, show_sysobj, template_path=None):
+    """
+    This function is used to get the operator.
+
+    :param conn:
+    :param coltype:
+    :param show_sysobj:
+    :param template_path:
+    :return:
+    """
+    SQL = render_template("/".join([template_path, 'get_operator.sql']),
+                          type=coltype, show_sysobj=show_sysobj)
+
+    status, res = conn.execute_2darray(SQL)
+    if not status:
+        return internal_server_error(errormsg=res)
+
+    result = []
+    for row in res['rows']:
+        result.append([row['oprname'], row['oprname']])
+
+    return result

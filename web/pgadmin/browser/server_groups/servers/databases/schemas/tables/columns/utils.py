@@ -65,7 +65,7 @@ def get_parent(conn, tid, template_path=None):
 
 @get_template_path
 def column_formatter(conn, tid, clid, data, edit_types_list=None,
-                     template_path=None):
+                     fetch_inherited_tables=True, template_path=None):
     """
     This function will return formatted output of query result
     as per client model format for column node
@@ -73,6 +73,8 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
     :param tid: Table ID
     :param clid: Column ID
     :param data: Data
+    :param edit_types_list:
+    :param fetch_inherited_tables:
     :param template_path: Optional template path
     :return:
     """
@@ -97,15 +99,16 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
     data = fetch_length_precision(data)
 
     # We need to fetch inherited tables for each table
-    SQL = render_template("/".join([template_path,
-                                    'get_inherited_tables.sql']), tid=tid)
-    status, inh_res = conn.execute_dict(SQL)
-    if not status:
-        return internal_server_error(errormsg=inh_res)
-    for row in inh_res['rows']:
-        if row['attrname'] == data['name']:
-            data['is_inherited'] = True
-            data['tbls_inherited'] = row['inhrelname']
+    if fetch_inherited_tables:
+        SQL = render_template("/".join(
+            [template_path, 'get_inherited_tables.sql']), tid=tid)
+        status, inh_res = conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=inh_res)
+        for row in inh_res['rows']:
+            if row['attrname'] == data['name']:
+                data['is_inherited'] = True
+                data['tbls_inherited'] = row['inhrelname']
 
     # We need to format variables according to client js collection
     if 'attoptions' in data and data['attoptions'] is not None:
@@ -206,7 +209,7 @@ def get_formatted_columns(conn, tid, data, other_columns,
 
         for column in data['columns']:
             column_formatter(conn, tid, column['attnum'], column,
-                             edit_types[column['atttypid']])
+                             edit_types[column['atttypid']], False)
 
     return data
 

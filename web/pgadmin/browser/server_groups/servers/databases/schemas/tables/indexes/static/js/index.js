@@ -492,12 +492,6 @@ define('pgadmin.node.index', [
             this.errorModel.set('name', msg);
             return msg;
           }
-          if (_.isUndefined(this.get('spcname'))
-            || String(this.get('spcname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Tablespace cannot be empty.');
-            this.errorModel.set('spcname', msg);
-            return msg;
-          }
           if (_.isUndefined(this.get('amname'))
             || String(this.get('amname')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Access method cannot be empty.');
