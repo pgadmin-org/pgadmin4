@@ -654,9 +654,10 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         condition = "(typtype IN ('b', 'c', 'd', 'e', 'p', 'r') AND " \
                     "typname NOT IN ('any', 'trigger', 'language_handler', " \
                     "'event_trigger'))"
-        if self.blueprint.show_system_objects:
+        if not self.blueprint.show_system_objects:
             condition += " AND nspname NOT LIKE E'pg\\\\_toast%' AND " \
-                         "nspname NOT LIKE E'pg\\\\_temp%'"
+                         "nspname NOT LIKE E'pg\\\\_temp%' AND "\
+                         "nspname != 'information_schema'"
 
         # Get Types
         status, types = self.get_types(self.conn, condition, False, scid)

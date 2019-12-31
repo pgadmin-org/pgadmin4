@@ -1,9 +1,12 @@
 SELECT
-    pr.oid, pr.xmin, pr.*, pr.prosrc AS prosrc_c,
-    pr.proname AS name, pg_get_function_result(pr.oid) AS prorettypename,
+    pr.oid, pr.xmin, pr.proiswindow, pr.prosrc, pr.prosrc AS prosrc_c,
+     pr.pronamespace, pr.prolang, pr.procost, pr.prorows,
+    pr.prosecdef, pr.proleakproof, pr.proisstrict, pr.proretset, pr.provolatile,
+    pr.pronargs, pr.prorettype, pr.proallargtypes, pr.proargmodes, pr.probin, pr.proacl,
+    pr.proname, pr.proname AS name, pg_get_function_result(pr.oid) AS prorettypename,
     typns.nspname AS typnsp, lanname, proargnames, oidvectortypes(proargtypes) AS proargtypenames,
     pg_get_expr(proargdefaults, 'pg_catalog.pg_class'::regclass) AS proargdefaultvals,
-    pronargdefaults, proconfig, pg_get_userbyid(proowner) AS funcowner, description,
+    pr.pronargdefaults, proconfig, pg_get_userbyid(proowner) AS funcowner, description,
     (SELECT
         array_agg(provider || '=' || label)
     FROM
@@ -19,7 +22,7 @@ JOIN
 JOIN
     pg_language lng ON lng.oid=prolang
 LEFT OUTER JOIN
-    pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_proc'::regclass)
+    pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_proc'::regclass and des.objsubid = 0)
 WHERE
     proisagg = FALSE
 {% if fnid %}
