@@ -19,7 +19,7 @@ class dialogTabNavigator {
 
     this.tabSwitching = false;
 
-    this.tabs = this.dialogContainer.find('.nav-tabs');
+    this.tabs = this.dialogContainer.find('.nav-tabs:visible');
 
     if (this.tabs.length > 0 ) {
       this.tabs = this.tabs[0];
@@ -35,7 +35,7 @@ class dialogTabNavigator {
 
   onKeyboardEvent(event, shortcut) {
     var currentTabPane =  this.dialogContainer
-        .find('.tab-content:first > .tab-pane.active:first'),
+        .find('.tab-content:first > .tab-pane.active:first:visible'),
       childTabData = this.isActivePaneHasChildTabs(currentTabPane);
 
     if (this.tabSwitching) {
@@ -57,12 +57,12 @@ class dialogTabNavigator {
   }
 
   isActivePaneHasChildTabs(currentTabPane) {
-    var childTab = currentTabPane.find('.nav-tabs:first'),
+    var childTab = currentTabPane.find('.nav-tabs:first:visible'),
       childTabPane;
 
     if (childTab.length > 0) {
       childTabPane = currentTabPane
-        .find('.tab-content:first > .tab-pane.active:first');
+        .find('.tab-content:first > .tab-pane.active:first:visible');
 
       return {
         'childTab': childTab,
@@ -93,7 +93,7 @@ class dialogTabNavigator {
 
       nextTabPane = tab_pane.prev();
       innerTabContainer = nextTabPane
-        .find('.tab-content:first > .tab-pane.active:first');
+        .find('.tab-content:first > .tab-pane.active:first:visible');
 
       if (innerTabContainer.length > 0) {
         findAndSetFocus(innerTabContainer);
@@ -124,7 +124,7 @@ class dialogTabNavigator {
 
       nextTabPane = tab_pane.next();
       innerTabContainer = nextTabPane
-        .find('.tab-content:first > .tab-pane.active:first');
+        .find('.tab-content:first > .tab-pane.active:first:visible');
 
       if (innerTabContainer.length > 0) {
         findAndSetFocus(innerTabContainer);

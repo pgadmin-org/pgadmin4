@@ -1283,7 +1283,8 @@ define('pgadmin.misc.explain', [
         }).appendTo(graphicalContainer),
         zoomInBtn = $('<button></button>', {
           class: 'btn btn-secondary pg-explain-zoom-btn',
-          title: 'Zoom in',
+          title: gettext('Zoom in'),
+          'aria-label': gettext('Zoom in'),
           tabindex: 0,
         }).appendTo(zoomArea).append(
           $('<i></i>', {
@@ -1291,7 +1292,8 @@ define('pgadmin.misc.explain', [
           })),
         zoomToNormal = $('<button></button>', {
           class: 'btn btn-secondary pg-explain-zoom-btn',
-          title: 'Zoom to original',
+          title: gettext('Zoom to original'),
+          'aria-label': gettext('Zoom to original'),
           tabindex: 0,
         }).appendTo(zoomArea).append(
           $('<i></i>', {
@@ -1299,7 +1301,8 @@ define('pgadmin.misc.explain', [
           })),
         zoomOutBtn = $('<button></button>', {
           class: 'btn btn-secondary pg-explain-zoom-btn',
-          title: 'Zoom out',
+          title: gettext('Zoom out'),
+          'aria-label': gettext('Zoom out'),
           tabindex: 0,
         }).appendTo(zoomArea).append(
           $('<i></i>', {
@@ -1313,7 +1316,8 @@ define('pgadmin.misc.explain', [
         downloadBtn = $('<button></button>', {
           id: 'btn-explain-download',
           class: 'btn btn-secondary pg-explain-download-btn',
-          title: 'Download',
+          title: gettext('Download'),
+          'aria-label': gettext('Download'),
           tabindex: 0,
           disabled: function() {
             var current_browser = pgAdmin.Browser.get_browser();
@@ -1341,7 +1345,8 @@ define('pgadmin.misc.explain', [
       $('<button></button>', {
         id: 'btn-explain-stats',
         class: 'btn btn-secondary pg-explain-stats-btn',
-        title: 'Statistics',
+        title: gettext('Statistics'),
+        'aria-label': gettext('Statistics'),
         tabindex: 0,
       }).appendTo(statsArea).append(
         $('<i></i>', {
@@ -1380,7 +1385,6 @@ define('pgadmin.misc.explain', [
           var today  = new Date();
           var filename = 'explain_plan_' + today.getTime() + '.svg';
           svgDownloader.downloadSVG(s.toString(), filename);
-          downloadBtn.trigger('blur');
         }
       };
 
@@ -1450,7 +1454,6 @@ define('pgadmin.misc.explain', [
             'height': h * curr_zoom_factor,
           });
           planDiv.data('zoom-factor', curr_zoom_factor);
-          zoomInBtn.trigger('blur');
         });
 
         zoomOutBtn.on('click', function() {
@@ -1466,7 +1469,6 @@ define('pgadmin.misc.explain', [
             'height': h * curr_zoom_factor,
           });
           planDiv.data('zoom-factor', curr_zoom_factor);
-          zoomOutBtn.trigger('blur');
         });
 
         zoomToNormal.on('click', function() {
@@ -1482,7 +1484,6 @@ define('pgadmin.misc.explain', [
             'height': h * curr_zoom_factor,
           });
           planDiv.data('zoom-factor', curr_zoom_factor);
-          zoomToNormal.trigger('blur');
         });
 
         downloadBtn.on('click', function() {
@@ -1495,7 +1496,6 @@ define('pgadmin.misc.explain', [
               var today  = new Date();
               var filename = 'explain_plan_' + today.getTime() + '.svg';
               svgDownloader.downloadSVG(s.toString(), filename);
-              downloadBtn.trigger('blur');
             }
           });
         });
