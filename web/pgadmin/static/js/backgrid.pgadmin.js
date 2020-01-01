@@ -883,6 +883,7 @@ define([
         select2_opts = _.extend({
           openOnEnter: false,
           multiple: false,
+          onDemandLoad: true,
         }, self.defaults.select2,
         (col.select2 || {})
         ),
@@ -943,6 +944,12 @@ define([
         select2_opts['placeholder'] = '';
       }
 
+      if(select2_opts.onDemandLoad) {
+        select2_opts.dataAdapter = $.fn.select2.amd.require('select2/onDemandDataAdapter');
+        if(_.isUndefined(select2_opts.ajax)) {
+          select2_opts.ajax = {};
+        }
+      }
       // Initialize select2 control.
       this.$sel = this.$select.select2(select2_opts);
 

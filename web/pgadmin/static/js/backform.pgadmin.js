@@ -2190,6 +2190,7 @@ define([
         emptyOptions: false,
         preserveSelectionOrder: false,
         isDropdownParent: false,
+        onDemandLoad: true,
       });
 
       // Evaluate the disabled, visible, and required option
@@ -2248,6 +2249,16 @@ define([
         select2Opts.data = data.rawValue;
       }
 
+      /* Set the pgadmin adapter for on demand load.
+       * Setting empty ajax option will enable infinite scrolling.
+       */
+      if(select2Opts.onDemandLoad) {
+        select2Opts.dataAdapter = $.fn.select2.amd.require('select2/onDemandDataAdapter');
+        if(_.isUndefined(select2Opts.ajax)) {
+          select2Opts.ajax = {};
+        }
+      }
+
       this.$sel = this.$el.find('select').select2(select2Opts);
 
       // Add or remove tags from select2 control
@@ -2262,8 +2273,6 @@ define([
             $(this).empty();
           }
         });
-
-
       }
 
       // Select the highlighted item on Tab press.
