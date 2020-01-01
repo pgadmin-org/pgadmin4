@@ -545,7 +545,8 @@ define('pgadmin.node.foreign_key', [
           url = 'get_coveringindex',
           m = self.model,
           cols = [],
-          coveringindex = null;
+          coveringindex = null,
+          url_jump_after_node = 'schema';
 
         self.collection.each(function(m){
           cols.push(m.get('local_column'));
@@ -557,7 +558,7 @@ define('pgadmin.node.foreign_key', [
             full_url = node.generate_url.apply(
               node, [
                 null, url, this.field.get('node_data'),
-                this.field.get('url_with_id') || false, node_info,
+                this.field.get('url_with_id') || false, node_info, url_jump_after_node,
               ]);
 
           if (this.field.get('version_compatible')) {
@@ -622,6 +623,7 @@ define('pgadmin.node.foreign_key', [
       canDrop: true,
       canDropCascade: true,
       hasDepends: true,
+      url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)

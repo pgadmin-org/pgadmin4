@@ -29,6 +29,7 @@ define('pgadmin.node.unique_constraint', [
       parent_type: ['table','partition'],
       canDrop: true,
       canDropCascade: true,
+      url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)

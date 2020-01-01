@@ -33,6 +33,7 @@ define('pgadmin.node.constraints', [
       label: gettext('Constraints'),
       collection_type: 'coll-constraints',
       parent_type: ['table','partition'],
+      url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

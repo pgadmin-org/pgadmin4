@@ -26,6 +26,7 @@ define('pgadmin.node.check_constraint', [
       hasSQL: true,
       hasDepends: true,
       parent_type: ['table','partition'],
+      url_jump_after_node: 'schema',
       Init: function() {
         // Avoid mulitple registration of menus
         if (this.initialized)

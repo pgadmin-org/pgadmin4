@@ -179,7 +179,8 @@ define([
          */
         var self = this,
           url = self.field.get('url') || self.defaults.url,
-          m = self.model.top || self.model;
+          m = self.model.top || self.model,
+          url_jump_after_node = self.field.get('url_jump_after_node') || null;
 
         // Hmm - we found the url option.
         // That means - we needs to fetch the options from that node.
@@ -189,7 +190,7 @@ define([
             with_id = this.field.get('url_with_id') || false,
             full_url = node.generate_url.apply(
               node, [
-                null, url, this.field.get('node_data'), with_id, node_info,
+                null, url, this.field.get('node_data'), with_id, node_info, url_jump_after_node,
               ]),
             cache_level,
             cache_node = this.field.get('cache_node');
@@ -450,9 +451,10 @@ define([
           node = column.get('schema_node'),
           node_info = column.get('node_info'),
           with_id = column.get('url_with_id') || false,
+          url_jump_after_node = this.column.get('url_jump_after_node') || null,
           full_url = node.generate_url.apply(
             node, [
-              null, url, column.get('node_data'), with_id, node_info,
+              null, url, column.get('node_data'), with_id, node_info, url_jump_after_node,
             ]),
           cache_level,
           cache_node = column.get('cache_node');

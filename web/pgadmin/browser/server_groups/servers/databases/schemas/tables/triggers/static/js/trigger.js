@@ -42,6 +42,7 @@ define('pgadmin.node.trigger', [
       sqlAlterHelp: 'sql-altertrigger.html',
       sqlCreateHelp: 'sql-createtrigger.html',
       dialogHelp: url_for('help.static', {'filename': 'trigger_dialog.html'}),
+      url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -315,7 +316,7 @@ define('pgadmin.node.trigger', [
           id: 'tfunction', label: gettext('Trigger function'),
           type: 'text', disabled: 'inSchemaWithModelCheck',
           mode: ['create','edit', 'properties'], group: gettext('Definition'),
-          control: 'node-ajax-options', url: 'get_triggerfunctions',
+          control: 'node-ajax-options', url: 'get_triggerfunctions', url_jump_after_node: 'schema',
           cache_node: 'trigger_function',
         },{
           id: 'tgargs', label: gettext('Arguments'), cell: 'string',

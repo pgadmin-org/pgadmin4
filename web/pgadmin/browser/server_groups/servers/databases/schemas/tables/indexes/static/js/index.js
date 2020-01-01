@@ -92,6 +92,7 @@ define('pgadmin.node.index', [
           return !(m.inSchemaWithModelCheck.apply(this, arguments));
         },
         control: 'node-ajax-options', url: 'get_collations', node: 'index',
+        url_jump_after_node: 'schema',
       },{
         id: 'op_class', label: gettext('Operator class'),
         cell: NodeAjaxOptionsDepsCell, tags: true,
@@ -106,6 +107,7 @@ define('pgadmin.node.index', [
           return !(m.checkAccessMethod.apply(this, arguments));
         },
         control: 'node-ajax-options', url: 'get_op_class', node: 'index',
+        url_jump_after_node: 'schema',
         deps: ['amname'], transform: function(data, control) {
           /* We need to extract data from collection according
            * to access method selected by user if not selected
@@ -232,6 +234,7 @@ define('pgadmin.node.index', [
       hasStatistics: true,
       width: pgBrowser.stdW.md + 'px',
       statsPrettifyFields: [gettext('Size'), gettext('Index size')],
+      url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -308,6 +311,7 @@ define('pgadmin.node.index', [
           id: 'amname', label: gettext('Access Method'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchemaWithModelCheck', url: 'get_access_methods',
+          url_jump_after_node: 'schema',
           group: gettext('Definition'), select2: {'allowClear': true},
           control: Backform.NodeAjaxOptionsControl.extend({
             // When access method changes we need to clear columns collection

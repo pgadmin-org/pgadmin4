@@ -71,6 +71,7 @@ define('pgadmin.node.rule', [
           return true;
         }
       },
+      url_jump_after_node: 'schema',
       Init: function() {
 
         /* Avoid mulitple registration of menus */

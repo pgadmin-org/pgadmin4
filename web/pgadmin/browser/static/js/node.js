@@ -281,7 +281,7 @@ define('pgadmin.browser.node', [
       if (this.model) {
         // This will be the URL, used for object manipulation.
         // i.e. Create, Update in these cases
-        var urlBase = this.generate_url(item, type, node, false);
+        var urlBase = this.generate_url(item, type, node, false, null, that.url_jump_after_node);
 
         if (!urlBase)
           // Ashamed of myself, I don't know how to manipulate this
@@ -1698,11 +1698,14 @@ define('pgadmin.browser.node', [
      *   type:  Create/drop/edit/properties/sql/depends/statistics
      *   d:     Provide the ItemData for the current item node
      *   with_id: Required id information at the end?
-     *
+     *   jump_after_node: This will skip all the value between jump_after_node
+     *   to the last node, excluding jump_after_node and the last node. This is particularly
+     *   helpful in partition table where we need to skip parent table OID of a partitioned
+     *   table in URL formation. Partitioned table itself is a "table" and can be multilevel
      * Supports url generation for create, drop, edit, properties, sql,
      * depends, statistics
      */
-    generate_url: function(item, type, d, with_id, info) {
+    generate_url: function(item, type, d, with_id, info, jump_after_node) {
       var opURL = {
           'create': 'obj',
           'drop': 'obj',
@@ -1735,9 +1738,16 @@ define('pgadmin.browser.node', [
           });
         }
       }
+
+      let jump_after_priority = priority;
+      if(jump_after_node && treeInfo[jump_after_node]) {
+        jump_after_priority = treeInfo[jump_after_node].priority;
+      }
+
       var nodePickFunction = function(treeInfoValue) {
-        return (treeInfoValue.priority <= priority);
+        return (treeInfoValue.priority <= jump_after_priority || treeInfoValue.priority == priority);
       };
+
       return generateUrl.generate_url(pgBrowser.URL, treeInfo, actionType, self.type, nodePickFunction, itemID);
     },
     // Base class for Node Data Collection

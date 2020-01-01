@@ -629,6 +629,7 @@ define('pgadmin.node.exclusion_constraint', [
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Index size')],
+      url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)

@@ -1811,7 +1811,7 @@ define([
               msql_url = node.generate_url.apply(
                 node, [
                   null, 'msql', this.field.get('node_data'), !self.model.isNew(),
-                  this.field.get('node_info'),
+                  this.field.get('node_info'), node.url_jump_after_node,
                 ]);
 
             // Fetching the modified SQL
