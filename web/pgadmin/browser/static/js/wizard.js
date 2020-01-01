@@ -82,10 +82,10 @@ define([
       '          </div>' +
       '          <% if (this.options.show_header_cancel_btn) { %>' +
       '            <div class="ml-auto">' +
-      '              <button class="ajs-close wizard-cancel-event pull-right"' +
+      '              <button aria-label="' + gettext('Close') +'" tabindex="0" class="ajs-close wizard-cancel-event pull-right"' +
       '                title="' + gettext('Close') + '"></button>' +
       '              <% if (this.options.show_header_maximize_btn) { %>' +
-      '                <button class="ajs-maximize wizard-maximize-event mr-1 pull-right"' +
+      '                <button aria-label="' + gettext('Maximize') + '" tabindex="0"  class="ajs-maximize wizard-maximize-event mr-1 pull-right"' +
       '                  title="' + gettext('Maximize') + '"></button>' +
       '              <% } %>' +
       '            </div>' +
@@ -121,14 +121,14 @@ define([
       '              </div> ' +
       '              <div class="alert-text"></div> ' +
       '              <div class="ml-auto close-error-bar"> ' +
-      '                <a class="close-error fa fa-times text-danger"></a> ' +
+      '                <a aria-label="' + gettext('Close error bar') + '" class="close-error fa fa-times text-danger"></a> ' +
       '              </div> ' +
       '            </div> ' +
       '          </div> ' +
       '        </div>' +
       '        <div class="wizard-buttons d-flex">' +
       '          <div>' +
-      '            <button title = "' + gettext('Help for this dialog.') + '"' +
+      '            <button tabindex="0" aria-label="' + gettext('Help') + '" title = "' + gettext('Help for this dialog.') + '"' +
       '              class="btn btn-secondary pull-left wizard-help" <%=this.options.wizard_help ? "" : "disabled" %>>' +
       '              <span class="fa fa-lg fa-question" role="img"></span></button>' +
       '          </div>' +

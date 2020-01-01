@@ -286,6 +286,7 @@ define([
                     name: 'dialog_help',
                     type: 'button',
                     label: gettext('Maintenance'),
+                    'aria-label': gettext('Help'),
                     url: url_for(
                       'help.static', {
                         'filename': 'maintenance_dialog.html',

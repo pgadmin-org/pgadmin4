@@ -47,6 +47,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
           name: 'dialog_help',
           type: 'button',
           label: gettext('Restore'),
+          'aria-label': gettext('Help'),
           url: url_for('help.static', {
             'filename': 'restore_dialog.html',
           }),

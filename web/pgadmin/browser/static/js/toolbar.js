@@ -18,6 +18,7 @@ let _browserPanel = null;
 let _defaultToolBarButtons = [
   {
     label: gettext('Filtered Rows'),
+    ariaLabel: gettext('Filtered Rows'),
     btnClass: 'pg-font-icon icon-filter-table-toolbar',
     text: '',
     toggled: false,
@@ -27,6 +28,7 @@ let _defaultToolBarButtons = [
   },
   {
     label: gettext('View Data'),
+    ariaLabel: gettext('View Data'),
     btnClass: 'fa fa-table',
     text: '',
     toggled: false,
@@ -36,6 +38,7 @@ let _defaultToolBarButtons = [
   },
   {
     label: gettext('Query Tool'),
+    ariaLabel: gettext('Query Tool'),
     btnClass: 'pg-font-icon icon-query-tool',
     text: '',
     toggled: false,
@@ -57,7 +60,7 @@ function registerToolBarButton(btn) {
         || (_.findIndex(_browserPanel._buttonList,{name:btn.label}) < 0)) {
     _browserPanel.addButton(
       btn.label, btn.btnClass, btn.text, btn.label, btn.toggled,
-      btn.toggleClass, btn.parentClass, btn.enabled
+      btn.toggleClass, btn.parentClass, btn.enabled, btn.ariaLabel
     );
 
     _toolbarButtons[btn.label] = btn;

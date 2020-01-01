@@ -424,6 +424,7 @@ define('pgadmin.preferences', [
                   name: 'dialog_help',
                   type: 'button',
                   label: gettext('Preferences'),
+                  'aria-label': gettext('Help'),
                   url: url_for(
                     'help.static', {
                       'filename': 'preferences.html',

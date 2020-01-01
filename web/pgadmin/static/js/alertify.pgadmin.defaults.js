@@ -260,6 +260,8 @@ define([
       this.elements.dialog.classList.add('pg-el-container');
       $(this.elements.commands.close).attr('title', gettext('Close'));
       $(this.elements.commands.maximize).attr('title', gettext('Maximize'));
+      $(this.elements.commands.close).attr('aria-label', gettext('Close'));
+      $(this.elements.commands.maximize).attr('aria-label', gettext('Maximize'));
       alertifyDialogResized.apply(this, arguments);
     });
     this.set('onresize', alertifyDialogStartResizing.bind(this, true));

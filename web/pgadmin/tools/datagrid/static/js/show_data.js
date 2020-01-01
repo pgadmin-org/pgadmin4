@@ -130,6 +130,7 @@ function initFilterDialog(alertify, pgBrowser) {
                 name: 'dialog_help',
                 type: 'button',
                 label: gettext('Data Filter'),
+                'aria-label': gettext('Help'),
                 url: url_for('help.static', {
                   'filename': 'viewdata_filter.html',
                 }),

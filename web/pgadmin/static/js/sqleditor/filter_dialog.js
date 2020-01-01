@@ -70,6 +70,7 @@ let FilterDialog = {
                     name: 'dialog_help',
                     type: 'button',
                     label: gettext('Help'),
+                    'aria-label': gettext('Help'),
                     url: url_for('help.static', {
                       'filename': 'editgrid.html',
                     }),
