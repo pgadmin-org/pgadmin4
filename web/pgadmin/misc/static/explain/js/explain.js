@@ -1187,7 +1187,7 @@ define('pgadmin.misc.explain', [
         return [
           '   <li class="nav-item" role="presentation">',
           '    <a class="nav-link ', _active ? 'active' : '', '"',
-          '       data-toggle="tab" tabindex="-1"',
+          '       data-toggle="tab" tabindex="0"',
           `       data-tab-index="${_idx}"`,
           '       aria-selected="', _active ? 'true' : 'false', '"',
           `       role="tab" data-explain-role="${_type}"`,
@@ -1199,7 +1199,7 @@ define('pgadmin.misc.explain', [
       },
       createTabPanel = (_type, _active, _extraClasses) => {
         return [
-          '   <div role="tabpanel" tabindex="-1" class="tab-pane pg-el-sm-12',
+          '   <div role="tabpanel" tabindex="0" class="tab-pane pg-el-sm-12',
           '        pg-el-md-12 pg-el-lg-12 pg-el-12 fade collapse',
           _active ? ' active show' : '', ` ${_extraClasses}"`,
           `        data-explain-tabpanel="${_type}"`,

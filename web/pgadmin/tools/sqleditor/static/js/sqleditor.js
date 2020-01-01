@@ -404,6 +404,12 @@ define('tools.querytool', [
         self.query_tool_obj.focus();
       });
 
+      pgBrowser.Events.on('pgadmin:query_tool:explain:focus', ()=>{
+        setTimeout(function () {
+          $('.sql-editor-explain .backform-tab .nav-link.active').focus();
+        }, 200);
+      });
+
       if (!self.preferences.new_browser_tab) {
         // Listen on the panel closed event and notify user to save modifications.
         _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
