@@ -16,7 +16,7 @@ review process for any patches submitted for inclusion in pgAdmin.
   bulk updates every year). The start date should always be 2013, and the end year
   the current year, e.g.
 
-    Copyright (C) 2013 - 2019, The pgAdmin Development Team
+    Copyright (C) 2013 - 2020, The pgAdmin Development Team
  
 * Ensure there's a blank line immediately following any copyright headers.
 

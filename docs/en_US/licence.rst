@@ -13,7 +13,7 @@ documentation is attributed to the
 
 .. topic:: pgAdmin 4
 
-    Copyright (C) 2013 - 2019, The pgAdmin Development Team
+    Copyright (C) 2013 - 2020, The pgAdmin Development Team
 
     Permission to use, copy, modify, and distribute this software and its
     documentation for any purpose, without fee, and without a written agreement is
