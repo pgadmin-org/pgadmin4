@@ -223,6 +223,22 @@ _framework_config() {
     ./framework-config.sh "${BUILDROOT}/${APP_BUNDLE_NAME}" || { echo "framework-config.sh failed"; exit 1; }
 }
 
+_codesign_binaries() {
+    cd ${SOURCEDIR}/pkg/mac
+
+    if [ ! -f codesign.conf ]; then
+        echo
+        echo "******************************************************************"
+        echo "* codesign.conf not found. NOT signing the binaries."
+        echo "******************************************************************"
+        echo
+        sleep 5
+        return
+    fi
+
+    ./codesign-binaries.sh "${BUILDROOT}/${APP_BUNDLE_NAME}" || { echo codesign-binaries.sh failed; exit 1; }
+}
+
 _codesign_bundle() {
     cd ${SOURCEDIR}/pkg/mac
 
@@ -268,6 +284,7 @@ _build_runtime || { echo Runtime build failed; exit 1; }
 _build_doc
 _complete_bundle
 _framework_config
+_codesign_binaries
 _codesign_bundle
 _create_dmg
 _codesign_dmg

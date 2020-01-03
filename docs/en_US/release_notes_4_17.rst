@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #4764 <https://redmine.postgresql.org/issues/4764>`_ -  Allow screen-reader to read relationship attributes in nested elements.
+| `Issue #5060 <https://redmine.postgresql.org/issues/5060>`_ -  Ensure all binaries are securely signed and linked with the hardened runtime in the macOS bundle
 
 Housekeeping
 ************
