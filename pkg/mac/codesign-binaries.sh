@@ -30,13 +30,13 @@ do
 		# when the signing server is macOS 10.9 and codesign recommends to use
 		# 10.13 or later and XCode 10 or later.
 		# error: invalid or inappropriate API flag(s) specified
-		codesign --deep -f -i "${DEVELOPER_BUNDLE_ID}" -s "${DEVELOPER_ID}" --options runtime \"${i}\"
+		codesign --deep -f -i "${DEVELOPER_BUNDLE_ID}" -s "${DEVELOPER_ID}" --options runtime ${i}
 	fi
 done
 
 echo Signing ${BUNDLE} libraries
 for i in $(find "${BUNDLE}" -type f -name "*.dylib*")
 do
-	codesign --deep -f -i "${DEVELOPER_BUNDLE_ID}" -s "${DEVELOPER_ID}" --options runtime \"${i}\"
+	codesign --deep -f -i "${DEVELOPER_BUNDLE_ID}" -s "${DEVELOPER_ID}" --options runtime ${i}
 done
 
