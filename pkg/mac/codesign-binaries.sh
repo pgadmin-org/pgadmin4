@@ -20,7 +20,7 @@ if [ -z "${DEVELOPER_BUNDLE_ID}" ]; then
 fi
 
 echo Signing ${BUNDLE} binaries
-for i in `find ${BUNDLE} -type f`
+for i in `find "${BUNDLE}" -type f`
 do
 	file "${i}" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle"
 	if [ $? -eq 0 ] ; then
@@ -33,7 +33,7 @@ do
 done
 
 echo Signing ${BUNDLE} libraries
-for i in `find ${BUNDLE} -type f -name "*.dylib*"`
+for i in `find "${BUNDLE}" -type f -name "*.dylib*"`
 do
 	codesign --deep -f -i "${DEVELOPER_BUNDLE_ID}" -s "${DEVELOPER_ID}" --options runtime "${i}"
 done
