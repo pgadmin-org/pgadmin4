@@ -1,5 +1,4 @@
 #!/bin/sh
-set -x
 
 BUNDLE="$1"
 
@@ -26,10 +25,6 @@ for i in $(find "${BUNDLE}" -type f)
 do
 	file "${i}" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle"
 	if [ $? -eq 0 ] ; then
-		# We are using 0x1000 instead of runtimes as it returns following error 
-		# when the signing server is macOS 10.9 and codesign recommends to use
-		# 10.13 or later and XCode 10 or later.
-		# error: invalid or inappropriate API flag(s) specified
 		codesign --deep -f -i "${DEVELOPER_BUNDLE_ID}" -s "${DEVELOPER_ID}" --options runtime ${i}
 	fi
 done
