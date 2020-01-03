@@ -190,6 +190,41 @@ Python Tests:
      Example 2)  Execute only reverse engineered SQL test framework for some modules
          run 'python runtests.py --pkg resql --modules sequences,functions'
 
+Code Coverage:
+---------------
+
+- Test framework is able to calculate the code coverage.
+- Coverage package(coverage) is added in $PGADMIN4_SRC/web/regression/requirements.txt file
+
+How to generate code coverage report for API test-suite?
+-------------------------------------
+
+- Change to the regression test directory:
+    run 'cd $PGADMIN4_SRC/web/regression'
+
+- Before running code coverage we need to configure 'regression/.coveragerc' file.
+   i). Create 'regression/.coveragerc' file.
+   ii). Copy content of 'regression/.coveragerc.in' to 'regression/.coveragerc'
+   iii). Modify 'regression/.coveragerc' file as per our need as 'regression/.coveragerc.in' has default configurations
+
+        In 'regression/.coveragerc' file we need to mention some parameters
+        like 'source'(project path),'include'(files/modules to be included for
+        coverage),'omit'(files/modules to be omitted from coverage)
+
+        We can also add more parameters according to our need.
+        For more info please read coverage.py's official document here
+        'http://coverage.readthedocs.io/en/coverage-4.2/install.html'
+
+- Run coverage
+    With all modules
+        run 'python runtests.py --coverage --exclude feature_tests'
+    With specific module
+        run 'python runtests.py --pkg browser.server_groups.servers.tests --coverage'
+
+- After execution of coverage, we will see code coverage report on console.
+  For a nicer presentation, '/regression/covhtml' directory gets created.
+  Open 'index.html' file in browser and you will see detail coverage report.
+
 Javascript Tests:
 
 - Install node.js and yarn, in the appropriate way for your platform. On macOS with Homebrew you might use:

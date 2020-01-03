@@ -20,6 +20,7 @@ Housekeeping
 | `Issue #5023 <https://redmine.postgresql.org/issues/5023>`_ -  Refactored SQL of Views and Materialized Views.
 | `Issue #5024 <https://redmine.postgresql.org/issues/5024>`_ -  Refactored SQL of Functions and Procedures.
 | `Issue #5038 <https://redmine.postgresql.org/issues/5038>`_ -  Added support for on-demand loading of items in Select2.
+| `Issue #5048 <https://redmine.postgresql.org/issues/5048>`_ -  Added code coverage tool for pgAdmin.
 
 Bug fixes
 *********

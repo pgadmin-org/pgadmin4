@@ -14,6 +14,7 @@ import sys
 import uuid
 import psycopg2
 import sqlite3
+import shutil
 from functools import partial
 from testtools.testcase import clone_test_with_new_id
 
@@ -23,7 +24,11 @@ from regression import test_setup
 
 from pgadmin.utils.preferences import Preferences
 
+CURRENT_PATH = os.path.abspath(os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), "../"))
+
 SERVER_GROUP = test_setup.config_data['server_group']
+COVERAGE_CONFIG_FILE = os.path.join(CURRENT_PATH, ".coveragerc")
 file_name = os.path.realpath(__file__)
 
 
@@ -1146,3 +1151,27 @@ def get_watcher_dialogue_status(self):
 def get_driver_version():
     version = getattr(psycopg2, '__version__', None)
     return version
+
+
+def is_coverage_enabled(args):
+    """
+    This function checks for coverage args exists in command line args
+    :return: boolean
+    """
+    if "coverage" in args and args["coverage"]:
+        return True
+    return False
+
+
+def print_and_store_coverage_report(cov):
+    """
+    This function print the coverage report on console and store it in html
+    files
+    :return: None
+    """
+    print("\nCoverage Summary:\n", file=sys.stderr)
+    cov.report()
+    cov_dir = os.path.join(CURRENT_PATH, "covhtml")
+    if os.path.exists(cov_dir):
+        shutil.rmtree(cov_dir)
+    cov.html_report(directory=cov_dir)
