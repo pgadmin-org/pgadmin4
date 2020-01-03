@@ -33,4 +33,5 @@ Bug fixes
 | `Issue #5004 <https://redmine.postgresql.org/issues/5004>`_ -  Fix vulnerability issues reported by 'yarn audit'. Replace the deprecated uglifyjs-webpack-plugin with a terser-webpack-plugin.
 | `Issue #5008 <https://redmine.postgresql.org/issues/5008>`_ -  Ensure that the error message should not be displayed if Tablespace is not selected while creating the index.
 | `Issue #5009 <https://redmine.postgresql.org/issues/5009>`_ -  Fix an issue where operator, access method and operator class is not visible for exclusion constraints.
+| `Issue #5013 <https://redmine.postgresql.org/issues/5013>`_ -  Add a note to the documentation about the use of non-privileged ports on filesystems that don't support extended attributes when running the container.
 | `Issue #5047 <https://redmine.postgresql.org/issues/5047>`_ -  Added tab navigation for tabs under explain panel in query tool.

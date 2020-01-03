@@ -122,6 +122,17 @@ instances.
 
         sudo chown -R 5050:5050 <host_directory>
 
+    On some filesystems that do not support extended attributes, it may not be
+    possible to run pgAdmin without specifying a value for *PGADMIN_LISTEN_PORT*
+    that is greater than 1024. In such cases, specify an alternate port when
+    launching the container by adding the environment variable, for example:
+
+    .. code-block:: bash
+
+        -e 'PGADMIN_LISTEN_PORT=5050'
+
+    Don't forget to adjust any host-container port mapping accordingly.
+
 **/var/lib/pgadmin**
 
 This is the working directory in which pgAdmin stores session data, user files,
