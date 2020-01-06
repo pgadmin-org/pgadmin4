@@ -93,57 +93,6 @@ define([
     );
   });
 
-  /* Define on demand loading of dropdown items.
-   * This also requires ajax option of select2 to be set.
-   * The trick is, ajax: {} will also work even if you're actually not
-   * using ajax.
-   */
-  $.fn.select2.amd.define('select2/onDemandDataAdapter', [
-    'select2/utils',
-    'select2/data/select',
-  ], function (Utils, SelectAdapter) {
-
-    function onDemandDataAdapter ($element, options) {
-      this.$element = $element;
-      this.options = options;
-    }
-    Utils.Extend(onDemandDataAdapter, SelectAdapter);
-    onDemandDataAdapter.prototype.query = function (params, callback) {
-      var data = [];
-      var self = this;
-      if (!params.page) {
-        params.page = 1;
-      }
-      var pageSize = 20;
-
-      var $options = this.$element.children();
-      $options.each(function () {
-        var $option = $(this);
-
-        if (!$option.is('option') && !$option.is('optgroup')) {
-          return;
-        }
-
-        var option = self.item($option);
-
-        var matches = self.matches(params, option);
-
-        if (matches !== null) {
-          data.push(matches);
-        }
-      });
-
-      callback({
-        results: data.slice((params.page - 1) * pageSize, params.page * pageSize),
-        pagination: {
-          more: data.length >= params.page * pageSize,
-        },
-      });
-    };
-
-    return onDemandDataAdapter;
-  });
-
   /*
    * NodeAjaxOptionsControl
    *   This control will fetch the options required to render the select

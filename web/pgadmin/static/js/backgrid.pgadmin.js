@@ -9,11 +9,11 @@
 
 define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-  'moment', 'bignumber', 'sources/utils', 'sources/keyboard_shortcuts',
+  'moment', 'bignumber', 'sources/utils', 'sources/keyboard_shortcuts', 'sources/select2/configure_show_on_scroll',
   'bootstrap.datetimepicker', 'backgrid.filter', 'bootstrap.toggle',
 ], function(
   gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber,
-  commonUtils, keyboardShortcuts
+  commonUtils, keyboardShortcuts, configure_show_on_scroll
 ) {
   /*
    * Add mechanism in backgrid to render different types of cells in
@@ -883,7 +883,7 @@ define([
         select2_opts = _.extend({
           openOnEnter: false,
           multiple: false,
-          onDemandLoad: true,
+          showOnScroll: true,
         }, self.defaults.select2,
         (col.select2 || {})
         ),
@@ -944,12 +944,9 @@ define([
         select2_opts['placeholder'] = '';
       }
 
-      if(select2_opts.onDemandLoad) {
-        select2_opts.dataAdapter = $.fn.select2.amd.require('select2/onDemandDataAdapter');
-        if(_.isUndefined(select2_opts.ajax)) {
-          select2_opts.ajax = {};
-        }
-      }
+      /* Configure show on scroll if required */
+      select2_opts = configure_show_on_scroll.default(select2_opts);
+
       // Initialize select2 control.
       this.$sel = this.$select.select2(select2_opts);
 

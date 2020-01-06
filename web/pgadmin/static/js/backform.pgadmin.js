@@ -10,10 +10,10 @@
 define([
   'sources/gettext', 'underscore', 'jquery',
   'backbone', 'backform', 'backgrid', 'codemirror', 'sources/sqleditor_utils',
-  'sources/keyboard_shortcuts', 'sources/window',
+  'sources/keyboard_shortcuts', 'sources/window', 'sources/select2/configure_show_on_scroll',
   'spectrum', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle',
 ], function(gettext, _, $, Backbone, Backform, Backgrid, CodeMirror,
-  SqlEditorUtils, keyboardShortcuts, pgWindow) {
+  SqlEditorUtils, keyboardShortcuts, pgWindow, configure_show_on_scroll) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {}),
     pgBrowser = pgAdmin.Browser;
@@ -2190,7 +2190,7 @@ define([
         emptyOptions: false,
         preserveSelectionOrder: false,
         isDropdownParent: false,
-        onDemandLoad: true,
+        showOnScroll: true,
       });
 
       // Evaluate the disabled, visible, and required option
@@ -2249,15 +2249,8 @@ define([
         select2Opts.data = data.rawValue;
       }
 
-      /* Set the pgadmin adapter for on demand load.
-       * Setting empty ajax option will enable infinite scrolling.
-       */
-      if(select2Opts.onDemandLoad) {
-        select2Opts.dataAdapter = $.fn.select2.amd.require('select2/onDemandDataAdapter');
-        if(_.isUndefined(select2Opts.ajax)) {
-          select2Opts.ajax = {};
-        }
-      }
+      /* Configure show on scroll if required */
+      select2Opts = configure_show_on_scroll.default(select2Opts);
 
       this.$sel = this.$el.find('select').select2(select2Opts);
 
