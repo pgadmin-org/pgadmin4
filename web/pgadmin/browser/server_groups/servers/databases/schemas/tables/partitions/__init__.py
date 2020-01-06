@@ -200,52 +200,27 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
 
     })
 
-    def children(self, **kwargs):
-        """Build a list of treeview nodes from the child nodes."""
-
-        if 'sid' not in kwargs:
-            return precondition_required(
-                gettext('Required properties are missing.')
-            )
-
-        from pgadmin.utils.driver import get_driver
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
-            sid=kwargs['sid']
-        )
-
-        did = None
-        if 'did' in kwargs:
-            did = kwargs['did']
-
-        conn = manager.connection(did=did)
-
-        if not conn.connected():
-            return precondition_required(
-                gettext(
-                    "Connection to the server has been lost."
-                )
-            )
-
+    def get_children_nodes(self, manager, **kwargs):
         nodes = []
+        # treat partition table as normal table.
+        # replace tid with ptid and pop ptid from kwargs
+        if 'ptid' in kwargs:
+            ptid = kwargs.pop('ptid')
+            kwargs['tid'] = ptid
+
         for module in self.blueprint.submodules:
             if isinstance(module, PGChildModule):
                 if manager is not None and \
                         module.BackendSupported(manager, **kwargs):
-                    # treat partition table as normal table.
-                    # replace tid with ptid and pop ptid from kwargs
-                    if 'ptid' in kwargs:
-                        ptid = kwargs.pop('ptid')
-                        kwargs['tid'] = ptid
                     nodes.extend(module.get_nodes(**kwargs))
             else:
                 nodes.extend(module.get_nodes(**kwargs))
 
-        # Return sorted nodes based on label
-        return make_json_response(
-            data=sorted(
-                nodes, key=lambda c: c['label']
-            )
-        )
+        if manager is not None and \
+                self.blueprint.BackendSupported(manager, **kwargs):
+            nodes.extend(self.blueprint.get_nodes(**kwargs))
+
+        return nodes
 
     @BaseTableView.check_precondition
     def list(self, gid, sid, did, scid, tid):
@@ -295,7 +270,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
         """
         SQL = render_template(
             "/".join([self.partition_template_path, 'nodes.sql']),
-            scid=scid, tid=tid
+            scid=scid, tid=tid, ptid=ptid
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:

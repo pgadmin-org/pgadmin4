@@ -343,10 +343,8 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
     def children(self, *args, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
-        children = []
+        children = self.get_children_nodes(*args, **kwargs)
 
-        for module in self.blueprint.submodules:
-            children.extend(module.get_nodes(*args, **kwargs))
         # Return sorted nodes based on label
         return make_json_response(
             data=sorted(
@@ -354,8 +352,46 @@ class NodeView(with_metaclass(MethodViewType, View)):
             )
         )
 
+    def get_children_nodes(self, *args, **kwargs):
+        """
+        Returns the list of children nodes for the current nodes. Override this
+        function for special cases only.
+
+        :param args:
+        :param kwargs: Parameters to generate the correct set of tree node.
+        :return: List of the children nodes
+        """
+        children = []
+
+        for module in self.blueprint.submodules:
+            children.extend(module.get_nodes(*args, **kwargs))
+
+        return children
+
 
 class PGChildNodeView(NodeView):
+
+    def get_children_nodes(self, manager, **kwargs):
+        """
+        Returns the list of children nodes for the current nodes.
+
+        :param manager: Server Manager object
+        :param kwargs: Parameters to generate the correct set of browser tree
+          node
+        :return:
+        """
+        nodes = []
+        for module in self.blueprint.submodules:
+            if isinstance(module, PGChildModule):
+                if (
+                    manager is not None and
+                    module.BackendSupported(manager, **kwargs)
+                ):
+                    nodes.extend(module.get_nodes(**kwargs))
+            else:
+                nodes.extend(module.get_nodes(**kwargs))
+        return nodes
+
     def children(self, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
 
@@ -388,21 +424,11 @@ class PGChildNodeView(NodeView):
                 )
             )
 
-        nodes = []
-        for module in self.blueprint.submodules:
-            if isinstance(module, PGChildModule):
-                if (
-                    manager is not None and
-                    module.BackendSupported(manager, **kwargs)
-                ):
-                    nodes.extend(module.get_nodes(**kwargs))
-            else:
-                nodes.extend(module.get_nodes(**kwargs))
-
         # Return sorted nodes based on label
         return make_json_response(
             data=sorted(
-                nodes, key=lambda c: c['label']
+                self.get_children_nodes(manager, **kwargs),
+                key=lambda c: c['label']
             )
         )
 
