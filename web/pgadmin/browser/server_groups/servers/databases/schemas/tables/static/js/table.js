@@ -349,7 +349,7 @@ define('pgadmin.node.table', [
             return (!(d && d.label.match(/pg_global/)));
           },
           deps: ['is_partitioned'],
-          disabled: function(m) {
+          disabled: function() {
             if(this.node_info &&  'catalog' in this.node_info) {
               return true;
             }
