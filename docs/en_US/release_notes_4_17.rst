@@ -30,6 +30,7 @@ Bug fixes
 | `Issue #4633 <https://redmine.postgresql.org/issues/4633>`_ -  Added support to view multilevel partitioned tables.
 | `Issue #4842 <https://redmine.postgresql.org/issues/4842>`_ -  Ensure that constraints, indexes, rules, triggers, and compound triggers should be created on partitions.
 | `Issue #4943 <https://redmine.postgresql.org/issues/4943>`_ -  Added more information to the 'Database connected/disconnected' message.
+| `Issue #4950 <https://redmine.postgresql.org/issues/4950>`_ -  Ensure that the user should be able to select/modify tablespace for the partitioned table on v12 and above.
 | `Issue #4999 <https://redmine.postgresql.org/issues/4999>`_ -  Rename some internal environment variables that could conflict with Kubernetes.
 | `Issue #5004 <https://redmine.postgresql.org/issues/5004>`_ -  Fix vulnerability issues reported by 'yarn audit'. Replace the deprecated uglifyjs-webpack-plugin with a terser-webpack-plugin.
 | `Issue #5008 <https://redmine.postgresql.org/issues/5008>`_ -  Ensure that the error message should not be displayed if Tablespace is not selected while creating the index.

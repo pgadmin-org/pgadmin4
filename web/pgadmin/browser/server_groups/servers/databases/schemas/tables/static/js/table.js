@@ -354,18 +354,6 @@ define('pgadmin.node.table', [
               return true;
             }
 
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 120000 &&
-                m.get('is_partitioned')) {
-
-              setTimeout( function() {
-                m.set('spcname', undefined);
-              }, 10);
-
-              return true;
-            }
-
             return false;
           },
         },{

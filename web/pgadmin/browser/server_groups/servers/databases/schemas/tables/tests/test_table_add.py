@@ -170,6 +170,10 @@ class TableAddTestCase(BaseTestGenerator):
         self.table_name = "test_table_add_%s" % (str(uuid.uuid4())[1:8])
         # Get the common data
         data = tables_utils.get_table_common_data()
+        if self.server_information and \
+            'server_version' in self.server_information and \
+                self.server_information['server_version'] >= 120000:
+            data['spcname'] = None
         data.update({
             "name": self.table_name,
             "relowner": db_user,
