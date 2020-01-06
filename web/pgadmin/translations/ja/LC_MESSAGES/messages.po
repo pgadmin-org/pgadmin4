@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-03 19:02+0530\n"
-"PO-Revision-Date: 2019-12-07 19:19+0900\n"
+"PO-Revision-Date: 2020-01-05 22:04+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -7142,7 +7142,7 @@ msgstr "権限を少なくとも1つは指定してください"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:46
 msgid "Security label must be specified."
-msgstr ""
+msgstr "セキュリティラベルは必須です"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:79
 #: pgadmin/browser/server_groups/servers/static/js/server.js:84
@@ -8034,7 +8034,7 @@ msgstr "左パネルのロゴ"
 
 #: pgadmin/browser/static/js/wizard.js:124
 msgid "Close error bar"
-msgstr ""
+msgstr "エラーバーを閉じる"
 
 #: pgadmin/browser/static/js/wizard.js:131
 #: pgadmin/browser/templates/browser/index.html:135 pgadmin/help/__init__.py:59
@@ -8996,22 +8996,22 @@ msgstr "分析"
 #: pgadmin/misc/static/explain/js/explain.js:1286
 #: pgadmin/misc/static/explain/js/explain.js:1287
 msgid "Zoom in"
-msgstr ""
+msgstr "ズームイン"
 
 #: pgadmin/misc/static/explain/js/explain.js:1295
 #: pgadmin/misc/static/explain/js/explain.js:1296
 msgid "Zoom to original"
-msgstr ""
+msgstr "ズーム倍率をリセット"
 
 #: pgadmin/misc/static/explain/js/explain.js:1304
 #: pgadmin/misc/static/explain/js/explain.js:1305
 msgid "Zoom out"
-msgstr ""
+msgstr "ズームアウト"
 
 #: pgadmin/misc/static/explain/js/explain.js:1319
 #: pgadmin/misc/static/explain/js/explain.js:1320
 msgid "Download"
-msgstr ""
+msgstr "ダウンロード"
 
 #: pgadmin/misc/statistics/static/js/statistics.js:214
 msgid "No statistics are available for the selected object."
@@ -9100,7 +9100,7 @@ msgstr "内部サーバエラー"
 
 #: pgadmin/static/js/backform.pgadmin.js:1550
 msgid "Add"
-msgstr ""
+msgstr "追加"
 
 #: pgadmin/static/js/backform.pgadmin.js:1841
 msgid "No updates."
@@ -10510,27 +10510,27 @@ msgstr "デバッガ - "
 
 #: pgadmin/tools/debugger/templates/debugger/direct.html:59
 msgid "Step into"
-msgstr ""
+msgstr "ステップイン"
 
 #: pgadmin/tools/debugger/templates/debugger/direct.html:67
 msgid "Step over"
-msgstr ""
+msgstr "ステップオーバー"
 
 #: pgadmin/tools/debugger/templates/debugger/direct.html:75
 msgid "Continue/Start"
-msgstr ""
+msgstr "続行/開始"
 
 #: pgadmin/tools/debugger/templates/debugger/direct.html:85
 msgid "Toggle breakpoint"
-msgstr ""
+msgstr "ブレークポイントの設定/解除"
 
 #: pgadmin/tools/debugger/templates/debugger/direct.html:93
 msgid "Clear all breakpoints"
-msgstr ""
+msgstr "すべてのブレークポイントを削除"
 
 #: pgadmin/tools/debugger/templates/debugger/direct.html:103
 msgid "Stop"
-msgstr ""
+msgstr "停止"
 
 #: pgadmin/tools/grant_wizard/__init__.py:327
 msgid "Unable to fetch the {} objects"
