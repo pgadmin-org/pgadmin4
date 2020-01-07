@@ -37,3 +37,4 @@ Bug fixes
 | `Issue #5009 <https://redmine.postgresql.org/issues/5009>`_ -  Fix an issue where operator, access method and operator class is not visible for exclusion constraints.
 | `Issue #5013 <https://redmine.postgresql.org/issues/5013>`_ -  Add a note to the documentation about the use of non-privileged ports on filesystems that don't support extended attributes when running the container.
 | `Issue #5047 <https://redmine.postgresql.org/issues/5047>`_ -  Added tab navigation for tabs under explain panel in query tool.
+| `Issue #5068 <https://redmine.postgresql.org/issues/5068>`_ -  Fix an issue where the table is not created with autovacuum_enabled and toast.autovacuum_enabled for PG/EPAS 12.

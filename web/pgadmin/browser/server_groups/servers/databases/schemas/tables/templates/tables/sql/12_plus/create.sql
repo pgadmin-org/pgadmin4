@@ -103,6 +103,8 @@ WITH (
     toast.{{opt.name}} = {{opt.value}}{% endif %}
 {% endfor %}{% endif %}
 
+{% if data.spcname %}){% else %});{% endif %}
+
 {% endif %}
 {### SQL for Tablespace ###}
 {% if data.spcname %}
