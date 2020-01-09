@@ -1307,7 +1307,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         # Now we have all list of columns which we need
         if 'columns' in data:
             for c in data['columns']:
-                columns.append(self.qtIdent(self.conn, c['attname']))
+                columns.append(self.qtIdent(self.conn, c['name']))
 
         if len(columns) > 0:
             columns = ", ".join(columns)
@@ -1353,7 +1353,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         # Now we have all list of columns which we need
         if 'columns' in data:
             for c in data['columns']:
-                columns.append(self.qtIdent(self.conn, c['attname']))
+                columns.append(self.qtIdent(self.conn, c['name']))
                 values.append('?')
 
         if len(columns) > 0:
@@ -1400,7 +1400,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
         # Now we have all list of columns which we need
         if 'columns' in data:
             for c in data['columns']:
-                columns.append(self.qtIdent(self.conn, c['attname']))
+                columns.append(self.qtIdent(self.conn, c['name']))
 
         if len(columns) > 0:
             if len(columns) == 1:
