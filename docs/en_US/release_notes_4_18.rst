@@ -14,6 +14,7 @@ Housekeeping
 ************
 
 | `Issue #5071 <https://redmine.postgresql.org/issues/5071>`_ -  Improve the test framework to run for multiple classes defined in a single file.
+| `Issue #5072 <https://redmine.postgresql.org/issues/5072>`_ -  Updated wcDocker package which includes aria-label accessibility improvements.
 
 Bug fixes
 *********
