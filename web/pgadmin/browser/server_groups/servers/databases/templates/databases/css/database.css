@@ -11,4 +11,9 @@
   background-image: url('{{ url_for('NODE-database.static', filename='img/databasebad.svg') }}') !important;
   border-radius: 10px;
   background-size: 20px !important;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+  align-content: center;
+  height: 1.3em;
+
 }

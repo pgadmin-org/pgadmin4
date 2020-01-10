@@ -24,6 +24,9 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -88,7 +91,7 @@ class SequenceModule(SchemaChildModule):
 blueprint = SequenceModule(__name__)
 
 
-class SequenceView(PGChildNodeView):
+class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
     node_type = blueprint.node_type
 
     parent_ids = [
@@ -273,6 +276,23 @@ class SequenceView(PGChildNodeView):
         Returns:
 
         """
+        status, res = self._fetch_properties(scid, seid)
+        if not status:
+            return res
+
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, scid, seid):
+        """
+        This function is used to fetch the properties of the specified object.
+        :param scid:
+        :param seid:
+        :return:
+        """
+
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             scid=scid, seid=seid
@@ -280,10 +300,11 @@ class SequenceView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(_("Could not find the sequence in the database."))
+            return False, gone(
+                _("Could not find the sequence in the database."))
 
         for row in res['rows']:
             SQL = render_template(
@@ -292,7 +313,7 @@ class SequenceView(PGChildNodeView):
             )
             status, rset1 = self.conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=rset1)
+                return False, internal_server_error(errormsg=rset1)
 
             row['current_value'] = rset1['rows'][0]['last_value']
             row['minimum'] = rset1['rows'][0]['min_value']
@@ -319,7 +340,7 @@ class SequenceView(PGChildNodeView):
         )
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         for row in dataclres['rows']:
             priv = parse_priv_from_db(row)
@@ -328,10 +349,7 @@ class SequenceView(PGChildNodeView):
             else:
                 res['rows'][0][row['deftype']] = [priv]
 
-        return ajax_response(
-            response=res['rows'][0],
-            status=200
-        )
+        return True, res['rows'][0]
 
     @check_precondition(action="create")
     def create(self, gid, sid, did, scid):
@@ -868,6 +886,31 @@ class SequenceView(PGChildNodeView):
             data=res,
             status=200
         )
+
+    @check_precondition(action="fetch_objects_to_compare")
+    def fetch_objects_to_compare(self, sid, did, scid):
+        """
+        This function will fetch the list of all the sequences for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']), scid=scid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(scid, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
 
 
 SequenceView.register_node_view(blueprint)

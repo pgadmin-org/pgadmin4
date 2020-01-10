@@ -26,6 +26,8 @@ from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 # If we are in Python3
 if not IS_PY2:
@@ -94,7 +96,7 @@ class TypeModule(SchemaChildModule):
 blueprint = TypeModule(__name__)
 
 
-class TypeView(PGChildNodeView, DataTypeReader):
+class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     """
     This class is responsible for generating routes for Type node
 
@@ -173,6 +175,10 @@ class TypeView(PGChildNodeView, DataTypeReader):
     * get_external_functions_list(gid, sid, did, scid, tid):
       - This function will return list of external functions
         in ajax response
+
+    * compare(**kwargs):
+      - This function will compare the type nodes from two
+        different schemas.
     """
 
     node_type = blueprint.node_type
@@ -559,6 +565,22 @@ class TypeView(PGChildNodeView, DataTypeReader):
         Returns:
             JSON of selected type node
         """
+        status, res = self._fetch_properties(scid, tid)
+        if not status:
+            return res
+
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, scid, tid):
+        """
+        This function is used to fecth the properties of the specified object.
+        :param scid:
+        :param tid:
+        :return:
+        """
 
         SQL = render_template(
             "/".join([self.template_path,
@@ -569,10 +591,10 @@ class TypeView(PGChildNodeView, DataTypeReader):
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
+            return False, gone(
                 gettext("""Could not find the type in the database."""))
 
         # Making copy of output for future use
@@ -583,7 +605,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                               scid=scid, tid=tid)
         status, acl = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=acl)
+            return False, internal_server_error(errormsg=acl)
 
         # We will set get privileges from acl sql so we don't need
         # it from properties sql
@@ -599,10 +621,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
         # Calling function to check and additional properties if available
         copy_dict.update(self.additional_properties(copy_dict, tid))
 
-        return ajax_response(
-            response=copy_dict,
-            status=200
-        )
+        return True, copy_dict
 
     @check_precondition
     def get_collations(self, gid, sid, did, scid, tid=None):
@@ -1427,6 +1446,32 @@ class TypeView(PGChildNodeView, DataTypeReader):
             response=dependencies_result,
             status=200
         )
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid):
+        """
+        This function will fetch the list of all the types for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']),
+                              scid=scid, datlastsysoid=self.datlastsysoid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(scid, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
 
 
 TypeView.register_node_view(blueprint)

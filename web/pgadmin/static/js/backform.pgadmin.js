@@ -817,7 +817,7 @@ define([
     },
   });
 
-  Backform.Accordian = Backform.Dialog.extend({
+  Backform.Accordian   = Backform.Dialog.extend({
     className: function() {
       return 'set-group pg-el-12';
     },
@@ -2129,7 +2129,9 @@ define([
 
     formatter: Select2Formatter,
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
+      '<% if(label == false) {} else {%>',
+      '  <label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
+      '<% }%>',
       '<div class="<%=Backform.controlsClassName%>">',
       ' <select id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
       '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%>',
@@ -2161,7 +2163,6 @@ define([
       '</div>',
     ].join('\n')),
     render: function() {
-
       if (this.$sel && this.$sel.select2 &&
         this.$sel.select2.hasOwnProperty('destroy')) {
         this.$sel.select2('destroy');
@@ -2467,7 +2468,7 @@ define([
         self.sqlCtrl.setOption('autoCloseBrackets', sqlEditPreferences.insert_pair_brackets);
         self.sqlCtrl.setOption('matchBrackets', sqlEditPreferences.brace_matching);
         setTimeout(function() {
-          self.sqlCtrl.refresh();
+          if (self.sqlCtrl) self.sqlCtrl.refresh();
         }, 500);
       }
     },

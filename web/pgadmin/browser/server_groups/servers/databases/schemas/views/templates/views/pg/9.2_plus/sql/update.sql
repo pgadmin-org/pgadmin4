@@ -19,7 +19,7 @@ ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
 {% if def and def != o_data.definition.rstrip(';') %}
 CREATE OR REPLACE VIEW {{ conn|qtIdent(view_schema, view_name) }}
-    WITH (security_barrier={{ data.security_barrier|lower if data.security_barrier else o_data.security_barrier|default('false', 'true')|lower }})
+    WITH (security_barrier={{ data.security_barrier|lower if data.security_barrier is defined else o_data.security_barrier|default('false', 'true')|lower }})
     AS
     {{ def }};
 {% else %}

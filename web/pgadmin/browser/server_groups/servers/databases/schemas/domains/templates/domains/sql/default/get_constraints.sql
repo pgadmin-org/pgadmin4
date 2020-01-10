@@ -8,7 +8,7 @@ JOIN
 JOIN
     pg_namespace nl ON nl.oid=typnamespace
 LEFT OUTER JOIN
-    pg_description des ON (des.objoid=t.oid AND des.classoid='pg_constraint'::regclass)
+    pg_description des ON (des.objoid=c.oid AND des.classoid='pg_constraint'::regclass)
 WHERE
     contype = 'c'
     AND contypid =  {{doid}}::oid

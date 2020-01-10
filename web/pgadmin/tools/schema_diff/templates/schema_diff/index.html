@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block init_script %}
+try {
+  require(
+    ['sources/generated/schema_diff', 'sources/generated/slickgrid', 'sources/generated/codemirror', 'sources/generated/browser_nodes'],
+    function(pgSchemaDiffHook) {
+      var pgSchemaDiffHook = pgSchemaDiffHook || pgAdmin.Tools.SchemaDiffHook;
+      pgSchemaDiffHook.load({{trans_id}});
+    },
+    function() {
+      console.log(arguments);
+    });
+} catch (err) {
+  console.log(err);
+}
+{% endblock %}
+{% block css_link %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}
+{% block body %}
+<div id="schema-diff-container">
+    <div id="diff_fetching_data" class="pg-sp-container schema-diff-busy-fetching d-none">
+        <div class="pg-sp-content">
+            <div class="row">
+                <div class="col-12 pg-sp-icon"></div>
+            </div>
+            <div class="row"><div class="col-12 pg-sp-text schema-diff-busy-text"></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

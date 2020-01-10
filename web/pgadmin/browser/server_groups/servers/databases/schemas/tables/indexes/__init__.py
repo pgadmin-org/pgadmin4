@@ -13,7 +13,7 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, current_app
 from flask_babelex import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
@@ -25,8 +25,14 @@ from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.directory_compare import compare_dictionaries,\
+    directory_diff
+from pgadmin.tools.schema_diff.model import SchemaDiffModel
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 from pgadmin.browser.server_groups.servers.databases.schemas. \
     tables.indexes import utils as index_utils
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -135,7 +141,7 @@ class IndexesModule(CollectionNodeModule):
 blueprint = IndexesModule(__name__)
 
 
-class IndexesView(PGChildNodeView):
+class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     This class is responsible for generating routes for Index node
 
@@ -227,6 +233,11 @@ class IndexesView(PGChildNodeView):
                          {'get': 'get_op_class'}]
     })
 
+    # Schema Diff: Keys to ignore while comparing
+    keys_to_ignore = ['oid', 'relowner', 'schema',
+                      'indrelid', 'nspname'
+                      ]
+
     def check_precondition(f):
         """
         This function will behave as a decorator which will checks
@@ -247,6 +258,12 @@ class IndexesView(PGChildNodeView):
                 kwargs['did']
             ]['datlastsysoid'] if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
+
+            self.table_template_path = compile_template_path(
+                'tables/sql',
+                self.manager.server_type,
+                self.manager.version
+            )
 
             # we will set template path for sql scripts
             self.template_path = compile_template_path(
@@ -485,19 +502,35 @@ class IndexesView(PGChildNodeView):
         Returns:
             JSON of selected schema node
         """
+        status, data = self._fetch_properties(did, tid, idx)
+        if not status:
+            return data
 
+        return ajax_response(
+            response=data,
+            status=200
+        )
+
+    def _fetch_properties(self, did, tid, idx):
+        """
+        This function is used to fetch the properties of specified object.
+        :param did:
+        :param tid:
+        :param idx:
+        :return:
+        """
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
         )
 
         status, res = self.conn.execute_dict(SQL)
-
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the index in the table."""))
+            return False, gone(
+                gettext("""Could not find the index in the table."""))
 
         # Making copy of output for future use
         data = dict(res['rows'][0])
@@ -509,10 +542,7 @@ class IndexesView(PGChildNodeView):
         if self.manager.version >= 110000:
             data = index_utils.get_include_details(self.conn, idx, data)
 
-        return ajax_response(
-            response=data,
-            status=200
-        )
+        return True, data
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
@@ -620,7 +650,8 @@ class IndexesView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, idx=None):
+    def delete(self, gid, sid, did, scid, tid, idx=None,
+               only_sql=False):
         """
         This function will updates existing the schema object
 
@@ -676,6 +707,9 @@ class IndexesView(PGChildNodeView):
                     "/".join([self.template_path, 'delete.sql']),
                     data=data, conn=self.conn, cascade=cascade
                 )
+
+                if only_sql:
+                    return SQL
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -791,6 +825,32 @@ class IndexesView(PGChildNodeView):
             self.datlastsysoid)
 
         return ajax_response(response=SQL)
+
+    @check_precondition
+    def get_sql_from_index_diff(self, sid, did, scid, tid, idx, data=None,
+                                diff_schema=None, drop_req=False):
+
+        tmp_idx = idx
+        schema = ''
+        if data:
+            schema = self.schema
+        elif diff_schema:
+            schema = diff_schema
+
+        sql = index_utils.get_reverse_engineered_sql(
+            self.conn, schema,
+            self.table, did, tid, idx,
+            self.datlastsysoid,
+            template_path=None, with_header=False)
+
+        drop_sql = ''
+        if drop_req:
+            drop_sql = '\n' + render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                data=data, conn=self.conn
+            )
+
+        return drop_sql + '\n\n' + sql
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, idx):
@@ -914,5 +974,129 @@ class IndexesView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid, tid, oid=None,
+                                 ignore_keys=False):
+        """
+        This function will fetch the list of all the indexes for
+        specified schema id.
 
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+
+        res = dict()
+
+        if not oid:
+            SQL = render_template("/".join([self.template_path,
+                                            'nodes.sql']), tid=tid)
+            status, indexes = self.conn.execute_2darray(SQL)
+            if not status:
+                current_app.logger.error(indexes)
+                return False
+
+            for row in indexes['rows']:
+                status, data = self._fetch_properties(did, tid,
+                                                      row['oid'])
+                if status:
+                    if ignore_keys:
+                        for key in self.keys_to_ignore:
+                            if key in data:
+                                del data[key]
+                    res[row['name']] = data
+        else:
+            status, data = self._fetch_properties(did, tid,
+                                                  oid)
+            if not status:
+                current_app.logger.error(data)
+                return False
+            res = data
+
+        return res
+
+    def ddl_compare(self, **kwargs):
+        """
+        This function will compare index properties and
+         return the difference of SQL
+        """
+
+        src_sid = kwargs.get('source_sid')
+        src_did = kwargs.get('source_did')
+        src_scid = kwargs.get('source_scid')
+        src_tid = kwargs.get('source_tid')
+        src_oid = kwargs.get('source_oid')
+        tar_sid = kwargs.get('target_sid')
+        tar_did = kwargs.get('target_did')
+        tar_scid = kwargs.get('target_scid')
+        tar_tid = kwargs.get('target_tid')
+        tar_oid = kwargs.get('target_oid')
+        comp_status = kwargs.get('comp_status')
+
+        source = ''
+        target = ''
+        diff = ''
+
+        status, target_schema = self.get_schema(tar_sid,
+                                                tar_did,
+                                                tar_scid
+                                                )
+        if not status:
+            return internal_server_error(errormsg=target_schema)
+
+        if comp_status == SchemaDiffModel.COMPARISON_STATUS['source_only']:
+            diff = self.get_sql_from_index_diff(sid=src_sid,
+                                                did=src_did, scid=src_scid,
+                                                tid=src_tid, idx=src_oid,
+                                                diff_schema=target_schema)
+
+        elif comp_status == SchemaDiffModel.COMPARISON_STATUS['target_only']:
+            diff = self.delete(gid=1, sid=tar_sid, did=tar_did,
+                               scid=tar_scid, tid=tar_tid,
+                               idx=tar_oid, only_sql=True)
+
+        else:
+            source = self.fetch_objects_to_compare(sid=src_sid, did=src_did,
+                                                   scid=src_scid, tid=src_tid,
+                                                   oid=src_oid)
+            target = self.fetch_objects_to_compare(sid=tar_sid, did=tar_did,
+                                                   scid=tar_scid, tid=tar_tid,
+                                                   oid=tar_oid)
+
+            if not (source or target):
+                return None
+
+            diff_dict = directory_diff(
+                source, target, ignore_keys=self.keys_to_ignore,
+                difference={}
+            )
+
+            required_create_keys = ['columns']
+            create_req = False
+
+            for key in required_create_keys:
+                if key in diff_dict:
+                    create_req = True
+
+            if create_req:
+                diff = self.get_sql_from_index_diff(sid=src_sid,
+                                                    did=src_did,
+                                                    scid=src_scid,
+                                                    tid=src_tid,
+                                                    idx=src_oid,
+                                                    diff_schema=target_schema,
+                                                    drop_req=True)
+            else:
+                diff = self.get_sql_from_index_diff(sid=tar_sid,
+                                                    did=tar_did,
+                                                    scid=tar_scid,
+                                                    tid=tar_tid,
+                                                    idx=tar_oid,
+                                                    data=diff_dict)
+
+        return diff
+
+
+SchemaDiffRegistry(blueprint.node_type, IndexesView, 'table')
 IndexesView.register_node_view(blueprint)

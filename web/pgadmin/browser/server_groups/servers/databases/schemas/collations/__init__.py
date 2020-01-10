@@ -25,6 +25,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 # If we are in Python3
 if not IS_PY2:
@@ -92,7 +94,7 @@ class CollationModule(SchemaChildModule):
 blueprint = CollationModule(__name__)
 
 
-class CollationView(PGChildNodeView):
+class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     This class is responsible for generating routes for Collation node
 
@@ -144,6 +146,10 @@ class CollationView(PGChildNodeView):
     * dependent(gid, sid, did, scid):
       - This function will generate dependent list to show it in dependent
         pane for the selected Collation node.
+
+    * compare(**kwargs):
+      - This function will compare the collation nodes from two different
+        schemas.
     """
 
     node_type = blueprint.node_type
@@ -172,7 +178,8 @@ class CollationView(PGChildNodeView):
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'get_collations': [{'get': 'get_collation'},
-                           {'get': 'get_collation'}]
+                           {'get': 'get_collation'}],
+        'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
     def check_precondition(f):
@@ -318,23 +325,36 @@ class CollationView(PGChildNodeView):
             JSON of selected collation node
         """
 
+        status, res = self._fetch_properties(scid, coid)
+        if not status:
+            return res
+
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, scid, coid):
+        """
+        This function fetch the properties for the specified object.
+
+        :param scid: Schema ID
+        :param coid: Collation ID
+        """
+
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
                               scid=scid, coid=coid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the collation object in the database.")
-            )
+            return False, gone(gettext("Could not find the collation "
+                                       "object in the database."))
 
-        return ajax_response(
-            response=res['rows'][0],
-            status=200
-        )
+        return True, res['rows'][0]
 
     @check_precondition
     def get_collation(self, gid, sid, did, scid, coid=None):
@@ -747,6 +767,31 @@ class CollationView(PGChildNodeView):
             response=dependencies_result,
             status=200
         )
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid):
+        """
+        This function will fetch the list of all the collations for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']), scid=scid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(scid, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
 
 
 CollationView.register_node_view(blueprint)

@@ -10,6 +10,7 @@
 """ Implements Utility class for Table and Partitioned Table. """
 
 import re
+import copy
 from functools import wraps
 import simplejson as json
 from flask import render_template, jsonify, request
@@ -179,8 +180,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 data[row['deftype']] = [priv]
 
         # We will add Auto vacuum defaults with out result for grid
-        data['vacuum_table'] = self.parse_vacuum_data(self.conn, data, 'table')
-        data['vacuum_toast'] = self.parse_vacuum_data(self.conn, data, 'toast')
+        data['vacuum_table'] = copy.deepcopy(
+            self.parse_vacuum_data(self.conn, data, 'table'))
+        data['vacuum_toast'] = copy.deepcopy(
+            self.parse_vacuum_data(self.conn, data, 'toast'))
 
         # Fetch columns for the table logic
         #
@@ -405,7 +408,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             status=200
         )
 
-    def get_reverse_engineered_sql(self, did, scid, tid, main_sql, data):
+    def get_reverse_engineered_sql(self, did, scid, tid, main_sql, data,
+                                   json_resp=True, diff_partition_sql=False):
         """
         This function will creates reverse engineered sql for
         the table object
@@ -416,6 +420,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
            tid: Table ID
            main_sql: List contains all the reversed engineered sql
            data: Table's Data
+           json_resp: Json response or plain SQL
+           diff_partition_sql: In Schema diff, the Partition sql should be
+           return separately to perform further task
         """
         """
         #####################################
@@ -427,6 +434,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         schema = data['schema']
         table = data['name']
         is_partitioned = 'is_partitioned' in data and data['is_partitioned']
+        sql_header = ''
 
         data = self._formatter(did, scid, tid, data)
 
@@ -444,18 +452,20 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     c['cltype'], c['hasSqrBracket'] = \
                         column_utils.type_formatter(c['cltype'])
 
-        sql_header = u"-- Table: {0}\n\n-- ".format(
-            self.qtIdent(self.conn, data['schema'], data['name']))
+        if json_resp:
+            sql_header = u"-- Table: {0}\n\n-- ".format(
+                self.qtIdent(self.conn, data['schema'], data['name']))
 
-        sql_header += render_template("/".join([self.table_template_path,
-                                                'delete.sql']),
-                                      data=data, conn=self.conn)
+            sql_header += render_template("/".join([self.table_template_path,
+                                                    'delete.sql']),
+                                          data=data, conn=self.conn)
 
-        sql_header = sql_header.strip('\n')
-        sql_header += '\n'
+            sql_header = sql_header.strip('\n')
+            sql_header += '\n'
 
-        # Add into main sql
-        main_sql.append(sql_header)
+            # Add into main sql
+            main_sql.append(sql_header)
+        partition_main_sql = ""
 
         # Parse privilege data
         if 'relacl' in data:
@@ -493,12 +503,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         for row in rset['rows']:
             index_sql = index_utils.get_reverse_engineered_sql(
                 self.conn, schema, table, did, tid, row['oid'],
-                self.datlastsysoid)
+                self.datlastsysoid,
+                template_path=None, with_header=json_resp)
             index_sql = u"\n" + index_sql
 
             # Add into main sql
             index_sql = re.sub('\n{2,}', '\n\n', index_sql)
-            main_sql.append(index_sql)
+
+            main_sql.append(index_sql.strip('\n'))
 
         """
         ########################################
@@ -514,7 +526,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         for row in rset['rows']:
             trigger_sql = trigger_utils.get_reverse_engineered_sql(
                 self.conn, schema, table, tid, row['oid'],
-                self.datlastsysoid, self.blueprint.show_system_objects)
+                self.datlastsysoid, self.blueprint.show_system_objects,
+                template_path=None, with_header=json_resp)
             trigger_sql = u"\n" + trigger_sql
 
             # Add into main sql
@@ -571,10 +584,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            display_comments = True
+            if not json_resp:
+                display_comments = False
             res_data = parse_rule_definition(res)
             rules_sql += render_template("/".join(
                 [self.rules_template_path, 'create.sql']),
-                data=res_data, display_comments=True)
+                data=res_data, display_comments=display_comments)
 
             # Add into main sql
             rules_sql = re.sub('\n{2,}', '\n\n', rules_sql)
@@ -594,13 +610,17 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 return internal_server_error(errormsg=rset)
 
             if len(rset['rows']):
-                sql_header = u"\n-- Partitions SQL"
+                if json_resp:
+                    sql_header = u"\n-- Partitions SQL"
                 partition_sql = ''
                 for row in rset['rows']:
                     part_data = dict()
-                    part_data['partitioned_table_name'] = table
-                    part_data['parent_schema'] = schema
-                    part_data['schema'] = row['schema_name']
+                    part_data['partitioned_table_name'] = data['name']
+                    part_data['parent_schema'] = data['schema']
+                    if not json_resp:
+                        part_data['schema'] = data['schema']
+                    else:
+                        part_data['schema'] = row['schema_name']
                     part_data['relispartition'] = True
                     part_data['name'] = row['name']
                     part_data['partition_value'] = row['partition_value']
@@ -612,13 +632,18 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         data=part_data, conn=self.conn)
 
                 # Add into main sql
-                partition_sql = re.sub('\n{2,}', '\n\n', partition_sql)
-                main_sql.append(
-                    sql_header + '\n\n' + partition_sql.strip('\n')
-                )
+                partition_sql = re.sub('\n{2,}', '\n\n', partition_sql
+                                       ).strip('\n')
+                partition_main_sql = partition_sql.strip('\n')
+                if not diff_partition_sql:
+                    main_sql.append(
+                        sql_header + '\n\n' + partition_main_sql
+                    )
 
         sql = '\n'.join(main_sql)
 
+        if not json_resp:
+            return sql, partition_main_sql
         return ajax_response(response=sql.strip('\n'))
 
     def reset_statistics(self, scid, tid):
@@ -907,7 +932,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                             conn=self.conn).strip('\n') + '\n\n'
 
                 # If partition(s) is/are added
-                if 'added' in partitions:
+                if 'added' in partitions and 'partition_scheme' in old_data\
+                        and old_data['partition_scheme'] != '':
                     temp_data = dict()
                     temp_data['schema'] = data['schema']
                     temp_data['name'] = data['name']
@@ -1133,7 +1159,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def properties(self, gid, sid, did, scid, tid, res):
+    def properties(self, gid, sid, did, scid, tid, res,
+                   return_ajax_response=True):
         """
         This function will show the properties of the selected table node.
 
@@ -1145,6 +1172,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             scid: Schema ID
             tid: Table ID
             res: Table/Partition table properties
+            return_ajax_response: If True then return the ajax response
 
         Returns:
             JSON of selected table node
@@ -1241,6 +1269,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     })
 
             data['partitions'] = partitions
+
+        if not return_ajax_response:
+            return data
 
         return ajax_response(
             response=data,
@@ -1359,6 +1390,22 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             }
         )
 
+    def get_delete_sql(self, res):
+        # Below will decide if it's simple drop or drop with cascade call
+        if self.cmd == 'delete':
+            # This is a cascade operation
+            cascade = True
+        else:
+            cascade = False
+
+        data = res['rows'][0]
+
+        return render_template(
+            "/".join([self.table_template_path, 'delete.sql']),
+            data=data, cascade=cascade,
+            conn=self.conn
+        )
+
     def delete(self, gid, sid, did, scid, tid, res):
         """
         This function will delete the table object
@@ -1371,20 +1418,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
            tid: Table ID
         """
 
-        # Below will decide if it's simple drop or drop with cascade call
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        SQL = self.get_delete_sql(res)
 
-        data = res['rows'][0]
-
-        SQL = render_template(
-            "/".join([self.table_template_path, 'delete.sql']),
-            data=data, cascade=cascade,
-            conn=self.conn
-        )
         status, res = self.conn.execute_scalar(SQL)
         if not status:
             return status, res

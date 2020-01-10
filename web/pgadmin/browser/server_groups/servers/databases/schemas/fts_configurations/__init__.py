@@ -24,6 +24,8 @@ from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 # If we are in Python3
 if not IS_PY2:
@@ -93,7 +95,7 @@ class FtsConfigurationModule(SchemaChildModule):
 blueprint = FtsConfigurationModule(__name__)
 
 
-class FtsConfigurationView(PGChildNodeView):
+class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     class FtsConfigurationView(PGChildNodeView)
 
@@ -167,6 +169,9 @@ class FtsConfigurationView(PGChildNodeView):
     * dependencies(self, gid, sid, did, scid, cfgid):
       - This function get the dependencies and return ajax response for node.
 
+    * compare(**kwargs):
+      - This function will compare the fts configuration nodes from two
+        different schemas.
     """
 
     node_type = blueprint.node_type
@@ -202,6 +207,7 @@ class FtsConfigurationView(PGChildNodeView):
                        {'get': 'copyConfig'}],
         'tokens': [{'get': 'tokens'}, {'get': 'tokens'}],
         'dictionaries': [{}, {'get': 'dictionaries'}],
+        'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
     def _init_(self, **kwargs):
@@ -343,7 +349,22 @@ class FtsConfigurationView(PGChildNodeView):
             scid: Schema Id
             cfgid: fts Configuration id
         """
+        status, res = self._fetch_properties(scid, cfgid)
+        if not status:
+            return res
 
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, scid, cfgid):
+        """
+        This function is used to fetch property of specified object.
+        :param scid:
+        :param cfgid:
+        :return:
+        """
         sql = render_template(
             "/".join([self.template_path, 'properties.sql']),
             scid=scid,
@@ -352,10 +373,10 @@ class FtsConfigurationView(PGChildNodeView):
         status, res = self.conn.execute_dict(sql)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
+            return False, gone(
                 _(
                     "Could not find the FTS Configuration node in the "
                     "database node.")
@@ -370,14 +391,11 @@ class FtsConfigurationView(PGChildNodeView):
         status, rset = self.conn.execute_dict(sql)
 
         if not status:
-            return internal_server_error(errormsg=rset)
+            return False, internal_server_error(errormsg=rset)
 
         res['rows'][0]['tokens'] = rset['rows']
 
-        return ajax_response(
-            response=res['rows'][0],
-            status=200
-        )
+        return True, res['rows'][0]
 
     @check_precondition
     def create(self, gid, sid, did, scid):
@@ -926,6 +944,31 @@ class FtsConfigurationView(PGChildNodeView):
             response=dependencies_result,
             status=200
         )
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid):
+        """
+        This function will fetch the list of all the fts configurations for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']), scid=scid)
+        status, fts_cfg = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in fts_cfg['rows']:
+            status, data = self._fetch_properties(scid, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
 
 
 FtsConfigurationView.register_node_view(blueprint)

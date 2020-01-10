@@ -30,6 +30,8 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, unauthorized
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
+
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.model import Server
 
 
@@ -1111,4 +1113,5 @@ class DatabaseView(PGChildNodeView):
         )
 
 
+SchemaDiffRegistry(blueprint.node_type, DatabaseView)
 DatabaseView.register_node_view(blueprint)

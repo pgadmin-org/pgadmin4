@@ -28,6 +28,7 @@ from pgadmin.model import db, Server, ServerGroup, User
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from psycopg2 import Error as psycopg2_Error, OperationalError
 
 
@@ -1627,4 +1628,5 @@ class ServerNode(PGChildNodeView):
         )
 
 
+SchemaDiffRegistry(blueprint.node_type, ServerNode)
 ServerNode.register_node_view(blueprint)

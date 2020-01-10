@@ -21,7 +21,7 @@ from flask import render_template, make_response, request, jsonify, \
     current_app
 from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
-    SchemaChildModule, DataTypeReader
+    SchemaChildModule, DataTypeReader, get_schema
 from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db, parse_variables_from_db
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -30,8 +30,10 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.model import SchemaDiffModel
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 
 class FunctionModule(SchemaChildModule):
@@ -115,7 +117,7 @@ class FunctionModule(SchemaChildModule):
 blueprint = FunctionModule(__name__)
 
 
-class FunctionView(PGChildNodeView, DataTypeReader):
+class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     """
     class FunctionView(PGChildNodeView)
 
@@ -177,6 +179,10 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
     * exec_sql(gid, sid, did, scid, fnid):
       - Returns sql for Script
+
+    * compare(**kwargs):
+      - This function will compare the function nodes from two
+        different schemas.
     """
 
     node_type = blueprint.node_type
@@ -212,6 +218,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         'get_support_functions': [{'get': 'get_support_functions'},
                                   {'get': 'get_support_functions'}]
     })
+
+    keys_to_ignore = ['oid', 'proowner', 'typnsp', 'xmin', 'prokind',
+                      'proisagg', 'pronamespace', 'proargdefaults']
 
     @property
     def required_args(self):
@@ -790,7 +799,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, fnid=None):
+    def delete(self, gid, sid, did, scid, fnid=None, only_sql=False):
         """
         Drop the Function.
 
@@ -841,6 +850,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                                       func_args=res['rows'][0]['func_args'],
                                       nspname=res['rows'][0]['nspname'],
                                       cascade=cascade)
+                if only_sql:
+                    return SQL
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -915,7 +926,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             )
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, fnid=None):
+    def sql(self, gid, sid, did, scid, fnid=None, diff_schema=None,
+            json_resp=True):
         """
         Returns the SQL for the Function object.
 
@@ -989,6 +1001,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            if diff_schema:
+                res['rows'][0]['nspname'] = diff_schema
             name_with_default_args = self.qtIdent(
                 self.conn,
                 res['rows'][0]['nspname'],
@@ -1040,6 +1054,10 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            if diff_schema:
+                res['rows'][0]['nspname'] = diff_schema
+                resp_data['pronamespace'] = diff_schema
+
             name_with_default_args = self.qtIdent(
                 self.conn,
                 res['rows'][0]['nspname'],
@@ -1070,6 +1088,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                resp_data['pronamespace'],
                resp_data['proname']),
            resp_data['proargtypenames'].lstrip('(').rstrip(')'))
+
+        if not json_resp:
+            return re.sub('\n{2,}', '\n\n', func_def)
 
         SQL = sql_header + func_def
         SQL = re.sub('\n{2,}', '\n\n', SQL)
@@ -1597,7 +1618,66 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             status=200
         )
 
+    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
+                          diff_schema=None, drop_sql=False):
+        sql = ''
+        if data:
+            if diff_schema:
+                data['schema'] = diff_schema
+            status, sql = self._get_sql(gid, sid, did, scid, data, oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  scid=scid, fnid=oid, only_sql=True)
+            elif diff_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
+                               diff_schema=diff_schema, json_resp=False)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
+                               json_resp=False)
+        return sql
 
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid, oid=None):
+        """
+        This function will fetch the list of all the functions for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+        server_type = self.manager.server_type
+        server_version = self.manager.sversion
+
+        if server_type == 'pg' and self.blueprint.min_ver is not None and \
+                server_version < self.blueprint.min_ver:
+            return res
+        if server_type == 'ppas' and self.blueprint.min_ppasver is not None \
+                and server_version < self.blueprint.min_ppasver:
+            return res
+
+        if not oid:
+            SQL = render_template("/".join([self.sql_template_path,
+                                            'node.sql']), scid=scid)
+            status, rset = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            for row in rset['rows']:
+                data = self._fetch_properties(0, sid, did, scid, row['oid'])
+                if isinstance(data, dict):
+                    res[row['name']] = data
+        else:
+            data = self._fetch_properties(0, sid, did, scid, oid)
+            res = data
+
+        return res
+
+
+SchemaDiffRegistry(blueprint.node_type, FunctionView)
 FunctionView.register_node_view(blueprint)
 
 
@@ -1698,6 +1778,7 @@ class ProcedureView(FunctionView):
                 'prosrc']
 
 
+SchemaDiffRegistry(procedure_blueprint.node_type, ProcedureView)
 ProcedureView.register_node_view(procedure_blueprint)
 
 
@@ -1796,4 +1877,5 @@ class TriggerFunctionView(FunctionView):
                 'prosrc']
 
 
+SchemaDiffRegistry(trigger_function_blueprint.node_type, TriggerFunctionView)
 TriggerFunctionView.register_node_view(trigger_function_blueprint)

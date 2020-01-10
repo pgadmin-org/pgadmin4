@@ -21,7 +21,7 @@ CACHE {{data.seqcache|int}} {% endif %}
 {% endif %}{% endif %}{% if data.colconstype == 'g' and data.genexpr and data.genexpr != '' %} GENERATED ALWAYS AS ({{data.genexpr}}) STORED{% endif %};
 
 {###  Add comments ###}
-{% if data and data.description %}
+{% if data and data.description and data.description != None %}
 COMMENT ON COLUMN {{conn|qtIdent(data.schema, data.table, data.name)}}
     IS {{data.description|qtLiteral}};
 

@@ -26,7 +26,7 @@ def get_template_path(f):
     def wrap(*args, **kwargs):
         # Here args[0] will hold the connection object
         conn_obj = args[0]
-        if 'template_path' not in kwargs:
+        if 'template_path' not in kwargs or kwargs['template_path'] is None:
             kwargs['template_path'] = \
                 'indexes/sql/#{0}#'.format(conn_obj.manager.version)
 
@@ -229,7 +229,7 @@ def get_sql(conn, data, did, tid, idx, datlastsysoid,
 @get_template_path
 def get_reverse_engineered_sql(conn, schema, table, did, tid, idx,
                                datlastsysoid,
-                               template_path=None):
+                               template_path=None, with_header=True):
     """
     This function will return reverse engineered sql for specified trigger.
 
@@ -240,6 +240,8 @@ def get_reverse_engineered_sql(conn, schema, table, did, tid, idx,
     :param idx: Index ID
     :param datlastsysoid:
     :param template_path: Optional template path
+    :param with_header: Optional parameter to decide whether the SQL will be
+     returned with header or not
     :return:
     """
     SQL = render_template("/".join([template_path, 'properties.sql']),
@@ -267,11 +269,12 @@ def get_reverse_engineered_sql(conn, schema, table, did, tid, idx,
 
     SQL, name = get_sql(conn, data, did, tid, None, datlastsysoid)
 
-    sql_header = u"-- Index: {0}\n\n-- ".format(data['name'])
+    if with_header:
+        sql_header = u"-- Index: {0}\n\n-- ".format(data['name'])
 
-    sql_header += render_template("/".join([template_path, 'delete.sql']),
-                                  data=data, conn=conn)
+        sql_header += render_template("/".join([template_path, 'delete.sql']),
+                                      data=data, conn=conn)
 
-    SQL = sql_header + '\n\n' + SQL
+        SQL = sql_header + '\n\n' + SQL
 
     return SQL

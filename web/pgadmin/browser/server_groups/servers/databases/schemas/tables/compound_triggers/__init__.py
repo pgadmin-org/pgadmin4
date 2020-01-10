@@ -26,6 +26,10 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
+from pgadmin.utils.compile_template_name import compile_template_path
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -155,7 +159,7 @@ class CompoundTriggerModule(CollectionNodeModule):
 blueprint = CompoundTriggerModule(__name__)
 
 
-class CompoundTriggerView(PGChildNodeView):
+class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     This class is responsible for generating routes for Compound Trigger node
 
@@ -245,6 +249,10 @@ class CompoundTriggerView(PGChildNodeView):
         'enable': [{'put': 'enable_disable_trigger'}]
     })
 
+    # Schema Diff: Keys to ignore while comparing
+    keys_to_ignore = ['oid', 'xmin', 'nspname', 'tfunction',
+                      'tgrelid', 'tgfoid']
+
     def check_precondition(f):
         """
         This function will behave as a decorator which will checks
@@ -266,6 +274,12 @@ class CompoundTriggerView(PGChildNodeView):
                 kwargs['did']
             ]['datlastsysoid'] if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
+
+            self.table_template_path = compile_template_path(
+                'tables/sql',
+                self.manager.server_type,
+                self.manager.version
+            )
 
             # we will set template path for sql scripts
             self.template_path = 'compound_triggers/sql/{0}/#{1}#'.format(
@@ -417,6 +431,18 @@ class CompoundTriggerView(PGChildNodeView):
             JSON of selected compound trigger node
         """
 
+        data = self._fetch_properties(tid, trid)
+
+        if not status:
+            return data
+
+        return ajax_response(
+            response=data,
+            status=200
+        )
+
+    def _fetch_properties(self, tid, trid):
+
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
                               tid=tid, trid=trid,
@@ -440,10 +466,7 @@ class CompoundTriggerView(PGChildNodeView):
 
         data = trigger_definition(data)
 
-        return ajax_response(
-            response=data,
-            status=200
-        )
+        return True, data
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
@@ -519,7 +542,7 @@ class CompoundTriggerView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, trid=None):
+    def delete(self, gid, sid, did, scid, tid, trid=None, only_sql=False):
         """
         This function will updates existing the compound trigger object
 
@@ -579,6 +602,9 @@ class CompoundTriggerView(PGChildNodeView):
                                       conn=self.conn,
                                       cascade=cascade
                                       )
+                if only_sql:
+                    return SQL
+
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -846,5 +872,109 @@ class CompoundTriggerView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def get_sql_from_diff(self, gid, sid, did, scid, tid, oid,
+                          data=None, diff_schema=None, drop_sql=False):
+        if data:
+            sql, name = self.get_sql(scid, tid, oid, data)
+            if not isinstance(sql, (str, unicode)):
+                return sql
+            sql = sql.strip('\n').strip(' ')
+        else:
+            if drop_sql:
+                SQL = self.delete(gid=gid, sid=sid, did=did,
+                                  scid=scid, tid=tid,
+                                  trid=oid, only_sql=True)
+            else:
+                SQL = render_template("/".join([self.template_path,
+                                                'properties.sql']),
+                                      tid=tid, trid=oid,
+                                      datlastsysoid=self.datlastsysoid)
 
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
+                if len(res['rows']) == 0:
+                    return gone(gettext("""Could not find the compound
+                     trigger in the table."""))
+
+                data = dict(res['rows'][0])
+                # Adding parent into data dict,
+                # will be using it while creating sql
+                data['schema'] = self.schema
+                data['table'] = self.table
+
+                if len(data['tgattr']) >= 1:
+                    columns = ', '.join(data['tgattr'].split(' '))
+                    data['columns'] = self._column_details(tid, columns)
+
+                data = self._trigger_definition(data)
+
+                if diff_schema:
+                    data['schema'] = diff_schema
+
+                SQL, name = self.get_sql(scid, tid, None, data)
+
+                sql_header = u"-- Compound Trigger: {0}\n\n-- ".format(
+                    data['name'])
+
+                sql_header += render_template("/".join([self.template_path,
+                                                        'delete.sql']),
+                                              data=data, conn=self.conn)
+
+                SQL = sql_header + '\n\n' + SQL.strip('\n')
+
+                # If compound trigger is disbaled then add sql
+                # code for the same
+                if not data['is_enable_trigger']:
+                    SQL += '\n\n'
+                    SQL += render_template("/".join([
+                        self.template_path,
+                        'enable_disable_trigger.sql']),
+                        data=data, conn=self.conn)
+
+        return SQL
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid, tid, oid=None,
+                                 ignore_keys=False):
+        """
+        This function will fetch the list of all the triggers for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :param tid: Table Id
+        :return:
+        """
+        res = dict()
+
+        if oid:
+            status, data = self._fetch_properties(tid, oid)
+            if not status:
+                current_app.logger.error(data)
+                return False
+            res = data
+        else:
+            SQL = render_template("/".join([self.template_path,
+                                            'nodes.sql']), tid=tid)
+            status, triggers = self.conn.execute_2darray(SQL)
+            if not status:
+                current_app.logger.error(triggers)
+                return False
+
+            for row in triggers['rows']:
+                status, data = self._fetch_properties(tid, row['oid'])
+                if status:
+                    if ignore_keys:
+                        for key in self.keys_to_ignore:
+                            if key in data:
+                                del data[key]
+                    res[row['name']] = data
+
+        return res
+
+
+SchemaDiffRegistry(blueprint.node_type, CompoundTriggerView, 'table')
 CompoundTriggerView.register_node_view(blueprint)

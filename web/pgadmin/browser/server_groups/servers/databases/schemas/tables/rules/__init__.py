@@ -13,7 +13,8 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases.schemas as schemas
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, make_response, request, jsonify,\
+    current_app
 from flask_babelex import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
@@ -23,7 +24,11 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils import IS_PY2
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -134,7 +139,7 @@ class RuleModule(CollectionNodeModule):
 blueprint = RuleModule(__name__)
 
 
-class RuleView(PGChildNodeView):
+class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     This is a class for rule node which inherits the
     properties and methods from PGChildNodeView class and define
@@ -178,6 +183,9 @@ class RuleView(PGChildNodeView):
         'configs': [{'get': 'configs'}]
     })
 
+    # Schema Diff: Keys to ignore while comparing
+    keys_to_ignore = ['oid', 'schema', 'definition']
+
     def check_precondition(f):
         """
         This function will behave as a decorator which will check the
@@ -197,6 +205,12 @@ class RuleView(PGChildNodeView):
             ]['datlastsysoid'] if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
             self.template_path = 'rules/sql'
+            self.table_template_path = compile_template_path(
+                'tables/sql',
+                self.manager.server_type,
+                self.manager.version
+            )
+
             return f(*args, **kwargs)
 
         return wrap
@@ -279,21 +293,34 @@ class RuleView(PGChildNodeView):
         Fetch the properties of an individual rule and render in properties tab
 
         """
+        status, data = self._fetch_properties(rid)
+        if not status:
+            return data
+
+        return ajax_response(
+            response=data,
+            status=200
+        )
+
+    def _fetch_properties(self, rid):
+        """
+        This function is used to fetch the properties of the specified object
+        :param rid:
+        :return:
+        """
         SQL = render_template("/".join(
             [self.template_path, 'properties.sql']
         ), rid=rid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the rule in the table."""))
+            return False, gone(
+                gettext("""Could not find the rule in the table."""))
 
-        return ajax_response(
-            response=parse_rule_definition(res),
-            status=200
-        )
+        return True, parse_rule_definition(res)
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
@@ -369,7 +396,7 @@ class RuleView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, rid=None):
+    def delete(self, gid, sid, did, scid, tid, rid=None, only_sql=False):
         """
         This function will drop a rule object
         """
@@ -412,6 +439,8 @@ class RuleView(PGChildNodeView):
                     nspname=rset['nspname'],
                     cascade=cascade
                 )
+                if only_sql:
+                    return SQL
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -490,6 +519,44 @@ class RuleView(PGChildNodeView):
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
+    def get_sql_from_diff(self, gid, sid, did, scid, tid, oid, data=None,
+                          diff_schema=None, drop_sql=False):
+
+        if drop_sql:
+            SQL = self.delete(gid=gid, sid=sid, did=did,
+                              scid=scid, tid=tid,
+                              rid=oid, only_sql=True)
+        else:
+            SQL = render_template("/".join(
+                [self.template_path, 'properties.sql']), rid=oid)
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("""Could not find the rule in the table.""")
+                )
+            res_data = parse_rule_definition(res)
+
+            SQL = ''
+
+            if data:
+                old_data = res_data
+                SQL = render_template(
+                    "/".join([self.template_path, 'update.sql']),
+                    data=data, o_data=old_data
+                )
+            else:
+                if diff_schema:
+                    res_data['schema'] = diff_schema
+
+                SQL = render_template("/".join(
+                    [self.template_path, 'create.sql']),
+                    data=res_data, display_comments=True)
+
+        return SQL
+
+    @check_precondition
     def dependents(self, gid, sid, did, scid, tid, rid):
         """
         This function gets the dependents and returns an ajax response
@@ -527,5 +594,47 @@ class RuleView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid, tid, oid=None,
+                                 ignore_keys=False):
+        """
+        This function will fetch the list of all the rules for
+        specified schema id.
 
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :param tid: Table Id
+        :return:
+        """
+
+        res = {}
+        if oid:
+            status, data = self._fetch_properties(oid)
+            if not status:
+                current_app.logger.error(data)
+                return False
+
+            res = data
+        else:
+            SQL = render_template("/".join([self.template_path,
+                                            'nodes.sql']),
+                                  tid=tid)
+            status, rules = self.conn.execute_2darray(SQL)
+            if not status:
+                current_app.logger.error(rules)
+                return False
+
+            for row in rules['rows']:
+                status, data = self._fetch_properties(row['oid'])
+                if status:
+                    if ignore_keys:
+                        for key in self.keys_to_ignore:
+                            if key in data:
+                                del data[key]
+                    res[row['name']] = data
+        return res
+
+
+SchemaDiffRegistry(blueprint.node_type, RuleView, 'table')
 RuleView.register_node_view(blueprint)

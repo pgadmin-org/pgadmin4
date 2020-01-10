@@ -14,9 +14,12 @@ import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.editors';
 import 'slickgrid/slick.formatters';
+import 'slickgrid/slick.groupitemmetadataprovider';
 import 'slickgrid/plugins/slick.autotooltips';
 import 'slickgrid/plugins/slick.cellrangedecorator';
 import 'slickgrid/plugins/slick.cellrangeselector';
+import 'slickgrid/plugins/slick.checkboxselectcolumn';
+import 'slickgrid/plugins/slick.rowselectionmodel';
 import 'sources/slickgrid/custom_header_buttons';
 
 export default window.Slick;

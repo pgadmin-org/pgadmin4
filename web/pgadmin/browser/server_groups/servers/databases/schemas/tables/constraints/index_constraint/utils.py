@@ -152,7 +152,8 @@ def get_index_constraint_sql(conn, did, tid, data, template_path=None):
 
                     modified_sql, name = get_sql(conn, c, did, tid, ctype,
                                                  c['oid'])
-                    sql.append(modified_sql.strip('\n'))
+                    if modified_sql:
+                        sql.append(modified_sql.strip('\n'))
 
             if 'added' in constraint:
                 for c in constraint['added']:
@@ -183,6 +184,7 @@ def get_sql(conn, data, did, tid, ctype, cid=None, template_path=None):
     :return:
     """
     name = data['name'] if 'name' in data else None
+    sql = None
     if cid is not None:
         sql = render_template("/".join([template_path, 'properties.sql']),
                               did=did, tid=tid, cid=cid,

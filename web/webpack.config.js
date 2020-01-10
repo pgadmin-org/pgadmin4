@@ -356,6 +356,7 @@ module.exports = [{
     slickgrid: sourceDir + '/bundle/slickgrid.js',
     sqleditor: './pgadmin/tools/sqleditor/static/js/sqleditor.js',
     debugger_direct: './pgadmin/tools/debugger/static/js/direct.js',
+    schema_diff: './pgadmin/tools/schema_diff/static/js/schema_diff_hook.js',
     file_utils: './pgadmin/misc/file_manager/static/js/utility.js',
     'pgadmin.style': pgadminCssStyles,
     pgadmin: pgadminScssStyles,
@@ -492,7 +493,8 @@ module.exports = [{
         ',pgadmin.tools.import_export' +
         ',pgadmin.tools.debugger.controller' +
         ',pgadmin.tools.debugger.direct' +
-        ',pgadmin.node.pga_job',
+        ',pgadmin.node.pga_job' +
+        ',pgadmin.tools.schema_diff',
       },
     }, {
       test: require.resolve('snapsvg'),

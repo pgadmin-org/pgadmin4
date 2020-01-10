@@ -29,6 +29,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import ColParamsJSONDecoder
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str

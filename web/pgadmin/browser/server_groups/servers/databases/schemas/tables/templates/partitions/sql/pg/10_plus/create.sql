@@ -3,6 +3,7 @@
 {#====== MAIN TABLE TEMPLATE STARTS HERE ======#}
 {#===========================================#}
 {### CREATE TABLE STATEMENT FOR partitions ###}
+
 CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data.schema, data.name)}}{% if data.relispartition is defined and data.relispartition %} PARTITION OF {{conn|qtIdent(data.parent_schema, data.partitioned_table_name)}}{% endif %}
 
 {# Macro to render for constraints #}

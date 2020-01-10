@@ -161,6 +161,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
     * dependencies(gid, sid, did, scid, pkgid, edbfnid):
       - Returns the dependencies for the Functions object.
 
+    * compare(**kwargs):
+      - This function will compare the nodes from two different schemas.
     """
 
     node_type = blueprint.node_type
@@ -184,7 +186,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}]
+        'dependent': [{'get': 'dependents'}],
+        'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
     def check_precondition(f):

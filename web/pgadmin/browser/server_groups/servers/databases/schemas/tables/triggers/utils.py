@@ -30,7 +30,7 @@ def get_template_path(f):
     def wrap(*args, **kwargs):
         # Here args[0] will hold the connection object
         conn_obj = args[0]
-        if 'template_path' not in kwargs:
+        if 'template_path' not in kwargs or kwargs['template_path'] is None:
             kwargs['template_path'] = 'triggers/sql/{0}/#{1}#'.format(
                 conn_obj.manager.server_type, conn_obj.manager.version)
 
@@ -201,7 +201,7 @@ def get_sql(conn, data, tid, trid, datlastsysoid,
 @get_template_path
 def get_reverse_engineered_sql(conn, schema, table, tid, trid,
                                datlastsysoid, show_system_objects,
-                               template_path=None):
+                               template_path=None, with_header=True):
     """
     This function will return reverse engineered sql for specified trigger.
 
@@ -213,6 +213,8 @@ def get_reverse_engineered_sql(conn, schema, table, tid, trid,
     :param datlastsysoid:
     :param show_system_objects: Show System Object value True or False
     :param template_path: Optional template path
+    :param with_header: Optional parameter to decide whether the SQL will be
+     returned with header or not
     :return:
     """
     SQL = render_template("/".join([template_path, 'properties.sql']),
@@ -240,12 +242,15 @@ def get_reverse_engineered_sql(conn, schema, table, tid, trid,
     SQL, name = get_sql(conn, data, tid, None, datlastsysoid,
                         show_system_objects)
 
-    sql_header = u"-- Trigger: {0}\n\n-- ".format(data['name'])
+    if with_header:
+        sql_header = u"-- Trigger: {0}\n\n-- ".format(data['name'])
 
-    sql_header += render_template("/".join([template_path, 'delete.sql']),
-                                  data=data, conn=conn)
+        sql_header += render_template("/".join([template_path, 'delete.sql']),
+                                      data=data, conn=conn)
 
-    SQL = sql_header + '\n\n' + SQL.strip('\n')
+        SQL = sql_header + '\n\n' + SQL.strip('\n')
+    else:
+        SQL = SQL.strip('\n')
 
     # If trigger is disabled then add sql code for the same
     if data['is_enable_trigger'] != 'O':

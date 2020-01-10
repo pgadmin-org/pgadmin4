@@ -9,6 +9,7 @@
 
 """Implements View and Materialized View Node"""
 
+import copy
 from functools import wraps
 
 import simplejson as json
@@ -18,13 +19,16 @@ from flask_babelex import gettext
 import pgadmin.browser.server_groups.servers.databases as databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
-    SchemaChildModule, parse_rule_definition, VacuumSettings
+    SchemaChildModule, parse_rule_definition, VacuumSettings, get_schema
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+
 
 """
     This module is responsible for generating two nodes
@@ -197,7 +201,7 @@ def check_precondition(f):
     return wrap
 
 
-class ViewNode(PGChildNodeView, VacuumSettings):
+class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
     """
     This class is responsible for generating routes for view node.
 
@@ -250,6 +254,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
     * dependent(gid, sid, did, scid):
       - This function will generate dependent list to show it in dependent
         pane for the selected view node.
+
+    * compare(**kwargs):
+      - This function will compare the view nodes from two
+        different schemas.
     """
     node_type = view_blueprint.node_type
 
@@ -289,6 +297,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             {'get': 'get_toast_table_vacuum'},
             {'get': 'get_toast_table_vacuum'}]
     })
+
+    keys_to_ignore = ['oid', 'schema', 'xmin']
 
     def __init__(self, *args, **kwargs):
         """
@@ -400,21 +410,37 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         Fetches the properties of an individual view
         and render in the properties tab
         """
+        status, res = self._fetch_properties(scid, vid)
+        if not status:
+            return res
+
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, scid, vid):
+        """
+        This function is used to fetch the properties of the specified object
+        :param scid:
+        :param vid:
+        :return:
+        """
         SQL = render_template("/".join(
             [self.template_path, 'sql/properties.sql']
         ), vid=vid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the view."""))
+            return False, gone(gettext("""Could not find the view."""))
 
         SQL = render_template("/".join(
             [self.template_path, 'sql/acl.sql']), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         for row in dataclres['rows']:
             priv = parse_priv_from_db(row)
@@ -428,10 +454,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         # merging formated result with main result again
         result.update(frmtd_reslt)
 
-        return ajax_response(
-            response=result,
-            status=200
-        )
+        return True, result
 
     @staticmethod
     def formatter(result):
@@ -556,7 +579,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, vid=None):
+    def delete(self, gid, sid, did, scid, vid=None, only_sql=False):
         """
         This function will drop a view object
         """
@@ -604,6 +627,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                     nspname=res_data['rows'][0]['schema'],
                     name=res_data['rows'][0]['name'], cascade=cascade
                 )
+
+                if only_sql:
+                    return SQL
+
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -840,7 +867,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         return columns
 
-    def get_rule_sql(self, vid):
+    def get_rule_sql(self, vid, display_comments=True):
         """
         Get all non system rules of view node,
         generate their sql and render
@@ -869,12 +896,12 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 res = parse_rule_definition(res)
                 SQL = render_template("/".join(
                     [self.rule_temp_path, 'sql/create.sql']),
-                    data=res, display_comments=True)
+                    data=res, display_comments=display_comments)
                 SQL_data += '\n'
                 SQL_data += SQL
         return SQL_data
 
-    def get_compound_trigger_sql(self, vid):
+    def get_compound_trigger_sql(self, vid, display_comments=True):
         """
         Get all compound trigger nodes associated with view node,
         generate their sql and render into sql tab
@@ -945,13 +972,13 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                     [self.ct_trigger_temp_path,
                      'sql/{0}/#{1}#/create.sql'.format(
                          self.manager.server_type, self.manager.version)]),
-                    data=res_rows, display_comments=True)
+                    data=res_rows, display_comments=display_comments)
                 SQL_data += '\n'
                 SQL_data += SQL
 
         return SQL_data
 
-    def get_trigger_sql(self, vid):
+    def get_trigger_sql(self, vid, display_comments=True):
         """
         Get all trigger nodes associated with view node,
         generate their sql and render
@@ -1038,13 +1065,13 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 [self.trigger_temp_path,
                  'sql/{0}/#{1}#/create.sql'.format(
                      self.manager.server_type, self.manager.version)]),
-                data=res_rows, display_comments=True)
+                data=res_rows, display_comments=display_comments)
             SQL_data += '\n'
             SQL_data += SQL
 
         return SQL_data
 
-    def get_index_sql(self, did, vid):
+    def get_index_sql(self, did, vid, display_comments=True):
         """
         Get all index associated with view node,
         generate their sql and render
@@ -1084,16 +1111,22 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             SQL = render_template("/".join(
                 [self.index_temp_path,
                  'sql/#{0}#/create.sql'.format(self.manager.version)]),
-                data=data, display_comments=True)
+                data=data, display_comments=display_comments)
             SQL_data += '\n'
             SQL_data += SQL
         return SQL_data
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, vid):
+    def sql(self, gid, sid, did, scid, vid, diff_schema=None,
+            json_resp=True):
         """
         This function will generate sql to render into the sql panel
         """
+
+        display_comments = True
+
+        if not json_resp:
+            display_comments = False
 
         SQL_data = ''
         SQL = render_template("/".join(
@@ -1111,6 +1144,9 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             )
 
         result = res['rows'][0]
+        if diff_schema:
+            result['schema'] = diff_schema
+
         # sending result to formtter
         frmtd_reslt = self.formatter(result)
 
@@ -1152,18 +1188,20 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             [self.template_path, 'sql/create.sql']),
             data=result,
             conn=self.conn,
-            display_comments=True
+            display_comments=display_comments
         )
         SQL += "\n"
         SQL += render_template("/".join(
             [self.template_path, 'sql/grant.sql']), data=result)
 
         SQL_data += SQL
-        SQL_data += self.get_rule_sql(vid)
-        SQL_data += self.get_trigger_sql(vid)
-        SQL_data += self.get_compound_trigger_sql(vid)
-        SQL_data += self.get_index_sql(did, vid)
+        SQL_data += self.get_rule_sql(vid, display_comments)
+        SQL_data += self.get_trigger_sql(vid, display_comments)
+        SQL_data += self.get_compound_trigger_sql(vid, display_comments)
+        SQL_data += self.get_index_sql(did, vid, display_comments)
 
+        if not json_resp:
+            return SQL_data
         return ajax_response(response=SQL_data)
 
     @check_precondition
@@ -1356,6 +1394,60 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             sql = gettext('-- Please create column(s) first...')
 
         return ajax_response(response=sql)
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid, oid=None):
+        """
+        This function will fetch the list of all the views for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+
+        if not oid:
+            SQL = render_template("/".join([self.template_path,
+                                            'sql/nodes.sql']), did=did,
+                                  scid=scid, datlastsysoid=self.datlastsysoid)
+            status, views = self.conn.execute_2darray(SQL)
+            if not status:
+                current_app.logger.error(views)
+                return False
+
+            for row in views['rows']:
+                status, data = self._fetch_properties(scid, row['oid'])
+                if status:
+                    res[row['name']] = data
+        else:
+            status, data = self._fetch_properties(scid, oid)
+            if not status:
+                current_app.logger.error(data)
+                return False
+            res = data
+
+        return res
+
+    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
+                          diff_schema=None, drop_sql=False):
+        sql = ''
+        if data:
+            if diff_schema:
+                data['schema'] = diff_schema
+            sql, nameOrError = self.getSQL(gid, sid, did, data, oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  scid=scid, vid=oid, only_sql=True)
+            elif diff_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, vid=oid,
+                               diff_schema=diff_schema, json_resp=False)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, vid=oid,
+                               json_resp=False)
+        return sql
 
 
 # Override the operations for materialized view
@@ -1631,10 +1723,16 @@ class MViewNode(ViewNode, VacuumSettings):
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, vid):
+    def sql(self, gid, sid, did, scid, vid, diff_schema=None,
+            json_resp=True):
         """
         This function will generate sql to render into the sql panel
         """
+
+        display_comments = True
+
+        if not json_resp:
+            display_comments = False
 
         SQL_data = ''
         SQL = render_template("/".join(
@@ -1653,6 +1751,9 @@ class MViewNode(ViewNode, VacuumSettings):
             )
 
         result = res['rows'][0]
+
+        if diff_schema:
+            result['schema'] = diff_schema
 
         # sending result to formtter
         frmtd_reslt = self.formatter(result)
@@ -1732,17 +1833,20 @@ class MViewNode(ViewNode, VacuumSettings):
             [self.template_path, 'sql/create.sql']),
             data=result,
             conn=self.conn,
-            display_comments=True
+            display_comments=display_comments
         )
         SQL += "\n"
         SQL += render_template("/".join(
             [self.template_path, 'sql/grant.sql']), data=result)
 
         SQL_data += SQL
-        SQL_data += self.get_rule_sql(vid)
-        SQL_data += self.get_trigger_sql(vid)
-        SQL_data += self.get_index_sql(did, vid)
+        SQL_data += self.get_rule_sql(vid, display_comments)
+        SQL_data += self.get_trigger_sql(vid, display_comments)
+        SQL_data += self.get_index_sql(did, vid, display_comments)
         SQL_data = SQL_data.strip('\n')
+
+        if not json_resp:
+            return SQL_data
         return ajax_response(response=SQL_data)
 
     @check_precondition
@@ -1756,9 +1860,9 @@ class MViewNode(ViewNode, VacuumSettings):
         values
         """
 
-        res = self.get_vacuum_table_settings(self.conn)
+        res = self.get_vacuum_table_settings(self.conn, sid)
         return ajax_response(
-            response=res['rows'],
+            response=res,
             status=200
         )
 
@@ -1772,10 +1876,10 @@ class MViewNode(ViewNode, VacuumSettings):
           - setting
         values
         """
-        res = self.get_vacuum_toast_settings(self.conn)
+        res = self.get_vacuum_toast_settings(self.conn, sid)
 
         return ajax_response(
-            response=res['rows'],
+            response=res,
             status=200
         )
 
@@ -1785,21 +1889,39 @@ class MViewNode(ViewNode, VacuumSettings):
         Fetches the properties of an individual view
         and render in the properties tab
         """
+        status, res = self._fetch_properties(did, scid, vid)
+        if not status:
+            return res
+
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, did, scid, vid):
+        """
+        This function is used to fetch the properties of the specified object
+        :param did:
+        :param scid:
+        :param vid:
+        :return:
+        """
         SQL = render_template("/".join(
             [self.template_path, 'sql/properties.sql']
         ), did=did, vid=vid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the materialized view."""))
+            return False, gone(
+                gettext("""Could not find the materialized view."""))
 
         SQL = render_template("/".join(
             [self.template_path, 'sql/acl.sql']), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         for row in dataclres['rows']:
             priv = parse_priv_from_db(row)
@@ -1818,10 +1940,7 @@ class MViewNode(ViewNode, VacuumSettings):
         result['vacuum_toast'] = self.parse_vacuum_data(
             self.conn, result, 'toast')
 
-        return ajax_response(
-            response=result,
-            status=200
-        )
+        return True, result
 
     @check_precondition
     def refresh_data(self, gid, sid, did, scid, vid):
@@ -1873,6 +1992,34 @@ class MViewNode(ViewNode, VacuumSettings):
             current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid, oid=None):
+        """
+        This function will fetch the list of all the mviews for
+        specified schema id.
 
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+        SQL = render_template("/".join([self.template_path,
+                                        'sql/nodes.sql']), did=did,
+                              scid=scid, datlastsysoid=self.datlastsysoid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(did, scid, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
+
+
+SchemaDiffRegistry(view_blueprint.node_type, ViewNode)
 ViewNode.register_node_view(view_blueprint)
+SchemaDiffRegistry(mview_blueprint.node_type, MViewNode)
 MViewNode.register_node_view(mview_blueprint)

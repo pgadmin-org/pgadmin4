@@ -13,7 +13,7 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, current_app
 from flask_babelex import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -25,7 +25,11 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import trigger_definition
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils import IS_PY2
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
@@ -151,7 +155,7 @@ class TriggerModule(CollectionNodeModule):
 blueprint = TriggerModule(__name__)
 
 
-class TriggerView(PGChildNodeView):
+class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     This class is responsible for generating routes for Trigger node
 
@@ -244,6 +248,10 @@ class TriggerView(PGChildNodeView):
         'enable': [{'put': 'enable_disable_trigger'}]
     })
 
+    # Schema Diff: Keys to ignore while comparing
+    keys_to_ignore = ['oid', 'xmin', 'nspname', 'tfunction',
+                      'tgrelid', 'tgfoid', 'prosrc']
+
     def check_precondition(f):
         """
         This function will behave as a decorator which will checks
@@ -267,6 +275,11 @@ class TriggerView(PGChildNodeView):
                 kwargs['did'] in self.manager.db_info else 0
 
             # we will set template path for sql scripts
+            self.table_template_path = compile_template_path(
+                'tables/sql',
+                self.manager.server_type,
+                self.manager.version
+            )
             self.template_path = 'triggers/sql/{0}/#{1}#'.format(
                 self.manager.server_type, self.manager.version)
             # Store server type
@@ -450,7 +463,22 @@ class TriggerView(PGChildNodeView):
         Returns:
             JSON of selected trigger node
         """
+        status, data = self._fetch_properties(tid, trid)
+        if not status:
+            return data
 
+        return ajax_response(
+            response=data,
+            status=200
+        )
+
+    def _fetch_properties(self, tid, trid):
+        """
+        This function is used to fetch the properties of the specified object
+        :param tid:
+        :param trid:
+        :return:
+        """
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
                               tid=tid, trid=trid,
@@ -459,10 +487,10 @@ class TriggerView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
+            return False, gone(
                 gettext("""Could not find the trigger in the table."""))
 
         # Making copy of output for future use
@@ -472,10 +500,7 @@ class TriggerView(PGChildNodeView):
 
         data = trigger_definition(data)
 
-        return ajax_response(
-            response=data,
-            status=200
-        )
+        return True, data
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
@@ -552,7 +577,7 @@ class TriggerView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, trid=None):
+    def delete(self, gid, sid, did, scid, tid, trid=None, only_sql=False):
         """
         This function will updates existing the trigger object
 
@@ -610,6 +635,8 @@ class TriggerView(PGChildNodeView):
                                       conn=self.conn,
                                       cascade=cascade
                                       )
+                if only_sql:
+                    return SQL
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -762,6 +789,36 @@ class TriggerView(PGChildNodeView):
         return ajax_response(response=SQL)
 
     @check_precondition
+    def get_sql_from_diff(self, gid, sid, did, scid, tid, oid,
+                          data=None, diff_schema=None, drop_sql=False):
+        if data:
+            SQL, name = trigger_utils.get_sql(
+                self.conn, data, tid, oid,
+                self.datlastsysoid,
+                self.blueprint.show_system_objects)
+
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
+            SQL = SQL.strip('\n').strip(' ')
+        else:
+            if drop_sql:
+                SQL = self.delete(gid=gid, sid=sid, did=did,
+                                  scid=scid, tid=tid, trid=oid,
+                                  only_sql=True)
+            else:
+                schema = self.schema
+                if diff_schema:
+                    schema = diff_schema
+                SQL = trigger_utils.get_reverse_engineered_sql(
+                    self.conn, schema,
+                    self.table, tid, oid,
+                    self.datlastsysoid,
+                    self.blueprint.show_system_objects,
+                    template_path=None, with_header=False)
+
+        return SQL
+
+    @check_precondition
     def enable_disable_trigger(self, gid, sid, did, scid, tid, trid):
         """
         This function will enable OR disable the current trigger object
@@ -875,5 +932,46 @@ class TriggerView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid, tid, oid=None,
+                                 ignore_keys=False):
+        """
+        This function will fetch the list of all the triggers for
+        specified schema id.
 
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :param tid: Table Id
+        :return:
+        """
+        res = dict()
+
+        if oid:
+            status, data = self._fetch_properties(tid, oid)
+            if not status:
+                current_app.logger.error(data)
+                return False
+            res = data
+        else:
+            SQL = render_template("/".join([self.template_path,
+                                            'nodes.sql']), tid=tid)
+            status, triggers = self.conn.execute_2darray(SQL)
+            if not status:
+                current_app.logger.error(triggers)
+                return False
+
+            for row in triggers['rows']:
+                status, data = self._fetch_properties(tid, row['oid'])
+                if status:
+                    if ignore_keys:
+                        for key in self.keys_to_ignore:
+                            if key in data:
+                                del data[key]
+                    res[row['name']] = data
+
+        return res
+
+
+SchemaDiffRegistry(blueprint.node_type, TriggerView, 'table')
 TriggerView.register_node_view(blueprint)

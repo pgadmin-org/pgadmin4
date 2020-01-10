@@ -27,6 +27,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 # If we are in Python3
 if not IS_PY2:
@@ -79,7 +81,7 @@ class DomainModule(SchemaChildModule):
 blueprint = DomainModule(__name__)
 
 
-class DomainView(PGChildNodeView, DataTypeReader):
+class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     """
     class DomainView
 
@@ -138,6 +140,10 @@ class DomainView(PGChildNodeView, DataTypeReader):
 
     * types(gid, sid, did, scid, fnid=None):
       - Returns Data Types.
+
+    * compare(**kwargs):
+      - This function will compare the domain nodes from two different
+        schemas.
     """
 
     node_type = blueprint.node_type
@@ -169,7 +175,8 @@ class DomainView(PGChildNodeView, DataTypeReader):
         'get_collations': [
             {'get': 'get_collations'},
             {'get': 'get_collations'}
-        ]
+        ],
+        'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
     def validate_request(f):
@@ -369,15 +376,31 @@ class DomainView(PGChildNodeView, DataTypeReader):
             scid: Schema Id
             doid: Domain Id
         """
+        status, res = self._fetch_properties(did, scid, doid)
+        if not status:
+            return res
 
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, did, scid, doid):
+        """
+        This function is used to fecth the properties of specified object.
+        :param did:
+        :param scid:
+        :param doid:
+        :return:
+        """
         SQL = render_template("/".join([self.template_path, 'properties.sql']),
                               scid=scid, doid=doid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""
+            return False, gone(gettext("""
 Could not find the domain in the database.
 It may have been removed by another user or moved to another schema.
 """))
@@ -393,7 +416,7 @@ It may have been removed by another user or moved to another schema.
                               doid=doid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         data['constraints'] = res['rows']
 
@@ -406,10 +429,7 @@ It may have been removed by another user or moved to another schema.
         if doid <= self.manager.db_info[did]['datlastsysoid']:
             data['sysdomain'] = True
 
-        return ajax_response(
-            response=data,
-            status=200
-        )
+        return True, data
 
     def _parse_type(self, basetype):
         """
@@ -664,7 +684,7 @@ AND relkind != 'c'))"""
         )
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, doid=None):
+    def sql(self, gid, sid, did, scid, doid=None, return_ajax_response=True):
         """
         Returns the SQL for the Domain object.
 
@@ -674,6 +694,7 @@ AND relkind != 'c'))"""
             did: Database Id
             scid: Schema Id
             doid: Domain Id
+            return_ajax_response:
         """
 
         SQL = render_template("/".join([self.template_path,
@@ -715,6 +736,9 @@ AND relkind != 'c'))"""
 
 """.format(self.qtIdent(self.conn, data['basensp'], data['name']))
         SQL = sql_header + SQL
+
+        if not return_ajax_response:
+            return SQL.strip('\n')
 
         return ajax_response(response=SQL.strip('\n'))
 
@@ -845,6 +869,41 @@ AND relkind != 'c'))"""
             response=dependencies_result,
             status=200
         )
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid):
+        """
+        This function will fetch the list of all the domains for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+        SQL = render_template("/".join([self.template_path,
+                                        'node.sql']), scid=scid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(did, scid, row['oid'])
+
+            if status:
+                if 'constraints' in data and len(data['constraints']) > 0:
+                    for item in data['constraints']:
+                        # Remove keys that should not be the part
+                        # of comparision.
+                        if 'conoid' in item:
+                            item.pop('conoid')
+                        if 'nspname' in item:
+                            item.pop('nspname')
+
+                res[row['name']] = data
+
+        return res
 
 
 DomainView.register_node_view(blueprint)

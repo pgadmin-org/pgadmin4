@@ -84,6 +84,8 @@ define('tools.querytool', [
       this.handler.preferences = this.preferences;
       this.connIntervalId = null;
       this.layout = opts.layout;
+      this.set_server_version(opts.server_ver);
+      this.trigger('pgadmin-sqleditor:view:initialised');
     },
 
     // Bind all the events
@@ -2315,6 +2317,12 @@ define('tools.querytool', [
           pgBrowser.Events.on('pgadmin:query_tool:connected:'+ transId,()=>{
             self.check_data_changes_to_execute_query();
           });
+        }
+      },
+
+      set_value_to_editor: function(query) {
+        if (this.gridView && this.gridView.query_tool_obj && !_.isUndefined(query)) {
+          this.gridView.query_tool_obj.setValue(query);
         }
       },
 

@@ -23,6 +23,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone, bad_request
 from pgadmin.utils.driver import get_driver
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 """
     This module is responsible for generating two nodes
@@ -1023,5 +1024,6 @@ It may have been removed by another user.
         return ajax_response(response=SQL.strip("\n"))
 
 
+SchemaDiffRegistry(schema_blueprint.node_type, SchemaView)
 SchemaView.register_node_view(schema_blueprint)
 CatalogView.register_node_view(catalog_blueprint)

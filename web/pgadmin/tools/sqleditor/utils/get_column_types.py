@@ -35,12 +35,13 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
         column_types[col['name']] = col_type
 
         if not is_query_tool:
-            col_type['not_null'] = col['not_null'] = \
-                rset['rows'][key]['not_null']
+            if key in rset['rows']:
+                col_type['not_null'] = col['not_null'] = \
+                    rset['rows'][key]['not_null']
 
-            col_type['has_default_val'] = \
-                col['has_default_val'] = \
-                rset['rows'][key]['has_default_val']
+                col_type['has_default_val'] = \
+                    col['has_default_val'] = \
+                    rset['rows'][key]['has_default_val']
 
         else:
             for row in rset['rows']:

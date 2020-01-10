@@ -24,6 +24,8 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 # If we are in Python3
 if not IS_PY2:
@@ -91,7 +93,7 @@ class SynonymModule(SchemaChildModule):
 blueprint = SynonymModule(__name__)
 
 
-class SynonymView(PGChildNodeView):
+class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     This class is responsible for generating routes for Synonym node
 
@@ -143,6 +145,10 @@ class SynonymView(PGChildNodeView):
     * dependent(gid, sid, did, scid):
       - This function will generate dependent list to show it in dependent
         pane for the selected Synonym node.
+
+    * compare(**kwargs):
+      - This function will compare the synonyms nodes from two
+        different schemas.
     """
 
     node_type = blueprint.node_type
@@ -385,26 +391,36 @@ class SynonymView(PGChildNodeView):
         Returns:
             JSON of selected synonym node
         """
+        status, res = self._fetch_properties(scid, syid)
+        if not status:
+            return res
 
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, scid, syid):
+        """
+        This function is used to fetch the properties of the specified object
+        :param scid:
+        :param syid:
+        :return:
+        """
         try:
             SQL = render_template("/".join([self.template_path,
                                             'properties.sql']),
                                   scid=scid, syid=syid)
             status, res = self.conn.execute_dict(SQL)
-
             if not status:
-                return internal_server_error(errormsg=res)
+                return False, internal_server_error(errormsg=res)
 
-            if len(res['rows']) > 0:
-                return ajax_response(
-                    response=res['rows'][0],
-                    status=200
-                )
-            else:
-                return gone(
+            if len(res['rows']) == 0:
+                return False, gone(
                     gettext('The specified synonym could not be found.')
                 )
 
+            return True, res['rows'][0]
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -706,6 +722,34 @@ class SynonymView(PGChildNodeView):
             response=dependencies_result,
             status=200
         )
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did, scid):
+        """
+        This function will fetch the list of all the synonyms for
+        specified schema id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :return:
+        """
+        res = dict()
+        if self.manager.server_type != 'ppas':
+            return res
+
+        SQL = render_template("/".join([self.template_path,
+                                        'properties.sql']), scid=scid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(scid, row['name'])
+            if status:
+                res[row['name']] = data
+
+        return res
 
 
 SynonymView.register_node_view(blueprint)
