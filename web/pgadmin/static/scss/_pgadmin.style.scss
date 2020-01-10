@@ -652,12 +652,15 @@ fieldset.inline-fieldset > div {
   outline: none;
 }
 
-input[type="checkbox"]:focus,
-a:focus {
-    &.navbar-brand, &.dropdown-item {
-        outline: none !important;
+input[type="checkbox"],
+select,
+a {
+    &:focus {
+      &.navbar-brand, &.dropdown-item {
+          outline: none !important;
+      }
+      outline: 2px solid $input-focus-border-color !important;
     }
-    outline: 2px solid $input-focus-border-color !important;
 }
 
 div.rolmembership {
@@ -869,6 +872,14 @@ table.table-bottom-border {
   tbody tr:last-of-type{
     & td, & th {
       border-bottom: $panel-border;
+    }
+  }
+}
+
+table.table-right-border {
+  tr {
+    & td:last-of-type, & th:last-of-type {
+      border-right: $panel-border;
     }
   }
 }

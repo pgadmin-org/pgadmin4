@@ -14,10 +14,10 @@
 .fileinfo #contents li .fm_file_rename,
 .fileinfo table#contents tr td:first-child input.fm_file_rename {
   display: none;
-  width: 80px;
+  width: 100%;
   margin: 0 auto;
   text-align: center;
-  height: 17px;
+  height: inherit;
 }
 
 .fileinfo > h1 {

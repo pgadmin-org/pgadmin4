@@ -8816,10 +8816,10 @@ table@^5.2.3:
     slice-ansi "^2.1.0"
     string-width "^3.0.0"
 
-tablesorter@^2.31.1:
-  version "2.31.1"
-  resolved "https://registry.yarnpkg.com/tablesorter/-/tablesorter-2.31.1.tgz#19c550c555fad4d3814500bfd4373e8b4f972305"
-  integrity sha512-xXFYMu2vc73oKNWcf+hdId1Rvtl2W3zS9pJAX0BWjJcn6zmhquXCk+kuBQzKid/Iq/T8ERPlyAJ7q0Wkgym7Sg==
+tablesorter@^2.31.2:
+  version "2.31.2"
+  resolved "https://registry.yarnpkg.com/tablesorter/-/tablesorter-2.31.2.tgz#3a37759c2b269688138b46f88454d61d1895b275"
+  integrity sha512-e4ubgJpHNXHWm8tR+eGt2BPAqoOCY+uOQ6PVDCgtklCtJO6VHmORmjZdtm9aYqSqWsUih72wB0nS95JiXZ2l2g==
   dependencies:
     jquery ">=1.2.6"
 
