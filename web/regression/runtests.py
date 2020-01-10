@@ -150,8 +150,10 @@ def get_suite(module_list, test_server, test_app_client, server_information,
 
     # Get the each test module and add into list
     for key, klass in module_list:
-        gen = klass
-        modules.append(gen)
+        # Separate each test class from list of classes and store in modules
+        for item in klass:
+            gen = item
+            modules.append(gen)
 
     # Set the test client to each module & generate the scenarios
     for module in modules:

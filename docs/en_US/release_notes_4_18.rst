@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5071 <https://redmine.postgresql.org/issues/5071>`_ -  Improve the test framework to run for multiple classes defined in a single file.
 
 Bug fixes
 *********
