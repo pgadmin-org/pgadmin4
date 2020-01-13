@@ -598,8 +598,6 @@ class Filemanager(object):
             Filemanager.resume_windows_warning()
             return files
 
-        if dir is None:
-            dir = ""
         orig_path = Filemanager.get_abs_path(dir, path)
 
         if not path_exists(orig_path):
@@ -693,12 +691,13 @@ class Filemanager(object):
         # absolute path.
         orig_path = os.path.abspath(orig_path)
 
-        if _platform == 'win32':
-            if dir[-1] == '\\' or dir[-1] == '/':
-                dir = dir[:-1]
-        else:
-            if dir[-1] == '/':
-                dir = dir[:-1]
+        if dir:
+            if _platform == 'win32':
+                if dir[-1] == '\\' or dir[-1] == '/':
+                    dir = dir[:-1]
+            else:
+                if dir[-1] == '/':
+                    dir = dir[:-1]
 
         # Do not allow user to access outside his storage dir in server mode.
         if not orig_path.startswith(dir):
@@ -710,7 +709,7 @@ class Filemanager(object):
     def get_abs_path(dir, path):
 
         if (path.startswith('\\\\') and _platform == 'win32')\
-                or config.SERVER_MODE is False:
+                or config.SERVER_MODE is False or dir is None:
             return u"{}".format(path)
 
         if path == '/' or path == '\\':
@@ -823,8 +822,8 @@ class Filemanager(object):
         trans_data = Filemanager.get_trasaction_selection(self.trans_id)
         dir = None
         if config.SERVER_MODE:
-            dir = self.dir if self.dir is not None else ''
-            if not dir.endswith('/'):
+            dir = self.dir
+            if dir is not None and not dir.endswith('/'):
                 dir += u'/'
 
         filelist = self.list_filesystem(
