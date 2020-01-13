@@ -52,6 +52,7 @@
 
 .slick-header-column.ui-state-default {
     height: 32px !important;
+    line-height: 25px !important;
 }
 
 #schema-diff-grid .grid-header label {
@@ -186,4 +187,8 @@
 .target-buttons {
   flex-wrap: wrap;
   max-width: 40% !important;
+}
+
+.slick-cell .ml-2 {
+  margin-left: 2rem !important;
 }

@@ -318,7 +318,7 @@ export default class SchemaDiffUI {
     // Format Schema object title with appropriate icon
     var formatColumnTitle = function (row, cell, value, columnDef, dataContext) {
       let icon = 'icon-' + dataContext.type;
-      return '<i class="ml-5 wcTabIcon '+ icon +'"></i><span>' + value + '</span>';
+      return '<i class="ml-2 wcTabIcon '+ icon +'"></i><span>' + value + '</span>';
     };
 
     // Grid Columns
@@ -349,7 +349,14 @@ export default class SchemaDiffUI {
         getter: 'type',
         formatter: function (g) {
           let icon = 'icon-coll-' + g.value;
-          return '<i class="wcTabIcon '+ icon +'"></i><span>' + g.rows[0].label + '</span>';
+          let identical=0, different=0, source_only=0, target_only=0;
+          for (var i = 0; i < g.rows.length; i++) {
+            if (g.rows[i]['status'] == self.filters[0]) identical++;
+            else if (g.rows[i]['status'] == self.filters[1]) different++;
+            else if (g.rows[i]['status'] == self.filters[2]) source_only++;
+            else if (g.rows[i]['status'] == self.filters[3]) target_only++;
+          }
+          return '<i class="wcTabIcon '+ icon +'"></i><span>' + g.rows[0].label + ' - ' + gettext('Identical') + ': <strong>' + identical + '</strong>&nbsp;&nbsp;' + gettext('Different') + ': <strong>' + different + '</strong>&nbsp;&nbsp;' + gettext('Source Only') + ': <strong>' + source_only + '</strong>&nbsp;&nbsp;' + gettext('Target Only') + ': <strong>' + target_only + '</strong></span>';
         },
         aggregateCollapsed: true,
         lazyTotalsCalculation: true,
@@ -406,6 +413,8 @@ export default class SchemaDiffUI {
     grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
     grid.registerPlugin(checkboxSelector);
 
+    self.dataView.syncGridSelection(grid, true, true);
+
     grid.onClick.subscribe(function(e, args) {
       if (args.row) {
         data = args.grid.getData().getItem(args.row);
@@ -431,11 +440,13 @@ export default class SchemaDiffUI {
 
   render_grid_data(data) {
     var self = this;
+    self.grid.setSelectedRows([]);
     self.dataView.beginUpdate();
     self.dataView.setItems(data);
     self.dataView.setFilter(self.filter.bind(self));
     self.groupBySchemaObject();
     self.dataView.endUpdate();
+    self.dataView.refresh();
 
     self.resize_grid();
   }
