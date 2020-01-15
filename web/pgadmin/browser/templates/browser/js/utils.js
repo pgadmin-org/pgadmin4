@@ -45,6 +45,10 @@ define('pgadmin.browser.utils',
   pgAdmin['csrf_token_header'] = '{{ current_app.config.get('WTF_CSRF_HEADERS')[0] }}';
   pgAdmin['csrf_token'] = '{{ csrf_token() }}';
 
+  /* Get the inactivity related config */
+  pgAdmin['user_inactivity_timeout'] = {{ current_app.config.get('USER_INACTIVITY_TIMEOUT') }};
+  pgAdmin['override_user_inactivity_timeout'] = '{{ current_app.config.get('OVERRIDE_USER_INACTIVITY_TIMEOUT') }}' == 'True';
+
   // Define list of nodes on which Query tool option doesn't appears
   var unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',
@@ -65,6 +69,7 @@ define('pgadmin.browser.utils',
     app_name: '{{ app_name }}',
     pg_libpq_version: {{pg_libpq_version|e}},
     support_ssh_tunnel: '{{ support_ssh_tunnel }}' == 'True',
+    logout_url: '{{logout_url}}',
 
     counter: {total: 0, loaded: 0},
     registerScripts: function (ctx) {

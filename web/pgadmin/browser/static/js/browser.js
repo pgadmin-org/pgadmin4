@@ -17,7 +17,7 @@ define('pgadmin.browser', [
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
   'pgadmin.browser.error', 'pgadmin.browser.frame',
-  'pgadmin.browser.node', 'pgadmin.browser.collection',
+  'pgadmin.browser.node', 'pgadmin.browser.collection', 'pgadmin.browser.activity',
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state',
 ], function(
@@ -547,6 +547,11 @@ define('pgadmin.browser', [
       obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode, obj);
 
       obj.bind_beforeunload();
+
+      /* User UI activity */
+      obj.log_activity(); /* The starting point */
+      obj.register_to_activity_listener(document);
+      obj.start_inactivity_timeout_daemon();
     },
 
     init_master_password: function() {

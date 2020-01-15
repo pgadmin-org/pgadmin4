@@ -154,7 +154,7 @@ window.onload = function(e){
                     <li><a class="dropdown-item" href="#" onclick="pgAdmin.Browser.UserManagement.show_users()">{{ _('Users') }}</a></li>
                     <li class="dropdown-divider"></li>
                     {% endif %}
-                    <li><a class="dropdown-item" href="{{ url_for('security.logout') }}?next={{url_for('browser.index')}}">{{ _('Logout') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ logout_url }}">{{ _('Logout') }}</a></li>
                 </ul>
             </li>
         </ul>

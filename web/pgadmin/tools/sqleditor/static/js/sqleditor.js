@@ -659,6 +659,11 @@ define('tools.querytool', [
           }
         }, 1000);
       }
+
+      /* Register to log the activity */
+      pgBrowser.register_to_activity_listener(document, ()=>{
+        alertify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Kindly close the window and login again.'));
+      });
     },
 
     /* Regarding SlickGrid usage in render_grid function.
@@ -2508,6 +2513,7 @@ define('tools.querytool', [
         }
 
         const executeQuery = new ExecuteQuery.ExecuteQuery(this, pgAdmin.Browser.UserManagement);
+        executeQuery.poll = pgBrowser.override_activity_event_decorator(executeQuery.poll).bind(executeQuery);
         executeQuery.execute(sql, explain_prefix, shouldReconnect);
       },
 

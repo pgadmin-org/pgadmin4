@@ -447,6 +447,22 @@ SESSION_EXPIRATION_TIME = 1
 # the session files for cleanup after specified number of *hours*.
 CHECK_SESSION_FILES_INTERVAL = 24
 
+# USER_INACTIVITY_TIMEOUT is interval in Seconds. If the pgAdmin screen is left
+# unattended for <USER_INACTIVITY_TIMEOUT> seconds then the user will
+# be logged out. When set to 0, the timeout will be disabled.
+# If pgAdmin doesn't detect any activity in the time specified (in seconds),
+# the user will be forcibly logged out from pgAdmin. Set to zero to disable
+# the timeout.
+# Note: This is applicable only for SERVER_MODE=True.
+USER_INACTIVITY_TIMEOUT = 0
+
+# OVERRIDE_USER_INACTIVITY_TIMEOUT when set to True will override
+# USER_INACTIVITY_TIMEOUT when long running queries in the Query Tool
+# or Debugger are running. When the queries complete, the inactivity timer
+# will restart in this case. If set to False, user inactivity may cause
+# transactions or in-process debugging sessions to be aborted.
+OVERRIDE_USER_INACTIVITY_TIMEOUT = True
+
 ##########################################################################
 # SSH Tunneling supports only for Python 2.7 and 3.4+
 ##########################################################################
@@ -495,3 +511,7 @@ if (SUPPORT_SSH_TUNNEL is True and
      (sys.version_info[0] == 3 and sys.version_info[1] < 4))):
     SUPPORT_SSH_TUNNEL = False
     ALLOW_SAVE_TUNNEL_PASSWORD = False
+
+# Disable USER_INACTIVITY_TIMEOUT when SERVER_MODE=False
+if not SERVER_MODE:
+    USER_INACTIVITY_TIMEOUT = 0

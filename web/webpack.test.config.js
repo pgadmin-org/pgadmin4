@@ -16,6 +16,7 @@ const nodeModulesDir = path.resolve(__dirname, 'node_modules');
 const regressionDir = path.resolve(__dirname, 'regression');
 
 module.exports = {
+  mode: 'development',
   devtool: 'inline-source-map',
   plugins: [
     new webpack.ProvidePlugin({
@@ -102,6 +103,7 @@ module.exports = {
       'pgadmin.schema.dir': path.resolve(__dirname, 'pgadmin/browser/server_groups/servers/databases/schemas/static/js'),
       'pgadmin.browser.layout': path.join(__dirname, './pgadmin/browser/static/js/layout'),
       'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
+      'pgadmin.browser.activity': path.join(__dirname, './pgadmin/browser/static/js/activity'),
       'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
     },
   },
