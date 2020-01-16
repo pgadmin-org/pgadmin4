@@ -8,22 +8,153 @@
 ##########################################################################
 
 from __future__ import print_function
+from regression.python_test_utils.test_utils import *
+import os
+import json
 
-import sys
-import traceback
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/cast_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
-from regression.python_test_utils.test_utils import get_db_connection
+
+def generate_scenarios(key):
+    """
+    This function generates the test case scenarios according to key given
+    to it, e.g. key=ADD, key=update etc.
+    :param key: for which operation generate the test scenario
+    :type key: str
+    :return: scenarios
+    :rtype: list
+    """
+    scenarios = []
+    for scenario in test_cases[key]:
+        test_name = scenario["name"]
+        scenario.pop("name")
+        tup = (test_name, dict(scenario))
+        scenarios.append(tup)
+    return scenarios
 
 
-def get_cast_data():
-    data = {
-        "castcontext": "IMPLICIT",
-        "encoding": "UTF8",
-        "name": "money->bigint",
-        "srctyp": "money",
-        "trgtyp": "bigint",
-    }
-    return data
+def api_get_cast(self, cast_id):
+    return self.tester.get(
+        self.url + str(SERVER_GROUP) + '/' + str(
+            self.server_id) + '/' +
+        str(self.db_id) + '/' + str(cast_id),
+        content_type='html/json')
+
+
+def api_create_cast(self):
+    return self.tester.post(
+        self.url + str(SERVER_GROUP) + '/' +
+        str(self.server_id) + '/' + str(
+            self.db_id) + '/',
+        data=json.dumps(self.data),
+        content_type='html/json')
+
+
+def api_get_cast_node(self, cast_id):
+    return self.tester.get(
+        self.url + str(SERVER_GROUP) + '/' + str(
+            self.server_id) + '/' +
+        str(self.db_id) + '/' + str(cast_id),
+        content_type='html/json')
+
+
+def api_create_cast_get_functions(self):
+    return self.tester.post(
+        self.url + 'get_functions/' + str(SERVER_GROUP) + '/' +
+        str(self.server_id) + '/' + str(
+            self.db_id) + '/',
+        data=json.dumps(self.data),
+        content_type='html/json')
+
+
+def api_delete_cast(self, cast_id):
+    return self.tester.delete(
+        self.url + str(SERVER_GROUP) + '/' +
+        str(self.server_id) + '/' + str(self.db_id) +
+        '/' + str(cast_id),
+        follow_redirects=True)
+
+
+def api_delete_casts(self, list_of_cast_ids):
+    return self.tester.delete(
+        self.url + str(SERVER_GROUP) + '/' +
+        str(self.server_id) + '/' + str(self.db_id) + '/',
+        data=json.dumps({'ids': list_of_cast_ids}),
+        content_type='html/json',
+        follow_redirects=True)
+
+
+def api_create_cast_get_type(self):
+    return self.tester.get(
+        self.url + 'get_type/' + str(SERVER_GROUP) + '/' +
+        str(self.server_id) + '/' + str(
+            self.db_id) + '/',
+        content_type='html/json')
+
+
+def api_get_cast_node_dependent(self):
+    return self.tester.get(
+        self.url + 'dependent/' + str(SERVER_GROUP) + '/' + str(
+            self.server_id) + '/' +
+        str(self.db_id) + '/' + str(self.cast_id),
+        content_type='html/json')
+
+
+def api_get_cast_node_dependencies(self):
+    return self.tester.get(
+        self.url + 'dependency/' + str(SERVER_GROUP) + '/' + str(
+            self.server_id) + '/' +
+        str(self.db_id) + '/' + str(self.cast_id),
+        content_type='html/json')
+
+
+def api_get_cast_sql(self):
+    return self.tester.get(
+        self.url + 'sql/' + str(SERVER_GROUP) + '/' + str(
+            self.server_id) + '/' +
+        str(self.db_id) + '/' + str(self.cast_id),
+        content_type='html/json')
+
+
+def api_update_cast(self):
+    return self.tester.put(
+        self.url + str(SERVER_GROUP) + '/' +
+        str(self.server_id) + '/' + str(
+            self.db_id) +
+        '/' + str(self.cast_id),
+        data=json.dumps(self.data),
+        follow_redirects=True)
+
+
+def get_database_connection(self):
+    return get_db_connection(self.server_data['db_name'],
+                             self.server['username'],
+                             self.server['db_password'],
+                             self.server['host'],
+                             self.server['port'],
+                             self.server['sslmode'])
+
+
+def assert_status_code(self, response):
+    act_res = response.status_code
+    exp_res = self.expected_data["status_code"]
+    return self.assertEquals(act_res, exp_res)
+
+
+def assert_error_message(self, response):
+    act_res = response.json["errormsg"]
+    exp_res = self.expected_data["error_msg"]
+    return self.assertEquals(act_res, exp_res)
+
+
+def assert_cast_created(self):
+    source_type = self.data["srctyp"]
+    target_type = self.data["trgtyp"]
+    con = get_database_connection(self)
+    act_res = verify_cast(con, source_type, target_type)
+    return self.assertTrue(act_res)
 
 
 def create_cast(server, source_type, target_type):
@@ -82,7 +213,10 @@ def verify_cast(connection, source_type, target_type):
             "format_type(t.oid, NULL) = '%s')" % (source_type, target_type))
         casts = pg_cursor.fetchall()
         connection.close()
-        return casts
+        if len(casts) > 0:
+            return True
+        else:
+            return False
     except Exception:
         traceback.print_exc(file=sys.stderr)
 

@@ -17,25 +17,30 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as cast_utils
 
+import sys
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
+
 
 class CastsMultipleDeleteTestCase(BaseTestGenerator):
     """ This class will delete the cast node added under database node. """
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for cast node.
-        ('Check Cast Node', dict(url='/browser/cast/obj/'))
-    ]
+    url = '/browser/cast/obj/'
+    scenarios = cast_utils.generate_scenarios("cast_delete_multiple")
 
     def setUp(self):
         super(CastsMultipleDeleteTestCase, self).setUp()
+        self.inv_data = self.inventory_data
         self.default_db = self.server["db"]
         self.database_info = parent_node_dict['database'][-1]
         self.db_name = self.database_info['db_name']
         self.server["db"] = self.db_name
-        self.source_type = 'money'
-        self.target_type = 'bigint'
-        self.cast_id = cast_utils.create_cast(self.server, self.source_type,
-                                              self.target_type)
+        self.cast_id = cast_utils.create_cast(self.server,
+                                              self.inv_data["srctyp"],
+                                              self.inv_data["trgtyp"])
 
     def runTest(self):
         """ This function will delete added cast."""
@@ -53,20 +58,32 @@ class CastsMultipleDeleteTestCase(BaseTestGenerator):
                                              self.server['host'],
                                              self.server['port'],
                                              self.server['sslmode'])
-        response = cast_utils.verify_cast(connection, self.source_type,
-                                          self.target_type)
-        if len(response) == 0:
+        casts_exists = cast_utils.verify_cast(connection,
+                                              self.inv_data["srctyp"],
+                                              self.inv_data["trgtyp"])
+        if not casts_exists:
             raise Exception("Could not find cast.")
-        delete_response = self.tester.delete(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/',
-            data=json.dumps({'ids': [self.cast_id]}),
-            content_type='html/json',
-            follow_redirects=True)
-        self.assertEquals(delete_response.status_code, 200)
+
+        if self.is_positive_test:
+            response = cast_utils.api_delete_casts(self, [self.cast_id])
+            cast_utils.assert_status_code(self, response)
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=[eval(self.mock_data["return_value"])]):
+                    response = cast_utils.api_delete_casts(self,
+                                                           [self.cast_id])
+                    cast_utils.assert_status_code(self, response)
+                    cast_utils.assert_error_message(self, response)
+            else:
+                response = cast_utils.api_delete_casts(self, [self.cast_id])
+                cast_utils.assert_status_code(self, response)
 
     def tearDown(self):
+        """ Actually Delete cast """
+        if not self.is_positive_test:
+            cast_utils.api_delete_casts(self, [self.cast_id])
+
         """This function will disconnect test database."""
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

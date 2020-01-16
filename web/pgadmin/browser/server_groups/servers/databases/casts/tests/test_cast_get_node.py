@@ -1,12 +1,3 @@
-##########################################################################
-#
-# pgAdmin 4 - PostgreSQL Tools
-#
-# Copyright (C) 2013 - 2020, The pgAdmin Development Team
-# This software is released under the PostgreSQL Licence
-#
-##########################################################################
-
 from __future__ import print_function
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
@@ -23,15 +14,15 @@ else:
     from unittest.mock import patch
 
 
-class CastsGetTestCase(BaseTestGenerator):
+class CastsGetNodeTestCase(BaseTestGenerator):
     """ This class will fetch the cast node added under database node. """
     skip_on_database = ['gpdb']
-    url = '/browser/cast/obj/'
-    scenarios = cast_utils.generate_scenarios("cast_get")
+    url = '/browser/cast/nodes/'
+    scenarios = cast_utils.generate_scenarios("cast_get_node")
 
     def setUp(self):
         """ This function will create cast."""
-        super(CastsGetTestCase, self).setUp()
+        super(CastsGetNodeTestCase, self).setUp()
         self.inv_data = self.inventory_data
         self.default_db = self.server["db"]
         self.database_info = parent_node_dict['database'][-1]
@@ -54,24 +45,36 @@ class CastsGetTestCase(BaseTestGenerator):
 
         if self.is_positive_test:
             if self.is_list:
-                response = cast_utils.api_get_cast(self, "")
+                response = cast_utils.api_get_cast_node(self, "")
                 cast_utils.assert_status_code(self, response)
-
             else:
-                response = cast_utils.api_get_cast(self, self.cast_id)
+                response = cast_utils.api_get_cast_node(self, self.cast_id)
                 cast_utils.assert_status_code(self, response)
         else:
             if self.mocking_required:
+                return_value_object = eval(self.mock_data["return_value"])
                 with patch(self.mock_data["function_name"],
-                           side_effect=[eval(self.mock_data["return_value"])]):
+                           side_effect=[return_value_object]):
                     if self.is_list:
-                        response = cast_utils.api_get_cast(self, "")
+                        response = cast_utils.api_get_cast_node(self, "")
                         cast_utils.assert_status_code(self, response)
+                        # act_res = response.status_code
+                        # exp_res = self.expected_data["status_code"]
+                        # self.assertEquals(act_res, exp_res)
+
                         cast_utils.assert_error_message(self, response)
 
+                        # act_res = response.json["errormsg"]
+                        # exp_res = self.expected_data["error_msg"]
+                        # self.assertEquals(act_res, exp_res)
+
                     else:
-                        response = cast_utils.api_get_cast(self, self.cast_id)
+                        response = cast_utils.api_get_cast_node(self,
+                                                                self.cast_id)
                         cast_utils.assert_status_code(self, response)
+                        # act_res = response.status_code
+                        # exp_res = self.expected_data["status_code"]
+                        # self.assertEquals(act_res, exp_res)
             else:
                 self.cast_id = 12893
                 response = cast_utils.api_get_cast(self, self.cast_id)

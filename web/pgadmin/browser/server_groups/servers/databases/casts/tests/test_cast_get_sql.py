@@ -9,8 +9,6 @@
 
 from __future__ import print_function
 
-import json
-
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -25,28 +23,26 @@ else:
     from unittest.mock import patch
 
 
-class CastsPutTestCase(BaseTestGenerator):
-    url = '/browser/cast/obj/'
+class CastsGetSqlTestCase(BaseTestGenerator):
     """ This class will fetch the cast node added under database node. """
     skip_on_database = ['gpdb']
-    scenarios = cast_utils.generate_scenarios("cast_put")
+    url = '/browser/cast/'
+    scenarios = cast_utils.generate_scenarios("cast_get_sql")
 
     def setUp(self):
         """ This function will create cast."""
-        super(CastsPutTestCase, self).setUp()
+        super(CastsGetSqlTestCase, self).setUp()
         self.inv_data = self.inventory_data
-        self.data = self.test_data
         self.default_db = self.server["db"]
         self.database_info = parent_node_dict['database'][-1]
         self.db_name = self.database_info['db_name']
         self.server["db"] = self.db_name
-        self.source_type = self.inv_data["srctyp"]
-        self.target_type = self.inv_data["trgtyp"]
-        self.cast_id = cast_utils.create_cast(self.server, self.source_type,
-                                              self.target_type)
+        self.cast_id = cast_utils.create_cast(self.server,
+                                              self.inv_data["srctyp"],
+                                              self.inv_data["trgtyp"])
 
     def runTest(self):
-        """ This function will update added cast."""
+        """ This function will fetch added cast."""
         self.server_id = self.database_info["server_id"]
         self.db_id = self.database_info['db_id']
         db_con = database_utils.connect_database(self,
@@ -55,31 +51,19 @@ class CastsPutTestCase(BaseTestGenerator):
                                                  self.db_id)
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database.")
-        connection = utils.get_db_connection(self.server['db'],
-                                             self.server['username'],
-                                             self.server['db_password'],
-                                             self.server['host'],
-                                             self.server['port'])
-        casts_exists = cast_utils.verify_cast(connection, self.source_type,
-                                              self.target_type)
-        if not casts_exists:
-            raise Exception("Could not find cast.")
 
-        self.data["id"] = self.cast_id
         if self.is_positive_test:
-            response = cast_utils.api_update_cast(self)
+            response = cast_utils.api_get_cast_sql(self)
             cast_utils.assert_status_code(self, response)
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
                            side_effect=[eval(self.mock_data["return_value"])]):
-                    response = cast_utils.api_update_cast(self)
+                    response = cast_utils.api_get_cast_sql(self)
                     cast_utils.assert_status_code(self, response)
-                    cast_utils.assert_error_message(self, response)
             else:
-                if len(self.data) == 1:
-                    self.cast_id = 109822
-                response = cast_utils.api_update_cast(self)
+                self.cast_id = 34091
+                response = cast_utils.api_get_cast_sql(self)
                 cast_utils.assert_status_code(self, response)
 
     def tearDown(self):
@@ -88,9 +72,10 @@ class CastsPutTestCase(BaseTestGenerator):
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
-                                             self.server['port'])
-        cast_utils.drop_cast(connection, self.source_type,
-                             self.target_type)
+                                             self.server['port'],
+                                             self.server['sslmode'])
+        cast_utils.drop_cast(connection, self.inv_data["srctyp"],
+                             self.inv_data["trgtyp"])
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)
         self.server['db'] = self.default_db
