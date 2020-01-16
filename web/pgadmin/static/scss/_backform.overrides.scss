@@ -37,13 +37,13 @@
 }
 .backform-tab .tab-pane {
 	padding: 0.5rem;
-	&.SQL {
-    height: 100%;
-    padding: 0px;
+	&.SQL, &.sql-code-control {
+        height: 100%;
+        padding: 0px;
 
-    & .pgadmin-controls.SQL {
-      padding: 0px;
-    }
+        & .pgadmin-controls.SQL {
+          padding: 0px;
+        }
 	}
 }
 

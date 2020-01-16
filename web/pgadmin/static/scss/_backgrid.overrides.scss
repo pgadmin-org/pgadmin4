@@ -149,10 +149,6 @@ table.backgrid {
   font-weight: normal;
 }
 
-span.form-control:disabled {
-  @extend .form-control:disabled
-}
-
 .subnode {
   border: $panel-border;
   background: $color-bg;
