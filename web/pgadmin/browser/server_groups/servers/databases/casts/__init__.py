@@ -303,7 +303,7 @@ class CastView(PGChildNodeView):
                     row['oid'],
                     did,
                     row['name'],
-                    icon="icon-fts_template"
+                    icon="icon-cast"
                 ),
                 status=200
             )
