@@ -341,13 +341,18 @@ define([
         backgridDivTop = backgridDiv.offset().top,
         backgridDivHeight = backgridDiv.height(),
         backformTab = $(this).closest(cls), // Backform-tab
-        gridScroll = backformTab[0].offsetHeight - backgridDivTop;
+        gridScroll = null;
+
+      if(backformTab.length == 0) {
+        return false;
+      }
+      gridScroll = backformTab[0].offsetHeight - backgridDivTop;
 
       if (backgridDivHeight > gridScroll) {
         var top = elem.get(0).offsetTop + elem.height();
         backformTab.find('.tab-content').scrollTop(top);
       }
-      return;
+      return true;
     });
   };
 

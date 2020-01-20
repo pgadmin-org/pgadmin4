@@ -336,7 +336,7 @@ def properties(sid, did, node_id, node_type):
 
 @blueprint.route(
     '/sql/<int:sid>/<int:did>/',
-    methods=['GET'], endpoint='modified_sql'
+    methods=['POST'], endpoint='modified_sql'
 )
 @login_required
 @check_precondition
@@ -346,13 +346,7 @@ def msql(sid, did):
     """
 
     server_prop = server_info
-    data = {}
-    for k, v in request.args.items():
-        try:
-            data[k] = json.loads(v)
-        except ValueError:
-            data[k] = v
-
+    data = request.form if request.form else json.loads(request.data.decode())
     # Form db connection
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
     conn = manager.connection(did=did)

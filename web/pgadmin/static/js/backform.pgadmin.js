@@ -1421,13 +1421,10 @@ define([
               newRow = self.grid.body.rows[idx].$el;
 
             newRow.addClass('new');
-            try {
-              $(newRow).pgMakeBackgridVisible('.backform-tab');
-            } catch(err) {
+            if(!$(newRow).pgMakeBackgridVisible('.backform-tab')){
               // We can have subnode controls in Panels
               $(newRow).pgMakeBackgridVisible('.set-group');
             }
-
             return false;
           }
         });
@@ -1692,9 +1689,8 @@ define([
           newRow.attr('class', 'new').on('click',() => {
             $(this).attr('class', 'editable');
           });
-          try {
-            $(newRow).pgMakeBackgridVisible('.backform-tab');
-          } catch(err) {
+
+          if(!$(newRow).pgMakeBackgridVisible('.backform-tab')){
             // We can have subnode controls in Panels
             $(newRow).pgMakeBackgridVisible('.set-group');
           }
