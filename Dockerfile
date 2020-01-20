@@ -162,11 +162,13 @@ RUN apk add --no-cache --virtual \
         postgresql-client \
         postgresql-libs \
         shadow \
+        sudo \
         libcap && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir gunicorn==19.9.0 && \
-    apk del --no-cache build-deps
+    apk del --no-cache build-deps && \
+    echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix
 
 # We need the v12 libpq, which is only in the 'edge' build of Alpine at present
 COPY --from=pg12-builder /usr/local/lib/libpq.so.5.12 /usr/lib/

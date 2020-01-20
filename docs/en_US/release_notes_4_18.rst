@@ -30,3 +30,4 @@ Bug fixes
 | `Issue #5065 <https://redmine.postgresql.org/issues/5065>`_ -  Updated the incorrect icon used for the cast node on refresh.
 | `Issue #5066 <https://redmine.postgresql.org/issues/5066>`_ -  Fix an issue where refreshing a package results in the change in the object completely.
 | `Issue #5074 <https://redmine.postgresql.org/issues/5074>`_ -  Fix an issue where select, insert and update scripts on tables throwing an error.
+| `Issue #5076 <https://redmine.postgresql.org/issues/5076>`_ -  Ensure Postfix starts in the container, now it runs as non-root by default.
