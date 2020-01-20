@@ -13,6 +13,12 @@ omit =
     */tests/*
     */feature_tests/*
 
+# Here exclude the lines from the code coverage report
+[report]
+exclude_lines=
+    import*
+    except*
+
 # Mention patterns in 'include' to include code for the coverage measurement
 # Here, code coverage will show report only for modules mentioned in the
 # 'include'

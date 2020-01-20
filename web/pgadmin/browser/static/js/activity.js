@@ -91,7 +91,10 @@ _.extend(pgBrowser, {
   },
 
   logout_inactivity_user: function() {
-    window.location.href = pgBrowser.utils.logout_url;
+    if (!_.isUndefined(pgBrowser.utils) &&
+        !_.isUndefined(pgBrowser.utils.logout_url)) {
+      window.location.href = pgBrowser.utils.logout_url;
+    }
   },
 
   /* The daemon will track and logout when timeout occurs */

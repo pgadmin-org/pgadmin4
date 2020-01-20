@@ -27,7 +27,7 @@
       }
     },
     {
-      "name": "Missing required parameter while creating langauge",
+      "name": "Missing required parameter while creating language",
       "url": "/browser/language/obj/",
       "is_positive_test": false,
       "missing_name": true,
@@ -47,7 +47,7 @@
       "mock_data": {}
     },
     {
-      "name": "Error while crerating langauge with missing langauge pack",
+      "name": "Error while creating language with missing language pack",
       "url": "/browser/language/obj/",
       "is_positive_test": false,
       "missing_lang_pack": true,
@@ -63,11 +63,14 @@
         "status_code": 500,
         "message": "Could not find the required parameter"
       },
-      "mocking_required": false,
-      "mock_data": {}
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error')"
+      }
     },
     {
-      "name": "Error while getting properties created langauge",
+      "name": "Error while getting properties created language",
       "url": "/browser/language/obj/",
       "is_positive_test": false,
       "error_in_properties": true,
@@ -81,7 +84,7 @@
       },
       "expected_data": {
         "status_code": 500,
-        "message": "Error while getting properties created langauge."
+        "message": "Error while getting properties created language."
       },
       "mocking_required": true,
       "mock_data": {
@@ -114,13 +117,13 @@
       "mock_data": {}
     },
     {
-      "name": "Error while getting created langauges properties",
+      "name": "Error while getting created languages properties",
       "url": "/browser/language/obj/",
       "is_positive_test": false,
       "error_in_language_properties": true,
       "expected_data": {
         "status_code": 500,
-        "message": "Internal server error while getting langauges"
+        "message": "Internal server error while getting languages"
       },
       "mocking_required": true,
       "mock_data": {
@@ -129,13 +132,13 @@
       }
     },
     {
-      "name": "Error while getting created langauges acl",
+      "name": "Error while getting created languages acl",
       "url": "/browser/language/obj/",
       "is_positive_test": false,
       "language_acl": true,
       "expected_data": {
         "status_code": 500,
-        "message": "Internal server error while getting langauges acl"
+        "message": "Internal server error while getting languages acl"
       },
       "mocking_required": true,
       "mock_data": {
@@ -158,13 +161,13 @@
       }
     },
     {
-      "name": "Error while getting created langauges list",
+      "name": "Error while getting created languages list",
       "url": "/browser/language/obj/",
       "is_positive_test": false,
       "language_list": true,
       "expected_data": {
         "status_code": 500,
-        "message": "Internal server error while getting langauges"
+        "message": "Internal server error while getting languages"
       },
       "mocking_required": true,
       "mock_data": {
@@ -394,7 +397,7 @@
       "mock_data": {}
     },
     {
-      "name": "Error while getting getting a language to delete",
+      "name": "Error while getting a language to delete",
       "url": "/browser/language/obj/",
       "is_positive_test": false,
       "error_in_getting_language": true,
@@ -409,7 +412,7 @@
       }
     },
     {
-      "name": "Error while deleting the created langauge",
+      "name": "Error while deleting the created language",
       "url": "/browser/language/obj/",
       "is_positive_test": false,
       "error_in_deleting_language": true,

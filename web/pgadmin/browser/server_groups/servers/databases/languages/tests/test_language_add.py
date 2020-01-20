@@ -66,10 +66,11 @@ class LanguagesAddTestCase(BaseTestGenerator):
                 actual_status_code = response.status_code
                 expected_status_code = self.expected_data["status_code"]
             if hasattr(self, "missing_lang_pack"):
-                self.data['name'] = 'plperlu'
-                response = self.create_language()
-                actual_status_code = response.status_code
-                expected_status_code = self.expected_data["status_code"]
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.create_language()
+                    actual_status_code = response.status_code
+                    expected_status_code = self.expected_data["status_code"]
 
             if hasattr(self, "error_in_properties"):
                 with patch(self.mock_data["function_name"],
