@@ -15,6 +15,7 @@ Housekeeping
 ************
 
 | `Issue #5049 <https://redmine.postgresql.org/issues/5049>`_ -  Improve code coverage and API test cases for the CAST module.
+| `Issue #5050 <https://redmine.postgresql.org/issues/5050>`_ -  Improve code coverage and API test cases for the LANGUAGE module.
 | `Issue #5071 <https://redmine.postgresql.org/issues/5071>`_ -  Improve the test framework to run for multiple classes defined in a single file.
 | `Issue #5072 <https://redmine.postgresql.org/issues/5072>`_ -  Updated wcDocker package which includes aria-label accessibility improvements.
 | `Issue #5096 <https://redmine.postgresql.org/issues/5096>`_ -  Replace node-sass with sass for SCSS compilation.

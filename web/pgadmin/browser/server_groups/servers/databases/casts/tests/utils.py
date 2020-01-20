@@ -17,24 +17,6 @@ with open(CURRENT_PATH + "/cast_test_data.json") as data_file:
     test_cases = json.load(data_file)
 
 
-def generate_scenarios(key):
-    """
-    This function generates the test case scenarios according to key given
-    to it, e.g. key=ADD, key=update etc.
-    :param key: for which operation generate the test scenario
-    :type key: str
-    :return: scenarios
-    :rtype: list
-    """
-    scenarios = []
-    for scenario in test_cases[key]:
-        test_name = scenario["name"]
-        scenario.pop("name")
-        tup = (test_name, dict(scenario))
-        scenarios.append(tup)
-    return scenarios
-
-
 def api_get_cast(self, cast_id):
     return self.tester.get(
         self.url + str(SERVER_GROUP) + '/' + str(

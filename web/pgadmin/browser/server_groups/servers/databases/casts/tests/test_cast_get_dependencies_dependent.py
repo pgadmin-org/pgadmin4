@@ -27,8 +27,8 @@ class CastsGetDependentsAndDependencyTestCase(BaseTestGenerator):
     """ This class will fetch the cast node added under database node. """
     skip_on_database = ['gpdb']
     url = '/browser/cast/'
-    scenarios = cast_utils.generate_scenarios(
-        "cast_get_dependencies_dependants")
+    scenarios = utils.generate_scenarios(
+        "cast_get_dependencies_dependants", cast_utils.test_cases)
 
     def setUp(self):
         """ This function will create cast."""

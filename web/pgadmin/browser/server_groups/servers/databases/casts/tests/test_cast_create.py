@@ -27,7 +27,7 @@ class CastsCreateTestCase(BaseTestGenerator):
     url = '/browser/cast/obj/'
 
     # Generates scenarios from cast_test_data.json file
-    scenarios = cast_utils.generate_scenarios("cast_create")
+    scenarios = utils.generate_scenarios("cast_create", cast_utils.test_cases)
 
     def setUp(self):
         """ This function will get data required to create cast."""

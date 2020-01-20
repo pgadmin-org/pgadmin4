@@ -53,7 +53,7 @@ def login_tester_account(tester):
     :return: None
     """
     if os.environ['PGADMIN_SETUP_EMAIL'] and \
-       os.environ['PGADMIN_SETUP_PASSWORD']:
+            os.environ['PGADMIN_SETUP_PASSWORD']:
         email = os.environ['PGADMIN_SETUP_EMAIL']
         password = os.environ['PGADMIN_SETUP_PASSWORD']
         tester.login(email, password)
@@ -280,8 +280,7 @@ def create_constraint(server,
         pg_cursor.execute('''
             ALTER TABLE "%s"
               ADD CONSTRAINT "%s" %s (some_column)
-            ''' % (table_name, constraint_name, constraint_type.upper())
-        )
+            ''' % (table_name, constraint_name, constraint_type.upper()))
 
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
@@ -865,13 +864,17 @@ def _cleanup(tester, app_starter):
     """This function use to cleanup the created the objects(servers, databases,
      schemas etc) during the test suite run"""
     try:
-        test_servers = regression.parent_node_dict["server"] + \
+        test_servers = \
+            regression.parent_node_dict["server"] + \
             regression.node_info_dict["sid"]
-        test_databases = regression.parent_node_dict["database"] + \
+        test_databases = \
+            regression.parent_node_dict["database"] + \
             regression.node_info_dict["did"]
-        test_table_spaces = regression.parent_node_dict["tablespace"] + \
+        test_table_spaces = \
+            regression.parent_node_dict["tablespace"] + \
             regression.node_info_dict["tsid"]
-        test_roles = regression.parent_node_dict["role"] + \
+        test_roles = \
+            regression.parent_node_dict["role"] + \
             regression.node_info_dict["lrid"]
         # Drop databases
         for database in test_databases:
@@ -1175,3 +1178,23 @@ def print_and_store_coverage_report(cov):
     if os.path.exists(cov_dir):
         shutil.rmtree(cov_dir)
     cov.html_report(directory=cov_dir)
+
+
+def generate_scenarios(key, test_cases):
+    """
+    This function generates the test case scenarios according to key given
+    to it, e.g. key=ADD, key=update etc.
+    :param key: for which operation generate the test scenario
+    :type key: str
+    :param test_cases
+    :type test_cases: list
+    :return: scenarios
+    :rtype: list
+    """
+    scenarios = []
+    for scenario in test_cases[key]:
+        test_name = scenario["name"]
+        scenario.pop("name")
+        tup = (test_name, dict(scenario))
+        scenarios.append(tup)
+    return scenarios

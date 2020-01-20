@@ -26,7 +26,8 @@ else:
 class CastsCreateGetFunctionsTestCase(BaseTestGenerator):
     skip_on_database = ['gpdb']
     url = '/browser/cast/'
-    scenarios = cast_utils.generate_scenarios("cast_create_get_functions")
+    scenarios = utils.generate_scenarios("cast_create_get_functions",
+                                         cast_utils.test_cases)
 
     def runTest(self):
         """ This function will add cast under test database. """

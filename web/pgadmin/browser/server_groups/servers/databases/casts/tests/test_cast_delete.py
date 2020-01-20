@@ -28,7 +28,8 @@ class CastsDeleteTestCase(BaseTestGenerator):
     url = '/browser/cast/obj/'
     """ This class will delete the cast node added under database node. """
     skip_on_database = ['gpdb']
-    scenarios = cast_utils.generate_scenarios("cast_delete")
+    scenarios = utils.generate_scenarios("cast_delete",
+                                         cast_utils.test_cases)
 
     def setUp(self):
         super(CastsDeleteTestCase, self).setUp()

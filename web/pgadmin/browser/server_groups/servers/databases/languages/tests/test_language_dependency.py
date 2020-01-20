@@ -10,7 +10,6 @@
 from __future__ import print_function
 
 import uuid
-import json
 
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
@@ -20,47 +19,47 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as language_utils
 
 
-class LanguagesDeleteMultipleTestCase(BaseTestGenerator):
-    scenarios = utils.generate_scenarios('delete_multiple',
-                                         language_utils.test_cases)
+class LanguagesGetDependencyTestCase(BaseTestGenerator):
+    scenarios = utils.generate_scenarios(
+        'get_language_dependency', language_utils.test_cases)
 
     def setUp(self):
         self.server_data = parent_node_dict["database"][-1]
         self.server_id = self.server_data["server_id"]
         self.db_id = self.server_data['db_id']
         self.db_name = self.server_data["db_name"]
-        self.lang_names = ["language_%s" % str(uuid.uuid4())[1:8],
-                           "language_%s" % str(uuid.uuid4())[1:8]]
-
+        self.lang_name = "language_%s" % str(uuid.uuid4())[1:8]
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
                                                  self.db_id)
+
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database.")
-        self.language_ids = [language_utils.create_language(
-            self.server,
-            self.db_name,
-            self.lang_names[0]
-        ),
-            language_utils.create_language(
-                self.server,
-                self.db_name,
-                self.lang_names[1])
-        ]
+        self.language_id = language_utils.create_language(self.server,
+                                                          self.db_name,
+                                                          self.lang_name)
 
     def runTest(self):
-        """This function will delete languages under test database."""
-        data = {'ids': self.language_ids}
-        response = self.tester.delete("{0}{1}/{2}/{3}/".format(
-            self.url, utils.SERVER_GROUP, self.server_id, self.db_id),
-            follow_redirects=True,
-            data=json.dumps(data),
-            content_type='html/json'
-        )
-        self.assertEquals(response.status_code, 200)
+        """This function contains the test cases for language dependency"""
+
+        response = self.get_language_dependency()
+        actual_response_code = response.status_code
+        expected_status_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_status_code)
+
+    def get_language_dependency(self):
+        """
+        This function will get the language dependency
+        :return:language dependency response
+        """
+        return self.tester.get("{0}{1}/{2}/{3}/{4}".format(
+            self.url, utils.SERVER_GROUP, self.server_id, self.db_id,
+            self.language_id), follow_redirects=True)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete added language and
+               disconnect the test database."""
+        language_utils.delete_language(self.server, self.db_name,
+                                       self.lang_name)
         database_utils.disconnect_database(self, self.server_id, self.db_id)

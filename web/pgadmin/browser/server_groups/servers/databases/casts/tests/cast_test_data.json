@@ -1,7 +1,7 @@
 {
   "cast_create": [
     {
-      "name": "TC_01 - Create cast: With valid source & target type of implicit_type.",
+      "name": "Create cast: With valid source & target type of implicit_type.",
       "is_positive_test": true,
       "inventory_data": {},
       "test_data": {
@@ -20,7 +20,7 @@
       }
     },
     {
-      "name": "TC_02 - Create cast: With valid source & target type of explict_type.",
+      "name": "Create cast: With valid source & target type of explict_type.",
       "is_positive_test": true,
       "inventory_data": {},
       "test_data": {
@@ -39,7 +39,7 @@
       }
     },
     {
-      "name": "TC_03 - Create cast: With invalid source type.",
+      "name": "Create cast: With invalid source type.",
       "is_positive_test": false,
       "inventory_data": {},
       "test_data": {
@@ -58,7 +58,7 @@
       }
     },
     {
-      "name": "TC_04 - Create cast: With insufficient parameters missing target type.",
+      "name": "Create cast: With insufficient parameters missing target type.",
       "is_positive_test": false,
       "inventory_data": {},
       "test_data": {
@@ -76,7 +76,7 @@
       }
     },
     {
-      "name": "TC_05 - Create cast: With valid data while server down",
+      "name": "Create cast: With valid data while server down",
       "is_positive_test": false,
       "inventory_data": {},
       "test_data": {
@@ -98,7 +98,7 @@
       }
     },
     {
-      "name": "TC_06 - Create cast: With valid data while exception.",
+      "name": "Create cast: With valid data while exception.",
       "is_positive_test": false,
       "inventory_data": {},
       "test_data": {
@@ -122,7 +122,7 @@
   ],
   "cast_create_get_functions": [
     {
-      "name": "TC_01 - From create cast dialogue, get available cast functions for valid source & target type",
+      "name": "From create cast dialogue, get available cast functions for valid source & target type",
       "is_positive_test": true,
       "inventory_data": {},
       "test_data": {
@@ -141,7 +141,7 @@
       }
     },
     {
-      "name": "TC_02 - From create cast dialogue, get available cast functions when server is down",
+      "name": "From create cast dialogue, get available cast functions when server is down",
       "is_positive_test": false,
       "inventory_data": {},
       "test_data": {
@@ -167,7 +167,7 @@
 
   "cast_create_get_type": [
     {
-      "name": "TC_01 - From create cast dialogue get available cast types",
+      "name": "From create cast dialogue get available cast types",
       "is_positive_test": true,
       "inventory_data": {},
       "test_data": {},
@@ -180,7 +180,7 @@
       }
     },
     {
-      "name": "TC_02 - From create cast dialogue get available cast types while server is down",
+      "name": "From create cast dialogue get available cast types while server is down",
       "is_positive_test": false,
       "inventory_data": {},
       "test_data": {},
@@ -199,7 +199,7 @@
 
   "cast_delete": [
     {
-      "name": "TC_01 - Delete existing cast using cast id",
+      "name": "Delete existing cast using cast id",
       "is_positive_test": true,
       "inventory_data": {
         "castcontext": "EXPLICIT",
@@ -218,7 +218,7 @@
       }
     },
     {
-      "name": "TC_02 - Delete non-existing cast using cast id",
+      "name": "Delete non-existing cast using cast id",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -237,7 +237,7 @@
       }
     },
     {
-      "name": "TC_03 - Delete existing cast using cast id while server down",
+      "name": "Delete existing cast using cast id while server down",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -261,7 +261,7 @@
   ],
   "cast_delete_multiple": [
     {
-      "name": "TC_01 - Delete multiple existing casts using cast ids",
+      "name": "Delete multiple existing casts using cast ids",
       "is_positive_test": true,
       "inventory_data": {
         "castcontext": "EXPLICIT",
@@ -280,7 +280,7 @@
       }
     },
     {
-      "name": "TC_02 - Delete multiple existing casts using cast ids while server down",
+      "name": "Delete multiple existing casts using cast ids while server down",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -303,7 +303,7 @@
 
     },
     {
-      "name": "TC_03 - Delete multiple existing casts using cast ids while exception",
+      "name": "Delete multiple existing casts using cast ids while exception",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -329,7 +329,7 @@
 
     "cast_get": [
     {
-      "name": "TC_01 - Get cast details: With existing cast id.",
+      "name": "Get cast details: With existing cast id.",
       "is_positive_test": true,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -349,7 +349,7 @@
       "is_list": false
     },
     {
-      "name": "TC_02 - Get casts list: With existing db id.",
+      "name": "Get casts list: With existing db id.",
       "is_positive_test": true,
 
       "inventory_data": {
@@ -370,7 +370,7 @@
       "is_list": true
     },
     {
-      "name": "TC_03 - Get cast details: With non existing db id",
+      "name": "Get cast details: With non existing db id",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -390,7 +390,7 @@
       "is_list": false
     },
     {
-      "name": "TC_04 - Get cast details: With existing cast id while server is down.",
+      "name": "Get cast details: With existing cast id while server is down.",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -413,7 +413,7 @@
        "is_list": false
     },
     {
-      "name": "TC_05 - Get casts list: With existing db id while server is down.",
+      "name": "Get casts list: With existing db id while server is down.",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -439,7 +439,7 @@
 
    "cast_get_dependencies_dependants": [
     {
-      "name": "TC_01 - Get cast dependents with existing cast id",
+      "name": "Get cast dependents with existing cast id",
       "is_positive_test": true,
       "inventory_data": {"castcontext": "IMPLICIT",
         "encoding": "UTF8",
@@ -457,7 +457,7 @@
        "is_dependant": true
     },
     {
-      "name": "TC_02 - Get cast dependencies with existing cast id",
+      "name": "Get cast dependencies with existing cast id",
       "is_positive_test": true,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -480,7 +480,7 @@
 
   "cast_get_node": [
     {
-      "name": "TC_01 - Get cast node details: With existing cast id.",
+      "name": "Get cast node details: With existing cast id.",
       "is_positive_test": true,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -500,7 +500,7 @@
       "is_list": false
     },
     {
-      "name": "TC_02 - Get casts nodes list: With existing db id.",
+      "name": "Get casts nodes list: With existing db id.",
       "is_positive_test": true,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -520,7 +520,7 @@
        "is_list": true
     },
     {
-      "name": "TC_03 - Get cast node details: With non existing db id",
+      "name": "Get cast node details: With non existing db id",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -540,7 +540,7 @@
       "is_list": false
     },
     {
-      "name": "TC_04 - Get cast node details: With existing cast id while server is down.",
+      "name": "Get cast node details: With existing cast id while server is down.",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -563,7 +563,7 @@
       "is_list": false
     },
     {
-      "name": "TC_05 - Get casts list: With existing db id while server is down.",
+      "name": "Get casts list: With existing db id while server is down.",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -589,7 +589,7 @@
 
   "cast_get_sql": [
     {
-      "name": "TC_01 - Get cast sql for existing cast id",
+      "name": "Get cast sql for existing cast id",
       "is_positive_test": true,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -608,7 +608,7 @@
       }
     },
     {
-      "name": "TC_02 - Get cast sql for non-existing cast id",
+      "name": "Get cast sql for non-existing cast id",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -627,7 +627,7 @@
       }
     },
     {
-      "name": "TC_03 - Get cast sql for existing cast id while server is down",
+      "name": "Get cast sql for existing cast id while server is down",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -649,7 +649,7 @@
       }
     },
     {
-      "name": "TC_04 - Get cast sql for existing cast id while exception",
+      "name": "Get cast sql for existing cast id while exception",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -675,7 +675,7 @@
 
   "cast_put": [
     {
-      "name": "TC_01 - Update existing cast with valid parameter Value ",
+      "name": "Update existing cast with valid parameter Value ",
       "is_positive_test": true,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -694,7 +694,7 @@
       }
     },
     {
-      "name": "TC_02 - Update existing cast with invalid parameter value  ",
+      "name": "Update existing cast with invalid parameter value  ",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -715,7 +715,7 @@
       }
     },
     {
-      "name": "TC_03 - Update existing cast with valid parameter value while server is down",
+      "name": "Update existing cast with valid parameter value while server is down",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
@@ -737,7 +737,7 @@
       }
     },
     {
-      "name": "TC_04 - Update non-existing cast with valid parameter value",
+      "name": "Update non-existing cast with valid parameter value",
       "is_positive_test": false,
       "inventory_data": {
         "castcontext": "IMPLICIT",
