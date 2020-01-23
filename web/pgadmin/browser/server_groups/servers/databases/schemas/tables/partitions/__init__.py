@@ -153,6 +153,24 @@ class PartitionsModule(CollectionNodeModule):
         """
         return False
 
+    @property
+    def csssnippets(self):
+        """
+        Returns a snippet of css to include in the page
+        """
+        snippets = [
+            render_template(
+                "partitions/css/partition.css",
+                node_type=self.node_type,
+                _=gettext
+            )
+        ]
+
+        for submodule in self.submodules:
+            snippets.extend(submodule.csssnippets)
+
+        return snippets
+
 
 blueprint = PartitionsModule(__name__)
 
@@ -194,7 +212,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
+            {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
@@ -287,11 +305,12 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=rset)
 
         def browser_node(row):
+            icon = self.get_partition_icon_css_class(row)
             return self.blueprint.generate_browser_node(
                 row['oid'],
                 tid,
                 row['name'],
-                icon=self.get_icon_css_class({}),
+                icon=icon,
                 tigger_count=row['triggercount'],
                 has_enable_triggers=row['has_enable_triggers'],
                 is_partitioned=row['is_partitioned'],

@@ -67,13 +67,13 @@ class TestBasePartitionTable(BaseTestGenerator):
 
 
         ('#get_icon_css_class when table is partitioned '
-         'it returns icon-partition class',
+         'it returns icon-partition_table class',
          dict(
              test='get_icon_css_class',
              input_parameters=dict(
                  is_partitioned=True
              ),
-             expected_return='icon-partition'
+             expected_return='icon-partition_table'
          )),
         ('#get_icon_css_class when table is not partitioned '
          'it returns icon-table class',

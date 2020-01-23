@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #2554 <https://redmine.postgresql.org/issues/2554>`_ -  Added support for a multi-level partitioned table.
 | `Issue #3452 <https://redmine.postgresql.org/issues/3452>`_ -  Added a Schema Diff tool to compare two schemas and generate a diff script.
 
 Housekeeping

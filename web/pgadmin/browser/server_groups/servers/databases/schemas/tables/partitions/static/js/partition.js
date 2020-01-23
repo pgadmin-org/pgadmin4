@@ -562,7 +562,9 @@ function(
             control: 'unique-col-collection',
             columns : ['name', 'columns'],
             canAdd: function(m) {
-              if (m.get('is_partitioned')) {
+              if (m.get('is_partitioned') && !_.isUndefined(m.top.node_info) && !_.isUndefined(m.top.node_info.server)
+              && !_.isUndefined(m.top.node_info.server.version) &&
+                m.top.node_info.server.version < 110000) {
                 setTimeout(function() {
                   var coll = m.get('primary_key');
                   coll.remove(coll.filter(function() { return true; }));
@@ -861,7 +863,7 @@ function(
           editable: true, type: 'collection',
           group: 'partition', mode: ['edit', 'create'],
           deps: ['is_partitioned', 'partition_type'],
-          canEdit: false, canDelete: true,
+          canEdit: true, canDelete: true,
           customDeleteTitle: gettext('Detach Partition'),
           customDeleteMsg: gettext('Are you sure you wish to detach this partition?'),
           columns:['is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder'],

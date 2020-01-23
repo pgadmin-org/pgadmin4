@@ -1004,7 +1004,7 @@ define('pgadmin.node.table', [
           editable: true, type: 'collection',
           group: 'partition', mode: ['edit', 'create'],
           deps: ['is_partitioned', 'partition_type', 'typname'],
-          canEdit: false, canDelete: true,
+          canEdit: true, canDelete: true,
           customDeleteTitle: gettext('Detach Partition'),
           customDeleteMsg: gettext('Are you sure you wish to detach this partition?'),
           columns:['is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder'],

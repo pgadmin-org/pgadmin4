@@ -190,6 +190,28 @@ def set_partition_data(server, db_name, schema_name, table_name,
                         }]
              }
         )
+    if partition_type == 'range' and mode == 'multilevel':
+        data['partitions'].update(
+            {'added': [{'values_from': "'2014-01-01'",
+                        'values_to': "'2014-12-31'",
+                        'is_attach': False,
+                        'partition_name': 'sale_2014_sub_part',
+                        'is_sub_partitioned': True,
+                        'sub_partition_type': 'range',
+                        'sub_partition_keys':
+                            [{'key_type': 'column', 'pt_column': 'sales'}]
+                        },
+                       {'values_from': "'2015-01-01'",
+                        'values_to': "'2015-12-31'",
+                        'is_attach': False,
+                        'partition_name': 'sale_2015_sub_part',
+                        'is_sub_partitioned': True,
+                        'sub_partition_type': 'list',
+                        'sub_partition_keys':
+                            [{'key_type': 'column', 'pt_column': 'sales'}]
+                        }]
+             }
+        )
     elif partition_type == 'list' and mode == 'create':
         data['partitions'].update(
             {'added': [{'values_in': "'2016-01-01', '2016-12-31'",
@@ -198,6 +220,26 @@ def set_partition_data(server, db_name, schema_name, table_name,
                        {'values_in': "'2017-01-01', '2017-12-31'",
                         'is_attach': False,
                         'partition_name': 'sale_2017'
+                        }]
+             }
+        )
+    elif partition_type == 'list' and mode == 'multilevel':
+        data['partitions'].update(
+            {'added': [{'values_in': "'2016-01-01', '2016-12-31'",
+                        'is_attach': False,
+                        'partition_name': 'sale_2016_sub_part',
+                        'is_sub_partitioned': True,
+                        'sub_partition_type': 'list',
+                        'sub_partition_keys':
+                            [{'key_type': 'column', 'pt_column': 'sales'}]
+                        },
+                       {'values_in': "'2017-01-01', '2017-12-31'",
+                        'is_attach': False,
+                        'partition_name': 'sale_2017_sub_part',
+                        'is_sub_partitioned': True,
+                        'sub_partition_type': 'list',
+                        'sub_partition_keys':
+                            [{'key_type': 'column', 'pt_column': 'sales'}]
                         }]
              }
         )
@@ -320,3 +362,124 @@ def get_table_common_data():
             "name": "autovacuum_freeze_table_age"
         }]
     }
+
+
+def get_range_partitions_data(data, mode=None, multilevel_partition=False):
+    """
+    This function returns the partitions data for range partition.
+    :param data:
+    :param mode:
+    :param multilevel_partition:
+    :return:
+    """
+    data['partitions'] = \
+        [{'values_from': "'2010-01-01'",
+          'values_to': "'2010-12-31'",
+          'is_attach': False,
+          'partition_name': 'emp_2010'
+          },
+         {'values_from': "'2011-01-01'",
+          'values_to': "'2011-12-31'",
+          'is_attach': False,
+          'partition_name': 'emp_2011'
+          }]
+    if mode == 'Default':
+        data['partitions'] = \
+            [{'values_from': "'2010-01-01'",
+              'values_to': "'2010-12-31'",
+              'is_attach': False,
+              'partition_name': 'emp_2010_def'
+              },
+             {'values_from': "'2011-01-01'",
+              'values_to': "'2011-12-31'",
+              'is_attach': False,
+              'partition_name': 'emp_2011_def'
+              },
+             {'values_from': "",
+              'values_to': "",
+              'is_attach': False,
+              'is_default': True,
+              'partition_name': 'emp_2012_def'
+              }]
+    if multilevel_partition:
+        data['partitions'] = \
+            [{'values_from': "'2010-01-01'",
+              'values_to': "'2010-12-31'",
+              'is_attach': False,
+              'partition_name': 'emp_2010_multi_level',
+              'is_sub_partitioned': True,
+              'sub_partition_type': 'range',
+              'sub_partition_keys':
+                  [{'key_type': 'column', 'pt_column': 'empno'}]
+              },
+             {'values_from': "'2011-01-01'",
+              'values_to': "'2011-12-31'",
+              'is_attach': False,
+              'partition_name': 'emp_2011_multi_level',
+              'is_sub_partitioned': True,
+              'sub_partition_type': 'list',
+              'sub_partition_keys':
+                  [{'key_type': 'column', 'pt_column': 'empno'}]
+              }]
+    data['partition_keys'] = \
+        [{'key_type': 'column', 'pt_column': 'DOJ'}]
+
+
+def get_list_partitions_data(data, multilevel_partition=False):
+    """
+    This function returns the partitions data for list partition.
+    :param data:
+    :param multilevel_partition:
+    :return:
+    """
+    data['partitions'] = \
+        [{'values_in': "'2012-01-01', '2012-12-31'",
+          'is_attach': False,
+          'partition_name': 'emp_2012'
+          },
+         {'values_in': "'2013-01-01', '2013-12-31'",
+          'is_attach': False,
+          'partition_name': 'emp_2013'
+          }]
+
+    if multilevel_partition:
+        data['partitions'] = \
+            [{'values_in': "'2012-01-01', '2012-12-31'",
+              'is_attach': False,
+              'partition_name': 'emp_2012_multi_level',
+              'is_sub_partitioned': True,
+              'sub_partition_type': 'list',
+              'sub_partition_keys':
+                  [{'key_type': 'column', 'pt_column': 'empno'}]
+              },
+             {'values_in': "'2013-01-01', '2013-12-31'",
+              'is_attach': False,
+              'partition_name': 'emp_2013_multi_level',
+              'is_sub_partitioned': True,
+              'sub_partition_type': 'range',
+              'sub_partition_keys':
+                  [{'key_type': 'column', 'pt_column': 'empno'}]
+              }]
+    data['partition_keys'] = \
+        [{'key_type': 'column', 'pt_column': 'DOJ'}]
+
+
+def get_hash_partitions_data(data):
+    """
+    This function returns the partitions data for hash partition.
+    :param data:
+    :return:
+    """
+    data['partitions'] = \
+        [{'values_modulus': "24",
+          'values_remainder': "3",
+          'is_attach': False,
+          'partition_name': 'emp_2016'
+          },
+         {'values_modulus': "8",
+          'values_remainder': "2",
+          'is_attach': False,
+          'partition_name': 'emp_2017'
+          }]
+    data['partition_keys'] = \
+        [{'key_type': 'column', 'pt_column': 'empno'}]

@@ -5,7 +5,9 @@ SELECT rel.oid, rel.relname AS name,
     rel.relnamespace AS schema_id,
     nsp.nspname AS schema_name,
     (CASE WHEN rel.relkind = 'p' THEN true ELSE false END) AS is_partitioned,
-    (CASE WHEN rel.relkind = 'p' THEN pg_get_partkeydef(rel.oid::oid) ELSE '' END) AS partition_scheme
+    (CASE WHEN rel.relkind = 'p' THEN true ELSE false END) AS is_sub_partitioned,
+    (CASE WHEN rel.relkind = 'p' THEN pg_get_partkeydef(rel.oid::oid) ELSE '' END) AS partition_scheme,
+    (CASE WHEN rel.relkind = 'p' THEN pg_get_partkeydef(rel.oid::oid) ELSE '' END) AS sub_partition_scheme
 FROM
     (SELECT * FROM pg_inherits WHERE inhparent = {{ tid }}::oid) inh
     LEFT JOIN pg_class rel ON inh.inhrelid = rel.oid

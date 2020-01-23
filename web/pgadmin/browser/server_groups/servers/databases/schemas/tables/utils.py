@@ -676,17 +676,19 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
     def get_partition_scheme(self, data):
         partition_scheme = None
-        if 'partition_type' in data \
-                and data['partition_type'] == 'range':
+        part_type = 'sub_partition_type' if 'sub_partition_type' in data \
+            else 'partition_type'
+        part_keys = 'sub_partition_keys' if 'sub_partition_keys' in data \
+            else 'partition_keys'
+
+        if part_type in data and data[part_type] == 'range':
             partition_scheme = 'RANGE ('
-        elif 'partition_type' in data \
-                and data['partition_type'] == 'list':
+        elif part_type in data and data[part_type] == 'list':
             partition_scheme = 'LIST ('
-        elif 'partition_type' in data \
-                and data['partition_type'] == 'hash':
+        elif part_type in data and data[part_type] == 'hash':
             partition_scheme = 'HASH ('
 
-        for row in data['partition_keys']:
+        for row in data[part_keys]:
             if row['key_type'] == 'column':
                 partition_scheme += self.qtIdent(
                     self.conn, row['pt_column']) + ', '
@@ -694,7 +696,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 partition_scheme += row['expression'] + ', '
 
         # Remove extra space and comma
-        if len(data['partition_keys']) > 0:
+        if len(data[part_keys]) > 0:
             partition_scheme = partition_scheme[:-2]
         partition_scheme += ')'
 
@@ -1235,7 +1237,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         'partition_name': partition_name,
                         'values_from': range_from,
                         'values_to': range_to,
-                        'is_default': is_default
+                        'is_default': is_default,
+                        'is_sub_partitioned': row['is_sub_partitioned'],
+                        'sub_partition_scheme': row['sub_partition_scheme']
                     })
                 elif data['partition_type'] == 'list':
                     if row['partition_value'] == 'DEFAULT':
@@ -1251,7 +1255,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         'oid': row['oid'],
                         'partition_name': partition_name,
                         'values_in': range_in,
-                        'is_default': is_default
+                        'is_default': is_default,
+                        'is_sub_partitioned': row['is_sub_partitioned'],
+                        'sub_partition_scheme': row['sub_partition_scheme']
                     })
                 else:
                     range_part = row['partition_value'].split(
@@ -1265,7 +1271,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         'oid': row['oid'],
                         'partition_name': partition_name,
                         'values_modulus': range_modulus,
-                        'values_remainder': range_remainder
+                        'values_remainder': range_remainder,
+                        'is_sub_partitioned': row['is_sub_partitioned'],
+                        'sub_partition_scheme': row['sub_partition_scheme']
                     })
 
             data['partitions'] = partitions
@@ -1338,6 +1346,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                                                + modulus_str \
                                                + ', REMAINDER ' +\
                                                remainder_str + ')'
+
+            # Check if partition is again declare as partitioned table.
+            if 'is_sub_partitioned' in row and row['is_sub_partitioned']:
+                part_data['partition_scheme'] = self.get_partition_scheme(row)
+                part_data['is_partitioned'] = True
 
             if 'is_attach' in row and row['is_attach']:
                 partition_sql = render_template(

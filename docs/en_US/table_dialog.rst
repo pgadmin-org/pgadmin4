@@ -26,6 +26,8 @@ Use the fields in the *General* tab to identify the table:
   drop-down listbox in the *Schema* field.
 * Use the drop-down listbox in the *Tablespace* field to specify the tablespace
   in which the table will be stored.
+* Move the *Partitioned Table?* switch to the *Yes* in case you want to create a
+  partitioned table. Option is available for PostgreSQL 10 and above.
 * Store notes about the table in the *Comment* field.
 
 Click the *Columns* tab to continue.
@@ -448,6 +450,21 @@ icon (+) to add each partition:
 * If partition type is List then *In* field will be enabled.
 * If partition type is Hash then *Modulus* and *Remainder* fields will be
   enabled.
+
+Users can create a partition and define them as a partitioned table. Click
+the *Edit* icon to expand the properties of a partition.
+Use the *Partition* tab to create that partition as a partitioned table.
+
+* Move the *Partitioned Table?* switch to the *Yes* in case you want to create a
+  partitioned table.
+* Select a partition type from the *Partition Type* selection box.
+* Use the *Partition Keys* panel to define the partition keys.
+
+View of multi level Partitioned Table in browser tree:
+
+.. image:: images/table_partition_tree.png
+    :alt: Table dialog partition tree
+    :align: center
 
 Click the *Parameter* tab to continue.
 
