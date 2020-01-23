@@ -538,7 +538,7 @@ def compose_type_name(col_info, typname):
         if typname == 'character' or typname == 'character varying':
             typname = typname + '(' + str(col_info['internal_size']) + ')'
         elif typname == 'character[]' or typname == 'character varying[]':
-            typname = '%s(%s)[]'.format(
+            typname = '{}({})[]'.format(
                 typname[:-2],
                 str(col_info['internal_size'])
             )
