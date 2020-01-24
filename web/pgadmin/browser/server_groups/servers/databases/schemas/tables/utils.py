@@ -1137,13 +1137,18 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     partitions_oid['created'] = created
                     partitions_oid['attached'] = attached
 
-            icon = self.get_icon_css_class(res['rows'][0])
-
-            if 'relkind' in res['rows'][0] and \
-                    res['rows'][0]['relkind'] == 'p':
-                is_partitioned = True
+            if 'is_partitioned' in res['rows'][0]:
+                is_partitioned = res['rows'][0]['is_partitioned']
             else:
                 is_partitioned = False
+
+            # If partitioned_table_name in result set then get partition
+            # icon css class else table icon.
+            if 'partitioned_table_name' in res['rows'][0]:
+                res['rows'][0]['is_sub_partitioned'] = is_partitioned
+                icon = self.get_partition_icon_css_class(res['rows'][0])
+            else:
+                icon = self.get_icon_css_class(res['rows'][0])
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(

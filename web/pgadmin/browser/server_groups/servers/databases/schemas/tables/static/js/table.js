@@ -777,7 +777,13 @@ define('pgadmin.node.table', [
         },{
           id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
           mode: ['create', 'edit'], min: 10, max: 100,
-          disabled: 'inSchema', group: gettext('advanced'),
+          group: gettext('advanced'),
+          disabled: function(m) {
+            if(m.get('is_partitioned')) {
+              return true;
+            }
+            return m.inSchema();
+          },
         },{
           id: 'relhasoids', label: gettext('Has OIDs?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
