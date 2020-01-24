@@ -1,5 +1,5 @@
 SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS relacl_str,
-  (CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE
+  (CASE WHEN length(spc.spcname) > 0 OR rel.relkind = 'p' THEN spc.spcname ELSE
     (SELECT sp.spcname FROM pg_database dtb
     JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
     WHERE dtb.oid = {{ did }}::oid)
