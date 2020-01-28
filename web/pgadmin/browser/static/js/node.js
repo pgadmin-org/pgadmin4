@@ -329,7 +329,7 @@ define('pgadmin.browser.node', [
                 <div class="pr-2">
                   <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true" role="img"></i>
                 </div>
-                <div class="alert-text">${msg}</div>
+                <div role="alert" class="alert-text">${msg}</div>
                 <div class="ml-auto close-error-bar">
                   <a class="close-error fa fa-times text-danger"></a>
                 </div>
@@ -396,7 +396,7 @@ define('pgadmin.browser.node', [
 
           if (!newModel.isNew()) {
             // This is definetely not in create mode
-            var msgDiv = '<div class="alert alert-info pg-panel-message pg-panel-properties-message">' +
+            var msgDiv = '<div role="status" class="alert alert-info pg-panel-message pg-panel-properties-message">' +
               gettext('Retrieving data from the server...') + '</div>',
               $msgDiv = $(msgDiv);
             var timer = setTimeout(function(ctx) {
@@ -500,7 +500,7 @@ define('pgadmin.browser.node', [
         isPrivate: true,
         isLayoutMember: false,
         elContainer: true,
-        content: '<div class="obj_properties container-fluid"><div class="alert alert-info pg-panel-message">' + gettext('Please wait while we fetch information about the node from the server...') + '</div></div>',
+        content: '<div class="obj_properties container-fluid"><div role="status" class="alert alert-info pg-panel-message">' + gettext('Please wait while we fetch information about the node from the server...') + '</div></div>',
         onCreate: function(myPanel, $container) {
           $container.addClass('pg-no-overflow');
         },

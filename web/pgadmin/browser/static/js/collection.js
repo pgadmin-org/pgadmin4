@@ -216,7 +216,7 @@ define([
         j.empty();
         j.data('obj-view', gridView);
 
-        $msgContainer = '<div class="alert alert-info pg-panel-message pg-panel-properties-message">' +
+        $msgContainer = '<div role="status" class="alert alert-info pg-panel-message pg-panel-properties-message">' +
          gettext('Retrieving data from the server...') + '</div>';
 
         $msgContainer = $($msgContainer).appendTo(j);

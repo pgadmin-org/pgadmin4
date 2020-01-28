@@ -127,8 +127,8 @@ define([
               alertMessage = '\
                   <div class="media text-danger text-14">\
                     <div class="media-body media-middle">\
-                      <div class="alert-text" role="status">' + promptmsg + '</div><br/>\
-                      <div class="alert-text">' + gettext('Click for details.') + '</div>\
+                      <div class="alert-text" role="alert">' + promptmsg + '</div><br/>\
+                      <div class="alert-text" role="alert">' + gettext('Click for details.') + '</div>\
                     </div>\
                   </div>';
             }
@@ -172,8 +172,8 @@ define([
           var alertMessage = '\
                 <div class="media text-danger text-14">\
                   <div class="media-body media-middle">\
-                    <div class="alert-text" role="status">' + gettext('INTERNAL SERVER ERROR') + '</div><br/>\
-                    <div class="alert-text">' + gettext('Click for details.') + '</div>\
+                    <div class="alert-text" role="alert">' + gettext('INTERNAL SERVER ERROR') + '</div><br/>\
+                    <div class="alert-text" role="alert">' + gettext('Click for details.') + '</div>\
                   </div>\
                 </div>';
 
@@ -457,12 +457,33 @@ define([
       $(this.elements.commands.close).attr('title', gettext('Close'));
       $(this.elements.commands.maximize).attr('title', gettext('Maximize'));
       $(this.elements.content).addClass('ajs-wrap-text');
+      $(this.elements.header).attr('id', 'confirm-dialog-header');
+      $(this.elements.body).attr('id', 'confirm-dialog-body');
+      $(this.elements.dialog).attr({
+        role: 'alertdialog',
+        'aria-modal': 'true',
+        'aria-labelledby': 'confirm-dialog-header',
+        'aria-describedby': 'confirm-dialog-body',
+      });
     },
     reverseButtons: true,
   });
 
   alertify.prompt().set({
     reverseButtons: true,
+  });
+
+  alertify.alert().set({
+    onshow:function() {
+      $(this.elements.header).attr('id', 'alert-dialog-header');
+      $(this.elements.body).attr('id', 'alert-dialog-body');
+      $(this.elements.modal).attr({
+        role: 'alertdialog',
+        'aria-modal': 'true',
+        'aria-labelledby': 'alert-dialog-header',
+        'aria-describedby': 'alert-dialog-body',
+      });
+    },
   });
 
   /* Suppress the enter key events occurring from select2 boxes

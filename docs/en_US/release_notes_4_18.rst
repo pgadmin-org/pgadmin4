@@ -11,6 +11,8 @@ New features
 
 | `Issue #2554 <https://redmine.postgresql.org/issues/2554>`_ -  Added support for a multi-level partitioned table.
 | `Issue #3452 <https://redmine.postgresql.org/issues/3452>`_ -  Added a Schema Diff tool to compare two schemas and generate a diff script.
+| `Issue #4762 <https://redmine.postgresql.org/issues/4762>`_ -  Allow screen-reader to read label & description of non-textable elements.
+| `Issue #4763 <https://redmine.postgresql.org/issues/4763>`_ -  Allow screen-reader to identify the alert errors.
 
 Housekeeping
 ************

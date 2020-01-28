@@ -262,7 +262,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="sql-editor-message" tabindex="0"></div>',
+        content: '<div role="status" class="sql-editor-message" tabindex="0"></div>',
       });
 
       var history = new pgAdmin.Browser.Panel({

@@ -106,7 +106,7 @@ define([
       '            </div>' +
       '          <% } %>' +
       '          <div class="wizard-progress-bar"><% if (show_progress_bar) { %>' +
-      '            <p class="alert alert-info col-sm-12"><%= show_progress_bar %></p><% } %>' +
+      '            <p role="status" class="alert alert-info col-sm-12"><%= show_progress_bar %></p><% } %>' +
       '          </div>' +
       '          <div class="wizard-right-panel_content">' +
       '          </div>' +
@@ -119,7 +119,7 @@ define([
       '              <div class="pr-2"> ' +
       '                <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true" role="img"></i> ' +
       '              </div> ' +
-      '              <div class="alert-text"></div> ' +
+      '              <div role="alert" class="alert-text"></div> ' +
       '              <div class="ml-auto close-error-bar"> ' +
       '                <a aria-label="' + gettext('Close error bar') + '" class="close-error fa fa-times text-danger"></a> ' +
       '              </div> ' +

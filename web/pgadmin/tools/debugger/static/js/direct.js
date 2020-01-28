@@ -1726,12 +1726,13 @@ define([
           // Create the messages panel to display the message returned from the database server
           var messages = new pgAdmin.Browser.Panel({
             name: 'messages',
-            title: gettext('Messages'),
+            title:
+            gettext('Messages'),
             width: '100%',
             height: '100%',
             isCloseable: false,
             isPrivate: true,
-            content: '<div id="messages" class="messages" tabindex="0"></div>',
+            content: '<div role="status" id="messages" class="messages" tabindex="0"></div>',
           });
 
           // Create the result panel to display the result after debugging the function
