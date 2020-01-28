@@ -101,6 +101,7 @@ def get_check_constraint_sql(conn, tid, data, template_path=None):
         if 'deleted' in constraint:
             for c in constraint['deleted']:
                 c['schema'] = data['schema']
+                c['nspname'] = data['schema']
                 c['table'] = data['name']
 
                 # Sql for drop

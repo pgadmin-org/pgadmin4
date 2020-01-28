@@ -35,7 +35,7 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if d
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
     {% endif %}
 
-AS {% if 'probin' in data or 'prosrc_c' in data %}
+AS {% if (data.lanname == 'c' or o_data.lanname == 'c') and ('probin' in data or 'prosrc_c' in data) %}
 {% if 'probin' in data %}{{ data.probin|qtLiteral }}{% else %}{{ o_data.probin|qtLiteral }}{% endif %}, {% if 'prosrc_c' in data %}{{ data.prosrc_c|qtLiteral }}{% else %}{{ o_data.prosrc_c|qtLiteral }}{% endif %}{% elif 'prosrc' in data %}
 $BODY${{ data.prosrc }}$BODY${% elif o_data.lanname == 'c' %}
 {{ o_data.probin|qtLiteral }}, {{ o_data.prosrc_c|qtLiteral }}{% else %}

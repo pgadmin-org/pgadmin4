@@ -883,7 +883,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                                 old_col_data['cltype'])
 
                         # Sql for alter column
-                        if 'inheritedfrom' not in c:
+                        if 'inheritedfrom' not in c and\
+                                'inheritedfromtable' not in c:
                             column_sql += render_template("/".join(
                                 [self.column_template_path, 'update.sql']),
                                 data=c, o_data=old_col_data, conn=self.conn
@@ -897,7 +898,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                         c = column_utils.convert_length_precision_to_string(c)
 
-                        if 'inheritedfrom' not in c:
+                        if 'inheritedfrom' not in c and\
+                                'inheritedfromtable' not in c:
                             column_sql += render_template("/".join(
                                 [self.column_template_path, 'create.sql']),
                                 data=c, conn=self.conn).strip('\n') + '\n\n'
@@ -949,6 +951,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                 # Combine all the SQL together
                 SQL += '\n' + partitions_sql.strip('\n')
+
+            data['columns_to_be_dropped'] = []
+            if 'columns' in data and 'deleted' in data['columns']:
+                data['columns_to_be_dropped'] = list(map(
+                    lambda d: d['name'], data['columns']['deleted']))
 
             # Check if index constraints are added/changed/deleted
             index_constraint_sql = \
@@ -1501,11 +1508,12 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             for data_row in data[vacuum_key]['changed']:
                 for old_data_row in old_data[vacuum_key]:
                     if data_row['name'] == old_data_row['name']:
-                        if data_row['value'] is not None:
-                            set_values.append(data_row)
-                        elif data_row['value'] is None and \
-                                'value' in old_data_row:
-                            reset_values.append(data_row)
+                        if 'value' in data_row:
+                            if data_row['value'] is not None:
+                                set_values.append(data_row)
+                            elif data_row['value'] is None and \
+                                    'value' in old_data_row:
+                                reset_values.append(data_row)
 
             if len(set_values) > 0:
                 data[vacuum_key]['set_values'] = set_values

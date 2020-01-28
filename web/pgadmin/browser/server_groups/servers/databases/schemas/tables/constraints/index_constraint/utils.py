@@ -137,14 +137,22 @@ def get_index_constraint_sql(conn, did, tid, data, template_path=None):
             # If constraint(s) is/are deleted
             if 'deleted' in constraint:
                 for c in constraint['deleted']:
-                    c['schema'] = data['schema']
-                    c['table'] = data['name']
+                    del_cols = []
+                    if 'columns_to_be_dropped' in data:
+                        del_cols = list(map(lambda x, y: x['column'] in y,
+                                            c['columns'],
+                                            data['columns_to_be_dropped'])
+                                        )
 
-                    # Sql for drop
-                    sql.append(render_template("/".join([template_path,
-                                                         'delete.sql']),
-                                               data=c,
-                                               conn=conn).strip('\n'))
+                    if len(del_cols) == 0:
+                        c['schema'] = data['schema']
+                        c['table'] = data['name']
+
+                        # Sql for drop
+                        sql.append(render_template("/".join([template_path,
+                                                             'delete.sql']),
+                                                   data=c,
+                                                   conn=conn).strip('\n'))
             if 'changed' in constraint:
                 for c in constraint['changed']:
                     c['schema'] = data['schema']

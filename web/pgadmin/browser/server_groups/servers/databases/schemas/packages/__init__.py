@@ -837,5 +837,4 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         return sql
 
 
-SchemaDiffRegistry(blueprint.node_type, PackageView)
 PackageView.register_node_view(blueprint)

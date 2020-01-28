@@ -220,46 +220,54 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                            ignore_keys, difference)
         elif type(source_dict[key]) is list:
             tmp_target = None
-            for index in range(len(source_dict[key])):
-                source = copy.deepcopy(source_dict[key][index])
-                if type(source) is list:
-                    # TODO
-                    pass
-                elif type(source) is dict:
-                    if 'name' in source or 'colname' in source:
-                        if type(target_dict[key]) is list and len(
-                                target_dict[key]) > 0:
-                            tmp = None
-                            tmp_target = copy.deepcopy(target_dict[key])
-                            for item in tmp_target:
-                                if (
-                                        'name' in item and
-                                        item['name'] == source['name']
-                                ) or (
-                                        'colname' in item and
-                                        item['colname'] == source['colname']
-                                ):
-                                    tmp = copy.deepcopy(item)
-                            if tmp and source != tmp:
-                                updated.append(copy.deepcopy(source))
-                                tmp_target.remove(tmp)
-                            elif tmp and source == tmp:
-                                tmp_target.remove(tmp)
-                            elif tmp is None:
+            tmp_list = list(filter(
+                lambda x: type(x) == list or type(x) == dict, source_dict[key]
+            ))
+
+            if len(tmp_list) > 0:
+                for index in range(len(source_dict[key])):
+                    source = copy.deepcopy(source_dict[key][index])
+                    if type(source) is list:
+                        # TODO
+                        pass
+                    elif type(source) is dict:
+                        if 'name' in source or 'colname' in source:
+                            if type(target_dict[key]) is list and len(
+                                    target_dict[key]) > 0:
+                                tmp = None
+                                tmp_target = copy.deepcopy(target_dict[key])
+                                for item in tmp_target:
+                                    if (
+                                            'name' in item and
+                                            item['name'] == source['name']
+                                    ) or (
+                                            'colname' in item and
+                                            item['colname'] == source[
+                                                'colname']
+                                    ):
+                                        tmp = copy.deepcopy(item)
+                                if tmp and source != tmp:
+                                    updated.append(copy.deepcopy(source))
+                                    tmp_target.remove(tmp)
+                                elif tmp and source == tmp:
+                                    tmp_target.remove(tmp)
+                                elif tmp is None:
+                                    added.append(source)
+                            else:
                                 added.append(source)
-                        else:
-                            added.append(source)
-                    difference[key] = {}
-                    difference[key]['added'] = added
-                    difference[key]['changed'] = updated
-                elif target_dict[key] is None or \
-                        (type(target_dict[key]) is list and
-                         len(target_dict[key]) < index and
-                         source != target_dict[key][index]):
-                    difference[key] = source
-                elif type(target_dict[key]) is list and\
-                        len(target_dict[key]) > index:
-                    difference[key] = source
+                        difference[key] = {}
+                        difference[key]['added'] = added
+                        difference[key]['changed'] = updated
+                    elif target_dict[key] is None or \
+                            (type(target_dict[key]) is list and
+                             len(target_dict[key]) < index and
+                             source != target_dict[key][index]):
+                        difference[key] = source
+                    elif type(target_dict[key]) is list and\
+                            len(target_dict[key]) > index:
+                        difference[key] = source
+            else:
+                target_dict[key] = source_dict[key]
 
             if type(source) is dict and tmp_target and key in tmp_target and \
                     tmp_target[key] and len(tmp_target[key]) > 0:

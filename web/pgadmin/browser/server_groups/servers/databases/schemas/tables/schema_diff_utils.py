@@ -32,6 +32,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                'columns',
                                'edit_types',
                                'primary_key',
+                               'unique_constraint',
                                'exclude_constraint',
                                'check_constraint',
                                'foreign_key',
@@ -188,15 +189,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                                       scid=tar_scid,
                                                       tid=tar_oid,
                                                       json_resp=False)
-            SQL = render_template(
-                "/".join([self.table_template_path, 'properties.sql']),
-                did=tar_did, scid=tar_scid, tid=tar_oid,
-                datlastsysoid=self.datlastsysoid
-            )
-            status, res = self.conn.execute_dict(SQL)
 
-            if status:
-                diff = self.get_delete_sql(res)
+            diff = self.get_drop_sql(sid=tar_sid, did=tar_did,
+                                     scid=tar_scid, tid=tar_oid)
 
         elif comp_status == SchemaDiffModel.COMPARISON_STATUS['different']:
             source = self.fetch_tables(
@@ -230,10 +225,10 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
             diff_dict.update(col_diff)
 
             # Constraint comparison
-            pk_diff = self.constraint_ddl_comp(source, target)
+            pk_diff = self.constraint_ddl_comp(source, target, diff_dict)
             diff_dict.update(pk_diff)
 
-            diff_dict['relacl'] = self.parce_acl(source, target)
+            diff_dict.update(self.parce_acl(source, target))
 
             if not generate_script:
                 source = self.get_sql_from_table_diff(sid=src_sid,
@@ -308,7 +303,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
                                 )
                                 if child_diff:
-                                    diff += child_diff
+                                    diff += '\n' + child_diff
                     elif result:
                         # For partition module
                         identical = False
@@ -348,7 +343,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     comp_status=res['status']
 
                                 )
-                                if ddl_compare:
+                                if child_diff:
                                     diff += child_diff
                         else:
                             diff = self.get_sql_from_table_diff(
@@ -418,7 +413,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         return different
 
     @staticmethod
-    def constraint_ddl_comp(source_table, target_table):
+    def constraint_ddl_comp(source_table, target_table, diff_dict):
         """
         Table Constraint DDL comparison
         :param source: Source Table
@@ -427,19 +422,26 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         """
         different = {}
         non_editable_keys = {}
+        columns_to_be_dropped = []
 
         non_editable_keys = {'primary_key': ['col_count',
                                              'condeferrable',
                                              'condeffered',
                                              'columns'],
+                             'unique_constraint': ['col_count',
+                                                   'condeferrable',
+                                                   'condeffered',
+                                                   'columns'],
                              'check_constraint': ['consrc'],
                              'exclude_constraint': ['amname',
                                                     'indconstraint',
-                                                    'columns']
+                                                    'columns'],
+                             'foreign_key': []
                              }
 
-        for constraint in ['primary_key', 'check_constraint',
-                           'exclude_constraint']:
+        for constraint in ['primary_key', 'unique_constraint',
+                           'check_constraint',
+                           'exclude_constraint', 'foreign_key']:
             source_cols = source_table[constraint] if \
                 constraint in source_table else []
             target_cols = copy.deepcopy(target_table[constraint]) if\
@@ -472,7 +474,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     tmp_updated = None
                                     break
                             if tmp_updated:
-                                tmp_updated['oid'] = tmp_tar['oid']
+                                tmp_updated['oid'] = tmp['oid']
                                 updated.append(tmp_updated)
                             target_cols.remove(tmp)
                         elif tmp_tar and tmp_src == tmp_tar:

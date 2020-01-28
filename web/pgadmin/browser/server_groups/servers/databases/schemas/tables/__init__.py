@@ -1607,10 +1607,21 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             data={'total_rows': count}
         )
 
-    def get_delete_sql(self, res):
-        self.cmd = 'delete'
-        sql = super(TableView, self).get_delete_sql(res)
-        self.cmd = None
+    @BaseTableView.check_precondition
+    def get_drop_sql(self, sid, did, scid, tid):
+        SQL = render_template("/".join(
+            [self.table_template_path, 'properties.sql']),
+            did=did, scid=scid, tid=tid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, res = self.conn.execute_dict(SQL)
+        sql = ''
+
+        if status:
+            self.cmd = 'delete'
+            sql = super(TableView, self).get_delete_sql(res)
+            self.cmd = None
+
         return sql
 
     @BaseTableView.check_precondition

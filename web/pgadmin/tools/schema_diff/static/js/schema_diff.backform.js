@@ -69,6 +69,13 @@ let SchemaDiffSqlControl =
     copyData() {
       event.stopPropagation();
       clipboard.copyTextToClipboard(this.model.get('diff_ddl'));
+      this.$el.find('.ddl-copy').text(gettext('Copied!'));
+      var self = this;
+      setTimeout(function() {
+        let $copy = self.$el.find('.ddl-copy');
+        if (!$copy.hasClass('d-none')) $copy.addClass('d-none');
+        $copy.text(gettext('Copy'));
+      }, 3000);
       return false;
     },
     onFocus: function() {
@@ -78,14 +85,6 @@ let SchemaDiffSqlControl =
       if ($copy.hasClass('d-none')) $copy.removeClass('d-none');
 
     },
-    onBlur: function() {
-      let $copy = this.$el.find('.ddl-copy');
-      if (!$(event.relatedTarget).hasClass('ddl-copy')) {
-        if (!$copy.hasClass('d-none')) $copy.addClass('d-none');
-        this.$el.find('.pgadmin-controls').first().removeClass('focused');
-      }
-    },
-
   });
 
 let SchemaDiffSelect2Control =
@@ -302,7 +301,8 @@ let SchemaDiffHeaderView = Backform.Form.extend({
                 <button id="btn-filter" type="button" class="btn btn-sm btn-secondary"
                         title=""
                         accesskey=""
-                        tabindex="0">
+                        tabindex="0"
+                        style="pointer-events: none;">
                     <i class="fa fa-filter sql-icon-lg" aria-hidden="true"></i>&nbsp;` + gettext('Filter') + `
                 </button>
                 <button id="btn-filter-dropdown" type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
@@ -315,7 +315,7 @@ let SchemaDiffHeaderView = Backform.Form.extend({
         '<ul class="dropdown-menu filter">',
         '<li>',
         '<a class="dropdown-item" id="btn-identical" href="#" tabindex="0">',
-        '<i class="identical fa fa-check" aria-hidden="true"></i>',
+        '<i class="identical fa fa-check visibility-hidden" aria-hidden="true"></i>',
         '<span> ' + gettext('Identical') + ' </span>',
         '</a>',
         '</li>',

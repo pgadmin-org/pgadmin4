@@ -834,23 +834,35 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         schema = ''
         if data:
             schema = self.schema
+
+            data['schema'] = self.schema
+            data['nspname'] = self.schema
+            data['table'] = self.table
+
+            sql, name = index_utils.get_sql(
+                self.conn, data, did, tid, idx, self.datlastsysoid,
+                mode='create')
+
+            sql = sql.strip('\n').strip(' ')
+
         elif diff_schema:
             schema = diff_schema
 
-        sql = index_utils.get_reverse_engineered_sql(
-            self.conn, schema,
-            self.table, did, tid, idx,
-            self.datlastsysoid,
-            template_path=None, with_header=False)
+            sql = index_utils.get_reverse_engineered_sql(
+                self.conn, schema,
+                self.table, did, tid, idx,
+                self.datlastsysoid,
+                template_path=None, with_header=False)
 
         drop_sql = ''
         if drop_req:
-            drop_sql = '\n' + render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                data=data, conn=self.conn
-            )
+            drop_sql = '\n' + self.delete(gid=1, sid=sid, did=did,
+                                          scid=scid, tid=tid,
+                                          idx=idx, only_sql=True)
 
-        return drop_sql + '\n\n' + sql
+        if drop_sql != '':
+            sql = drop_sql + '\n\n' + sql
+        return sql
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, idx):
@@ -1077,14 +1089,24 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
             for key in required_create_keys:
                 if key in diff_dict:
-                    create_req = True
+                    if key == 'columns' and ((
+                            'added' in diff_dict[key] and
+                            len(diff_dict[key]['added']) > 0
+                    ) or ('changed' in diff_dict[key] and
+                          len(diff_dict[key]['changed']) > 0) or (
+                            'deleted' in diff_dict[key] and
+                            len(diff_dict[key]['deleted']) > 0)
+                    ):
+                        create_req = True
+                    elif key != 'columns':
+                        create_req = True
 
             if create_req:
-                diff = self.get_sql_from_index_diff(sid=src_sid,
-                                                    did=src_did,
-                                                    scid=src_scid,
-                                                    tid=src_tid,
-                                                    idx=src_oid,
+                diff = self.get_sql_from_index_diff(sid=tar_sid,
+                                                    did=tar_did,
+                                                    scid=tar_scid,
+                                                    tid=tar_tid,
+                                                    idx=tar_oid,
                                                     diff_schema=target_schema,
                                                     drop_req=True)
             else:

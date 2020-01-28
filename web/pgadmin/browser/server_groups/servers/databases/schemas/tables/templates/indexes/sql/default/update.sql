@@ -9,7 +9,7 @@ ALTER INDEX {{conn|qtIdent(data.schema, o_data.name)}}
 ALTER INDEX {{conn|qtIdent(data.schema, data.name)}}
     SET (FILLFACTOR={{data.fillfactor}});
 
-{% elif data.fillfactor == '' and o_data.fillfactor|default('', 'true') != data.fillfactor %}
+{% elif (data.fillfactor == '' or data.fillfactor == None) and o_data.fillfactor|default('', 'true') != data.fillfactor %}
 ALTER INDEX {{conn|qtIdent(data.schema, data.name)}}
     RESET (FILLFACTOR);
 

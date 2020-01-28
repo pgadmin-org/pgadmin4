@@ -399,8 +399,11 @@ def compare(trans_id, source_sid, source_did, source_scid,
     if error_msg == gettext('Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg, status=404)
 
-    if not check_version_compatibility(source_sid, target_sid):
-        return not_implemented(errormsg=gettext("Version mismatch."))
+    # Server version compatibility check
+    status, msg = check_version_compatibility(source_sid, target_sid)
+
+    if not status:
+        return make_json_response(success=0, errormsg=msg, status=404)
 
     comparison_result = []
 
@@ -584,18 +587,24 @@ def check_version_compatibility(sid, tid):
     driver = get_driver(PG_DEFAULT_DRIVER)
     src_server = Server.query.filter_by(id=sid).first()
     src_manager = driver.connection_manager(src_server.id)
+    src_conn = src_manager.connection()
 
     tar_server = Server.query.filter_by(id=tid).first()
     tar_manager = driver.connection_manager(tar_server.id)
+    tar_conn = tar_manager.connection()
+
+    if not (src_conn.connected() or src_conn.connected()):
+        return False, gettext('Server(s) disconnected.')
 
     def get_round_val(x):
         if x < 10000:
             return x if x % 100 == 0 else x + 100 - x % 100
         else:
-            return x if x % 10000 == 0 else x + 10000 - x % 10000
+            return x + 10000 - x % 10000
 
     if get_round_val(src_manager.version) == \
             get_round_val(tar_manager.version):
-        return True
+        return True, None
 
-    return False
+    return False, gettext('Source and Target database server must be of '
+                          'the same major version.')

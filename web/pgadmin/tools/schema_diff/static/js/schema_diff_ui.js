@@ -31,7 +31,7 @@ export default class SchemaDiffUI {
     this.header = null;
     this.trans_id = trans_id;
     this.filters = ['Identical', 'Different', 'Source Only', 'Target Only'];
-    this.sel_filters = ['Identical', 'Different', 'Source Only', 'Target Only'];
+    this.sel_filters = ['Different', 'Source Only', 'Target Only'];
     this.dataView = null;
     this.grid = null,
     this.selection = {};
@@ -229,8 +229,12 @@ export default class SchemaDiffUI {
             server_data['did'] = self.model.get('target_did');
             server_data['database'] = data.database;
 
-            if (_.isUndefined(generated_script))
-              generated_script = 'BEGIN;' + '\n' + self.model.get('diff_ddl') + '\n' + 'END;';
+            if (_.isUndefined(generated_script)) {
+              generated_script = gettext('-- The generated script does not include the dependency resolution currently, so it may fail in case of dependency. \n');
+              generated_script += gettext('-- Please report an issue at https://redmine.postgresql.org/projects/pgadmin4/issues/new \n');
+
+              generated_script += 'BEGIN;' + '\n' + self.model.get('diff_ddl') + '\n' + 'END;';
+            }
 
             let preferences = pgWindow.pgAdmin.Browser.get_preferences_for_module('schema_diff');
             if (preferences.schema_diff_new_browser_tab) {

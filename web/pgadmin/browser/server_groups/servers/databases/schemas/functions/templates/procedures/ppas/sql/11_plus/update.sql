@@ -37,7 +37,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}({% if 
 {% endif %}
 {% endif %}
 
-AS {% if 'probin' in data or 'prosrc_c' in data %}
+AS {% if (data.lanname == 'c' or o_data.lanname == 'c') and ('probin' in data or 'prosrc_c' in data) %}
 {% if 'probin' in data %}{{ data.probin|qtLiteral }}{% else %}{{ o_data.probin|qtLiteral }}{% endif %}, {% if 'prosrc_c' in data %}{{ data.prosrc_c|qtLiteral }}{% else %}{{ o_data.prosrc_c|qtLiteral }}{% endif %}{% elif 'prosrc' in data %}
 $BODY${{ data.prosrc }}$BODY${% elif o_data.lanname == 'c' %}
 {{ o_data.probin|qtLiteral }}, {{ o_data.prosrc_c|qtLiteral }}{% else %}
