@@ -357,7 +357,7 @@ define('pgadmin.node.table', [
             return false;
           },
         },{
-          id: 'partition', type: 'group', label: gettext('Partition'),
+          id: 'partition', type: 'group', label: gettext('Partitions'),
           mode: ['edit', 'create'], min_version: 100000,
           visible: function(m) {
             // Always show in case of create mode

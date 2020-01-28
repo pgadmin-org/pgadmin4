@@ -1895,7 +1895,7 @@ define([
 
       /* Register to log the activity */
       pgBrowser.register_to_activity_listener(document, ()=>{
-        Alertify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Kindly close the window and login again.'));
+        Alertify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Please close the window and login again.'));
       });
 
       controller.poll_result = pgBrowser.override_activity_event_decorator(controller.poll_result).bind(controller);

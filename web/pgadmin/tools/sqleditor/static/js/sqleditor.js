@@ -662,7 +662,7 @@ define('tools.querytool', [
 
       /* Register to log the activity */
       pgBrowser.register_to_activity_listener(document, ()=>{
-        alertify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Kindly close the window and login again.'));
+        alertify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Please close the window and login again.'));
       });
     },
 
