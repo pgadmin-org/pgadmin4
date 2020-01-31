@@ -71,7 +71,7 @@ define('pgadmin.node.schema', [
 
         var gridHeader = _.template([
             '<div class="subnode-header">',
-            '  <label class="control-label col-sm-4"><%-label%></label>',
+            '  <span class="control-label col-sm-4"><%-label%></span>',
             '</div>'].join('\n')),
           gridBody = $('<div class="pgadmin-control-group backgrid form-group col-12 object subnode"></div>').append(
             gridHeader(attributes)

@@ -175,7 +175,7 @@ define([
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <input class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> id="<%=cId%>" value="<%-value%>" />',
+      '  <input id="<%=cId%>" class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> id="<%=cId%>" value="<%-value%>" />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -551,7 +551,7 @@ define([
       extraToggleClasses: null,
     },
     template: _.template([
-      '<label class="<%=controlLabelClassName%>"><%=label%></label>',
+      '<span class="<%=controlLabelClassName%>"><%=label%></span>',
       '<label class="sr-value sr-only" for="<%=cId%>"></label>',
       '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
       '      <input tabindex="-1" type="checkbox" aria-hidden="true" aria-label="Toggle button" data-style="quick" data-toggle="toggle"',
@@ -1265,7 +1265,7 @@ define([
       var self = this,
         gridHeader = _.template([
           '<div class="subnode-header">',
-          '  <label class="control-label pg-el-sm-10" id="<%=cId%>"><%-label%></label>',
+          '  <span  class="control-label pg-el-sm-10" id="<%=cId%>"><%-label%></span>',
           '  <button aria-label="' + _('Add new row') + '" class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"><%-add_label%></button>',
           '</div>',
         ].join('\n')),
@@ -1726,8 +1726,9 @@ define([
       helpMessage: null,
     },
     template: _.template([
+      '<label for="<%=cId%>" class="sr-only"><%=(label==""?"SQL":label)%></label>',
       '<div class="<%=controlsClassName%>">',
-      '  <textarea class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%>><%-value%></textarea>',
+      '  <textarea id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%>><%-value%></textarea>',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -2140,7 +2141,7 @@ define([
       '  <label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<% }%>',
       '<div class="<%=Backform.controlsClassName%>">',
-      ' <select id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
+      ' <select title="<%=name%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
       '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%>',
       '  <%=required ? "required" : ""%><%= select2.multiple ? " multiple>" : ">" %>',
       '  <%=select2.first_empty ? " <option></option>" : ""%>',
@@ -2437,9 +2438,9 @@ define([
 
     // Customize template to add new styles
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%> sql_field_layout <%=extraClasses.join(\' \')%>">',
-      '  <textarea ',
+      '  <textarea id="<%=cId%>"',
       '    class="<%=Backform.controlClassName%> " name="<%=name%>"',
       '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%>',
       '    rows=<%=rows%>',
@@ -2523,6 +2524,7 @@ define([
           return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
         };
 
+      data.cId = data.cId || _.uniqueId('pgC_');
       // Evaluate the disabled, visible option
       var isDisabled = evalF(data.disabled, data, this.model),
         isVisible = evalF(data.visible, data, this.model),
@@ -2616,8 +2618,9 @@ define([
   Backform.SqlCodeControl = Backform.SqlFieldControl.extend({
     // Customize template to add new styles
     template: _.template([
+      '<label class="sr-only" for="<%=cId%>"><%=(label==""?"Code":label)%></label>',
       '<div class="pgadmin-controls pg-el-12 <%=extraClasses.join(\' \')%>">',
-      '  <textarea ',
+      '  <textarea id="<%=cId%>" ',
       '    class="<%=Backform.controlClassName%> " name="<%=name%>"',
       '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> ',
       '    rows=<%=rows%>',
@@ -2797,9 +2800,9 @@ define([
         }
       },
       template: _.template([
-        '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+        '<label for="<%=cId%>" class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
         '<div class="input-group  <%=Backform.controlsClassName%>">',
-        ' <input type="text" class="<%=Backform.controlClassName%> datetimepicker-input <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> data-toggle="datetimepicker"/>',
+        ' <input id="<%=cId%>" type="text" class="<%=Backform.controlClassName%> datetimepicker-input <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> data-toggle="datetimepicker"/>',
         ' <div class="input-group-append">',
         '   <span class="input-group-text fa fa-calendar"></span>',
         ' </div>',
@@ -2834,6 +2837,9 @@ define([
           visible: evalF(data.visible, this.model),
           required: evalF(data.required, this.model),
         });
+
+        data.cId = data.cId || _.uniqueId('pgC_');
+
         if (!data.disabled) {
           data.placeholder = data.placeholder || this.defaults.placeholder;
         }
@@ -3226,7 +3232,7 @@ define([
       '<label class="<%=Backform.controlLabelClassName%>"><%=controlLabel%></label>',
       '<div class="<%=Backform.controlContainerClassName%>">',
       '  <button class="btn btn-secondary btn-checkbox">',
-      '    <input type="<%=type%>" class="<%=extraClasses.join(\' \')%>" id="<%=id%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '    <input type="<%=type%>" class="<%=extraClasses.join(\' \')%>" id="<%=cId%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '    <%=label%>',
       '  </button>',
       '</div>',

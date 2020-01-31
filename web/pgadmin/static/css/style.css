@@ -4,7 +4,6 @@
 @import '~bootstrap-datepicker/dist/css/bootstrap-datepicker3.css';
 @import '~tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.css';
 @import '~bootstrap4-toggle/css/bootstrap4-toggle.css';
-@import '~backgrid-select-all/backgrid-select-all.css';
 @import '~backgrid-filter/backgrid-filter.css';
 @import '~slickgrid/css/select2.css';
 @import '~jquery-contextmenu/dist/jquery.contextMenu.css';
@@ -22,3 +21,4 @@
 @import '~slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css';
 
 @import '../vendor/backgrid/backgrid.css';
+@import '../vendor/backgrid/backgrid-select-all.css';

@@ -226,7 +226,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="sql_textarea"><textarea id="sql-textarea" name="sql-textarea" title="'+gettext('SQL Code')+'"></textarea></div>',
+        content: '<label for="sql-textarea" class="sr-only">SQL Code</label><div class="sql_textarea"><textarea id="sql-textarea" name="sql-textarea" title="'+gettext('SQL Code')+'"></textarea></div>',
       }),
       // Dependencies of the object
       'dependencies': new pgAdmin.Browser.Panel({

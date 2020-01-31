@@ -208,7 +208,7 @@ define([
   pgAdmin.Browser.MenuGroup = function(opts, items, prev, ctx) {
     var template = _.template([
         '<% if (above) { %><li class="dropdown-divider"></li><% } %>',
-        '<li class="dropdown-submenu">',
+        '<li class="dropdown-submenu" role="menuitem">',
         ' <a href="#" class="dropdown-item">',
         '  <% if (icon) { %><i class="<%= icon %>"></i><% } %>',
         '  <span><%= label %></span>',

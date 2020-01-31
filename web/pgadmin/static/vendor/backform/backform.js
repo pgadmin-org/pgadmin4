@@ -547,12 +547,12 @@
       id: _.uniqueId('bf_')
     },
     template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>" for="<%=id%>"><%=controlLabel%></label>',
+      '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=controlLabel%></label>',
       '<div class="<%=Backform.controlContainerClassName%>">',
       '  <div class="form-check">',
-      '    <input type="<%=type%>" class="form-check-input <%=extraClasses.join(\' \')%>" id="<%=id%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly" : ""%> <%=required ? "required" : ""%> />',
+      '    <input type="<%=type%>" class="form-check-input <%=extraClasses.join(\' \')%>" id="<%=cId%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly" : ""%> <%=required ? "required" : ""%> />',
       '    <% if (label && label.length) { %>',
-      '       <label class="form-check-label" for="<%=id%>"><%=label%></label>',
+      '       <label class="form-check-label" for="<%=cId%>"><%=label%></label>',
       '    <% } %>',
       '  </div>',
       '</div>'
@@ -579,8 +579,8 @@
       '    <% var option = options[i]; %>',
       '    <% var id = _.uniqueId("bf_"); %>',
       '  <div class="form-check">',
-      '    <input type="<%=type%>" class="<%=extraClasses.join(\' \')%>" id="<%=id%>" name="<%=name%>" value="<%-formatter.fromRaw(option.value)%>" <%=rawValue == option.value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '    <label class="form-check-label" for="<%=id%>"><%-option.label%></label>',
+      '    <input type="<%=type%>" class="<%=extraClasses.join(\' \')%>" id="<%=cId%>" name="<%=name%>" value="<%-formatter.fromRaw(option.value)%>" <%=rawValue == option.value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '    <label class="form-check-label" for="<%=cId%>"><%-option.label%></label>',
       '  </div>',
       '  <% } %>',
       '  <% if (helpMessage && helpMessage.length) { %>',

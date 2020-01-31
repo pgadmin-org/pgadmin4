@@ -99,7 +99,7 @@ define([
                   '<button tabindex="0" type="<%= type %>" ',
                   'class="btn <%=extraClasses.join(\' \')%>"',
                   '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>">',
-                  '<span class="<%= icon %>" role="img"></span><% if (label != "") { %>&nbsp;<%-label%><% } %></button>',
+                  '<span class="<%= icon %>" role="img"></span><% if (label != "") { %>&nbsp;<%-label%><% } %><span class="sr-only"><%-tooltip%></span></button>',
                 ].join(' '));
               if (location == 'header') {
                 btnGroup.appendTo(that.header);
@@ -165,9 +165,9 @@ define([
 
                 // canDrop can be set to false for individual row from the server side to disable the checkbox
                 if ('canDrop' in model && model.canDrop === false)
-                  this.$el.empty().append('<input tabindex="-1" type="checkbox" disabled="disabled"/>');
+                  this.$el.empty().append('<input tabindex="-1" type="checkbox" title="Select" disabled="disabled"/>');
                 else
-                  this.$el.empty().append('<input tabindex="-1" type="checkbox" />');
+                  this.$el.empty().append('<input tabindex="-1" type="checkbox" title="Select" />');
 
                 this.delegateEvents();
                 return this;

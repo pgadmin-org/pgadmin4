@@ -337,8 +337,8 @@ function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode)
           var self = this,
             titleTmpl = _.template([
               '<div class=\'subnode-header\'>',
-              '<label class=\'control-label\'><%-label%></label>',
-              '<button class=\'btn btn-sm-sq btn-secondary add fa fa-plus\' title=\'' + _('Add new row') + '\' <%=canAdd ? \'\' : \'disabled="disabled"\'%>></button>',
+              '<span class=\'control-label\'><%-label%></span>',
+              '<button class=\'btn btn-sm-sq btn-secondary add fa fa-plus\' title=\'' + _('Add new row') + '\' <%=canAdd ? \'\' : \'disabled="disabled"\'%>><span class="sr-only">Add new row</span></button>',
               '</div>'].join('\n')),
             $gridBody =
             $('<div class=\'pgadmin-control-group backgrid form-group col-12 object subnode\'></div>').append(
