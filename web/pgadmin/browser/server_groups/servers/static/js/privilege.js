@@ -169,7 +169,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         );
       },
     },{
-      id: 'grantor', label: gettext('Grantor'), type: 'text', disabled: true,
+      id: 'grantor', label: gettext('Grantor'), type: 'text', readonly: true,
       cell: 'node-list-by-name', node: 'role',
     }],
 

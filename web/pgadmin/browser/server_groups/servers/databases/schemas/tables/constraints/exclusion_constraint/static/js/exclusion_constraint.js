@@ -360,7 +360,7 @@ define('pgadmin.node.exclusion_constraint', [
               allowClear: false, width: 'style',
               placeholder: 'Select column',
             }, first_empty: !self.model.isNew(),
-            disabled: function() {
+            readonly: function() {
               return !_.isUndefined(self.model.get('oid'));
             },
           }],
@@ -737,7 +737,7 @@ define('pgadmin.node.exclusion_constraint', [
             },
           }),
           select2:{allowClear:true},
-          disabled: function(m) {
+          readonly: function(m) {
             return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&
                 !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
@@ -748,7 +748,7 @@ define('pgadmin.node.exclusion_constraint', [
         },{
           id: 'condeferrable', label: gettext('Deferrable?'),
           type: 'switch', group: gettext('Definition'), deps: ['index'],
-          disabled: function(m) {
+          readonly: function(m) {
             return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&
                 !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
@@ -758,12 +758,6 @@ define('pgadmin.node.exclusion_constraint', [
           type: 'switch', group: gettext('Definition'),
           deps: ['condeferrable'],
           disabled: function(m) {
-            if((_.has(m, 'handler') &&
-              !_.isUndefined(m.handler) &&
-                !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew())) {
-              return true;
-            }
-
             // Disable if condeferred is false or unselected.
             if(m.get('condeferrable') == true) {
               return false;
@@ -775,10 +769,17 @@ define('pgadmin.node.exclusion_constraint', [
               return true;
             }
           },
+          readonly: function(m) {
+            if((_.has(m, 'handler') &&
+              !_.isUndefined(m.handler) &&
+                !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew())) {
+              return true;
+            }
+          },
         },{
           id: 'indconstraint', label: gettext('Constraint'), cell: 'string',
           type: 'multiline', mode: ['create', 'edit', 'properties'], editable: false,
-          group: gettext('Definition'), disabled: function(m) {
+          group: gettext('Definition'), readonly: function(m) {
             return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&
                 !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
@@ -795,7 +796,7 @@ define('pgadmin.node.exclusion_constraint', [
           },
           control: ExclusionConstraintColumnControl,
           model: ExclusionConstraintColumnModel,
-          disabled: function(m) {
+          readonly: function(m) {
             return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&
                 !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
@@ -979,18 +980,6 @@ define('pgadmin.node.exclusion_constraint', [
           }),
           deps: ['index'], node: 'column',
           disabled: function(m) {
-            // If we are in table edit mode then
-            if (_.has(m, 'top') && !_.isUndefined(m.top)
-              && !m.top.isNew()) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should be allowed for Unique
-              return !_.isUndefined(m.get('oid'));
-            }
-
-            // We can't update columns of existing index constraint.
-            if (!m.isNew()) {
-              return true;
-            }
             // Disable if index is selected.
             var index = m.get('index');
             if(_.isUndefined(index) || index == '') {
@@ -1000,6 +989,18 @@ define('pgadmin.node.exclusion_constraint', [
               col.reset();
               return true;
             }
+          },
+          readonly: function(m) {
+            // If we are in table edit mode then
+            if (_.has(m, 'top') && !_.isUndefined(m.top)
+              && !m.top.isNew()) {
+              // If OID is undefined then user is trying to add
+              // new constraint which should be allowed for Unique
+              return !_.isUndefined(m.get('oid'));
+            }
+
+            // We can't update columns of existing index constraint.
+            return !m.isNew();
           },
         }],
         validate: function() {

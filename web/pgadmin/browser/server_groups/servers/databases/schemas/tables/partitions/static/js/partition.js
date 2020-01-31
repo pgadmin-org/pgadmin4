@@ -401,7 +401,7 @@ function(
 
             return false;
           },
-          disabled: function(m) {
+          readonly: function(m) {
             if (!m.isNew())
               return true;
             return false;
@@ -799,10 +799,11 @@ function(
 
             return false;
           },
+          readonly: function(m) {
+            return !m.isNew();
+          },
           disabled: function(m) {
-            if (!m.isNew() || !m.get('is_partitioned'))
-              return true;
-            return false;
+            return !m.get('is_partitioned');
           },
         },{
           id: 'partition_keys', label:gettext('Partition Keys'),

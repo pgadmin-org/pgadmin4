@@ -406,7 +406,7 @@ define('pgadmin.node.server', [
               }),
               passwordChangeFields = [{
                 name: 'user_name', label: gettext('User'),
-                type: 'text', disabled: true, control: 'input',
+                type: 'text', readonly: true, control: 'input',
               },{
                 name: 'password', label: gettext('Current Password'),
                 type: 'password', disabled: function() { return is_pgpass_file_used; },
@@ -785,16 +785,16 @@ define('pgadmin.node.server', [
           mode: ['properties', 'edit', 'create'],
         },{
           id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         },{
           id: 'port', label: gettext('Port'), type: 'int', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1, max: 65535,
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected', min: 1, max: 65535,
         },{
           id: 'db', label: gettext('Maintenance database'), type: 'text', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         },{
           id: 'username', label: gettext('Username'), type: 'text', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         },{
           id: 'password', label: gettext('Password'), type: 'password',
           group: gettext('Connection'), control: 'input', mode: ['create'], deps: ['connect_now'],
@@ -815,7 +815,11 @@ define('pgadmin.node.server', [
           },
         },{
           id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+        },{
+          id: 'service', label: gettext('Service'), type: 'text',
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+          group: gettext('Connection'),
         },{
           id: 'sslmode', label: gettext('SSL mode'), type: 'options', group: gettext('SSL'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
@@ -830,32 +834,32 @@ define('pgadmin.node.server', [
         },{
           id: 'sslcert', label: gettext('Client certificate'), type: 'text',
           group: gettext('SSL'), mode: ['edit', 'create'],
-          disabled: 'isSSL', control: Backform.FileControl,
+          disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
           dialog_type: 'select_file', supp_types: ['*'],
           deps: ['sslmode'],
         },{
           id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
           group: gettext('SSL'), mode: ['edit', 'create'],
-          disabled: 'isSSL', control: Backform.FileControl,
+          disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
           dialog_type: 'select_file', supp_types: ['*'],
           deps: ['sslmode'],
         },{
           id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
           group: gettext('SSL'), mode: ['edit', 'create'],
-          disabled: 'isSSL', control: Backform.FileControl,
+          disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
           dialog_type: 'select_file', supp_types: ['*'],
           deps: ['sslmode'],
         },{
           id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
           group: gettext('SSL'), mode: ['edit', 'create'],
-          disabled: 'isSSL', control: Backform.FileControl,
+          disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
           dialog_type: 'select_file', supp_types: ['*'],
           deps: ['sslmode'],
         },{
           id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
           mode: ['edit', 'create'], group: gettext('SSL'),
           'options': {'size': 'mini'},
-          deps: ['sslmode'], disabled: 'isSSL',
+          deps: ['sslmode'], disabled: 'isSSL', readonly: 'isConnected',
         },{
           id: 'sslcert', label: gettext('Client certificate'), type: 'text',
           group: gettext('SSL'), mode: ['properties'],
@@ -909,26 +913,30 @@ define('pgadmin.node.server', [
               return true;
             }
 
-            return model.get('connected');
+            return false;
           },
+          readonly: 'isConnected',
         },{
           id: 'tunnel_host', label: gettext('Tunnel host'), type: 'text', group: gettext('SSH Tunnel'),
           mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel') || model.get('connected');
+            return !model.get('use_ssh_tunnel');
           },
+          readonly: 'isConnected',
         },{
           id: 'tunnel_port', label: gettext('Tunnel port'), type: 'int', group: gettext('SSH Tunnel'),
           mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'], max: 65535,
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel') || model.get('connected');
+            return !model.get('use_ssh_tunnel');
           },
+          readonly: 'isConnected',
         },{
           id: 'tunnel_username', label: gettext('Username'), type: 'text', group: gettext('SSH Tunnel'),
           mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel') || model.get('connected');
+            return !model.get('use_ssh_tunnel');
           },
+          readonly: 'isConnected',
         },{
           id: 'tunnel_authentication', label: gettext('Authentication'), type: 'switch',
           mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
@@ -936,11 +944,12 @@ define('pgadmin.node.server', [
             'offText':  gettext('Password'), 'size': 'mini', width: '90'},
           deps: ['use_ssh_tunnel'],
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel') || model.get('connected');
+            return !model.get('use_ssh_tunnel');
           },
+          readonly: 'isConnected',
         }, {
           id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'text',
-          group: gettext('SSH Tunnel'), mode: ['edit', 'create'],
+          group: gettext('SSH Tunnel'), mode: ['properties', 'edit', 'create'],
           control: Backform.FileControl, dialog_type: 'select_file', supp_types: ['*'],
           deps: ['tunnel_authentication', 'use_ssh_tunnel'],
           disabled: function(model) {
@@ -953,15 +962,13 @@ define('pgadmin.node.server', [
             return !model.get('tunnel_authentication') || !model.get('use_ssh_tunnel');
           },
         },{
-          id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'text',
-          group: gettext('SSH Tunnel'), mode: ['properties'],
-        },{
           id: 'tunnel_password', label: gettext('Password'), type: 'password',
           group: gettext('SSH Tunnel'), control: 'input', mode: ['create'],
           deps: ['use_ssh_tunnel'],
           disabled: function(model) {
-            return !model.get('use_ssh_tunnel') || model.get('connected');
+            return !model.get('use_ssh_tunnel');
           },
+          readonly: 'isConnected',
         }, {
           id: 'save_tunnel_password', controlLabel: gettext('Save password?'),
           type: 'checkbox', group: gettext('SSH Tunnel'), mode: ['create'],
@@ -977,15 +984,15 @@ define('pgadmin.node.server', [
           },
         }, {
           id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         },{
           id: 'db_res', label: gettext('DB restriction'), type: 'select2', group: gettext('Advanced'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', select2: {multiple: true, allowClear: false,
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected', select2: {multiple: true, allowClear: false,
             tags: true, tokenSeparators: [','], first_empty: false, selectOnClose: true, emptyOptions: true},
         },{
           id: 'passfile', label: gettext('Password file'), type: 'text',
           group: gettext('Advanced'), mode: ['edit', 'create'],
-          disabled: 'isConnectedWithValidLib', control: Backform.FileControl,
+          disabled: 'isValidLib', readonly: 'isConnected', control: Backform.FileControl,
           dialog_type: 'select_file', supp_types: ['*'],
         },{
           id: 'passfile', label: gettext('Password file'), type: 'text',
@@ -995,13 +1002,9 @@ define('pgadmin.node.server', [
             return !_.isUndefined(passfile) && !_.isNull(passfile);
           },
         },{
-          id: 'service', label: gettext('Service'), type: 'text',
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
-          group: gettext('Connection'),
-        },{
           id: 'connect_timeout', label: gettext('Connection timeout (seconds)'),
           type: 'int', group: gettext('Advanced'),
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
           min: 0,
         }],
         validate: function() {
@@ -1030,16 +1033,9 @@ define('pgadmin.node.server', [
         },
         isSSL: function(model) {
           var ssl_mode = model.get('sslmode');
-          // If server is not connected and have required SSL option
-          if(model.get('connected')) {
-            return true;
-          }
           return _.indexOf(SSL_MODES, ssl_mode) == -1;
         },
-        isConnectedWithValidLib: function(model) {
-          if(model.get('connected')) {
-            return true;
-          }
+        isValidLib: function() {
           // older version of libpq do not support 'passfile' parameter in
           // connect method, valid libpq must have version >= 100000
           return pgBrowser.utils.pg_libpq_version < 100000;

@@ -1049,7 +1049,7 @@ define('pgadmin.browser.node', [
         tree = pgAdmin.Browser.tree,
         j = panel.$container.find('.obj_properties').first(),
         view = j.data('obj-view'),
-        content = $('<div tabindex="1"></div>')
+        content = $('<div></div>')
           .addClass('pg-prop-content col-12'),
         confirm_close = true;
 

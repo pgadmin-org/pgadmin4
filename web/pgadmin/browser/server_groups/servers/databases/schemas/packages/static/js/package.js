@@ -113,7 +113,7 @@ define('pgadmin.node.package', [
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: function(m) {
+          readonly: function(m) {
             return !m.isNew();
           },
         },{
@@ -122,13 +122,13 @@ define('pgadmin.node.package', [
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: true, editable: false, visible: function(m) {
+          readonly: true, editable: false, visible: function(m) {
             return !m.isNew();
           },
         },{
           id: 'schema', label: gettext('Schema'), type: 'text', node: 'schema',
           control: 'node-list-by-name',
-          disabled: function(m) { return !m.isNew(); }, filter: function(d) {
+          readonly: function(m) { return !m.isNew(); }, filter: function(d) {
             // If schema name start with pg_* then we need to exclude them
             if(d && d.label.match(/^pg_/))
             {

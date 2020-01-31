@@ -492,7 +492,7 @@ define('pgadmin.node.fts_configuration', [
           type: 'text', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', disabled: true, mode:['properties'],
+          editable: false, type: 'text', mode:['properties'],
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'edit','create'], node: 'role',
@@ -513,11 +513,11 @@ define('pgadmin.node.fts_configuration', [
           //disable parser when user select copy_config manually and vica-versa
           disabled: function(m) {
             var copy_config = m.get('copy_config');
-            return m.isNew() &&
-                    (_.isNull(copy_config) ||
+            return (_.isNull(copy_config) ||
                     _.isUndefined(copy_config) ||
                     copy_config === '') ? false : true;
           },
+          readonly: function(m) {return !m.isNew();},
         },{
           id: 'copy_config', label: gettext('Copy config'),type: 'text',
           mode: ['create'], group: gettext('Definition'),
@@ -526,11 +526,11 @@ define('pgadmin.node.fts_configuration', [
           //disable copy_config when user select parser manually and vica-versa
           disabled: function(m) {
             var parser = m.get('prsname');
-            return m.isNew() &&
-                    (_.isNull(parser) ||
+            return (_.isNull(parser) ||
                     _.isUndefined(parser) ||
                     parser === '') ? false : true;
           },
+          readonly: function(m) {return !m.isNew();},
         },{
           id: 'tokens', label: gettext('Tokens'), type: 'collection',
           group: gettext('Tokens'), control: TokenControl,

@@ -134,16 +134,12 @@ define('pgadmin.node.procedure', [
             else{
               return false;
             }
-
           case 'variables':
           case 'prosecdef':
             return this.node_info.server.version < 90500;
           case 'prorows':
             var server = this.node_info.server;
             return !(server.version >= 90500 && m.get('proretset') == true);
-          case 'funcowner':
-          case 'proargs':
-            return true;
           case 'proparallel':
             if (this.node_info.server.version < 90600 ||
               this.node_info.server.server_type != 'ppas' ||

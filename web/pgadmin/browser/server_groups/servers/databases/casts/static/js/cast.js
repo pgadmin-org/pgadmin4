@@ -82,13 +82,13 @@ define('pgadmin.node.cast', [
         // Define the schema for cast
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          editable: false, type: 'text', disabled: true, cellHeaderClasses: 'width_percent_50',
+          editable: false, type: 'text', readonly: true, cellHeaderClasses: 'width_percent_50',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', disabled: true, mode: ['properties'],
+          editable: false, type: 'text', mode: ['properties'],
         },{
           id: 'srctyp', label: gettext('Source type'), url: 'get_type',
-          type: 'text', group: gettext('Definition'), disabled: function(m) {
+          type: 'text', group: gettext('Definition'), readonly: function(m) {
             return !m.isNew();
           }, mode: ['create'],
 
@@ -132,10 +132,10 @@ define('pgadmin.node.cast', [
            */
         {
           id: 'srctyp', label: gettext('Source type'), type: 'text',
-          group: gettext('Definition'), disabled: true, mode:['properties','edit'],
+          group: gettext('Definition'), readonly: true, mode:['properties','edit'],
         },{
           id: 'trgtyp', label: gettext('Target type'), url: 'get_type',
-          type: 'text', group: gettext('Definition'), disabled: function(m) {
+          type: 'text', group: gettext('Definition'), readonly: function(m) {
             return !m.isNew();
           }, mode: ['create'],
           transform: function(rows) {
@@ -177,7 +177,7 @@ define('pgadmin.node.cast', [
            */
         {
           id: 'trgtyp', label: gettext('Target type'), type: 'text',
-          group: gettext('Definition'), disabled: true, mode:['properties','edit'],
+          group: gettext('Definition'), readonly: true, mode:['properties','edit'],
         },
 
         /*
@@ -187,7 +187,7 @@ define('pgadmin.node.cast', [
            */
         {
           id: 'proname', label: gettext('Function'), deps:['srctyp', 'trgtyp'],
-          type: 'text', disabled: function(m) { return !m.isNew(); },
+          type: 'text', readonly: function(m) { return !m.isNew(); },
           group: gettext('Definition'), mode: ['create'],
           control: 'node-ajax-options',
           options: function(control) {
@@ -231,7 +231,7 @@ define('pgadmin.node.cast', [
          */
         {
           id: 'proname', label: gettext('Function'), type: 'text',
-          group: gettext('Definition'), disabled: true, mode:['properties','edit'],
+          group: gettext('Definition'), readonly: true, mode:['properties','edit'],
         },{
           id: 'castcontext', label: gettext('Context'),
           options:{'onText':'IMPLICIT','offText':'EXPLICIT', width: '90'},
@@ -248,7 +248,7 @@ define('pgadmin.node.cast', [
          * edit mode
          */
         {
-          id: 'castcontext', label: gettext('Context'), disabled: true,
+          id: 'castcontext', label: gettext('Context'), readonly: true,
           options:[{
             label: 'IMPLICIT', value: 'IMPLICIT',
           },{
@@ -259,7 +259,7 @@ define('pgadmin.node.cast', [
           mode:['properties', 'edit'],
         },{
           id: 'syscast', label: gettext('System cast?'),
-          cell: 'switch', type: 'switch', mode: ['properties'], disabled: true,
+          cell: 'switch', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'),
           type: 'multiline', cellHeaderClasses: 'width_percent_50',

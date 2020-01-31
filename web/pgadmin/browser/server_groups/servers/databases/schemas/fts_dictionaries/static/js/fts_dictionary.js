@@ -137,7 +137,7 @@ define('pgadmin.node.fts_dictionary', [
           type: 'text', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', disabled: true, mode:['properties'],
+          editable: false, type: 'text', mode:['properties'],
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'edit','create'], node: 'role',
@@ -151,7 +151,7 @@ define('pgadmin.node.fts_dictionary', [
           type: 'multiline', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'template', label: gettext('Template'),type: 'text',
-          disabled: function(m) { return !m.isNew(); }, url: 'fetch_templates',
+          readonly: function(m) { return !m.isNew(); }, url: 'fetch_templates',
           group: gettext('Definition'), control: 'node-ajax-options',
           cache_node: 'fts_template',
         },{

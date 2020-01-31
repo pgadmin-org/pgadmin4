@@ -349,13 +349,7 @@ define('pgadmin.node.table', [
             return (!(d && d.label.match(/pg_global/)));
           },
           deps: ['is_partitioned'],
-          disabled: function() {
-            if(this.node_info &&  'catalog' in this.node_info) {
-              return true;
-            }
-
-            return false;
-          },
+          disabled: 'inSchema',
         },{
           id: 'partition', type: 'group', label: gettext('Partitions'),
           mode: ['edit', 'create'], min_version: 100000,
@@ -376,7 +370,7 @@ define('pgadmin.node.table', [
 
             return false;
           },
-          disabled: function(m) {
+          readonly: function(m) {
             if (!m.isNew())
               return true;
             return false;
@@ -898,10 +892,11 @@ define('pgadmin.node.table', [
             return false;
           },
           disabled: function(m) {
-            if (!m.isNew() || !m.get('is_partitioned'))
+            if (!m.get('is_partitioned'))
               return true;
             return false;
           },
+          readonly: function(m) {return !m.isNew();},
         },{
           id: 'partition_keys', label:gettext('Partition Keys'),
           model: Backform.PartitionKeyModel,

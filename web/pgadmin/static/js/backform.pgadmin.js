@@ -175,7 +175,7 @@ define([
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <input class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled readonly" : ""%> id="<%=cId%>" value="<%-value%>" />',
+      '  <input class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> id="<%=cId%>" value="<%-value%>" />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -233,6 +233,7 @@ define([
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
+        readonly: evalF(data.readonly, data, this.model),
         visible: evalF(data.visible, data, this.model),
         required: evalF(data.required, data, this.model),
       });
@@ -260,7 +261,7 @@ define([
       template: _.template([
         '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
         '<div class="<%=Backform.controlContainerClassName%>">',
-        '  <input type="<%=type%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+        '  <input type="<%=type%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> />',
         '  <% if (helpMessage && helpMessage.length) { %>',
         '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
         '  <% } %>',
@@ -315,7 +316,7 @@ define([
         '  <% if (maxlength) { %>',
         '    maxlength="<%=maxlength%>"',
         '  <% } %>',
-        '    placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
+        '    placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%>',
         '    rows=<%=rows ? rows : ""%>',
         '    <%=required ? "required" : ""%>><%-value%></textarea>',
         '  <% if (helpMessage && helpMessage.length) { %>',
@@ -389,7 +390,7 @@ define([
   Backform.SelectControl.prototype.template = _.template([
     '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
     '<div class="<%=Backform.controlContainerClassName%>">',
-    '  <select id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
+    '  <select id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%> <%=required ? "required" : ""%> >',
     '    <% for (var i=0; i < options.length; i++) { %>',
     '      <% var option = options[i]; %>',
     '      <option value="<%-formatter.fromRaw(option.value)%>" <%=option.value === rawValue ? "selected=\'selected\'" : ""%> <%=option.disabled ? "disabled=\'disabled\'" : ""%>><%-option.label%></option>',
@@ -409,7 +410,7 @@ define([
       '<% for (var i=0; i < options.length; i++) { %>',
       ' <% var option = options[i]; %>',
       ' <% if (option.value === rawValue) { %>',
-      ' <input id="<%=cId%>" class="<%=Backform.controlClassName%> uneditable-input" disabled readonly value="<%-option.label%>"></span>',
+      ' <input id="<%=cId%>" class="<%=Backform.controlClassName%> uneditable-input" readonly value="<%-option.label%>"></span>',
       ' <% } %>',
       '<% } %>',
       '<% if (helpMessage && helpMessage.length) { %>',
@@ -557,7 +558,7 @@ define([
       '      data-size="<%=options.size%>" data-height="<%=options.height%>"  ',
       '      data-on="<%=options.onText%>" data-off="<%=options.offText%>" ',
       '      data-onstyle="<%=options.onColor%>" data-offstyle="<%=options.offColor%>" data-width="<%=options.width%>" ',
-      '      name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '      name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -579,11 +580,11 @@ define([
 
       if(this.$el.find('.toggle.btn').hasClass('off')) {
         this.$el.find('.sr-value').text(`
-          ${label}. ${offText}. ${gettext('Toggle button')}
+          ${label}, ${offText}, ${gettext('Toggle button')}
         `);
       } else {
         this.$el.find('.sr-value').text(`
-          ${label}. ${onText}. ${gettext('Toggle button')}
+          ${label}, ${onText}, ${gettext('Toggle button')}
         `);
       }
     },
@@ -618,6 +619,7 @@ define([
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(field.disabled, field, this.model),
+        readonly: evalF(field.readonly, field, this.model),
         visible:  evalF(data.visible, field, this.model),
         required: evalF(data.required, field, this.model),
       });
@@ -637,8 +639,9 @@ define([
         this.$el.addClass(Backform.requiredInputClassName);
       }
 
+      /* Set disabled for both disabled and readonly */
       data.options = _.defaults({
-        disabled: evalF(field.disabled, field, this.model),
+        disabled: data.disabled || data.readonly,
       }, this.field.get('options'), this.defaults.options,
       $.fn.bootstrapToggle.defaults);
 
@@ -651,7 +654,7 @@ define([
       this.$input.bootstrapToggle();
       // When disable then set tabindex value to -1
       this.$el.find('.toggle.btn')
-        .attr('tabindex', data.options.disabled ? '-1' : '0')
+        .attr('tabindex', data.disabled ? '-1' : '0')
         .attr('id', data.cId);
 
       this.$el.find('.toggle.btn .toggle-group .btn').attr('aria-hidden', true);
@@ -659,6 +662,12 @@ define([
 
       this.updateInvalid();
 
+      /* Bootstrap toggle does not have option for readonly
+       * If readonly, then let it focus.
+       */
+      if(data.readonly) {
+        this.$el.find('.select2-selection').attr('tabindex', 0);
+      }
       return this;
     },
   });
@@ -830,7 +839,7 @@ define([
       'header': _.template([
         '<div class="<%=Backform.accordianGroupClassName%>" <%=disabled ? "disabled" : ""%>>',
         ' <% if (legend != false) { %>',
-        '  <div class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>" aria-controls="<%=cId%>" role="heading" tabindex="0"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
+        '  <div class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>" aria-controls="<%=cId%>" aria-level="3" role="heading"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
         ' <% } %>',
         '</div>',
       ].join('\n')),
@@ -1718,7 +1727,7 @@ define([
     },
     template: _.template([
       '<div class="<%=controlsClassName%>">',
-      '  <textarea class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%>><%-value%></textarea>',
+      '  <textarea class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%>><%-value%></textarea>',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -1885,7 +1894,7 @@ define([
     template: _.template([
       '<label for="<%=cId%>" class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <input type="<%=type%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '  <input type="<%=type%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
@@ -1968,8 +1977,9 @@ define([
                 (server_info.version <= s.max_version))));
 
           var disabled = (
-              (mode == 'properties') || !ver_in_limit || in_catalog
+              !ver_in_limit || in_catalog
             ),
+            readonly = (mode == 'properties'),
             schema_node = (s.node && _.isString(s.node) &&
               s.node in pgBrowser.Nodes && pgBrowser.Nodes[s.node]) || node;
 
@@ -1978,16 +1988,17 @@ define([
             // This can be disabled in some cases (if not hidden)
 
             disabled: (disabled ? true : evalASFunc(s.disabled)),
+            readonly: (readonly ? true : evalASFunc(s.readonly)),
             editable: _.isUndefined(s.editable) ?
               pgAdmin.editableCell : evalASFunc(s.editable),
             subnode: ((_.isString(s.model) && s.model in pgBrowser.Nodes) ?
               pgBrowser.Nodes[s.model].model : s.model),
-            canAdd: (disabled ? false : evalASFunc(s.canAdd)),
-            canAddRow: (disabled ? false : evalASFunc(s.canAddRow)),
-            canEdit: (disabled ? false : evalASFunc(s.canEdit)),
-            canDelete: (disabled ? false : evalASFunc(s.canDelete)),
-            canEditRow: (disabled ? false : evalASFunc(s.canEditRow)),
-            canDeleteRow: (disabled ? false : evalASFunc(s.canDeleteRow)),
+            canAdd: (disabled || readonly) ? false : evalASFunc(s.canAdd),
+            canAddRow: (disabled || readonly) ? false : evalASFunc(s.canAddRow),
+            canEdit: (disabled || readonly) ? false : evalASFunc(s.canEdit),
+            canDelete: (disabled || readonly) ? false : evalASFunc(s.canDelete),
+            canEditRow: (disabled || readonly) ? false : evalASFunc(s.canEditRow),
+            canDeleteRow: (disabled || readonly) ? false : evalASFunc(s.canDeleteRow),
             transform: evalASFunc(s.transform),
             mode: mode,
             control: control,
@@ -2130,7 +2141,7 @@ define([
       '<% }%>',
       '<div class="<%=Backform.controlsClassName%>">',
       ' <select id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
-      '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%>',
+      '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%>',
       '  <%=required ? "required" : ""%><%= select2.multiple ? " multiple>" : ">" %>',
       '  <%=select2.first_empty ? " <option></option>" : ""%>',
       '  <% for (var i=0; i < options.length; i++) {%>',
@@ -2142,7 +2153,7 @@ define([
       '    <% if (!select2.multiple && option.value === rawValue) {%>selected="selected"<%}%>',
       '    <% if (select2.multiple && rawValue && rawValue.indexOf(option.value) != -1){%>selected="selected" data-index="rawValue.indexOf(option.value)"<%}%>',
       '    <%}%>',
-      '    <%= disabled ? "disabled" : ""%>><%-option.label%></option>',
+      '    <%= disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%>><%-option.label%></option>',
       '  <%}%>',
       ' </select>',
       ' <% if (helpMessage && helpMessage.length) { %>',
@@ -2191,8 +2202,10 @@ define([
       });
 
       // Evaluate the disabled, visible, and required option
+      // disable for readonly also and later handle readonly programmatically.
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
+        readonly: evalF(data.readonly, data, this.model),
         visible: evalF(data.visible, data, this.model),
         required: evalF(data.required, data, this.model),
       });
@@ -2220,7 +2233,7 @@ define([
       this.$el.html(this.template(data)).addClass(field.name);
 
       var select2Opts = _.extend({
-        disabled: data.disabled,
+        disabled: data.disabled || data.readonly,
       }, field.select2, {
         options: (this.field.get('options') || this.defaults.options),
       });
@@ -2233,7 +2246,7 @@ define([
       }
 
       // If disabled then no need to show placeholder
-      if (data.disabled || data.mode === 'properties') {
+      if (data.disabled || data.readonly) {
         select2Opts['placeholder'] = '';
       }
 
@@ -2276,6 +2289,15 @@ define([
             self.trigger('results:select', {});
           }
         });
+      }
+
+      /* Select2 does not have option for readonly
+       * If readonly, then let it focus.
+       */
+      if(data.readonly && !data.disabled) {
+        setTimeout(()=>{
+          this.$el.find('.select2-selection').attr('tabindex', 0);
+        }, 500);
       }
 
       this.updateInvalid();
@@ -2419,7 +2441,7 @@ define([
       '<div class="<%=Backform.controlsClassName%> sql_field_layout <%=extraClasses.join(\' \')%>">',
       '  <textarea ',
       '    class="<%=Backform.controlClassName%> " name="<%=name%>"',
-      '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
+      '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%>',
       '    rows=<%=rows%>',
       '    <%=required ? "required" : ""%>><%-value%></textarea>',
       '  <% if (helpMessage && helpMessage.length) { %>',
@@ -2504,6 +2526,7 @@ define([
       // Evaluate the disabled, visible option
       var isDisabled = evalF(data.disabled, data, this.model),
         isVisible = evalF(data.visible, data, this.model),
+        isReadonly = evalF(data.readonly, data, this.model),
         self = this;
 
       self.sqlCtrl = CodeMirror.fromTextArea(
@@ -2520,9 +2543,13 @@ define([
       });
 
       // Disable editor
-      if (isDisabled) {
+      if (isDisabled || isReadonly) {
         // set read only mode to true instead of 'nocursor', and hide cursor using a class so that copying is enabled
         self.sqlCtrl.setOption('readOnly', true);
+        self.sqlCtrl.setOption('extraKeys', {
+          Tab: false,
+          'Shift-Tab': false,
+        });
         var cm = self.sqlCtrl.getWrapperElement();
         if (cm) {
           cm.className += ' cm_disabled hide-cursor-workaround';
@@ -2592,7 +2619,7 @@ define([
       '<div class="pgadmin-controls pg-el-12 <%=extraClasses.join(\' \')%>">',
       '  <textarea ',
       '    class="<%=Backform.controlClassName%> " name="<%=name%>"',
-      '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
+      '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> ',
       '    rows=<%=rows%>',
       '    <%=required ? "required" : ""%>><%-value%></textarea>',
       '  <% if (helpMessage && helpMessage.length) { %>',
@@ -2654,9 +2681,9 @@ define([
       '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
       '<div class="input-group">',
-      '<input type="<%=type%>" id="<%=cId%>" class="form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '<input type="<%=type%>" id="<%=cId%>" class="form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> />',
       '<div class="input-group-append">',
-      '<button class="btn btn-secondary fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> aria-hidden="true" aria-label="Select file" title="Select file"></button>',
+      '<button class="btn btn-secondary fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%> aria-hidden="true" aria-label="Select file" title="Select file"></button>',
       '</div>',
       '</div>',
       '<% if (helpMessage && helpMessage.length) { %>',
@@ -2772,7 +2799,7 @@ define([
       template: _.template([
         '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
         '<div class="input-group  <%=Backform.controlsClassName%>">',
-        ' <input type="text" class="<%=Backform.controlClassName%> datetimepicker-input <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> data-toggle="datetimepicker"/>',
+        ' <input type="text" class="<%=Backform.controlClassName%> datetimepicker-input <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> data-toggle="datetimepicker"/>',
         ' <div class="input-group-append">',
         '   <span class="input-group-text fa fa-calendar"></span>',
         ' </div>',
@@ -2803,6 +2830,7 @@ define([
         // Evaluate the disabled, visible, and required option
         _.extend(data, {
           disabled: evalF(data.disabled, this.model),
+          readonly: evalF(data.readonly, this.model),
           visible: evalF(data.visible, this.model),
           required: evalF(data.required, this.model),
         });

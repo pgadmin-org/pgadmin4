@@ -92,16 +92,16 @@ define('pgadmin.node.synonym', [
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchemaWithModelCheck',
+          disabled: 'inSchema', readonly: function(m) { return !m.isNew(); },
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: true , control: 'node-list-by-name',
+          readonly: true , control: 'node-list-by-name',
           node: 'role', visible: false,
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: function(m) { return !m.isNew(); }, node: 'schema',
+          readonly: function(m) { return !m.isNew(); }, node: 'schema',
           control: 'node-list-by-name', cache_node: 'database',
           cache_level: 'database',
         },{
@@ -181,7 +181,7 @@ define('pgadmin.node.synonym', [
           },
         },{
           id: 'is_public_synonym', label: gettext('Public synonym?'),
-          disabled: true, type: 'switch', mode: ['properties'], cell: 'switch',
+          type: 'switch', mode: ['properties'], cell: 'switch',
           options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success',
             offColor: 'primary', size: 'mini'},
         },
@@ -212,19 +212,6 @@ define('pgadmin.node.synonym', [
             return true;
           }
           return false;
-        },
-        // We will check if we are under schema node & in 'create' mode
-        inSchemaWithModelCheck: function(m) {
-          if(this.node_info &&  'schema' in this.node_info)
-          {
-            // We will disbale control if it's in 'edit' mode
-            if (m.isNew()) {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          return true;
         },
       }),
       canCreate: function(itemData, item, data) {

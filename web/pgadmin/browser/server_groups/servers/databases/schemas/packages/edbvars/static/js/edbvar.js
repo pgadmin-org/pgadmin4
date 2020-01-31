@@ -57,17 +57,15 @@ define('pgadmin.node.edbvar', [
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties'],
-          disabled: true,
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
         },{
           id: 'datatype', label: gettext('Data type'), cell: 'string',
-          type: 'text', disabled: true,
+          type: 'text', readonly: true,
         },{
           id: 'visibility', label: gettext('Visibility'), cell: 'string',
           type: 'text', mode: ['properties'],
-          disabled: true,
         }],
         validate: function()
         {

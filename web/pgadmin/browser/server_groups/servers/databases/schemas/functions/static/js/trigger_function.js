@@ -120,18 +120,19 @@ define('pgadmin.node.trigger_function', [
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'isDisabled',
+          disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
         },{
           id: 'funcowner', label: gettext('Owner'), cell: 'string',
           control: Backform.NodeListByNameControl, node: 'role',  type:
-          'text', disabled: 'isDisabled',
+          'text', disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'pronamespace', label: gettext('Schema'), cell: 'string',
           control: 'node-list-by-id', type: 'text', cache_level: 'database',
-          node: 'schema', disabled: 'isDisabled', mode: ['create', 'edit'],
+          node: 'schema', disabled: 'isDisabled',  readonly: 'isReadonly',
+          mode: ['create', 'edit'],
         },{
           id: 'sysfunc', label: gettext('System function?'),
           cell:'boolean', type: 'switch',
@@ -142,22 +143,22 @@ define('pgadmin.node.trigger_function', [
           mode: ['properties'], visible: 'isVisible',
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', disabled: 'isDisabled',
+          type: 'multiline', disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'pronargs', label: gettext('Argument count'), cell: 'string',
           type: 'text', group: gettext('Definition'), mode: ['properties'],
         },{
           id: 'proargs', label: gettext('Arguments'), cell: 'string',
           type: 'text', group: gettext('Definition'), mode: ['properties', 'edit'],
-          disabled: 'isDisabled',
+          disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'proargtypenames', label: gettext('Signature arguments'), cell:
           'string', type: 'text', group: gettext('Definition'), mode: ['properties'],
-          disabled: 'isDisabled',
+          disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'prorettypename', label: gettext('Return type'), cell: 'string',
           control: 'select2', type: 'text', group: gettext('Definition'),
-          disabled: 'isDisabled', first_empty: true,
+          disabled: 'isDisabled', readonly: 'isReadonly', first_empty: true,
           select2: { width: '100%', allowClear: false },
           mode: ['create'], visible: 'isVisible', options: [
             {label: gettext('trigger'), value: 'trigger'},
@@ -166,11 +167,12 @@ define('pgadmin.node.trigger_function', [
         },{
           id: 'prorettypename', label: gettext('Return type'), cell: 'string',
           type: 'text', group: gettext('Definition'),
-          mode: ['properties', 'edit'], disabled: 'isDisabled', visible: 'isVisible',
+          mode: ['properties', 'edit'], disabled: 'isDisabled', readonly: 'isReadonly',
+          visible: 'isVisible',
         },  {
           id: 'lanname', label: gettext('Language'), cell: 'string',
           control: 'node-ajax-options', type: 'text', group: gettext('Definition'),
-          url: 'get_languages', disabled: 'isDisabled',
+          url: 'get_languages', disabled: 'isDisabled', readonly: 'isReadonly',
           transform: function(d) {
             return _.reject(d, function(o) {
               return o.label == 'sql' || o.label == 'edbspl';
@@ -187,21 +189,21 @@ define('pgadmin.node.trigger_function', [
               return false;
             }
             return true;
-          }, disabled: 'isDisabled',
+          }, disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'probin', label: gettext('Object file'), cell: 'string',
           type: 'text', group: gettext('Definition'), deps: ['lanname'], visible:
           function(m) {
             if (m.get('lanname') == 'c') { return true; }
             return false;
-          }, disabled: 'isDisabled',
+          }, disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'prosrc_c', label: gettext('Link symbol'), cell: 'string',
           type: 'text', group: gettext('Definition'),  deps: ['lanname'], visible:
           function(m) {
             if (m.get('lanname') == 'c') { return true; }
             return false;
-          }, disabled: 'isDisabled',
+          }, disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'provolatile', label: gettext('Volatility'), cell: 'string',
           control: 'node-ajax-options', type: 'text', group: gettext('Options'),
@@ -209,34 +211,34 @@ define('pgadmin.node.trigger_function', [
             {'label': 'VOLATILE', 'value': 'v'},
             {'label': 'STABLE', 'value': 's'},
             {'label': 'IMMUTABLE', 'value': 'i'},
-          ], disabled: 'isDisabled', select2: { allowClear: false },
+          ], disabled: 'isDisabled', readonly: 'isReadonly', select2: { allowClear: false },
         },{
           id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
-          group: gettext('Options'), disabled: 'isDisabled',
+          group: gettext('Options'), disabled: 'isDisabled', readonly: 'isReadonly',
           visible: 'isVisible',
         },{
           id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
-          disabled: 'isDisabled', group: gettext('Options'),
+          disabled: 'isDisabled', readonly: 'isReadonly', group: gettext('Options'),
         },{
           id: 'prosecdef', label: gettext('Security of definer?'),
           group: gettext('Options'), cell:'boolean', type: 'switch',
-          disabled: 'isDisabled',
+          disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'proiswindow', label: gettext('Window?'),
           group: gettext('Options'), cell:'boolean', type: 'switch',
-          disabled: 'isDisabled', visible: 'isVisible',
+          disabled: 'isDisabled', readonly: 'isReadonly', visible: 'isVisible',
         },{
           id: 'procost', label: gettext('Estimated cost'), type: 'text',
-          group: gettext('Options'), disabled: 'isDisabled',
+          group: gettext('Options'), disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'prorows', label: gettext('Estimated rows'), type: 'text',
           group: gettext('Options'),
-          disabled: 'isDisabled',
+          disabled: 'isDisabled', readonly: 'isReadonly',
           deps: ['proretset'], visible: 'isVisible',
         },{
           id: 'proleakproof', label: gettext('Leak proof?'),
           group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
-          disabled: 'isDisabled',
+          disabled: 'isDisabled', readonly: 'isReadonly',
         }, pgBrowser.SecurityGroupSchema, {
           id: 'proacl', label: gettext('Privileges'), mode: ['properties'],
           group: gettext('Security'), type: 'text',
@@ -245,20 +247,20 @@ define('pgadmin.node.trigger_function', [
           group: gettext('Parameters'), control: 'variable-collection',
           model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: 'canVarAdd', canEdit: false,
-          canDelete: true, disabled: 'isDisabled',
+          canDelete: true, disabled: 'isDisabled', readonly: 'isReadonly',
         },{
           id: 'acl', label: gettext('Privileges'), editable: false,
           type: 'collection', group: 'security', mode: ['edit', 'create'],
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['X'],
-          }), uniqueCol : ['grantee', 'grantor'], disabled: 'isDisabled',
+          }), uniqueCol : ['grantee', 'grantor'], disabled: 'isDisabled', readonly: 'isReadonly',
           canAdd: true, canDelete: true, control: 'unique-col-collection',
         },{
           id: 'seclabels', label: gettext('Security labels'), canEdit: true,
           model: pgBrowser.SecLabelModel, type: 'collection',
           min_version: 90100, group: 'security', mode: ['edit', 'create'],
           canDelete: true, control: 'unique-col-collection', canAdd: true,
-          uniqueCol : ['provider'], disabled: 'isDisabled',
+          uniqueCol : ['provider'], disabled: 'isDisabled', readonly: 'isReadonly',
         }],
         validate: function(keys)
         {
@@ -340,10 +342,7 @@ define('pgadmin.node.trigger_function', [
           if (this.name == 'sysproc') { return false; }
           return true;
         },
-        isDisabled: function(m) {
-          if(this.node_info &&  'catalog' in this.node_info) {
-            return true;
-          }
+        isReadonly: function(m) {
           switch(this.name){
           case 'proargs':
           case 'proargtypenames':
@@ -351,6 +350,15 @@ define('pgadmin.node.trigger_function', [
           case 'proretset':
           case 'proiswindow':
             return !m.isNew();
+          default:
+            return false;
+          }
+        },
+        isDisabled: function(m) {
+          if(this.node_info &&  'catalog' in this.node_info) {
+            return true;
+          }
+          switch(this.name){
           case 'prorows':
             if(m.get('proretset') == true) {
               return false;

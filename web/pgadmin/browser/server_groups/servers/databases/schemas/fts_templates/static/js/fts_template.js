@@ -90,7 +90,7 @@ define('pgadmin.node.fts_template', [
           type: 'text', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', disabled: true, mode:['properties'],
+          editable: false, type: 'text', mode:['properties'],
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
@@ -101,13 +101,13 @@ define('pgadmin.node.fts_template', [
           type: 'multiline', cellHeaderClasses: 'width_percent_50',
         },{
           id: 'tmplinit', label: gettext('Init function'),
-          group: gettext('Definition'), type: 'text', disabled: function(m) {
+          group: gettext('Definition'), type: 'text', readonly: function(m) {
             return !m.isNew();
           }, control: 'node-ajax-options', url: 'get_init',
           cache_level: 'database', cache_node: 'schema',
         },{
           id: 'tmpllexize', label: gettext('Lexize function'), group: gettext('Definition'),
-          type: 'text', disabled: function(m) { return !m.isNew(); },
+          type: 'text', readonly: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'get_lexize', cache_level: 'database',
           cache_node: 'schema',
         }],

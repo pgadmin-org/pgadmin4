@@ -65,7 +65,6 @@ define('pgadmin.node.language', [
           icon: 'wcTabIcon icon-language', data: {action: 'create'},
         }]);
       },
-
       // Define the model for language node
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
@@ -122,14 +121,14 @@ define('pgadmin.node.language', [
           },
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
-          type: 'text', disabled: true,
+          type: 'text',
         },{
           id: 'lanowner', label: gettext('Owner'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'properties', 'create'], select2: { allowClear: false },
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], disabled: true,
+          group: gettext('Security'), mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
@@ -142,11 +141,14 @@ define('pgadmin.node.language', [
                 m.set({'is_template': false});
                 return false;
               }
-              else
+              else {
                 m.set({'is_template': true});
+                return true;
+              }
             }
-            return true;
+            return false;
           },
+          readonly: function(m) {return !m.isNew();},
         },{
           id: 'lanproc', label: gettext('Handler function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
@@ -167,11 +169,16 @@ define('pgadmin.node.language', [
             return res;
           }, disabled: function(m) {
             if (m.isNew()) {
-              if (m.get('template_list').indexOf(m.get('name')) == -1)
+              if (m.get('template_list').indexOf(m.get('name')) == -1) {
                 return false;
+              }
+              else {
+                return true;
+              }
             }
-            return true;
+            return false;
           },
+          readonly: function(m) {return !m.isNew();},
         },{
           id: 'laninl', label: gettext('Inline function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
@@ -192,11 +199,16 @@ define('pgadmin.node.language', [
             return res;
           }, disabled: function(m) {
             if (m.isNew()) {
-              if (m.get('template_list').indexOf(m.get('name')) == -1)
+              if (m.get('template_list').indexOf(m.get('name')) == -1) {
                 return false;
+              }
+              else {
+                return true;
+              }
             }
-            return true;
+            return false;
           },
+          readonly: function(m) {return !m.isNew();},
         },{
           id: 'lanval', label: gettext('Validator function'), type: 'text', control: 'node-ajax-options',
           group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
@@ -217,11 +229,16 @@ define('pgadmin.node.language', [
             return res;
           }, disabled: function(m) {
             if (m.isNew()) {
-              if (m.get('template_list').indexOf(m.get('name')) == -1)
+              if (m.get('template_list').indexOf(m.get('name')) == -1) {
                 return false;
+              }
+              else {
+                return true;
+              }
             }
-            return true;
+            return false;
           },
+          readonly: function(m) {return !m.isNew();},
         }, {
           id: 'lanacl', label: gettext('Privileges'), type: 'collection',
           group: gettext('Security'), control: 'unique-col-collection', mode: ['edit', 'create'],

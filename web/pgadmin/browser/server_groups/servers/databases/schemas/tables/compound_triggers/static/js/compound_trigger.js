@@ -183,7 +183,7 @@ define('pgadmin.node.compound_trigger', [
           type: 'text', disabled: 'inSchema',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'int', disabled: true, mode: ['properties'],
+          type: 'int', mode: ['properties'],
         },{
           id: 'is_enable_trigger', label: gettext('Trigger enabled?'),
           mode: ['edit', 'properties'],
@@ -214,8 +214,9 @@ define('pgadmin.node.compound_trigger', [
               var evn_insert = m.get('evnt_insert');
               if (!_.isUndefined(evn_insert) && m.node_info['server']['server_type'] == 'ppas')
                 return false;
-              return m.inSchemaWithModelCheck.apply(this, [m]);
+              return m.inSchema.apply(this, [m]);
             },
+            readonly: 'inEditMode',
           },{
             id: 'evnt_update', label: gettext('UPDATE'),
             type: 'switch', mode: ['create','edit', 'properties'],
@@ -227,8 +228,9 @@ define('pgadmin.node.compound_trigger', [
               var evn_update = m.get('evnt_update');
               if (!_.isUndefined(evn_update) && m.node_info['server']['server_type'] == 'ppas')
                 return false;
-              return m.inSchemaWithModelCheck.apply(this, [m]);
+              return m.inSchema.apply(this, [m]);
             },
+            readonly: 'inEditMode',
           },{
             id: 'evnt_delete', label: gettext('DELETE'),
             type: 'switch', mode: ['create','edit', 'properties'],
@@ -240,8 +242,9 @@ define('pgadmin.node.compound_trigger', [
               var evn_delete = m.get('evnt_delete');
               if (!_.isUndefined(evn_delete) && m.node_info['server']['server_type'] == 'ppas')
                 return false;
-              return m.inSchemaWithModelCheck.apply(this, [m]);
+              return m.inSchema.apply(this, [m]);
             },
+            readonly: 'inEditMode',
           },{
             id: 'evnt_truncate', label: gettext('TRUNCATE'),
             type: 'switch', mode: ['create','edit', 'properties'],
@@ -257,12 +260,13 @@ define('pgadmin.node.compound_trigger', [
 
               if (!_.isUndefined(evn_truncate) && m.node_info['server']['server_type'] == 'ppas')
                 return false;
-              return m.inSchemaWithModelCheck.apply(this, [m]);
+              return m.inSchema.apply(this, [m]);
             },
           }],
+          readonly: 'inEditMode',
         },{
           id: 'whenclause', label: gettext('When'),
-          type: 'text', disabled: 'inSchemaWithModelCheck',
+          type: 'text', disabled: 'inSchema', readonly: 'inEditMode',
           mode: ['create', 'edit', 'properties'],
           control: 'sql-field', visible: true, group: gettext('Events'),
         },{
@@ -274,10 +278,6 @@ define('pgadmin.node.compound_trigger', [
             if(this.node_info &&  'catalog' in this.node_info) {
               return true;
             }
-            //Disable in edit mode
-            if (!m.isNew()) {
-              return true;
-            }
             // Enable column only if update event is set true
             var isUpdate = m.get('evnt_update');
             if(!_.isUndefined(isUpdate) && isUpdate) {
@@ -285,6 +285,7 @@ define('pgadmin.node.compound_trigger', [
             }
             return true;
           },
+          readonly: 'inEditMode',
         },{
           id: 'prosrc', label: gettext('Code'), group: gettext('Code'),
           type: 'text', mode: ['create', 'edit'],
@@ -301,7 +302,8 @@ define('pgadmin.node.compound_trigger', [
           },
         },{
           id: 'is_sys_trigger', label: gettext('System trigger?'), cell: 'string',
-          type: 'switch', disabled: 'inSchemaWithModelCheck', mode: ['properties'],
+          type: 'switch', disabled: 'inSchema', mode: ['properties'],
+          readonly: 'inEditMode',
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
@@ -383,17 +385,8 @@ define('pgadmin.node.compound_trigger', [
           }
           return false;
         },
-        // We will check if we are under schema node & in 'create' mode
-        inSchemaWithModelCheck: function(m) {
-          if(this.node_info &&  'schema' in this.node_info) {
-            // We will disable control if it's in 'edit' mode
-            if (m.isNew()) {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          return true;
+        inEditMode: function(m) {
+          return !m.isNew();
         },
         // Checks weather to enable/disable control
         inSchemaWithColumnCheck: function(m) {

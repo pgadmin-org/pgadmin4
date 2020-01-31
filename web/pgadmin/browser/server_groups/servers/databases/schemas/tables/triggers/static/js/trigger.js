@@ -185,7 +185,7 @@ define('pgadmin.node.trigger', [
           type: 'text', disabled: 'inSchema',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'int', disabled: true, mode: ['properties'],
+          type: 'int', mode: ['properties'],
         },{
           id: 'is_enable_trigger', label: gettext('Trigger enabled?'),
           mode: ['edit', 'properties'], group: gettext('Definition'),

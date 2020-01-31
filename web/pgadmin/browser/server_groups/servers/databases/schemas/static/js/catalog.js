@@ -60,16 +60,16 @@ define('pgadmin.node.catalog', [
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', disabled: true,
+          type: 'text', readonly: true,
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
-          type: 'text', disabled: true,
+          type: 'text',
         },{
           id: 'namespaceowner', label: gettext('Owner'), cell: 'string',
-          type: 'text', disabled: true,
+          type: 'text', readonly: true,
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], disabled: true,
+          group: gettext('Security'), mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',

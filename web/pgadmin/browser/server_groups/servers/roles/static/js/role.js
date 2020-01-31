@@ -386,10 +386,10 @@ define('pgadmin.node.role', [
         },
         schema: [{
           id: 'rolname', label: gettext('Name'), type: 'text',
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
-          editable: false, type: 'text', visible: true, disabled: true,
+          editable: false, type: 'text', visible: true,
         },{
           id: 'rolpassword', label: gettext('Password'), type: 'password',
           group: gettext('Definition'), mode: ['edit', 'create'],
@@ -404,21 +404,21 @@ define('pgadmin.node.role', [
             return false;
           },
         },{
-          id: 'rolvaliduntil', disabled: 'readonly', type: 'text',
+          id: 'rolvaliduntil', readonly: 'readonly', type: 'text',
           group: gettext('Definition'), label: gettext('Account expires'),
           mode: ['properties', 'edit', 'create'], control: 'datetimepicker',
           deps: ['rolcanlogin'], options: {format: 'YYYY-MM-DD HH:mm:ss Z'},
         },{
           id: 'rolconnlimit',  type: 'int', group: gettext('Definition'),
           label: gettext('Connection limit'), cell: 'integer', min : -1,
-          mode: ['properties', 'edit', 'create'], disabled: 'readonly',
+          mode: ['properties', 'edit', 'create'], readonly: 'readonly',
         },{
           id: 'rolcanlogin', label: gettext('Can login?'),
           type: 'switch',
           controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
           group: gettext('Privileges'),
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'rolsuper', label: gettext('Superuser?'),
           type: 'switch',
@@ -434,33 +434,36 @@ define('pgadmin.node.role', [
               this.model.set('rolcreatedb', this.model.get('rolsuper'));
             },
           }),
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'rolcreaterole', label: gettext('Create roles?'),
           group: gettext('Privileges'),
           type: 'switch',
           controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'description', label: gettext('Comments'), type: 'multiline',
           group: null, mode: ['properties', 'edit', 'create'],
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'rolcreatedb', label: gettext('Create databases?'),
           group: gettext('Privileges'),
           type: 'switch',
           controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'rolcatupdate', label: gettext('Update catalog?'),
           type: 'switch',
           controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
           max_version: 90400,
-          group: gettext('Privileges'), disabled: function(m) {
-            return (m.get('read_only') || (!m.get('rolsuper')));
+          group: gettext('Privileges'), readonly: function(m) {
+            return m.get('read_only');
+          },
+          disabled: function(m) {
+            return !m.get('rolsuper');
           },
         },{
           id: 'rolinherit', group: gettext('Privileges'),
@@ -468,7 +471,7 @@ define('pgadmin.node.role', [
           type: 'switch',
           controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'rolreplication', group: gettext('Privileges'),
           label: gettext('Can initiate streaming replication and backups?'),
@@ -476,11 +479,11 @@ define('pgadmin.node.role', [
           controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
           min_version: 90100,
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'rolmembership', label: gettext('Roles'),
           group: gettext('Membership'), type: 'collection',
-          cell: 'string', disabled: 'readonly',
+          cell: 'string', readonly: 'readonly',
           mode: ['properties', 'edit', 'create'],
           control: RoleMembersControl, model: pgBrowser.Node.Model.extend({
             keys: ['role'],
@@ -509,12 +512,12 @@ define('pgadmin.node.role', [
           model: pgBrowser.Node.VariableModel.extend({keys:['name', 'database']}),
           control: 'variable-collection',
           mode: [ 'edit', 'create'], canAdd: true, canDelete: true,
-          disabled: 'readonly',
+          readonly: 'readonly',
         },{
           id: 'seclabels', label: gettext('Security labels'),
           model: SecurityModel, editable: false, type: 'collection',
           group: gettext('Security'), mode: ['edit', 'create'],
-          min_version: 90200, disabled: 'readonly', canAdd: true,
+          min_version: 90200, readonly: 'readonly', canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection',
         }],
         readonly: function(m) {

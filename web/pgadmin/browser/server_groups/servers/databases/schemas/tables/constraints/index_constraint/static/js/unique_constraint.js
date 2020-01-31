@@ -374,7 +374,7 @@ define('pgadmin.node.unique_constraint', [
             return res;
           },
           select2:{allowClear:false},
-          disabled: function(m) {
+          readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
@@ -387,6 +387,8 @@ define('pgadmin.node.unique_constraint', [
             if (!m.isNew()) {
               return true;
             }
+          },
+          disabled: function(m) {
             // Disable if index is selected.
             var index = m.get('index');
             if(_.isUndefined(index) || index == '') {
@@ -471,7 +473,7 @@ define('pgadmin.node.unique_constraint', [
             },
           }),
           deps: ['index'], node: 'column',
-          disabled: function(m) {
+          readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
@@ -484,6 +486,8 @@ define('pgadmin.node.unique_constraint', [
             if (!m.isNew()) {
               return true;
             }
+          },
+          disabled: function(m) {
             // Disable if index is selected.
             var index = m.get('index');
             if(_.isUndefined(index) || index == '') {
@@ -531,7 +535,7 @@ define('pgadmin.node.unique_constraint', [
             },
           }),
           select2:{allowClear:true}, node: 'index',
-          disabled: function(m) {
+          readonly: function(m) {
             // If we are in table edit mode then disable it
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
@@ -563,7 +567,7 @@ define('pgadmin.node.unique_constraint', [
         },{
           id: 'condeferrable', label: gettext('Deferrable?'),
           type: 'switch', group: gettext('Definition'), deps: ['index'],
-          disabled: function(m) {
+          readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
@@ -576,6 +580,8 @@ define('pgadmin.node.unique_constraint', [
             if (!m.isNew()) {
               return true;
             }
+          },
+          disabled: function(m) {
             // Disable if index is selected.
             var index = m.get('index');
             if(_.isUndefined(index) || index == '') {
@@ -592,7 +598,7 @@ define('pgadmin.node.unique_constraint', [
           id: 'condeferred', label: gettext('Deferred?'),
           type: 'switch', group: gettext('Definition'),
           deps: ['condeferrable'],
-          disabled: function(m) {
+          readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'top') && !_.isUndefined(m.top)
               && !m.top.isNew()) {
@@ -605,6 +611,8 @@ define('pgadmin.node.unique_constraint', [
             if (!m.isNew()) {
               return true;
             }
+          },
+          disabled: function(m) {
             // Disable if condeferred is false or unselected.
             if(m.get('condeferrable') == true) {
               return false;

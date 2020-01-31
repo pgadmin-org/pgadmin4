@@ -98,7 +98,7 @@ define('pgadmin.node.extension', [
           {
             id: 'name', label: gettext('Name'), first_empty: true,
             type: 'text', mode: ['properties', 'create', 'edit'],
-            visible: true, url:'avails', disabled: function(m) {
+            visible: true, url:'avails', readonly: function(m) {
               return !m.isNew();
             },
             transform: function(data, cell) {
@@ -182,7 +182,7 @@ define('pgadmin.node.extension', [
           },
           {
             id: 'eid', label: gettext('OID'), cell: 'string',
-            type: 'text', disabled: true, mode: ['properties'],
+            type: 'text', mode: ['properties'],
           },
           {
             id: 'owner', label: gettext('Owner'), control: 'node-list-by-name',
@@ -231,7 +231,7 @@ define('pgadmin.node.extension', [
           },
           {
             id: 'comment', label: gettext('Comment'), cell: 'string',
-            type: 'multiline', disabled: true,
+            type: 'multiline', readonly: true,
           },
         ],
         validate: function() {

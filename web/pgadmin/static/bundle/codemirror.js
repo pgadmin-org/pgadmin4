@@ -30,7 +30,7 @@ var cmds = CodeMirror.commands;
 cmds.focusOut = function(){
   event.stopPropagation();
   document.activeElement.blur();
-  if(event.currentTarget.parents().find('.sql-code-control')) {
+  if(event.currentTarget.hasOwnProperty('parents') && event.currentTarget.parents().find('.sql-code-control')) {
     // for code mirror in dialogs
     event.currentTarget.parents().find('.sql-code-control').focus();
   }

@@ -188,7 +188,7 @@ define('pgadmin.node.domain', [
           control: 'node-ajax-options', type: 'text', url: 'get_types',
           mode:['properties', 'create', 'edit'], group: gettext('Definition'),
           first_empty: true, cache_node: 'type',
-          disabled: function(m) {
+          readonly: function(m) {
             return !m.isNew();
           },
           transform: function(d) {
@@ -198,11 +198,9 @@ define('pgadmin.node.domain', [
         },{
           id: 'typlen', label: gettext('Length'), cell: 'string',
           type: 'text', group: gettext('Definition'), deps: ['basetype'],
+          readonly: function(m) {return !m.isNew();},
           disabled: function(m) {
             // We will store type from selected from combobox
-            if (!m.isNew()) {
-              return true;
-            }
             var of_type = m.get('basetype');
             if(m.type_options) {
               // iterating over all the types
@@ -233,11 +231,9 @@ define('pgadmin.node.domain', [
         },{
           id: 'precision', label: gettext('Precision'), cell: 'string',
           type: 'text', group: gettext('Definition'), deps: ['basetype'],
+          readonly: function(m) {return !m.isNew();},
           disabled: function(m) {
             // We will store type from selected from combobox
-            if (!m.isNew()) {
-              return true;
-            }
             var of_type = m.get('basetype');
             if(m.type_options) {
               // iterating over all the types
@@ -276,7 +272,7 @@ define('pgadmin.node.domain', [
           id: 'collname', label: gettext('Collation'), cell: 'string',
           control: 'node-ajax-options', type: 'text', url: 'get_collations',
           group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema', disabled: function(m) {
+          cache_node: 'schema', readonly: function(m) {
             return !m.isNew();
           },
         },{
@@ -313,16 +309,6 @@ define('pgadmin.node.domain', [
           return errmsg;
         },
       }),
-      isDisabled: function(m){
-        if (!m.isNew()) {
-          var server = this.node_info.server;
-          if (server.version < 90200)
-          {
-            return false;
-          }
-        }
-        return true;
-      },
     });
 
   }

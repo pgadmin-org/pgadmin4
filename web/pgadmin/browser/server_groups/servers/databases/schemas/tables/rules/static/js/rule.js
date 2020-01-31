@@ -144,7 +144,7 @@ define('pgadmin.node.rule', [
         },
         {
           id: 'oid', label: gettext('OID'),
-          type: 'text', disabled: true, mode: ['properties'],
+          type: 'text', mode: ['properties'],
         },
         {
           id: 'schema', label:'',

@@ -140,7 +140,7 @@ define('pgadmin.node.sequence', [
         },{
           id: 'start', label: gettext('Start'), type: 'int',
           mode: ['properties', 'create'], group: gettext('Definition'),
-          disabled: function(m) {
+          readonly: function(m) {
             return !m.isNew();
           },
         },{
@@ -158,7 +158,7 @@ define('pgadmin.node.sequence', [
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         }, pgBrowser.SecurityGroupSchema,{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], disabled: true,
+          group: gettext('Security'), mode: ['properties'],
         },{
           id: 'relacl', label: gettext('Privileges'), group: 'security',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({

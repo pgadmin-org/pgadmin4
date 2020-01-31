@@ -326,7 +326,7 @@ define('pgadmin.node.type', [
           disabled: 'schemaCheck',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties'], disabled: true,
+          type: 'text' , mode: ['properties'],
         },{
           id: 'typeowner', label: gettext('Owner'), cell: 'string',
           control: 'node-list-by-name',
@@ -346,7 +346,7 @@ define('pgadmin.node.type', [
           control: 'node-list-by-name', select2: {allowClear: false},
         },{
           id: 'typtype', label: gettext('Type'),
-          mode: ['create','edit'], disabled: 'inSchemaWithModelCheck',
+          mode: ['create','edit'], disabled: 'inSchema', readonly: 'inEditMode',
           group: gettext('Definition'),
           select2: { allowClear: false },
           options: function() {
@@ -408,7 +408,8 @@ define('pgadmin.node.type', [
             control: 'node-ajax-options',
             select2: { allowClear: true, placeholder: '', width: '100%' },
             url: 'get_stypes', type: 'text', mode: ['properties', 'create', 'edit'],
-            group: gettext('Range Type'), disabled: 'inSchemaWithModelCheck',
+            group: gettext('Range Type'), disabled: 'inSchema',
+            readonly: 'inEditMode',
             transform: function(d, self){
               self.model.subtypes =  d;
               return d;
@@ -416,7 +417,7 @@ define('pgadmin.node.type', [
           },{
             id: 'opcname', label: gettext('Subtype operator class'), cell: 'string',
             mode: ['properties', 'create', 'edit'], group: gettext('Range Type'),
-            disabled: 'inSchemaWithModelCheck', deps: ['typname'],
+            disabled: 'inSchema', readonly: 'inEditMode', deps: ['typname'],
             control: 'select', options: function() {
               var l_typname = this.model.get('typname'),
                 self = this,
@@ -483,7 +484,7 @@ define('pgadmin.node.type', [
             id: 'rngcanonical', label: gettext('Canonical function'), cell: 'string',
             type: 'text', mode: ['properties', 'create', 'edit'],
             group: gettext('Range Type'),
-            disabled: 'inSchemaWithModelCheck', deps: ['name', 'typname'],
+            disabled: 'inSchema', readonly: 'inEditMode', deps: ['name', 'typname'],
             control: 'select', options: function() {
               var name = this.model.get('name'),
                 self = this,
@@ -517,7 +518,7 @@ define('pgadmin.node.type', [
             id: 'rngsubdiff', label: gettext('Subtype diff function'), cell: 'string',
             type: 'text', mode: ['properties', 'create', 'edit'],
             group: gettext('Range Type'),
-            disabled: 'inSchemaWithModelCheck', deps: ['opcname'],
+            disabled: 'inSchema', readonly: 'inEditMode', deps: ['opcname'],
             control: 'select', options: function() {
               var l_typname = this.model.get('typname'),
                 l_opcname = this.model.get('opcname'),
@@ -563,7 +564,7 @@ define('pgadmin.node.type', [
             id: 'typinput', label: gettext('Input function'),
             cell: 'string',type: 'text',
             mode: ['properties', 'create', 'edit'], group: gettext('Required'),
-            disabled: 'inSchemaWithModelCheck',
+            disabled: 'inSchema', readonly: 'inEditMode',
             control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: '', width: '100%' },
@@ -572,8 +573,8 @@ define('pgadmin.node.type', [
             cell: 'string',
             type: 'text', mode: ['properties', 'create', 'edit'],
             group: gettext('Required'),
-            disabled: 'inSchemaWithModelCheck'
-            ,control: 'node-ajax-options', url: 'get_external_functions',
+            disabled: 'inSchema', readonly: 'inEditMode',
+            control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: '', width: '100%' },
           },{
@@ -582,23 +583,23 @@ define('pgadmin.node.type', [
             id: 'typreceive', label: gettext('Receive function'),
             cell: 'string', type: 'text', group: gettext('Optional-1'),
             mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck'
-            ,control: 'node-ajax-options', url: 'get_external_functions',
+            disabled: 'inSchema', readonly: 'inEditMode',
+            control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: '', width: '100%' },
           },{
             id: 'typsend', label: gettext('Send function'),
             cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck'
-            ,control: 'node-ajax-options', url: 'get_external_functions',
+            disabled: 'inSchema', readonly: 'inEditMode',
+            control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: '', width: '100%' },
           },{
             id: 'typmodin', label: gettext('Typmod in function'),
             cell: 'string', type: 'text',
             mode: ['properties', 'create', 'edit'], group: gettext('Optional-1'),
-            disabled: 'inSchemaWithModelCheck',
+            disabled: 'inSchema', readonly: 'inEditMode',
             control: 'node-ajax-options', url: 'get_external_functions',
             select2: { allowClear: true, placeholder: '', width: '100%' },
             transform: function(d) {
@@ -615,7 +616,7 @@ define('pgadmin.node.type', [
             id: 'typmodout', label: gettext('Typmod out function'),
             cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck',
+            disabled: 'inSchema', readonly: 'inEditMode',
             control: 'node-ajax-options', url: 'get_external_functions',
             select2: { allowClear: true, placeholder: '', width: '100%' },
             transform: function(d) {
@@ -632,30 +633,30 @@ define('pgadmin.node.type', [
             id: 'typlen', label: gettext('Internal length'),
             cell: 'integer', group: gettext('Optional-1'),
             type: 'int', mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck',
+            disabled: 'inSchema', readonly: 'inEditMode',
           },{
             id: 'variable', label: gettext('Variable?'), cell: 'switch',
             group: gettext('Optional-1'), type: 'switch',
             mode: ['create','edit'],
-            disabled: 'inSchemaWithModelCheck',
+            disabled: 'inSchema', readonly: 'inEditMode',
           },{
             id: 'typdefault', label: gettext('Default?'),
             cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create','edit'],
-            disabled: 'inSchemaWithModelCheck',
+            disabled: 'inSchema', readonly: 'inEditMode',
           },{
             id: 'typanalyze', label: gettext('Analyze function'),
             cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create','edit'],
-            disabled: 'inSchemaWithModelCheck'
-            ,control: 'node-ajax-options', url: 'get_external_functions',
+            disabled: 'inSchema', readonly: 'inEditMode',
+            control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: '', width: '100%' },
           },{
             id: 'typcategory', label: gettext('Category type'),
             cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create','edit'],
-            disabled: 'inSchemaWithModelCheck', control: 'select2',
+            disabled: 'inSchema', readonly: 'inEditMode', control: 'select2',
             select2: { allowClear: true, placeholder: '', width: '100%' },
             options: [
               {label :'', value : ''},
@@ -677,7 +678,7 @@ define('pgadmin.node.type', [
           },{
             id: 'typispreferred', label: gettext('Preferred?'), cell: 'switch',
             type: 'switch', mode: ['properties', 'create','edit'],
-            disabled: 'inSchemaWithModelCheck',
+            disabled: 'inSchema', readonly: 'inEditMode',
             group: gettext('Optional-1'),
           },{
             id: 'spacer_ctrl_optional_2', group: gettext('Optional-2'), mode: ['edit', 'create'], type: 'spacer',
@@ -685,16 +686,17 @@ define('pgadmin.node.type', [
             id: 'element', label: gettext('Element type'), cell: 'string',
             control: 'node-ajax-options', group: gettext('Optional-2'),
             type: 'text', mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', url: 'get_types',
+            disabled: 'inSchema', readonly: 'inEditMode', url: 'get_types',
           },{
             id: 'typdelim', label: gettext('Delimiter'), cell: 'string',
             type: 'text', mode: ['properties', 'create', 'edit'],
-            group: gettext('Optional-2'), disabled: 'inSchemaWithModelCheck',
+            group: gettext('Optional-2'), disabled: 'inSchema',
+            readonly: 'inEditMode',
           },{
             id: 'typalign', label: gettext('Alignment type'),
             cell: 'string', group: gettext('Optional-2'),
             type: 'text', mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', control: 'select2',
+            disabled: 'inSchema', readonly: 'inEditMode', control: 'select2',
             select2: { allowClear: true, placeholder: '', width: '100%' },
             options: [
               {label :'', value : ''},
@@ -707,7 +709,7 @@ define('pgadmin.node.type', [
             id: 'typstorage', label: gettext('Storage type'),
             type: 'text', mode: ['properties', 'create', 'edit'],
             group: gettext('Optional-2'), cell: 'string',
-            disabled: 'inSchemaWithModelCheck', control: 'select2',
+            disabled: 'inSchema', readonly: 'inEditMode', control: 'select2',
             select2: { allowClear: true, placeholder: '', width: '100%' },
             options: [
               {label :'', value : ''},
@@ -720,12 +722,12 @@ define('pgadmin.node.type', [
             id: 'typbyval', label: gettext('Passed by value?'),
             cell: 'switch',
             type: 'switch', mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', group: gettext('Optional-2'),
+            disabled: 'inSchema', readonly: 'inEditMode', group: gettext('Optional-2'),
           },{
             id: 'is_collatable', label: gettext('Collatable?'),
             cell: 'switch',  min_version: 90100, group: gettext('Optional-2'),
             type: 'switch', mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck',
+            disabled: 'inSchema', readonly: 'inEditMode',
             // End of extension tab
           }],
         },{
@@ -878,6 +880,9 @@ define('pgadmin.node.type', [
           }
           return false;
         },
+        inEditMode: function(m) {
+          return !m.isNew();
+        },
         schemaCheck: function(m) {
           if(this.node_info && 'schema' in this.node_info)
           {
@@ -886,34 +891,6 @@ define('pgadmin.node.type', [
             } else {
               return m.get('typtype') === 'p';
             }
-          }
-          return true;
-        },
-        // We will check if we are under schema node & in 'create' mode
-        inSchemaWithModelCheck: function(m) {
-          if(this.node_info &&  'schema' in this.node_info)
-          {
-            // We will disbale control if it's in 'edit' mode
-            if (m.isNew()) {
-              return false;
-            } else {
-              return true;
-            }
-
-          }
-          return true;
-        },
-        // We want to enable only in edit mode
-        inSchemaWithEditMode: function(m) {
-          if(this.node_info &&  'schema' in this.node_info)
-          {
-            // We will disbale control if it's in 'edit' mode
-            if (m.isNew()) {
-              return true;
-            } else {
-              return false;
-            }
-
           }
           return true;
         },

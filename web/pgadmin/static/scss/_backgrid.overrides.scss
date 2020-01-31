@@ -305,6 +305,12 @@ table.backgrid {
     outline: $input-focus-border-color auto 5px !important;
   }
 
+  & td.select-cell.editor select{
+    outline: none !important;
+    height: 100% !important;
+    width: 100% !important;
+  }
+
   tr.editor-row  {
     background-color: $color-gray-light !important;
     & > td {

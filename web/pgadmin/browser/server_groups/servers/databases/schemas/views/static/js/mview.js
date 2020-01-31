@@ -149,7 +149,7 @@ define('pgadmin.node.mview', [
           type: 'text', disabled: 'inSchema',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', disabled: true, mode: ['properties'],
+          type: 'text', mode: ['properties'],
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string',
           control: 'node-list-by-name', select2: { allowClear: false },
@@ -161,7 +161,7 @@ define('pgadmin.node.mview', [
           disabled: 'inSchema', select2: { allowClear: false },
         },{
           id: 'system_view', label: gettext('System view?'), cell: 'string',
-          type: 'switch', disabled: true, mode: ['properties'],
+          type: 'switch', mode: ['properties'],
         }, pgBrowser.SecurityGroupSchema, {
           id: 'acl', label: gettext('Privileges'),
           mode: ['properties'], type: 'text', group: gettext('Security'),

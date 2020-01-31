@@ -342,11 +342,11 @@ define('pgadmin.node.tablespace', [
           type: 'text',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', disabled: true, mode: ['properties'],
+          type: 'text', mode: ['properties'],
         },{
           id: 'spclocation', label: gettext('Location'), cell: 'string',
           group: gettext('Definition'), type: 'text', mode: ['properties', 'edit','create'],
-          disabled: function(m) {
+          readonly: function(m) {
             // To disabled it in edit mode,
             // We'll check if model is new if yes then disabled it
             return !m.isNew();
@@ -357,7 +357,7 @@ define('pgadmin.node.tablespace', [
           select2: {allowClear: false},
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], disabled: true,
+          group: gettext('Security'), mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',

@@ -85,7 +85,7 @@ define('pgadmin.node.resource_group', [
         // Defining schema for the resource group node
         schema: [{
           id: 'oid', label: gettext('OID'), type: 'text',
-          editable: false, disabled: true, mode:['properties'],
+          editable: false, mode:['properties'],
         },{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text',

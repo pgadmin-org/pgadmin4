@@ -344,7 +344,7 @@ define('pgadmin.node.column', [
         },{
           // Need to show this field only when creating new table [in SubNode control]
           id: 'inheritedfrom', label: gettext('Inherited from table'),
-          type: 'text', disabled: true, editable: false,
+          type: 'text', readonly: true, editable: false,
           cellHeaderClasses:'width_percent_10',
           visible: function(m) {
             return _.isUndefined(m.top.node_info['table'] || m.top.node_info['view'] || m.top.node_info['mview']);
@@ -641,24 +641,24 @@ define('pgadmin.node.column', [
           id: 'genexpr', label: gettext('Expression'), type: 'text',
           mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
           min_version: 120000, deps: ['colconstype'], visible: 'isTypeGenerated',
-          disabled: function(m) {
+          readonly: function(m) {
             return !m.isNew();
           },
         },{
           id: 'is_pk', label: gettext('Primary key?'),
-          type: 'switch', disabled: true, mode: ['properties'],
+          type: 'switch', mode: ['properties'],
           group: gettext('Definition'),
         },{
           id: 'is_fk', label: gettext('Foreign key?'),
-          type: 'switch', disabled: true, mode: ['properties'],
+          type: 'switch', mode: ['properties'],
           group: gettext('Definition'),
         },{
           id: 'is_inherited', label: gettext('Inherited?'),
-          type: 'switch', disabled: true, mode: ['properties'],
+          type: 'switch', mode: ['properties'],
           group: gettext('Definition'),
         },{
           id: 'tbls_inherited', label: gettext('Inherited from table(s)'),
-          type: 'text', disabled: true, mode: ['properties'], deps: ['is_inherited'],
+          type: 'text', mode: ['properties'], deps: ['is_inherited'],
           group: gettext('Definition'),
           visible: function(m) {
             if (!_.isUndefined(m.get('is_inherited')) && m.get('is_inherited')) {
@@ -669,7 +669,7 @@ define('pgadmin.node.column', [
           },
         },{
           id: 'is_sys_column', label: gettext('System column?'), cell: 'string',
-          type: 'switch', disabled: true, mode: ['properties'],
+          type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],

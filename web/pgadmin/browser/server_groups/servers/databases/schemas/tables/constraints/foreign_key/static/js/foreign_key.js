@@ -153,7 +153,7 @@ define('pgadmin.node.foreign_key', [
               first_empty: !_.isUndefined(self.model.get('oid')),
             },
             version_compatible: self.field.get('version_compatible'),
-            disabled: function() {
+            readonly: function() {
               return !_.isUndefined(self.model.get('oid'));
             },
           },{
@@ -168,7 +168,7 @@ define('pgadmin.node.foreign_key', [
             }),
             url: 'all_tables', node: 'table',
             version_compatible: self.field.get('version_compatible'),
-            disabled: function() {
+            readonly: function() {
               return !_.isUndefined(self.model.get('oid'));
             },
             transform: function(rows) {
@@ -260,7 +260,7 @@ define('pgadmin.node.foreign_key', [
             },
             deps:['references'],  node: 'table',
             version_compatible: self.field.get('version_compatible'),
-            disabled: function() {
+            readonly: function() {
               return !_.isUndefined(self.model.get('oid'));
             },
           }],
@@ -733,14 +733,13 @@ define('pgadmin.node.foreign_key', [
         },{
           id: 'condeferrable', label: gettext('Deferrable?'),
           type: 'switch', group: gettext('Definition'),
-          disabled: function(m) {
+          readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
               // If OID is undefined then user is trying to add
               // new constraint which should allowed for Unique
               return !_.isUndefined(m.get('oid'));
             }
-            // We can't update condeferrable of existing foreign key.
             return !m.isNew();
           },
         },{
@@ -748,14 +747,6 @@ define('pgadmin.node.foreign_key', [
           type: 'switch', group: gettext('Definition'),
           deps: ['condeferrable'],
           disabled: function(m) {
-            // If we are in table edit mode then
-            if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should allowed for Unique
-              return !_.isUndefined(m.get('oid'));
-            } else if(!m.isNew()) {
-              return true;
-            }
             // Disable if condeferred is false or unselected.
             if(m.get('condeferrable') == true) {
               return false;
@@ -767,6 +758,15 @@ define('pgadmin.node.foreign_key', [
               return true;
             }
           },
+          readonly: function(m) {
+            // If we are in table edit mode then
+            if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
+              // If OID is undefined then user is trying to add
+              // new constraint which should allowed for Unique
+              return !_.isUndefined(m.get('oid'));
+            }
+            return !m.isNew();
+          },
         },{
           id: 'confmatchtype', label: gettext('Match type'),
           type: 'switch', group: gettext('Definition'),
@@ -774,7 +774,7 @@ define('pgadmin.node.foreign_key', [
             onText: 'FULL',
             offText: 'SIMPLE',
             width: '80',
-          },disabled: function(m) {
+          },readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
               // If OID is undefined then user is trying to add
@@ -790,7 +790,7 @@ define('pgadmin.node.foreign_key', [
           options: {
             onText: gettext('Yes'),
             offText: gettext('No'),
-          },disabled: function(m) {
+          },readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
               // If OID is undefined then user is trying to add
@@ -877,22 +877,22 @@ define('pgadmin.node.foreign_key', [
                 }
               };
 
-            // If we are in table edit mode then
-            if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should allowed for Unique
-              if (_.isUndefined(m.get('oid')) && _.isUndefined(m.handler.get('oid'))) {
-                return true;
-              } else {
-                return setIndexName();
-              }
-
-            } else if (!m.isNew() && m.get('autoindex') && !_.isUndefined(index)
+            if (!m.isNew() && m.get('autoindex') && !_.isUndefined(index)
               && _.isNull(index) && index == '') {
               return true;
             }
 
             return setIndexName();
+          },
+          readonly: function(m) {
+            // If we are in table edit mode then
+            if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
+              // If OID is undefined then user is trying to add
+              // new constraint which should allowed for Unique
+              return !_.isUndefined(m.get('oid'));
+            }
+            // We can't update columns of existing foreign key.
+            return !m.isNew();
           },
         },{
           id: 'columns', label: gettext('Columns'),
@@ -988,7 +988,7 @@ define('pgadmin.node.foreign_key', [
           }, canDelete: true,
           control: ForeignKeyColumnControl,
           model: ForeignKeyColumnModel,
-          disabled: function(m) {
+          readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
               // If OID is undefined then user is trying to add
@@ -1008,7 +1008,7 @@ define('pgadmin.node.foreign_key', [
             {label: 'CASCADE', value: 'c'},
             {label: 'SET NULL', value: 'n'},
             {label: 'SET DEFAULT', value: 'd'},
-          ],disabled: function(m) {
+          ],readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
               // If OID is undefined then user is trying to add
@@ -1028,7 +1028,7 @@ define('pgadmin.node.foreign_key', [
             {label: 'CASCADE', value: 'c'},
             {label: 'SET NULL', value: 'n'},
             {label: 'SET DEFAULT', value: 'd'},
-          ],disabled: function(m) {
+          ],readonly: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
               // If OID is undefined then user is trying to add

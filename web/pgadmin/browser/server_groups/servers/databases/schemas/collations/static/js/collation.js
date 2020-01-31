@@ -120,20 +120,22 @@ define('pgadmin.node.collation', [
           control: 'node-ajax-options',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           url: 'get_collations', disabled: 'inSchemaWithModelCheck',
+          readonly: function(m) {return !m.isNew;},
           deps: ['locale', 'lc_collate', 'lc_type'],
         },{
           id: 'locale', label: gettext('Locale'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
-          disabled: 'inSchemaWithModelCheck',
+          disabled: 'inSchemaWithModelCheck', readonly: function(m) {return !m.isNew;},
           deps: ['lc_collate', 'lc_type', 'copy_collation'],
         },{
           id: 'lc_collate', label: gettext('LC_COLLATE'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           deps: ['locale', 'copy_collation'], disabled: 'inSchemaWithModelCheck',
+          readonly: function(m) {return !m.isNew;},
         },{
           id: 'lc_type', label: gettext('LC_TYPE'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
-          disabled: 'inSchemaWithModelCheck',
+          disabled: 'inSchemaWithModelCheck', readonly: function(m) {return !m.isNew;},
           deps: ['locale', 'copy_collation'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
@@ -221,14 +223,6 @@ define('pgadmin.node.collation', [
                 return true;
               return false;
             }
-
-            // We will disbale control if it's in 'edit' mode
-            if (m.isNew()) {
-              return false;
-            } else {
-              return true;
-            }
-
           }
           return true;
         },
