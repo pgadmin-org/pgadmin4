@@ -13,7 +13,7 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, current_app
 from flask_babelex import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -29,6 +29,7 @@ from pgadmin.utils import IS_PY2
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+
 
 # If we are in Python3
 if not IS_PY2:
@@ -431,10 +432,14 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             JSON of selected compound trigger node
         """
 
-        data = self._fetch_properties(tid, trid)
+        status, data = self._fetch_properties(tid, trid)
 
         if not status:
-            return data
+            return internal_server_error(errormsg=data)
+
+        if 'rows' in data and len(data['rows']) == 0:
+            return gone(gettext(
+                """Could not find the compound trigger in the table."""))
 
         return ajax_response(
             response=data,
@@ -451,11 +456,10 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return status, res
 
         if len(res['rows']) == 0:
-            return gone(gettext(
-                """Could not find the compound trigger in the table."""))
+            return True, res
 
         # Making copy of output for future use
         data = dict(res['rows'][0])
@@ -876,7 +880,10 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     def get_sql_from_diff(self, gid, sid, did, scid, tid, oid,
                           data=None, diff_schema=None, drop_sql=False):
         if data:
-            sql, name = self.get_sql(scid, tid, oid, data)
+            sql, name = compound_trigger_utils.get_sql(self.conn,
+                                                       data,
+                                                       tid, oid,
+                                                       self.datlastsysoid)
             if not isinstance(sql, (str, unicode)):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -908,21 +915,16 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     columns = ', '.join(data['tgattr'].split(' '))
                     data['columns'] = self._column_details(tid, columns)
 
-                data = self._trigger_definition(data)
+                data = trigger_definition(data)
 
                 if diff_schema:
                     data['schema'] = diff_schema
 
-                SQL, name = self.get_sql(scid, tid, None, data)
-
-                sql_header = u"-- Compound Trigger: {0}\n\n-- ".format(
-                    data['name'])
-
-                sql_header += render_template("/".join([self.template_path,
-                                                        'delete.sql']),
-                                              data=data, conn=self.conn)
-
-                SQL = sql_header + '\n\n' + SQL.strip('\n')
+                SQL, name = compound_trigger_utils.get_sql(self.conn,
+                                                           data,
+                                                           tid,
+                                                           None,
+                                                           self.datlastsysoid)
 
                 # If compound trigger is disbaled then add sql
                 # code for the same

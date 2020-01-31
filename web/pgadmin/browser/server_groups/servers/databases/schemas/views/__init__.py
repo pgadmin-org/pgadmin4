@@ -1145,6 +1145,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         result = res['rows'][0]
         if diff_schema:
+            result['definition'] = result['definition'].replace(
+                result['schema'],
+                diff_schema)
             result['schema'] = diff_schema
 
         # sending result to formtter
@@ -1753,6 +1756,9 @@ class MViewNode(ViewNode, VacuumSettings):
         result = res['rows'][0]
 
         if diff_schema:
+            result['definition'] = result['definition'].replace(
+                result['schema'],
+                diff_schema)
             result['schema'] = diff_schema
 
         # sending result to formtter

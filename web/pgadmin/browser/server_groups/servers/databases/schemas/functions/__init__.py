@@ -1146,13 +1146,13 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             data['pronamespace'] = self._get_schema(
                 data['pronamespace']
             )
-        if 'provolatile' in data:
+        if 'provolatile' in data and data['provolatile']:
             data['provolatile'] = vol_dict[data['provolatile']]
 
         if fnid is not None:
             # Edit Mode
 
-            if 'proparallel' in data:
+            if 'proparallel' in data and data['proparallel']:
                 data['proparallel'] = parallel_dict[data['proparallel']]
 
             # Fetch Old Data from database.
