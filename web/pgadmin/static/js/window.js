@@ -7,11 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
+let getWindowOpener = (opener) => {
+  return opener.opener && opener.opener.pgAdmin ? getWindowOpener(opener.opener) : opener;
+};
+
 let pgWindow = function() {
   let pgWindow = null;
   try {
     if(window.opener && window.opener.pgAdmin) {
-      pgWindow = window.opener;
+      /* Windows can be opened at multiple levels */
+      pgWindow = getWindowOpener(window.opener);
     } else if(window.parent && window.parent.pgAdmin){
       pgWindow = window.parent;
     } else if(window.top && window.top.pgAdmin){
