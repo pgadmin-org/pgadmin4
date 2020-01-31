@@ -474,7 +474,7 @@ define([
 
         /* For the html ele */
         let item_ele =
-          `<li class="${cap_classes}">
+          `<li class="${cap_classes}" tabindex="0">
             <div class="clip">
             <span data-alt="${_.escape(item_data.Path)}" class="${icon_type}"></span>`;
 
@@ -530,7 +530,7 @@ define([
       `<table id="contents" class="table table-bordered table-noouter-border table-bottom-border table-right-border table-hover tablesorter file_listing_table ${no_data?'file_listing_table_no_data':''}">
         <thead>
           <tr>
-            <th>
+            <th tabindex="0">
               <span>${lg.name}</span>
             </th>
             <th class="sorter-metric" data-metric-name-full="byte|Byte|BYTE" data-metric-name-abbr="b|B">
@@ -575,7 +575,7 @@ define([
 
         /* For the html ele */
         let item_ele =
-          `<tr class="${cap_classes}">
+          `<tr class="${cap_classes}" tabindex="0">
             <td title="${_.escape(item_data.Path)}" class="${class_type}">`;
 
         let data_protected = '';
@@ -698,7 +698,7 @@ define([
         $('.storage_dialog #uploader .input-path').prop('disabled', false);
         var result = '',
           data = resp.data.result;
-
+        let isGridView = false;
         // hide activity indicator
         $('.fileinfo').find('span.activity').hide();
         if (data.Code === 0) {
@@ -711,6 +711,7 @@ define([
         // generate HTML for files/folder and render into container
         if ($('.fileinfo').data('view') == 'grid') {
           result += getGridView(data, capabilities);
+          isGridView = true;
         } else {
           result += getListView(data, capabilities);
         }
@@ -737,6 +738,23 @@ define([
           $.tablesorter.resizable.setWidth($listing_table.find('th[data-column="2"]'), wo.resizable_widths[2]);
         });
 
+        /* Role of this function is to click or double click on element when user is doing keyboard navigation*/
+        var clickOnFileFolderManually = function(event) {
+          let self = this;
+          event.preventDefault();
+          event.stopPropagation();
+          // if file/folder is protected do nothing
+          if ($(this).find('.fa-lock').length)
+            return;
+          if ($(this).find('.fa-file-text-o').length)
+            $(this).click();
+          // If folder then first select and then double click to opn folder
+          else if ($(this).find('.fa-folder-open').length) {
+            $(this).click();
+            setTimeout(() => { $(self).trigger('dblclick'); }, 10);
+          }
+        };
+
         $listing_table.on( 'tablesorter-ready', function() {
           let wo = this.config.widgetOptions;
           if($.tablesorter.storage($listing_table[0], 'tablesorter-table-resized-width') === '') {
@@ -744,7 +762,54 @@ define([
           }
           $.tablesorter.resizable.setWidth($listing_table.find('th[data-column="2"]'), wo.resizable_widths[2]);
           $listing_table.trigger('resizableUpdate');
+
+          // Table Sorter writes table elements randomly so we need to handle some corner cases manually
+          $('#show_hidden').off('keydown').on('keydown', function(event) {
+            if (!isGridView && event.keyCode == 9 && event.shiftKey) {
+              event.preventDefault();
+              $listing_table.find('tbody tr:last').trigger('focus');
+            }
+          });
+
+          $listing_table.find('tbody tr').off('keydown').on('keydown', function(event) {
+            // If key is pressed then we need to trigger click so that it can select file
+            if (event.keyCode == 13 || event.keyCode == 32) {
+              clickOnFileFolderManually.call(this, event);
+            } else if (event.keyCode == 9) {
+              if (event.shiftKey) {
+                // When first tr losses focus and shift + tab > we need to set focus on header
+                if ($(this).prev().length == 0) {
+                  event.preventDefault();
+                  $listing_table.find('th.tablesorter-header:last').trigger('focus');
+                }
+              } else {
+                // When last tr losses focus and Tab was pressed > we need to set focus on checkbox
+                if ($(this).next().length == 0) {
+                  event.preventDefault();
+                  $('#show_hidden').trigger('focus');
+                }
+              }
+            }
+          });
+
+          $listing_table.find('th.tablesorter-header').off('keydown').on('keydown', function(event) {
+            // If key is pressed then we need to trigger click so that it can sort
+            if (event.keyCode == 13 || event.keyCode == 32) {
+              event.preventDefault();
+              event.stopPropagation();
+              $(this).trigger('click');
+            }
+          });
         });
+
+        if(isGridView) {
+          $('.file_manager').find('#contents li').off('keydown').on('keydown', function(event) {
+            // If key is pressed then we need to trigger click so that it can sort
+            if (event.keyCode == 13 || event.keyCode == 32) {
+              clickOnFileFolderManually.call(this, event);
+            }
+          });
+        }
 
         // rename file/folder
         $('.file_manager button.rename').off().on('click', function(e) {
@@ -1195,11 +1260,11 @@ define([
           select_box = `<div class='change_file_types d-flex align-items-center p-1'>
           <div>
             ${gettext('Show hidden files and folders')}?
-            <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='11'>
+            <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='0'>
           </div>
           <div class="ml-auto">
             <label class="my-auto">${gettext('Format')}</label>
-            <select name='type' tabindex='12'>${fileFormats}</select>
+            <select name='type' tabindex='0'>${fileFormats}</select>
           <div>`;
         }
 
@@ -1254,6 +1319,8 @@ define([
       $('.file_manager .fileinfo').on('click', function() {
         enable_disable_btn();
       });
+
+
 
       // Refresh current directory
       $('.file_manager .refresh').on('click', function() {
@@ -1476,12 +1543,12 @@ define([
         // we remove simple file upload element
         $('.file-input-container').remove();
         $('.upload').remove();
-        $('.create').before('<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn btn-sm btn-secondary upload" tabindex="6"><span class="fa fa-upload sql-icon-lg"></span></button> ');
+        $('.create').before('<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn btn-sm btn-secondary upload" tabindex="0"><span class="fa fa-upload sql-icon-lg"></span></button> ');
 
         $('#uploader .upload').off().on('click', function() {
           // we create prompt
           var msg = '<div id="dropzone-container" class="d-flex flex-column flex-grow-1">' +
-            '<button class="fa fa-times fa-lg dz_cross_btn ml-auto" tabindex="7"></button>' +
+            '<button class="fa fa-times fa-lg dz_cross_btn ml-auto" tabindex="0"></button>' +
             '<div id="multiple-uploads" class="dropzone flex-grow-1 d-flex p-1">'+
             '<div class="dz-default dz-message d-none"></div>'+
             '</div>' +
@@ -1645,7 +1712,7 @@ define([
 
           // template for creating new folder
           folder_div =
-            '<li class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
+            '<li tabIndex="0" class=\'cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload\'>' +
             '<div class=\'clip\'><span data-alt=\'\' class=\'fa fa-folder-open fm_folder_grid\' role="img"></span></div>' +
             '<div><input type=\'text\' class=\'fm_file_rename\'><span class="less_text" title=\'\'>New_Folder</span></div>' +
             '<span class=\'meta size\'></span><span class=\'meta created\'></span><span class=\'meta modified\'></span></li>';

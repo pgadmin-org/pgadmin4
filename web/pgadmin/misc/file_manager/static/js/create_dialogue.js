@@ -28,11 +28,7 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
           text: gettext('Create'),
           key: 13,
           className: 'btn btn-primary fa fa-file file_manager_create file_manager_ok pg-alertify-button disabled',
-        },
-        ],
-        focus: {
-          element: 0,
-        },
+        }],
         options: {
           closableByDimmer: false,
           maximizable: false,
@@ -175,6 +171,7 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
 
         if (!_.isUndefined(newFile) && newFile !== '' && this.is_file_exist()) {
           this.replace_file();
+          this.$container.find('.replace_file').find('.btn_yes').trigger('focus');
           closeEvent.cancel = true;
         } else {
           pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);

@@ -333,3 +333,16 @@
   font-size: 8px;
   margin-right: -8px;
 }
+
+table.tablesorter {
+  th:focus,
+  tr:focus {
+    outline: $input-focus-border-color auto 5px !important;
+  }
+}
+
+#contents {
+  li:focus {
+    outline: $input-focus-border-color auto 5px !important;
+  }
+}

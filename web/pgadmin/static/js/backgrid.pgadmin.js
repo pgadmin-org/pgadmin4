@@ -781,6 +781,7 @@ define([
       this.$select.off('blur', this.exitEditMode);
       this.$select.select2('close');
       this.$el.removeClass('editor');
+      this.$el.find('.select2-selection').trigger('focus');
     },
 
     saveOrCancel: function (e) {
@@ -794,7 +795,9 @@ define([
 
         let gotoCell;
         // go to Next Cell & if Shift is also pressed go to Previous Cell
-        gotoCell = e.shiftKey ? self.$el.prev() : self.$el.next();
+        if (e.keyCode == 9 || e.keyCode == 16) {
+          gotoCell = e.shiftKey ? self.$el.prev() : self.$el.next();
+        }
 
         if (gotoCell) {
           let command = new Backgrid.Command({

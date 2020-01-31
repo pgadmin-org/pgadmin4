@@ -9,15 +9,15 @@
                 <div class="input-group" role="group">
                     <div class="input-group-prepend">
                         <button name="home" type="button" value="Home" title="{{ _('Home') }}" class="btn btn-secondary home"
-                                tabindex="1">
+                                tabindex="0">
                             <span class="fa fa-home sql-icon-lg"></span>
                         </button>
                         <button name="level-up" type="button" title="{{ _('Back') }}" value="LevelUp" class="btn btn-secondary level-up"
-                                disabled tabindex="2">
+                                disabled tabindex="0">
                             <span class="fa fa-level-up sql-icon-lg"></span>
                         </button>
                     </div>
-                    <input id="file-input-path" class="form-control input-path text-truncate" title="" type="text" tabindex="3" autofocus/>
+                    <input id="file-input-path" class="form-control input-path text-truncate" title="" type="text" tabindex="0" autofocus/>
                 </div>
                 <div class="uploadresponse"></div>
             </div>
@@ -25,7 +25,7 @@
                 <input class="mode" name="mode" type="hidden" value="add"/>
                 <input class="currentpath" name="currentpath" type="hidden"/>
                 <button type="button" title="{{ _('Refresh') }}" class="btn btn-sm btn-secondary refresh"
-                        tabindex="4">
+                        tabindex="0">
                     <span class="fa fa-refresh sql-icon-lg"></span>
                 </button>
                 <button type="button" title="{{ _('Download File') }}" class="btn btn-sm btn-secondary download"
@@ -37,19 +37,19 @@
                     <span class="fa fa-trash sql-icon-lg"></span>
                 </button>
                 <button name="rename" type="button" title="{{ _('Rename File/Folder') }}" class="btn btn-sm btn-secondary rename"
-                        tabindex="5">
+                        tabindex="0">
                     <span class="fa fa-pencil-square-o sql-icon-lg"></span>
                 </button>
                 <button name="newfolder" type="button" title="{{ _('Create new folder') }}" value="New Folder"
-                        class="btn btn-sm btn-secondary create" tabindex="8">
+                        class="btn btn-sm btn-secondary create" tabindex="0">
                     <span class="fa fa-folder-open sql-icon-lg"></span>
                     <span class="fa fa-plus add-folder-icon"></span>
                 </button>
                 <div class="btn-group" role="group">
-                    <button class="ON btn btn-secondary btn-sm grid" type="button" title="{{ _('View as grid') }}" tabindex="9">
+                    <button class="ON btn btn-secondary btn-sm grid" type="button" title="{{ _('View as grid') }}" tabindex="0">
                         <span class="fa fa-th sql-icon-lg"></span>
                     </button>
-                    <button type="button" class="btn btn-secondary btn-sm list" title="{{ _('View as table') }}" tabindex="10">
+                    <button type="button" class="btn btn-secondary btn-sm list" title="{{ _('View as table') }}" tabindex="0">
                         <span class="fa fa-list sql-icon-lg"></span>
                     </button>
                 </div>
@@ -67,15 +67,15 @@
         <div class='delete_item'>
             <span>{{ _('Are you sure you want to delete this item?') }}</span>
             <span class="pull-right">
-                <button type='button' class='btn btn-secondary btn_no' tabindex="14">{{ _('No') }}</button>
-                <button type='button' class='btn btn-primary btn_yes' tabindex="13">{{ _('Yes') }}</button>
+                <button type='button' class='btn btn-secondary btn_no' tabindex="0">{{ _('No') }}</button>
+                <button type='button' class='btn btn-primary btn_yes' tabindex="0">{{ _('Yes') }}</button>
             </span>
         </div>
         <div class='replace_file'>
             <span>{{ _('Are you sure you want to replace this file?') }}</span>
             <span class="pull-right">
-                <button type='button' class='btn btn-secondary btn_no' tabindex="16">{{ _('No') }}</button>
-                <button type='button' class='btn btn-primary btn_yes' tabindex="15">{{ _('Yes') }}</button>
+                <button type='button' class='btn btn-secondary btn_no' tabindex="0">{{ _('No') }}</button>
+                <button type='button' class='btn btn-primary btn_yes' tabindex="0">{{ _('Yes') }}</button>
             </span>
         </div>
     </div>

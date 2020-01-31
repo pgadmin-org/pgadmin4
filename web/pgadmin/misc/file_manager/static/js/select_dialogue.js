@@ -91,9 +91,6 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
           key: 13,
           className: 'btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled',
         }],
-        focus: {
-          element: 0,
-        },
         options: {
           closableByDimmer: false,
           maximizable: false,
