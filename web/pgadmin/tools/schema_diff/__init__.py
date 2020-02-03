@@ -21,7 +21,7 @@ from flask_security import current_user, login_required
 from flask_babelex import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    make_response as ajax_response, not_implemented
+    make_response as ajax_response, not_implemented, internal_server_error
 from pgadmin.model import Server
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
@@ -68,7 +68,8 @@ class SchemaDiffModule(PgAdminModule):
             'schema_diff.connect_server',
             'schema_diff.connect_database',
             'schema_diff.get_server',
-            'schema_diff.generate_script'
+            'schema_diff.generate_script',
+            'schema_diff.close'
         ]
 
     def register_preferences(self):
@@ -214,6 +215,37 @@ def initialize():
 
     return make_json_response(
         data={'schemaDiffTransId': trans_id})
+
+
+@blueprint.route('/close/<int:trans_id>',
+                 methods=["DELETE"],
+                 endpoint='close')
+def close(trans_id):
+    """
+    Remove the session details for the particular transaction id.
+
+    Args:
+        trans_id: unique transaction id
+    """
+    if 'schemaDiff' not in session:
+        return make_json_response(data={'status': True})
+
+    schema_diff_data = session['schemaDiff']
+
+    # Return from the function if transaction id not found
+    if str(trans_id) not in schema_diff_data:
+        return make_json_response(data={'status': True})
+
+    try:
+        # Remove the information of unique transaction id from the
+        # session variable.
+        schema_diff_data.pop(str(trans_id), None)
+        session['schemaDiff'] = schema_diff_data
+    except Exception as e:
+        app.logger.error(e)
+        return internal_server_error(errormsg=str(e))
+
+    return make_json_response(data={'status': True})
 
 
 @blueprint.route(

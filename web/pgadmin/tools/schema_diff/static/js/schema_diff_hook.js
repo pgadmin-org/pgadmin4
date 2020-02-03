@@ -24,7 +24,7 @@ define([
     load: function(trans_id) {
       window.onbeforeunload = function() {
         $.ajax({
-          url: url_for('schemadiff.index') + 'close/'+trans_id,
+          url: url_for('schema_diff.close', {'trans_id': trans_id}),
           method: 'DELETE',
         });
       };

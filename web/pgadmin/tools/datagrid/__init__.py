@@ -386,15 +386,15 @@ def close(trans_id):
     Args:
         trans_id: unique transaction id
     """
-    if 'gridData' not in session:
-        return make_json_response(data={'status': True})
-
-    grid_data = session['gridData']
-    # Return from the function if transaction id not found
-    if str(trans_id) not in grid_data:
-        return make_json_response(data={'status': True})
-
     with query_tool_close_session_lock:
+        if 'gridData' not in session:
+            return make_json_response(data={'status': True})
+
+        grid_data = session['gridData']
+        # Return from the function if transaction id not found
+        if str(trans_id) not in grid_data:
+            return make_json_response(data={'status': True})
+
         try:
             close_query_tool_session(trans_id)
             # Remove the information of unique transaction id from the
@@ -458,20 +458,20 @@ def close_query_tool_session(trans_id):
     :param trans_id: Transaction id
     :return:
     """
+    if 'gridData' in session and str(trans_id) in session['gridData']:
+        cmd_obj_str = session['gridData'][str(trans_id)]['command_obj']
+        # Use pickle.loads function to get the command object
+        cmd_obj = pickle.loads(cmd_obj_str)
 
-    cmd_obj_str = session['gridData'][str(trans_id)]['command_obj']
-    # Use pickle.loads function to get the command object
-    cmd_obj = pickle.loads(cmd_obj_str)
+        # if connection id is None then no need to release the connection
+        if cmd_obj.conn_id is not None:
+            manager = get_driver(
+                PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
+            if manager is not None:
+                conn = manager.connection(
+                    did=cmd_obj.did, conn_id=cmd_obj.conn_id)
 
-    # if connection id is None then no need to release the connection
-    if cmd_obj.conn_id is not None:
-        manager = get_driver(
-            PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
-        if manager is not None:
-            conn = manager.connection(
-                did=cmd_obj.did, conn_id=cmd_obj.conn_id)
-
-            # Release the connection
-            if conn.connected():
-                conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
-                manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
+                # Release the connection
+                if conn.connected():
+                    conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
+                    manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
