@@ -65,7 +65,7 @@ class NavMenuLocators:
         "//span[text()='{0}']//following::span[text()='{1}']"
 
     insert_bracket_pair_switch_btn = \
-        "//div[label[normalize-space(text())='Insert bracket pairs?']]" \
+        "//div[span[normalize-space(text())='Insert bracket pairs?']]" \
         "//div[contains(@class,'toggle btn')]"
 
     backup_filename_txt_box_name = "file"
