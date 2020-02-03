@@ -11,9 +11,9 @@
 
 import copy
 
-from flask import render_template
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import internal_server_error
 from pgadmin.tools.schema_diff.directory_compare import compare_dictionaries,\
     directory_diff
 from pgadmin.tools.schema_diff.model import SchemaDiffModel

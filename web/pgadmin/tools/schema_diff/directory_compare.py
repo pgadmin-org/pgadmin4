@@ -23,6 +23,7 @@ def compare_dictionaries(source_dict, target_dict, node, node_label,
     :param source_dict: First Dictionary
     :param target_dict: Second Dictionary
     :param node: node type
+    :param node_label: node label
     :param ignore_keys: List of keys that will be ignored while comparing
     :return:
     """
@@ -108,6 +109,7 @@ def are_lists_identical(source_list, target_list, ignore_keys):
     This function is used to compare two list.
     :param source_list:
     :param target_list:
+    :param ignore_keys: ignore keys to compare
     :return:
     """
     if source_list is None or target_list is None or \
@@ -132,8 +134,9 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
     """
     This function is used to recursively compare two dictionaries with
     same keys.
-    :param source_dict:
-    :param target_dict:
+    :param source_dict: source dict
+    :param target_dict: target dict
+    :param ignore_keys: ignore keys to compare
     :return:
     """
 
@@ -187,6 +190,7 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
     :param source_dict: source dict
     :param target_dict: target dict
     :param ignore_keys: ignore keys to compare
+    :param difference:
     """
 
     src_keys = set(source_dict.keys())
@@ -207,9 +211,9 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
         if key in ignore_keys:
             pass
         elif key in tar_only:
-            target_only[key] = target_dict[key]
-            # Target only values in deleted list
-            difference[key]['deleted'] = target_dict[key]
+            if type(target_dict[key]) is list:
+                difference[key] = {}
+                difference[key]['deleted'] = target_dict[key]
         elif key in src_only:
             # Source only values in the newly added list
             if type(source_dict[key]) is list:

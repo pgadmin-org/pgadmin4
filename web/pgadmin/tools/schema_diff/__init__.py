@@ -21,7 +21,7 @@ from flask_security import current_user, login_required
 from flask_babelex import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    make_response as ajax_response, not_implemented, internal_server_error
+    make_response as ajax_response, internal_server_error
 from pgadmin.model import Server
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
@@ -298,6 +298,7 @@ def get_server(sid, did):
     This function will return the server details for the specified
     server id.
     """
+    res = []
     try:
         """Return a JSON document listing the server groups for the user"""
         driver = get_driver(PG_DEFAULT_DRIVER)

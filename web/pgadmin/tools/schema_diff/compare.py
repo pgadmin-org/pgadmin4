@@ -12,16 +12,15 @@
 import copy
 
 from flask import render_template
-from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import internal_server_error
 from pgadmin.tools.schema_diff.directory_compare import compare_dictionaries,\
     directory_diff
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
-from abc import abstractmethod
 
 
-class SchemaDiffObjectCompare():
+class SchemaDiffObjectCompare:
 
     keys_to_ignore = ['oid', 'schema']
 
