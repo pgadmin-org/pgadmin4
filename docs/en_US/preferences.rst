@@ -376,6 +376,18 @@ Query Tool window navigation:
     :alt: Preferences dialog sql keyboard shortcuts section
     :align: center
 
+The Schema Diff Node
+********************
+
+Expand the *Schema Diff* node to specify your display preferences.
+
+.. image:: images/preferences_schema_diff.png
+    :alt: Preferences schema diff
+    :align: center
+
+Use the *Open in new browser tab* switch to indicate if you would like Schema Diff
+to open in a new tab.
+
 The Storage Node
 ****************
 
@@ -399,5 +411,3 @@ Use the fields on the *Options* panel to specify storage preferences.
 
 * When the *Show hidden files and folders?* switch is set to *True*, the file
   manager will display hidden files and folders.
-
-

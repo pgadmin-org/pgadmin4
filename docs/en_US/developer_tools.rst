@@ -14,3 +14,4 @@ PL/SQL code.
    debugger
    query_tool
    editgrid
+   schema_diff
