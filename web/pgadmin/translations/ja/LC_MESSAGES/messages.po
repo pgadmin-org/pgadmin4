@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-31 21:30+0530\n"
-"PO-Revision-Date: 2020-01-05 22:04+0900\n"
+"PO-Revision-Date: 2020-02-01 18:52+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -3555,6 +3555,8 @@ msgid ""
 "Could not find the compound\n"
 "                     trigger in the table."
 msgstr ""
+"テーブルに複合トリガが\n"
+"            見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:38
 msgid "Compound Trigger"
@@ -9286,15 +9288,15 @@ msgstr "実行時"
 
 #: pgadmin/static/js/generated/vendors~snapsvg.chunk.js:1
 msgid "desc"
-msgstr ""
+msgstr "desc 要素"
 
 #: pgadmin/static/js/generated/vendors~snapsvg.chunk.js:1
 msgid "defs"
-msgstr ""
+msgstr "defs 要素"
 
 #: pgadmin/static/js/generated/vendors~snapsvg.chunk.js:1
 msgid "rect"
-msgstr ""
+msgstr "rect 要素"
 
 #: pgadmin/static/js/selection/clipboard.js:80
 #: pgadmin/tools/user_management/static/js/user_management.js:548
@@ -10164,11 +10166,11 @@ msgstr "アクセスキー （停止）"
 
 #: pgadmin/tools/debugger/__init__.py:108
 msgid "Accesskey (Step into)"
-msgstr "アクセスキー （詳細ステップ実行）"
+msgstr "アクセスキー （ステップイン）"
 
 #: pgadmin/tools/debugger/__init__.py:121
 msgid "Accesskey (Step over)"
-msgstr "アクセスキー （ステップ実行）"
+msgstr "アクセスキー （ステップオーバー）"
 
 #: pgadmin/tools/debugger/__init__.py:134
 msgid "Accesskey (Toggle breakpoint)"
@@ -10471,12 +10473,12 @@ msgstr "続行しようとした際にデバッグセッション内でエラー
 #: pgadmin/tools/debugger/static/js/direct.js:788
 #: pgadmin/tools/debugger/static/js/direct.js:795
 msgid "Error while executing step over in debugging session."
-msgstr "ステップ実行中にデバッグセッション内でエラーが発生しました"
+msgstr "ステップオーバー中にデバッグセッション内でエラーが発生しました"
 
 #: pgadmin/tools/debugger/static/js/direct.js:819
 #: pgadmin/tools/debugger/static/js/direct.js:826
 msgid "Error while executing step into in debugging session."
-msgstr "詳細ステップ実行中にデバッグセッション内でエラーが発生しました"
+msgstr "ステップイン中にデバッグセッション内でエラーが発生しました"
 
 #: pgadmin/tools/debugger/static/js/direct.js:865
 #: pgadmin/tools/debugger/static/js/direct.js:872
@@ -10533,7 +10535,7 @@ msgstr "スタック"
 #: pgadmin/tools/debugger/static/js/direct.js:1898
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:665
 msgid "Timeout"
-msgstr ""
+msgstr "タイムアウト"
 
 #: pgadmin/tools/debugger/static/js/direct.js:1898
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:665
@@ -10541,6 +10543,8 @@ msgid ""
 "Your session has timed out due to inactivity. Please close the window and"
 " login again."
 msgstr ""
+"放置されていたセッションがタイムアウトになりました。ウィンドウをいったん閉じ、"
+"再度ログインしてください"
 
 #: pgadmin/tools/debugger/templates/debugger/direct.html:2
 msgid "Debugger - "
@@ -11013,7 +11017,7 @@ msgstr "リストアジョブが失敗しました"
 
 #: pgadmin/tools/schema_diff/__init__.py:79
 msgid "If set to True, the Schema Diff will be opened in a new browser tab."
-msgstr ""
+msgstr "True の場合、スキーマ差異ツールを新しいブラウザタブに開きます"
 
 #: pgadmin/tools/schema_diff/__init__.py:146
 #: pgadmin/tools/schema_diff/__init__.py:154
@@ -11046,127 +11050,131 @@ msgstr "トランザクション ID がセッション内に見つかりませ�
 
 #: pgadmin/tools/schema_diff/__init__.py:573
 msgid "Selected object is not supported for DDL comparison."
-msgstr ""
+msgstr "選択されたオブジェクトの DDL 比較はサポートされていません"
 
 #: pgadmin/tools/schema_diff/__init__.py:597
 msgid "Server(s) disconnected."
-msgstr ""
+msgstr "サーバへの接続を切断しました"
 
 #: pgadmin/tools/schema_diff/__init__.py:609
 msgid "Source and Target database server must be of the same major version."
-msgstr ""
+msgstr "比較元と比較対象のデータベースサーバは同じメジャーバージョンで合わせてください"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:72
 msgid "Copied!"
-msgstr ""
+msgstr "コピーしました"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:98
 msgid "Select an item..."
-msgstr ""
+msgstr "項目を選択..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:298
 msgid "Compare"
-msgstr ""
+msgstr "比較"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:299
 msgid "Generate Script"
-msgstr ""
+msgstr "スクリプトを生成"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:319
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:364
 msgid "Identical"
-msgstr ""
+msgstr "同じです"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:325
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:364
 msgid "Different"
-msgstr ""
+msgstr "異なります"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:331
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:364
 msgid "Source Only"
-msgstr ""
+msgstr "比較元のみ"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:337
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:364
 msgid "Target Only"
-msgstr ""
+msgstr "比較対象のみ"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:40
 msgid "Schema Diff (Beta)"
-msgstr ""
+msgstr "スキーマ差異 (ベータ)"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:94
 msgid "Schema Diff initialize error"
-msgstr ""
+msgstr "スキーマ差異の初期化エラー"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:76
 msgid "DDL Comparison"
-msgstr ""
+msgstr "DDL の比較"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:86
 msgid "Comparing objects..."
-msgstr ""
+msgstr "オブジェクトを比較中..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:155
 msgid "Selection Error"
-msgstr ""
+msgstr "選択エラー"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:155
 msgid "Please select source and target."
-msgstr ""
+msgstr "比較元と比較対象を選択してください"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:190
 msgid "Schema compare error"
-msgstr ""
+msgstr "スキーマの比較エラー"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:233
 msgid "-- This script is generated by 'Schema Diff' utility of pgAdmin 4. \n"
-msgstr ""
+msgstr "-- このスクリプトは pgAdmin 4 の「スキーマ差異」ツールにより生成されたものです \n"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:234
 msgid ""
 "-- It does not include the dependency resolution logic, hence - it may "
 "not be able to resolve some dependent database object differences. \n"
 msgstr ""
+"-- 依存関係を解決するロジックは含まれていないため、依存するデータベースオブジェクトの"
+"差異のいくつかは解決できないかもしれません \n"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:235
 msgid "-- Please report an issue for any failure with the reproduction steps. \n"
-msgstr ""
+msgstr "-- 何か問題に遭遇した場合は、再現手順を添えて報告してください \n"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:255
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:298
 msgid "Generate script error"
-msgstr ""
+msgstr "スクリプトの生成エラー"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:494
 msgid "Poll error"
-msgstr ""
+msgstr "ポールエラー"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:577
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:634
 msgid "Select server..."
-msgstr ""
+msgstr "サーバを選択..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:598
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:654
 msgid "Select database..."
-msgstr ""
+msgstr "データベースを選択..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:620
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:676
 msgid "Select schema..."
-msgstr ""
+msgstr "スキーマを選択..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:714
 msgid ""
 "Select the server, database and schema for the source and target and "
 "click <b>Compare</b> to compare them."
 msgstr ""
+"比較元と比較対象のサーバ・データベース・スキーマを選択し、"
+"<b>比較</b>をクリックしてください"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:748
 msgid "Failed to connect the database."
-msgstr ""
+msgstr "データベースへの接続に失敗しました"
 
 #: pgadmin/tools/sqleditor/__init__.py:73
 msgid "Query tool"
@@ -11626,7 +11634,7 @@ msgstr "括弧を挿入"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:195
 msgid "Specifies whether or not to insert paired brackets in the editor."
-msgstr "エディタで括弧を挿入するかどうかを指定します"
+msgstr "エディタで括弧を自動的に補完するかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:203
 msgid "Brace matching?"
@@ -11634,7 +11642,7 @@ msgstr "括弧の対応"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:205
 msgid "Specifies whether or not to highlight matched braces in the editor."
-msgstr "エディタで対になっている括弧をハイライトするかどうかを指定します"
+msgstr "エディタで対になっている括弧を強調表示するかどうかを指定します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:213
 msgid "CSV quoting"
@@ -12976,7 +12984,7 @@ msgstr "指定されたデータベースが見つかりませんでした"
 #~ msgstr "ダッシュボードセッション"
 
 #~ msgid "Query Tool Initialize Error"
-#~ msgstr "クエリツール初期化エラー"
+#~ msgstr "クエリツールの初期化エラー"
 
 #~ msgid "Please select the objects to grant privileges to from the list below."
 #~ msgstr "以下の一覧から、権限を付与するオブジェクトを選択してください"
