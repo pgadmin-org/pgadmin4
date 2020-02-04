@@ -25,13 +25,13 @@ for i in $(find "${BUNDLE}" -type f)
 do
 	file "${i}" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle"
 	if [ $? -eq 0 ] ; then
-		codesign --deep --verify --verbose --timestamp --options runtime -i "${DEVELOPER_BUNDLE_ID" --sign "${DEVELOPER_ID}" "$"
+		codesign --deep --verify --verbose --timestamp --options runtime -i "${DEVELOPER_BUNDLE_ID}" --sign "${DEVELOPER_ID}" "$i"
 	fi
 done
 
 echo Signing ${BUNDLE} libraries
 for i in $(find "${BUNDLE}" -type f -name "*.dylib*")
 do
-	codesign --deep --verify --verbose --timestamp --options runtime -i "${DEVELOPER_BUNDLE_ID" --sign "${DEVELOPER_ID}" "$"
+	codesign --deep --verify --verbose --timestamp --options runtime -i "${DEVELOPER_BUNDLE_ID}" --sign "${DEVELOPER_ID}" "$i"
 done
 
