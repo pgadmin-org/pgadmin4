@@ -16,7 +16,7 @@ SCRIPT_DIR=`pwd`
 
 # Sign the .app
 echo Signing ${DMG_IMAGE}
-codesign --sign "${DEVELOPER_ID}" --verbose --force "${DMG_IMAGE}"
+codesign --sign "${DEVELOPER_ID}" --timestamp --verbose --force "${DMG_IMAGE}"
 
 # Verify it worked
 echo Verifying the signature

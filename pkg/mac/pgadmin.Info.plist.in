@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>pgAdmin4</string>
+	<string>pgAdmin 4</string>
 	<key>CFBundleGetInfoString</key>
 	<string>pgAdmin4 PGADMIN_LONG_VERSION</string>
 	<key>CFBundleIconFile</key>

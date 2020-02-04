@@ -152,6 +152,10 @@ _build_runtime() {
     make clean
     ${QMAKE} || { echo qmake failed; exit 1; }
     make || { echo make failed; exit 1; }
+    # Hack to pass notarization due to name change between app and binary
+    if [ -f pgAdmin4.app/Contents/MacOS/pgAdmin4 ]; then
+        mv pgAdmin4.app/Contents/MacOS/pgAdmin4 "pgAdmin4.app/Contents/MacOS/${APP_NAME}"
+    fi
     cp -r pgAdmin4.app "${BUILDROOT}/${APP_BUNDLE_NAME}"
 }
 

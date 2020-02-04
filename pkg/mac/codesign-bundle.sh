@@ -12,7 +12,7 @@ source codesign.conf
 
 # Sign the .app
 echo Signing ${BUNDLE}
-codesign --sign "${DEVELOPER_ID}" --verbose --deep --force "${BUNDLE}"
+codesign --sign "${DEVELOPER_ID}" --timestamp --verbose --deep --force "${BUNDLE}"
 
 # Verify it worked
 echo Verifying the signature
