@@ -17,9 +17,9 @@ let _browserPanel = null;
 // Default Tool Bar Buttons.
 let _defaultToolBarButtons = [
   {
-    label: gettext('Filtered Rows'),
-    ariaLabel: gettext('Filtered Rows'),
-    btnClass: 'pg-font-icon icon-filter-table-toolbar',
+    label: gettext('Query Tool'),
+    ariaLabel: gettext('Query Tool'),
+    btnClass: 'pg-font-icon icon-query-tool',
     text: '',
     toggled: false,
     toggleClass: '',
@@ -37,9 +37,9 @@ let _defaultToolBarButtons = [
     enabled: false,
   },
   {
-    label: gettext('Query Tool'),
-    ariaLabel: gettext('Query Tool'),
-    btnClass: 'pg-font-icon icon-query-tool',
+    label: gettext('Filtered Rows'),
+    ariaLabel: gettext('Filtered Rows'),
+    btnClass: 'pg-font-icon icon-filter-table-toolbar',
     text: '',
     toggled: false,
     toggleClass: '',

@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #3812 <https://redmine.postgresql.org/issues/3812>`_ -  Ensure that path file name should not disappear when changing ext from the dropdown in file explorer dialog.
 | `Issue #4410 <https://redmine.postgresql.org/issues/4410>`_ -  Fixed an issue while editing char[] or character varying[] column from View/Edit data throwing an error.
 | `Issue #4511 <https://redmine.postgresql.org/issues/4511>`_ -  Fixed an issue where Grant wizard unable to handle multiple objects when the query string parameter exceeds its limit.
+| `Issue #4601 <https://redmine.postgresql.org/issues/4601>`_ -  Added tab navigation on close buttons for all the panels and create/properties dialog.
 | `Issue #4827 <https://redmine.postgresql.org/issues/4827>`_ -  Fix column resizable issue in the file explorer dialog.
 | `Issue #5000 <https://redmine.postgresql.org/issues/5000>`_ -  Logout the pgAdmin session when no user activity of mouse move, click or keypress.
 | `Issue #5025 <https://redmine.postgresql.org/issues/5025>`_ -  Fix an issue where setting STORAGE_DIR to empty should show all the volumes on Windows in server mode.

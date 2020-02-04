@@ -1532,9 +1532,9 @@ define('pgadmin.browser.node', [
             }], 'footer', 'pg-prop-btn-group-below');
 
             btn_grp.on('keydown', 'button', function(event) {
-              if (event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
-                // set focus back to first editable input element of current active tab once we cycle through all enabled buttons.
-                commonUtils.findAndSetFocus(view.$el.find('.tab-content div.active'));
+              if (!event.shiftKey && event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
+                // set focus back to first focusable element on dialog
+                view.$el.closest('.wcFloating').find('[tabindex]:not([tabindex="-1"]').first().focus();
                 return false;
               }
             });
@@ -1553,6 +1553,15 @@ define('pgadmin.browser.node', [
 
           // Show contents before buttons
           j.prepend(content);
+          view.$el.closest('.wcFloating').find('.wcFrameButtonBar > .wcFrameButton[style!="display: none;"]').on('keydown', function(e) {
+
+            if(e.shiftKey && e.keyCode === 9) {
+              e.stopPropagation();
+              setTimeout(() => {
+                view.$el.closest('.wcFloating').find('[tabindex]:not([tabindex="-1"]):not([disabled])').last().focus();
+              }, 10);
+            }
+          });
         }.bind(panel),
         closePanel = function(confirm_close_flag) {
           if(!_.isUndefined(confirm_close_flag)) {

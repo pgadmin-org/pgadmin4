@@ -37,7 +37,7 @@
 }
 
 /* darken % taken from bootstrap - button_variant */
-.wcFrameButton:hover, .wcFrameButtonHover {
+.wcFrameButton:hover, .wcFrameButtonHover,  .wcFrameButton:focus {
   background-color: $btn-secondary-hover-bg;
 }
 
@@ -57,9 +57,7 @@
   padding: 0rem 0.25rem;
 
   display: -webkit-flex; /* Safari */
-  -webkit-flex-direction: row-reverse; /* Safari 6.1+ */
   display: flex;
-  flex-direction: row-reverse;
 }
 
 
