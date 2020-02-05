@@ -600,8 +600,20 @@ export default class SchemaDiffUI {
           placeholder: gettext('Select database...'),
         },
         disabled: function(m) {
-          if (!_.isUndefined(m.get('source_sid')) && !_.isNull(m.get('source_sid')))
+          let self = this;
+          if (!_.isUndefined(m.get('source_sid')) && !_.isNull(m.get('source_sid'))
+              && m.get('source_sid') !== '') {
+            setTimeout(function() {
+              if (self.options.length > 0) {
+                m.set('source_did', self.options[0].value);
+              }
+            }, 10);
             return false;
+          }
+
+          setTimeout(function() {
+            m.set('source_did', undefined);
+          }, 10);
           return true;
         },
         connect: function() {
@@ -622,8 +634,20 @@ export default class SchemaDiffUI {
           placeholder: gettext('Select schema...'),
         },
         disabled: function(m) {
-          if (!_.isUndefined(m.get('source_did')) && !_.isNull(m.get('source_did')))
+          let self = this;
+          if (!_.isUndefined(m.get('source_did')) && !_.isNull(m.get('source_did'))
+              && m.get('source_did') !== '') {
+            setTimeout(function() {
+              if (self.options.length > 0) {
+                m.set('source_scid', self.options[0].value);
+              }
+            }, 10);
             return false;
+          }
+
+          setTimeout(function() {
+            m.set('source_scid', undefined);
+          }, 10);
           return true;
         },
       }, {
@@ -656,8 +680,20 @@ export default class SchemaDiffUI {
           placeholder: gettext('Select database...'),
         },
         disabled: function(m) {
-          if (!_.isUndefined(m.get('target_sid')) && !_.isNull(m.get('target_sid')))
+          let self = this;
+          if (!_.isUndefined(m.get('target_sid')) && !_.isNull(m.get('target_sid'))
+              && m.get('target_sid') !== '') {
+            setTimeout(function() {
+              if (self.options.length > 0) {
+                m.set('target_did', self.options[0].value);
+              }
+            }, 10);
             return false;
+          }
+
+          setTimeout(function() {
+            m.set('target_did', undefined);
+          }, 10);
           return true;
         },
         connect: function() {
@@ -678,8 +714,20 @@ export default class SchemaDiffUI {
           placeholder: gettext('Select schema...'),
         },
         disabled: function(m) {
-          if (!_.isUndefined(m.get('target_did')) && !_.isNull(m.get('target_did')))
+          let self = this;
+          if (!_.isUndefined(m.get('target_did')) && !_.isNull(m.get('target_did'))
+              && m.get('target_did') !== '') {
+            setTimeout(function() {
+              if (self.options.length > 0) {
+                m.set('target_scid', self.options[0].value);
+              }
+            }, 10);
             return false;
+          }
+
+          setTimeout(function() {
+            m.set('target_scid', undefined);
+          }, 10);
           return true;
         },
       }],

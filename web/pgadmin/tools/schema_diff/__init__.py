@@ -555,7 +555,7 @@ def generate_script(trans_id):
                                    comp_status=comp_status,
                                    generate_script=True)
 
-            diff_ddl += sql['diff_ddl']
+            diff_ddl += sql['diff_ddl'] + '\n\n'
 
     return ajax_response(
         status=200,
@@ -584,10 +584,6 @@ def ddl_compare(trans_id, source_sid, source_did, source_scid,
 
     if error_msg == gettext('Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg, status=404)
-
-    source_ddl = ''
-    target_ddl = ''
-    diff_ddl = ''
 
     view = SchemaDiffRegistry.get_node_view(node_type)
     if view and hasattr(view, 'ddl_compare'):
