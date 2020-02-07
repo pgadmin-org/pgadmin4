@@ -748,8 +748,8 @@ define([
             return;
           if ($(this).find('.fa-file-text-o').length)
             $(this).click();
-          // If folder then first select and then double click to opn folder
-          else if ($(this).find('.fa-folder-open').length) {
+          // If folder then first select and then double click to open folder/drive
+          else if ($(this).find('.fa-folder-open').length || $(this).find('.fa-hdd-o').length) {
             $(this).click();
             setTimeout(() => { $(self).trigger('dblclick'); }, 10);
           }

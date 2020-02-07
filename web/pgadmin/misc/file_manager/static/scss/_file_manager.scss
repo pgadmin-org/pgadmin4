@@ -346,3 +346,19 @@ table.tablesorter {
     outline: $input-focus-border-color auto 5px !important;
   }
 }
+
+/* Specific to IE11 where we want to highlight the focus on grid/row  */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  table.tablesorter {
+    th:focus,
+    tr:focus {
+      border: 2px solid $input-focus-border-color !important;;
+    }
+  }
+
+  #contents {
+    li:focus {
+      border: 2px solid $input-focus-border-color !important;
+    }
+  }
+}
