@@ -115,8 +115,8 @@ instances.
 
 .. warning:: Warning: pgAdmin runs as the *pgadmin* user (UID: 5050) in the
     *pgadmin* group (GID: 5050) in the container. You must ensure that all files
-    are readable, and where necessary (e.g. the working/session directory) for
-    this user on the host machine. For example:
+    are readable, and where necessary (e.g. the working/session directory)
+    writeable for this user on the host machine. For example:
 
     .. code-block:: bash
 
