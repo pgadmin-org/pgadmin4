@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5170 <https://redmine.postgresql.org/issues/5170>`_ -  Added Czech language support.
 
 Housekeeping
 ************

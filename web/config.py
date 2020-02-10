@@ -84,6 +84,7 @@ HELP_PATH = '../../../docs/en_US/_build/html/'
 LANGUAGES = {
     'en': 'English',
     'zh': 'Chinese (Simplified)',
+    'cs': 'Czech',
     'fr': 'French',
     'de': 'German',
     'it': 'Italian',
