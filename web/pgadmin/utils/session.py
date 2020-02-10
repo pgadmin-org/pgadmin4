@@ -352,7 +352,7 @@ def pga_unauthorised():
         else:
             login_message = lm.login_message
 
-    if not lm.login_view or request.is_xhr:
+    if not lm.login_view:
         # Only 401 is not enough to distinguish pgAdmin login is required.
         # There are other cases when we return 401. For eg. wrong password
         # supplied while connecting to server.
