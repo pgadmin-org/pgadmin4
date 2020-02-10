@@ -23,7 +23,7 @@ Flask-Mail==0.9.1
 Flask-Migrate==2.4.0
 Flask-Principal==0.4.0
 Flask-SQLAlchemy==2.3.2
-Flask-WTF==0.14.2
+Flask-WTF==0.14.3
 Flask-Compress==1.4.0
 passlib==1.7.1
 pytz==2018.9
