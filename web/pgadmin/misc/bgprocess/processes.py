@@ -18,7 +18,8 @@ import psutil
 from abc import ABCMeta, abstractproperty, abstractmethod
 from datetime import datetime
 from pickle import dumps, loads
-from subprocess import Popen
+from subprocess import Popen, PIPE
+import logging
 
 from pgadmin.utils import IS_PY2, u, file_quote, fs_encoding, \
     get_complete_file_path
@@ -382,10 +383,28 @@ class BatchProcess(object):
                 # Explicitly ignoring signals in the child process
                 signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-            p = Popen(
-                cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
-                preexec_fn=preexec_function, env=env
-            )
+            # if in debug mode, wait for process to complete and
+            # get the stdout and stderr of popen.
+            if config.CONSOLE_LOG_LEVEL <= logging.DEBUG:
+                p = Popen(
+                    cmd, close_fds=True, stdout=PIPE, stderr=PIPE, stdin=None,
+                    preexec_fn=preexec_function, env=env
+                )
+
+                output, errors = p.communicate()
+                output = output.decode() \
+                    if hasattr(output, 'decode') else output
+                errors = errors.decode() \
+                    if hasattr(errors, 'decode') else errors
+                current_app.logger.debug(
+                    'Process Watcher Out:{0}'.format(output))
+                current_app.logger.debug(
+                    'Process Watcher Err:{0}'.format(errors))
+            else:
+                p = Popen(
+                    cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
+                    preexec_fn=preexec_function, env=env
+                )
 
         self.ecode = p.poll()
 
