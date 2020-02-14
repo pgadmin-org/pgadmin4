@@ -11,8 +11,15 @@ from __future__ import print_function
 
 import sys
 import traceback
+import os
+import json
 
 from regression.python_test_utils.test_utils import get_db_connection
+from regression.python_test_utils import test_utils as utils
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/event_triggers_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
 
 def create_event_trigger(server, db_name, schema_name, func_name,
@@ -87,5 +94,36 @@ def verify_event_trigger(server, db_name, trigger_name):
         event_trigger = pg_cursor.fetchone()
         connection.close()
         return event_trigger
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
+def verify_event_trigger_node(self):
+    """
+    This function verifies the event trigger is present in the database
+    :param self: server details
+    :return event_trigger: event trigger's expected details
+    :rtype event_trigger: dict
+    """
+    try:
+        connection = get_db_connection(self.db_name,
+                                       self.server['username'],
+                                       self.server['db_password'],
+                                       self.server['host'],
+                                       self.server['port'],
+                                       self.server['sslmode'])
+        pg_cursor = connection.cursor()
+        pg_cursor.execute("SELECT evtenabled,"
+                          "evtevent, "
+                          "(select rolname from pg_authid where oid "
+                          "= pl.evtowner) as evtowner,"
+                          " evtname from pg_event_trigger pl "
+                          "WHERE evtname = '%s'" % self.test_data['name'])
+
+        event_trigger = pg_cursor.fetchone()
+        expected_output = utils.create_expected_output(
+            self.parameters_to_compare, list(event_trigger))
+        connection.close()
+        return expected_output
     except Exception:
         traceback.print_exc(file=sys.stderr)

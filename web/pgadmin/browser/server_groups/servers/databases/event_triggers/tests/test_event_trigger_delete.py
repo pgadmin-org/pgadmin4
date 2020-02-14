@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+import sys
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
@@ -20,14 +21,16 @@ from regression import trigger_funcs_utils
 from regression.python_test_utils import test_utils as utils
 from . import utils as event_trigger_utils
 
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
+
 
 class EventTriggerDeleteTestCase(BaseTestGenerator):
     """ This class will delete added event trigger under test database. """
-    scenarios = [
-        # Fetching default URL for event trigger  node.
-        ('Fetch Event Trigger Node URL',
-         dict(url='/browser/event_trigger/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('delete_event_trigger',
+                                         event_trigger_utils.test_cases)
 
     def setUp(self):
         self.schema_data = parent_node_dict['schema'][-1]
@@ -58,6 +61,18 @@ class EventTriggerDeleteTestCase(BaseTestGenerator):
             self.server, self.db_name, self.schema_name, self.func_name,
             self.trigger_name)
 
+    def delete_event_trigger(self):
+        """
+        This function returns the event trigger delete response
+        :return: event trigger delete response
+        """
+        return self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' +
+            str(self.db_id) + '/' +
+            str(self.event_trigger_id),
+            follow_redirects=True)
+
     def runTest(self):
         """ This function will delete event trigger under test database. """
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
@@ -81,13 +96,32 @@ class EventTriggerDeleteTestCase(BaseTestGenerator):
             self.trigger_name)
         if not trigger_response:
             raise Exception("Could not find event trigger.")
-        del_response = self.tester.delete(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' +
-            str(self.db_id) + '/' +
-            str(self.event_trigger_id),
-            follow_redirects=True)
-        self.assertEquals(del_response.status_code, 200)
+        actual_response_code = True
+        expected_response_code = False
+
+        if self.is_positive_test:
+            response = self.delete_event_trigger()
+            actual_response_code = response.status_code
+            expected_response_code = self.expected_data['status_code']
+        else:
+            if hasattr(self, "error_deleting_event_trigger"):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.delete_event_trigger()
+                    actual_response_code = response.status_code
+                    expected_response_code = self.expected_data['status_code']
+            if hasattr(self, "error_deleting_created_event_trigger"):
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.delete_event_trigger()
+                    actual_response_code = response.status_code
+                    expected_response_code = self.expected_data['status_code']
+            if hasattr(self, "wrong_event_trigger_id"):
+                self.event_trigger_id = 99999
+                response = self.delete_event_trigger()
+                actual_response_code = response.status_code
+                expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         # Disconnect the database

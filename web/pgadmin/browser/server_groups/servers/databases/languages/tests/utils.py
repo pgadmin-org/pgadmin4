@@ -14,6 +14,7 @@ import traceback
 import os
 import json
 from regression.python_test_utils.test_utils import get_db_connection
+from regression.python_test_utils import test_utils as utils
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 with open(CURRENT_PATH + "/language_test_data.json") as data_file:
@@ -83,8 +84,9 @@ def verify_language(self):
                           "from pg_language pl where lanname='%s'" %
                           self.data["name"])
         language = pg_cursor.fetchall()
-        expected_output = make_dict(self.parameters_to_compare,
-                                    list(language[0]))
+        expected_output = utils.create_expected_output(
+            self.parameters_to_compare,
+            list(language[0]))
 
         connection.close()
 

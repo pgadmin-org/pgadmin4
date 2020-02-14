@@ -9,6 +9,7 @@
 
 import json
 import uuid
+import sys
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
@@ -21,14 +22,16 @@ from regression import trigger_funcs_utils
 from regression.python_test_utils import test_utils as utils
 from . import utils as event_trigger_utils
 
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
+
 
 class EventTriggerPutTestCase(BaseTestGenerator):
     """ This class will fetch added event trigger under test database. """
-    scenarios = [
-        # Fetching default URL for event trigger  node.
-        ('Fetch Event Trigger Node URL',
-         dict(url='/browser/event_trigger/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('update_event_trigger',
+                                         event_trigger_utils.test_cases)
 
     def setUp(self):
         self.schema_data = parent_node_dict['schema'][-1]
@@ -58,6 +61,18 @@ class EventTriggerPutTestCase(BaseTestGenerator):
             self.server, self.db_name, self.schema_name, self.func_name,
             self.trigger_name)
 
+    def update_event_trigger(self):
+        """
+        This functions update event trigger details
+        :return: Event trigger update request details
+        """
+        return self.tester.put(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/' + str(self.event_trigger_id),
+            data=json.dumps(self.test_data),
+            follow_redirects=True)
+
     def runTest(self):
         """ This function will update event trigger under test database. """
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
@@ -80,17 +95,33 @@ class EventTriggerPutTestCase(BaseTestGenerator):
             self.server, self.db_name, self.trigger_name)
         if not trigger_response:
             raise Exception("Could not find event trigger.")
-        data = {
-            "comment": "This is event trigger update comment",
-            "id": self.event_trigger_id
-        }
-        put_response = self.tester.put(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.event_trigger_id),
-            data=json.dumps(data),
-            follow_redirects=True)
-        self.assertEquals(put_response.status_code, 200)
+        self.test_data['id'] = self.event_trigger_id
+        actual_response_code = True
+        expected_response_code = False
+        if self.is_positive_test:
+            response = self.update_event_trigger()
+            actual_response_code = response.status_code
+            expected_response_code = self.expected_data['status_code']
+        else:
+            if hasattr(self, "error_updating_event_trigger"):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.update_event_trigger()
+                    actual_response_code = response.status_code
+                    expected_response_code = self.expected_data['status_code']
+            if hasattr(self, "wrong_event_trigger_id"):
+                self.event_trigger_id = 99999
+                response = self.update_event_trigger()
+                actual_response_code = response.status_code
+                expected_response_code = self.expected_data['status_code']
+            if hasattr(self, "error_in_db"):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.update_event_trigger()
+                    actual_response_code = response.status_code
+                    expected_response_code = self.expected_data['status_code']
+
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         # Disconnect the database

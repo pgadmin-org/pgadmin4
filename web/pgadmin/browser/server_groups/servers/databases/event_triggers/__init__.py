@@ -676,7 +676,9 @@ class EventTriggerView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the specified event trigger on the server.")
+                gettext(
+                    "Could not find the specified event trigger on the "
+                    "server.")
             )
 
         result = res['rows'][0]

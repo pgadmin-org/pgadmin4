@@ -24,11 +24,8 @@ from . import utils as event_trigger_utils
 
 class EventTriggerMultipleDeleteTestCase(BaseTestGenerator):
     """ This class will delete added event trigger under test database. """
-    scenarios = [
-        # Fetching default URL for event trigger  node.
-        ('Fetch Event Trigger Node URL',
-         dict(url='/browser/event_trigger/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('delete_multiple_event_trigger',
+                                         event_trigger_utils.test_cases)
 
     def setUp(self):
         self.schema_data = parent_node_dict['schema'][-1]
@@ -64,6 +61,20 @@ class EventTriggerMultipleDeleteTestCase(BaseTestGenerator):
             self.server, self.db_name, self.schema_name, self.func_name,
             self.trigger_names[1]))
 
+    def delete_multiple(self, data):
+        """
+        This function returns multiple event trigger delete response
+        :param data: event trigger ids to delete
+        :return: event trigger delete response
+        """
+        return self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' +
+            str(self.db_id) + '/',
+            follow_redirects=True,
+            data=json.dumps(data),
+            content_type='html/json')
+
     def runTest(self):
         """ This function will delete event trigger under test database. """
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
@@ -93,14 +104,16 @@ class EventTriggerMultipleDeleteTestCase(BaseTestGenerator):
         if not trigger_response:
             raise Exception("Could not find event trigger.")
         data = {'ids': self.event_trigger_ids}
-        del_response = self.tester.delete(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' +
-            str(self.db_id) + '/',
-            follow_redirects=True,
-            data=json.dumps(data),
-            content_type='html/json')
-        self.assertEquals(del_response.status_code, 200)
+
+        actual_response_code = True
+        expected_response_code = False
+
+        if self.is_positive_test:
+            response = self.delete_multiple(data)
+            actual_response_code = response.status_code
+            expected_response_code = self.expected_data['status_code']
+
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         # Disconnect the database

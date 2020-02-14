@@ -14,6 +14,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5088 <https://redmine.postgresql.org/issues/5088>`_ -  Improve code coverage and API test cases for the Event Trigger module.
 | `Issue #5176 <https://redmine.postgresql.org/issues/5176>`_ -  Enhance logging by tracking stdout and stderr of subprocess when log level set to DEBUG.
 
 Bug fixes

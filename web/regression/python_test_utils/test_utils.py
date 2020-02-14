@@ -1198,3 +1198,21 @@ def generate_scenarios(key, test_cases):
         tup = (test_name, dict(scenario))
         scenarios.append(tup)
     return scenarios
+
+
+def create_expected_output(parameters, actual_data):
+    """
+    This function creates the dict using given parameter and actual data
+    :param parameters:
+    :param actual_data:
+    :return: expected data
+    :type: dict
+    """
+    expected_output = {}
+
+    for key in parameters:
+        for value in actual_data:
+            expected_output[key] = value
+            actual_data.remove(value)
+            break
+    return expected_output
