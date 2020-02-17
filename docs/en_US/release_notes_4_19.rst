@@ -16,6 +16,7 @@ Housekeeping
 
 | `Issue #5088 <https://redmine.postgresql.org/issues/5088>`_ -  Improve code coverage and API test cases for the Event Trigger module.
 | `Issue #5176 <https://redmine.postgresql.org/issues/5176>`_ -  Enhance logging by tracking stdout and stderr of subprocess when log level set to DEBUG.
+| `Issue #5185 <https://redmine.postgresql.org/issues/5185>`_ -  Added option to override the class name of a label tag for select2 control.
 
 Bug fixes
 *********

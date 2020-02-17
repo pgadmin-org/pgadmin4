@@ -2138,7 +2138,7 @@ define([
     formatter: Select2Formatter,
     template: _.template([
       '<% if(label == false) {} else {%>',
-      '  <label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
+      '  <label class="<%=controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<% }%>',
       '<div class="<%=Backform.controlsClassName%>">',
       ' <select title="<%=name%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
