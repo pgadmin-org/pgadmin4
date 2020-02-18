@@ -2108,6 +2108,11 @@ define([
         preserveSelectionOrder: false,
         isDropdownParent: false,
       },
+      // To accept the label and conrol classes while extending control if
+      // required(e.g. if we want to show label and control in 50-50% or in
+      //different width of dialog/form) otherwise default classes will be added
+      controlLabelClassName: Backform.controlLabelClassName,
+      controlsClassName: Backform.controlsClassName,
     }),
 
     events: function() {
@@ -2140,7 +2145,7 @@ define([
       '<% if(label == false) {} else {%>',
       '  <label class="<%=controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<% }%>',
-      '<div class="<%=Backform.controlsClassName%>">',
+      '<div class="<%=controlsClassName%>">',
       ' <select title="<%=name%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
       '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%>',
       '  <%=required ? "required" : ""%><%= select2.multiple ? " multiple>" : ">" %>',
