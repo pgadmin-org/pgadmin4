@@ -28,8 +28,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="VACUUM VERBOSE;\n"
              ),
-             extected_msg="Maintenance (Vacuum)",
-             expetced_details_cmd='VACUUM VERBOSE;'
+             expected_msg="Maintenance (Vacuum)",
+             expected_details_cmd='VACUUM VERBOSE;'
 
          )),
         ('When maintained the server with FULL VERBOSE options',
@@ -46,8 +46,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="VACUUM FULL VERBOSE;\n"
              ),
-             extected_msg="Maintenance (Vacuum)",
-             expetced_details_cmd='VACUUM FULL VERBOSE;'
+             expected_msg="Maintenance (Vacuum)",
+             expected_details_cmd='VACUUM FULL VERBOSE;'
 
          )),
         ('When maintained the server with ANALYZE',
@@ -64,8 +64,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="ANALYZE VERBOSE;\n"
              ),
-             extected_msg="Maintenance (Analyze)",
-             expetced_details_cmd='ANALYZE VERBOSE;'
+             expected_msg="Maintenance (Analyze)",
+             expected_details_cmd='ANALYZE VERBOSE;'
 
          )),
         ('When maintained the server with REINDEX',
@@ -82,8 +82,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="REINDEX;\n"
              ),
-             extected_msg="Maintenance (Reindex)",
-             expetced_details_cmd='REINDEX;'
+             expected_msg="Maintenance (Reindex)",
+             expected_details_cmd='REINDEX;'
 
          )),
         ('When maintained the server with CLUSTER',
@@ -100,8 +100,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="CLUSTER VERBOSE;\n"
              ),
-             extected_msg="Maintenance (Cluster)",
-             expetced_details_cmd='CLUSTER VERBOSE;'
+             expected_msg="Maintenance (Cluster)",
+             expected_details_cmd='CLUSTER VERBOSE;'
 
          )),
     ]
@@ -114,8 +114,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
         )
 
         # Check the expected message returned
-        self.assertEqual(maintenance_obj.message, self.extected_msg)
+        self.assertEqual(maintenance_obj.message, self.expected_msg)
 
         # Check the command
         obj_details = maintenance_obj.details(self.class_params['cmd'], None)
-        self.assertIn(self.expetced_details_cmd, obj_details)
+        self.assertIn(self.expected_details_cmd, obj_details)

@@ -45,9 +45,9 @@ class RestoreMessageTest(BaseTestGenerator):
                  ],
                  cmd="/test_path/pg_restore"
              ),
-             extected_msg="Restoring backup on the server "
+             expected_msg="Restoring backup on the server "
                           "'test_restore_server (localhost:5444)'",
-             expetced_details_cmd='/test_path/pg_restore --file '
+             expected_details_cmd='/test_path/pg_restore --file '
                                   '"restore_file" --host "localhost"'
                                   ' --port "5444" --username "postgres" '
                                   '--no-password --database "postgres"'
@@ -69,9 +69,9 @@ class RestoreMessageTest(BaseTestGenerator):
         )
 
         # Check the expected message returned
-        self.assertEqual(restore_obj.message, self.extected_msg)
+        self.assertEqual(restore_obj.message, self.expected_msg)
 
         # Check the command
         obj_details = restore_obj.details(self.class_params['cmd'],
                                           self.class_params['args'])
-        self.assertIn(self.expetced_details_cmd, obj_details)
+        self.assertIn(self.expected_details_cmd, obj_details)

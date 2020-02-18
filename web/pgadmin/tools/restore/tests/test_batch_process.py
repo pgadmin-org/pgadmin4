@@ -9,7 +9,8 @@
 
 import sys
 
-from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
+from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc, \
+    current_app
 from pgadmin.tools.restore import RestoreMessage
 from pgadmin.utils.route import BaseTestGenerator
 from pickle import dumps, loads
@@ -53,61 +54,61 @@ class BatchProcessTest(BaseTestGenerator):
 
     @patch('pgadmin.tools.restore.RestoreMessage.get_server_details')
     @patch('pgadmin.misc.bgprocess.processes.Popen')
-    @patch('pgadmin.misc.bgprocess.processes.current_app')
     @patch('pgadmin.misc.bgprocess.processes.db')
     @patch('pgadmin.tools.restore.current_user')
     @patch('pgadmin.misc.bgprocess.processes.current_user')
     def runTest(self, current_user_mock, current_user, db_mock,
-                current_app_mock, popen_mock, get_server_details_mock):
-        current_user.id = 1
-        current_user_mock.id = 1
-        current_app_mock.PGADMIN_RUNTIME = False
+                popen_mock, get_server_details_mock):
+        with self.app.app_context():
+            current_user.id = 1
+            current_user_mock.id = 1
+            current_app.PGADMIN_RUNTIME = False
 
-        def db_session_add_mock(j):
-            cmd_obj = loads(j.desc)
-            self.assertTrue(isinstance(cmd_obj, IProcessDesc))
-            self.assertEqual(cmd_obj.bfile, self.class_params['bfile'])
-            self.assertEqual(cmd_obj.cmd,
-                             ' --file "restore_file" '
-                             '--host "{0}" '
-                             '--port "{1}" '
-                             '--username "{2}" '
-                             '--no-password '
-                             '--database "{3}"'.format(
-                                 self.class_params['host'],
-                                 self.class_params['port'],
-                                 self.class_params['username'],
-                                 self.class_params['database']
-                             ))
+            def db_session_add_mock(j):
+                cmd_obj = loads(j.desc)
+                self.assertTrue(isinstance(cmd_obj, IProcessDesc))
+                self.assertEqual(cmd_obj.bfile, self.class_params['bfile'])
+                self.assertEqual(cmd_obj.cmd,
+                                 ' --file "restore_file" '
+                                 '--host "{0}" '
+                                 '--port "{1}" '
+                                 '--username "{2}" '
+                                 '--no-password '
+                                 '--database "{3}"'.format(
+                                     self.class_params['host'],
+                                     self.class_params['port'],
+                                     self.class_params['username'],
+                                     self.class_params['database']
+                                 ))
 
-        get_server_details_mock.return_value = \
-            self.class_params['name'],\
-            self.class_params['host'],\
-            self.class_params['port']
+            get_server_details_mock.return_value = \
+                self.class_params['name'], \
+                self.class_params['host'], \
+                self.class_params['port']
 
-        db_mock.session.add.side_effect = db_session_add_mock
-        db_mock.session.commit = MagicMock(return_value=True)
+            db_mock.session.add.side_effect = db_session_add_mock
+            db_mock.session.commit = MagicMock(return_value=True)
 
-        restore_obj = RestoreMessage(
-            self.class_params['sid'],
-            self.class_params['bfile'],
-            *self.class_params['args']
-        )
+            restore_obj = RestoreMessage(
+                self.class_params['sid'],
+                self.class_params['bfile'],
+                *self.class_params['args']
+            )
 
-        p = BatchProcess(
-            desc=restore_obj,
-            cmd=self.class_params['cmd'],
-            args=self.class_params['args']
-        )
+            p = BatchProcess(
+                desc=restore_obj,
+                cmd=self.class_params['cmd'],
+                args=self.class_params['args']
+            )
 
-        # Check that _create_process has been called
-        self.assertTrue(db_mock.session.add.called)
+            # Check that _create_process has been called
+            self.assertTrue(db_mock.session.add.called)
 
-        # Check start method
-        self._check_start(popen_mock, p, restore_obj)
+            # Check start method
+            self._check_start(popen_mock, p, restore_obj)
 
-        # Check list method
-        self._check_list(p, restore_obj)
+            # Check list method
+            self._check_list(p, restore_obj)
 
     @patch('pgadmin.misc.bgprocess.processes.Process')
     def _check_start(self, popen_mock, p, restore_obj, process_mock):

@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #5170 <https://redmine.postgresql.org/issues/5170>`_ -  Added Czech language support.
+| `Issue #5179 <https://redmine.postgresql.org/issues/5179>`_ -  Added Python 3.8 support.
 
 Housekeeping
 ************

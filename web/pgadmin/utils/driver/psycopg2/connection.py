@@ -1652,7 +1652,7 @@ Failed to reset the connection to the server due to following error:
             resp.append(self.__notices.pop(0))
 
         for notify in self.__notifies:
-            if notify.payload is not None and notify.payload is not '':
+            if notify.payload is not None and notify.payload != '':
                 notify_msg = gettext(
                     "Asynchronous notification \"{0}\" with payload \"{1}\" "
                     "received from server process with PID {2}\n"
@@ -1725,7 +1725,7 @@ Failed to reset the connection to the server due to following error:
         # if formatted_msg is false then return from the function
         if not formatted_msg:
             notices = self.get_notices()
-            return errmsg if notices is '' else notices + '\n' + errmsg
+            return errmsg if notices == '' else notices + '\n' + errmsg
 
         # Do not append if error starts with `ERROR:` as most pg related
         # error starts with `ERROR:`
@@ -1789,7 +1789,7 @@ Failed to reset the connection to the server due to following error:
                 errmsg += self.decode_to_utf8(exception_obj.diag.context)
 
         notices = self.get_notices()
-        return errmsg if notices is '' else notices + '\n' + errmsg
+        return errmsg if notices == '' else notices + '\n' + errmsg
 
     #####
     # As per issue reported on pgsycopg2 github repository link is shared below

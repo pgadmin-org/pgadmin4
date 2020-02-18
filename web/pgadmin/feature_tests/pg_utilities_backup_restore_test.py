@@ -137,7 +137,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self.assertIn("from database 'pg_utility_test_db'", str(command))
 
             # On windows a modified path may be shown so skip this test
-            if os.name is not 'nt':
+            if os.name != 'nt':
                 self.assertIn("test_backup", str(command))
 
             self.assertIn("pg_dump", str(command))
@@ -203,7 +203,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 text
 
             self.assertIn(self.server['name'], str(command))
-            if os.name is not 'nt':
+            if os.name != 'nt':
                 self.assertIn("test_backup", str(command))
 
             self.assertIn("pg_restore", str(command))

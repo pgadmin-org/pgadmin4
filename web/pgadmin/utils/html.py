@@ -9,8 +9,12 @@
 
 """Utilities for HTML"""
 
-import cgi
 from pgadmin.utils import IS_PY2
+
+if IS_PY2:
+    from cgi import escape as html_escape
+else:
+    from html import escape as html_escape
 
 
 def safe_str(x):
@@ -32,4 +36,4 @@ def safe_str(x):
             x = x.decode('utf-8')
     except Exception:
         pass
-    return cgi.escape(x)
+    return html_escape(x, False)

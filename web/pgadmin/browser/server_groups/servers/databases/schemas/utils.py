@@ -569,7 +569,7 @@ class VacuumSettings:
 
         for row in vacuum_settings_tmp:
             row_name = row['name']
-            if type is 'toast':
+            if type == 'toast':
                 row_name = 'toast_{0}'.format(row['name'])
             if row_name in result and result[row_name] is not None:
                 if row['column_type'] == 'number':

@@ -46,9 +46,9 @@ class BackupMessageTest(BaseTestGenerator):
                  ],
                  cmd="/test_path/pg_dump"
              ),
-             extected_msg="Backing up the server"
+             expected_msg="Backing up the server"
                           " 'test_backup_server (localhost:5444)'",
-             expetced_details_cmd='/test_path/pg_dump --file '
+             expected_details_cmd='/test_path/pg_dump --file '
                                   '"backup_file" --host "localhost" '
                                   '--port "5444" --username "postgres" '
                                   '--no-password --database "postgres"'
@@ -79,9 +79,9 @@ class BackupMessageTest(BaseTestGenerator):
                  ],
                  cmd="/test_path/pg_dump"
              ),
-             extected_msg="Backing up the global objects on the server "
+             expected_msg="Backing up the global objects on the server "
                           "'test_backup_server (localhost:5444)'",
-             expetced_details_cmd='/test_path/pg_dump --file "backup_file" '
+             expected_details_cmd='/test_path/pg_dump --file "backup_file" '
                                   '--host "localhost"'
                                   ' --port "5444" --username "postgres" '
                                   '--no-password --database "postgres"'
@@ -112,10 +112,10 @@ class BackupMessageTest(BaseTestGenerator):
                  ],
                  cmd="/test_path/pg_dump"
              ),
-             extected_msg="Backing up an object on the server "
+             expected_msg="Backing up an object on the server "
                           "'test_backup_server (localhost:5444)'"
                           " from database 'postgres'",
-             expetced_details_cmd='/test_path/pg_dump --file "backup_file" '
+             expected_details_cmd='/test_path/pg_dump --file "backup_file" '
                                   '--host "localhost" '
                                   '--port "5444" --username "postgres" '
                                   '--no-password --database "postgres"'
@@ -139,9 +139,9 @@ class BackupMessageTest(BaseTestGenerator):
         )
 
         # Check the expected message returned
-        self.assertEqual(backup_obj.message, self.extected_msg)
+        self.assertEqual(backup_obj.message, self.expected_msg)
 
         # Check the command
         obj_details = backup_obj.details(self.class_params['cmd'],
                                          self.class_params['args'])
-        self.assertIn(self.expetced_details_cmd, obj_details)
+        self.assertIn(self.expected_details_cmd, obj_details)

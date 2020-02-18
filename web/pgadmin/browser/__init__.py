@@ -29,7 +29,7 @@ from flask_security.recoverable import reset_password_token_status, \
 from flask_security.signals import reset_password_instructions_sent
 from flask_security.utils import config_value, do_flash, get_url, \
     get_message, slash_url_suffix, login_user, send_mail
-from flask_security.views import _security, _commit, _render_json, _ctx
+from flask_security.views import _security, _commit, default_render_json, _ctx
 from werkzeug.datastructures import MultiDict
 
 import config
@@ -952,7 +952,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
 
         if request.json and not has_error:
             form.user = current_user
-            return _render_json(form)
+            return default_render_json(form)
 
         return _security.render_template(
             config_value('CHANGE_PASSWORD_TEMPLATE'),
