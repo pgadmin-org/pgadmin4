@@ -443,7 +443,7 @@ define([
           );
         }
       } else {
-        Alertify.alert(gettext('This object is not user editable.'),
+        Alertify.alert(gettext('Edit object'), gettext('This object is not user editable.'),
           function() {
             return true;
           });
@@ -538,7 +538,7 @@ define([
           }
         );
       } else {
-        Alertify.alert(gettext('This object cannot be deleted.'),
+        Alertify.alert(gettext('Delete object'), gettext('This object cannot be deleted.'),
           function() {
             return true;
           }

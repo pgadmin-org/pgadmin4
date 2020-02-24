@@ -22,5 +22,6 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #5058 <https://redmine.postgresql.org/issues/5058>`_ -  Ensure that AlertifyJS should not be visible as a title for alert dialog.
 | `Issue #5107 <https://redmine.postgresql.org/issues/5107>`_ -  Set proper focus on tab navigation for file manager dialog.
 | `Issue #5115 <https://redmine.postgresql.org/issues/5115>`_ -  Fix an issue where command and statements were parsed incorrectly for Rules.
