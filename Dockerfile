@@ -71,7 +71,7 @@ RUN apk add --no-cache \
         libffi-dev && \
     pip install --no-cache-dir \
         sphinx \
-        flask_security \
+        flask_security_too \
         flask_paranoid \
         python-dateutil \
         flask_sqlalchemy \
